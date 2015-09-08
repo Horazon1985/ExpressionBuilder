@@ -1,0 +1,247 @@
+<objects>
+<!-- MathToolForm -->    
+  <object id = "GUI_MathToolForm_INPUT">
+    <German>Eingabe</German>
+    <English>Input</English>
+    <Ukrainian>Пуск</Ukrainian>
+    <Russian>Ввод</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_APPROX">
+    <German>Approx</German>
+    <English>Approx</English>
+    <Ukrainian>Наблизити</Ukrainian>
+    <Russian>Приблизить</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_CLEAR">
+    <German>Leeren</German>
+    <English>Clear</English>
+    <Ukrainian>Очистити</Ukrainian>
+    <Russian>Очистить</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_CANCEL">
+    <German>Abbruch</German>
+    <English>Cancel</English>
+    <Ukrainian>Відміна</Ukrainian>
+    <Russian>Отмена</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_LATEX_CODE">
+    <German>LaTex-Code</German>
+    <English>LaTex code</English>
+    <Ukrainian>Код LaTex</Ukrainian>
+    <Russian>Код LaTex</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_OPERATOR">
+    <German>Operator</German>
+    <English>Operator</English>
+    <Ukrainian>Оператор</Ukrainian>
+    <Russian>Оператор</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_COMMAND">
+    <German>Befehl</German>
+    <English>Command</English>
+    <Ukrainian>Команда</Ukrainian>
+    <Russian>Команда</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_ROTATE_GRAPH">
+    <German>Graphen rotieren lassen</German>
+    <English>Rotate graph</English>
+    <Ukrainian>Обертати график</Ukrainian>
+    <Russian>Вращать график</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_STOP_ROTATION">
+    <German>Rotation stoppen</German>
+    <English>Stop rotation</English>
+    <Ukrainian>Припинити обертання</Ukrainian>
+    <Russian>Прекратить вращение</Russian>
+  </object>
+  <object id = "GUI_MathToolForm_LEGEND">
+    <German>Legende</German>
+    <English>Legend</English>
+    <Ukrainian>Легенда</Ukrainian>
+    <Russian>Легенда</Russian>
+  </object>
+<!-- MathToolmenü -->
+  <object id = "GUI_MathToolForm_MENU_FILE">
+    <German>Datei</German>
+    <English>File</English>
+    <Russian>Файл</Russian>
+    <Ukrainian>Файл</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_QUIT">
+    <German>Verlassen</German>
+    <English>Quit</English>
+    <Russian>Выход</Russian>
+    <Ukrainian>Вихід</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_MATHTOOL">
+    <German>MathTool</German>
+    <English>MathTool</English>
+    <Russian>MathTool</Russian>
+    <Ukrainian>MathTool</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_HELP">
+    <German>Hilfe</German>
+    <English>Help</English>
+    <Russian>Помощь</Russian>
+    <Ukrainian>Допомога</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_LANGUAGES">
+    <German>Sprachen</German>
+    <English>Languages</English>
+    <Russian>Языки</Russian>
+    <Ukrainian>Мови</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_REPRESENTATION_MODE">
+    <German>Darstellungsmodus</German>
+    <English>Representation Mode</English>
+    <Russian>Режим представления</Russian>
+    <Ukrainian>Режим зображення</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_ABOUT">
+    <German>Über MathTool</German>
+    <English>About MathTool</English>
+    <Russian>О MathTool</Russian>
+    <Ukrainian>Про MathTool</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_ENGLISH">
+    <German>Englisch</German>
+    <English>English</English>
+    <Russian>Английский</Russian>
+    <Ukrainian>Англійська</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_GERMAN">
+    <German>Deutsch</German>
+    <English>German</English>
+    <Russian>Немецкий</Russian>
+    <Ukrainian>Німецька</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_RUSSIAN">
+    <German>Russisch</German>
+    <English>Russian</English>
+    <Russian>Русский</Russian>
+    <Ukrainian>Російська</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_UKRAINIAN">
+    <German>Ukrainisch</German>
+    <English>Ukrainian</English>
+    <Russian>Украинский</Russian>
+    <Ukrainian>Українська</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_TEXT_MODE">
+    <German>Textmodus</German>
+    <English>Text mode</English>
+    <Russian>Текстовый режим</Russian>
+    <Ukrainian>Текстовий режим</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_FORMULA_MODE">
+    <German>Formelmodus</German>
+    <English>Formula mode</English>
+    <Russian>Формульный режим</Russian>
+    <Ukrainian>Формульний режим</Ukrainian>
+  </object>
+<!-- DevelopersDialogGUI -->    
+  <object id = "GUI_DevelopersDialogGUI_ABOUT">
+    <German>Über MathTool</German>
+    <English>About MathTool</English>
+    <Russian>О MathTool</Russian>
+    <Ukrainian>Про MathTool</Ukrainian>
+  </object>
+<!-- HelpDialogGUI -->    
+  <object id = "GUI_HelpDialogGUI_HELP">
+    <German>Hilfe</German>
+    <English>Help</English>
+    <Ukrainian>Допомога</Ukrainian>
+    <Russian>Помощь</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_MENU">
+    <German>Menü</German>
+    <English>Menu</English>
+    <Ukrainian>Меню</Ukrainian>
+    <Russian>Меню</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_GENERALITIES">
+    <German>Allgemeines</German>
+    <English>Generalities</English>
+    <Ukrainian>Загальне</Ukrainian>
+    <Russian>Общее</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_MATH_FORMULAS">
+    <German>Mathematische Formeln</German>
+    <English>Mathematical formulas</English>
+    <Ukrainian>Математичні формули</Ukrainian>
+    <Russian>Математические формулы</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_LOGICAL_EXPRESSION">
+    <German>Logische Ausdrücke</German>
+    <English>Logical expressions</English>
+    <Ukrainian>Логічні вирази</Ukrainian>
+    <Russian>Логические выражения</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_OPERATORS">
+    <German>Operatoren</German>
+    <English>Operators</English>
+    <Ukrainian>Оператори</Ukrainian>
+    <Russian>Операторы</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_COMMANDS">
+    <German>Befehle</German>
+    <English>Commands</English>
+    <Ukrainian>Команди</Ukrainian>
+    <Russian>Команды</Russian>
+  </object>
+  <object id = "GUI_HelpDialogGUI_BUG_REPORT">
+    <German>Kontakt/Bugs melden</German>
+    <English>Contact/Report bugs</English>
+    <Ukrainian>Контакт/Повідомити про баг</Ukrainian>
+    <Russian>Контакт/Сообщить о баге</Russian>
+  </object>
+ <!-- LegendGUI -->    
+ <object id = "GUI_LegendGUI_LEGEND">
+    <German>Legende</German>
+    <English>legend</English>
+    <Ukrainian>Легенда</Ukrainian>
+    <Russian>Легенда</Russian>
+  </object>
+  <object id = "GUI_LegendGUI_CONTROLS">
+    <German>Bedienung:</German>
+    <English>Controls:</English>
+    <Ukrainian>Управління:</Ukrainian>
+    <Russian>Управление:</Russian>
+  </object>
+  <object id = "GUI_LegendGUI_GRAPHS">
+    <German>Graphen:</German>
+    <English>Graphs:</English>
+    <Ukrainian>Графіки:</Ukrainian>
+    <Russian>Графики:</Russian>
+  </object>
+  <object id = "GUI_LegendGUI_GRAPH">
+    <German>Graph </German>
+    <English>Graph </English>
+    <Ukrainian>Графік </Ukrainian>
+    <Russian>График </Russian>
+  </object>
+  <object id = "GUI_LegendGUI_EQUATION_OF_IMPLICIT_FUNCTION">
+    <German>(Vereinfachte) Gleichung der implizit gegebenen Funktion: </German>
+    <English>(Simplified) equation of the implicitly given function: </English>
+    <Ukrainian>(Спрощене) рівняння неявно заданої функції: </Ukrainian>
+    <Russian>(Упрощенное) уравнение неявно заданной функции: </Russian>
+  </object>
+  <object id = "GUI_LegendGUI_PARAMETERIZED_CURVE">
+    <German>Parametrisierte Kurve: </German>
+    <English>Parameterized curve: </English>
+    <Ukrainian>Параметризована крива: </Ukrainian>
+    <Russian>Параметризованная кривая: </Russian>
+  </object>
+  <object id = "GUI_ComputingDialogGUI_COMPUTING">
+    <German>Berechnung wird ausgeführt. Zum Abbrechen ESC-Taste drücken.</German>
+    <English>Computation is running. Press ESC key to cancel cpmputation.</English>
+    <Ukrainian>Виконується обчислення. Для припинення натисніть ESC.</Ukrainian>
+    <Russian>Выполняется вычисление. Для прекращения нажмите ESC.</Russian>
+  </object>
+  <object id = "GUI_ComputingDialogGUI_INFO">
+    <German>Info</German>
+    <English>Information</English>
+    <Ukrainian>Інфо</Ukrainian>
+    <Russian>Инфо</Russian>
+  </object>
+</objects>

@@ -1,0 +1,50 @@
+﻿<objects>
+  <object id = "LEB_LogicalBinaryOperation_COMPUTATION_ABORTED">
+    <German>Berechnung abgebrochen.</German>
+    <English>Computation aborted.</English>
+    <Ukrainian>Обчислення припинено.</Ukrainian>
+    <Russian>Вычисление прекращено.</Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
+    <German>Der Ausdruck oder ein Teilausdruck ist leer oder unvollständig.</German>
+    <English>The expression or a part of the expression is either empty or incomplete.</English>
+    <Ukrainian>Вираз або частина виразу порожня або неповна.</Ukrainian>
+    <Russian>Выражение или часть выражения пуста либо неполна.</Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_WRONG_BRACKETS">
+    <German>Falsche Klammerung.</German>
+    <English>Incorrect brackets.</English>
+    <Ukrainian>Неправильні дужки.</Ukrainian>
+    <Russian>Неправильные скобки.</Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY">
+    <German>Linke Seite eines logischen binären Operators ist leer.</German>
+    <English>The left side of a logical binary operator is empty.</English>
+    <Ukrainian>Ліва частина логічного бінарного оператора порожня.</Ukrainian>
+    <Russian>Левая часть логического бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_RIGHT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY">
+    <German>Rechte Seite eines logischen binären Operators ist leer.</German>
+    <English>The right side of a logical binary operator is empty.</English>
+    <Ukrainian>Права частина логічного бінарного оператора порожня.</Ukrainian>
+    <Russian>Правая часть логического бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED">
+    <German>Folgender logischer Ausdruck/Teilausdruck kann nicht interpretiert werden: </German>
+    <English>The following logical expression/part of a logical expression cannot be interpreted: </English>
+    <Ukrainian>Наступний логічний вираз/частина логічного виразу не може бути проінтерпритована: </Ukrainian>
+    <Russian>Следующее логическое выражение/часть логического выражения не может быть проинтерпритирована: </Russian>
+  </object>
+  <object id = "LEB_LogicalExpression_STACK_OVERFLOW">
+    <German>Speicher voll. Die Berechnung wurde beendet.</German>
+    <English>Stack overflow. The computation was aborted.</English>
+    <Ukrainian>Оперативна пам'ять переповнена. Обчислення припинено.</Ukrainian>
+    <Russian>Оперативная память переполнена. Вычисление прекращено.</Russian>
+  </object>
+  <object id = "LEB_LogicalUnaryOperation_COMPUTATION_ABORTED">
+    <German>Berechnung abgebrochen.</German>
+    <English>Computation aborted.</English>
+    <Ukrainian>Обчислення припинено.</Ukrainian>
+    <Russian>Вычисление прекращено.</Russian>
+  </object>
+</objects>

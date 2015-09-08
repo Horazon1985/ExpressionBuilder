@@ -1,0 +1,1155 @@
+<objects>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_APPROX">
+    <German>Im Befehl 'approx' muss genau ein Parameter stehen.</German>
+    <English>The command 'approx' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'approx' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'approx' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_PARAMETER_IN_APPROX_IS_INVALID">
+    <German>Der Parameter im Befehl 'approx' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'approx' must be a valid expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'approx' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр команды 'approx' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CCNF">
+    <German>Im Befehl 'ccnf' muss genau ein Parameter stehen.</German>
+    <English>The command 'ccnf' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'ccnf' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'ccnf' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_CCNF">
+    <German>Der Parameter im Befehl 'ccnf' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'ccnf' must be a valid logical expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'ccnf' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'ccnf' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CDNF">
+    <German>Im Befehl 'cdnf' muss genau ein Parameter stehen.</German>
+    <English>The command 'cdnf' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'cdnf' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'cdnf' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_CDNF">
+    <German>Der Parameter im Befehl 'cdnf' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'cdnf' must be a valid logical expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'cdnf' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'cdnf' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CLEAR">
+    <German>Im Befehl 'clear' dürfen keine Parameter stehen.</German>
+    <English>The command 'clear' allowes no parameter.</English>
+    <Ukrainian>У команди 'clear' не має бути параметрів.</Ukrainian>
+    <Russian>У команды 'clear' не должно быть параметров.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEF">
+    <German>Im Befehl 'def' muss genau ein Parameter stehen, welcher aus einer Variablenzuweisung oder einer Funktionszuweisung besteht.</German>
+    <English>The command 'def' must contain exactly one parameter, which is a definition either of a variable or of a function.</English>
+    <Ukrainian>У команди 'approx' має бути рівно один параметр, що є визначенням змінної або .</Ukrainian>
+    <Russian>У команды 'approx' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_NO_EQUAL_IN_DEF">
+    <German>Im Befehl 'def' muss ein Gleichheitszeichen als Zuweisungsoperator vorhanden sein.</German>
+    <English>In command 'def' the assignment operator '=' must occur.</English>
+    <Ukrainian>У команді 'def' має бути присутній оператор присвоєння '='.</Ukrainian>
+    <Russian>В команде 'def' должен присутствовать оператор присвоения '='.</Russian>
+  </object>
+  <object id = "MCC_TO_VARIABLE_MUST_BE_ASSIGNED_REAL_VALUE">
+    <German>Bei einer Variablenzuweisung muss der Veränderlichen ein reeller Wert zugewiesen werden.</German>
+    <English>In an assignment of a variable, a real value must be assigned to a variable.</English>
+    <Ukrainian>При присвоєнні змінної, їй має присвоюватися дійсне значення.</Ukrainian>
+    <Russian>При присвоении переменной, ей должно присваиваться вещественное значение.</Russian>
+  </object>
+  <object id = "MCC_TO_VARIABLE_MUST_BE_ASSIGNED_CONSTANT_REAL_VALUE">
+    <German>Bei einer Variablenzuweisung muss der Veränderlichen ein reeller konstanter Wert zugewiesen werden.</German>
+    <English>In an assignment of a variable, a constant real value must be assigned to a variable.</English>
+    <Ukrainian>При присвоєнні змінної, їй має присвоюватися дійсне стале значення.</Ukrainian>
+    <Russian>При присвоении переменной, ей должно присваиваться вещественное постоянное значение.</Russian>
+  </object>
+  <object id = "MCC_INVALID_EXPRESSION_ON_RIGHT_SIDE">
+    <German>Ungültiger Ausdruck auf der rechten Seite. Gemeldeter Fehler: </German>
+    <English>Invalid expression on the right side. Reported error: </English>
+    <Ukrainian>Невірне значення у правій частині. Повідомлення про помилку: </Ukrainian>
+    <Russian>Неправильное значение в правой части. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_INVALID_DEF">
+    <German>Ungültige Variablen- oder Funktionsdefinition.</German>
+    <English>Invalid assignment of variable or function.</English>
+    <Ukrainian>Неправильне визначення змінної або функції.</Ukrainian>
+    <Russian>Неправильное определение переменной или функции.</Russian>
+  </object>
+  <object id = "MCC_IS_NO_FUNCTION_VARS_IN_FUNCTION_DECLARATION">
+    <German>Die zu definierende Funktion muss mindestens eine Variable als Parameter enthalten.</German>
+    <English>The function to be defined must contains at least one variable as a parameter.</English>
+    <Ukrainian>Функція, що визначається, має містить щонайменше одну змінну як параметр.</Ukrainian>
+    <Russian>Определяемая функция должна содержать минимум одну переменную как параметр.</Russian>
+  </object>
+  <object id = "MCC_IS_NOT_VALID_VARIABLE_1">
+    <German>'</German>
+    <English>'</English>
+    <Ukrainian>'</Ukrainian>
+    <Russian>'</Russian>
+  </object>
+  <object id = "MCC_IS_NOT_VALID_VARIABLE_2">
+    <German>' ist keine gültige Veränderliche.</German>
+    <English>' is not a valid variable.</English>
+    <Ukrainian>' не є діючою змінною.</Ukrainian>
+    <Russian>' не является действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_DEF_1">
+    <German>In der Funktionsdeklaration der Funktion </German>
+    <English>In the declaration of the function </English>
+    <Ukrainian>В оголошенні функції </Ukrainian>
+    <Russian>В обьявлении функции </Russian>
+  </object>
+  <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_DEF_2">
+    <German> dürfen nicht mehrmals dieselben Veränderlichen vorkommen.</German>
+    <English> it is not allowed that same variables occur twice.</English>
+    <Ukrainian> не можна більше одного разу використовувати ту саму змінну.</Ukrainian>
+    <Russian> нельзя более одного раза использовать одну и ту же переменную.</Russian>
+  </object>
+  <object id = "MCC_PROTECTED_FUNC_NAME_1">
+    <German>Der Funktionsname '</German>
+    <English>The function name '</English>
+    <Ukrainian>Ім'я функції '</Ukrainian>
+    <Russian>Имя функции '</Russian>
+  </object>
+  <object id = "MCC_PROTECTED_FUNC_NAME_2">
+    <German>' ist der Name einer geschützten Funktion, eines geschützten Operators oder eines geschützten Befehls. Bitte wählen Sie einen anderen Namen.</German>
+    <English>' is the name of either a protected function, a protected operator or a protected command. Please, choose another function name.</English>
+    <Ukrainian>' є ім'ям захищеної функції, захищеного оператора або захищеної команди. Оберіть, будь ласка, інше ім'я для функції.</Ukrainian>
+    <Russian>' является именем защищённой функции, защищённого оператора или защищённой команды. Выберите, пожалуйста, другое имя функции.</Russian>
+  </object>
+  <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS_1">
+    <German>Der Funktionsname '</German>
+    <English>The function name '</English>
+    <Ukrainian>Ім'я функції '</Ukrainian>
+    <Russian>Имя функции '</Russian>
+  </object>
+  <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS_2">
+    <German>' enthält Sonderzeichen. Bitte wählen Sie einen anderen Namen, welcher nur aus Buchstaben und Ziffern besteht.</German>
+    <English>' contains special characters. Please, choose another function name, which consists only of letters and digits..</English>
+    <Ukrainian>' містить спеціальні символи. Оберіть, будь ласка, інше ім'я функції, що складається лише з літер та цифр.</Ukrainian>
+    <Russian>' содержит специальные символы. Выберите, пожалуйста, другое имя функции, которое состоит только из букв и цифр.</Russian>
+  </object>
+  <object id = "MCC_RIGHT_SIDE_OF_DEF_CONTAINS_WRONG_VAR">
+    <German>Auf der rechten Seite taucht eine Veränderliche auf, die nicht als Funktionsparameter vorkommt.</German>
+    <English>The right side contains a variable, which does not occur in function parameters.</English>
+    <Ukrainian>Права частина містить змінну, що не є параметром функції.</Ukrainian>
+    <Russian>Правая часть содержит переменную, которая не является параметром функции.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEFFUNCS">
+    <German>Im Befehl 'deffuncs' dürfen keine Parameter stehen.</German>
+    <English>The command 'deffuncs' allows no parameter.</English>
+    <Ukrainian>У команди 'deffuncs' не має бути параметрів.</Ukrainian>
+    <Russian>У команды 'deffuncs' не должно быть параметров.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEFVARS">
+    <German>Im Befehl 'defvars' dürfen keine Parameter stehen.</German>
+    <English>The command 'defvars' allows no parameter.</English>
+    <Ukrainian>У команди 'defvars' не має бути параметрів.</Ukrainian>
+    <Russian>У команды 'defvars' не должно быть параметров.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EIGENVALUES">
+    <German>Im Befehl 'eigenvalues' muss genau ein Parameter stehen.</German>
+    <English>The command 'eigenvalues' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'eigenvalues' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'eigenvalues' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVALUES">
+    <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'eigenvalues' must be a valid matrix expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'eigenvalues' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'eigenvalues' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVALUES_NOT_QUADRATIC">
+    <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'eigenvalues' must be a valid matrix expression, which represents a quadratic matrix. Reported Error: </English>
+    <Ukrainian>Параметр команди 'eigenvalues' має бути діючим матричним виразом, що представляє квадратну матрицю. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'eigenvalues' должен быть действительным матричным выражением, который представляет квадратную матрицу. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_EIGENVALUES_OF_MATRIX_1">
+    <German>Es konnten folgende Eigenwerte der Matrix </German>
+    <English>Following eigenvalues of the matrix </English>
+    <Ukrainian>Наступні власні числла матриці </Ukrainian>
+    <Russian>Следующие собственные значения матрицы </Russian>
+  </object>
+  <object id = "MCC_EIGENVALUES_OF_MATRIX_2">
+    <German> ermittelt werden: </German>
+    <English> are found: </English>
+    <Ukrainian> було знайдено:</Ukrainian>
+    <Russian> были найдены: </Russian>
+  </object>
+  <object id = "MCC_NO_EIGENVALUES_1">
+    <German>Es konnten keine Eigenwerte der Matrix </German>
+    <English>No eigenvalues of the matrix </English>
+    <Ukrainian>Жодних власних значень матриці </Ukrainian>
+    <Russian>Никаких собственных значений матрицы </Russian>
+  </object>
+  <object id = "MCC_NO_EIGENVALUES_2">
+    <German> ermittelt werden.</German>
+    <English> found.</English>
+    <Ukrainian> не було знайдено.</Ukrainian>
+    <Russian> не было найдено.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EIGENVECTORS">
+    <German>Im Befehl 'eigenvectors' muss genau ein Parameter stehen.</German>
+    <English>The command 'eigenvectors' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'eigenvectors' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'eigenvectors' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVECTORS">
+    <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'eigenvectors' must be a valid matrix expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVECTORS_NOT_QUADRATIC">
+    <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'eigenvectors' must be a valid matrix expression, which represents a quadratic matrix. Reported Error: </English>
+    <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом, що представляє квадратну матрицю. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением, который представляет квадратную матрицу. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_OF_MATRIX_1">
+    <German>Es konnten folgende Eigenvektoren der Matrix </German>
+    <English>Following eigenvectors of the matrix </English>
+    <Ukrainian>Наступні власні вектори матриці </Ukrainian>
+    <Russian>Следующие собственные векторы матрицы </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_OF_MATRIX_2">
+    <German> ermittelt werden: </German>
+    <English> are found: </English>
+    <Ukrainian> було знайдено:</Ukrainian>
+    <Russian> были найдены: </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_OF_MATRIX_2">
+    <German> ist ein Eigenvektor zum Eigenwert </German>
+    <English> is an eigenvector for the eigenvalue </English>
+    <Ukrainian> є власним вектором для власного значення </Ukrainian>
+    <Russian> является собственным вектором для собственного значения </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_FOR_EIGENVALUE_1">
+    <German>Eigenvektoren zum Eigenwert </German>
+    <English>Eigenvectors for eigenvalue </English>
+    <Ukrainian>Власні вектори для власного числа </Ukrainian>
+    <Russian>Собственные векторы для собственного числа </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_FOR_EIGENVALUE_2">
+    <German> : </German>
+    <English> : </English>
+    <Ukrainian> : </Ukrainian>
+    <Russian> : </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EULER">
+    <German>Im Befehl 'euler' muss genau ein Parameter stehen.</German>
+    <English>The command 'euler' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'euler' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'euler' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EULER">
+    <German>Der Parameter im Befehl 'euler' muss eine nichtnegative ganze Zahl sein.</German>
+    <English>The parameter in command 'euler' must be a nonnegative integer.</English>
+    <Ukrainian>Параметром команди 'euler' має бути невід'ємне ціле число.</Ukrainian>
+    <Russian>Параметром команды 'euler' должно быть неотрицательное целое число.</Russian>
+  </object>
+  <object id = "MCC_ENTER_SMALLER_NUMBER_IN_EULER">
+    <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
+    <English>Please choose a smaller number of digits.</English>
+    <Ukrainian>Оберіть, будь ласка, менше число для кількості знаків.</Ukrainian>
+    <Russian>Выберите, пожалуйста, меньшее число для количества знаков.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EXPAND">
+    <German>Im Befehl 'expand' muss genau ein Parameter stehen.</German>
+    <English>The command 'expand' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'expand' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'expand' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EXPAND">
+    <German>Der Parameter im Befehl 'expand' muss ein gültiger Ausdruck sein.</German>
+    <English>The parameter in command 'expand' must be a valid expression.</English>
+    <Ukrainian>Параметр команди 'div' має бути діючим виразом.</Ukrainian>
+    <Russian>Параматр команды 'div' должен быть действительным выражением.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_KER">
+    <German>Im Befehl 'ker' muss genau ein Parameter stehen.</German>
+    <English>The command 'ker' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'ker' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'ker' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_KER">
+    <German>Der Parameter im Befehl 'ker' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'ker' must be a valid matrix expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'ker' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'ker' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_BASIS_OF_KER_1">
+    <German>Eine Basis des Kerns der Matrix </German>
+    <English>A basis of the kernel of the matrix </English>
+    <Ukrainian>База ядра матриці </Ukrainian>
+    <Russian>Базис ядра матрицы </Russian>
+  </object>
+  <object id = "MCC_BASIS_OF_KER_2">
+    <German> ist gegeben durch die folgenden Vektoren: </German>
+    <English> is given by the following vectors: </English>
+    <Ukrainian> задана наступними векторами: </Ukrainian>
+    <Russian> задан следующими векторами: </Russian>
+  </object>
+  <object id = "MCC_TRIVIAL_KER_1">
+    <German>Der Kern der Matrix </German>
+    <English>The kernel of the matrix </English>
+    <Ukrainian>Ядро матриці </Ukrainian>
+    <Russian>Ядро матрицы </Russian>
+  </object>
+  <object id = "MCC_TRIVIAL_KER_2">
+    <German> enthält nur den Nullvektor </German>
+    <English> contains only the zero vector </English>
+    <Ukrainian> містить лише нульовий вектор </Ukrainian>
+    <Russian> содержит только нулевой вектор </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_LATEX">
+    <German>Im Befehl 'latex' muss genau ein Parameter stehen. Dieser muss aus gültigen Ausdrücken bestehen, die allesamt durch Gleichheitszeichen verbunden sind.</German>
+    <English>The command 'latex' must contain exactly one parameter. This parameter must consist of a chain of valid expression, which are connected by equal signs.</English>
+    <Ukrainian>У команди 'latex' має бути рівно один параметр. Цей параметр має складатися з ланцюга діючих виразів, що з'єднані знаком рівності.</Ukrainian>
+    <Russian>У команды 'latex' должен быть ровно один параметр. Этот параметр должен состоять из цепи действительных выражений объединенных знаком равенства.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_LATEX">
+    <German>Fehler im Parameter des Befehls 'latex': </German>
+    <English>Error in the parameter of command 'latex': </English>
+    <Ukrainian>Помилка у параметрі команди 'latex': </Ukrainian>
+    <Russian>Ошибка в параметре команды 'latex': </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PI">
+    <German>Im Befehl 'pi' muss genau ein Parameter stehen.</German>
+    <English>The command 'pi' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'pi' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'pi' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_PI">
+    <German>Der Parameter im Befehl 'pi' muss eine nichtnegative ganze Zahl sein.</German>
+    <English>The parameter in command 'pi' must be a nonnegative integer.</English>
+    <Ukrainian>Параметром команди 'pi' має бути невід'ємне ціле число.</Ukrainian>
+    <Russian>Параметром команды 'pi' должно быть неотрицательное целое число.</Russian>
+  </object>
+  <object id = "MCC_ENTER_SMALLER_NUMBER_IN_PI">
+    <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
+    <English>Please choose a smaller number of digits.</English>
+    <Ukrainian>Оберіть, будь ласка, менше число для </Ukrainian>
+    <Russian>Выберите, пожалуйста, меньшее число для</Russian>
+  </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOT2D">
+    <German>Zu wenig Parameter im Befehl 'plot2d'.</German>
+    <English>Not enough parameters in command 'plot2d'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'plot2d'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'plot2d'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT2D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT2D_2">
+    <German>. Parameter im Befehl 'plot2d' muss ein gültiger Ausdruck in einer Veränderlichen sein.</German>
+    <English>. parameter in command 'plot2d' must be a valid expression in one variable.</English>
+    <Ukrainian>. параметр команди 'plot2d' має бути діючим виразом однієї змінної.</Ukrainian>
+    <Russian>. параметр команды 'plot2d' должен быть действительным выражением одной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D_1">
+    <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens eine Veränderliche enthalten. Diese enthalten jedoch </German>
+    <English>The expressions in command 'plot2d' must contain at most one variable. They contain </English>
+    <Ukrainian>Вирази у команді 'plot2d' мають містити не більше однієї змінної. Вони містять </Ukrainian>
+    <Russian>Выражения в команде 'plot2d' должны содержать не более одной переменной. Они содержат </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D_2">
+    <German> Veränderliche.</German>
+    <English> variable.</English>
+    <Ukrainian> змінних.</Ukrainian>
+    <Russian> переменных.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D_2">
+    <German>. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
+    <English>. parameter in command 'plot2d' must be a real number.</English>
+    <Ukrainian>. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
+    <Russian>. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_2">
+    <German>. Parameter im Befehl 'plot2d' muss kleiner sein als der </German>
+    <English>. parameter in command 'plot2d' must be smaller than the </English>
+    <Ukrainian>. параметр команди 'plot2d' має бути меншим ніж </Ukrainian>
+    <Russian>. параметр команды 'plot2d' должен быть меньше чем </Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_3">
+    <German>. Parameter.</German>
+    <English>. parameter.</English>
+    <Ukrainian>. параметр.</Ukrainian>
+    <Russian>. праметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_IMPLICIT_PLOT2D">
+    <German>Beim Plotten impliziter Funktionen muss der Befehl 'plot2d' genau 5 Parameter enthalten: der erste ist die Gleichung, die anderen vier sind die Grenzen, innerhalb derer der Graph geplottet wird.</German>
+    <English>If plotting implicit functions, the command 'plot2d' must contain exactly 5 parameters: the first parameter is the equation, the remaining parameters define the interval limits for the corresponding variables.</English>
+    <Ukrainian>При побудові графіку неявної фуннкції, команда 'plot2d' має місити рівно 5 параметрів: перший параметр - це рівняння, решта параметрів визначають інтервали, що обмежують відповідні змінні.</Ukrainian>
+    <Russian>При построении графика невной функции, команда 'plot2d' должна содержать ровно 5 параметров: первый параметр - это уравнение, остальные параметры определяют интервалы, которые ограничивают соответствующие переменные.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_IMPLICIT_PLOT2D">
+    <German>Der 1. Parameter im Befehl 'plot2d' muss aus zwei gültigen Ausdrücken bestehen, welche durch ein '=' verbunden sind. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'plot2d' must consist of two valid expressions, connected by an '='. Reported eror: </English>
+    <Ukrainian>1. параметр команди 'plot2d' має складатися з двох діючих виразів, що поєднані знаком '='. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параметр кманды 'plot2d' должен состоять из двух действительных выражений объединённых знаком '='. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_IMPLICIT_PLOT2D_1">
+    <German>Die beiden Ausdrücke im Befehl 'plot2d' dürfen höchstens zwei Veränderliche enthalten. Diese enthalten jedoch </German>
+    <English>The expressions in command 'plot2d' must contain at most two variables. They contain </English>
+    <Ukrainian>Обидва вирази у команді 'plot2d' повинні містити щонайбільше дві змінні. Вони містять </Ukrainian>
+    <Russian>Оба Выражения в команде 'plot2d' должны содержать не более двух переменных. Они содержат </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_IMPLICIT_PLOT2D_2">
+    <German> Veränderliche.</German>
+    <English> variables.</English>
+    <Ukrainian> змінні.</Ukrainian>
+    <Russian> переменные.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_IMPLICIT_PLOT2D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_IMPLICIT_PLOT2D_2">
+    <German>. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
+    <English>. parameter in command 'plot2d' must be a real number.</English>
+    <Ukrainian>. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
+    <Russian>. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
+  </object>
+  <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D">
+    <German>3. Parameter im Befehl 'plot2d' muss größer sein als der 2. Parameter.</German>
+    <English>3. parameter in command 'plot2d' must be greater than the 2. parameter.</English>
+    <Ukrainian>3. параметр команди 'plot2d' має бути більше ніж 2. параметр.</Ukrainian>
+    <Russian>3. параметр команды 'plot2d' должен быть меньше чем 2. параметр.</Russian>
+  </object>
+  <object id = "MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D">
+    <German>5. Parameter im Befehl 'plot2d' muss größer sein als der 4. Parameter.</German>
+    <English>5. parameter in command 'plot2d' must be greater than the 4. parameter.</English>
+    <Ukrainian>5. параметр команди 'plot2d' має бути більше ніж 4. параметр.</Ukrainian>
+    <Russian>5. параметр команды 'plot2d' должен быть меньше чем 4. параметр.</Russian>
+  </object>
+  <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_PLOT3D">
+    <German>Zu wenig Parameter im Befehl 'plot3d'.</German>
+    <English>Not enough parameters in command 'plot3d'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'plot3d'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'plot3d'.</Russian>
+  </object>
+  <object id = "MCC_TOO_MANY_PARAMETERS_IN_PLOT3D">
+    <German>Zu viele Parameter im Befehl 'plot3d'.</German>
+    <English>Too many parameters in command 'plot3d'.</English>
+    <Ukrainian>Забагато параметрів у команди 'plot3d'.</Ukrainian>
+    <Russian>Слишком много параметров у команды 'plot3d'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_PLOT3D">
+    <German>Der 1. Parameter im Befehl 'plot3d' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'plot3d' must be a valid expression. Reported eror: </English>
+    <Ukrainian>1. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D_1">
+    <German>Der Ausdruck im Befehl 'plot3d' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch </German>
+    <English>The expression in command 'plot3d' must contain at most two variables. It contains </English>
+    <Ukrainian>Вираз у команді 'plot3d' має місити не більше двох змінних. Він містить </Ukrainian>
+    <Russian>Выражение в команде 'plot3d' должно содержать не более двух переменных. Оно содержит </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D_2">
+    <German> Veränderliche.</German>
+    <English> variables.</English>
+    <Ukrainian> змінних.</Ukrainian>
+    <Russian> переменных.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOT3D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOT3D_2">
+    <German>. Parameter im Befehl 'plot3d' muss eine reelle Zahl sein.</German>
+    <English>. parameter in command 'plot3d' must be a real number.</English>
+    <Ukrainian>. параметр команди 'plot3d' має бути дійсним числом.</Ukrainian>
+    <Russian>. параметр команды 'plot3d' должен быть действительным числом.</Russian>
+  </object>
+  <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D">
+    <German>Der 3. Parameter im Befehl 'plot3d' muss größer sein als der 2. Parameter.</German>
+    <English>The 3. parameter in command 'plot3d' must be greater than the 2. parameter.</English>
+    <Ukrainian>3. параметр команди 'plot3d' має бути більше ніж 2. параметр.</Ukrainian>
+    <Russian>3. параметр команды 'plot3d' должен быть меньше чем 2. параметр.</Russian>
+  </object>
+  <object id = "MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D">
+    <German>Der 5. Parameter im Befehl 'plot3d' muss größer sein als der 4. Parameter.</German>
+    <English>The 5. parameter in command 'plot3d' must be greater than the 4. parameter.</English>
+    <Ukrainian>5. параметр команди 'plot3d' має бути більше ніж 4. параметр.</Ukrainian>
+    <Russian>5. параметр команды 'plot3d' должен быть меньше чем 4. параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTCURVE">
+    <German>Im Befehl 'plotcurve' müssen genau drei Parameter stehen.</German>
+    <English>The command 'plotcurve' must contain exactly three parameters.</English>
+    <Ukrainian>У команди 'plotcurve' має бути рівно три параметра.</Ukrainian>
+    <Russian>У команды 'plotcurve' должно быть ровно три параметра.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_PLOTCURVE">
+    <German>Der 1. Parameter im Befehl 'plotcurve' muss eine parametrisierte Kurve sein.</German>
+    <English>The 1. parameter in command 'plotcurve' must be a parameterized curve.</English>
+    <Ukrainian>1. параметр команди 'plotcurve' має бути параметризованою кривою.</Ukrainian>
+    <Russian>1. параметр команды 'plotcurve' должен быть параметризированной кривой.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_CURVE_COMPONENTS_IN_PLOTCURVE">
+    <German>Die parametrisierte Kurve im Befehl 'plotcurve' muss entweder aus zwei oder aus drei Komponenten bestehen.</German>
+    <English>The parameterized curve in command 'plotcurve' must consist either of two or of three components.</English>
+    <Ukrainian>Параметризована крива у команді 'plotcurve' повинна складатися або з двох або з трьох компонент.</Ukrainian>
+    <Russian>Параметризированная кривая в команде 'plotcurve' должна состоять либо из двух либо из трёх компонент.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_CURVE_COMPONENTS_IN_PLOTCURVE_1">
+    <German>Die </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_CURVE_COMPONENTS_IN_PLOTCURVE_2">
+    <German>. Kompomente in der Kurvendarstellung muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>. component in the representation of the curve must be a valid expression. Reported Error: </English>
+    <Ukrainian>. компонента у зображенні кривої має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. компонента в представлении кривой должна быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CURVE_COMPONENTS_IN_PLOTCURVE">
+    <German>Die Kurve im Befehl 'plotcurve' darf durch höchstens einen Parameter parametrisiert werden.</German>
+    <English>The curve in command 'plotcurve' must be parameterized by at most one parameter variable.</English>
+    <Ukrainian>Крива у команді 'plotcurve' може бути параметризована максимум одним параметром.</Ukrainian>
+    <Russian>Кривая в команде 'plotcurve' может быть параметризирована максимум одним параметром.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCURVE_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCURVE_2">
+    <German>. Parameter im Befehl 'plotcurve' muss eine reelle Zahl sein.</German>
+    <English>. parameter in command 'plotcurve' must be a real number.</English>
+    <Ukrainian>. параметр команди 'plotcurve' має бути дійсним числом.</Ukrainian>
+    <Russian>. параметр команды 'plotcurve' должен быть вещественным числом.</Russian>
+  </object>
+  <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_PLOTPOLAR">
+    <German>Zu wenig Parameter im Befehl 'plotpolar'.</German>
+    <English>Not enough parameters in command 'plotpolar'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'plotpolar'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'plotpolar'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOTPOLAR_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOTPOLAR_2">
+    <German>. Parameter im Befehl 'plotpolar' muss ein gültiger Ausdruck in einer Veränderlichen sein.</German>
+    <English>. parameter in command 'plotolar' must be a valid expression in one variable.</English>
+    <Ukrainian>. параметр команди 'plotolar' має бути діючим виразом однієї змінної.</Ukrainian>
+    <Russian>. параметр команды 'plotolar' должен быть действительным выражением одной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTPOLAR_1">
+    <German>Die Ausdrücke im Befehl 'plotpolar' dürfen höchstens eine Veränderliche enthalten. Diese enthalten jedoch </German>
+    <English>The expressions in command 'plotpolar' must contain at most one variables. They contain </English>
+    <Ukrainian>Вирази у команді 'plotpolar' мають містити не більше однієї змінної. Вони містять </Ukrainian>
+    <Russian>Выражения в команде 'plotpolar' должны содержать не более одной переменной. Они содержат </Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTPOLAR_2">
+    <German> Veränderliche.</German>
+    <English> variables.</English>
+    <Ukrainian> змінних.</Ukrainian>
+    <Russian> переменных.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTPOLAR_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTPOLAR_2">
+    <German>. Parameter im Befehl 'plotpolar' muss eine reelle Zahl sein.</German>
+    <English>. parameter in command 'plotpolar' must be a real number.</English>
+    <Ukrainian>. параметр команди 'plotpolar' має бути дійсним числом.</Ukrainian>
+    <Russian>. параметр команды 'plotpolar' должен быть вещественным числом.</Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_2">
+    <German>. Parameter im Befehl 'plotpolar' muss größer sein als der </German>
+    <English>. parameter in command 'plotpolar' must be greater than the </English>
+    <Ukrainian>. параметр команди 'plotpolar' має бути більше ніж </Ukrainian>
+    <Russian>. параметр команды 'plotpolar' должен быть меньше чем </Russian>
+  </object>
+  <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_3">
+    <German>. Parameter.</German>
+    <English>. parameter.</English>
+    <Ukrainian>. параметр.</Ukrainian>
+    <Russian>. параметр.</Russian>
+  </object>
+  <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_SOLVE">
+    <German>Zu wenig Parameter im Befehl 'solve'.</German>
+    <English>Not enough parameters in command 'solve'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'solve'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'solve'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVE">
+    <German>Der 1. Parameter im Befehl 'solve' muss von der Form 'f(x) = g(x)' sein, wobei f und g Funktionen und x eine gültige Veränderliche ist.</German>
+    <English>The 1. parameter in command 'solve' must be of the form 'f(x) = g(x)', where f and g are functions and x is a variable.</English>
+    <Ukrainian>1. параметр команди 'solve' має бути у формі 'f(x) = g(x)', де f та g - функції та x - змінна.</Ukrainian>
+    <Russian>1. параметр команды 'solve' должен быть в форме 'f(x) = g(x)', где f и g - функции и x - переменная.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVE_WITH_REPORTED_ERROR">
+    <German>Der 1. Parameter im Befehl 'solve' muss von der Form 'f(x) = g(x)' sein, wobei f und g Funktionen und x eine gültige Veränderliche ist. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'solve' must be of the form 'f(x) = g(x)', where f and g are functions and x is a variable. Reported error: </English>
+    <Ukrainian>1. параметр команди 'solve' має бути у формі 'f(x) = g(x)', де f та g - функції та x - змінна. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параметр команды 'solve' должен быть в форме 'f(x) = g(x)', где f и g - функции и x - переменная. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_MORE_THAN_ONE_VARIABLE_IN_SOLVE">
+    <German>In der Gleichung darf höchstens eine Veränderliche auftreten. Falls mehrere Veränderliche auftreten, so geben Sie bitte die Veränderliche, nach der die Gleichung gelöst werden soll, als zweiten Parameter an.</German>
+    <English>The equation must contain at most one variable. If it contains more than one variable, indicate the variable by which you want to solve the equation, as second parameter.</English>
+    <Ukrainian>У рівнянні має бути максимум одна змінна. Якщо воно містить більше однієї змінної, вкажіть змінну, по якій Ви хочете розв'язати рівняння, як другий параметр.</Ukrainian>
+    <Russian>В уравнении должно быть не более одной переменной. Если оно содержит более одной переменной, укажите преременную, по которой Вы хотите решить уравнение, как второй параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVE">
+    <German>Der 2. Parameter im Befehl 'solve' muss eine gültige Veränderliche sein.</German>
+    <English>The 2. parameter in command 'solve' must be a valid variable.</English>
+    <Ukrainian>2. параметр команди 'solve' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параматр команды 'solve' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_SOLVE">
+    <German>In der Gleichung darf höchstens eine Veränderliche auftreten.</German>
+    <English>The equation must contain at most one variable.</English>
+    <Ukrainian>У рівнянні має бути максимум одна змінна.</Ukrainian>
+    <Russian>В уравнении должно быть не более одной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVE_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVE_2">
+    <German>. Parameter im Befehl 'solve' muss eine Konstante sein, deren Betrag höchstens 1.7E308 beträgt.</German>
+    <English>. parameter in command 'solve' must be a constant with absolute value of at most 1.7E308.</English>
+    <Ukrainian>. параметр команди 'solve' має бути константою, модуль якої не перевищує 1.7E308.</Ukrainian>
+    <Russian>. параметр команды 'solve' должен быть константой, модуль которой не превышает 1.7E308.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_4_PARAMETER_IN_SOLVE">
+    <German>Der 4. Parameter im Befehl 'solve' muss positive ganze Zahl sein.</German>
+    <English>The 4. parameter in command 'solve' must be a positive integer.</English>
+    <Ukrainian>4. параметр команди 'solve' має бути додатним цілим числом.</Ukrainian>
+    <Russian>4. параметр команды 'solve' должна быть положительным целым числом.</Russian>
+  </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVEDEQ">
+    <German>Zu wenig Parameter im Befehl 'solvedeq'.</German>
+    <English>Not enough parameters in command 'solvedeq'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'solvedeq'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'solvedeq'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_SOLVEDEQ">
+    <German>Der 3. Parameter im Befehl 'solvedeq' muss eine positive ganze Zahl sein.</German>
+    <English>The 3. parameter in command 'solvedeq' must be a positive integer.</English>
+    <Ukrainian>3. параметр команди 'solvedeq' має бути додатним цілим числом.</Ukrainian>
+    <Russian>3. параметр команды 'solvedeq' должна быть положительным целым числом.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVEDEQ">
+    <German>Der 1. Parameter im Befehl 'solvedeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'solvedeq' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр команди 'solvedeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. Параматр команды 'solvedeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDEQ_1">
+    <German>Die Differentialgleichung besitzt die Ordnung </German>
+    <English>The differential equation has order </English>
+    <Ukrainian>Дифененціальне рівняння має порядок </Ukrainian>
+    <Russian>Дифференциальное уравнение имеет порядок </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDEQ_2">
+    <German>. Es dürfen daher nur Ableitungen höchstens </German>
+    <English>. Hence only derivatives of order at most </English>
+    <Ukrainian>. Тому дозволені похідні до </Ukrainian>
+    <Russian>. Потому разрешены производние до </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDEQ_3">
+    <German>. Ordnung auftreten.</German>
+    <English>. are allowed.</English>
+    <Ukrainian>. порядку.</Ukrainian>
+    <Russian>. порядка.</Russian>
+  </object>
+  <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_SOLVEDEQ">
+    <German>In der Differentialgleichung dürfen höchstens zwei Veränderliche auftreten.</German>
+    <English>The differential equation must contain at most two variables.</English>
+    <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
+    <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_SOLVEDEQ_1">
+    <German>Die Veränderliche </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_SOLVEDEQ_2">
+    <German> muss in der Differentialgleichung vorkommen.</German>
+    <English> must occur in the differential equation.</English>
+    <Ukrainian> має бути присутня у диференціальному рівнянні.</Ukrainian>
+    <Russian> должна присутствовать в дифференциальном уравнении.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDEQ">
+    <German>Der 2. Parameter im Befehl 'solvedeq' muss eine gültige Veränderliche sein.</German>
+    <English>The 2. parameter in command 'solvedeq' must be a valid variable.</English>
+    <Ukrainian>2. параметр команди 'solvedeq' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параматр команды 'solvedeq' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVEDEQ">
+    <German>Zu viele Parameter im Befehl 'solvedeq'.</German>
+    <English>Too many parameters in command 'solvedeq'.</English>
+    <Ukrainian>Забагато параметрів у команди 'solvedeq'.</Ukrainian>
+    <Russian>Слишком много параметров у команды 'solvedeq'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVEDEQ_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVEDEQ_2">
+    <German>. Parameter im Befehl 'solvedeq' muss eine reelle Zahl sein, deren Betrag höchstens 1.7E308 beträgt.</German>
+    <English>. parameter in command 'solvedeq' must be a real number with absolute value of at most 1.7E308.</English>
+    <Ukrainian>. параметр команди 'solvedeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
+    <Russian>. параметр команды 'solvedeq' должен быть вещественным числом, модуль которого не превышает 1.7E308.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_TABLE">
+    <German>Im Befehl 'table' muss genau ein Parameter stehen.</German>
+    <English>The command 'table' must contain exactly one parameter.</English>
+    <Ukrainian>У команди 'table' має бути рівно один параметр.</Ukrainian>
+    <Russian>У команды 'table' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_TABLE">
+    <German>Der Parameter im Befehl 'table' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in command 'table' must be a valid logical expression. Reported Error: </English>
+    <Ukrainian>Параметр команди 'table' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параметр команды 'table' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
+    <German>Zu wenig Parameter im Befehl 'tangent'.</German>
+    <English>Not enough parameters in command 'tangent'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'tangent'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'tangent'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_TANGENT">
+    <German>Der 1. Parameter im Befehl 'tangent' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'tangent' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр команди 'tangent' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. Параматр команды 'tangent' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_TANGENT_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_TANGENT_2">
+    <German>. Parameter muss von der Form 'VARIABLE = WERT' sein, wobei die Veränderliche VARIABLE im Ausdruck vorkommen muss.</German>
+    <English>. parameter must be of the form 'VARIABLE = VALUE', where VARIABLE is a variable, which must be contained in the expression.</English>
+    <Ukrainian>. параметр має бути у формі 'VARIABLE = VALUE', де VARIABLE - змінною, що міститься у виразі.</Ukrainian>
+    <Russian>. параметр должен быть в форме 'VARIABLE = VALUE', где VARIABLE - переменная, которая входит в выражении.</Russian>
+  </object>
+  <object id = "MCC_NOT_A_VALID_VARIABLE_IN_TANGENT">
+    <German> ist keine gültige Veränderliche.</German>
+    <English> is not a valid variable.</English>
+    <Ukrainian> не є діючою змінною.</Ukrainian>
+    <Russian> не является действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_TANGENT_1">
+    <German>Der Veränderlichen im </German>
+    <English>To the variable in the </English>
+    <Ukrainian>Змінній у </Ukrainian>
+    <Russian>Переменной в </Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_TANGENT_2">
+    <German>. Parameter im Befehl 'tangent' muss eine reelle Zahl zugewiesen werden.</German>
+    <English>. parameter in command 'tangent' must be assigned a real number.</English>
+    <Ukrainian>. параметрі команди 'tangent' має бути присвоєне дійсне число.</Ukrainian>
+    <Russian>. параметре команды 'tangent' должно быть присвоено вещественное число.</Russian>
+  </object>
+  <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_TANGENT_1">
+    <German>Die Veränderliche </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_TANGENT_2">
+    <German> tritt doppelt auf.</German>
+    <English> occurs twice in parameters.</English>
+    <Ukrainian> зустрічаться двічі у параметрах.</Ukrainian>
+    <Russian> встречается дважды в параметрах.</Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TANGENT_1">
+    <German>Die Veränderliche </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TANGENT_2">
+    <German> muss in den Parametern vorkommen.</German>
+    <English> must occur in parameters.</English>
+    <Ukrainian> має бути у параметррах.</Ukrainian>
+    <Russian> должна быть в параметрах.</Russian>
+  </object>
+  <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_TAYLORDEQ">
+    <German>Zu wenig Parameter im Befehl 'taylordeq'.</German>
+    <English>Not enough parameters in command 'taylordeq'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'taylordeq'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'taylordeq'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDEQ">
+    <German>Der 3. Parameter im Befehl 'taylordeq' muss eine positive ganze Zahl sein.</German>
+    <English>The 3. parameter in command 'taylordeq' must be a positive integer.</English>
+    <Ukrainian>3. параметр команди 'taylordeq' має бути додатним цілим числом.</Ukrainian>
+    <Russian>3. команды 'taylordeq' должен быть положительным целым числом.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_TAYLORDEQ">
+    <German>Der 1. Parameter im Befehl 'taylordeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in command 'taylordeq' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр команди 'taylordeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. Параматр команды 'taylordeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDEQ_1">
+    <German>Die Differentialgleichung besitzt die Ordnung </German>
+    <English>The differential equation has order </English>
+    <Ukrainian>Дифененціальне рівняння має порядок </Ukrainian>
+    <Russian>Дифференциальное уравнение имеет порядок </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDEQ_2">
+    <German>. Es dürfen daher nur Ableitungen höchstens </German>
+    <English>. Hence only derivatives of order at most </English>
+    <Ukrainian>. Тому дозволені похідні до </Ukrainian>
+    <Russian>. Потому разрешены производние до </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDEQ_3">
+    <German>. Ordnung auftreten.</German>
+    <English> are allowed.</English>
+    <Ukrainian>. порядку.</Ukrainian>
+    <Russian>. порядка.</Russian>
+  </object>
+  <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_TAYLORDEQ_1">
+    <German>In der Differentialgleichung dürfen höchstens zwei Veränderliche auftreten.</German>
+    <English>The differential equation must contain at most two variables.</English>
+    <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
+    <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TAYLORDEQ_1">
+    <German>Die Veränderliche </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TAYLORDEQ_2">
+    <German> muss in der Differentialgleichung vorkommen.</German>
+    <English> must occur in the differential equation.</English>
+    <Ukrainian> має бути присутня у диференціальному рівнянні.</Ukrainian>
+    <Russian> должна присутствовать в дифференциальном уравнении.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_TAYLORDEQ">
+    <German>Der 2. Parameter im Befehl 'taylordeq' muss eine gültige Veränderliche sein.</German>
+    <English>The 2. parameter in command 'taylordeq' must be a valid variable.</English>
+    <Ukrainian>2. параметр команди 'taylordeq' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параматр команды 'taylordeq' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_TOO_MANY_PARAMETERS_IN_TAYLORDEQ">
+    <German>Zu viele Parameter im Befehl 'taylordeq'.</German>
+    <English>Too many parameters in command 'taylordeq'.</English>
+    <Ukrainian>Забагато параметрів у команди 'taylordeq'.</Ukrainian>
+    <Russian>Слишком много параметров у команды 'taylordeq'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDEQ_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDEQ_2">
+    <German>. Parameter im Befehl 'taylordeq' muss gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
+    <English>. parameter in command 'taylordeq' must be a valid expression, which does not contain any variable occurring in the differential equation.</English>
+    <Ukrainian>. параметр в команді 'taylordeq' має бути діючим виразом, що не містить змінних, що задіяні у диференціальному рівнянні.</Ukrainian>
+    <Russian>. параметр в команде 'taylordeq' должен быть действительным выражением, не содержащим переменных, учавствующих в дифференциальном уравнении.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETER_IN_TAYLORDEQ">
+    <German>Der letzte Parameter im Befehl 'taylordeq' muss eine nichtnegative ganze Zahl sein.</German>
+    <English>The last parameter in command 'taylordeq' must be a nonnegative integer.</English>
+    <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
+    <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEF_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEF_2">
+    <German>. Parameter im Befehl 'undef' ist keine gültige Veränderliche.</German>
+    <English>. parameter in command 'undef' is not a valid variable.</English>
+    <Ukrainian>. параметр команди 'undef' не є діючою змінною.</Ukrainian>
+    <Russian>. параметр команды 'undef' не является действительной переменной.</Russian>
+  </object>
+  <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_UNDEFALL">
+    <German>Im Befehl 'undefall' dürfen keine Parameter stehen.</German>
+    <English>In command 'undefall' no parameters are allowed.</English>
+    <Ukrainian>У команди 'undefall' не має бути параметрів.</Ukrainian>
+    <Russian>У команды 'undefall' не должно быть параметров.</Russian>
+  </object>
+  <object id = "MCC_INVALID_COMMAND">
+    <German>Ungültiger Befehl.</German>
+    <English>Invalid command.</English>
+    <Ukrainian>Невірна команда.</Ukrainian>
+    <Russian>Неправильная команда.</Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_1">
+    <German>Die Differentialgleichung besitzt die Ordnung </German>
+    <English>The differential equation has order </English>
+    <Ukrainian>Дифененціальне рівняння має порядок </Ukrainian>
+    <Russian>Дифференциальное уравнение имеет порядок </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_2">
+    <German>. Es dürfen daher nur Ableitungen höchstens </German>
+    <English>. Hence only derivatives of order at most </English>
+    <Ukrainian>. Тому дозволені похідні до </Ukrainian>
+    <Russian>. Потому разрешены производние до </Russian>
+  </object>
+  <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_3">
+    <German>. Ordnung auftreten.</German>
+    <English> are allowed.</English>
+    <Ukrainian>. порядку.</Ukrainian>
+    <Russian>. порядка.</Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF_1">
+    <German>Der logische Ausdruck </German>
+    <English>The logical expression </English>
+    <Ukrainian>Логічний вираз </Ukrainian>
+    <Russian>Логическое выражение </Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF_2">
+    <German> enthält mehr als 20 Veränderliche. Die kanonische konjunktive Normalform ist damit zu groß für die Ausgabe.</German>
+    <English> contains more than 20 variables. The canonical conjunctive normal form is too big for output.</English>
+    <Ukrainian> містить більше 20 змінних. Канонічна кон'юнктивна нормальна форма завелика для виводу.</Ukrainian>
+    <Russian> содержит более 20 переменных. Каноническая конъюнктивная нормальная форма слишком большая для вывода.</Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CDNF_1">
+    <German>Der logische Ausdruck </German>
+    <English>The logical expression </English>
+    <Ukrainian>Логічний вираз </Ukrainian>
+    <Russian>Логическое выражение </Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CDNF_2">
+    <German> enthält mehr als 20 Veränderliche. Die kanonische disjunktive Normalform ist damit zu groß für die Ausgabe.</German>
+    <English> contains more than 20 variables. The canonical disjunctive normal form is too big for output.</English>
+    <Ukrainian> містить більше 20 змінних. Канонічна диз'юнктивна нормальна форма завелика для виводу.</Ukrainian>
+    <Russian> содержит более 20 переменных. Каноническая дизъюнктивная нормальная форма слишком большая для вывода.</Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES_1">
+    <German>Der logische Ausdruck </German>
+    <English>The logical expression </English>
+    <Ukrainian>Логічний вираз </Ukrainian>
+    <Russian>Логическое выражение </Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES_2">
+    <German> enthält mehr als 20 Veränderliche. Die Wertetabelle ist damit zu groß für die Ausgabe.</German>
+    <English> contains more than 20 variables. The table of values is too big for output.</English>
+    <Ukrainian> містить більше 20 змінних. Таблиця значень є завеликою для відображення.</Ukrainian>
+    <Russian> содержит более 20 переменных. Таблица значений является слишком большой для отображения.</Russian>
+  </object>
+  <object id = "MCC_TABLE_OF_VALUES_FOR_LOGICAL_EXPRESSION">
+    <German>Wertetabelle für den logischen Ausdruck </German>
+    <English>Table of values of the logical expression </English>
+    <Ukrainian>Таблиця значень логічного виразу </Ukrainian>
+    <Russian>Таблица значений логического выражения </Russian>
+  </object>
+ <!-- Übersetzungen der output-Nachrichten: -->  
+  <object id = "MCC_VALUE_ASSIGNED_TO_VARIABLE_1">
+    <German>Der Wert der Veränderlichen </German>
+    <English>The value of the variable </English>
+    <Ukrainian>Змінній було присвоєно значення </Ukrainian>
+    <Russian>Переменной было присвоено значение </Russian>
+  </object>
+  <object id = "MCC_VALUE_ASSIGNED_TO_VARIABLE_2">
+    <German> wurde auf </German>
+    <English> was set to </English>
+    <Ukrainian> </Ukrainian>
+    <Russian> </Russian>
+  </object>
+  <object id = "MCC_VALUE_ASSIGNED_TO_VARIABLE_3">
+    <German> gesetzt.</German>
+    <English>.</English>
+    <Ukrainian>.</Ukrainian>
+    <Russian>.</Russian>
+  </object>
+  <object id = "MCC_FUNCTION_WAS_DEFINED">
+    <German>Es wurde die folgende Funktion definiert: </German>
+    <English>The following function was defined: </English>
+    <Ukrainian>Наступна функція була визначена: </Ukrainian>
+    <Russian>Следующая функция была определена: </Russian>
+  </object>
+  <object id = "MCC_LIST_OF_DEFINED_FUNCTIONS">
+    <German>Liste aller vom Benutzer definierten Funktionen: </German>
+    <English>List of all functions defined by user: </English>
+    <Ukrainian>Список усіх функцій визначених користувачем: </Ukrainian>
+    <Russian>Список всех функций определённых пользователем: </Russian>
+  </object>
+  <object id = "MCC_LIST_OF_VARIABLES">
+    <German>Liste aller Veränderlichen mit vordefinierten Werten: </German>
+    <English>List of all variables which are given values: </English>
+    <Ukrainian>Список усіх функцій, яким було присвоєно значення: </Ukrainian>
+    <Russian>Список всех функций, которым было присвоено значение: </Russian>
+  </object>
+  <object id = "MCC_DIGITS_OF_E_1">
+    <German>Eulersche Zahl e auf </German>
+    <English>Euler constant e rounded to </English>
+    <Ukrainian>Число Ейлера e округлено до </Ukrainian>
+    <Russian>Число Эйлера e округлено до </Russian>
+  </object>
+  <object id = "MCC_DIGITS_OF_E_2">
+    <German> Stellen gerundet: </German>
+    <English> digits: </English>
+    <Ukrainian> знаків: </Ukrainian>
+    <Russian> знаков: </Russian>
+  </object>
+  <object id = "MCC_DIGITS_OF_PI_1">
+    <German>Konstante pi auf </German>
+    <English>Constant pi rounded to </English>
+    <Ukrainian>Константа pi округлена до </Ukrainian>
+    <Russian>Константа pi округлена до </Russian>
+  </object>
+  <object id = "MCC_DIGITS_OF_PI_2">
+    <German> Stellen gerundet: </German>
+    <English> digits: </English>
+    <Ukrainian> знаків: </Ukrainian>
+    <Russian> знаков: </Russian>
+  </object>
+  <object id = "MCC_IS_ARBITRARY_INTEGER">
+    <German> ist eine beliebige ganze Zahl.</German>
+    <English> is an arbitrary integer.</English>
+    <Ukrainian> є довільним цілим числом.</Ukrainian>
+    <Russian> является произвольным целым числом.</Russian>
+  </object>
+  <object id = "MCC_ARE_ARBITRARY_INTEGERS">
+    <German> sind beliebige ganze Zahlen.</German>
+    <English> are arbitrary integers.</English>
+    <Ukrainian> - довільні цілі числа.</Ukrainian>
+    <Russian> - произвольные целые числа.</Russian>
+  </object>
+  <object id = "MCC_NO_EXACT_SOLUTIONS_OF_EQUATION_FOUND">
+    <German>Es konnten keine exakten Lösungen ermittelt werden.</German>
+    <English>No precise solutions found.</English>
+    <Ukrainian>Точних розв'язків не знайдено.</Ukrainian>
+    <Russian>Точные решения не найдены.</Russian>
+  </object>
+  <object id = "MCC_SOLUTIONS_OF_EQUATION">
+    <German>Lösungen der Gleichung </German>
+    <English>Solutions of the equation </English>
+    <Ukrainian>Розв'язки рівняння </Ukrainian>
+    <Russian>Решения уравнения </Russian>
+  </object>
+  <object id = "MCC_ALL_REALS">
+    <German>Alle reellen Zahlen.</German>
+    <English>All real numbers.</English>
+    <Ukrainian>Всі дійсні числа.</Ukrainian>
+    <Russian>Все вещественные числа.</Russian>
+  </object>
+  <object id = "MCC_EQUATIONS_HAS_NO_SOLUTIONS">
+    <German>Die gegebene Gleichung besitzt keine Lösungen.</German>
+    <English>The given equation admits no solutions.</English>
+    <Ukrainian>Дане рівняння не має розв'язків.</Ukrainian>
+    <Russian>Данное уравнение не имеет решений.</Russian>
+  </object>
+  <object id = "MCC_NO_SOLUTIONS_OF_EQUATION_FOUND">
+    <German>Es konnten keine Lösungen ermittelt werden.</German>
+    <English>No solutions found.</English>
+    <Ukrainian>Точних розв'язків не знайдено.</Ukrainian>
+    <Russian>Точные решения не найдены.</Russian>
+  </object>
+  <object id = "MCC_SOLUTION_OF_DEQ_NOT_DEFINED_IN_POINT">
+    <German>Die Lösung der Differentialgleichung ist nicht definiert an der Stelle </German>
+    <English>The solution of the differential equation is not defined in </English>
+    <Ukrainian>Розв'язок рівняння не визначено в точці </Ukrainian>
+    <Russian>Решение уравнения не определено в точке </Russian>
+  </object>
+  <object id = "MCC_SOLUTION_OF_DEQ">
+    <German>Lösung der Differentialgleichung </German>
+    <English>Solution of the differential equation </English>
+    <Ukrainian>Розв'язок диференціального рівняння </Ukrainian>
+    <Russian>Решение дифференциального уравнения </Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_IS_CONSTANT_1">
+    <German>Der logische Ausdruck </German>
+    <English>The logical expression </English>
+    <Ukrainian>Логічний вираз </Ukrainian>
+    <Russian>Логическое выражение </Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_IS_CONSTANT_2">
+    <German> enthält keine logischen Veränderlichen und hat den Wert 1.</German>
+    <English> contains no logical variables an has the value 1.</English>
+    <Ukrainian> не містить логічних змінних та має значення 1.</Ukrainian>
+    <Russian> не содержит логических переменных и имеет значение 1.</Russian>
+  </object>
+  <object id = "MCC_LOGICAL_EXPRESSION_IS_CONSTANT_3">
+    <German> enthält keine logischen Veränderlichen und hat den Wert 0.</German>
+    <English> contains no logical variables an has the value 0.</English>
+    <Ukrainian> не містить логічних змінних та має значення 0.</Ukrainian>
+    <Russian> не содержит логических переменных и имеет значение 0.</Russian>
+  </object>
+  <object id = "MCC_ORDER_OF_VARIABLES_IN_TABLE">
+    <German>Reihenfolge der logischen Veränderlichen in den Tupeln: </German>
+    <English>Order of the logical variables in the tuples: </English>
+    <Ukrainian>Порядок логічних змінних у кортежі: </Ukrainian>
+    <Russian>Порядок логических переменных в кортеже: </Russian>
+  </object>
+  <object id = "MCC_EQUATION_OF_TANGENT_SPACE_1">
+    <German>Gleichung des Tangentialraumes an den Graphen von Y = </German>
+    <English>Equation of the tangent space to the graph of Y = </English>
+    <Ukrainian>Рівняння дотичного простору до графіка Y = </Ukrainian>
+    <Russian>Уравнение касательного порстранства к графику Y = </Russian>
+  </object>
+  <object id = "MCC_EQUATION_OF_TANGENT_SPACE_2">
+    <German> im Punkt </German>
+    <English> in the point </English>
+    <Ukrainian> в точці </Ukrainian>
+    <Russian> в точке </Russian>
+  </object>
+  <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_1">
+    <German>Die Veränderliche </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_2">
+    <German> ist wieder eine Unbestimmte.</German>
+    <English> is again an indeterminate.</English>
+    <Ukrainian> знову невизначена.</Ukrainian>
+    <Russian> снова неопределена.</Russian>
+  </object>
+  <object id = "MCC_ALL_VARIABLES_ARE_INDETERMINATES_AGAIN">
+    <German>Alle Veränderlichen sind wieder Unbestimmte.</German>
+    <English>All variables are again indeterminates.</English>
+    <Ukrainian>Всі змінні знову невизначені.</Ukrainian>
+    <Russian>Все переменные снова неопределены.</Russian>
+  </object>
+</objects>

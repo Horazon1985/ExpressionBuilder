@@ -1,0 +1,57 @@
+<objects>
+<!-- MathToolForm -->    
+  <object id = "Bound_MAX_DIGITS_OF_E">
+    <value>100000</value>
+  </object>
+  <object id = "Bound_MAX_DIGITS_OF_PI">
+    <value>100000</value>
+  </object>
+  <object id = "Bound_DIVISORS_OF_INTEGERS">
+    <value>1000000</value>
+  </object>
+  <object id = "Bound_POWER_OF_RATIONALS">
+    <value>10000</value>
+  </object>
+  <object id = "Bound_ROOTDEGREE_OF_RATIONALS">
+    <value>10000</value>
+  </object>
+  <object id = "Bound_INTEGER_FACTORIAL">
+    <value>10000</value>
+  </object>
+  <object id = "Bound_FACTORIAL_WITH_DENOMINATOR_TWO">
+    <value>20000</value>
+  </object>
+  <object id = "Bound_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL">
+    <value>5</value>
+  </object>
+  <object id = "Bound_POWER_OF_BINOMIAL">
+    <value>100</value>
+  </object>
+  <object id = "Bound_DEGREE_OF_COMMON_ROOT">
+    <value>100</value>
+  </object>
+  <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION">
+    <value>100</value>
+  </object>
+  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_EXPANSION">
+    <value>10000</value>
+  </object>
+  <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY">
+    <value>10</value>
+  </object>
+  <object id = "Bound_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY">
+    <value>10</value>
+  </object>
+  <object id = "Bound_MAXIMAL_INTEGRABLE_POWER">
+    <value>100</value>
+  </object>
+  <object id = "Bound_POWER_OF_GENERAL_MATRIX">
+    <value>10</value>
+  </object>
+  <object id = "Bound_POWER_OF_RATIONAL_MATRIX">
+    <value>100</value>
+  </object>
+  <object id = "Bound_COMPUTE_DET_EXPLICITLY">
+    <value>5</value>
+  </object>
+</objects>

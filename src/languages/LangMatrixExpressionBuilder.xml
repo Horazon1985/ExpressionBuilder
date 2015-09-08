@@ -1,0 +1,110 @@
+﻿<objects>
+  <object id = "MEB_MatrixExpression_NO_ROWS">
+    <German>Die Matrix enthält keine Zeilen.</German>
+    <English>The matrix contains no rows.</English>
+    <Ukrainian>Матриця не містить жодного рядка.</Ukrainian>
+    <Russian>Матрица не содоржит ни одной строки.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_WRONG_BRACKETS">
+    <German>Falsche Klammerung.</German>
+    <English>Incorrect brackets.</English>
+    <Ukrainian>Неправильні дужки.</Ukrainian>
+    <Russian>Неправильные скобки.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_EMPTY_PARAMETER">
+    <German>Leerer Parameter.</German>
+    <English>Empty parameter.</English>
+    <Ukrainian>Порожній ппараметр.</Ukrainian>
+    <Russian>Пустой параметр.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_NOT_A_MATRIX">
+    <German>Der Ausdruck enthält eine nicht wohldefinierte Matrix.</German>
+    <English>The expression contains a not well-defined matrix.</English>
+    <Ukrainian>Вираз містить неправильно визначену матрицю.</Ukrainian>
+    <Russian>Выражение содержит матрицу, которая задана неверно.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
+    <German>Der Ausdruck ist leer oder unvollständig.</German>
+    <English>The expression is either epmty or incomplete.</English>
+    <Ukrainian>Вираз порожній або неповний.</Ukrainian>
+    <Russian>Выражение пустое либо неполное.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
+    <German>Linke Seite eines binären Operators ist leer.</German>
+    <English>Left side of a binary operator is empty.</English>
+    <Ukrainian>Ліва частина бінарного оператора порожня.</Ukrainian>
+    <Russian>Левая часть бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
+    <German>Rechte Seite eines binären Operators ist leer.</German>
+    <English>Right side of a binary operator is empty.</English>
+    <Ukrainian>Права частина бінарного оператора порожня.</Ukrainian>
+    <Russian>Правая часть бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED">
+    <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
+    <English>The following formula/part of the formula cannot be interpreted: </English>
+    <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
+    <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+  </object>
+  <object id = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED">
+    <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
+    <English>The following formula/part of the formula cannot be interpreted: </English>
+    <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
+    <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+  </object>
+  <object id = "MEB_Expression_STACK_OVERFLOW">
+    <German>Speicher voll. Die Berechnung wurde beendet.</German>
+    <English>Stack overflow. The computation was aborted.</English>
+    <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>
+    <Russian>Оперативная память переполнена. Вычисление было прекращено.</Russian>
+  </object>
+  <object id = "MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED">
+    <German>Die Summe oder die Differenz zweier auftretender Matrizen ist nicht definiert.</German>
+    <English>The sum or the difference of two occurring matrices is not defined.</English>
+    <Ukrainian>Суму або різницю матриць не визначено.</Ukrainian>
+    <Russian>Сумма или разница матриц не определена.</Russian>
+  </object>
+  <object id = "MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED">
+    <German>Das Produkt zweier auftretender Matrizen ist nicht definiert.</German>
+    <English>The product of two occurring matrices is not defined.</English>
+    <Ukrainian>Добуток матриць не визначено.</Ukrainian>
+    <Russian>Произведение матриц не определено.</Russian>
+  </object>
+  <object id = "MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED">
+    <German>Die Potenz einer auftretender Matrix ist nicht definiert.</German>
+    <English>The power of an occurring matrix is not defined.</English>
+    <Ukrainian>Степінь однієї з матриць невизначена.</Ukrainian>
+    <Russian>Степень одной из матриц неопределена.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_DET_NOT_DEFINED">
+    <German>Die Determinante einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The determinant of an occurring matrix is not defined.</English>
+    <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
+    <Russian>Определитель одной из матриц не определён.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
+    <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The exponential function of an occurring matrix is not defined.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_LN_NOT_DEFINED">
+    <German>Der Logarithmus einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The logarithm of an occurring matrix is not defined.</English>
+    <Ukrainian></Ukrainian>
+    <Russian>.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_TR_NOT_DEFINED">
+    <German>Die Spur einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The trace of an occurring matrix is not defined.</English>
+    <Ukrainian>Слід однієї з матриць невизначений.</Ukrainian>
+    <Russian>След одной из матриц не определён.</Russian>
+  </object>
+  <object id = "SM_SimplifyMatrixMethods_COMPUTATION_ABORTED">
+    <German>Berechnung abgebrochen.</German>
+    <English>Computation aborted.</English>
+    <Ukrainian>Обчислення припинено.</Ukrainian>
+    <Russian>Вычисление прекращено.</Russian>
+  </object>
+</objects>

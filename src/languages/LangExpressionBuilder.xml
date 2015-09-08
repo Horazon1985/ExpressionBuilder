@@ -1,0 +1,464 @@
+﻿<objects>
+  <object id = "EB_BinaryOperation_UNDEFINED_VALUE">
+    <German>Zu großer oder undefinierter Wert.</German>
+    <English>Too big or undefined value.</English>
+    <Ukrainian>Завелике або невизначене значення.</Ukrainian>
+    <Russian>Слишком большое или неопределённое значение.</Russian>
+  </object>
+  <object id = "EB_BinaryOperation_DIVISION_BY_ZERO">
+    <German>Division durch 0.</German>
+    <English>Division by zero.</English>
+    <Ukrainian>Ділення на нуль.</Ukrainian>
+    <Russian>Деление на ноль.</Russian>
+  </object>
+  <object id = "EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE">
+    <German>Die Funktion ist nicht differenzierbar.</German>
+    <English>The function is not differentiable.</English>
+    <Ukrainian>Функція недиференційована.</Ukrainian>
+    <Russian>Функция не дифференцируема.</Russian>
+  </object>
+  <object id = "EB_BinaryOperation_COMPUTATION_ABORTED">
+    <German>Berechnung abgebrochen.</German>
+    <English>Computation aborted.</English>
+    <Ukrainian>Обчислення припинено.</Ukrainian>
+    <Russian>Вычисление прекращено.</Russian>
+  </object>
+  <object id = "EB_Constant_CONSTANT_CANNOT_BE_EVALUATED">
+    <German>Eine der Konstanten kann nicht ausgewertet werden. Approximiert werden können nur Konstanten, deren Betrag höchstens 1.7E308 beträgt. Ist der Betrag der Konstante kleiner als 4.9E-324, so wird er durch 0 approximiert.</German>
+    <English>One of the constants cannot be evaluated. Only constants with absolute value of at most 1.7E308 can be approximated. If the absolute value of a constant is less that 4.9E-324, it is approximated by 0.</English>
+    <Ukrainian>Одна з констант не може бути оцінена. Тільки константи, модуль яких не перевищує 1.7E308, можуть бути наближені. Якщо модуль константи менше ніж 4.9E-324, то вона буде наближена нулем.</Ukrainian>
+    <Russian>Одна из констант не может быть оценена. Только константы, модуль которых не превышает 1.7E308, могут быть приближены. Если модуль константы меньше чем 4.9E-324, то она будет приближена нулем.</Russian>
+  </object>
+  <object id = "EB_Constant_DIVISION_BY_ZERO">
+    <German>Division durch 0.</German>
+    <English>Division by zero.</English>
+    <Ukrainian>Ділення на нуль.</Ukrainian>
+    <Russian>Деление на ноль.</Russian>
+  </object>
+  <object id = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE">
+    <German>Der Ausdruck ist leer oder unvollständig.</German>
+    <English>The expression is either epmty or incomplete.</English>
+    <Ukrainian>Вираз порожній або неповний.</Ukrainian>
+    <Russian>Выражение пустое либо неполное.</Russian>
+  </object>
+  <object id = "EB_Expression_IS_NOT_VALID_COMMAND">
+    <German> ist kein gültiger Befehl oder Operator.</German>
+    <English> is not a valid command or operator.</English>
+    <Ukrainian> не є діючою командою або оператором.</Ukrainian>
+    <Russian> не является действительной командой или оператором.</Russian>
+  </object>
+  <object id = "EB_Expression_MISSING_CLOSING_BRACKET_1">
+    <German>In </German>
+    <English>In </English>
+    <Ukrainian>В</Ukrainian>
+    <Russian>В</Russian>
+  </object>
+  <object id = "EB_Expression_MISSING_CLOSING_BRACKET_2">
+    <German> fehlt am Ende eine schließende Klammer.</German>
+    <English> a closing bracket is missing.</English>
+    <Ukrainian> в кінці відсутня закриваюча дужка.</Ukrainian>
+    <Russian> в конце отсуствует закрывающая скобка.</Russian>
+  </object>
+  <object id = "EB_Expression_WRONG_BRACKETS">
+    <German>Falsche Klammerung.</German>
+    <English>Incorrect brackets.</English>
+    <Ukrainian>Неправильні дужки.</Ukrainian>
+    <Russian>Неправильные скобки.</Russian>
+  </object>
+  <object id = "EB_Expression_EMPTY_PARAMETER">
+    <German>Leerer Parameter.</German>
+    <English>Empty parameter.</English>
+    <Ukrainian>Порожній ппараметр.</Ukrainian>
+    <Russian>Пустой параметр.</Russian>
+  </object>
+  <object id = "EB_Expression_WRONG_ABS_BRACKETS">
+    <German>Falsche Klammerung der Betragsklammern.</German>
+    <English>Incorrect brackets of the absolute value function.</English>
+    <Ukrainian>Неправильні дужки функції модуля.</Ukrainian>
+    <Russian>Неправильные скобки функции модуля.</Russian>
+  </object>
+  <object id = "EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY">
+    <German>Linke Seite eines binären Operators ist leer.</German>
+    <English>Left side of a binary operator is empty.</English>
+    <Ukrainian>Ліва частина бінарного оператора порожня.</Ukrainian>
+    <Russian>Левая часть бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY">
+    <German>Rechte Seite eines binären Operators ist leer.</German>
+    <English>Right side of a binary operator is empty.</English>
+    <Ukrainian>Права частина бінарного оператора порожня.</Ukrainian>
+    <Russian>Правая часть бинарного оператора пуста.</Russian>
+  </object>
+  <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_1">
+    <German>Die Funktion '</German>
+    <English>The function '</English>
+    <Ukrainian>Функція '</Ukrainian>
+    <Russian>Функция '</Russian>
+  </object>
+  <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_2">
+    <German>' benötigt genau </German>
+    <English>' requires precisely</English>
+    <Ukrainian>' вимагає точно</Ukrainian>
+    <Russian>' требует в точности</Russian>
+  </object>
+  <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_3">
+    <German> Argumente.</German>
+    <English> arguments.</English>
+    <Ukrainian> аргументів.</Ukrainian>
+    <Russian> аргументов.</Russian>
+  </object>
+  <object id = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED">
+    <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
+    <English>The following formula/part of the formula cannot be interpreted: </English>
+    <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
+    <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+  </object>
+  <object id = "EB_Expression_STACK_OVERFLOW">
+    <German>Speicher voll. Die Berechnung wurde beendet.</German>
+    <English>Stack overflow. The computation was aborted.</English>
+    <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>
+    <Russian>Оперативная память переполнена. Вычисление было прекращено.</Russian>
+  </object>
+  <object id = "EB_Function_UNDEFINED_VALUE">
+    <German>Undefinierter Wert.</German>
+    <English>Undefined value.</English>
+    <Ukrainian>Невизначене значення.</Ukrainian>
+    <Russian>Неопределённое значение.</Russian>
+  </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
+    <German>Zu wenig Parameter im Operator 'diff'.</German>
+    <English>Not enought parameters in operator 'diff'.</English>
+    <Ukrainian>Замало параметрів для оператора 'diff'.</Ukrainian>
+    <Russian>Слишком мало параметров для оператора 'diff'.</Russian>
+  </object>
+  <object id = "EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG">
+    <German>Der 1. Parameter im Operator 'diff' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in the operator 'diff' has to be a valid expression. Error message: </English>
+    <Ukrainian>1. параметр оператора 'diff' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параметр оператора 'diff' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID">
+    <German>Der 2. Parameter im Operator 'diff' muss eine gültige Variable sein.</German>
+    <English>The 2. parameter in the operator 'diff' has to be a valid variable.</English>
+    <Ukrainian>2. параметр оператора 'diff' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параметр оператора 'diff' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID">
+    <German>Der 3. Parameter im Operator 'diff' muss entweder eine gültige Variable oder eine nicht-negative ganze Zahl sein.</German>
+    <English>The 3. parameter in the operator 'diff' must either be a valid variable or a non-negative integer.</English>
+    <Ukrainian>3. параметр оператора 'diff' має бути діючою змінною або невід'ємним цілим числом.</Ukrainian>
+    <Russian>3. параметр оператора 'diff' должен быть действительной переменной или неотрицательным целым числом.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2">
+    <German>. Parameter im Operator 'diff' muss eine gültige Variable sein.</German>
+    <English>. parameter in the operator 'diff' must be a valid variable.</English>
+    <Ukrainian>. параметр оператора 'diff' має бути діючою змінною.</Ukrainian>
+    <Russian>. параметр оператора 'diff' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV">
+    <German>Im Operator 'div' muss genau ein Parameter stehen.</German>
+    <English>Operator 'div' must contain exactly one parameter.</English>
+    <Ukrainian>У оператора 'div' має бути рівно один параметр.</Ukrainian>
+    <Russian>У оператора 'div' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_PARAMETER_IN_DIV_IS_INVALID">
+    <German>Der Parameter im Operator 'div' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in operator 'div' must be a valid expression. Reported error: </English>
+    <Ukrainian>Параметр оператора 'div' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'div' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_FAC">
+    <German>Im Operator 'fac' muss genau ein Parameter stehen.</German>
+    <English>Operator 'fac' must contain exactly one parameter.</English>
+    <Ukrainian>У оператора 'fac' має бути рівно один параметр.</Ukrainian>
+    <Russian>У оператора 'fac' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_PARAMETER_IN_FAC_IS_INVALID">
+    <German>Der Parameter im Operator 'fac' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in operator 'fac' must be a valid expression. Reported error: </English>
+    <Ukrainian>Параметр оператора 'fac' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'fac' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_GCD">
+    <German>Im Operator 'gcd' muss mindestens ein Parameter stehen.</German>
+    <English>Operator 'gcd' must contain at least one parameter.</English>
+    <Ukrainian>У оператора 'gcd' має бути мінімум один параметр.</Ukrainian>
+    <Russian>У оператора 'gcd' должен быть минимум один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_2">
+    <German>. Parameter im Operator 'gcd' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'gcd' is not a valid expression. Reported Error: </English>
+    <Ukrainian>. Параметр оператора 'gcd' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'gcd' не является действительным оператором. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT">
+    <German>Im Operator 'int' müssen entweder genau zwei Parameter (im Falle einer unbestimmten Integration) oder genau vier Parameter (im Falle einer bestimmten Integration) stehen.</German>
+    <English>Operator 'int' must either contain exactly two parameters (in case of indefinite integration) or exactly four parameters (in case of definite integration).</English>
+    <Ukrainian>У оператора має 'int' бути або рівно два параметра (у випадку невизначеного інтеграла) або рівно чотири параметра (у випадку визначеного інтеграла).</Ukrainian>
+    <Russian>У оператора 'int' должно быть ровно два параметра (в случае неопределённого интеграла) или ровно четыре параметра (в случае определённого интеграла).</Russian>
+  </object>
+  <object id = "EB_Operator_1_PARAMETER_IN_INT_IS_INVALID">
+    <German>Der 1. Parameter im Operator 'int' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in operator 'int' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр оператора 'int' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'int' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_2_PARAMETER_IN_INT_IS_INVALID">
+    <German>Der 2. Parameter im Operator 'int' muss eine gültige Veränderliche sein.</German>
+    <English>The 2. parameter in operator 'int' must be a valid variable.</English>
+    <Ukrainian>2. параметр оператора 'int' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параматр оператора 'int' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_3_PARAMETER_IN_INT_IS_INVALID">
+    <German>Der 3. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Ausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
+    <English>The 3. parameter in operator 'int' is the lower limit of integration. This must be a valid expression, which does not contain the integration variable.</English>
+    <Ukrainian>3. параметр оператора 'int' є нижньою границею інтегрування. Він має бути діючим виразом, який не містить змінної інтегрування.</Ukrainian>
+    <Russian>3. параметр оператора 'int' является нижним пределом интегрирования. Он должен быть действительным выражением, которое не содержит переменной интегрирования.</Russian>
+  </object>
+  <object id = "EB_Operator_4_PARAMETER_IN_INT_IS_INVALID">
+    <German>Der 4. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Ausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
+    <English>The 4. parameter in operator 'int' is the upper limit of integration. This must be a valid expression, which does not contain the integration variable.</English>
+    <Ukrainian>4. параметр оператора 'int' є верхньою границею інтегрування. Він має бути діючим виразом, який не містить змінної інтегрування.</Ukrainian>
+    <Russian>4. параметр оператора 'int' является верхним пределом интегрирования. Он должен быть действительным выражением, которое не содержит переменной интегрирования.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE">
+    <German>Im Operator 'laplace' muss genau ein Parameter stehen.</German>
+    <English>Operator 'laplace' must contain exactly one parameter.</English>
+    <Ukrainian>У оператора 'laplace' має бути рівно один параметр.</Ukrainian>
+    <Russian>У оператора 'laplace' должен быть ровно один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID">
+    <German>Der Parameter im Operator 'laplace' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in operator 'laplace' must be a valid expression. Reported error: </English>
+    <Ukrainian>Параметр оператора 'int' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'int' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_LCM">
+    <German>Im Operator 'lcm' muss mindestens ein Parameter stehen.</German>
+    <English>Operator 'lcm' must contain at least one parameter.</English>
+    <Ukrainian>У оператора 'lcm' має бути мінімум один параметр.</Ukrainian>
+    <Russian>У оператора 'lcm' должен быть минимум один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_2">
+    <German>. Parameter im Operator 'lcm' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'lcm' is not a valid expression. Reported Error: </English>
+    <Ukrainian>. Параметр оператора 'lcm' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'lcm' не является действительным оператором. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_MOD">
+    <German>Im Operator 'mod' müssen genau zwei Parameter stehen, die jeweils ganze Zahlen darstellen.</German>
+    <English>Operator 'mod' must contain exactly two parameters, each representing integers.</English>
+    <Ukrainian>У оператора 'mod' має бути рівно два параметра, кожен з яких має представляти ціле число.</Ukrainian>
+    <Russian>У оператора 'mod' должно быть ровно два параметра, каждый из которых должен представлять целое число.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_2">
+    <German>. Parameter im Operator 'mod' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'mod' is not a valid expression. Reported error: </English>
+    <Ukrainian>. Параметр оператора 'mod' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'mod' не является действительным оператором. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD">
+    <German>Im Operator 'prod' müssen genau vier parameter stehen.</German>
+    <English>Operator 'prod' must contain exactly four parameters.</English>
+    <Ukrainian>У оператора 'prod' має бути рівно чотири параметра.</Ukrainian>
+    <Russian>У оператора 'prod' должно быть ровно четыре параметра.</Russian>
+  </object>
+  <object id = "EB_Operator_1_PARAMETER_IN_PROD_IS_INVALID">
+    <German>Der 1. Parameter im Operator 'prod' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in operator 'prod' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр оператора 'prod' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'prod' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_2_PARAMETER_IN_PROD_IS_INVALID">
+    <German>Der 2. Parameter im Operator 'prod' muss eine Variable sein, nach der multipliziert wird.</German>
+    <English>The 2. parameter in operator 'prod' must be a valid variable by that multiplication will be performed.</English>
+    <Ukrainian>2. параметр оператора 'prod' має бути діючою змінною, по якій буде здійснюватися множення.</Ukrainian>
+    <Russian>2. параматр оператора 'prod' должен быть действительной переменной, по которой будет производиться умножение.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2">
+    <German>. Parameter im Operator 'prod' muss entweder eine ganze Zahl sein, welche im Definitionsbereich des Ausdrucks liegt, oder ein Ausdruck sein, welcher Veränderliche enthält.</German>
+    <English>. parameter in operator 'prod' must be either an integer, where the expression is defined at, or an expression, containing a variable.</English>
+    <Ukrainian>. параметр оператора 'prod' має бути або цілим числом з області визначення або виразом, що містить змінну.</Ukrainian>
+    <Russian>. параметр оператора 'prod' должен быть целым числом из области определения или выражением, которое содержит переменную.</Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE">
+    <German>Die Grenzen im Operator 'prod' dürfen die Indexvariable nicht enthalten.</German>
+    <English>The limits in operator 'prod' are not allowed to contain the index variable.</English>
+    <Ukrainian>Границі оператора 'prod' не мають містити індексної змінної.</Ukrainian>
+    <Russian>Пределы оператора 'prod' не должны содержать индексной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
+    <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
+    <English>Operator 'sum' must contain exactly four parameters.</English>
+    <Ukrainian>У оператора 'sum' має бути рівно чотири параметра.</Ukrainian>
+    <Russian>У оператора 'sum' должно быть ровно четыре параметра.</Russian>
+  </object>
+  <object id = "EB_Operator_1_PARAMETER_IN_SUM_IS_INVALID">
+    <German>Der 1. Parameter im Operator 'sum' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in operator 'sum' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр оператора 'sum' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'sum' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_2_PARAMETER_IN_SUM_IS_INVALID">
+    <German>Der 2. Parameter im Operator 'sum' muss eine Variable sein, nach der addiert wird.</German>
+    <English>The 2. parameter in operator 'sum' must be a valid variable by that addition will be performed.</English>
+    <Ukrainian>2. параметр оператора 'sum' має бути діючою змінною, по якій буде здійснюватися додавання.</Ukrainian>
+    <Russian>2. параматр оператора 'sum' должен быть действительной переменной, по которой будет производиться сложение.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2">
+    <German>. Parameter im Operator 'sum' muss entweder eine ganze Zahl sein, welche im Definitionsbereich des Ausdrucks liegt, oder ein Ausdruck sein, welcher Veränderliche enthält.</German>
+    <English>. parameter in operator 'sum' must be either an integer, where the expression is defined at, or an expression, containing a variable.</English>
+    <Ukrainian>. параметр оператора 'sum' має бути або цілим числом з області визначення або виразом, що містить змінну.</Ukrainian>
+    <Russian>. параметр оператора 'sum' должен быть целым числом из области определения или выражением, которое содержит переменную.</Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE">
+    <German>Die Grenzen im Operator 'sum' dürfen die Indexvariable nicht enthalten.</German>
+    <English>The limits in operator 'sum' are not allowed to contain the index variable.</English>
+    <Ukrainian>Границі оператора 'sum' не мають містити індексної змінної.</Ukrainian>
+    <Russian>Пределы оператора 'sum' не должны содержать индексной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_TAYLOR">
+    <German>Im Operator 'taylor' müssen genau vier parameter stehen.</German>
+    <English>Operator 'taylor' must contain exactly four parameters.</English>
+    <Ukrainian>У оператора 'taylor' має бути рівно чотири параметра.</Ukrainian>
+    <Russian>У оператора 'taylor' должно быть ровно четыре параметра.</Russian>
+  </object>
+  <object id = "EB_Operator_1_PARAMETER_IN_TAYLOR_IS_INVALID">
+    <German>Der 1. Parameter im Operator 'taylor' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The 1. parameter in operator 'taylor' must be a valid expression. Reported error: </English>
+    <Ukrainian>1. параметр оператора 'taylor' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'taylor' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_2_PARAMETER_IN_TAYLOR_IS_INVALID">
+    <German>Der 2. Parameter im Operator 'taylor' muss eine gültige Veränderliche sein.</German>
+    <English>The 2. parameter in operator 'taylor' must be a valid variable.</English>
+    <Ukrainian>2. параметр оператора 'taylor' має бути діючою змінною.</Ukrainian>
+    <Russian>2. параматр оператора 'taylor' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID">
+    <German>Der 3. Parameter im Operator 'taylor' muss eine reelle Zahl sein, die im Definitionsbereich der Funktion liegt.</German>
+    <English>The 3. parameter in operator 'taylor' must be real number, where the function is defined at.</English>
+    <Ukrainian>3. параметр оператора 'taylor' має бути дійсним числом з області визначення.</Ukrainian>
+    <Russian>3. параметр оператора 'taylor' должен быть вещественным числом из области определения.</Russian>
+  </object>
+  <object id = "EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID">
+    <German>Der 4. Parameter im Operator 'taylor' muss eine natürliche Zahl sein. Dies ist die Ordnung des Taylorpolynoms.</German>
+    <English>The 4. parameter in operator 'taylor' must be a natural number. This is the degree of the taylor polynomial.</English>
+    <Ukrainian>4. параметр оператора 'taylor' має бути натуральним числом. Це порядок полінома Тейлора.</Ukrainian>
+    <Russian>4. параметр оператора 'taylor' должен быть натуральным числом. Это порядок полинома Тейлора.</Russian>
+  </object>
+  <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_1">
+    <German>Der Ausdruck </German>
+    <English>The expression </English>
+    <Ukrainian>Вираз </Ukrainian>
+    <Russian>Выражение </Russian>
+  </object>
+  <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_2">
+    <German> kann nicht explizit nach </German>
+    <English> cannot be explicitly differentiated with respect to </English>
+    <Ukrainian> не може бути точно продиференційована по </Ukrainian>
+    <Russian> не может быть точно продифферинциирована по </Russian>
+  </object>
+  <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_3">
+    <German> differenziert werden.</German>
+    <English>.</English>
+    <Ukrainian>.</Ukrainian>
+    <Russian>.</Russian>
+  </object>
+  <object id = "EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED">
+    <German>Fakultäten von negativen ganzen Zahlen sind nicht definiert.</German>
+    <English>Factorials of negative integers are not defined.</English>
+    <Ukrainian>Факторіали від'ємних чисел не визначено.</Ukrainian>
+    <Russian>Факториалы отрицательных чисел не определены.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_2">
+    <German>. Parameter im Operator 'gcd' muss eine ganze Zahl sein.</German>
+    <English>. parameter in operator 'gcd' must be an integer.</English>
+    <Ukrainian>. парамер оператора 'gcd' має бути цілим числом.</Ukrainian>
+    <Russian>. параметр оператора 'gcd' должен быть целым числом.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_2">
+    <German>. Parameter im Operator 'lcm' muss eine ganze Zahl sein.</German>
+    <English>. parameter in operator 'lcm' must be an integer.</English>
+    <Ukrainian>. парамер оператора 'lcm' має бути цілим числом.</Ukrainian>
+    <Russian>. параметр оператора 'lcm' должен быть целым числом.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_2">
+    <German>. Parameter im Operator 'mod' muss eine ganze Zahl sein.</German>
+    <English>. parameter in operator 'mod' must be an integer.</English>
+    <Ukrainian>. парамер оператора 'mod' має бути цілим числом.</Ukrainian>
+    <Russian>. параметр оператора 'mod' должен быть целым числом.</Russian>
+  </object>
+  <object id = "EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS">
+    <German>Die Anzahl der eingesetzten Funktionen muss mit der Anzahl der Parameter der Funktion übereinstimmen.</German>
+    <English>The number of functions plugged in must be equal to the number of parameters of the function.</English>
+    <Ukrainian>Кількіть використаних функцій має бути рівна кількості параметрів функції.</Ukrainian>
+    <Russian>Количество используемых функций должно быть равно количеству параметров функции.</Russian>
+  </object>
+  <object id = "EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_1">
+    <German>Die Variable </German>
+    <English>The variable </English>
+    <Ukrainian>Змінна </Ukrainian>
+    <Russian>Переменная </Russian>
+  </object>
+  <object id = "EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_2">
+    <German> besitzt einen nicht definierten Wert.</German>
+    <English> has an undefined value.</English>
+    <Ukrainian> має невизначене значення.</Ukrainian>
+    <Russian> имеет неопределённое значение.</Russian>
+  </object>
+</objects>

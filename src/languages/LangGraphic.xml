@@ -1,0 +1,44 @@
+﻿<objects>
+  <object id = "GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON">
+    <German>Linke Maustaste gedrückt halten: Graphen verschieben</German>
+    <English>Hold down the left mouse button: move graph</English>
+    <Ukrainian>Затиснути ліву клавішу миші: рухати графік</Ukrainian>
+    <Russian>Зажать левую клавишу мыши: двигать график</Russian>
+  </object>
+  <object id = "GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON">
+    <German>Rechte Maustaste gedrückt halten: Graphen zerren</German>
+    <English>Hold down the right mouse button: shear graph</English>
+    <Ukrainian>Затиснути праву клавішу миші: розтягнути графік</Ukrainian>
+    <Russian>Зажать левую клавишу мыши: растянуть график</Russian>
+  </object>
+  <object id = "GR_Graphic2D_MOVE_MOUSE_WHEEL">
+    <German>Mausrad bewegen: hinein- und herauszoomen</German>
+    <English>Move mouse wheel: zoom in and out</English>
+    <Ukrainian>Прокрутити колесо миші: збільшувати, зменшувати</Ukrainian>
+    <Russian>Прокрутить колёсико мыши: увеличивать, уменьшать</Russian>
+  </object>
+  <object id = "GR_Graphic2D_IMPOSSIBLE_MOVE_GRAPH">
+    <German>Graphen impliziter Funktionen können weder bewegt, noch verschoben werden.</German>
+    <English>Graphs of implicit functions cannot be moved.</English>
+    <Ukrainian>Графіки неявних функцій не можна рухати.</Ukrainian>
+    <Russian>Графики неявных функций нельзя двигать.</Russian>
+  </object>
+  <object id = "GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON">
+    <German>Linke Maustaste gedrückt halten: Graphen horizontal rotieren</German>
+    <English>Hold down the left mouse button: rotate graph horizontally</English>
+    <Ukrainian>Затиснути ліву клавішу миші: обертати графік горизонтально</Ukrainian>
+    <Russian>Зажать левую клавишу мыши: вращать график горизонтально</Russian>
+  </object>
+  <object id = "GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON">
+    <German>Rechte Maustaste gedrückt halten: Graphen vertikal rotieren</German>
+    <English>Hold down the right mouse button: rotate graph vertically</English>
+    <Ukrainian>Затиснути праву клавішу миші: обертати графік вертикально</Ukrainian>
+    <Russian>Зажать правую клавишу мыши: вращать график вертикально</Russian>
+  </object>
+  <object id = "GR_Graphic3D_MOVE_MOUSE_WHEEL">
+    <German>Mausrad bewegen: hinein- und herauszoomen</German>
+    <English>Move mouse wheel: zoom in and out</English>
+    <Ukrainian>Прокрутити колеcо миші: збільшувати, зменшувати</Ukrainian>
+    <Russian>Прокрутить колёсико мыши: увеличивать, уменьшать</Russian>
+  </object>
+</objects>
