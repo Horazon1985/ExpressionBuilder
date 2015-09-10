@@ -69,6 +69,49 @@ public class ExpressionCollection {
         this.bound = 0;
     }
 
+    /**
+     * Gibt zurück, ob die ExpressionCollection den Ausdruck expr enthält
+     * (verglichen wird mit equals()).
+     */
+    public boolean contains(Expression expr) {
+        if (expr == null) {
+            for (int i = 0; i < this.bound; i++) {
+                if (this.terms.get(i) == null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        for (int i = 0; i < this.bound; i++) {
+            if (expr.equals(this.terms.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Gibt zurück, ob die ExpressionCollection den Ausdruck expr enthält
+     * (verglichen wird mit equivalent()). Ist expr == null, so wird false
+     * zurückgegeben.
+     */
+    public boolean containsExquivalent(Expression expr) {
+        if (expr == null) {
+            for (int i = 0; i < this.bound; i++) {
+                if (this.terms.get(i) == null) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        for (int i = 0; i < this.bound; i++) {
+            if (expr.equivalent(this.terms.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     public String toString() {
         if (this.bound == 0) {
@@ -78,6 +121,8 @@ public class ExpressionCollection {
         for (int i = 0; i < this.bound; i++) {
             if (this.terms.get(i) != null) {
                 result = result + this.terms.get(i).toString() + ", ";
+            } else {
+                result = result + "-, ";
             }
         }
         return result.substring(0, result.length() - 2) + "]";

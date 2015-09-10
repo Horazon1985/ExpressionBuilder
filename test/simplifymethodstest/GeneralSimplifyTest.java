@@ -14,8 +14,8 @@ import org.junit.Test;
 
 public class GeneralSimplifyTest {
 
-    Expression a, b, c, x, y, z;
-    
+    Expression a, b, c, d, x, y, z;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -29,6 +29,7 @@ public class GeneralSimplifyTest {
         a = Expression.build("a", new HashSet<String>());
         b = Expression.build("b", new HashSet<String>());
         c = Expression.build("c", new HashSet<String>());
+        d = Expression.build("d", new HashSet<String>());
         x = Expression.build("x", new HashSet<String>());
         y = Expression.build("y", new HashSet<String>());
         z = Expression.build("z", new HashSet<String>());
@@ -42,7 +43,7 @@ public class GeneralSimplifyTest {
         try {
             f = f.orderSumsAndProducts();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
@@ -55,11 +56,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.orderDifferenceAndDivision();
             Assert.assertTrue(f.equivalent(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void collectPowersInProductTest() {
         // Sammeln von Potenzen mit gleicher Basis.
@@ -68,7 +69,7 @@ public class GeneralSimplifyTest {
         try {
             f = f.collectProducts();
             Assert.assertTrue(f.equivalent(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
@@ -81,7 +82,7 @@ public class GeneralSimplifyTest {
         try {
             f = f.reduceQuotients().orderDifferenceAndDivision();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
@@ -94,11 +95,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInSums();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-            
+
     @Test
     public void factorizeSumsTest2() {
         // b/a+c/a = (b+c)/a 
@@ -107,11 +108,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInSums();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void factorizeSumsTest3() {
         // (x*b)/a+(c*x)/a = (b+c)/a 
@@ -120,11 +121,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInSums();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void factorizeSumsSimplifyNotFactorizePowersTest() {
         // x*1+x*x = x+x^2 NOT x*(1+x)
@@ -133,11 +134,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.simplify();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
-    }   
-    
+    }
+
     @Test
     public void factorizeSumsSimplifyFactorizePowersTest() {
         // x*1+x*x = x*(1+x)
@@ -146,11 +147,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInSums();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void factorizeDifferencesTest1() {
         // a*b-c*c = a*(b-c) 
@@ -159,11 +160,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInDifferences();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-            
+
     @Test
     public void factorizeDifferencesTest2() {
         // b/a-c/a = (b-c)/a 
@@ -172,11 +173,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInDifferences();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void factorizeDifferencesTest3() {
         // (x*b)/a-(c*x)/a = (b-c)/a 
@@ -185,11 +186,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInDifferences();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void factorizeDifferencesSimplifyNotFactorizePowersTest() {
         // x*1-x*x = x-x^2 NOT x*(1-x)
@@ -198,11 +199,11 @@ public class GeneralSimplifyTest {
         try {
             f = f.simplify();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
-    }   
-    
+    }
+
     @Test
     public void factorizeDifferencesSimplifyFactorizePowersTest() {
         // x*1-x*x = x*(1-x)
@@ -211,13 +212,38 @@ public class GeneralSimplifyTest {
         try {
             f = f.factorizeInDifferences();
             Assert.assertTrue(f.equals(g));
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
-    
-    
-    
-    
+
+    @Test
+    public void expandTest() {
+        // (a+b)*(c+d) = a*c + a*d + b*c + b*d
+        Expression f = (a.add(b)).mult(c.add(d));
+        Expression g = a.mult(c.add(d)).add(b.mult(c.add(d)));
+        try {
+            // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
+            f = f.expand().orderSumsAndProducts();
+            Assert.assertTrue(f.equals(g));
+        } catch (EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void expandBinomialTest() {
+        // (a+b)^3 = a^3 + 3*a^2*b + 3*a*b^2 + b^3
+        Expression f = a.add(b).pow(3);
+        Expression g = a.pow(3).add(Expression.THREE.mult(a.pow(2)).mult(b.pow(1))).add(
+                Expression.THREE.mult(a.pow(1)).mult(b.pow(2))).add(b.pow(3));
+        try {
+            // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
+            f = f.expand().orderSumsAndProducts();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
 }

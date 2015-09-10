@@ -881,10 +881,16 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(currentFactor);
 
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsLeft.get(i)).mult(SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
+                summandsLeft.put(i, SimplifyUtilities.produceProduct(
+                        ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(
+                                summandsLeft.get(i)).mult(
+                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsRight.get(i)).mult(SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
+                summandsRight.put(i, SimplifyUtilities.produceProduct(
+                        ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(
+                                summandsRight.get(i)).mult(
+                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
@@ -947,7 +953,8 @@ public class BinaryOperation extends Expression {
                     return expr;
                 }
 
-                BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).intValue()).divide(ArithmeticMethods.factorial(numberOfSummandsInBase.intValue() - 1).multiply(ArithmeticMethods.factorial(exponent.intValue())));
+                BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).intValue()).divide(
+                        ArithmeticMethods.factorial(numberOfSummandsInBase.intValue() - 1).multiply(ArithmeticMethods.factorial(exponent.intValue())));
 
                 /*
                  Falls die (geschätzte) Anzahl der resultierenden Summanden >=
