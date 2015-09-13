@@ -7,6 +7,7 @@ import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
+import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
@@ -16,7 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class SpecialSubstitutionMethods {
+public class SpecialEquationMethods {
 
     // Allgemeine Hilfsmethoden um festzustellen, ob ein HashSet von Expressions
     // nur Ausdrücke enthält, deren paarweise Quotienten rational sind.
@@ -65,7 +66,7 @@ public class SpecialSubstitutionMethods {
      * 5*exp(3*x) true zurückgegeben, jedoch false bei f = exp(x) +
      * exp(2^(1/2)*x).
      */
-    public static boolean isRationalFunktionInExp(Expression f, String var, HashSet<Expression> factorsOfVar) {
+    public static boolean isRationalFunktionInExp(Expression f, String var, HashSet<Expression> argumentsInExp) {
 
         if (!f.contains(var)) {
             return true;
@@ -79,12 +80,23 @@ public class SpecialSubstitutionMethods {
         if (f instanceof BinaryOperation) {
 
             if (f.isPower()) {
-                return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, factorsOfVar)
-                        && ((BinaryOperation) f).isIntegerConstant();
+
+                if (!((BinaryOperation) f).getLeft().contains(var)) {
+                    // a^f(x), a von x unabhängig, wird umgeformt zu exp(ln(a)*f(x)).
+                    Function fAsExp = ((BinaryOperation) f).getLeft().ln().mult(((BinaryOperation) f).getRight()).exp();
+                    return isRationalFunktionInExp(fAsExp, var, argumentsInExp);
+                }
+                /* 
+                 Sonstiger Fall: f(x)^g(x) ist nur dann eine rationale Exponentialgleichung, wenn f(x)
+                 eine ist und wenn g(x) eine konstante ganze Zahl ist.
+                 */
+                return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, argumentsInExp)
+                        && ((BinaryOperation) f).getRight().isIntegerConstant();
+
             }
-            return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, factorsOfVar)
-                    && isRationalFunktionInExp(((BinaryOperation) f).getRight(), var, factorsOfVar)
-                    && areQuotientsOfTermsRational(factorsOfVar);
+            return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, argumentsInExp)
+                    && isRationalFunktionInExp(((BinaryOperation) f).getRight(), var, argumentsInExp)
+                    && areQuotientsOfTermsRational(argumentsInExp);
 
         }
         if (f instanceof Function) {
@@ -94,19 +106,24 @@ public class SpecialSubstitutionMethods {
             }
 
             Expression argumentOfExp = ((Function) f).getLeft();
-            try {
-                Expression derivativeOfArgumentOfExp = argumentOfExp.diff(var).simplify();
-                if (derivativeOfArgumentOfExp.contains(var)) {
-                    return false;
-                }
-                if (!areQuotientsRational(derivativeOfArgumentOfExp, factorsOfVar)) {
-                    return false;
-                }
-                factorsOfVar.add(derivativeOfArgumentOfExp);
+            if (areQuotientsRational(argumentOfExp, argumentsInExp)) {
+                argumentsInExp.add(argumentOfExp);
                 return true;
-            } catch (EvaluationException e) {
-                return false;
             }
+            return false;
+//            try {
+//                Expression derivativeOfArgumentOfExp = argumentOfExp.diff(var).simplify();
+//                if (derivativeOfArgumentOfExp.contains(var)) {
+//                    return false;
+//                }
+//                if (!areQuotientsRational(derivativeOfArgumentOfExp, argumentsInExp)) {
+//                    return false;
+//                }
+//                argumentsInExp.add(derivativeOfArgumentOfExp);
+//                return true;
+//            } catch (EvaluationException e) {
+//                return false;
+//            }
 
         }
 
@@ -139,7 +156,7 @@ public class SpecialSubstitutionMethods {
 
             if (f.isPower()) {
                 return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, factorsOfVar)
-                        && ((BinaryOperation) f).isIntegerConstant();
+                        && ((BinaryOperation) f).getRight().isIntegerConstant();
             }
             return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, factorsOfVar)
                     && isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var, factorsOfVar)
@@ -218,7 +235,7 @@ public class SpecialSubstitutionMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException {
+    public static ExpressionCollection solveExponentialEquation2(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> factorsOfVar = new HashSet();
@@ -325,6 +342,147 @@ public class SpecialSubstitutionMethods {
         }
 
         return zeros;
+
+    }
+
+    /**
+     * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
+     * Exponentialgleichung, so wird eine leere ExpressionCollection
+     * zurückgegeben.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException {
+
+        ExpressionCollection zeros = new ExpressionCollection();
+        HashSet<Expression> factorsOfVar = new HashSet();
+        /*
+         Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
+         Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann
+         werden keine Lösungen ermittelt (diese Methode ist dafür nicht
+         zuständig).
+         */
+        if (!isRationalFunktionInExp(f, var, factorsOfVar) || factorsOfVar.isEmpty()) {
+            return zeros;
+        }
+
+        // Konstante Summanden aus der Exponentialfunktion rausziehen.
+        f = separateConstantPartsInRationalExponentialEquations(f, var);
+
+        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger lcmOfDenominators = BigInteger.ONE;
+
+        Iterator<Expression> iter = factorsOfVar.iterator();
+        Expression firstFactorOfArgument = iter.next();
+        Expression currentQuotient;
+
+        while (iter.hasNext()) {
+            currentQuotient = iter.next().div(firstFactorOfArgument).simplify();
+            // Die folgende Abfrage müsste wegen Vorbedingung immer true sein. Trotzdem sicherheitshalber!
+            if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+
+                if (currentQuotient.isIntegerConstant()) {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getPreciseValue().toBigInteger());
+                } else {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getPreciseValue().toBigInteger());
+                    lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getPreciseValue().toBigInteger());
+                }
+
+            }
+        }
+
+        // Das ist die eigentliche Substitution.
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify().exp();
+
+        Object fSubstituted = SolveMethods.substitute(f, var, substitution, true);
+        if (fSubstituted instanceof Expression) {
+
+            String substVar = SolveMethods.getSubstitutionVariable(f);
+            ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) fSubstituted, substVar);
+            zeros = new ExpressionCollection();
+            // Rücksubstitution.
+            for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
+                try {
+                    zeros.add(SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var));
+                } catch (EvaluationException e) {
+                    /*
+                     Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
+                     Lösung -> zerosOfSubstitutedEquation.get(i) nicht in die
+                     Lösungen mitaufnehmen.
+                     */
+                }
+            }
+
+        }
+
+        return zeros;
+
+    }
+
+    /**
+     * Gibt einen Ausdruck zurück, indem in Exponentialfunktionen bzgl. var der
+     * von var abhängige Teil von dem von var unabhängigen Teil getrennt wurde.
+     * BEISPIEL: Für f = 3 + 2^(x+7) - x^2*exp(8 - sin(x)) wird 3 + 2^7*2^x -
+     * x^2*exp(8)*exp(-sin(x)) zurückgegeben.
+     */
+    private static Expression separateConstantPartsInRationalExponentialEquations(Expression f, String var) {
+
+        // Im Folgenden sei x = var;
+        if (!f.contains(var) || f instanceof Constant || f instanceof Variable) {
+            return f;
+        }
+        if (f instanceof BinaryOperation) {
+
+            if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var)) {
+
+                // a^(c + f(x)), a und c von x unabhängig, wird umgeformt zu a^c*a^f(x).
+                Expression base = ((BinaryOperation) f).getLeft();
+                ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
+                ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
+                ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
+                ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
+                Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
+                if (exponentLeft.equals(Expression.ZERO)) {
+                    return f;
+                }
+                return base.pow(SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant)).mult(
+                        base.pow(SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant)));
+
+            }
+            return new BinaryOperation(
+                    separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getLeft(), var),
+                    separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getRight(), var),
+                    ((BinaryOperation) f).getType());
+
+        }
+        if (f instanceof Function) {
+
+            if (!((Function) f).getType().equals(TypeFunction.exp)) {
+                return new Function(separateConstantPartsInRationalExponentialEquations(((Function) f).getLeft(), var),
+                        ((Function) f).getType());
+            }
+
+            Expression argumentOfExp = ((Function) f).getLeft();
+            // exp(c + f(x)), c von x unabhängig, wird umgeformt zu exp(c)*exp(f(x)).
+            ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(argumentOfExp, var);
+            ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(argumentOfExp, var);
+            ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(argumentOfExp, var);
+            ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(argumentOfExp, var);
+            Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
+            if (exponentLeft.equals(Expression.ZERO)) {
+                return f;
+            }
+            return SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant).exp().mult(
+                    SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant).exp());
+
+        }
+
+        /*
+         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
+         welchem var vorkommt, dann false zurückgeben.
+         */
+        return f;
 
     }
 

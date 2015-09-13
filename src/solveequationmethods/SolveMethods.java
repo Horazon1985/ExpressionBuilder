@@ -1541,13 +1541,13 @@ public class SolveMethods {
         }
 
         // Fall: f ist eine rationale Funktion in einer Exponentialfunktion.
-        if (SpecialSubstitutionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
-            return SpecialSubstitutionMethods.solveExponentialEquation(f, var);
+        if (SpecialEquationMethods.isRationalFunktionInExp(f, var, new HashSet())) {
+            return SpecialEquationMethods.solveExponentialEquation(f, var);
         }
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
-        if (SpecialSubstitutionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
-            return SpecialSubstitutionMethods.solveTrigonometricalEquation(f, var);
+        if (SpecialEquationMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
+            return SpecialEquationMethods.solveTrigonometricalEquation(f, var);
         }
 
         /*
@@ -1602,13 +1602,13 @@ public class SolveMethods {
          */
         Expression fByDefinition = f.simplifyReplaceExponentialFunctionsByDefinitions();
         HashSet<Expression> factorsOfVar = new HashSet<>();
-        if (SpecialSubstitutionMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
+        if (SpecialEquationMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
             if (!fByDefinition.equals(f)) {
-                return SpecialSubstitutionMethods.solveExponentialEquation(fByDefinition, var);
+                return SpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
             }
         }
         fByDefinition = f.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-        if (SpecialSubstitutionMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, factorsOfVar)) {
+        if (SpecialEquationMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, factorsOfVar)) {
             if (!fByDefinition.equals(f)) {
                 return solveZeroEquation(fByDefinition, var);
             }
@@ -2596,8 +2596,7 @@ public class SolveMethods {
          var und n = a/c ganzzahlig. DANN: f = exp(b - n*d)*substitution^n,
          d.h. f ist ein Monom in subst.
          */
-        if (((Function) f).getType().equals(TypeFunction.exp)
-                && substitution instanceof Function && ((Function) substitution).getType().equals(TypeFunction.exp)) {
+        if (f.isFunction(TypeFunction.exp) && substitution.isFunction(TypeFunction.exp)) {
 
             String substVar = getSubstitutionVariable(f);
             Object expArgumentSubstituted = substitute(((Function) f).getLeft(), var, ((Function) substitution).getLeft(), false);
