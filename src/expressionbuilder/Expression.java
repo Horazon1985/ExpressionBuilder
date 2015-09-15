@@ -8,7 +8,7 @@ import translator.Translator;
 
 public abstract class Expression {
 
-    //Sprache für Fehlermeldungen.
+    // Sprache für Fehlermeldungen.
     private static TypeLanguage language;
 
     public final static Variable PI = Variable.create("pi");
@@ -37,7 +37,7 @@ public abstract class Expression {
      */
     public static String[] getOperatorAndArguments(String input) throws ExpressionException {
 
-        //Leerzeichen beseitigen
+        // Leerzeichen beseitigen
         input = input.replaceAll(" ", "");
 
         String[] result = new String[2];

@@ -7,7 +7,6 @@ import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
-import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
@@ -111,19 +110,6 @@ public class SpecialEquationMethods {
                 return true;
             }
             return false;
-//            try {
-//                Expression derivativeOfArgumentOfExp = argumentOfExp.diff(var).simplify();
-//                if (derivativeOfArgumentOfExp.contains(var)) {
-//                    return false;
-//                }
-//                if (!areQuotientsRational(derivativeOfArgumentOfExp, argumentsInExp)) {
-//                    return false;
-//                }
-//                argumentsInExp.add(derivativeOfArgumentOfExp);
-//                return true;
-//            } catch (EvaluationException e) {
-//                return false;
-//            }
 
         }
 
@@ -235,144 +221,28 @@ public class SpecialEquationMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveExponentialEquation2(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection zeros = new ExpressionCollection();
-        HashSet<Expression> factorsOfVar = new HashSet();
-        /*
-         Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
-         Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann
-         werden keine Lösungen ermittelt (diese Methode ist dafür nicht
-         zuständig).
-         */
-        if (!isRationalFunktionInExp(f, var, factorsOfVar)) {
-            return zeros;
-        }
-        if (factorsOfVar.isEmpty()) {
-            return zeros;
-        }
-
-        BigInteger gcdOfEnumerators = null;
-        BigInteger lcmOfDenominators = BigInteger.ONE;
-
-        Iterator<Expression> iter = factorsOfVar.iterator();
-        Expression firstFactorOfVar = null;
-        Expression currentQuotient;
-
-        ExpressionCollection factorsEnumerator, factorsDenominator;
-        Expression factorOfVar;
-        while (iter.hasNext()) {
-            if (firstFactorOfVar == null) {
-                firstFactorOfVar = iter.next();
-                factorOfVar = firstFactorOfVar;
-            } else {
-                factorOfVar = iter.next();
-            }
-            currentQuotient = factorOfVar.div(firstFactorOfVar).simplify();
-            if (currentQuotient.isIntegerConstantOrRationalConstant()) {
-
-                factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factorOfVar);
-                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factorOfVar);
-                /* 
-                 WICHTIGE ANNAHME: f ist vereinfacht, also jedes factorOfVar ebenfalls.
-                 Dementsprechend sind die Koeffizienten im Zähler und Nenner zusammengefasst und stehen vorne. 
-                 */
-                if (gcdOfEnumerators == null) {
-                    // Erste Initialisierung des ggT der Zählerkoeffizienten.
-                    if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = ((Constant) factorsEnumerator.get(0)).getPreciseValue().toBigInteger();
-                    } else {
-                        gcdOfEnumerators = BigInteger.ONE;
-                    }
-                } else {
-                    if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) factorsEnumerator.get(0)).getPreciseValue().toBigInteger());
-                    } else {
-                        gcdOfEnumerators = BigInteger.ONE;
-                    }
-                }
-                if (factorsDenominator.get(0) != null && factorsDenominator.get(0).isIntegerConstant()) {
-                    lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) factorsDenominator.get(0)).getPreciseValue().toBigInteger());
-                }
-
-            }
-        }
-
-        if (gcdOfEnumerators == null) {
-            gcdOfEnumerators = BigInteger.ONE;
-        }
-
-        iter = factorsOfVar.iterator();
-        factorOfVar = iter.next();
-        factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factorOfVar);
-        factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factorOfVar);
-        if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-            factorsEnumerator.remove(0);
-        }
-        if (factorsDenominator.get(0) != null && factorsDenominator.get(0).isIntegerConstant()) {
-            factorsDenominator.remove(0);
-        }
-        factorsEnumerator.add(new Constant(gcdOfEnumerators));
-        factorsEnumerator.add(Variable.create(var));
-        factorsDenominator.add(new Constant(lcmOfDenominators));
-
-        // Das ist die eigentliche Substitution.
-        Expression substitution = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).simplify().exp();
-
-        Object fSubstituted = SolveMethods.substitute(f, var, substitution, true);
-        if (fSubstituted instanceof Expression) {
-
-            String substVar = SolveMethods.getSubstitutionVariable(f);
-            ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) fSubstituted, substVar);
-            zeros = new ExpressionCollection();
-            // Rücksubstitution.
-            for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
-                try {
-                    zeros.add(SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var));
-                } catch (EvaluationException e) {
-                    /*
-                     Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
-                     Lösung -> zerosOfSubstitutedEquation.get(i) nicht in die
-                     Lösungen mitaufnehmen.
-                     */
-                }
-            }
-
-        }
-
-        return zeros;
-
-    }
-
-    /**
-     * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
-     * Exponentialgleichung, so wird eine leere ExpressionCollection
-     * zurückgegeben.
-     *
-     * @throws EvaluationException
-     */
     public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        HashSet<Expression> factorsOfVar = new HashSet();
+        HashSet<Expression> argumentsInExp = new HashSet();
+        
+        // Konstante Summanden aus der Exponentialfunktion rausziehen.
+        f = separateConstantPartsInRationalExponentialEquations(f, var);
+        
         /*
          Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
          Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!isRationalFunktionInExp(f, var, factorsOfVar) || factorsOfVar.isEmpty()) {
+        if (!isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             return zeros;
         }
-
-        // Konstante Summanden aus der Exponentialfunktion rausziehen.
-        f = separateConstantPartsInRationalExponentialEquations(f, var);
 
         BigInteger gcdOfEnumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
-        Iterator<Expression> iter = factorsOfVar.iterator();
+        Iterator<Expression> iter = argumentsInExp.iterator();
         Expression firstFactorOfArgument = iter.next();
         Expression currentQuotient;
 
@@ -393,7 +263,7 @@ public class SpecialEquationMethods {
         }
 
         // Das ist die eigentliche Substitution.
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify().exp();
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).exp().simplify();
 
         Object fSubstituted = SolveMethods.substitute(f, var, substitution, true);
         if (fSubstituted instanceof Expression) {
@@ -426,7 +296,7 @@ public class SpecialEquationMethods {
      * BEISPIEL: Für f = 3 + 2^(x+7) - x^2*exp(8 - sin(x)) wird 3 + 2^7*2^x -
      * x^2*exp(8)*exp(-sin(x)) zurückgegeben.
      */
-    private static Expression separateConstantPartsInRationalExponentialEquations(Expression f, String var) {
+    public static Expression separateConstantPartsInRationalExponentialEquations(Expression f, String var) {
 
         // Im Folgenden sei x = var;
         if (!f.contains(var) || f instanceof Constant || f instanceof Variable) {

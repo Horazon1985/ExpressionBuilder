@@ -1886,7 +1886,7 @@ public class SolveMethods {
             return substituteInPower(f, var, substitution, beginning);
         }
 
-        if (f instanceof Function) {
+        if (f.isFunction()) {
             return substituteInFunction(f, var, substitution, beginning);
         }
 
@@ -2536,7 +2536,7 @@ public class SolveMethods {
 
         /*
          Spezialfall: f = a^(c*x + d) und subst = b^(p*x + q) 
-         Dann ist f = C * subst^(ln(a)/ln(p)) mit geeignetem C.
+         Dann ist f = C * subst^D mit geeignetem C.
          */
         if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var)
                 && ((BinaryOperation) f).getRight().contains(var)) {
@@ -2552,26 +2552,26 @@ public class SolveMethods {
                 return false;
             }
             
-            // Berechnung von e, falls möglich.
+            // Berechnung von p, falls möglich.
             Expression p = ((BinaryOperation) f).getRight().diff(var).simplify();
             if (p.contains(var)){
                 return false;
             }
-            // Berechnung von f, falls möglich.
+            // Berechnung von q, falls möglich.
             Expression q = ((BinaryOperation) f).getRight().sub(p.mult(Variable.create(var))).simplify();
             if (q.contains(var)){
                 return false;
             }
+
+            Expression a = ((BinaryOperation) f).getLeft();
+            Expression b = ((BinaryOperation) substitution).getLeft();
             
-            // Berechnung von C.
-            
-            
-            
-            
-            
-            
-            
-            
+            // Berechnung von C und D.
+            // C = a^(d - c*q/p), D = (ln(a)*c)/(ln(b)*d) 
+            Expression factor = a.pow(d.sub(c.mult(q).div(p))).simplify();
+            Expression exponent = a.ln().mult(c).div(b.ln().mult(p)).simplify();
+
+            return factor.mult(substitution.pow(exponent));
             
         }
 
