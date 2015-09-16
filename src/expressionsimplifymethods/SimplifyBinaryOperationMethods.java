@@ -99,7 +99,7 @@ public class SimplifyBinaryOperationMethods {
      */
     public static Expression rationalConstantToQuotient(BinaryOperation expr) throws EvaluationException {
         if (expr.isRationalConstant() && !expr.containsApproximates()) {
-            return Constant.constantToQuotient(((Constant) expr.getLeft()).getPreciseValue(), ((Constant) expr.getRight()).getPreciseValue());
+            return Constant.constantToQuotient(((Constant) expr.getLeft()).getValue(), ((Constant) expr.getRight()).getValue());
         }
         return expr;
     }
@@ -128,8 +128,8 @@ public class SimplifyBinaryOperationMethods {
     public static Expression eliminateNegativeDenominator(BinaryOperation expr) throws EvaluationException {
 
         if (expr.getType().equals(TypeBinary.DIV) && expr.getRight() instanceof Constant
-                && ((Constant) expr.getRight()).getPreciseValue().compareTo(BigDecimal.ZERO) < 0) {
-            return MINUS_ONE.mult(expr.getLeft()).div(((Constant) expr.getRight()).getPreciseValue().negate());
+                && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) < 0) {
+            return MINUS_ONE.mult(expr.getLeft()).div(((Constant) expr.getRight()).getValue().negate());
         }
         return expr;
 
@@ -149,32 +149,32 @@ public class SimplifyBinaryOperationMethods {
 
             if ((expr.getLeft() instanceof Constant) && (expr.getRight() instanceof Constant)) {
 
-                BigDecimal c_1 = ((Constant) expr.getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) expr.getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) expr.getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) expr.getRight()).getValue();
                 return new Constant(c_1.subtract(c_2));
 
             } else if (!(expr.getLeft() instanceof Constant) && (expr.getRight() instanceof Constant)) {
 
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) expr.getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
+                BigDecimal c_3 = ((Constant) expr.getRight()).getValue();
                 BigDecimal enumerator = c_1.subtract(c_2.multiply(c_3));
                 return new Constant(enumerator).div(c_2);
 
             } else if ((expr.getLeft() instanceof Constant) && !(expr.getRight() instanceof Constant)) {
 
-                BigDecimal c_1 = ((Constant) expr.getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) expr.getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue();
+                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue();
                 BigDecimal enumerator = c_1.multiply(c_3).subtract(c_2);
                 return new Constant(enumerator).div(c_3);
 
             } else {
 
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getPreciseValue();
-                BigDecimal c_4 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
+                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue();
+                BigDecimal c_4 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue();
                 BigDecimal enumerator = c_1.multiply(c_4).subtract(c_2.multiply(c_3));
                 BigDecimal denominator = c_2.multiply(c_4);
                 return new Constant(enumerator).div(denominator);
@@ -204,7 +204,7 @@ public class SimplifyBinaryOperationMethods {
             if (expr.getType().equals(TypeBinary.POW)) {
 
                 // Negative Potenzen von 0 sind nicht definiert.
-                if (constantLeft.equals(ZERO) && constantRight.getPreciseValue().compareTo(BigDecimal.ZERO) < 0) {
+                if (constantLeft.equals(ZERO) && constantRight.getValue().compareTo(BigDecimal.ZERO) < 0) {
                     throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
                 }
                 /*
@@ -214,9 +214,9 @@ public class SimplifyBinaryOperationMethods {
                  int-Bereich.
                  */
                 if (constantRight.isIntegerConstant()
-                        && constantRight.getPreciseValue().compareTo(BigDecimal.ZERO) >= 0
-                        && constantRight.getPreciseValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
-                    return new Constant(constantLeft.getPreciseValue().pow(constantRight.getPreciseValue().intValue()));
+                        && constantRight.getValue().compareTo(BigDecimal.ZERO) >= 0
+                        && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                    return new Constant(constantLeft.getValue().pow(constantRight.getValue().intValue()));
                 }
 
             }
@@ -315,8 +315,8 @@ public class SimplifyBinaryOperationMethods {
 
         if (expr.getType().equals(TypeBinary.POW) && expr.getRight().isRationalConstant() && expr.getLeft().isIntegerConstantOrRationalConstant()) {
 
-            BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getPreciseValue().toBigInteger();
-            BigInteger exponentDenominator = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getPreciseValue().toBigInteger();
+            BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
+            BigInteger exponentDenominator = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
 
             BigInteger integerPartOfExponent = exponentEnumerator.divide(exponentDenominator);
             if (integerPartOfExponent.compareTo(BigInteger.ZERO) < 0) {
@@ -367,13 +367,13 @@ public class SimplifyBinaryOperationMethods {
                 if (factorsInExponentDenominator.get(0).isNonPositive()) {
                     return expr;
                 }
-                rootDegree = ((Constant) factorsInExponentDenominator.get(0)).getPreciseValue().toBigInteger();
+                rootDegree = ((Constant) factorsInExponentDenominator.get(0)).getValue().toBigInteger();
             }
 
             // 1. Fall: Basis ist eine ganze Zahl.
             if (expr.getLeft().isIntegerConstant()) {
 
-                BigInteger base = ((Constant) expr.getLeft()).getPreciseValue().toBigInteger();
+                BigInteger base = ((Constant) expr.getLeft()).getValue().toBigInteger();
 
                 if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ROOTDEGREE_OF_RATIONALS)) <= 0) {
 
@@ -401,7 +401,7 @@ public class SimplifyBinaryOperationMethods {
                 // 2. Fall: Basis ist ein Quotient.
                 if (((BinaryOperation) expr.getLeft()).getLeft().isIntegerConstant()) {
 
-                    BigInteger baseEnumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue().toBigInteger();
+                    BigInteger baseEnumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue().toBigInteger();
 
                     if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_ROOTDEGREE_OF_RATIONALS"))) <= 0) {
 
@@ -432,7 +432,7 @@ public class SimplifyBinaryOperationMethods {
                 }
                 if (((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                    BigInteger baseDenominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger baseDenominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_ROOTDEGREE_OF_RATIONALS"))) <= 0) {
 
@@ -480,29 +480,29 @@ public class SimplifyBinaryOperationMethods {
 
             // Falls der Zähler a und der Exponent n ganze Zahlen sind: (a/b)^n = a^n/b^n
             if (((BinaryOperation) expr.getLeft()).getLeft().isIntegerConstant()) {
-                BigDecimal constantEnumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue();
+                BigDecimal constantEnumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue();
                 /*
                  Potenzen von Brüchen sollen nur vereinfacht werden, wenn
                  Exponenten <= einer bestimmten Schranke sind. Diese Schranke
                  bewegt sich im int-Bereich.
                  */
-                if (((Constant) expr.getRight()).getPreciseValue().compareTo(BigDecimal.ZERO) >= 0
-                        && ((Constant) expr.getRight()).getPreciseValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
-                    constantEnumerator = constantEnumerator.pow(((Constant) expr.getRight()).getPreciseValue().intValue());
+                if (((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) >= 0
+                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                    constantEnumerator = constantEnumerator.pow(((Constant) expr.getRight()).getValue().intValue());
                     return new Constant(constantEnumerator).div(((BinaryOperation) expr.getLeft()).getRight().pow(expr.getRight()));
                 }
             }
             // Falls der Nenner b und der Exponent n ganze Zahlen sind: (a/b)^n = a^n/b^n
             if (((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
-                BigDecimal constantDenominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                BigDecimal constantDenominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                 /*
                  Potenzen von Brüchen sollen nur vereinfacht werden, wenn
                  Exponenten <= einer bestimmten Schranke sind.
                  */
                 if (expr.getRight().isIntegerConstant()
-                        && ((Constant) expr.getRight()).getPreciseValue().compareTo(BigDecimal.ZERO) >= 0
-                        && ((Constant) expr.getRight()).getPreciseValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
-                    constantDenominator = constantDenominator.pow(((Constant) expr.getRight()).getPreciseValue().intValue());
+                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) >= 0
+                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                    constantDenominator = constantDenominator.pow(((Constant) expr.getRight()).getValue().intValue());
                     return ((BinaryOperation) expr.getLeft()).getLeft().pow(expr.getRight()).div(constantDenominator);
                 }
             }
@@ -656,10 +656,10 @@ public class SimplifyBinaryOperationMethods {
          v1 - c*v2 = v1 + (-c)*v2, falls c < 0.
          */
         if ((expr.isSum() || expr.isDifference()) && !expr.getRight().hasPositiveSign()) {
-            if (expr.getType().equals(TypeBinary.PLUS)) {
-                return expr.getLeft().sub(Constant.negateExpression(expr.getRight()));
+            if (expr.isSum()) {
+                return expr.getLeft().sub(MINUS_ONE.mult(expr.getRight()));
             }
-            return expr.getLeft().add(Constant.negateExpression(expr.getRight()));
+            return expr.getLeft().add(MINUS_ONE.mult(expr.getRight()));
         }
         /*
          Bei Addition: c*v1 + v2 = v2 - (-c)*v1, falls c < 0.
@@ -804,8 +804,8 @@ public class SimplifyBinaryOperationMethods {
         if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0) instanceof Constant
                 && factorsDenominator.get(0) != null && factorsDenominator.get(0) instanceof Constant) {
 
-            BigDecimal enumerator = ((Constant) factorsEnumerator.get(0)).getPreciseValue();
-            BigDecimal denominator = ((Constant) factorsDenominator.get(0)).getPreciseValue();
+            BigDecimal enumerator = ((Constant) factorsEnumerator.get(0)).getValue();
+            BigDecimal denominator = ((Constant) factorsDenominator.get(0)).getValue();
             BigInteger[] reducedFraction = Constant.reduceFraction(enumerator, denominator);
 
             factorsEnumerator.put(0, new Constant(reducedFraction[0]));
@@ -815,7 +815,7 @@ public class SimplifyBinaryOperationMethods {
                 && factorsDenominator.get(0) != null && factorsDenominator.get(0) instanceof Constant) {
 
             // v1 / (c * v2) = -v1 / (-c * v2), falls c < 0.
-            BigDecimal coefficientDenominator = ((Constant) factorsDenominator.get(0)).getPreciseValue();
+            BigDecimal coefficientDenominator = ((Constant) factorsDenominator.get(0)).getValue();
             if (coefficientDenominator.compareTo(BigDecimal.ZERO) < 0) {
 
                 if (factorsEnumerator.get(0) == null) {
@@ -823,7 +823,7 @@ public class SimplifyBinaryOperationMethods {
                 } else {
                     factorsEnumerator.put(0, MINUS_ONE.mult(factorsEnumerator.get(0)));
                 }
-                factorsDenominator.put(0, new Constant(BigDecimal.ONE.negate().multiply(((Constant) factorsDenominator.get(0)).getPreciseValue())));
+                factorsDenominator.put(0, new Constant(BigDecimal.ONE.negate().multiply(((Constant) factorsDenominator.get(0)).getValue())));
 
             }
 
@@ -928,8 +928,8 @@ public class SimplifyBinaryOperationMethods {
 
             if (summandsLeft.get(0) instanceof Constant && summandsRight.get(0) instanceof Constant) {
 
-                BigDecimal c_1 = ((Constant) summandsLeft.get(0)).getPreciseValue();
-                BigDecimal c_2 = ((Constant) summandsRight.get(0)).getPreciseValue();
+                BigDecimal c_1 = ((Constant) summandsLeft.get(0)).getValue();
+                BigDecimal c_2 = ((Constant) summandsRight.get(0)).getValue();
                 if (c_1.compareTo(c_2) > 0) {
                     summandsLeft.put(0, new Constant(c_1.subtract(c_2)));
                     summandsRight.remove(0);
@@ -943,9 +943,9 @@ public class SimplifyBinaryOperationMethods {
 
             } else if (!(summandsLeft.get(0) instanceof Constant) && summandsRight.get(0) instanceof Constant) {
 
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getRight()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) summandsRight.get(0)).getPreciseValue();
+                BigDecimal c_1 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getRight()).getValue();
+                BigDecimal c_3 = ((Constant) summandsRight.get(0)).getValue();
                 BigDecimal enumerator = c_1.subtract(c_2.multiply(c_3));
                 if (enumerator.multiply(c_3).compareTo(BigDecimal.ZERO) > 0) {
                     summandsLeft.put(0, new Constant(enumerator).div(c_2));
@@ -960,9 +960,9 @@ public class SimplifyBinaryOperationMethods {
 
             } else if (summandsLeft.get(0) instanceof Constant && !(summandsRight.get(0) instanceof Constant)) {
 
-                BigDecimal c_1 = ((Constant) summandsLeft.get(0)).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getLeft()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) summandsLeft.get(0)).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getLeft()).getValue();
+                BigDecimal c_3 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getRight()).getValue();
                 BigDecimal enumerator = c_1.multiply(c_3).subtract(c_2);
                 if (enumerator.multiply(c_3).compareTo(BigDecimal.ZERO) > 0) {
                     summandsLeft.put(0, new Constant(enumerator).div(c_3));
@@ -977,10 +977,10 @@ public class SimplifyBinaryOperationMethods {
 
             } else {
 
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getLeft()).getPreciseValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getRight()).getPreciseValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getLeft()).getPreciseValue();
-                BigDecimal c_4 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getRight()).getPreciseValue();
+                BigDecimal c_1 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getLeft()).getValue();
+                BigDecimal c_2 = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getRight()).getValue();
+                BigDecimal c_3 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getLeft()).getValue();
+                BigDecimal c_4 = ((Constant) ((BinaryOperation) summandsRight.get(0)).getRight()).getValue();
                 BigDecimal enumerator = c_1.multiply(c_4).subtract(c_2.multiply(c_3));
                 BigDecimal denominator = c_2.multiply(c_4);
                 if (enumerator.multiply(denominator).compareTo(BigDecimal.ZERO) > 0) {
@@ -1110,10 +1110,10 @@ public class SimplifyBinaryOperationMethods {
                 if (enumerators.get(j).isIntegerConstant()) {
                     containsConstant = true;
                     if (gcdOfAllCoefficients.equals(BigInteger.ZERO)) {
-                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getPreciseValue().toBigInteger();
+                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getValue().toBigInteger();
                         break;
                     } else {
-                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger());
+                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getValue().toBigInteger());
                         break;
                     }
                 }
@@ -1145,10 +1145,10 @@ public class SimplifyBinaryOperationMethods {
                 if (enumerators.get(j).isIntegerConstant()) {
                     containsConstant = true;
                     if (gcdOfAllCoefficients.equals(BigInteger.ZERO)) {
-                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getPreciseValue().toBigInteger();
+                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getValue().toBigInteger();
                         break;
                     } else {
-                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger());
+                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getValue().toBigInteger());
                         break;
                     }
                 }
@@ -1181,10 +1181,10 @@ public class SimplifyBinaryOperationMethods {
                 if (enumerators.get(j).isIntegerConstant()) {
                     containsConstant = true;
                     if (gcdOfAllCoefficients.equals(BigInteger.ZERO)) {
-                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getPreciseValue().toBigInteger();
+                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getValue().toBigInteger();
                         break;
                     } else {
-                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger());
+                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getValue().toBigInteger());
                         break;
                     }
                 }
@@ -1218,10 +1218,10 @@ public class SimplifyBinaryOperationMethods {
                 if (enumerators.get(j).isIntegerConstant()) {
                     containsConstant = true;
                     if (gcdOfAllCoefficients.equals(BigInteger.ZERO)) {
-                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getPreciseValue().toBigInteger();
+                        gcdOfAllCoefficients = ((Constant) enumerators.get(j)).getValue().toBigInteger();
                         break;
                     } else {
-                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger());
+                        gcdOfAllCoefficients = gcdOfAllCoefficients.gcd(((Constant) enumerators.get(j)).getValue().toBigInteger());
                         break;
                     }
                 }
@@ -1272,7 +1272,7 @@ public class SimplifyBinaryOperationMethods {
                  entstandenen Faktoren bilden.
                  */
                 if (enumerators.get(j).isIntegerConstant()) {
-                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger().divide(gcdOfAllCoefficients)));
+                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getValue().toBigInteger().divide(gcdOfAllCoefficients)));
                     summandsLeftInEnumerator.put(i, SimplifyUtilities.produceQuotient(enumerators, denominators));
                     break;
                 }
@@ -1294,7 +1294,7 @@ public class SimplifyBinaryOperationMethods {
                  entstandenen Faktoren bilden.
                  */
                 if (enumerators.get(j).isIntegerConstant()) {
-                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger().divide(gcdOfAllCoefficients)));
+                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getValue().toBigInteger().divide(gcdOfAllCoefficients)));
                     summandsRightInEnumerator.put(i, SimplifyUtilities.produceQuotient(enumerators, denominators));
                     break;
                 }
@@ -1316,7 +1316,7 @@ public class SimplifyBinaryOperationMethods {
                  entstandenen Faktoren bilden.
                  */
                 if (enumerators.get(j).isIntegerConstant()) {
-                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger().divide(gcdOfAllCoefficients)));
+                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getValue().toBigInteger().divide(gcdOfAllCoefficients)));
                     summandsLeftInDenominator.put(i, SimplifyUtilities.produceQuotient(enumerators, denominators));
                     break;
                 }
@@ -1338,7 +1338,7 @@ public class SimplifyBinaryOperationMethods {
                  entstandenen Faktoren bilden.
                  */
                 if (enumerators.get(j).isIntegerConstant()) {
-                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getPreciseValue().toBigInteger().divide(gcdOfAllCoefficients)));
+                    enumerators.put(j, new Constant(((Constant) enumerators.get(j)).getValue().toBigInteger().divide(gcdOfAllCoefficients)));
                     summandsRightInDenominator.put(i, SimplifyUtilities.produceQuotient(enumerators, denominators));
                     break;
                 }
@@ -1391,7 +1391,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) commonDenominators.get(k)).getRight().isIntegerConstant()
                             && ((BinaryOperation) commonDenominators.get(k)).getRight().isNonNegative()) {
                         baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominators.get(k)).getLeft();
-                        expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCommonDenominators = commonDenominators.get(k);
                         expOfFactorInCommonDenominators = BigInteger.ONE;
@@ -1400,7 +1400,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) additionalDenominators.get(j)).getRight().isIntegerConstant()
                             && ((BinaryOperation) additionalDenominators.get(j)).getRight().isNonNegative()) {
                         baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(j)).getLeft();
-                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCurrentDenominators = additionalDenominators.get(j);
                         expOfFactorInCurrentDenominators = BigInteger.ONE;
@@ -1443,7 +1443,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) commonDenominators.get(k)).getRight().isIntegerConstant()
                             && ((BinaryOperation) commonDenominators.get(k)).getRight().isNonNegative()) {
                         baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominators.get(k)).getLeft();
-                        expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCommonDenominators = commonDenominators.get(k);
                         expOfFactorInCommonDenominators = BigInteger.ONE;
@@ -1452,7 +1452,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) additionalDenominators.get(j)).getRight().isIntegerConstant()
                             && ((BinaryOperation) additionalDenominators.get(j)).getRight().isNonNegative()) {
                         baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(j)).getLeft();
-                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCurrentDenominators = additionalDenominators.get(j);
                         expOfFactorInCurrentDenominators = BigInteger.ONE;
@@ -1512,7 +1512,7 @@ public class SimplifyBinaryOperationMethods {
                         && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isIntegerConstant()
                         && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isNonNegative()) {
                     baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominatorsCopy.get(j)).getLeft();
-                    expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getPreciseValue().toBigInteger();
+                    expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getValue().toBigInteger();
                 } else {
                     baseOfFactorInCommonDenominators = commonDenominatorsCopy.get(j);
                     expOfFactorInCommonDenominators = BigInteger.ONE;
@@ -1529,7 +1529,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) additionalDenominators.get(k)).getRight().isIntegerConstant()
                             && ((BinaryOperation) additionalDenominators.get(k)).getRight().isNonNegative()) {
                         baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(k)).getLeft();
-                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCurrentDenominators = additionalDenominators.get(k);
                         expOfFactorInCurrentDenominators = BigInteger.ONE;
@@ -1576,7 +1576,7 @@ public class SimplifyBinaryOperationMethods {
                         && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isIntegerConstant()
                         && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isNonNegative()) {
                     baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominatorsCopy.get(j)).getLeft();
-                    expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getPreciseValue().toBigInteger();
+                    expOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getValue().toBigInteger();
                 } else {
                     baseOfFactorInCommonDenominators = commonDenominatorsCopy.get(j);
                     expOfFactorInCommonDenominators = BigInteger.ONE;
@@ -1593,7 +1593,7 @@ public class SimplifyBinaryOperationMethods {
                             && ((BinaryOperation) additionalDenominators.get(k)).getRight().isIntegerConstant()
                             && ((BinaryOperation) additionalDenominators.get(k)).getRight().isNonNegative()) {
                         baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(k)).getLeft();
-                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getPreciseValue().toBigInteger();
+                        expOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getValue().toBigInteger();
                     } else {
                         baseOfFactorInCurrentDenominators = additionalDenominators.get(k);
                         expOfFactorInCurrentDenominators = BigInteger.ONE;
@@ -1743,7 +1743,7 @@ public class SimplifyBinaryOperationMethods {
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeftInEnumerator.get(0));
         ExpressionCollection factorsInEnumeratorWithoutCoefficient = new ExpressionCollection();
         if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0) instanceof Constant) {
-            coefficientInEnumeratorForTesting = ((Constant) factorsEnumerator.get(0)).getPreciseValue();
+            coefficientInEnumeratorForTesting = ((Constant) factorsEnumerator.get(0)).getValue();
             for (int i = 1; i < factorsEnumerator.getBound(); i++) {
                 factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(i));
             }
@@ -1762,7 +1762,7 @@ public class SimplifyBinaryOperationMethods {
             factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeftInDenominator.get(i));
             factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeftInDenominator.get(i));
             if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0) instanceof Constant) {
-                coefficientInDenominatorForTesting = ((Constant) factorsEnumerator.get(0)).getPreciseValue();
+                coefficientInDenominatorForTesting = ((Constant) factorsEnumerator.get(0)).getValue();
                 factorsInEnumeratorWithoutCoefficient.clear();
                 for (int j = 1; j < factorsEnumerator.getBound(); j++) {
                     factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(j));
@@ -1792,7 +1792,7 @@ public class SimplifyBinaryOperationMethods {
                 factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRightInDenominator.get(i));
                 if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0) instanceof Constant) {
                     // .negate() in b, weil man im Subtrahenden ist.
-                    coefficientInDenominatorForTesting = ((Constant) factorsEnumerator.get(0)).getPreciseValue().negate();
+                    coefficientInDenominatorForTesting = ((Constant) factorsEnumerator.get(0)).getValue().negate();
                     factorsInEnumeratorWithoutCoefficient.clear();
                     for (int j = 1; j < factorsEnumerator.getBound(); j++) {
                         factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(j));
@@ -1896,7 +1896,7 @@ public class SimplifyBinaryOperationMethods {
             return expr;
         }
 
-        BigInteger exponent = ((Constant) expr.getRight()).getPreciseValue().toBigInteger();
+        BigInteger exponent = ((Constant) expr.getRight()).getValue().toBigInteger();
         if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
             return ((Function) expr.getLeft()).getLeft().pow(expr.getRight());
         }
@@ -1931,14 +1931,14 @@ public class SimplifyBinaryOperationMethods {
 
         if (expr.isNotPower() || !(expr.getLeft().isIntegerConstant())
                 || expr.getLeft().equals(ZERO)
-                || !isPowerOfTen(((Constant) expr.getLeft()).getPreciseValue().toBigInteger())) {
+                || !isPowerOfTen(((Constant) expr.getLeft()).getValue().toBigInteger())) {
             return expr;
         }
 
         ExpressionCollection summands = SimplifyUtilities.getSummands(expr.getRight());
         ExpressionCollection resultFactorsOutsideOfPowerOfTen = new ExpressionCollection();
 
-        int exponent = SimplifyExpLog.getExponentIfDivisibleByPowerOfTen(((Constant) expr.getLeft()).getPreciseValue().toBigInteger());
+        int exponent = SimplifyExpLog.getExponentIfDivisibleByPowerOfTen(((Constant) expr.getLeft()).getValue().toBigInteger());
 
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) instanceof Function && ((Function) summands.get(i)).getType().equals(TypeFunction.lg)) {
@@ -1973,7 +1973,7 @@ public class SimplifyBinaryOperationMethods {
 
         if (expr.isNotPower() || !expr.getLeft().isIntegerConstant()
                 || expr.getLeft().equals(ZERO)
-                || !isPowerOfTen(((Constant) expr.getLeft()).getPreciseValue().toBigInteger())
+                || !isPowerOfTen(((Constant) expr.getLeft()).getValue().toBigInteger())
                 || expr.getRight().isNotDifference()) {
             return expr;
         }
@@ -1983,7 +1983,7 @@ public class SimplifyBinaryOperationMethods {
         ExpressionCollection resultFactorsInEnumeratorOutsideOfPowerOfTen = new ExpressionCollection();
         ExpressionCollection resultFactorsInDenominatorOutsideOfPowerOfTen = new ExpressionCollection();
 
-        int exponent = SimplifyExpLog.getExponentIfDivisibleByPowerOfTen(((Constant) expr.getLeft()).getPreciseValue().toBigInteger());
+        int exponent = SimplifyExpLog.getExponentIfDivisibleByPowerOfTen(((Constant) expr.getLeft()).getValue().toBigInteger());
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
             if (summandsLeft.get(i) instanceof Function && ((Function) summandsLeft.get(i)).getType().equals(TypeFunction.lg)) {

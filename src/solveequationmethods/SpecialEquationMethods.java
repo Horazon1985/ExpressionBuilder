@@ -225,10 +225,10 @@ public class SpecialEquationMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> argumentsInExp = new HashSet();
-        
+
         // Konstante Summanden aus der Exponentialfunktion rausziehen.
         f = separateConstantPartsInRationalExponentialEquations(f, var);
-        
+
         /*
          Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
          Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann
@@ -252,11 +252,11 @@ public class SpecialEquationMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getPreciseValue().toBigInteger());
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getPreciseValue().toBigInteger());
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getPreciseValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
 
             }
@@ -271,10 +271,32 @@ public class SpecialEquationMethods {
             String substVar = SolveMethods.getSubstitutionVariable(f);
             ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) fSubstituted, substVar);
             zeros = new ExpressionCollection();
+            ExpressionCollection currentZeros;
             // Rücksubstitution.
+            /*
+             Für die Vereinfachung der Lösungen sollen HIER Logarithmen auseinandergezogen werden, 
+             da es für diesen Zweck besser ist.
+             */
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
             for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                 try {
-                    zeros.add(SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var));
+                    currentZeros = SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var);
+                    for (int j = 0; j < currentZeros.getBound(); j++) {
+                        currentZeros.put(j, currentZeros.get(j).simplify(simplifyTypes));
+                    }
+                    // Lösungen hinzufügen.
+                    zeros.add(currentZeros);
                 } catch (EvaluationException e) {
                     /*
                      Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
@@ -408,20 +430,20 @@ public class SpecialEquationMethods {
                 if (gcdOfEnumerators == null) {
                     // Erste Initialisierung des ggT der Zählerkoeffizienten.
                     if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = ((Constant) factorsEnumerator.get(0)).getPreciseValue().toBigInteger();
+                        gcdOfEnumerators = ((Constant) factorsEnumerator.get(0)).getValue().toBigInteger();
                     } else {
                         gcdOfEnumerators = BigInteger.ONE;
                     }
                 } else {
                     if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) factorsEnumerator.get(0)).getPreciseValue().toBigInteger());
+                        gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) factorsEnumerator.get(0)).getValue().toBigInteger());
                     } else {
                         gcdOfEnumerators = BigInteger.ONE;
                     }
                 }
                 if (factorsDenominator.get(0) != null && factorsDenominator.get(0).isIntegerConstant()) {
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) factorsDenominator.get(0)).getPreciseValue().toBigInteger());
+                            ((Constant) factorsDenominator.get(0)).getValue().toBigInteger());
                 }
 
             }
@@ -673,7 +695,7 @@ public class SpecialEquationMethods {
             if (((BinaryOperation) f).getLeft() instanceof Function
                     && ((Function) ((BinaryOperation) f).getLeft()).getType().equals(TypeFunction.sin)
                     && ((BinaryOperation) f).getRight().isEvenConstant()) {
-                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().cos().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }
             return substituteInTrigonometricalEquationSinByCos(((BinaryOperation) f).getLeft()).pow(
@@ -706,7 +728,7 @@ public class SpecialEquationMethods {
         } else if (f.isPower()) {
             if (((BinaryOperation) f).getLeft().isFunction(TypeFunction.cos)
                     && ((BinaryOperation) f).getRight().isEvenConstant()) {
-                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().sin().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }
             return substituteInTrigonometricalEquationCosBySin(((BinaryOperation) f).getLeft()).pow(
@@ -788,11 +810,11 @@ public class SpecialEquationMethods {
                  */
                 int n = 1;
                 if (argument.isProduct()) {
-                    if (((Constant) ((BinaryOperation) argument).getLeft()).getPreciseValue().toBigInteger().abs().compareTo(
+                    if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(
                             BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                         return f;
                     }
-                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getPreciseValue().toBigInteger().intValue();
+                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
                     if (Math.abs(n) > ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION) {
                         return f;
                     }

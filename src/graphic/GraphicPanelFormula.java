@@ -1351,7 +1351,7 @@ public class GraphicPanelFormula extends JPanel {
 
             int lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
             if (expr.getLeft() instanceof Constant
-                    && ((Constant) expr.getLeft()).getPreciseValue().compareTo(BigDecimal.ZERO) == 0) {
+                    && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.ZERO) == 0) {
                 lengthLeft = 0;
             }
 
@@ -1380,7 +1380,7 @@ public class GraphicPanelFormula extends JPanel {
                  */
                 lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
                 if (expr.getLeft() instanceof Constant
-                        && ((Constant) expr.getLeft()).getPreciseValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
+                        && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
                     lengthLeft = getWidthOfSignMinus(g, fontSize);
                 }
             }
@@ -1416,7 +1416,7 @@ public class GraphicPanelFormula extends JPanel {
 
             if (expr.getLeft() instanceof BinaryOperation
                     || (expr.getLeft() instanceof Constant
-                    && ((Constant) (expr.getLeft())).getPreciseValue().compareTo(BigDecimal.ZERO) < 0)) {
+                    && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)) {
 
                 lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize) + 2 * getWidthOfBracket(fontSize);
 
@@ -1501,7 +1501,7 @@ public class GraphicPanelFormula extends JPanel {
             Expression argument = (Expression) params[0];
 
             if (argument instanceof BinaryOperation || (argument instanceof Constant
-                    && ((Constant) argument).getPreciseValue().compareTo(BigDecimal.ZERO) < 0)) {
+                    && ((Constant) argument).getValue().compareTo(BigDecimal.ZERO) < 0)) {
 
                 // l = l("(") + l(interior) + l(")") + l("!")
                 int lengthArgument = getLengthOfExpression(g, argument, fontSize);
@@ -2166,13 +2166,13 @@ public class GraphicPanelFormula extends JPanel {
             int lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
             int lengthMultSign = getWidthOfSignMult(g, fontSize);
             if (expr.getLeft() instanceof Constant
-                    && ((Constant) expr.getLeft()).getPreciseValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
+                    && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
                 lengthLeft = getWidthOfSignMinus(g, fontSize);
                 lengthMultSign = 0;
             }
 
             if (expr.getLeft() instanceof Constant
-                    && ((Constant) expr.getLeft()).getPreciseValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
+                    && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
 
                 // Falls left = -1 -> statt (-1)*right nur -right zeichnen.
                 drawSignMinus(g, x_0, y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
@@ -2242,7 +2242,7 @@ public class GraphicPanelFormula extends JPanel {
 
         if (expr.getLeft() instanceof BinaryOperation
                 || (expr.getLeft() instanceof Constant
-                && ((Constant) (expr.getLeft())).getPreciseValue().compareTo(BigDecimal.ZERO) < 0)) {
+                && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)) {
 
             // Zeichnen von (left)^right
             drawOpeningBracket(g, x_0, y_0, fontSize, heightLeft);
@@ -2455,7 +2455,7 @@ public class GraphicPanelFormula extends JPanel {
         Expression argument = (Expression) operator.getParams()[0];
 
         if (argument instanceof BinaryOperation || (argument instanceof Constant
-                && ((Constant) argument).getPreciseValue().compareTo(BigDecimal.ZERO) < 0)) {
+                && ((Constant) argument).getValue().compareTo(BigDecimal.ZERO) < 0)) {
 
             int heightArgument = getHeightOfExpression(g, argument, fontSize);
             drawOpeningBracket(g, x_0, y_0, fontSize, heightArgument);

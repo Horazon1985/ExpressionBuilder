@@ -918,8 +918,8 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression factor = (MatrixExpression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getPreciseValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getPreciseValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
             if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
                     && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
 
@@ -956,8 +956,8 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression summand = (MatrixExpression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getPreciseValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getPreciseValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
             if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
                     && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
 

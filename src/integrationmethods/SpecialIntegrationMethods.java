@@ -160,7 +160,7 @@ public class SpecialIntegrationMethods {
                  Da der Grad des Nenners hier <= 100 ist, ist
                  denominatorDecomposed.size() <= 51.
                  */
-                int n = ((Constant) ((BinaryOperation) denominatorDecomposed).getRight()).getPreciseValue().intValue();
+                int n = ((Constant) ((BinaryOperation) denominatorDecomposed).getRight()).getValue().intValue();
                 return integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(coefficientsEnumerator, coefficientsOfBaseOfDenominatorDecomposed, n, var);
             }
 
@@ -247,7 +247,7 @@ public class SpecialIntegrationMethods {
 
             // Für jeden Linearfaktor im Nenner wird der maximale Exponent ermittelt.
             if (factorsDenominator.get(i).isPower()) {
-                currentExponent = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getPreciseValue().intValue();
+                currentExponent = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().intValue();
             } else {
                 currentExponent = 1;
             }

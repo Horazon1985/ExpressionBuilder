@@ -967,7 +967,7 @@ public class SimplifyIntegralMethods {
             return false;
         }
 
-        BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
+        BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
         TypeFunction type = ((Function) ((BinaryOperation) f).getLeft()).getType();
 
         if (exponent.compareTo(BigInteger.valueOf(maxIntegrablePower)) > 0) {

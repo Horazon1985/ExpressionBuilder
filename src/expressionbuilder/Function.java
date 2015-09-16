@@ -921,8 +921,14 @@ public class Function extends Expression {
         // Zunächst linken Teil (Argument in der Funktion) vereinfachen.
         Function function = new Function(this.left.simplifyExpandLogarithms(), this.type);
         
-        // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x)
+        // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x).
         Expression functionSimplified = SimplifyExpLog.reduceLogarithmOfReciprocal(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+        
+        // Vereinfacht lg(x^y) zu y*lg(x) und ln(x^y) zu y*ln(x).
+        functionSimplified = SimplifyExpLog.reduceLogarithmOfPower(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }

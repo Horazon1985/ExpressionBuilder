@@ -356,7 +356,7 @@ public abstract class Expression {
             if ((formulaLeft.isEmpty()) && (priority == 1)) {
                 Expression right = build(formulaRight, vars);
                 if (right instanceof Constant) {
-                    return new Constant(((Constant) right).getPreciseValue().negate());
+                    return new Constant(((Constant) right).getValue().negate());
                 }
                 return MINUS_ONE.mult(build(formulaRight, vars));
             }
@@ -650,11 +650,11 @@ public abstract class Expression {
      */
     public boolean isIntegerConstantOrRationalConstantNegative() {
         if (this instanceof Constant) {
-            return (((Constant) this).getPreciseValue().compareTo(BigDecimal.ZERO) < 0);
+            return (((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0);
         }
         if (this.isRationalConstant()) {
-            return (((Constant) ((BinaryOperation) this).getLeft()).getPreciseValue().multiply(
-                    ((Constant) ((BinaryOperation) this).getRight()).getPreciseValue())).compareTo(BigDecimal.ZERO) < 0;
+            return (((Constant) ((BinaryOperation) this).getLeft()).getValue().multiply(
+                    ((Constant) ((BinaryOperation) this).getRight()).getValue())).compareTo(BigDecimal.ZERO) < 0;
         }
         return false;
     }
@@ -664,7 +664,7 @@ public abstract class Expression {
      * ist.
      */
     public boolean isIntegerConstant() {
-        return this instanceof Constant && ((Constant) this).getPreciseValue().compareTo(((Constant) this).getPreciseValue().setScale(0, BigDecimal.ROUND_HALF_UP)) == 0;
+        return this instanceof Constant && ((Constant) this).getValue().compareTo(((Constant) this).getValue().setScale(0, BigDecimal.ROUND_HALF_UP)) == 0;
     }
 
     /**
@@ -673,7 +673,7 @@ public abstract class Expression {
      */
     public boolean isOddConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getPreciseValue().toBigInteger();
+            BigInteger value = ((Constant) this).getValue().toBigInteger();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
                 return true;
             }
@@ -687,7 +687,7 @@ public abstract class Expression {
      */
     public boolean isEvenConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getPreciseValue().toBigInteger();
+            BigInteger value = ((Constant) this).getValue().toBigInteger();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return true;
             }
@@ -714,7 +714,7 @@ public abstract class Expression {
     public boolean doesExpressionStartsWithAMinusSign() {
 
         if (this instanceof Constant) {
-            return ((Constant) this).getPreciseValue().compareTo(BigDecimal.ZERO) < 0;
+            return ((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0;
         }
         if (this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.TIMES)) {
             return ((BinaryOperation) this).getLeft().doesExpressionStartsWithAMinusSign();

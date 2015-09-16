@@ -111,10 +111,10 @@ public class MatrixPower extends MatrixExpression {
 
         // Potenzen rationaler Matrizen.
         if (exponentSimplified.isIntegerConstant() && ((Matrix) leftComputed).isRationalMatrix()
-                && ((Constant) exponentSimplified).getPreciseValue().abs().compareTo(
+                && ((Constant) exponentSimplified).getValue().abs().compareTo(
                         BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_RATIONAL_MATRIX)) <= 0) {
 
-            int exponent = ((Constant) exponentSimplified).getPreciseValue().intValue();
+            int exponent = ((Constant) exponentSimplified).getValue().intValue();
             MatrixExpression result = MatrixExpression.getId(dim.width);
 
             if (exponent == 0) {
@@ -150,10 +150,10 @@ public class MatrixPower extends MatrixExpression {
         }
 
         // Potenzen beliebiger Matrizen.
-        if (exponentSimplified.isIntegerConstant() && ((Constant) exponentSimplified).getPreciseValue().abs().compareTo(
+        if (exponentSimplified.isIntegerConstant() && ((Constant) exponentSimplified).getValue().abs().compareTo(
                 BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_GENERAL_MATRIX)) <= 0) {
 
-            int exponent = ((Constant) exponentSimplified).getPreciseValue().intValue();
+            int exponent = ((Constant) exponentSimplified).getValue().intValue();
 
             if (exponent < 0) {
                 MatrixExpression inverseMatrix = invertMatrix((Matrix) leftComputed).simplify();

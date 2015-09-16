@@ -38,7 +38,7 @@ public class SimplifyFunctionalRelations {
                 && ((BinaryOperation) expr).getRight().isFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((Function) ((BinaryOperation) expr).getRight()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getPreciseValue();
+            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getValue();
             return result;
         }
 
@@ -49,7 +49,7 @@ public class SimplifyFunctionalRelations {
             Object[] result = new Object[3];
             result[0] = ((Function) ((BinaryOperation) expr).getLeft()).getLeft();
             result[1] = BigDecimal.ONE;
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getPreciseValue();
+            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
             return result;
         }
 
@@ -61,8 +61,8 @@ public class SimplifyFunctionalRelations {
                 && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().isFunction(type)) {
             Object[] result = new Object[3];
             result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getPreciseValue();
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getPreciseValue();
+            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue();
+            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
             return result;
         }
 
@@ -104,7 +104,7 @@ public class SimplifyFunctionalRelations {
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getPreciseValue();
+            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getValue();
             return result;
         }
 
@@ -116,7 +116,7 @@ public class SimplifyFunctionalRelations {
             Object[] result = new Object[3];
             result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getLeft();
             result[1] = BigDecimal.ONE;
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getPreciseValue();
+            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
             return result;
         }
 
@@ -129,8 +129,8 @@ public class SimplifyFunctionalRelations {
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft().isFunction(type)) {
             Object[] result = new Object[3];
             result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getPreciseValue();
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getPreciseValue();
+            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue();
+            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
             return result;
         }
 
@@ -1275,7 +1275,7 @@ public class SimplifyFunctionalRelations {
                         factors.remove(i);
                     }
                 } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                    exponent = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                    exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                     if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
@@ -1338,7 +1338,7 @@ public class SimplifyFunctionalRelations {
                             factorsEnumerator.remove(i);
                         }
                     } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                         if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             resultFactorsInEnumeratorOutsideOfAbs.add(factor);
                             factorsEnumerator.remove(i);
@@ -1365,7 +1365,7 @@ public class SimplifyFunctionalRelations {
                             factorsDenominator.remove(i);
                         }
                     } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                         if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             resultFactorsInDenominatorOutsideOfAbs.add(factor);
                             factorsDenominator.remove(i);
@@ -1554,15 +1554,15 @@ public class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factors.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factors.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getPreciseValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getPreciseValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factors.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
@@ -1604,15 +1604,15 @@ public class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getPreciseValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getPreciseValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
@@ -1629,15 +1629,15 @@ public class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentDenominator = ((Constant) ((BinaryOperation) factor).getRight()).getPreciseValue().toBigInteger();
+                        exponentDenominator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
                         if (exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getPreciseValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getPreciseValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {

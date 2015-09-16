@@ -45,8 +45,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigInteger multiple = m.divide(n, 0, BigDecimal.ROUND_DOWN).toBigInteger();
 
                     if (m.multiply(n).compareTo(BigDecimal.ZERO) < 0) {
@@ -73,8 +73,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //sin(2pi/3) = 3^(1/2)/2
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -109,7 +109,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.sin) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //sin(pi/6) = 1/2
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
@@ -154,7 +154,7 @@ public class SimplifyTrigonometry {
         //cos(k*pi) = (-1)^k
         if (expr.getType().equals(TypeFunction.cos) && expr.getLeft().isProduct()
                 && ((BinaryOperation) expr.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) expr.getLeft()).getRight().equals(PI)) {
-            BigInteger k = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue().toBigInteger();
+            BigInteger k = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue().toBigInteger();
             if (k.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return ONE;
             }
@@ -168,8 +168,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigInteger multiple = m.divide(n, 0, BigDecimal.ROUND_DOWN).toBigInteger();
                     if (m.multiply(n).compareTo(BigDecimal.ZERO) < 0) {
                         multiple = multiple.subtract(BigInteger.ONE);
@@ -196,8 +196,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //cos(2pi/3) = -1/2
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -232,7 +232,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.cos) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //cos(pi/6) = 3^(1/2)/2
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
@@ -287,8 +287,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigDecimal k = m.divide(n, 0, BigDecimal.ROUND_DOWN);
                     if (k.compareTo(BigDecimal.ZERO) != 0) {
                         return new Constant(m.subtract(k.multiply(n))).mult(PI).div(n).tan();
@@ -304,8 +304,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //tan(2pi/3) = -3^(1/2)
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -328,7 +328,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.tan) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //tan(pi/6) = 1/3^(1/2)
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
@@ -380,8 +380,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigDecimal k = m.divide(n, 0, BigDecimal.ROUND_DOWN);
                     if (k.compareTo(BigDecimal.ZERO) != 0) {
                         return new Constant(m.subtract(k.multiply(n))).mult(PI).div(n).cot();
@@ -397,8 +397,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //cot(2pi/3) = -1/3^(1/2)
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -421,7 +421,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.cot) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //cot(pi/6) = 3^(1/2)
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
@@ -473,8 +473,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigInteger multiple = m.divide(n, 0, BigDecimal.ROUND_DOWN).toBigInteger();
                     if (m.multiply(n).compareTo(BigDecimal.ZERO) < 0) {
                         multiple = multiple.subtract(BigInteger.ONE);
@@ -499,8 +499,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //cosec(2pi/3) = 2/3^(1/2)
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -523,7 +523,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.cos) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //cosec(pi/6) = 2
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
@@ -564,7 +564,7 @@ public class SimplifyTrigonometry {
         //sec(k*pi) = (-1)^k
         if (expr.getType().equals(TypeFunction.sec) && expr.getLeft().isProduct()
                 && ((BinaryOperation) expr.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) expr.getLeft()).getRight().equals(PI)) {
-            BigInteger k = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getPreciseValue().toBigInteger();
+            BigInteger k = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue().toBigInteger();
             if (k.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return ONE;
             }
@@ -578,8 +578,8 @@ public class SimplifyTrigonometry {
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
                     // m, n sind bereits ganzzahlig!
-                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue();
-                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue();
+                    BigDecimal m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue();
+                    BigDecimal n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
                     BigInteger multiple = m.divide(n, 0, BigDecimal.ROUND_DOWN).toBigInteger();
                     if (m.multiply(n).compareTo(BigDecimal.ZERO) < 0) {
                         multiple = multiple.subtract(BigInteger.ONE);
@@ -606,8 +606,8 @@ public class SimplifyTrigonometry {
                 if (((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getRight().equals(PI)) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                    BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                     //sec(2pi/3) = -2
                     if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(3)) == 0)) {
@@ -630,7 +630,7 @@ public class SimplifyTrigonometry {
         if (expr.getType().equals(TypeFunction.sec) && expr.getLeft().isQuotient()) {
             if (((BinaryOperation) expr.getLeft()).getLeft().equals(PI) && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant()) {
 
-                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getPreciseValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
 
                 //sec(pi/6) = 2/3^(1/2)
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {

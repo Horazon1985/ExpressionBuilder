@@ -232,6 +232,11 @@ public class SimplifyExpLog {
 
     }
 
+    /**
+     * Zieht Faktoren in die Logarithmusfunktion hinein, wenn Logarithmen in
+     * einer Summe vorliegt und wenn mindestens zwei logarithmische Summanden
+     * vorliegen.
+     */
     public static void pullFactorsIntoLogarithmicFunctions(ExpressionCollection summands, TypeFunction logType) {
 
         ExpressionCollection factorsEnumerator, factorsDenominator;
@@ -288,6 +293,11 @@ public class SimplifyExpLog {
 
     }
 
+    /**
+     * Sammelt Logarithmen in einer Summe auf, wenn mindestens zwei
+     * logarithmische Summanden vorliegen. Beispiel:
+     * (x+ln(a)+y+2*ln(b))-(z+ln(c)) wird zu (x+y+ln(a*b^2/c))-z
+     */
     public static void collectLogarithmicFunctionsInSum(ExpressionCollection summands, TypeFunction logType) {
 
         Expression logArgument = Expression.ONE;
@@ -322,7 +332,8 @@ public class SimplifyExpLog {
     }
 
     /**
-     * Sammelt Logarithmen in einer Differenz auf. Beispiel:
+     * Sammelt Logarithmen in einer Differenz auf, wenn mindestens zwei
+     * logarithmische Summanden vorliegen. Beispiel:
      * (x+ln(a)+y+2*ln(b))-(z+ln(c)) wird zu (x+y+ln(a*b^2/c))-z
      */
     public static void collectLogarithmicFunctionsInDifference(ExpressionCollection summandsLeft, ExpressionCollection summandsRight, TypeFunction logType) {
@@ -479,14 +490,14 @@ public class SimplifyExpLog {
 
             if (factorsEnumerator.get(i) != null && factorsEnumerator.get(i) instanceof Function && ((Function) factorsEnumerator.get(i)).getType().equals(logType)
                     && ((Function) factorsEnumerator.get(i)).getLeft().isIntegerConstant()) {
-                
+
                 // Fall: ln(a)/ln(b) mit ganzen a, b.
                 for (int j = 0; j < factorsDenominator.getBound(); j++) {
                     if (factorsDenominator.get(j) != null && factorsDenominator.get(j) instanceof Function && ((Function) factorsDenominator.get(j)).getType().equals(logType)
                             && ((Function) factorsDenominator.get(j)).getLeft().isIntegerConstant()) {
 
-                        a = ((Constant) ((Function) factorsEnumerator.get(i)).getLeft()).getPreciseValue().toBigInteger();
-                        b = ((Constant) ((Function) factorsDenominator.get(j)).getLeft()).getPreciseValue().toBigInteger();
+                        a = ((Constant) ((Function) factorsEnumerator.get(i)).getLeft()).getValue().toBigInteger();
+                        b = ((Constant) ((Function) factorsDenominator.get(j)).getLeft()).getValue().toBigInteger();
                         Object[] isRational = isQuotientOfLogarithmsRational(a, b);
                         if (isRational.length == 2) {
                             if (((BigInteger) isRational[0]).compareTo(BigInteger.ONE) == 0) {
@@ -513,10 +524,10 @@ public class SimplifyExpLog {
                     if (factorsDenominator.get(j) != null && factorsDenominator.get(j) instanceof Function && ((Function) factorsDenominator.get(j)).getType().equals(logType)
                             && ((Function) factorsDenominator.get(j)).getLeft().isRationalConstant()) {
 
-                        a = ((Constant) ((BinaryOperation) ((Function) factorsEnumerator.get(i)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                        b = ((Constant) ((BinaryOperation) ((Function) factorsEnumerator.get(i)).getLeft()).getRight()).getPreciseValue().toBigInteger();
-                        c = ((Constant) ((BinaryOperation) ((Function) factorsDenominator.get(j)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                        d = ((Constant) ((BinaryOperation) ((Function) factorsDenominator.get(j)).getLeft()).getRight()).getPreciseValue().toBigInteger();
+                        a = ((Constant) ((BinaryOperation) ((Function) factorsEnumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
+                        b = ((Constant) ((BinaryOperation) ((Function) factorsEnumerator.get(i)).getLeft()).getRight()).getValue().toBigInteger();
+                        c = ((Constant) ((BinaryOperation) ((Function) factorsDenominator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
+                        d = ((Constant) ((BinaryOperation) ((Function) factorsDenominator.get(j)).getLeft()).getRight()).getValue().toBigInteger();
                         /*
                          Nun wird geprüft, ob ln(a)/ln(c) und ln(b)/ln(d)
                          rational sind UND ob die Verhältnisse gleich sind.
@@ -576,8 +587,8 @@ public class SimplifyExpLog {
                          */
                         if (m.isIntegerConstantOrRationalConstant() && n.isIntegerConstantOrRationalConstant() && !m.equivalent(n)) {
                             Expression k = m.sub(n).simplify();
-                            a = ((Constant) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                            b = ((Constant) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
+                            a = ((Constant) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
+                            b = ((Constant) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
                             Object[] isRational = isQuotientOfLogarithmsRational(a, b);
                             if (k.isNonNegative()) {
                                 if (isRational.length == 2) {
@@ -610,8 +621,8 @@ public class SimplifyExpLog {
                             }
                         } else if (m.equivalent(n)) {
                             // Fall: m = n.
-                            a = ((Constant) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                            b = ((Constant) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getPreciseValue().toBigInteger();
+                            a = ((Constant) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
+                            b = ((Constant) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
                             Object[] isRational = isQuotientOfLogarithmsRational(a, b);
                             if (isRational.length == 2) {
                                 if (((BigInteger) isRational[0]).compareTo(BigInteger.ONE) == 0) {
@@ -643,10 +654,10 @@ public class SimplifyExpLog {
                             && ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getType().equals(logType)
                             && ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft().isRationalConstant()) {
 
-                        a = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                        b = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getRight()).getPreciseValue().toBigInteger();
-                        c = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getLeft()).getPreciseValue().toBigInteger();
-                        d = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getRight()).getPreciseValue().toBigInteger();
+                        a = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                        b = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getLeft()).getRight()).getValue().toBigInteger();
+                        c = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getLeft()).getValue().toBigInteger();
+                        d = ((Constant) ((BinaryOperation) ((Function) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getRight()).getValue().toBigInteger();
                         Object[] isLogADivLogCRational = isQuotientOfLogarithmsRational(a, c);
                         Object[] isLogBDivLogDRational = isQuotientOfLogarithmsRational(b, d);
                         /*
@@ -917,7 +928,18 @@ public class SimplifyExpLog {
         }
         return Expression.MINUS_ONE.mult(new Function(((BinaryOperation) expr.getLeft()).getRight(), expr.getType()));
     }
-
+    
+    /**
+     * Vereinfacht: ln(x^y) bzw. y*lg(1/x) zu ln(x^y) bzw. y*ln(x), falls expr eine
+     * Logarithmusfunktion darstellt.
+     */
+    public static Expression reduceLogarithmOfPower(Function expr) {
+        if (!(expr.getType().equals(TypeFunction.lg) || expr.getType().equals(TypeFunction.ln)) || !expr.getLeft().isPower()) {
+            return expr;
+        }
+        return ((BinaryOperation) expr.getLeft()).getRight().mult(new Function(((BinaryOperation) expr.getLeft()).getLeft(), expr.getType()));
+    }
+    
     /**
      * Liefert die Anzahl der Nullen am Ende der Zahl. Beispielsweise liefert es
      * bei 570000 dann 4.
@@ -953,16 +975,16 @@ public class SimplifyExpLog {
         ExpressionCollection resultSummandsOutsideOfLg = new ExpressionCollection();
         for (int i = 0; i < factors.getBound(); i++) {
             if (factors.get(i).isPower() && ((BinaryOperation) factors.get(i)).getLeft().isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsOutsideOfLg.add(((BinaryOperation) factors.get(i)).getRight().mult(new Constant(exponent).add(new Constant(resultBase).lg())));
                     factors.remove(i);
                 }
             } else if (factors.get(i).isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factors.get(i)).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factors.get(i)).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) factors.get(i)).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) factors.get(i)).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsOutsideOfLg.add(new Constant(exponent));
                     factors.put(i, new Constant(resultBase));
                 }
@@ -987,16 +1009,16 @@ public class SimplifyExpLog {
         ExpressionCollection resultSummandsRightOutsideOfLg = new ExpressionCollection();
         for (int i = 0; i < factorsEnumerator.getBound(); i++) {
             if (factorsEnumerator.get(i).isPower() && ((BinaryOperation) factorsEnumerator.get(i)).getLeft().isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factorsEnumerator.get(i)).getLeft()).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsLeftOutsideOfLg.add(((BinaryOperation) factorsEnumerator.get(i)).getRight().mult(new Constant(exponent).add(new Function(new Constant(resultBase), TypeFunction.lg))));
                     factorsEnumerator.remove(i);
                 }
             } else if (factorsEnumerator.get(i).isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factorsEnumerator.get(i)).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factorsEnumerator.get(i)).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) factorsEnumerator.get(i)).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) factorsEnumerator.get(i)).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsLeftOutsideOfLg.add(new Constant(exponent));
                     factorsEnumerator.put(i, new Constant(resultBase));
                 }
@@ -1004,16 +1026,16 @@ public class SimplifyExpLog {
         }
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
             if (factorsDenominator.get(i).isPower() && ((BinaryOperation) factorsDenominator.get(i)).getLeft().isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factorsDenominator.get(i)).getLeft()).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) ((BinaryOperation) factorsDenominator.get(i)).getLeft()).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getLeft()).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getLeft()).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsRightOutsideOfLg.add(((BinaryOperation) factorsDenominator.get(i)).getRight().mult(new Constant(exponent).add(new Function(new Constant(resultBase), TypeFunction.lg))));
                     factorsDenominator.remove(i);
                 }
             } else if (factorsDenominator.get(i).isIntegerConstant()) {
-                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factorsDenominator.get(i)).getPreciseValue().toBigInteger());
+                int exponent = getExponentIfDivisibleByPowerOfTen(((Constant) factorsDenominator.get(i)).getValue().toBigInteger());
                 if (exponent > 0) {
-                    BigDecimal resultBase = ((Constant) factorsDenominator.get(i)).getPreciseValue().divide(BigDecimal.TEN.pow(exponent));
+                    BigDecimal resultBase = ((Constant) factorsDenominator.get(i)).getValue().divide(BigDecimal.TEN.pow(exponent));
                     resultSummandsRightOutsideOfLg.add(new Constant(exponent));
                     factorsDenominator.put(i, new Constant(resultBase));
                 }

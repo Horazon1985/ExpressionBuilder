@@ -196,7 +196,7 @@ public class SimplifyUtilities {
                         && ((BinaryOperation) factors.get(i)).getRight().isIntegerConstant()
                         && ((BinaryOperation) factors.get(i)).getRight().isNonNegative()) {
                     resultBase = ((BinaryOperation) factors.get(i)).getLeft();
-                    resultExponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getPreciseValue().toBigInteger();
+                    resultExponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getValue().toBigInteger();
                     factors.remove(i);
                 } else {
                     resultBase = factors.get(i);
@@ -213,7 +213,7 @@ public class SimplifyUtilities {
                             && ((BinaryOperation) factors.get(j)).getRight().isIntegerConstant()
                             && ((BinaryOperation) factors.get(j)).getRight().isNonNegative()) {
                         base = ((BinaryOperation) factors.get(j)).getLeft();
-                        exponent = ((Constant) ((BinaryOperation) factors.get(j)).getRight()).getPreciseValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factors.get(j)).getRight()).getValue().toBigInteger();
                     } else {
                         base = factors.get(j);
                         exponent = BigInteger.ONE;
@@ -823,12 +823,12 @@ public class SimplifyUtilities {
             Constant constantSummand = Expression.ZERO;
             for (int i = 0; i < summands.getBound(); i++) {
                 if (summands.get(i).isConstant()) {
-                    constantSummand = new Constant(constantSummand.getValue() + summands.get(i).evaluate());
+                    constantSummand = new Constant(constantSummand.getApproxValue() + summands.get(i).evaluate());
                     summands.remove(i);
                 }
             }
 
-            if (constantSummand.getValue() != 0) {
+            if (constantSummand.getApproxValue() != 0) {
                 result.put(0, constantSummand);
             }
 
@@ -939,17 +939,17 @@ public class SimplifyUtilities {
             Constant constantFactor = Expression.ONE;
             for (int i = 0; i < factors.getBound(); i++) {
                 if (factors.get(i).isConstant()) {
-                    constantFactor = new Constant(constantFactor.getValue() * factors.get(i).evaluate());
+                    constantFactor = new Constant(constantFactor.getApproxValue() * factors.get(i).evaluate());
                     factors.remove(i);
                 }
             }
 
-            if (constantFactor.getValue() == 0) {
+            if (constantFactor.getApproxValue() == 0) {
                 result.put(0, constantFactor);
                 return result;
             }
 
-            if (constantFactor.getValue() != 1) {
+            if (constantFactor.getApproxValue() != 1) {
                 result.put(0, constantFactor);
             }
 

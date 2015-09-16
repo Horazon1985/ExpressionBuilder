@@ -218,7 +218,7 @@ public class PolynomialRootsMethods {
                 } else if (((BinaryOperation) expr).getRight().isRationalConstant()
                         && ((BinaryOperation) expr).getLeft() instanceof Variable
                         && ((Variable) ((BinaryOperation) expr).getLeft()).getName().equals(var)) {
-                    return ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getPreciseValue().toBigInteger();
+                    return ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
                 }
 
             }
@@ -457,8 +457,8 @@ public class PolynomialRootsMethods {
          coefficients.get(coefficients.getBound() - 1)).
          */
         BigInteger polynomValue;
-        HashMap<Integer, BigInteger> pDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getPreciseValue().toBigInteger());
-        HashMap<Integer, BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getPreciseValue().toBigInteger());
+        HashMap<Integer, BigInteger> pDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getValue().toBigInteger());
+        HashMap<Integer, BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getValue().toBigInteger());
 
         // WICHTIG: 0 muss zum testen ebenfalls aufgenommen werden.
         HashMap<Integer, BigInteger> pDivisorsWithZero = new HashMap();
@@ -479,7 +479,7 @@ public class PolynomialRootsMethods {
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
                     pDivisorPower = ((BigInteger) pDivisors.get(i)).pow(k);
                     qDivisorPower = ((BigInteger) qDivisors.get(j)).pow(coefficients.getBound() - 1 - k);
-                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getPreciseValue().toBigInteger().multiply(
+                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
@@ -493,7 +493,7 @@ public class PolynomialRootsMethods {
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
                     pDivisorPower = ((BigInteger) pDivisors.get(i)).negate().pow(k);
                     qDivisorPower = ((BigInteger) qDivisors.get(j)).pow(coefficients.getBound() - 1 - k);
-                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getPreciseValue().toBigInteger().multiply(
+                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
@@ -607,7 +607,7 @@ public class PolynomialRootsMethods {
         for (int i = 0; i < coefficients.getBound(); i++) {
             if (coefficients.get(i) instanceof BinaryOperation) {
                 pairForLCM[0] = commonDenominator;
-                pairForLCM[1] = ((Constant) ((BinaryOperation) coefficients.get(i)).getRight()).getPreciseValue().toBigInteger();
+                pairForLCM[1] = ((Constant) ((BinaryOperation) coefficients.get(i)).getRight()).getValue().toBigInteger();
                 commonDenominator = ArithmeticMethods.lcm(pairForLCM);
             }
         }

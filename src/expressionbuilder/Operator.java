@@ -1221,7 +1221,7 @@ public class Operator extends Expression {
                              */
                             return false;
                         }
-                        BigInteger valueRoundedDown = ((Constant) argument).getPreciseValue().toBigInteger();
+                        BigInteger valueRoundedDown = ((Constant) argument).getValue().toBigInteger();
                         return valueRoundedDown.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0;
                     } else {
                         /*
@@ -1229,8 +1229,8 @@ public class Operator extends Expression {
                          simplify()), also kann der Quotient nicht mehr
                          ganzzahlig sein.
                          */
-                        BigDecimal enumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getPreciseValue();
-                        BigDecimal denominator = ((Constant) ((BinaryOperation) argument).getRight()).getPreciseValue();
+                        BigDecimal enumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getValue();
+                        BigDecimal denominator = ((Constant) ((BinaryOperation) argument).getRight()).getValue();
                         BigInteger valueRoundedDown = enumerator.divide(denominator, BigDecimal.ROUND_HALF_UP).toBigInteger();
                         return valueRoundedDown.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0;
                     }
@@ -1248,7 +1248,7 @@ public class Operator extends Expression {
 
         // Operator Fakultät wird mit als (...)! ausgeschrieben.
         if (this.type.equals(TypeOperator.fac)) {
-            if ((Expression) this.params[0] instanceof Constant && ((Constant) this.params[0]).getPreciseValue().compareTo(BigDecimal.ZERO) >= 0) {
+            if ((Expression) this.params[0] instanceof Constant && ((Constant) this.params[0]).getValue().compareTo(BigDecimal.ZERO) >= 0) {
                 return ((Expression) this.params[0]).writeExpression() + "!";
             }
             if ((Expression) this.params[0] instanceof Variable) {
@@ -1678,7 +1678,7 @@ public class Operator extends Expression {
              (n+1/2)! lässt sich explizit angeben. Dieser Wert wird nur für n
              <= einer bestimmten Schranke angegeben.
              */
-            BigDecimal argumentEnumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getPreciseValue();
+            BigDecimal argumentEnumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getValue();
             if (argumentEnumerator.equals(argumentEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) && argumentEnumerator.abs().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_FACTORIAL_WITH_DENOMINATOR_TWO"))) <= 0) {
                 BigInteger argumentEnumeratorAsBigInteger = argumentEnumerator.toBigInteger();
                 if (argumentEnumeratorAsBigInteger.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
@@ -1706,7 +1706,7 @@ public class Operator extends Expression {
         BigInteger argumentRoundedDown;
 
         if (argument.isIntegerConstant()) {
-            argumentRoundedDown = ((Constant) argument).getPreciseValue().toBigInteger();
+            argumentRoundedDown = ((Constant) argument).getValue().toBigInteger();
             // Nur Fakultäten mit Argument <= einer bestimmten Schranke werden explizit ausgeben.
             if (argumentRoundedDown.compareTo(BigInteger.ZERO) < 0) {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
@@ -1741,7 +1741,7 @@ public class Operator extends Expression {
         BigInteger[] argumentsAsBigInteger = new BigInteger[this.params.length];
         for (int i = 0; i < argumentsAsBigInteger.length; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getPreciseValue().toBigInteger();
+                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
             } else {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_1")
                         + (i + 1)
@@ -1852,7 +1852,7 @@ public class Operator extends Expression {
         BigInteger[] argumentsAsBigInteger = new BigInteger[this.params.length];
         for (int i = 0; i < argumentsAsBigInteger.length; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getPreciseValue().toBigInteger();
+                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
             } else {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_1")
                         + (i + 1)
@@ -1881,7 +1881,7 @@ public class Operator extends Expression {
         BigInteger[] argumentsAsBigInteger = new BigInteger[2];
         for (int i = 0; i < 2; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getPreciseValue().toBigInteger();
+                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
             } else {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_1")
                         + (i + 1)
@@ -1905,8 +1905,8 @@ public class Operator extends Expression {
         Expression factor = (Expression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getPreciseValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getPreciseValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
             if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
                     && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
 
@@ -1953,8 +1953,8 @@ public class Operator extends Expression {
         Expression summand = (Expression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getPreciseValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getPreciseValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
             if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
                     && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
 

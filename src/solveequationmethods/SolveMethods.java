@@ -239,7 +239,7 @@ public class SolveMethods {
                         return new ExpressionCollection();
                     }
                     if (fAsBinaryOperation.getRight().isRationalConstant()) {
-                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getPreciseValue().toBigInteger();
+                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getValue().toBigInteger();
                         if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenConstant()) {
                             zeros = solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), var);
                             if (g.isConstant() && g.isNonPositive()) {
@@ -428,8 +428,8 @@ public class SolveMethods {
 
             if (((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) g).getRight().isIntegerConstant()) {
 
-                BigInteger m = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
-                BigInteger n = ((Constant) ((BinaryOperation) g).getRight()).getPreciseValue().toBigInteger();
+                BigInteger m = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) g).getRight()).getValue().toBigInteger();
                 BigInteger commonRootDegree = m.gcd(n);
                 if (commonRootDegree.compareTo(BigInteger.ONE) > 0 && commonRootDegree.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
                     return solveGeneralEquation(((BinaryOperation) f).getLeft().pow(m.divide(commonRootDegree)),
@@ -448,12 +448,12 @@ public class SolveMethods {
             if (((BinaryOperation) f).getRight().isIntegerConstantOrRationalConstant() && ((BinaryOperation) g).getRight().isIntegerConstantOrRationalConstant()) {
                 BigInteger m, n;
                 if (((BinaryOperation) f).getRight().isRationalConstant()) {
-                    m = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getPreciseValue().toBigInteger();
+                    m = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
                 } else {
                     m = BigInteger.ONE;
                 }
                 if (((BinaryOperation) g).getRight().isRationalConstant()) {
-                    n = ((Constant) ((BinaryOperation) ((BinaryOperation) g).getRight()).getRight()).getPreciseValue().toBigInteger();
+                    n = ((Constant) ((BinaryOperation) ((BinaryOperation) g).getRight()).getRight()).getValue().toBigInteger();
                 } else {
                     n = BigInteger.ONE;
                 }
@@ -2539,7 +2539,9 @@ public class SolveMethods {
          Dann ist f = C * subst^D mit geeignetem C.
          */
         if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var)
-                && ((BinaryOperation) f).getRight().contains(var)) {
+                && ((BinaryOperation) f).getRight().contains(var)
+                && substitution.isPower() && !((BinaryOperation) substitution).getLeft().contains(var)
+                && ((BinaryOperation) substitution).getRight().contains(var)) {
 
             // Berechnung von c, falls möglich.
             Expression c = ((BinaryOperation) f).getRight().diff(var).simplify();

@@ -381,7 +381,7 @@ public class BinaryOperation extends Expression {
 
             } else if (this.left instanceof Constant) {
 
-                if (((Constant) this.left).getPreciseValue().compareTo(BigDecimal.ZERO) >= 0) {
+                if (((Constant) this.left).getValue().compareTo(BigDecimal.ZERO) >= 0) {
                     if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
                         return leftAsLatexCode + "^" + this.right.expressionToLatex(true);
                     }
@@ -920,7 +920,7 @@ public class BinaryOperation extends Expression {
 
                 ExpressionCollection summands = SimplifyUtilities.getSummands(expr.getLeft());
 
-                BigInteger exponent = ((Constant) expr.getRight()).getPreciseValue().toBigInteger();
+                BigInteger exponent = ((Constant) expr.getRight()).getValue().toBigInteger();
                 BigInteger numberOfSummandsInBase = BigInteger.valueOf(summands.getBound());
 
                 if (numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
@@ -946,7 +946,7 @@ public class BinaryOperation extends Expression {
                 ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getLeft());
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getLeft());
 
-                BigInteger exponent = ((Constant) expr.getRight()).getPreciseValue().toBigInteger();
+                BigInteger exponent = ((Constant) expr.getRight()).getValue().toBigInteger();
                 BigInteger numberOfSummandsInBase = BigInteger.valueOf(summandsLeft.getBound() + summandsRight.getBound());
 
                 if (numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
@@ -2263,17 +2263,20 @@ public class BinaryOperation extends Expression {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
         }
 
-        ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // Faktoren vor Logarithmusfunktionen zur Basis 10 in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summands, TypeFunction.lg);
+        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsLeft, TypeFunction.lg);
+        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsRight, TypeFunction.lg);
         // Faktoren vor Logarithmusfunktionen zur Basis e in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summands, TypeFunction.ln);
-        Expression expr = SimplifyUtilities.produceSum(summands);
+        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsLeft, TypeFunction.ln);
+        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsRight, TypeFunction.ln);
+        Expression expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         if (expr.isSum()) {
 
             // In jedem Summanden einzeln Logarithmen sammeln.
-            summands = SimplifyUtilities.getSummands(expr);
+            ExpressionCollection summands = SimplifyUtilities.getSummands(expr);
             for (int i = 0; i < summands.getBound(); i++) {
                 summands.put(i, summands.get(i).simplifyCollectLogarithms());
             }
@@ -2291,8 +2294,8 @@ public class BinaryOperation extends Expression {
             // Im Minuenden und Subtrahenden einzeln Logarithmen sammeln.
             expr = ((BinaryOperation) expr).getLeft().simplifyCollectLogarithms().sub(((BinaryOperation) expr).getRight().simplifyCollectLogarithms());
 
-            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
-            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
+            summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
+            summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
             //Logarithmusfunktionen zur Basis 10 in einer Differenz sammeln
             SimplifyExpLog.collectLogarithmicFunctionsInDifference(summandsLeft, summandsRight, TypeFunction.lg);
@@ -2331,31 +2334,36 @@ public class BinaryOperation extends Expression {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
         }
 
-        if (this.isSum()) {
+        if (this.isSum() || this.isDifference()) {
 
-            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
             // In jedem Summanden einzeln Logarithmen auseinanderziehen.
-            for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyExpandLogarithms());
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                summandsLeft.put(i, summandsLeft.get(i).simplifyExpandLogarithms());
             }
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                summandsRight.put(i, summandsRight.get(i).simplifyExpandLogarithms());
+            }
+            return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
-            // Ergebnis bilden.
-            return SimplifyUtilities.produceSum(summands);
+        } else if (this.isProduct() || this.isQuotient()) {
 
-        } else if (this.isProduct()) {
-
-            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
             // In jedem Faktor einzeln Logarithmen auseinanderziehen.
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyExpandLogarithms());
+            for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+                factorsEnumerator.put(i, factorsEnumerator.get(i).simplifyExpandLogarithms());
             }
-
-            // Ergebnis bilden.
-            return SimplifyUtilities.produceProduct(factors);
+            for (int i = 0; i < factorsDenominator.getBound(); i++) {
+                factorsDenominator.put(i, factorsDenominator.get(i).simplifyExpandLogarithms());
+            }
+            return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
 
         }
-
-        return new BinaryOperation(this.left.simplifyExpandLogarithms(), this.right.simplifyExpandLogarithms(), this.type);
+        
+        // Dann ist this eine Potenz.
+        return this.left.simplifyExpandLogarithms().pow(this.right.simplifyExpandLogarithms());
 
     }
 

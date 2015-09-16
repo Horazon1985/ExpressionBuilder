@@ -88,7 +88,7 @@ public class SimplifyPolynomialMethods {
                 return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
+                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
             // Dann ist f kein Polynom
@@ -141,7 +141,7 @@ public class SimplifyPolynomialMethods {
                 return orderOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger();
+                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return orderOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
             // Dann ist f kein Polynom
@@ -240,7 +240,7 @@ public class SimplifyPolynomialMethods {
                     && ((BinaryOperation) f).getRight().isIntegerConstant()
                     && ((BinaryOperation) f).getRight().isNonNegative()) {
                 return degreeOfMultiPolynomial(((BinaryOperation) f).getLeft()).multiply(
-                        ((Constant) ((BinaryOperation) f).getRight()).getPreciseValue().toBigInteger());
+                        ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger());
             }
             // Dann ist f kein Polynom.
             return BigInteger.valueOf(-1);
@@ -345,7 +345,7 @@ public class SimplifyPolynomialMethods {
             simplifyTypes.add(TypeSimplify.reduce_quotients);
             simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
             polynomial = polynomial.simplify(simplifyTypes);

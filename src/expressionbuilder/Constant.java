@@ -7,42 +7,40 @@ import translator.Translator;
 
 public class Constant extends Expression {
 
-    /**
-     * value wird gebraucht, wenn es um approximative Berechnungen geht. Dann
-     * wird die Konstante als irrational angesehen. Ansonsten wird preciseValue
-     * verwendet und die Konstante gilt als rational.
+    /*
+     approxValue wird gebraucht, wenn es um approximative Berechnungen geht. Dann
+     wird die Konstante als irrational angesehen. Ansonsten wird value
+     verwendet und die Konstante gilt als rational.
      */
-    private double value;
-    private BigDecimal preciseValue;
+    private double approxValue;
+    private BigDecimal value;
     private boolean precise;
 
-    /**
-     * Verschiedene Konstruktoren
-     */
-    public Constant(double value) throws EvaluationException {
-        if (Double.isNaN(value) || Double.isInfinite(value)) {
+    // Verschiedene Konstruktoren
+    public Constant(double approxValue) throws EvaluationException {
+        if (Double.isNaN(approxValue) || Double.isInfinite(approxValue)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
-        this.value = value;
-        this.preciseValue = new BigDecimal(String.valueOf(this.value));
+        this.approxValue = approxValue;
+        this.value = BigDecimal.valueOf(this.approxValue);
         this.precise = false;
     }
 
     public Constant(int value) {
-        this.value = (double) value;
-        this.preciseValue = new BigDecimal(value);
+        this.approxValue = (double) value;
+        this.value = BigDecimal.valueOf(value);
         this.precise = true;
     }
 
     public Constant(BigDecimal value) {
-        this.value = value.doubleValue();
-        this.preciseValue = value;
+        this.approxValue = value.doubleValue();
+        this.value = value;
         this.precise = true;
     }
 
     public Constant(BigInteger value) {
-        this.value = new BigDecimal(value).doubleValue();
-        this.preciseValue = new BigDecimal(value);
+        this.approxValue = new BigDecimal(value).doubleValue();
+        this.value = new BigDecimal(value);
         this.precise = true;
     }
 
@@ -51,28 +49,28 @@ public class Constant extends Expression {
         try {
             valueAsBigdecimal = new BigDecimal(value);
         } catch (NumberFormatException e) {
-            this.value = 0;
-            this.preciseValue = new BigDecimal("0");
+            this.approxValue = 0;
+            this.value = BigDecimal.ZERO;
             this.precise = true;
             return;
         }
-        this.value = valueAsBigdecimal.doubleValue();
-        this.preciseValue = valueAsBigdecimal;
+        this.approxValue = valueAsBigdecimal.doubleValue();
+        this.value = valueAsBigdecimal;
         this.precise = true;
     }
 
     public Constant(BigDecimal value, boolean precise) {
-        this.value = value.doubleValue();
-        this.preciseValue = value;
+        this.approxValue = value.doubleValue();
+        this.value = value;
         this.precise = precise;
     }
 
-    public double getValue() {
-        return this.value;
+    public double getApproxValue() {
+        return this.approxValue;
     }
 
-    public BigDecimal getPreciseValue() {
-        return this.preciseValue;
+    public BigDecimal getValue() {
+        return this.value;
     }
 
     public boolean getPrecise() {
@@ -80,11 +78,11 @@ public class Constant extends Expression {
     }
 
     public void setValue(double value) {
-        this.value = value;
+        this.approxValue = value;
     }
 
     public void setPreciseValue(BigDecimal preciseValue) {
-        this.preciseValue = preciseValue;
+        this.value = preciseValue;
     }
 
     public void setPrecise(boolean precise) {
@@ -159,22 +157,22 @@ public class Constant extends Expression {
 
         // c_1 und c_2 sind hier entweder Konstanten oder Quotienten von Konstanten.
         if ((c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            return new Constant(((Constant) c_1).getPreciseValue().add(((Constant) c_2).getPreciseValue()));
+            return new Constant(((Constant) c_1).getValue().add(((Constant) c_2).getValue()));
         } else if (!(c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) c_2).getPreciseValue();
+            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
+            BigDecimal k_3 = ((Constant) c_2).getValue();
             return addFractionToConstant(k_3, k_1, k_2);
         } else if ((c_1 instanceof Constant) && !(c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) c_1).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getPreciseValue();
+            BigDecimal k_1 = ((Constant) c_1).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
+            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
             return addFractionToConstant(k_1, k_2, k_3);
         } else {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getPreciseValue();
-            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getPreciseValue();
+            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
+            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
+            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
             return addFractionToFraction(k_1, k_2, k_3, k_4);
         }
 
@@ -194,45 +192,38 @@ public class Constant extends Expression {
 
         // c_1 und c_2 sind hier entweder Konstanten oder Quotienten von Konstanten.
         if ((c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            return new Constant(((Constant) c_1).getPreciseValue().multiply(((Constant) c_2).getPreciseValue()));
+            return new Constant(((Constant) c_1).getValue().multiply(((Constant) c_2).getValue()));
         } else if (!(c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) c_2).getPreciseValue();
+            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
+            BigDecimal k_3 = ((Constant) c_2).getValue();
             return new Constant(k_1.multiply(k_3)).div(k_2);
         } else if ((c_1 instanceof Constant) && !(c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) c_1).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getPreciseValue();
+            BigDecimal k_1 = ((Constant) c_1).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
+            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
             return new Constant(k_1.multiply(k_2)).div(k_3);
         } else {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getPreciseValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getPreciseValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getPreciseValue();
-            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getPreciseValue();
+            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
+            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
+            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
+            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
             return new Constant(k_1.multiply(k_3)).div(k_2.multiply(k_4));
         }
 
     }
 
-    /**
-     * Gibt (-1)*expr zurück.
-     */
-    public static Expression negateExpression(Expression expr) {
-        return MINUS_ONE.mult(expr);
-    }
-
     @Override
     public Expression copy() {
-        return new Constant(this.preciseValue, this.precise);
+        return new Constant(this.value, this.precise);
     }
 
     @Override
     public double evaluate() throws EvaluationException {
-        if (Double.isNaN(this.value) || Double.isInfinite(this.value)) {
+        if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
-        return this.value;
+        return this.approxValue;
     }
 
     @Override
@@ -266,16 +257,12 @@ public class Constant extends Expression {
 
     @Override
     public Expression turnToApproximate() {
-        Constant c = new Constant(this.getPreciseValue());
-        c.setPrecise(false);
-        return c;
+        return new Constant(this.getValue(), false);
     }
 
     @Override
     public Expression turnToPrecise() {
-        Constant c = new Constant(this.getPreciseValue());
-        c.setPrecise(true);
-        return c;
+        return new Constant(this.getValue(), true);
     }
 
     @Override
@@ -311,19 +298,19 @@ public class Constant extends Expression {
 
             //Falls preciseValue eine ganze Zahl ist -> value ohne Nachkommastellen ausgeben!
             if (this.isIntegerConstant()) {
-                return this.preciseValue.setScale(0, BigDecimal.ROUND_HALF_UP).toPlainString();
+                return this.value.setScale(0, BigDecimal.ROUND_HALF_UP).toPlainString();
             }
-            return this.preciseValue.toPlainString();
+            return this.value.toPlainString();
 
         }
         /*
          Falls approximiert wird und this.value eine ganze Zahl ist -> value
          ohne Nachkommastellen ausgeben!
          */
-        if (this.value == Math.round(this.value)) {
-            return String.valueOf((long) this.value);
+        if (this.approxValue == Math.round(this.approxValue)) {
+            return String.valueOf((long) this.approxValue);
         }
-        return String.valueOf(this.value);
+        return String.valueOf(this.approxValue);
 
     }
 
@@ -339,42 +326,42 @@ public class Constant extends Expression {
 
     @Override
     public boolean isNonNegative() {
-        return this.preciseValue.compareTo(BigDecimal.ZERO) >= 0;
+        return this.value.compareTo(BigDecimal.ZERO) >= 0;
     }
 
     @Override
     public boolean isAlwaysNonNegative() {
-        return this.preciseValue.compareTo(BigDecimal.ZERO) >= 0;
+        return this.value.compareTo(BigDecimal.ZERO) >= 0;
     }
-    
+
     @Override
     public boolean isAlwaysPositive() {
-        return this.preciseValue.compareTo(BigDecimal.ZERO) > 0;
+        return this.value.compareTo(BigDecimal.ZERO) > 0;
     }
 
     @Override
     public boolean equals(Expression expr) {
         return expr instanceof Constant && this.precise == ((Constant) expr).getPrecise()
-                && this.preciseValue.equals(((Constant) expr).getPreciseValue());
+                && this.value.equals(((Constant) expr).getValue());
     }
 
     @Override
     public boolean equivalent(Expression expr) {
         return expr instanceof Constant && this.precise == ((Constant) expr).getPrecise()
-                && this.preciseValue.equals(((Constant) expr).getPreciseValue());
+                && this.value.equals(((Constant) expr).getValue());
     }
 
     @Override
     public boolean hasPositiveSign() {
-        return this.getPreciseValue().compareTo(BigDecimal.ZERO) >= 0;
+        return this.getValue().compareTo(BigDecimal.ZERO) >= 0;
     }
 
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
         if (this.precise) {
-            return constantToQuotient(this.preciseValue, BigDecimal.ONE);
+            return constantToQuotient(this.value, BigDecimal.ONE);
         }
-        if (Double.isNaN(this.value) || Double.isInfinite(this.value)) {
+        if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
         return this;
