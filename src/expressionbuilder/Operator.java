@@ -1928,8 +1928,14 @@ public class Operator extends Expression {
         }
 
         // Konstante (rationale) Potenzen herausziehen mit ungeradem Nenner.
-        if (factor.isPower()) {
+        if (factor.isPower() && !((BinaryOperation) factor).getRight().contains((String) this.params[1])) {
             return SimplifyOperatorMethods.takeConstantExponentsOutOfProducts((BinaryOperation) factor, (String) this.params[1],
+                    (Expression) this.params[2], (Expression) this.params[3]);
+        }
+
+        // Falls die Faktoren Potenzen sind, wo die Basis von der Indexvariablen nicht abhängen.
+        if (factor.isPower() && !((BinaryOperation) factor).getLeft().contains((String) this.params[1])) {
+            return SimplifyOperatorMethods.simplifyProductWithConstantBase((BinaryOperation) factor, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 

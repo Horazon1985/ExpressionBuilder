@@ -4,6 +4,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
+import expressionbuilder.Variable;
 
 public class SimplifyOperatorMethods {
 
@@ -12,17 +13,17 @@ public class SimplifyOperatorMethods {
      * dieser in eine entsprechende Summe oder Differenz von Summenoperatoren
      * aufgeteilt.
      */
-    public static Expression splitSumOfSumsOrDifferences(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
+    public static Expression splitSumOfSumsOrDifferences(BinaryOperation summand, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (expr.isDifference()) {
+        if (summand.isDifference()) {
 
             Object[] paramsLeft = new Object[4];
-            paramsLeft[0] = expr.getLeft();
+            paramsLeft[0] = summand.getLeft();
             paramsLeft[1] = var;
             paramsLeft[2] = lowerLimit;
             paramsLeft[3] = upperLimit;
             Object[] paramsRight = new Object[4];
-            paramsRight[0] = expr.getRight();
+            paramsRight[0] = summand.getRight();
             paramsRight[1] = var;
             paramsRight[2] = lowerLimit;
             paramsRight[3] = upperLimit;
@@ -30,7 +31,7 @@ public class SimplifyOperatorMethods {
 
         } else {
 
-            ExpressionCollection summands = SimplifyUtilities.getSummands(expr);
+            ExpressionCollection summands = SimplifyUtilities.getSummands(summand);
             Object[][] params = new Object[summands.getBound()][4];
             for (int i = 0; i < summands.getBound(); i++) {
                 for (int j = 0; j < 4; j++) {
@@ -50,13 +51,13 @@ public class SimplifyOperatorMethods {
 
     /**
      * Falls im Summenoperator konstante Faktoren (im Zähler oder Nenner)
-     * auftauchen, so werden diese herausgezogen. VORAUSSETZUNG: expr hat type
-     * == TypeBinary.TIMES oder type == TypeBinary.DIV.
+     * auftauchen, so werden diese herausgezogen. VORAUSSETZUNG: expr ist ein
+     * Produkt oder ein Quotient.
      */
-    public static Expression takeConstantsOutOfSums(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
+    public static Expression takeConstantsOutOfSums(BinaryOperation summand, String var, Expression lowerLimit, Expression upperLimit) {
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
         ExpressionCollection resultFactorsInEnumeratorOutsideOfSum = new ExpressionCollection();
         ExpressionCollection resultFactorsInDenominatorOutsideOfSum = new ExpressionCollection();
         ExpressionCollection resultFactorsInEnumeratorInSum = new ExpressionCollection();
@@ -116,20 +117,19 @@ public class SimplifyOperatorMethods {
     /**
      * Falls im Summenoperator eine Summe oder eine Differenz auftaucht, so wird
      * dieser in eine entsprechende Summe oder Differenz von Summenoperatoren
-     * aufgeteilt. VORAUSSETZUNG: expr hat type == TypeBinary.TIMES oder type ==
-     * TypeBinary.DIV.
+     * aufgeteilt. VORAUSSETZUNG: expr ist ein Produkt oder ein Quotient.
      */
-    public static Expression splitProductsOfProductsOrQuotients(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
+    public static Expression splitProductsOfProductsOrQuotients(BinaryOperation factor, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (expr.isQuotient()) {
+        if (factor.isQuotient()) {
 
             Object[] paramsLeft = new Object[4];
-            paramsLeft[0] = expr.getLeft();
+            paramsLeft[0] = factor.getLeft();
             paramsLeft[1] = var;
             paramsLeft[2] = lowerLimit;
             paramsLeft[3] = upperLimit;
             Object[] paramsRight = new Object[4];
-            paramsRight[0] = expr.getRight();
+            paramsRight[0] = factor.getRight();
             paramsRight[1] = var;
             paramsRight[2] = lowerLimit;
             paramsRight[3] = upperLimit;
@@ -137,7 +137,7 @@ public class SimplifyOperatorMethods {
 
         } else {
 
-            ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+            ExpressionCollection factors = SimplifyUtilities.getFactors(factor);
             Object[][] params = new Object[factors.getBound()][4];
             for (int i = 0; i < factors.getBound(); i++) {
                 for (int j = 0; j < 4; j++) {
@@ -156,23 +156,22 @@ public class SimplifyOperatorMethods {
 
     /**
      * Falls im Produktoperator konstante Exponenten auftauchen, so werden diese
-     * herausgezogen. VORAUSSETZUNG: Exponent hat type == TypeBinary.TIMES oder
-     * type == TypeBinary.DIV.
+     * herausgezogen. VORAUSSETZUNG: Exponent ist ein Produkt oder ein Quotient
      */
-    public static Expression takeConstantExponentsOutOfProducts(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
+    public static Expression takeConstantExponentsOutOfProducts(BinaryOperation factor, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (expr.isNotPower()) {
+        if (factor.isNotPower()) {
             // Dann nichts tun!
             Object[] params = new Object[4];
-            params[0] = expr;
+            params[0] = factor;
             params[1] = var;
             params[2] = lowerLimit;
             params[3] = upperLimit;
             return new Operator(TypeOperator.prod, params);
         }
 
-        ExpressionCollection exponentFactorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr.getRight());
-        ExpressionCollection exponentFactorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr.getRight());
+        ExpressionCollection exponentFactorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factor.getRight());
+        ExpressionCollection exponentFactorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factor.getRight());
         Expression exponentEnumeratorOutsideOfProduct = Expression.ONE;
         Expression exponentDenominatorOutsideOfProduct = Expression.ONE;
         ExpressionCollection resultFactorsInExponentEnumerator = new ExpressionCollection();
@@ -211,7 +210,7 @@ public class SimplifyOperatorMethods {
         }
 
         Object[] params = new Object[4];
-        params[0] = expr.getLeft().pow(resultExponentInProduct);
+        params[0] = factor.getLeft().pow(resultExponentInProduct);
         params[1] = var;
         params[2] = lowerLimit;
         params[3] = upperLimit;
@@ -227,25 +226,52 @@ public class SimplifyOperatorMethods {
 
     }
 
-    public static Expression simplifyProductWithConstantBase(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit ){
-    
-        if (expr.isNotPower()) {
+    /**
+     * Vereinfacht folgendes: prod(a^f(k),k,m,n) = a^sum(f(k),k,m,n)
+     */
+    public static Expression simplifyProductWithConstantBase(BinaryOperation factor, String var, Expression lowerLimit, Expression upperLimit) {
+
+        if (factor.isNotPower() || factor.getLeft().contains(var)) {
             // Dann nichts tun!
             Object[] params = new Object[4];
-            params[0] = expr;
+            params[0] = factor;
             params[1] = var;
             params[2] = lowerLimit;
             params[3] = upperLimit;
             return new Operator(TypeOperator.prod, params);
         }
-        
-        
-        
-        
-        
-        return null;
-    
+
+        Object[] params = new Object[4];
+        params[0] = factor.getRight();
+        params[1] = var;
+        params[2] = lowerLimit;
+        params[3] = upperLimit;
+        return factor.getLeft().pow(new Operator(TypeOperator.sum, params));
+
     }
+
+    /**
+     * Vereinfacht folgendes: sum(k^n,k,p,q) = Polynom in k für kleines n.
+     */
+    public static Expression simplifySumOfPowersOfIntegers(Expression summand, String var, Expression lowerLimit, Expression upperLimit) {
+
+        if (!summand.equals(Variable.create(var)) 
+                || !(summand.isPower() && ((BinaryOperation) summand).getLeft().equals(Variable.create(var)) 
+                && ((BinaryOperation) summand).getRight().isIntegerConstant() && ((BinaryOperation) summand).getRight().isPositive())) {
+            // Dann nichts tun!
+            Object[] params = new Object[4];
+            params[0] = summand;
+            params[1] = var;
+            params[2] = lowerLimit;
+            params[3] = upperLimit;
+            return new Operator(TypeOperator.prod, params);
+        }
+
+        // TO DO!
+        return null;
+
+    }
+    
     
     
     
