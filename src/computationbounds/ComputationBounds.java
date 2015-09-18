@@ -21,6 +21,7 @@ public class ComputationBounds {
     public static final int BOUND_POWER_OF_BINOMIAL = getBound("Bound_POWER_OF_BINOMIAL");
     public static final int BOUND_DEGREE_OF_COMMON_ROOT = getBound("Bound_DEGREE_OF_COMMON_ROOT");
     public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION");
+    public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS");
     public static final int BOUND_NUMBER_OF_SUMMANDS_IN_EXPANSION = getBound("Bound_NUMBER_OF_SUMMANDS_IN_EXPANSION");
     public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY");
     public static final int BOUND_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY");

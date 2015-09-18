@@ -12,6 +12,8 @@ import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.Variable;
+import expressionsimplifymethods.ExpressionCollection;
+import expressionsimplifymethods.SimplifyUtilities;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -1332,11 +1334,12 @@ public class GraphicPanelFormula extends JPanel {
 
         setFont(g, fontSize);
 
+        ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
+        
         // Im Folgenden bezeichnet l immer die Pixellänge der Formel.
         if (expr.isSum()) {
 
-            if (expr.getRight().isProduct()
-                    && ((BinaryOperation) expr.getRight()).getLeft().equals(Expression.MINUS_ONE)) {
+            if (!factorsOfRight.get(0).hasPositiveSign()) {
                 // In diesem Falls soll die Formel folgendermaßen ausgeschrieben werden: a+(-b) statt a+(-1)*b.
                 return getLengthOfExpression(g, expr.getLeft(), fontSize)
                         + getWidthOfSignPlus(g, fontSize) + 2 * getWidthOfBracket(fontSize)
@@ -1350,12 +1353,11 @@ public class GraphicPanelFormula extends JPanel {
         } else if (expr.isDifference()) {
 
             int lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
-            if (expr.getLeft() instanceof Constant
-                    && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.ZERO) == 0) {
+            if (expr.getLeft().equals(Expression.ZERO)) {
                 lengthLeft = 0;
             }
 
-            if (expr.getRight().isSum() || expr.getRight().isDifference()) {
+            if (expr.getRight().isSum() || expr.getRight().isDifference() || !factorsOfRight.get(0).hasPositiveSign()) {
                 // l(left) + l(-) + l("(") + l(right) + l(")").
                 return lengthLeft + getWidthOfSignMinus(g, fontSize) + 2 * getWidthOfBracket(fontSize)
                         + getLengthOfExpression(g, expr.getRight(), fontSize);
@@ -2036,9 +2038,9 @@ public class GraphicPanelFormula extends JPanel {
         drawSignPlus(g, x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize),
                 y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
-        if (expr.getRight() instanceof BinaryOperation
-                && ((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.TIMES)
-                && ((BinaryOperation) expr.getRight()).getLeft().equals(Expression.MINUS_ONE)) {
+        ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
+        
+        if (!factorsOfRight.get(0).hasPositiveSign()) {
 
             int h_r = getHeightOfExpression(g, expr.getRight(), fontSize);
             drawOpeningBracket(g, x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize)
@@ -2074,22 +2076,18 @@ public class GraphicPanelFormula extends JPanel {
 
         if (expr.getLeft().equals(Expression.ZERO)) {
             lengthLeft = 0;
-        }
-
-        if (!expr.getLeft().equals(Expression.ZERO)) {
-
+        } else {
             // left wird nur dann gezeichnet, wenn es nicht 0 ist.
             drawExpression(g, expr.getLeft(), x_0,
                     y_0 - Math.max(heightCenterRight - heightCenterLeft, 0),
                     fontSize);
-
         }
 
         drawSignMinus(g, x_0 + lengthLeft, y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
-        if (expr.getRight() instanceof BinaryOperation
-                && (((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.PLUS)
-                || ((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.MINUS))) {
+        ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
+        
+        if (expr.getRight().isSum() || expr.getRight().isDifference() || !factorsOfRight.get(0).hasPositiveSign()) {
 
             // Zeichnen von (right).
             drawOpeningBracket(g,
@@ -2104,7 +2102,7 @@ public class GraphicPanelFormula extends JPanel {
 
         } else {
 
-            // zeichnen von right.
+            // Zeichnen von right.
             drawExpression(g, expr.getRight(),
                     x_0 + lengthLeft + fontSize, y_0 - Math.max(heightCenterLeft - heightCenterRight, 0),
                     fontSize);

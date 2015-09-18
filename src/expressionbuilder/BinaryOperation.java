@@ -240,9 +240,14 @@ public class BinaryOperation extends Expression {
     public String writeExpression() {
 
         String leftAsText, rightAsText;
-
+        ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(this.right);
+        
         if (this.isSum()) {
-            return this.left.writeExpression() + "+" + this.right.writeExpression();
+            if (!factorsOfRight.get(0).hasPositiveSign()) {
+                return this.left.writeExpression() + "+(" + this.right.writeExpression()+")";
+            } else {
+                return this.left.writeExpression() + "+" + this.right.writeExpression();
+            }
         } else if (this.isDifference()) {
 
             leftAsText = this.left.writeExpression();
@@ -252,7 +257,7 @@ public class BinaryOperation extends Expression {
                 leftAsText = "";
             }
 
-            if (this.right.isSum() || this.right.isDifference()) {
+            if (this.right.isSum() || this.right.isDifference() || !factorsOfRight.get(0).hasPositiveSign()) {
                 return leftAsText + "-(" + this.right.writeExpression() + ")";
             }
             return leftAsText + "-" + this.right.writeExpression();
@@ -299,10 +304,9 @@ public class BinaryOperation extends Expression {
 
         }
 
-        /**
-         * Hier handelt es sich um eine Potenz.
-         */
-        if (this.left instanceof BinaryOperation) {
+        // Hier handelt es sich um eine Potenz.
+        if (this.left instanceof BinaryOperation
+                || (this.left instanceof Constant && this.left.isNonPositive() && !this.left.equals(Expression.ZERO))) {
             leftAsText = "(" + this.left.writeExpression() + ")";
         } else {
             leftAsText = this.left.writeExpression();
@@ -2361,7 +2365,7 @@ public class BinaryOperation extends Expression {
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
 
         }
-        
+
         // Dann ist this eine Potenz.
         return this.left.simplifyExpandLogarithms().pow(this.right.simplifyExpandLogarithms());
 

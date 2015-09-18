@@ -1,9 +1,8 @@
 package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
-import expressionbuilder.Operator;
 import expressionbuilder.Expression;
-import expressionbuilder.TypeBinary;
+import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
 
 public class SimplifyOperatorMethods {
@@ -122,7 +121,7 @@ public class SimplifyOperatorMethods {
      */
     public static Expression splitProductsOfProductsOrQuotients(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (expr.isProduct()) {
+        if (expr.isQuotient()) {
 
             Object[] paramsLeft = new Object[4];
             paramsLeft[0] = expr.getLeft();
@@ -162,10 +161,8 @@ public class SimplifyOperatorMethods {
      */
     public static Expression takeConstantExponentsOutOfProducts(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (!expr.getType().equals(TypeBinary.POW)) {
-            /**
-             * Dann nichts tun!
-             */
+        if (expr.isNotPower()) {
+            // Dann nichts tun!
             Object[] params = new Object[4];
             params[0] = expr;
             params[1] = var;
@@ -230,4 +227,26 @@ public class SimplifyOperatorMethods {
 
     }
 
+    public static Expression simplifyProductWithConstantBase(BinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit ){
+    
+        if (expr.isNotPower()) {
+            // Dann nichts tun!
+            Object[] params = new Object[4];
+            params[0] = expr;
+            params[1] = var;
+            params[2] = lowerLimit;
+            params[3] = upperLimit;
+            return new Operator(TypeOperator.prod, params);
+        }
+        
+        
+        
+        
+        
+        return null;
+    
+    }
+    
+    
+    
 }
