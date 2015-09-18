@@ -14,27 +14,6 @@ public abstract class LogicalExpression {
     public final static LogicalConstant TRUE = new LogicalConstant(true);
 
     /**
-     * Beseitigt alle Leerzeichen im String s und verwandelt alle Großbuchstaben
-     * zu Kleinbuchstaben.
-     */
-    private static String convertToSmallLetters(String s) {
-
-        //Leerzeichen beseitigen
-        s = s.replaceAll(" ", "");
-
-        //Falls Großbuchstaben auftreten -> zu Kleinbuchstaben machen
-        for (int i = 0; i < s.length(); i++) {
-            if (((int) s.charAt(i) >= 65) && ((int) s.charAt(i) <= 90)) {
-                //Macht Großbuchstaben zu Kleinbuchstaben
-                s = s.substring(0, i) + (char) ((int) s.charAt(i) + 32) + s.substring(i + 1, s.length());
-            }
-        }
-
-        return s;
-
-    }
-    
-    /**
      * Erstellt aus einem String einen logischen Ausdruck oder wirft einen
      * Fehler.
      *
@@ -42,7 +21,7 @@ public abstract class LogicalExpression {
      */
     public static LogicalExpression build(String formula, HashSet<String> vars) throws ExpressionException {
 
-        formula = convertToSmallLetters(formula);
+        formula = formula.replaceAll(" ", "").toLowerCase();
 
         /*
          Prioritäten: = = 0, > = 1, | = 2, & = 3, ! = 4 Boolsche Konstante,

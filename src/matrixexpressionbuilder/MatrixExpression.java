@@ -24,11 +24,24 @@ public abstract class MatrixExpression {
      * @throws ExpressionException
      */
     public static String[] getRowsFromMatrix(String matrix) throws ExpressionException {
+        
+        int numberOfRows = 1;
+        for (int i = 0; i < matrix.length(); i++){
+            if (matrix.substring(i, i + 1).equals(";")){
+                numberOfRows++;
+            }
+        }
+        
         String[] rows = matrix.split(";");
+        if (rows.length != numberOfRows){
+            throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_ROW_MISSING"));
+        }
+            
         if (rows.length == 0) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_NO_ROWS"));
         }
         return rows;
+        
     }
 
     /**
@@ -107,6 +120,9 @@ public abstract class MatrixExpression {
 
         for (int i = 0; i < rows.length; i++) {
 
+            if (rows[i].isEmpty()){
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
+            }
             currentRow = getEntriesFromRow(rows[i]).toArray();
             if (currentRow.length != entry[0].length) {
                 throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
@@ -122,34 +138,13 @@ public abstract class MatrixExpression {
     }
 
     /**
-     * Beseitigt alle Leerzeichen im String s und verwandelt alle Großbuchstaben
-     * zu Kleinbuchstaben.
-     */
-    private static String convertToSmallLetters(String s) {
-
-        //Leerzeichen beseitigen
-        s = s.replaceAll(" ", "");
-
-        //Falls Großbuchstaben auftreten -> zu Kleinbuchstaben machen
-        for (int i = 0; i < s.length(); i++) {
-            if (((int) s.charAt(i) >= 65) && ((int) s.charAt(i) <= 90)) {
-                //Macht Großbuchstaben zu Kleinbuchstaben
-                s = s.substring(0, i) + (char) ((int) s.charAt(i) + 32) + s.substring(i + 1, s.length());
-            }
-        }
-
-        return s;
-
-    }
-
-    /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
      * @throws ExpressionException
      */
     public static MatrixExpression build(String formula, HashSet<String> vars) throws ExpressionException {
 
-        formula = convertToSmallLetters(formula);
+        formula = formula.replaceAll(" ", "").toLowerCase();
 
         /*
          Versuche zunächst, ob formula zu einer Instanz von Expression
@@ -245,7 +240,6 @@ public abstract class MatrixExpression {
             }
             //Falls der Ausdruck die Form "-abc..." besitzt -> daraus "(-1)*abc..." machen
             if ((formulaLeft.isEmpty()) && (priority == 1)) {
-                MatrixExpression right = build(formulaRight, vars);
                 return MINUS_ONE.mult(build(formulaRight, vars));
             }
             switch (priority) {

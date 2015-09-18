@@ -190,8 +190,11 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable {
     /**
      * Voraussetzung: expr, var_1 und var_2 sind bereits gesetzt.
      */
-    public void computeScreenSizes(double t_0, double t_1) throws EvaluationException {
+    public void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
+        double t_0 = exprT_0.evaluate();
+        double t_1 = exprT_1.evaluate();
+        
         double globalMaxX = Double.NaN;
         double globalMaxY = Double.NaN;
         double globalMaxZ = Double.NaN;
@@ -303,8 +306,11 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(double t_0, double t_1) throws EvaluationException {
+    public void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
+        double t_0 = exprT_0.evaluate();
+        double t_1 = exprT_1.evaluate();
+        
         double t = t_0;
         double h;
 

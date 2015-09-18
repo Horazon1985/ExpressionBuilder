@@ -80,14 +80,11 @@ public class SpecialEquationMethodsTest {
     @Test
     public void solveExponentialEquationTest2() {
         try {
-            // Test: f = e^(3*x)-20*e^(2*x)+101*e^(x) = 130. Lösungen sind ln(2), ln(5), ln(13).
-            Expression f = Expression.build("exp(3*x)-20*exp(2*x)+101*exp(x)-130", new HashSet<String>());
+            // Test: f = exp(x) + exp(2^(1/2)*x) = 10. Keine algebraischen Lösungen.
+            Expression f = Expression.build("exp(x) + exp(2^(1/2)*x) - 10", new HashSet<String>());
             SolveMethods.setSolveTries(100);
             ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
-            assertTrue(zeros.getBound() == 3);
-            assertTrue(zeros.contains(new Constant(2).ln()));
-            assertTrue(zeros.contains(new Constant(5).ln()));
-            assertTrue(zeros.contains(new Constant(13).ln()));
+            assertTrue(zeros.getBound() == 0);
         } catch (ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         } catch (EvaluationException e) {

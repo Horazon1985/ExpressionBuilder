@@ -1,5 +1,6 @@
 package graphic;
 
+import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
@@ -286,7 +287,18 @@ public class GraphicPanel2D extends JPanel {
      *
      * @throws EvaluationException
      */
-    public void computeScreenSizes(double varAbscStart, double varAbscEnd) throws EvaluationException {
+    public void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+
+        double varAbscStart = exprAbscStart.evaluate();
+        double varAbscEnd = exprAbscEnd.evaluate();
+
+        if (varAbscStart >= varAbscEnd) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1")
+                    + (expr.size() + 1)
+                    + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_2")
+                    + (expr.size() + 2)
+                    + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_3"));
+        }
 
         this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
         this.maxX = varAbscEnd - this.axeCenterX;
@@ -338,7 +350,19 @@ public class GraphicPanel2D extends JPanel {
      *
      * @throws EvaluationException
      */
-    public void computeScreenSizes(double varAbscStart, double varAbscEnd, double varOrdStart, double varOrdEnd) throws EvaluationException {
+    public void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
+
+        double varAbscStart = exprAbscStart.evaluate();
+        double varAbscEnd = exprAbscEnd.evaluate();
+        double varOrdStart = exprOrdStart.evaluate();
+        double varOrdEnd = exprOrdEnd.evaluate();
+
+        if (varAbscStart >= varAbscEnd) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
+        }
+        if (varOrdStart >= varOrdEnd) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
+        }
 
         this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
         this.axeCenterY = (varOrdStart + varOrdEnd) / 2;
@@ -395,7 +419,10 @@ public class GraphicPanel2D extends JPanel {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(String varAbsc, double varAbscStart, double varAbscEnd) throws EvaluationException {
+    public void expressionToGraph(String varAbsc, Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+
+        double varAbscStart = exprAbscStart.evaluate();
+        double varAbscEnd = exprAbscEnd.evaluate();
 
         this.graph2D.clear();
         double[][] pointsOnGraphs;
@@ -840,12 +867,11 @@ public class GraphicPanel2D extends JPanel {
          * dass der Graph zu grob oder zu klein ist.
          */
         if (this.isExplicit && !this.isFixed && (this.graph2D.size() > 0)) {
-            double varAbscStart = this.axeCenterX - 2 * this.maxX;
-            double varAbscEnd = this.axeCenterX + 2 * this.maxX;
             try {
+                Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
+                Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
                 expressionToGraph(varAbsc, varAbscStart, varAbscEnd);
             } catch (EvaluationException e) {
-
             }
             convertGraphToGraphicalGraph();
         }

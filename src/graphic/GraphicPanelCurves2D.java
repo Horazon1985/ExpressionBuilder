@@ -146,7 +146,10 @@ public class GraphicPanelCurves2D extends JPanel {
     /**
      * Voraussetzung: expr und var sind bereits gesetzt.
      */
-    public void computeScreenSizes(double t_0, double t_1) throws EvaluationException {
+    public void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
+
+        double t_0 = exprT_0.evaluate();
+        double t_1 = exprT_1.evaluate();
 
         double globalMinX = Double.NaN;
         double globalMaxX = Double.NaN;
@@ -251,8 +254,11 @@ public class GraphicPanelCurves2D extends JPanel {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(double t_0, double t_1) throws EvaluationException {
+    public void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
+        double t_0 = exprT_0.evaluate();
+        double t_1 = exprT_1.evaluate();
+        
         double t = t_0;
         double h;
 

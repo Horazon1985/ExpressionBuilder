@@ -226,7 +226,7 @@ public class GraphicPanel3D extends JPanel implements Runnable {
 
     /**
      * Voraussetzung: graph3D ist bereits initialisiert (bzw. mit
-     * Funktionswerten gefüllt), max_x, max_y, max_z sind bekannt/initialisiert.
+     * Funktionswerten gefüllt), maxX, maxY, maxZ sind bekannt/initialisiert.
      */
     private void computeExpXExpYExpZ() {
 
@@ -274,8 +274,20 @@ public class GraphicPanel3D extends JPanel implements Runnable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(double x_0, double x_1, double y_0, double y_1) throws EvaluationException {
+    public void expressionToGraph(Expression exprX_0, Expression exprX_1, Expression exprY_0, Expression exprY_1) throws EvaluationException {
 
+        double x_0 = exprX_0.evaluate();
+        double x_1 = exprX_1.evaluate();
+        double y_0 = exprY_0.evaluate();
+        double y_1 = exprY_1.evaluate();
+        
+        if (x_0 >= x_1) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
+        }
+        if (y_0 >= y_1) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
+        }
+        
         this.graph3D = new double[101][101][3];
         this.graph3DIsDefined = new boolean[101][101][1];
 

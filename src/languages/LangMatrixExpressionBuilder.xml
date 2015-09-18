@@ -1,4 +1,10 @@
 ﻿<objects>
+  <object id = "MEB_MatrixExpression_ROW_MISSING">
+    <German>Die Matrix enthält mindestens eine leere Zeile.</German>
+    <English>The matrix contains at least one empty row.</English>
+    <Ukrainian>Матриця містить щонайменше один порожній рядок.</Ukrainian>
+    <Russian>Матрица содержит по крайней мере одну пустую строку.</Russian>
+  </object>
   <object id = "MEB_MatrixExpression_NO_ROWS">
     <German>Die Matrix enthält keine Zeilen.</German>
     <English>The matrix contains no rows.</English>
