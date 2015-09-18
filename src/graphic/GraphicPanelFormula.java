@@ -872,14 +872,22 @@ public class GraphicPanelFormula extends JPanel {
 
         } else if (matExpr instanceof MatrixBinaryOperation) {
 
-            if (((MatrixBinaryOperation) matExpr).getType().equals(TypeMatrixBinary.PLUS)) {
+            if (matExpr.isSum()) {
                 return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
                         + getWidthOfSignPlus(g, fontSize)
                         + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
-            } else if (((MatrixBinaryOperation) matExpr).getType().equals(TypeMatrixBinary.MINUS)) {
-                return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
-                        + getWidthOfSignMinus(g, fontSize)
-                        + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
+            } else if (matExpr.isDifference()) {
+                if (((MatrixBinaryOperation) matExpr).isSum() || ((MatrixBinaryOperation) matExpr).isDifference()) {
+                    // Hier noch Klammern um den Subtrahenden berücksichtigen.
+                    return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
+                            + getWidthOfSignMinus(g, fontSize)
+                            + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize)
+                            + 2 * getWidthOfBracket(fontSize);
+                } else {
+                    return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
+                            + getWidthOfSignMinus(g, fontSize)
+                            + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
+                }
             } else {
                 /*
                  Hier ist matExpr eine Instanz von MatrixBinaryOperation mit
@@ -1335,7 +1343,7 @@ public class GraphicPanelFormula extends JPanel {
         setFont(g, fontSize);
 
         ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
-        
+
         // Im Folgenden bezeichnet l immer die Pixellänge der Formel.
         if (expr.isSum()) {
 
@@ -2039,7 +2047,7 @@ public class GraphicPanelFormula extends JPanel {
                 y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
         ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
-        
+
         if (!factorsOfRight.get(0).hasPositiveSign()) {
 
             int h_r = getHeightOfExpression(g, expr.getRight(), fontSize);
@@ -2086,7 +2094,7 @@ public class GraphicPanelFormula extends JPanel {
         drawSignMinus(g, x_0 + lengthLeft, y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
         ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(expr.getRight());
-        
+
         if (expr.getRight().isSum() || expr.getRight().isDifference() || !factorsOfRight.get(0).hasPositiveSign()) {
 
             // Zeichnen von (right).
@@ -3031,31 +3039,10 @@ public class GraphicPanelFormula extends JPanel {
                 fontSize);
         drawSignPlus(g, x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize),
                 y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
-
-        if (matExpr.getRight() instanceof MatrixBinaryOperation
-                && ((MatrixBinaryOperation) matExpr.getRight()).getType().equals(TypeMatrixBinary.TIMES)
-                && ((MatrixBinaryOperation) matExpr.getRight()).getLeft().equals(MatrixExpression.MINUS_ONE)) {
-
-            int h_r = getHeightOfMatrixExpression(g, matExpr.getRight(), fontSize);
-            drawOpeningBracket(g, x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize)
-                    + fontSize, y_0 - Math.max(heightCenterLeft - heightCenterRight, 0), fontSize, h_r);
-            drawMatrixExpression(g, matExpr.getRight(),
-                    x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize)
-                    + getWidthOfBracket(fontSize) + fontSize, y_0 - Math.max(heightCenterLeft - heightCenterRight, 0),
-                    fontSize);
-            drawClosingBracket(g, x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize)
-                    + getWidthOfBracket(fontSize) + fontSize
-                    + getLengthOfMatrixExpression(g, matExpr.getRight(), fontSize),
-                    y_0 - Math.max(heightCenterLeft - heightCenterRight, 0), fontSize, h_r);
-
-        } else {
-
-            drawMatrixExpression(g, matExpr.getRight(),
-                    x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize)
-                    + fontSize, y_0 - Math.max(heightCenterLeft - heightCenterRight, 0),
-                    fontSize);
-
-        }
+        drawMatrixExpression(g, matExpr.getRight(),
+                x_0 + getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize)
+                + fontSize, y_0 - Math.max(heightCenterLeft - heightCenterRight, 0),
+                fontSize);
 
     }
 
@@ -3071,11 +3058,12 @@ public class GraphicPanelFormula extends JPanel {
         int heightRight = getHeightOfMatrixExpression(g, matExpr.getRight(), fontSize);
         int lengthLeft = getLengthOfMatrixExpression(g, matExpr.getLeft(), fontSize);
 
+        drawMatrixExpression(g, matExpr.getLeft(), x_0,
+                y_0 - Math.max(heightCenterRight - heightCenterLeft, 0),
+                fontSize);
         drawSignMinus(g, x_0 + lengthLeft, y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
-        if (matExpr.getRight() instanceof MatrixBinaryOperation
-                && (((MatrixBinaryOperation) matExpr.getRight()).getType().equals(TypeMatrixBinary.PLUS)
-                || ((MatrixBinaryOperation) matExpr.getRight()).getType().equals(TypeMatrixBinary.MINUS))) {
+        if (matExpr.getRight().isSum() || matExpr.getRight().isDifference()) {
 
             // Zeichnen von (right).
             drawOpeningBracket(g,
