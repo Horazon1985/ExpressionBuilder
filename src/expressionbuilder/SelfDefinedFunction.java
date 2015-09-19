@@ -236,13 +236,13 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
 
         String result = this.name + "\\left(";
         for (int i = 0; i < this.left.length - 1; i++) {
-            result = result + this.left[i].expressionToLatex(true) + ",";
+            result = result + this.left[i].expressionToLatex() + ",";
         }
-        result = result + this.left[this.left.length - 1].expressionToLatex(true) + "\\right)";
+        result = result + this.left[this.left.length - 1].expressionToLatex() + "\\right)";
         return result;
 
     }

@@ -726,7 +726,7 @@ public abstract class Expression {
     /**
      * Generierung eines Latex-Codes aus einem Ausdruck.
      */
-    public abstract String expressionToLatex(boolean beginning);
+    public abstract String expressionToLatex();
 
     /**
      * Liefert, ob der gegebene Ausdruck eine identische Kopie von expr
@@ -1023,6 +1023,14 @@ public abstract class Expression {
         return this instanceof Function && ((Function) this).getType().equals(type);
     }
 
+    public boolean isOperator() {
+        return this instanceof Operator;
+    }
+
+    public boolean isOperator(TypeOperator type) {
+        return this instanceof Operator && ((Operator) this).getType().equals(type);
+    }
+    
     public boolean isNotSum() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.PLUS));
     }

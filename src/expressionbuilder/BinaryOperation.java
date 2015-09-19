@@ -10,7 +10,6 @@ import expressionsimplifymethods.SimplifyFunctionMethods;
 import expressionsimplifymethods.SimplifyFunctionalRelations;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import translator.Translator;
@@ -241,10 +240,10 @@ public class BinaryOperation extends Expression {
 
         String leftAsText, rightAsText;
         ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(this.right);
-        
+
         if (this.isSum()) {
             if (!factorsOfRight.get(0).hasPositiveSign()) {
-                return this.left.writeExpression() + "+(" + this.right.writeExpression()+")";
+                return this.left.writeExpression() + "+(" + this.right.writeExpression() + ")";
             } else {
                 return this.left.writeExpression() + "+" + this.right.writeExpression();
             }
@@ -324,13 +323,13 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
 
         String leftAsLatexCode, rightAsLatexCode;
 
-        if (this.type.equals(TypeBinary.PLUS)) {
-            return this.left.expressionToLatex(false) + "+" + this.right.expressionToLatex(false);
-        } else if (this.type.equals(TypeBinary.MINUS)) {
+        if (this.isSum()) {
+            return this.left.expressionToLatex() + "+" + this.right.expressionToLatex();
+        } else if (this.isDifference()) {
 
             leftAsLatexCode = this.left.writeExpression();
 
@@ -340,67 +339,76 @@ public class BinaryOperation extends Expression {
             }
 
             if (this.right.isSum() || this.right.isDifference()) {
-                return leftAsLatexCode + "-\\left(" + this.right.expressionToLatex(true) + "\\right)";
+                return leftAsLatexCode + "-\\left(" + this.right.expressionToLatex() + "\\right)";
             }
-            return leftAsLatexCode + "-" + this.right.expressionToLatex(false);
+            return leftAsLatexCode + "-" + this.right.expressionToLatex();
 
-        } else if (this.type.equals(TypeBinary.TIMES)) {
+        } else if (this.isProduct()) {
+
+            //(-1)*a soll als -a ausgegeben werden.
+            if (this.left.equals(Expression.MINUS_ONE)) {
+                if (this.right.isSum() || this.right.isDifference()) {
+                    // Hier noch zusätzliche Klammern um den rechten Faktor.
+                    return "-(" + this.right.expressionToLatex() + ")";
+                }
+                return "-" + this.right.expressionToLatex();
+            }
 
             if (this.left.isSum() || this.left.isDifference()) {
-                leftAsLatexCode = "\\left(" + this.left.expressionToLatex(true) + "\\right)";
+                leftAsLatexCode = "\\left(" + this.left.expressionToLatex() + "\\right)";
             } else {
-                leftAsLatexCode = this.left.expressionToLatex(false);
+                leftAsLatexCode = this.left.expressionToLatex();
             }
 
             if (this.right.isSum() || this.right.isDifference()) {
-                rightAsLatexCode = "\\left(" + this.right.expressionToLatex(true) + "\\right)";
+                rightAsLatexCode = "\\left(" + this.right.expressionToLatex() + "\\right)";
             } else {
-                rightAsLatexCode = this.right.expressionToLatex(false);
+                rightAsLatexCode = this.right.expressionToLatex();
             }
 
             return leftAsLatexCode + " \\cdot " + rightAsLatexCode;
 
-        } else if (this.type.equals(TypeBinary.DIV)) {
+        } else if (this.isQuotient()) {
 
-            return "\\frac{" + this.left.expressionToLatex(true) + "}{" + this.right.expressionToLatex(true) + "}";
+            return "\\frac{" + this.left.expressionToLatex() + "}{" + this.right.expressionToLatex() + "}";
 
         } else {
 
             if (this.left instanceof BinaryOperation) {
                 if (this.left.isDifference() && ((BinaryOperation) this.left).getLeft().equals(Expression.ZERO)) {
-                    leftAsLatexCode = this.left.expressionToLatex(true);
+                    leftAsLatexCode = this.left.expressionToLatex();
                 } else {
-                    leftAsLatexCode = "\\left(" + this.left.expressionToLatex(true) + "\\right)";
+                    leftAsLatexCode = "\\left(" + this.left.expressionToLatex() + "\\right)";
                 }
             } else {
-                leftAsLatexCode = this.left.expressionToLatex(false);
+                leftAsLatexCode = this.left.expressionToLatex();
             }
 
             if (this.left instanceof Variable) {
 
                 if (this.right instanceof Variable && (this.right.writeExpression().length() == 1)) {
-                    return leftAsLatexCode + "^" + this.right.expressionToLatex(true);
+                    return leftAsLatexCode + "^" + this.right.expressionToLatex();
                 }
-                return leftAsLatexCode + "^{" + this.right.expressionToLatex(true) + "}";
+                return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
 
             } else if (this.left instanceof Constant) {
 
-                if (((Constant) this.left).getValue().compareTo(BigDecimal.ZERO) >= 0) {
+                if (this.left.isNonNegative()) {
                     if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
-                        return leftAsLatexCode + "^" + this.right.expressionToLatex(true);
+                        return leftAsLatexCode + "^" + this.right.expressionToLatex();
                     }
-                    return leftAsLatexCode + "^{" + this.right.expressionToLatex(true) + "}";
+                    return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
                 }
 
             } else {
 
                 if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
-                    return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex(true);
+                    return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex();
                 }
 
             }
 
-            return "{" + leftAsLatexCode + "}^{" + this.right.expressionToLatex(true) + "}";
+            return "{" + leftAsLatexCode + "}^{" + this.right.expressionToLatex() + "}";
 
         }
 

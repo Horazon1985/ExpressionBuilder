@@ -1425,8 +1425,10 @@ public class GraphicPanelFormula extends JPanel {
             int lengthLeft;
 
             if (expr.getLeft() instanceof BinaryOperation
-                    || (expr.getLeft() instanceof Constant
-                    && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)) {
+                    || (expr.getLeft() instanceof Constant && expr.getLeft().isNegative())
+                    || expr.getLeft().isOperator(TypeOperator.diff) || expr.getLeft().isOperator(TypeOperator.fac)
+                    || expr.getLeft().isOperator(TypeOperator.integral) || expr.getLeft().isOperator(TypeOperator.laplace)
+                    || expr.getLeft().isOperator(TypeOperator.prod) || expr.getLeft().isOperator(TypeOperator.sum)) {
 
                 lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize) + 2 * getWidthOfBracket(fontSize);
 
@@ -2248,7 +2250,10 @@ public class GraphicPanelFormula extends JPanel {
 
         if (expr.getLeft() instanceof BinaryOperation
                 || (expr.getLeft() instanceof Constant
-                && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)) {
+                && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)
+                || expr.getLeft().isOperator(TypeOperator.diff) || expr.getLeft().isOperator(TypeOperator.fac)
+                || expr.getLeft().isOperator(TypeOperator.integral) || expr.getLeft().isOperator(TypeOperator.laplace)
+                || expr.getLeft().isOperator(TypeOperator.prod) || expr.getLeft().isOperator(TypeOperator.sum)) {
 
             // Zeichnen von (left)^right
             drawOpeningBracket(g, x_0, y_0, fontSize, heightLeft);

@@ -1279,14 +1279,14 @@ public class Operator extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
 
         if (this.type.equals(TypeOperator.diff)) {
             if (this.params.length == 3) {
 
                 // Es wird zunächst geprüft, ob params[2] eine gültige Variable ist.
                 if (this.params[2] instanceof String) {
-                    String result = "\\left(" + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+                    String result = "\\left(" + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
                     for (int i = 1; i < 3; i++) {
                         result = "\\frac{\\partial}{\\partial " + ((String) this.params[i]) + "}" + result;
                     }
@@ -1294,53 +1294,55 @@ public class Operator extends Expression {
                 }
                 // Andernfalls ist der Operator von der Form diff(EXPRESSION, VAR, ZAHL)
                 return "\\frac{\\partial^{" + ((int) this.params[2]) + "}}{\\partial " + ((String) this.params[1]) + "^{" + ((int) this.params[2]) + "}}\\left("
-                        + ((Expression) this.params[0]).expressionToLatex(false) + "\\right)";
+                        + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
 
             } else {
-                String result = "\\left(" + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+                String result = "\\left(" + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
                 for (int i = 1; i < this.params.length; i++) {
                     result = "\\frac{\\partial}{\\partial " + ((String) this.params[i]) + "}" + result;
                 }
                 return result;
             }
         } else if (this.type.equals(TypeOperator.div)) {
-            return "\\div\\left(" + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+            return "\\div\\left(" + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else if (this.type.equals(TypeOperator.gcd)) {
             String result = "\\gcd(";
             for (int i = 0; i < this.params.length - 1; i++) {
-                result = result + ((Expression) this.params[i]).expressionToLatex(true) + ",";
+                result = result + ((Expression) this.params[i]).expressionToLatex() + ",";
             }
-            result = result + ((Expression) this.params[this.params.length - 1]).expressionToLatex(true) + ")";
+            result = result + ((Expression) this.params[this.params.length - 1]).expressionToLatex() + ")";
             return result;
         } else if (this.type.equals(TypeOperator.integral)) {
 
             String var = (String) this.params[1];
             if (this.params.length == 2) {
-                return "\\int " + ((Expression) this.params[0]).expressionToLatex(true) + "\\ d" + var;
+                return "\\int " + ((Expression) this.params[0]).expressionToLatex() + "\\ d" + var;
             } else {
-                return "\\int_{" + ((Expression) this.params[2]).expressionToLatex(true) + "}^{" + ((Expression) this.params[3]).expressionToLatex(true)
-                        + "} " + ((Expression) this.params[0]).expressionToLatex(true) + "\\ d" + var;
+                return "\\int_{" + ((Expression) this.params[2]).expressionToLatex() + "}^{" + ((Expression) this.params[3]).expressionToLatex()
+                        + "} " + ((Expression) this.params[0]).expressionToLatex() + "\\ d" + var;
             }
 
         } else if (this.type.equals(TypeOperator.laplace)) {
-            return "\\Delta\\left(" + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+            return "\\Delta\\left(" + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else if (this.type.equals(TypeOperator.lcm)) {
             String result = "\\lcm(";
             for (int i = 0; i < this.params.length - 1; i++) {
-                result = result + ((Expression) this.params[i]).expressionToLatex(true) + ",";
+                result = result + ((Expression) this.params[i]).expressionToLatex() + ",";
             }
-            result = result + ((Expression) this.params[this.params.length - 1]).expressionToLatex(true) + ")";
+            result = result + ((Expression) this.params[this.params.length - 1]).expressionToLatex() + ")";
             return result;
         } else if (this.type.equals(TypeOperator.prod)) {
-            return "\\prod_{" + ((String) this.params[1]) + " = " + ((int) this.params[2]) + "}^{" + ((int) this.params[3]) + "}\\left("
-                    + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+            return "\\prod_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{" 
+                    + ((Expression) this.params[3]).expressionToLatex() + "}\\left("
+                    + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else if (this.type.equals(TypeOperator.sum)) {
-            return "\\sum_{" + ((String) this.params[1]) + " = " + ((int) this.params[2]) + "}^{" + ((int) this.params[3]) + "}\\left("
-                    + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+            return "\\sum_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{" 
+                    + ((Expression) this.params[3]).expressionToLatex() + "}\\left("
+                    + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else {
             // In diesem Fall ist es das Taylorpolynom
-            return "T_{" + ((String) this.params[1]) + "," + ((double) this.params[2]) + "," + ((int) this.params[3]) + "}\\left("
-                    + ((Expression) this.params[0]).expressionToLatex(true) + "\\right)";
+            return "T_{" + ((String) this.params[1]) + "," + ((Expression) this.params[2]).expressionToLatex() + "," + ((int) this.params[3]) + "}\\left("
+                    + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         }
     }
 

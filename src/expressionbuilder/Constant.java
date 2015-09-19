@@ -315,7 +315,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
         return this.writeExpression();
     }
 

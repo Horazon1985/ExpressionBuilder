@@ -443,64 +443,64 @@ public class Function extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
 
         if (this.type == TypeFunction.id) {
-            return this.left.expressionToLatex(true);
+            return this.left.expressionToLatex();
         } else if (this.type == TypeFunction.abs) {
-            return "\\|" + this.left.expressionToLatex(true) + "\\|";
+            return "\\|" + this.left.expressionToLatex() + "\\|";
         } else if (this.type == TypeFunction.exp) {
-            return "\\exp\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\exp\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.ln) {
-            return "\\ln\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\ln\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.sin) {
-            return "\\sin\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\sin\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.cos) {
-            return "\\cos\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\cos\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.tan) {
-            return "\\tan\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\tan\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.cot) {
-            return "\\cot\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\cot\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.sec) {
-            return "\\sec\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\sec\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.cosec) {
-            return "\\csc\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\csc\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.sinh) {
-            return "\\sinh\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\sinh\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.cosh) {
-            return "\\cosh\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\cosh\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.tanh) {
-            return "\\tanh\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\tanh\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.coth) {
-            return "\\coth\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\coth\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.sech) {
-            return "\\text{sech}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{sech}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.cosech) {
-            return "\\text{csch}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{csch}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arcsin) {
-            return "\\arcsin\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\arcsin\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arccos) {
-            return "\\arccos\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\arccos\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arctan) {
-            return "\\arctan\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\arctan\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arccot) {
-            return "\\text{arccot}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arccot}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arcsec) {
-            return "\\text{arcsec}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arcsec}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arccosec) {
-            return "\\text{arccsc}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arccsc}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arsinh) {
-            return "\\text{arsinh}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arsinh}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arcosh) {
-            return "\\text{arcosh}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arcosh}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.artanh) {
-            return "\\text{artanh}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{artanh}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arcoth) {
-            return "\\text{arcoth}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arcoth}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else if (this.type == TypeFunction.arsech) {
-            return "\\text{arsech}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arsech}\\left(" + this.left.expressionToLatex() + "\\right)";
         } else {
-            return "\\text{arcsch}\\left(" + this.left.expressionToLatex(true) + "\\right)";
+            return "\\text{arcsch}\\left(" + this.left.expressionToLatex() + "\\right)";
         }
     }
 

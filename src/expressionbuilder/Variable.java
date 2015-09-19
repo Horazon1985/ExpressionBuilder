@@ -306,7 +306,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public String expressionToLatex(boolean beginning) {
+    public String expressionToLatex() {
         if (!this.name.equals("pi")) {
             return this.name;
         }
