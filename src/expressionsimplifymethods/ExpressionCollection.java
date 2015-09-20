@@ -89,7 +89,7 @@ public class ExpressionCollection {
         }
         return false;
     }
-    
+
     /**
      * Gibt zurück, ob die ExpressionCollection den Ausdruck expr enthält
      * (verglichen wird mit equivalent()). Ist expr == null, so wird false

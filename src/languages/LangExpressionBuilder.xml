@@ -1,4 +1,4 @@
-﻿<objects>
+<objects>
   <object id = "EB_BinaryOperation_UNDEFINED_VALUE">
     <German>Zu großer oder undefinierter Wert.</German>
     <English>Too big or undefined value.</English>
@@ -378,10 +378,10 @@
     <Russian>3. параметр оператора 'taylor' должен быть вещественным числом из области определения.</Russian>
   </object>
   <object id = "EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID">
-    <German>Der 4. Parameter im Operator 'taylor' muss eine natürliche Zahl <= 2147483647 sein. Dies ist die Ordnung des Taylorpolynoms.</German>
-    <English>The 4. parameter in operator 'taylor' must be a natural number <= 2147483647. This is the degree of the taylor polynomial.</English>
-    <Ukrainian>4. параметр оператора 'taylor' має бути натуральним числом <= 2147483647. Це порядок полінома Тейлора.</Ukrainian>
-    <Russian>4. параметр оператора 'taylor' должен быть натуральным числом <= 2147483647. Это порядок полинома Тейлора.</Russian>
+    <German>Der 4. Parameter im Operator 'taylor' muss eine natürliche Zahl kleiner als 2147483648 sein. Dies ist die Ordnung des Taylorpolynoms.</German>
+    <English>The 4. parameter in operator 'taylor' must be a natural number smallert than 2147483648. This is the degree of the taylor polynomial.</English>
+    <Ukrainian>4. параметр оператора 'taylor' має бути натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
+    <Russian>4. параметр оператора 'taylor' должен быть натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
   </object>
   <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_1">
     <German>Der Ausdruck </German>

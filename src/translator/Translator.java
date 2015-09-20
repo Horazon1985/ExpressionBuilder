@@ -14,9 +14,7 @@ public class Translator {
 
     public static String translateExceptionMessage(String exception_id) {
 
-        /**
-         * Die entsprechende XML-Datei öffnen.
-         */
+        // Die entsprechende XML-Datei öffnen.
         try {
             URL langFile;
             if (exception_id.substring(0, 2).equals("CC")) {
@@ -38,9 +36,7 @@ public class Translator {
             } else if (exception_id.substring(0, 2).equals("SM")) {
                 langFile = ClassLoader.getSystemResource("languages/LangSimplifyMethods.xml");
             } else {
-                /**
-                 * Hier sind es die GUI-Sprachdateien
-                 */
+                // Hier sind es die GUI-Sprachdateien
                 langFile = ClassLoader.getSystemResource("languages/LangGUI.xml");
             }
 
@@ -76,9 +72,7 @@ public class Translator {
         } catch (Exception e) {
         }
 
-        /**
-         * Sollte nie eintreten.
-         */
+        // Sollte nie eintreten.
         return "";
 
     }
