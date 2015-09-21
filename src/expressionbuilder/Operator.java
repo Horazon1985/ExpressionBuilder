@@ -18,12 +18,6 @@ public class Operator extends Expression {
     private Object[] params;
     private boolean precise;
 
-    public Operator() {
-        this.type = TypeOperator.none;
-        this.params = new Object[1];
-        this.precise = true;
-    }
-
     public Operator(TypeOperator type, Object[] params) {
         this.type = type;
         this.params = params;
@@ -93,7 +87,6 @@ public class Operator extends Expression {
         TypeOperator type = getTypeFromName(operator);
 
         // Ergebnisoperator zunächst (beliebig) initialisieren.
-        Operator resultOperator = new Operator();
         Object[] resultOperatorParams;
 
         // DIFFERENTIALOPERATOR
@@ -139,17 +132,13 @@ public class Operator extends Expression {
                     resultOperatorParams[0] = Expression.build(params[0], vars);
                     resultOperatorParams[1] = params[1];
                     resultOperatorParams[2] = Integer.parseInt(params[2]);
-                    resultOperator.setType(type);
-                    resultOperator.setParams(resultOperatorParams);
-                    return resultOperator;
+                    return new Operator(type, resultOperatorParams);
                 } else {
                     resultOperatorParams = new Object[3];
                     resultOperatorParams[0] = Expression.build(params[0], vars);
                     resultOperatorParams[1] = params[1];
                     resultOperatorParams[2] = params[2];
-                    resultOperator.setType(type);
-                    resultOperator.setParams(resultOperatorParams);
-                    return resultOperator;
+                    return new Operator(type, resultOperatorParams);
                 }
 
             } else {
@@ -180,16 +169,12 @@ public class Operator extends Expression {
                     resultOperatorParams = new Object[params.length];
                     resultOperatorParams[0] = Expression.build(params[0], vars);
                     System.arraycopy(params, 1, resultOperatorParams, 1, params.length - 1);
-                    resultOperator.setType(type);
-                    resultOperator.setParams(resultOperatorParams);
-                    return resultOperator;
+                    return new Operator(type, resultOperatorParams);
                 }
 
             }
-        }
-
-        // DIVERGENZ
-        if (type.equals(TypeOperator.div)) {
+        } else if (type.equals(TypeOperator.div)) {
+            // DIVERGENZ
             if (params.length != 1) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV"));
             }
@@ -202,13 +187,9 @@ public class Operator extends Expression {
 
             resultOperatorParams = new Object[1];
             resultOperatorParams[0] = Expression.build(params[0], vars);
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // FAKULTÄT
-        if (type.equals(TypeOperator.fac)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.fac)) {
+            // FAKULTÄT
             if (params.length != 1) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_FAC"));
             }
@@ -221,13 +202,9 @@ public class Operator extends Expression {
 
             resultOperatorParams = new Object[1];
             resultOperatorParams[0] = Expression.build(params[0], vars);
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // GCD
-        if (type.equals(TypeOperator.gcd)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.gcd)) {
+            // GCD
             if (params.length == 0) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_GCD"));
             }
@@ -244,13 +221,9 @@ public class Operator extends Expression {
                 }
             }
 
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // INTEGRAL
-        if (type.equals(TypeOperator.integral)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.integral)) {
+            // INTEGRAL
             if (params.length != 2 && params.length != 4) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT"));
             }
@@ -274,11 +247,9 @@ public class Operator extends Expression {
 
             if (params.length == 2) {
                 resultOperatorParams = new Object[2];
-                resultOperator.setType(type);
                 resultOperatorParams[0] = integrand;
                 resultOperatorParams[1] = params[1];
-                resultOperator.setParams(resultOperatorParams);
-                return resultOperator;
+                return new Operator(type, resultOperatorParams);
             }
 
             HashSet<String> varsInIntegrationLimit = new HashSet<>();
@@ -302,17 +273,13 @@ public class Operator extends Expression {
             }
 
             resultOperatorParams = new Object[4];
-            resultOperator.setType(type);
             resultOperatorParams[0] = integrand;
             resultOperatorParams[1] = params[1];
             resultOperatorParams[2] = lowerLimit;
             resultOperatorParams[3] = upperLimit;
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // LAPLACE-OPERATOR
-        if (type.equals(TypeOperator.laplace)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.laplace)) {
+            // LAPLACE-OPERATOR
             if (params.length != 1) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE"));
             }
@@ -325,13 +292,9 @@ public class Operator extends Expression {
 
             resultOperatorParams = new Object[1];
             resultOperatorParams[0] = Expression.build(params[0], vars);
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // LCM
-        if (type.equals(TypeOperator.lcm)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.lcm)) {
+            // LCM
             if (params.length == 0) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_LCM"));
             }
@@ -348,13 +311,9 @@ public class Operator extends Expression {
                 }
             }
 
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // MOD
-        if (type.equals(TypeOperator.mod)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.mod)) {
+            // MOD
             if (params.length != 2) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_MOD"));
             }
@@ -371,13 +330,9 @@ public class Operator extends Expression {
                 }
             }
 
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // PRODUKT
-        if (type.equals(TypeOperator.prod)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.prod)) {
+            // PRODUKT
             if (params.length != 4) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD"));
             }
@@ -428,13 +383,9 @@ public class Operator extends Expression {
             resultOperatorParams[1] = params[1];
             resultOperatorParams[2] = lowerLimit;
             resultOperatorParams[3] = upperLimit;
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
-        }
-
-        // SUMME
-        if (type.equals(TypeOperator.sum)) {
+            return new Operator(type, resultOperatorParams);
+        } else if (type.equals(TypeOperator.sum)) {
+            // SUMME
             if (params.length != 4) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM"));
             }
@@ -485,58 +436,49 @@ public class Operator extends Expression {
             resultOperatorParams[1] = params[1];
             resultOperatorParams[2] = lowerLimit;
             resultOperatorParams[3] = upperLimit;
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
+            return new Operator(type, resultOperatorParams);
         }
 
         // TAYLORPOLYNOM
-        if (type.equals(TypeOperator.taylor)) {
-            if (params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_TAYLOR"));
-            }
-
-            try {
-                Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_TAYLOR_IS_INVALID") + e.getMessage());
-            }
-
-            if (!isValidVariable(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_TAYLOR_IS_INVALID"));
-            }
-
-            HashSet<String> varsInCenterPoint = new HashSet<>();
-            try {
-                Expression.build(params[2], varsInCenterPoint);
-                if (!varsInCenterPoint.isEmpty()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID"));
-            }
-
-            try {
-                int k = Integer.parseInt(params[3]);
-                if (k < 0) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID"));
-                }
-            } catch (NumberFormatException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID"));
-            }
-
-            resultOperatorParams = new Object[4];
-            resultOperatorParams[0] = Expression.build(params[0], vars);
-            resultOperatorParams[1] = params[1];
-            resultOperatorParams[2] = Expression.build(params[2], vars);
-            resultOperatorParams[3] = Integer.parseInt(params[3]);
-            resultOperator.setType(type);
-            resultOperator.setParams(resultOperatorParams);
-            return resultOperator;
+        if (params.length != 4) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_TAYLOR"));
         }
 
-        // Kommt nicht vor, da alle Fälle abgedeckt sind, aber trotzdem.        
-        return resultOperator;
+        try {
+            Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_TAYLOR_IS_INVALID") + e.getMessage());
+        }
+
+        if (!isValidVariable(params[1])) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_TAYLOR_IS_INVALID"));
+        }
+
+        HashSet<String> varsInCenterPoint = new HashSet<>();
+        try {
+            Expression.build(params[2], varsInCenterPoint);
+            if (!varsInCenterPoint.isEmpty()) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID"));
+        }
+
+        try {
+            int k = Integer.parseInt(params[3]);
+            if (k < 0) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID"));
+            }
+        } catch (NumberFormatException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID"));
+        }
+
+        resultOperatorParams = new Object[4];
+        resultOperatorParams[0] = Expression.build(params[0], vars);
+        resultOperatorParams[1] = params[1];
+        resultOperatorParams[2] = Expression.build(params[2], vars);
+        resultOperatorParams[3] = Integer.parseInt(params[3]);
+        return new Operator(type, resultOperatorParams);
 
     }
 
@@ -750,7 +692,7 @@ public class Operator extends Expression {
         }
         return result;
     }
-    
+
     @Override
     public boolean containsExponentialFunction() {
         boolean result = false;

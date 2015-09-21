@@ -156,16 +156,52 @@
     <Russian>Параматр оператора 'div' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_GRAD">
-    <German>Im Operator 'grad' muss genau ein Parameter stehen.</German>
-    <English>Operator 'grad' must contain exactly one parameter.</English>
-    <Ukrainian>У оператора 'grad' має бути рівно один параметр.</Ukrainian>
-    <Russian>У оператора 'grad' должен быть ровно один параметр.</Russian>
+    <German>Im Operator 'grad' müssen mindestens zwei Parameter stehen.</German>
+    <English>Operator 'grad' must contain at least two parameter.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
   </object>
-  <object id = "MEB_Operator_PARAMETER_IN_GRAD_IS_INVALID">
-    <German>Der Parameter im Operator 'grad' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The parameter in operator 'grad' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'grad' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'grad' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID">
+    <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Gemeldeter Fehler: </German>
+    <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. Reported error: </English>
+    <Ukrainian>Первий параметр оператора 'grad' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>??? параматр оператора 'grad' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_1">
+    <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
+    <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. The argument is a </English>
+    <Ukrainian>Первий параметр оператора 'grad' має бути діючим ??? виразом. ??? </Ukrainian>
+    <Russian>??? параматр оператора 'grad' должен быть действительным ??? выражением. ??? </Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_2">
+    <German> x </German>
+    <English> x </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_3">
+    <German> Matrix.</German>
+    <English> matrix.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_2">
+    <German>. Parameter im Operator 'grad' muss eine gültige Veränderliche sein.</German>
+    <English>. parameter in operator 'grad' must be a valid variable.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_PARAMETER_IN_GRAD_REPEATED">
+    <German>Die Veränderlichen im Operator 'grad' müssen paarweise verschieden sein.</German>
+    <English>The variables in operator 'grad' must be pairwise distinct.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT">
     <German>Im Operator 'int' müssen entweder genau zwei Parameter (im Falle einer unbestimmten Integration) oder genau vier Parameter (im Falle einer bestimmten Integration) stehen.</German>
