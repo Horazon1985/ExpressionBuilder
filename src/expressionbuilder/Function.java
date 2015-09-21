@@ -262,6 +262,23 @@ public class Function extends Expression {
     }
 
     @Override
+    public boolean containsExponentialFunction() {
+        if (this.type.equals(TypeFunction.exp) && !this.left.isConstant()) {
+            // Im diesem Fall handelt es sich (eventuell) um Exponentialfunktionen.
+            return true;
+        }
+        return this.left.containsExponentialFunction();
+    }
+
+    @Override
+    public boolean containsTrigonometricalFunction() {
+        return (this.type.equals(TypeFunction.sin) || this.type.equals(TypeFunction.cos)
+                || this.type.equals(TypeFunction.tan) || this.type.equals(TypeFunction.cot)
+                || this.type.equals(TypeFunction.sec) || this.type.equals(TypeFunction.cosec)) && !this.left.isConstant()
+                || this.left.containsTrigonometricalFunction();
+    }
+
+    @Override
     public boolean containsIndefiniteIntegral() {
         return this.left.containsIndefiniteIntegral();
     }
@@ -909,7 +926,7 @@ public class Function extends Expression {
     public Expression simplifyPolynomials() throws EvaluationException {
         return new Function(this.left.simplifyPolynomials(), this.type);
     }
-    
+
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
         return new Function(this.left.simplifyCollectLogarithms(), this.type);
@@ -920,13 +937,13 @@ public class Function extends Expression {
 
         // Zunächst linken Teil (Argument in der Funktion) vereinfachen.
         Function function = new Function(this.left.simplifyExpandLogarithms(), this.type);
-        
+
         // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x).
         Expression functionSimplified = SimplifyExpLog.reduceLogarithmOfReciprocal(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
-        
+
         // Vereinfacht lg(x^y) zu y*lg(x) und ln(x^y) zu y*ln(x).
         functionSimplified = SimplifyExpLog.reduceLogarithmOfPower(function);
         if (!functionSimplified.equals(function)) {
@@ -934,7 +951,7 @@ public class Function extends Expression {
         }
 
         return function;
-        
+
     }
 
     @Override
@@ -1006,11 +1023,11 @@ public class Function extends Expression {
         if (function.getType().equals(TypeFunction.cosec)) {
             return Expression.ONE.div(new Function(function.getLeft(), TypeFunction.sin));
         }
-        
+
         return function;
 
     }
-    
+
     @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
         return new Function(this.left.simplifyAlgebraicExpressions(), this.type);

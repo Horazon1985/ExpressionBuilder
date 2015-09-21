@@ -199,8 +199,13 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_by_definitions);
+        // Exponentialfunktionen / trig. Funktionen sollen durch die ursprüngliche Definition ersetzt werden, wenn diese auch auftauchen!
+        if (f.containsExponentialFunction()) {
+            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_by_definitions);
+        }
+        if (f.containsTrigonometricalFunction()) {
         simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+        }
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
         return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
@@ -1425,7 +1430,7 @@ public class SimplifyIntegralMethods {
             throws EvaluationException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        
+
         if (factor.isPower()) {
 
             /*
@@ -1496,7 +1501,7 @@ public class SimplifyIntegralMethods {
             }
 
         }
-        
+
         return setOfSubstitutions;
 
     }
@@ -1531,7 +1536,7 @@ public class SimplifyIntegralMethods {
 
                 // Jede potentielle Substitution ausprobieren.
                 for (int j = 0; j < setOfSubstitutions.getBound(); j++) {
-                    
+
                     substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
                     quotient = SimplifyUtilities.produceProduct(factors).div(derivative).simplify();
@@ -1753,7 +1758,7 @@ public class SimplifyIntegralMethods {
 
         for (int i = 0; i < factors.getBound(); i++) {
 
-            if (factors.get(i) == null){
+            if (factors.get(i) == null) {
                 continue;
             }
             if (!(factors.get(i) instanceof Function) || !(((Function) factors.get(i)).getType().equals(TypeFunction.sin)

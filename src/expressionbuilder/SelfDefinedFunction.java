@@ -137,6 +137,24 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean containsExponentialFunction() {
+        boolean result = false;
+        for (int i = 0; i < this.left.length; i++) {
+            result = result || this.left[i].containsExponentialFunction();
+        }
+        return result || this.abstractExpression.containsExponentialFunction();
+    }
+
+    @Override
+    public boolean containsTrigonometricalFunction() {
+        boolean result = false;
+        for (int i = 0; i < this.left.length; i++) {
+            result = result || this.left[i].containsTrigonometricalFunction();
+        }
+        return result || this.abstractExpression.containsTrigonometricalFunction();
+    }
+    
+    @Override
     public boolean containsIndefiniteIntegral() {
         boolean result = false;
         for (int i = 0; i < this.left.length; i++) {

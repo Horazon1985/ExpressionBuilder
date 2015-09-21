@@ -251,6 +251,16 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean containsExponentialFunction() {
+        return false;
+    }
+    
+    @Override
+    public boolean containsTrigonometricalFunction() {
+        return false;
+    }
+    
+    @Override
     public boolean containsIndefiniteIntegral() {
         return false;
     }

@@ -12,6 +12,8 @@ import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import matrixsimplifymethods.SimplifyMatrixOperatorMethods;
@@ -110,7 +112,7 @@ public class MatrixOperator extends MatrixExpression {
         // DIFFERENTIALOPERATOR
         if (type.equals(TypeMatrixOperator.diff)) {
             if (params.length < 2) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF"));
             }
 
             if (params.length == 3) {
@@ -118,11 +120,11 @@ public class MatrixOperator extends MatrixExpression {
                 try {
                     MatrixExpression.build(params[0], vars);
                 } catch (NumberFormatException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
                 }
 
                 if (!isValidVariable(params[1])) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID"));
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID"));
                 }
 
                 boolean thirdArgumentIsValid = true;
@@ -135,13 +137,13 @@ public class MatrixOperator extends MatrixExpression {
                 }
 
                 if (!thirdArgumentIsValid) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
                 }
 
                 if (!isValidVariable(params[2])) {
                     int n = Integer.parseInt(params[2]);
                     if (n < 0) {
-                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                        throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
                     }
                 }
 
@@ -168,7 +170,7 @@ public class MatrixOperator extends MatrixExpression {
                 try {
                     MatrixExpression.build(params[0], vars);
                 } catch (ExpressionException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
                 }
 
                 // Es wird zunächst geprüft, ob alle übrigen Parameter gültige Variablen sind.
@@ -182,9 +184,9 @@ public class MatrixOperator extends MatrixExpression {
                 }
 
                 if (!allVariablesAreValid) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1")
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1")
                             + String.valueOf(indexOfInvalidVariable + 1)
-                            + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2"));
+                            + Translator.translateExceptionMessage("MEB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2"));
                 }
 
                 if (allVariablesAreValid) {
@@ -202,13 +204,13 @@ public class MatrixOperator extends MatrixExpression {
         // DIVERGENZ
         if (type.equals(TypeMatrixOperator.div)) {
             if (params.length != 1) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV"));
             }
 
             try {
                 MatrixExpression.build(params[0], vars);
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_DIV_IS_INVALID") + e.getMessage());
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_PARAMETER_IN_DIV_IS_INVALID") + e.getMessage());
             }
 
             resultMatrixOperatorParams = new Object[1];
@@ -218,10 +220,28 @@ public class MatrixOperator extends MatrixExpression {
             return resultMatrixOperator;
         }
 
+        // GRADIENT
+        if (type.equals(TypeMatrixOperator.grad)) {
+            if (params.length != 1) {
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_GRAD"));
+            }
+
+            try {
+                resultMatrixOperatorParams = new Object[1];
+                resultMatrixOperatorParams[0] = MatrixExpression.build(params[0], vars);
+                resultMatrixOperator.setType(type);
+                resultMatrixOperator.setParams(resultMatrixOperatorParams);
+                return resultMatrixOperator;
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_PARAMETER_IN_DIV_IS_GRAD") + e.getMessage());
+            }
+
+        }
+
         // INTEGRAL
         if (type.equals(TypeMatrixOperator.integral)) {
             if (params.length != 2 && params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT"));
             }
 
             HashSet<String> varsInIntegrand = new HashSet<>();
@@ -231,12 +251,12 @@ public class MatrixOperator extends MatrixExpression {
                 // Dies dient dazu, die Variablen im Integranden zu bestimmen.
                 integrand.getContainedVars(varsInIntegrand);
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
             }
 
             String intVar = params[1];
             if (!Expression.isValidDerivateOfVariable(intVar)) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_INT_IS_INVALID"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_2_PARAMETER_IN_INT_IS_INVALID"));
             }
 
             if (params.length == 2) {
@@ -253,19 +273,19 @@ public class MatrixOperator extends MatrixExpression {
             try {
                 lowerLimit = Expression.build(params[2], varsInIntegrationLimit);
                 if (varsInIntegrationLimit.contains(intVar)) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
             }
 
             try {
                 upperLimit = Expression.build(params[3], varsInIntegrationLimit);
                 if (varsInIntegrationLimit.contains(intVar)) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
             }
 
             resultMatrixOperatorParams = new Object[4];
@@ -281,13 +301,13 @@ public class MatrixOperator extends MatrixExpression {
         // LAPLACE-OPERATOR
         if (type.equals(TypeMatrixOperator.laplace)) {
             if (params.length != 1) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE"));
             }
 
             try {
                 MatrixExpression.build(params[0], vars);
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID") + e.getMessage());
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID") + e.getMessage());
             }
 
             resultMatrixOperatorParams = new Object[1];
@@ -300,7 +320,7 @@ public class MatrixOperator extends MatrixExpression {
         // PRODUKT
         if (type.equals(TypeMatrixOperator.prod)) {
             if (params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD"));
             }
 
             MatrixExpression factor;
@@ -308,41 +328,41 @@ public class MatrixOperator extends MatrixExpression {
             try {
                 factor = MatrixExpression.build(params[0], vars);
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_PROD_IS_INVALID") + e.getMessage());
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_PROD_IS_INVALID") + e.getMessage());
             }
 
             if (!isValidVariable(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_PROD_IS_INVALID"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_2_PARAMETER_IN_PROD_IS_INVALID"));
             }
 
             try {
                 lowerLimit = Expression.build(params[2], vars);
                 if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
                             + 3
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+                            + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
                         + 3
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
             }
 
             try {
                 upperLimit = Expression.build(params[3], vars);
                 if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
                             + 4
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+                            + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
                         + 4
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
             }
 
             if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE"));
             }
 
             resultMatrixOperatorParams = new Object[4];
@@ -358,7 +378,7 @@ public class MatrixOperator extends MatrixExpression {
         // SUMME
         if (type.equals(TypeMatrixOperator.sum)) {
             if (params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM"));
             }
 
             MatrixExpression summand;
@@ -366,41 +386,41 @@ public class MatrixOperator extends MatrixExpression {
             try {
                 summand = MatrixExpression.build(params[0], vars);
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_SUM_IS_INVALID") + e.getMessage());
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_SUM_IS_INVALID") + e.getMessage());
             }
 
             if (!isValidVariable(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_SUM_IS_INVALID"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_2_PARAMETER_IN_SUM_IS_INVALID"));
             }
 
             try {
                 lowerLimit = Expression.build(params[2], vars);
                 if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
                             + 3
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+                            + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
                         + 3
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
             }
 
             try {
                 upperLimit = Expression.build(params[3], vars);
                 if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                    throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
                             + 4
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+                            + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
                 }
             } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
                         + 4
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
             }
 
             if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE"));
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE"));
             }
 
             resultMatrixOperatorParams = new Object[4];
@@ -747,6 +767,9 @@ public class MatrixOperator extends MatrixExpression {
         if (this.type.equals(TypeMatrixOperator.div)) {
             return matrixOperator.simplifyTrivialDiv();
         }
+        if (this.type.equals(TypeMatrixOperator.grad)) {
+            return matrixOperator.simplifyTrivialGrad();
+        }
         if (this.type.equals(TypeMatrixOperator.integral)) {
             return matrixOperator.simplifyTrivialInt();
         }
@@ -777,25 +800,24 @@ public class MatrixOperator extends MatrixExpression {
             matExpr = matExpr.diff((String) this.params[1]);
             matExpr = matExpr.simplify();
             return matExpr;
-        } else {
-            /*
-             Es wird zunächst geprüft, ob alle übrigen Parameter gültige
-             Variablen sind, oder ob der dritte Parameter eine ganze Zahl ist.
-             */
-            if (this.params[2] instanceof String) {
-                for (int i = 1; i < this.params.length; i++) {
-                    matExpr = matExpr.diff((String) this.params[i]);
-                    matExpr = matExpr.simplify();
-                }
-            } else {
-                int k = (int) this.params[2];
-                for (int i = 0; i < k; i++) {
-                    matExpr = matExpr.diff((String) this.params[1]);
-                    matExpr = matExpr.simplify();
-                }
-            }
-            return matExpr;
         }
+        /*
+         Es wird zunächst geprüft, ob alle übrigen Parameter gültige
+         Variablen sind, oder ob der dritte Parameter eine ganze Zahl ist.
+         */
+        if (this.params[2] instanceof String) {
+            for (int i = 1; i < this.params.length; i++) {
+                matExpr = matExpr.diff((String) this.params[i]);
+                matExpr = matExpr.simplify();
+            }
+        } else {
+            int k = (int) this.params[2];
+            for (int i = 0; i < k; i++) {
+                matExpr = matExpr.diff((String) this.params[1]);
+                matExpr = matExpr.simplify();
+            }
+        }
+        return matExpr;
 
     }
 
@@ -812,11 +834,11 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
         HashSet<String> vars = new HashSet<>();
         matExpr.getContainedVars(vars);
-        Iterator iter = vars.iterator();
+        Iterator<String> iter = vars.iterator();
         String var;
 
         for (int i = 0; i < vars.size(); i++) {
-            var = (String) iter.next();
+            var = iter.next();
             if (result.equals(zeroMatrix)) {
                 result = matExpr.diff(var);
             } else {
@@ -825,6 +847,48 @@ public class MatrixOperator extends MatrixExpression {
         }
 
         return result;
+
+    }
+
+    /**
+     * Vereinfacht den Gradientenoperator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private MatrixExpression simplifyTrivialGrad() throws EvaluationException {
+
+        MatrixExpression expr = (MatrixExpression) this.params[0];
+
+        Dimension dim = expr.getDimension();
+
+        if (dim.height != 1 || dim.width != 1) {
+            throw new EvaluationException("");
+        }
+
+        Object exprConverted = expr.convertOneTimesOneMatrixToExpression();
+        if (exprConverted instanceof Expression) {
+
+            HashSet<String> vars = new HashSet<>();
+            expr.getContainedVars(vars);
+
+            ArrayList<String> varsOrdered = new ArrayList<>();
+
+            Iterator<String> iter = vars.iterator();
+
+            for (Iterator<String> iterator = vars.iterator(); iterator.hasNext();) {
+                varsOrdered.add(iter.next());
+            }
+
+            // Alle Variablen in alphabetischer Reihenfolge sortieren.
+            Collections.sort(varsOrdered);
+
+            // TO DO!
+            return null;
+
+        }
+
+        // Dann kann nichts vereinfacht werden.
+        return new MatrixOperator(TypeMatrixOperator.grad, new Object[]{expr});
 
     }
 

@@ -135,6 +135,21 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public boolean containsExponentialFunction() {
+        if (this.type.equals(TypeBinary.POW) && (!this.right.isConstant())) {
+            // Im diesem Fall handelt es sich (eventuell) um Exponentialfunktionen.
+            return true;
+        }
+        return this.left.containsExponentialFunction() || this.right.containsExponentialFunction();
+    }
+    
+    @Override
+    public boolean containsTrigonometricalFunction() {
+        return this.left.containsTrigonometricalFunction() || this.right.containsTrigonometricalFunction();
+    }
+    
+    
+    @Override
     public boolean containsIndefiniteIntegral() {
         return this.left.containsIndefiniteIntegral() || this.right.containsIndefiniteIntegral();
     }
@@ -2449,9 +2464,7 @@ public class BinaryOperation extends Expression {
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
 
-        } else if (this.isPower()) {
-            return new Function(new Function(this.left, TypeFunction.ln).mult(this.right), TypeFunction.exp);
-        }
+        } 
 
         return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
                 this.right.simplifyReplaceTrigonometricalFunctionsByDefinitions(),

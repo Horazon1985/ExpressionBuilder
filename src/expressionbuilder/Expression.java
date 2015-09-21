@@ -202,27 +202,6 @@ public abstract class Expression {
     }
 
     /**
-     * Beseitigt alle Leerzeichen im String s und verwandelt alle Großbuchstaben
-     * zu Kleinbuchstaben.
-     */
-    private static String convertToSmallLetters(String s) {
-
-        //Leerzeichen beseitigen
-        s = s.replaceAll(" ", "");
-
-        //Falls Großbuchstaben auftreten -> zu Kleinbuchstaben machen
-        for (int i = 0; i < s.length(); i++) {
-            if (((int) s.charAt(i) >= 65) && ((int) s.charAt(i) <= 90)) {
-                //Macht Großbuchstaben zu Kleinbuchstaben
-                s = s.substring(0, i) + (char) ((int) s.charAt(i) + 32) + s.substring(i + 1, s.length());
-            }
-        }
-
-        return s;
-
-    }
-
-    /**
      * Hauptmethode zum Erstellen einer Expression aus einem String.
      *
      * @throws ExpressionException
@@ -230,7 +209,7 @@ public abstract class Expression {
     public static Expression build(String formula, HashSet<String> vars) throws ExpressionException {
 
         // Leerzeichen beseitigen und alles zu Kleinbuchstaben machen
-        formula = convertToSmallLetters(formula);
+        formula = formula.replaceAll(" ", "").toLowerCase();
 
         // Prioritäten: + = 0, - = 1, * = 2, / = 3, ^ = 4, Zahl, Var, Funktion, Operator = 5.
         int priority = 5;
@@ -444,11 +423,7 @@ public abstract class Expression {
             String[] params = getArguments(operatorNameAndParams[1]);
             String operatorName;
             for (TypeOperator type : TypeOperator.values()) {
-                if (type.equals(TypeOperator.integral)) {
-                    operatorName = "int";
-                } else {
-                    operatorName = type.toString();
-                }
+                operatorName = Operator.getNameFromType(type);
                 if (operatorNameAndParams[0].equals(operatorName)) {
                     return Operator.getOperator(operatorName, params, vars);
                 }
@@ -527,6 +502,16 @@ public abstract class Expression {
      */
     public abstract boolean containsFunction();
 
+    /**
+     * Gibt zurück, ob this Exponentialfunktionen enthält.
+     */
+    public abstract boolean containsExponentialFunction();
+    
+    /**
+     * Gibt zurück, ob this trigonometrische Funktionen enthält.
+     */
+    public abstract boolean containsTrigonometricalFunction();
+        
     /**
      * Gibt zurück, ob this UNBESTIMMTE Integrale enthält.
      */

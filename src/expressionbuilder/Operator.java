@@ -745,7 +745,29 @@ public class Operator extends Expression {
         boolean result = false;
         for (Object param : this.params) {
             if (param instanceof Expression) {
-                result = result | ((Expression) param).containsFunction();
+                result = result || ((Expression) param).containsFunction();
+            }
+        }
+        return result;
+    }
+    
+    @Override
+    public boolean containsExponentialFunction() {
+        boolean result = false;
+        for (Object param : this.params) {
+            if (param instanceof Expression) {
+                result = result || ((Expression) param).containsExponentialFunction();
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public boolean containsTrigonometricalFunction() {
+        boolean result = false;
+        for (Object param : this.params) {
+            if (param instanceof Expression) {
+                result = result || ((Expression) param).containsTrigonometricalFunction();
             }
         }
         return result;
@@ -1332,11 +1354,11 @@ public class Operator extends Expression {
             result = result + ((Expression) this.params[this.params.length - 1]).expressionToLatex() + ")";
             return result;
         } else if (this.type.equals(TypeOperator.prod)) {
-            return "\\prod_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{" 
+            return "\\prod_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{"
                     + ((Expression) this.params[3]).expressionToLatex() + "}\\left("
                     + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else if (this.type.equals(TypeOperator.sum)) {
-            return "\\sum_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{" 
+            return "\\sum_{" + ((String) this.params[1]) + " = " + ((Expression) this.params[2]).expressionToLatex() + "}^{"
                     + ((Expression) this.params[3]).expressionToLatex() + "}\\left("
                     + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else {
@@ -1765,14 +1787,10 @@ public class Operator extends Expression {
     private Expression simplifyTrivialInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-
             Object result = SimplifyIntegralMethods.indefiniteIntegration(this, true);
-            if (result instanceof Boolean) {
-                // Dann ist result == false, also konnte der Integrand nicht integriert werden.
-                return this;
+            if (result instanceof Expression) {
+                return (Expression) result;
             }
-            return (Expression) result;
-
         }
 
         if (this.params.length == 4) {

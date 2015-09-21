@@ -7,6 +7,6 @@ public enum TypeMatrixOperator {
      * bereits einen primitiven Datentyp kennzeichnet. In der Konsole aber muss
      * 'int' eingegeben werden.
      */
-    none, diff, div, integral, laplace, prod, sum;
+    none, diff, div, grad, integral, laplace, prod, sum;
     
 }

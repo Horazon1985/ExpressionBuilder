@@ -301,11 +301,7 @@ public abstract class MatrixExpression {
             String[] params = Expression.getArguments(operatorNameAndParams[1]);
             String operatorName;
             for (TypeMatrixOperator type : TypeMatrixOperator.values()) {
-                if (type.equals(TypeMatrixOperator.integral)) {
-                    operatorName = "int";
-                } else {
-                    operatorName = type.toString();
-                }
+                operatorName = MatrixOperator.getNameFromType(type);
                 if (operatorNameAndParams[0].equals(operatorName)) {
                     return MatrixOperator.getOperator(operatorName, params, vars);
                 }
