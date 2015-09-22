@@ -2717,11 +2717,7 @@ public class GraphicPanelFormula extends JPanel {
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
-                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
-                if (!((Expression) left[i] instanceof Constant)){
-                    distanceFromOpeningBracket = distanceFromOpeningBracket + fontSize / 4;
-                }
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
                 g.drawString((String) left[i], x_0 + g.getFontMetrics().stringWidth(name)
@@ -2737,6 +2733,7 @@ public class GraphicPanelFormula extends JPanel {
             }
 
             if (i < left.length - 1) {
+                setFont(g, fontSize);
                 g.drawString(", ", x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
@@ -2745,6 +2742,7 @@ public class GraphicPanelFormula extends JPanel {
 
         }
 
+        setFont(g, fontSize);
         drawClosingBracket(g,
                 x_0 + g.getFontMetrics().stringWidth(name)
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
@@ -2783,6 +2781,7 @@ public class GraphicPanelFormula extends JPanel {
 
         }
 
+        setFont(g, fontSize);
         drawClosingBracket(g,
                 x_0 + g.getFontMetrics().stringWidth(((SelfDefinedFunction) f).getName())
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
@@ -3635,18 +3634,13 @@ public class GraphicPanelFormula extends JPanel {
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
-                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
-                if (!((Expression) left[i] instanceof Constant)){
-                    distanceFromOpeningBracket = distanceFromOpeningBracket + fontSize / 4;
-                }
             } else if (left[i] instanceof MatrixExpression) {
                 drawMatrixExpression(g, (MatrixExpression) left[i],
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize)), fontSize);
-                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
-                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfMatrixExpression(g, (MatrixExpression) left[i], fontSize) + fontSize / 4;
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfMatrixExpression(g, (MatrixExpression) left[i], fontSize);
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
                 g.drawString((String) left[i], x_0 + g.getFontMetrics().stringWidth(name)
@@ -3662,6 +3656,7 @@ public class GraphicPanelFormula extends JPanel {
             }
 
             if (i < left.length - 1) {
+                setFont(g, fontSize);
                 g.drawString(", ", x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
@@ -3670,6 +3665,7 @@ public class GraphicPanelFormula extends JPanel {
 
         }
 
+        setFont(g, fontSize);
         drawClosingBracket(g,
                 x_0 + g.getFontMetrics().stringWidth(name)
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,

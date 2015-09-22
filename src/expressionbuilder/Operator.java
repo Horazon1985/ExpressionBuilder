@@ -1949,6 +1949,13 @@ public class Operator extends Expression {
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
+        // Summen von Potenzen ganzer Zahlen explizit berechnen.
+        Expression simplifiedOperator = SimplifyOperatorMethods.simplifySumOfPowersOfIntegers(summand, (String) this.params[1],
+                    (Expression) this.params[2], (Expression) this.params[3]);
+        if (!simplifiedOperator.equals(this)){
+            return simplifiedOperator;
+        }
+        
         // Sonstiger Fall (wo man nichts machen kann).
         Object[] resultParams = new Object[4];
         resultParams[0] = summand.simplify();

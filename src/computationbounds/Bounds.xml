@@ -34,7 +34,7 @@
     <value>100</value>
   </object>
   <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS">
-    <value>10</value>
+    <value>4</value>
   </object>
   <object id = "Bound_NUMBER_OF_SUMMANDS_IN_EXPANSION">
     <value>10000</value>

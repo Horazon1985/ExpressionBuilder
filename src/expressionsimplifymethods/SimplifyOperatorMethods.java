@@ -1,10 +1,19 @@
 package expressionsimplifymethods;
 
+import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ONE;
+import static expressionbuilder.Expression.THREE;
+import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.Variable;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 public class SimplifyOperatorMethods {
 
@@ -255,8 +264,8 @@ public class SimplifyOperatorMethods {
      */
     public static Expression simplifySumOfPowersOfIntegers(Expression summand, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (!summand.equals(Variable.create(var)) 
-                || !(summand.isPower() && ((BinaryOperation) summand).getLeft().equals(Variable.create(var)) 
+        if (!summand.equals(Variable.create(var))
+                && !(summand.isPower() && ((BinaryOperation) summand).getLeft().equals(Variable.create(var))
                 && ((BinaryOperation) summand).getRight().isIntegerConstant() && ((BinaryOperation) summand).getRight().isPositive())) {
             // Dann nichts tun!
             Object[] params = new Object[4];
@@ -264,15 +273,92 @@ public class SimplifyOperatorMethods {
             params[1] = var;
             params[2] = lowerLimit;
             params[3] = upperLimit;
-            return new Operator(TypeOperator.prod, params);
+            return new Operator(TypeOperator.sum, params);
         }
 
-        // TO DO!
-        return null;
+        if (summand.isPower() && ((Constant) ((BinaryOperation) summand).getRight()).getValue().toBigInteger().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS)) > 0) {
+            // Dann ist der Exponent zu groß.
+            Object[] params = new Object[4];
+            params[0] = summand;
+            params[1] = var;
+            params[2] = lowerLimit;
+            params[3] = upperLimit;
+            return new Operator(TypeOperator.sum, params);
+        }
+
+        int n;
+        if (summand.equals(Variable.create(var))) {
+            n = 1;
+        } else {
+            n = ((Constant) ((BinaryOperation) summand).getRight()).getValue().toBigInteger().intValue();
+        }
+        
+        ArrayList<Expression> coefficients = getPolynomialCoefficientsForSumsOfPowersOfIntegers(n);
+        Expression abstractPolynomial = getPolynomialFromCoefficients(coefficients, var);
+        return abstractPolynomial.replaceVariable(var, upperLimit).sub(abstractPolynomial.replaceVariable(var, lowerLimit.sub(ONE)));
 
     }
-    
-    
-    
-    
+
+    private static ArrayList<Expression> getPolynomialCoefficientsForSumsOfPowersOfIntegers(int n) {
+
+        if (n <= 0 || n > ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS) {
+            return new ArrayList<>();
+        }
+
+        ArrayList<Expression> coefficients = new ArrayList<>();
+
+        switch (n) {
+            case 1:
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(TWO));
+                break;
+            case 2:
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(6));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(THREE));
+                break;
+            case 3:
+                coefficients.add(ZERO);
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(4));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(4));
+                break;
+            case 4:
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE);
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(3));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(5));
+                break;
+            default:
+                break;
+        }
+
+        return coefficients;
+
+    }
+
+    private static Expression getPolynomialFromCoefficients(ArrayList<Expression> coefficients, String var) {
+
+        Expression polynomial = ZERO;
+
+        for (int i = 0; i < coefficients.size(); i++) {
+            if (coefficients.get(i).equals(ZERO)) {
+                continue;
+            }
+            if (polynomial.equals(ZERO)) {
+                polynomial = coefficients.get(i).mult(Variable.create(var).pow(i));
+            } else {
+                polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
+            }
+        }
+
+        return polynomial;
+
+    }
+
 }
