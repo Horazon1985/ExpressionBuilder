@@ -457,7 +457,7 @@ public class Operator extends Expression {
         HashSet<String> varsInCenterPoint = new HashSet<>();
         try {
             Expression.build(params[2], varsInCenterPoint);
-            if (!varsInCenterPoint.isEmpty()) {
+            if (varsInCenterPoint.contains((String) params[1])) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID"));
             }
         } catch (ExpressionException e) {

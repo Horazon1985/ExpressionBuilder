@@ -84,7 +84,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             return new MatrixBinaryOperation(leftComputed, rightComputed, this.type);
         }
 
-        if (this.type.equals(TypeMatrixBinary.PLUS)) {
+        if (this.isSum()) {
 
             Expression[][] resultEntry = new Expression[((Matrix) leftComputed).getRowNumber()][((Matrix) leftComputed).getColumnNumber()];
             for (int i = 0; i < dim.height; i++) {
@@ -94,7 +94,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             }
             return new Matrix(resultEntry);
 
-        } else if (this.type.equals(TypeMatrixBinary.MINUS)) {
+        } else if (this.isDifference()) {
 
             Expression[][] resultEntry = new Expression[((Matrix) leftComputed).getRowNumber()][((Matrix) leftComputed).getColumnNumber()];
             for (int i = 0; i < dim.height; i++) {

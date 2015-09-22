@@ -372,10 +372,10 @@
     <Russian>2. параматр оператора 'taylor' должен быть действительной переменной.</Russian>
   </object>
   <object id = "EB_Operator_3_PARAMETER_IN_TAYLOR_IS_INVALID">
-    <German>Der 3. Parameter im Operator 'taylor' muss eine reelle Zahl sein, die im Definitionsbereich der Funktion liegt.</German>
-    <English>The 3. parameter in operator 'taylor' must be real number, where the function is defined at.</English>
-    <Ukrainian>3. параметр оператора 'taylor' має бути дійсним числом з області визначення.</Ukrainian>
-    <Russian>3. параметр оператора 'taylor' должен быть вещественным числом из области определения.</Russian>
+    <German>Der 3. Parameter im Operator 'taylor' muss ein gültiger Ausdruck sein, welcher die Veränderliche, nach der entwickelt wird, nicht enthält.</German>
+    <English>The 3. parameter in operator 'taylor' must be a valid expression, which does not contain the variable of the function.</English>
+    <Ukrainian>3. параметр оператора 'taylor' має бути діючим виразомм, що не містить змінну функції.</Ukrainian>
+    <Russian>3. параметр оператора 'taylor' должен быть действительным виражением, которое не содержит переменую функции.</Russian>
   </object>
   <object id = "EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID">
     <German>Der 4. Parameter im Operator 'taylor' muss eine natürliche Zahl kleiner als 2147483648 sein. Dies ist die Ordnung des Taylorpolynoms.</German>

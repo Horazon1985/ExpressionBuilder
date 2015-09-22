@@ -1034,6 +1034,7 @@ public class GraphicPanelFormula extends JPanel {
 
         } else {
 
+            // Sonstiger Standardfall
             String name = MatrixOperator.getNameFromType(matOperator.getType());
             int result = g.getFontMetrics().stringWidth(name) + 2 * getWidthOfBracket(fontSize);
 
@@ -2716,7 +2717,11 @@ public class GraphicPanelFormula extends JPanel {
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
+                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
+                if (!((Expression) left[i] instanceof Constant)){
+                    distanceFromOpeningBracket = distanceFromOpeningBracket + fontSize / 4;
+                }
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
                 g.drawString((String) left[i], x_0 + g.getFontMetrics().stringWidth(name)
@@ -3630,13 +3635,18 @@ public class GraphicPanelFormula extends JPanel {
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
+                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
+                if (!((Expression) left[i] instanceof Constant)){
+                    distanceFromOpeningBracket = distanceFromOpeningBracket + fontSize / 4;
+                }
             } else if (left[i] instanceof MatrixExpression) {
                 drawMatrixExpression(g, (MatrixExpression) left[i],
                         x_0 + g.getFontMetrics().stringWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize)), fontSize);
-                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfMatrixExpression(g, (MatrixExpression) left[i], fontSize);
+                // Der Summand fontSize / 4 dienst als kleiner Dummy (damit das Komma nicht UNMITTELBAR nach dem Ausdruck kommt).
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfMatrixExpression(g, (MatrixExpression) left[i], fontSize) + fontSize / 4;
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
                 g.drawString((String) left[i], x_0 + g.getFontMetrics().stringWidth(name)

@@ -86,8 +86,9 @@ public class MatrixPower extends MatrixExpression {
 
         Dimension dim = this.getDimension();
 
+        // simplify() wird deshalb benutzt, damit alle Ausdrücke in der Basis und im Exponenten möglich weit vereinfacht / verkürzt werden.
         Expression exponentSimplified = this.right.simplify();
-        MatrixExpression leftComputed = this.left.computeMatrixOperations();
+        MatrixExpression leftComputed = this.left.computeMatrixOperations().simplify();
         MatrixPower matExprSimplified = new MatrixPower(leftComputed, exponentSimplified);
 
         if (leftComputed.isNotMatrix()) {
