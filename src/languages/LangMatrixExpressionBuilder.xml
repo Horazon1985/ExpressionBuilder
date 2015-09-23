@@ -299,6 +299,36 @@
     <Ukrainian>Границі оператора 'prod' не мають містити індексної змінної.</Ukrainian>
     <Russian>Пределы оператора 'prod' не должны содержать индексной переменной.</Russian>
   </object>
+  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_ROT">
+    <German>Im Operator 'rot' müssen genau vier Parameter stehen.</German>
+    <English>Operator 'rot' must contain exactly four parameters.</English>
+    <Ukrainian>У оператора 'rot' має бути рівно чотири параметра.</Ukrainian>
+    <Russian>У оператора 'rot' должно быть ровно четыре параметра.</Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID">
+    <German>Der Parameter im Operator 'rot' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
+    <English>The parameter in operator 'rot' must be a valid matrix expression. Reported error: </English>
+    <Ukrainian>Параметр оператора 'rot' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'rot' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_ROT_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_ROT_IS_INVALID_2">
+    <German>. Parameter im Operator 'rot' muss eine gültige Veränderliche sein.</German>
+    <English>. parameter in operator 'rot' must be a valid variable.</English>
+    <Ukrainian>. параметр оператора 'rot' має бути діючою змінною.</Ukrainian>
+    <Russian>. параметр оператора 'rot' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "MEB_Operator_PARAMETER_IN_ROT_REPEATED">
+    <German>Die Veränderlichen im Operator 'rot' müssen paarweise verschieden sein.</German>
+    <English>The variables in operator 'rot' must be pairwise distinct.</English>
+    <Ukrainian>Змінні оператора 'rot' мають попарно відрізнятися.</Ukrainian>
+    <Russian>Переменные оператора 'rot' должны попарно отличаться.</Russian>
+  </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
     <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
     <English>Operator 'sum' must contain exactly four parameters.</English>
