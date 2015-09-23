@@ -18,6 +18,9 @@ public class Operator extends Expression {
     private Object[] params;
     private boolean precise;
 
+    public Operator() {
+    }
+
     public Operator(TypeOperator type, Object[] params) {
         this.type = type;
         this.params = params;
@@ -86,360 +89,434 @@ public class Operator extends Expression {
 
         TypeOperator type = getTypeFromName(operator);
 
-        // Ergebnisoperator zunächst (beliebig) initialisieren.
-        Object[] resultOperatorParams;
-
-        // DIFFERENTIALOPERATOR
-        if (type.equals(TypeOperator.diff)) {
-            if (params.length < 2) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF"));
-            }
-
-            if (params.length == 3) {
-
-                try {
-                    Expression.build(params[0], vars);
-                } catch (NumberFormatException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
-                }
-
-                if (!isValidVariable(params[1])) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID"));
-                }
-
-                boolean thirdArgumentIsValid = true;
-                if (!isValidVariable(params[2])) {
-                    try {
-                        Integer.parseInt(params[2]);
-                    } catch (NumberFormatException e) {
-                        thirdArgumentIsValid = false;
-                    }
-                }
-
-                if (!thirdArgumentIsValid) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
-                }
-
-                if (!isValidVariable(params[2])) {
-                    int n = Integer.parseInt(params[2]);
-                    if (n < 0) {
-                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
-                    }
-                }
-
-                if (!isValidVariable(params[2])) {
-                    resultOperatorParams = new Object[3];
-                    resultOperatorParams[0] = Expression.build(params[0], vars);
-                    resultOperatorParams[1] = params[1];
-                    resultOperatorParams[2] = Integer.parseInt(params[2]);
-                    return new Operator(type, resultOperatorParams);
-                } else {
-                    resultOperatorParams = new Object[3];
-                    resultOperatorParams[0] = Expression.build(params[0], vars);
-                    resultOperatorParams[1] = params[1];
-                    resultOperatorParams[2] = params[2];
-                    return new Operator(type, resultOperatorParams);
-                }
-
-            } else {
-
-                try {
-                    Expression.build(params[0], vars);
-                } catch (ExpressionException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
-                }
-
-                // Es wird zunächst geprüft, ob alle übrigen Parameter gültige Variablen sind.
-                boolean allVariablesAreValid = true;
-                int indexOfInvalidVariable = 0;
-                for (int i = 1; i < params.length; i++) {
-                    if (!isValidVariable(params[i])) {
-                        allVariablesAreValid = false;
-                        indexOfInvalidVariable = i;
-                    }
-                }
-
-                if (!allVariablesAreValid) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1")
-                            + String.valueOf(indexOfInvalidVariable + 1)
-                            + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2"));
-                }
-
-                if (allVariablesAreValid) {
-                    resultOperatorParams = new Object[params.length];
-                    resultOperatorParams[0] = Expression.build(params[0], vars);
-                    System.arraycopy(params, 1, resultOperatorParams, 1, params.length - 1);
-                    return new Operator(type, resultOperatorParams);
-                }
-
-            }
-        } else if (type.equals(TypeOperator.div)) {
-            // DIVERGENZ
-            if (params.length != 1) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV"));
-            }
-
-            try {
-                Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_DIV_IS_INVALID") + e.getMessage());
-            }
-
-            resultOperatorParams = new Object[1];
-            resultOperatorParams[0] = Expression.build(params[0], vars);
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.fac)) {
-            // FAKULTÄT
-            if (params.length != 1) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_FAC"));
-            }
-
-            try {
-                Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_FAC_IS_INVALID") + e.getMessage());
-            }
-
-            resultOperatorParams = new Object[1];
-            resultOperatorParams[0] = Expression.build(params[0], vars);
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.gcd)) {
-            // GCD
-            if (params.length == 0) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_GCD"));
-            }
-
-            resultOperatorParams = new Object[params.length];
-            for (int i = 0; i < params.length; i++) {
-                try {
-                    resultOperatorParams[i] = Expression.build(params[i], vars);
-                } catch (ExpressionException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_1")
-                            + (i + 1)
-                            + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_2")
-                            + e.getMessage());
-                }
-            }
-
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.integral)) {
-            // INTEGRAL
-            if (params.length != 2 && params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT"));
-            }
-
-            HashSet<String> varsInIntegrand = new HashSet<>();
-            Expression integrand;
-            try {
-                integrand = Expression.build(params[0], vars);
-                /**
-                 * Dies dient dazu, die Variablen im Integranden zu bestimmen
-                 */
-                integrand.getContainedVars(varsInIntegrand);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
-            }
-
-            String intVar = params[1];
-            if (!Expression.isValidDerivateOfVariable(intVar)) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_INT_IS_INVALID"));
-            }
-
-            if (params.length == 2) {
-                resultOperatorParams = new Object[2];
-                resultOperatorParams[0] = integrand;
-                resultOperatorParams[1] = params[1];
-                return new Operator(type, resultOperatorParams);
-            }
-
-            HashSet<String> varsInIntegrationLimit = new HashSet<>();
-            Expression lowerLimit, upperLimit;
-            try {
-                lowerLimit = Expression.build(params[2], varsInIntegrationLimit);
-                if (varsInIntegrationLimit.contains(intVar)) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
-            }
-
-            try {
-                upperLimit = Expression.build(params[3], varsInIntegrationLimit);
-                if (varsInIntegrationLimit.contains(intVar)) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
-            }
-
-            resultOperatorParams = new Object[4];
-            resultOperatorParams[0] = integrand;
-            resultOperatorParams[1] = params[1];
-            resultOperatorParams[2] = lowerLimit;
-            resultOperatorParams[3] = upperLimit;
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.laplace)) {
-            // LAPLACE-OPERATOR
-            if (params.length != 1) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE"));
-            }
-
-            try {
-                Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID") + e.getMessage());
-            }
-
-            resultOperatorParams = new Object[1];
-            resultOperatorParams[0] = Expression.build(params[0], vars);
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.lcm)) {
-            // LCM
-            if (params.length == 0) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_LCM"));
-            }
-
-            resultOperatorParams = new Object[params.length];
-            for (int i = 0; i < params.length; i++) {
-                try {
-                    resultOperatorParams[i] = Expression.build(params[i], vars);
-                } catch (ExpressionException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_1")
-                            + (i + 1)
-                            + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_2")
-                            + e.getMessage());
-                }
-            }
-
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.mod)) {
-            // MOD
-            if (params.length != 2) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_MOD"));
-            }
-
-            resultOperatorParams = new Object[2];
-            for (int i = 0; i < 2; i++) {
-                try {
-                    resultOperatorParams[i] = Expression.build(params[i], vars);
-                } catch (ExpressionException e) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_1")
-                            + (i + 1)
-                            + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_2")
-                            + e.getMessage());
-                }
-            }
-
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.prod)) {
-            // PRODUKT
-            if (params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD"));
-            }
-
-            Expression factor, lowerLimit, upperLimit;
-            try {
-                factor = Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_PROD_IS_INVALID") + e.getMessage());
-            }
-
-            if (!isValidVariable(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_PROD_IS_INVALID"));
-            }
-
-            try {
-                lowerLimit = Expression.build(params[2], vars);
-                if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
-                            + 3
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
-                        + 3
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
-            }
-
-            try {
-                upperLimit = Expression.build(params[3], vars);
-                if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
-                            + 4
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
-                        + 4
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
-            }
-
-            if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE"));
-            }
-
-            resultOperatorParams = new Object[4];
-            resultOperatorParams[0] = factor;
-            resultOperatorParams[1] = params[1];
-            resultOperatorParams[2] = lowerLimit;
-            resultOperatorParams[3] = upperLimit;
-            return new Operator(type, resultOperatorParams);
-        } else if (type.equals(TypeOperator.sum)) {
-            // SUMME
-            if (params.length != 4) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM"));
-            }
-
-            Expression summand, lowerLimit, upperLimit;
-            try {
-                summand = Expression.build(params[0], vars);
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_SUM_IS_INVALID") + e.getMessage());
-            }
-
-            if (!isValidVariable(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_SUM_IS_INVALID"));
-            }
-
-            try {
-                lowerLimit = Expression.build(params[2], vars);
-                if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
-                            + 3
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
-                        + 3
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
-            }
-
-            try {
-                upperLimit = Expression.build(params[3], vars);
-                if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
-                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
-                            + 4
-                            + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
-                }
-            } catch (ExpressionException e) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
-                        + 4
-                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
-            }
-
-            if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE"));
-            }
-
-            resultOperatorParams = new Object[4];
-            resultOperatorParams[0] = summand;
-            resultOperatorParams[1] = params[1];
-            resultOperatorParams[2] = lowerLimit;
-            resultOperatorParams[3] = upperLimit;
-            return new Operator(type, resultOperatorParams);
+        switch (type) {
+            case diff:
+                return getOperatorDiff(params, vars);
+            case div:
+                return getOperatorDiv(params, vars);
+            case fac:
+                return getOperatorFac(params, vars);
+            case gcd:
+                return getOperatorGCD(params, vars);
+            case integral:
+                return getOperatorIntegral(params, vars);
+            case laplace:
+                return getOperatorLaplace(params, vars);
+            case lcm:
+                return getOperatorLCM(params, vars);
+            case mod:
+                return getOperatorMod(params, vars);
+            case prod:
+                return getOperatorProd(params, vars);
+            case sum:
+                return getOperatorSum(params, vars);
+            case taylor:
+                return getOperatorTaylor(params, vars);
+            // Sollte theoretisch nie vorkommen.
+            default:
+                return new Operator();
         }
 
-        // TAYLORPOLYNOM
+    }
+
+    private static Operator getOperatorDiff(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+
+        if (params.length < 2) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF"));
+        }
+
+        if (params.length == 3) {
+
+            try {
+                Expression.build(params[0], vars);
+            } catch (NumberFormatException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
+            }
+
+            if (!isValidVariable(params[1])) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID"));
+            }
+
+            boolean thirdArgumentIsValid = true;
+            if (!isValidVariable(params[2])) {
+                try {
+                    Integer.parseInt(params[2]);
+                } catch (NumberFormatException e) {
+                    thirdArgumentIsValid = false;
+                }
+            }
+
+            if (!thirdArgumentIsValid) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+            }
+
+            if (!isValidVariable(params[2])) {
+                int n = Integer.parseInt(params[2]);
+                if (n < 0) {
+                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                }
+            }
+
+            if (!isValidVariable(params[2])) {
+                resultOperatorParams = new Object[3];
+                resultOperatorParams[0] = Expression.build(params[0], vars);
+                resultOperatorParams[1] = params[1];
+                resultOperatorParams[2] = Integer.parseInt(params[2]);
+                return new Operator(TypeOperator.diff, resultOperatorParams);
+            } else {
+                resultOperatorParams = new Object[3];
+                resultOperatorParams[0] = Expression.build(params[0], vars);
+                resultOperatorParams[1] = params[1];
+                resultOperatorParams[2] = params[2];
+                return new Operator(TypeOperator.diff, resultOperatorParams);
+            }
+
+        }
+
+        try {
+            Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG") + e.getMessage());
+        }
+
+        // Es wird zunächst geprüft, ob alle übrigen Parameter gültige Variablen sind.
+        boolean allVariablesAreValid = true;
+        int indexOfInvalidVariable = 0;
+        for (int i = 1; i < params.length; i++) {
+            if (!isValidVariable(params[i])) {
+                allVariablesAreValid = false;
+                indexOfInvalidVariable = i;
+            }
+        }
+
+        if (!allVariablesAreValid) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1")
+                    + String.valueOf(indexOfInvalidVariable + 1)
+                    + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        resultOperatorParams[0] = Expression.build(params[0], vars);
+        System.arraycopy(params, 1, resultOperatorParams, 1, params.length - 1);
+        return new Operator(TypeOperator.diff, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorDiv(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+
+        if (params.length < 2) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV"));
+        }
+
+        try {
+            resultOperatorParams = new Object[params.length];
+            resultOperatorParams[0] = Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_FIRST_PARAMETER_IN_DIV_IS_INVALID") + e.getMessage());
+        }
+
+        HashSet<String> varsInParams = new HashSet<>();
+        for (int i = 1; i < params.length; i++) {
+            if (!isValidVariable(params[i])) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_1")
+                        + i + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_2"));
+            }
+            if (varsInParams.contains(params[i])) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_DIV_REPEATED"));
+            }
+            varsInParams.add(params[i]);
+            resultOperatorParams[i] = params[i];
+        }
+        return new Operator(TypeOperator.div, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorFac(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 1) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_FAC"));
+        }
+
+        try {
+            Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_FAC_IS_INVALID") + e.getMessage());
+        }
+
+        resultOperatorParams = new Object[1];
+        resultOperatorParams[0] = Expression.build(params[0], vars);
+        return new Operator(TypeOperator.fac, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorGCD(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length == 0) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_GCD"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.gcd, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorIntegral(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 2 && params.length != 4) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT"));
+        }
+
+        HashSet<String> varsInIntegrand = new HashSet<>();
+        Expression integrand;
+        try {
+            integrand = Expression.build(params[0], vars);
+            // Dies dient dazu, die Variablen im Integranden zu bestimmen
+            integrand.getContainedVars(varsInIntegrand);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
+        }
+
+        String intVar = params[1];
+        if (!Expression.isValidDerivateOfVariable(intVar)) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_INT_IS_INVALID"));
+        }
+
+        if (params.length == 2) {
+            resultOperatorParams = new Object[2];
+            resultOperatorParams[0] = integrand;
+            resultOperatorParams[1] = params[1];
+            return new Operator(TypeOperator.integral, resultOperatorParams);
+        }
+
+        HashSet<String> varsInIntegrationLimit = new HashSet<>();
+        Expression lowerLimit, upperLimit;
+        try {
+            lowerLimit = Expression.build(params[2], varsInIntegrationLimit);
+            if (varsInIntegrationLimit.contains(intVar)) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_INT_IS_INVALID"));
+        }
+
+        try {
+            upperLimit = Expression.build(params[3], varsInIntegrationLimit);
+            if (varsInIntegrationLimit.contains(intVar)) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_4_PARAMETER_IN_INT_IS_INVALID"));
+        }
+
+        resultOperatorParams = new Object[4];
+        resultOperatorParams[0] = integrand;
+        resultOperatorParams[1] = params[1];
+        resultOperatorParams[2] = lowerLimit;
+        resultOperatorParams[3] = upperLimit;
+        return new Operator(TypeOperator.integral, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorLaplace(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 1) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE"));
+        }
+
+        try {
+            Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID") + e.getMessage());
+        }
+
+        resultOperatorParams = new Object[1];
+        resultOperatorParams[0] = Expression.build(params[0], vars);
+        return new Operator(TypeOperator.laplace, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorLCM(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length == 0) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_LCM"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.lcm, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorMod(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 2) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_MOD"));
+        }
+
+        resultOperatorParams = new Object[2];
+        for (int i = 0; i < 2; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.mod, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorProd(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 4) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD"));
+        }
+
+        Expression factor, lowerLimit, upperLimit;
+        try {
+            factor = Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_PROD_IS_INVALID") + e.getMessage());
+        }
+
+        if (!isValidVariable(params[1])) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_PROD_IS_INVALID"));
+        }
+
+        try {
+            lowerLimit = Expression.build(params[2], vars);
+            if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                        + 3
+                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                    + 3
+                    + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+        }
+
+        try {
+            upperLimit = Expression.build(params[3], vars);
+            if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                        + 4
+                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1")
+                    + 4
+                    + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2"));
+        }
+
+        if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE"));
+        }
+
+        resultOperatorParams = new Object[4];
+        resultOperatorParams[0] = factor;
+        resultOperatorParams[1] = params[1];
+        resultOperatorParams[2] = lowerLimit;
+        resultOperatorParams[3] = upperLimit;
+        return new Operator(TypeOperator.prod, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorSum(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length != 4) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM"));
+        }
+
+        Expression summand, lowerLimit, upperLimit;
+        try {
+            summand = Expression.build(params[0], vars);
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_SUM_IS_INVALID") + e.getMessage());
+        }
+
+        if (!isValidVariable(params[1])) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_2_PARAMETER_IN_SUM_IS_INVALID"));
+        }
+
+        try {
+            lowerLimit = Expression.build(params[2], vars);
+            if (!lowerLimit.isIntegerConstant() && lowerLimit.isConstant()) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                        + 3
+                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                    + 3
+                    + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+        }
+
+        try {
+            upperLimit = Expression.build(params[3], vars);
+            if (!upperLimit.isIntegerConstant() && upperLimit.isConstant()) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                        + 4
+                        + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+            }
+        } catch (ExpressionException e) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1")
+                    + 4
+                    + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2"));
+        }
+
+        if (lowerLimit.contains(params[1]) || upperLimit.contains(params[1])) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE"));
+        }
+
+        resultOperatorParams = new Object[4];
+        resultOperatorParams[0] = summand;
+        resultOperatorParams[1] = params[1];
+        resultOperatorParams[2] = lowerLimit;
+        resultOperatorParams[3] = upperLimit;
+        return new Operator(TypeOperator.sum, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorTaylor(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
         if (params.length != 4) {
             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_TAYLOR"));
         }
@@ -478,7 +555,7 @@ public class Operator extends Expression {
         resultOperatorParams[1] = params[1];
         resultOperatorParams[2] = Expression.build(params[2], vars);
         resultOperatorParams[3] = Integer.parseInt(params[3]);
-        return new Operator(type, resultOperatorParams);
+        return new Operator(TypeOperator.taylor, resultOperatorParams);
 
     }
 
@@ -1612,17 +1689,12 @@ public class Operator extends Expression {
 
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
-        HashSet<String> vars = new HashSet<>();
-        expr.getContainedVars(vars);
-        Iterator iter = vars.iterator();
-        String var;
 
-        for (int i = 0; i < vars.size(); i++) {
-            var = (String) iter.next();
+        for (int i = 1; i < this.params.length; i++) {
             if (result.equals(Expression.ZERO)) {
-                result = expr.diff(var);
+                result = expr.diff((String) this.params[i]);
             } else {
-                result = result.add(expr.diff(var));
+                result = result.add(expr.diff((String) this.params[i]));
             }
         }
 
@@ -1951,11 +2023,11 @@ public class Operator extends Expression {
 
         // Summen von Potenzen ganzer Zahlen explizit berechnen.
         Expression simplifiedOperator = SimplifyOperatorMethods.simplifySumOfPowersOfIntegers(summand, (String) this.params[1],
-                    (Expression) this.params[2], (Expression) this.params[3]);
-        if (!simplifiedOperator.equals(this)){
+                (Expression) this.params[2], (Expression) this.params[3]);
+        if (!simplifiedOperator.equals(this)) {
             return simplifiedOperator;
         }
-        
+
         // Sonstiger Fall (wo man nichts machen kann).
         Object[] resultParams = new Object[4];
         resultParams[0] = summand.simplify();

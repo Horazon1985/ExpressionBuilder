@@ -92,14 +92,14 @@
   <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
     <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
     <English>The exponential function of an occurring matrix is not defined.</English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <Ukrainian>Експоненційна функція даної матриці не визначена.</Ukrainian>
+    <Russian>Экспоненциальная функция данной матрицы не определена.</Russian>
   </object>
   <object id = "MEB_MatrixFunction_LN_NOT_DEFINED">
     <German>Der Logarithmus einer auftretenden Matrix ist nicht definiert.</German>
     <English>The logarithm of an occurring matrix is not defined.</English>
-    <Ukrainian></Ukrainian>
-    <Russian>.</Russian>
+    <Ukrainian>Логарифм функція даної матриці не визначено.</Ukrainian>
+    <Russian>Логарифм функция данной матрицы не определен.</Russian>
   </object>
   <object id = "MEB_MatrixFunction_TR_NOT_DEFINED">
     <German>Die Spur einer auftretenden Matrix ist nicht definiert.</German>
@@ -116,8 +116,8 @@
   <object id = "MEB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG">
     <German>Der 1. Parameter im Operator 'diff' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The 1. parameter in the operator 'diff' has to be a valid matrix expression. Error message: </English>
-    <Ukrainian>1. параметр оператора 'diff' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параметр оператора 'diff' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>1. параметр оператора 'diff' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параметр оператора 'diff' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID">
     <German>Der 2. Parameter im Operator 'diff' muss eine gültige Variable sein.</German>
@@ -144,46 +144,64 @@
     <Russian>. параметр оператора 'diff' должен быть действительной переменной.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV">
-    <German>Im Operator 'div' muss genau ein Parameter stehen.</German>
-    <English>Operator 'div' must contain exactly one parameter.</English>
-    <Ukrainian>У оператора 'div' має бути рівно один параметр.</Ukrainian>
-    <Russian>У оператора 'div' должен быть ровно один параметр.</Russian>
+    <German>Im Operator 'div' müssen mindestens zwei Parameter stehen.</German>
+    <English>Operator 'div' must contain at least two parameter.</English>
+    <Ukrainian>У оператора 'div' має бути щонайменше два параметра.</Ukrainian>
+    <Russian>У оператора 'div' по крайней мере два параметра</Russian>
   </object>
-  <object id = "MEB_Operator_PARAMETER_IN_DIV_IS_INVALID">
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_DIV_IS_INVALID">
     <German>Der Parameter im Operator 'div' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The parameter in operator 'div' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'div' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'div' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>Параметр оператора 'div' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'div' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_2">
+    <German>. Parameter im Operator 'div' muss eine gültige Veränderliche sein.</German>
+    <English>. parameter in operator 'div' must be a valid variable.</English>
+    <Ukrainian>. параметр оператора 'div' має бути діючою змінною.</Ukrainian>
+    <Russian>. параметр оператора 'div' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "MEB_Operator_PARAMETER_IN_DIV_REPEATED">
+    <German>Die Veränderlichen im Operator 'div' müssen paarweise verschieden sein.</German>
+    <English>The variables in operator 'div' must be pairwise distinct.</English>
+    <Ukrainian>Змінні оператора 'div' мають попарно відрізнятися.</Ukrainian>
+    <Russian>Переменные оператора 'div' должны попарно отличаться.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_GRAD">
     <German>Im Operator 'grad' müssen mindestens zwei Parameter stehen.</German>
-    <English>Operator 'grad' must contain at least two parameter.</English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <English>Operator 'grad' must contain at least two parameters.</English>
+    <Ukrainian>У оператора 'grad' маэ бути щонайменше два параметра.</Ukrainian>
+    <Russian>У оператора 'grad' должно быть по крайней мере два параметра.</Russian>
   </object>
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID">
     <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. Reported error: </English>
-    <Ukrainian>Первий параметр оператора 'grad' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>??? параматр оператора 'grad' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>Перший параметр оператора 'grad' має бути діючим 1x1-матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Первый параматр оператора 'grad' должен быть действительным 1x1-матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_1">
     <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
     <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. The argument is a </English>
-    <Ukrainian>Первий параметр оператора 'grad' має бути діючим ??? виразом. ??? </Ukrainian>
-    <Russian>??? параматр оператора 'grad' должен быть действительным ??? выражением. ??? </Russian>
+    <Ukrainian>Первий параметр оператора 'grad' має бути діючим 1x1-матричним виразом. Аргументом є </Ukrainian>
+    <Russian>Перший параматр оператора 'grad' должен быть действительным 1x1-матричным выражением. Аргументом является </Russian>
   </object>
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_2">
     <German> x </German>
     <English> x </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <Ukrainian> x </Ukrainian>
+    <Russian> x </Russian>
   </object>
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_3">
     <German> Matrix.</German>
     <English> matrix.</English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <Ukrainian> матриця.</Ukrainian>
+    <Russian> матрица.</Russian>
   </object>
   <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_1">
     <German>Der </German>
@@ -194,14 +212,14 @@
   <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_2">
     <German>. Parameter im Operator 'grad' muss eine gültige Veränderliche sein.</German>
     <English>. parameter in operator 'grad' must be a valid variable.</English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <Ukrainian>. параметр оператора 'grad' має бути діючою змінною.</Ukrainian>
+    <Russian>. параметр оператора 'grad' должен быть действительной переменной.</Russian>
   </object>
   <object id = "MEB_Operator_PARAMETER_IN_GRAD_REPEATED">
     <German>Die Veränderlichen im Operator 'grad' müssen paarweise verschieden sein.</German>
     <English>The variables in operator 'grad' must be pairwise distinct.</English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
+    <Ukrainian>Змінні оператора 'grad' повинні попарно відрізнятися.</Ukrainian>
+    <Russian>Переменные оператора 'grad' должны попарно отличаться.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT">
     <German>Im Operator 'int' müssen entweder genau zwei Parameter (im Falle einer unbestimmten Integration) oder genau vier Parameter (im Falle einer bestimmten Integration) stehen.</German>
@@ -212,8 +230,8 @@
   <object id = "MEB_Operator_1_PARAMETER_IN_INT_IS_INVALID">
     <German>Der 1. Parameter im Operator 'int' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The 1. parameter in operator 'int' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'int' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'int' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>1. параметр оператора 'int' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'int' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_2_PARAMETER_IN_INT_IS_INVALID">
     <German>Der 2. Parameter im Operator 'int' muss eine gültige Veränderliche sein.</German>
@@ -224,14 +242,14 @@
   <object id = "MEB_Operator_3_PARAMETER_IN_INT_IS_INVALID">
     <German>Der 3. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Matrizenausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
     <English>The 3. parameter in operator 'int' is the lower limit of integration. This must be a valid matrix expression, which does not contain the integration variable.</English>
-    <Ukrainian>3. параметр оператора 'int' є нижньою границею інтегрування. Він має бути діючим ??? виразом, який не містить змінної інтегрування.</Ukrainian>
-    <Russian>3. параметр оператора 'int' является нижним пределом интегрирования. Он должен быть действительным ??? выражением, которое не содержит переменной интегрирования.</Russian>
+    <Ukrainian>3. параметр оператора 'int' є нижньою границею інтегрування. Він має бути діючим матричним виразом, який не містить змінної інтегрування.</Ukrainian>
+    <Russian>3. параметр оператора 'int' является нижним пределом интегрирования. Он должен быть действительным матричным выражением, которое не содержит переменной интегрирования.</Russian>
   </object>
   <object id = "MEB_Operator_4_PARAMETER_IN_INT_IS_INVALID">
     <German>Der 4. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Matrizenausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
     <English>The 4. parameter in operator 'int' is the upper limit of integration. This must be a valid matrix expression, which does not contain the integration variable.</English>
-    <Ukrainian>4. параметр оператора 'int' є верхньою границею інтегрування. Він має бути діючим ??? виразом, який не містить змінної інтегрування.</Ukrainian>
-    <Russian>4. параметр оператора 'int' является верхним пределом интегрирования. Он должен быть действительным ??? выражением, которое не содержит переменной интегрирования.</Russian>
+    <Ukrainian>4. параметр оператора 'int' є верхньою границею інтегрування. Він має бути діючим матричним виразом, який не містить змінної інтегрування.</Ukrainian>
+    <Russian>4. параметр оператора 'int' является верхним пределом интегрирования. Он должен быть действительным матричным выражением, которое не содержит переменной интегрирования.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE">
     <German>Im Operator 'laplace' muss genau ein Parameter stehen.</German>
@@ -242,8 +260,8 @@
   <object id = "MEB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID">
     <German>Der Parameter im Operator 'laplace' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The parameter in operator 'laplace' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'int' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'int' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>Параметр оператора 'int' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Параматр оператора 'int' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD">
     <German>Im Operator 'prod' müssen genau vier parameter stehen.</German>
@@ -254,8 +272,8 @@
   <object id = "MEB_Operator_1_PARAMETER_IN_PROD_IS_INVALID">
     <German>Der 1. Parameter im Operator 'prod' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The 1. parameter in operator 'prod' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'prod' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'prod' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>1. параметр оператора 'prod' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'prod' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_2_PARAMETER_IN_PROD_IS_INVALID">
     <German>Der 2. Parameter im Operator 'prod' muss eine Variable sein, nach der multipliziert wird.</German>
@@ -290,8 +308,8 @@
   <object id = "MEB_Operator_1_PARAMETER_IN_SUM_IS_INVALID">
     <German>Der 1. Parameter im Operator 'sum' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The 1. parameter in operator 'sum' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'sum' має бути діючим ??? виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'sum' должен быть действительным ??? выражением. Сообщение об ошибке: </Russian>
+    <Ukrainian>1. параметр оператора 'sum' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>1. параматр оператора 'sum' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MEB_Operator_2_PARAMETER_IN_SUM_IS_INVALID">
     <German>Der 2. Parameter im Operator 'sum' muss eine Variable sein, nach der addiert wird.</German>

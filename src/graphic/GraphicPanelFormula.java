@@ -859,6 +859,12 @@ public class GraphicPanelFormula extends JPanel {
 
     public int getLengthOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
 
+        // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
+        Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
+        if (matExprConverted instanceof Expression){
+            return getLengthOfExpression(g, (Expression) matExprConverted, fontSize);
+        }
+        
         setFont(g, fontSize);
 
         if (matExpr instanceof Matrix) {
@@ -3674,10 +3680,17 @@ public class GraphicPanelFormula extends JPanel {
     }
 
     /**
-     * Hauptmethode zum Zeichnen eines MatrixExpression matExpr.
+     * Hauptmethode zum Zeichnen einer MatrixExpression matExpr.
      */
     private void drawMatrixExpression(Graphics g, MatrixExpression matExpr, int x_0, int y_0, int fontSize) {
 
+        // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
+        Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
+        if (matExprConverted instanceof Expression){
+            drawExpression(g, (Expression) matExprConverted, x_0, y_0, fontSize);
+            return;
+        }
+        
         setFont(g, fontSize);
 
         if (matExpr instanceof Matrix) {

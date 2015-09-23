@@ -162,16 +162,34 @@
     <Russian>. параметр оператора 'diff' должен быть действительной переменной.</Russian>
   </object>
   <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV">
-    <German>Im Operator 'div' muss genau ein Parameter stehen.</German>
-    <English>Operator 'div' must contain exactly one parameter.</English>
+    <German>Im Operator 'div' müssen mindestens zwei Parameter stehen.</German>
+    <English>Operator 'div' must contain at least two parameters.</English>
     <Ukrainian>У оператора 'div' має бути рівно один параметр.</Ukrainian>
     <Russian>У оператора 'div' должен быть ровно один параметр.</Russian>
   </object>
-  <object id = "EB_Operator_PARAMETER_IN_DIV_IS_INVALID">
-    <German>Der Parameter im Operator 'div' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-    <English>The parameter in operator 'div' must be a valid expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'div' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'div' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  <object id = "EB_Operator_FIRST_PARAMETER_IN_DIV_IS_INVALID">
+    <German>Der erste Parameter im Operator 'div' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>The first parameter in operator 'div' must be a valid expression. Reported error: </English>
+    <Ukrainian>Перший параметр оператора 'div' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>Первый параматр оператора 'div' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_2">
+    <German>. Parameter im Operator 'div' muss eine gültige Veränderliche sein.</German>
+    <English>. parameter in operator 'div' must be a valid variable.</English>
+    <Ukrainian>. параметр оператора 'div' має бути діючою змінною.</Ukrainian>
+    <Russian>. параметр оператора 'div' должен быть действительной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_PARAMETER_IN_DIV_REPEATED">
+    <German>Die Veränderlichen im Operator 'div' müssen paarweise verschieden sein.</German>
+    <English>The variables in operator 'div' must be pairwise distinct.</English>
+    <Ukrainian>Змінні оператора 'div' мають юути попарно різними.</Ukrainian>
+    <Russian>Переменные 'div' должны попарно отлчаться.</Russian>
   </object>
   <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_FAC">
     <German>Im Operator 'fac' muss genau ein Parameter stehen.</German>
