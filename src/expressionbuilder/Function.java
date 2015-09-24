@@ -263,7 +263,10 @@ public class Function extends Expression {
 
     @Override
     public boolean containsExponentialFunction() {
-        if (this.type.equals(TypeFunction.exp) && !this.left.isConstant()) {
+        if ((this.type.equals(TypeFunction.exp) || this.type.equals(TypeFunction.sinh)
+                || this.type.equals(TypeFunction.cosh) || this.type.equals(TypeFunction.tanh)
+                || this.type.equals(TypeFunction.coth) || this.type.equals(TypeFunction.sech)
+                || this.type.equals(TypeFunction.cosech)) && !this.left.isConstant()) {
             // Im diesem Fall handelt es sich (eventuell) um Exponentialfunktionen.
             return true;
         }

@@ -209,24 +209,6 @@
     <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом, що представляє квадратну матрицю. Повідомлення про помилку: </Ukrainian>
     <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением, который представляет квадратную матрицу. Сообщение об ошибке: </Russian>
   </object>
-  <object id = "MCC_EIGENVECTORS_OF_MATRIX_1">
-    <German>Es konnten folgende Eigenvektoren der Matrix </German>
-    <English>Following eigenvectors of the matrix </English>
-    <Ukrainian>Наступні власні вектори матриці </Ukrainian>
-    <Russian>Следующие собственные векторы матрицы </Russian>
-  </object>
-  <object id = "MCC_EIGENVECTORS_OF_MATRIX_2">
-    <German> ermittelt werden: </German>
-    <English> are found: </English>
-    <Ukrainian> було знайдено:</Ukrainian>
-    <Russian> были найдены: </Russian>
-  </object>
-  <object id = "MCC_EIGENVECTORS_OF_MATRIX_2">
-    <German> ist ein Eigenvektor zum Eigenwert </German>
-    <English> is an eigenvector for the eigenvalue </English>
-    <Ukrainian> є власним вектором для власного значення </Ukrainian>
-    <Russian> является собственным вектором для собственного значения </Russian>
-  </object>
   <object id = "MCC_EIGENVECTORS_FOR_EIGENVALUE_1">
     <German>Eigenvektoren zum Eigenwert </German>
     <English>Eigenvectors for eigenvalue </English>
@@ -238,6 +220,18 @@
     <English> : </English>
     <Ukrainian> : </Ukrainian>
     <Russian> : </Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_NO_EXPLICIT_EIGENVECTORS">
+    <German>Es konnte kein Eigenvector explizit berechnet werden.</German>
+    <English>No eigenvector could be computetd explicitely.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_EIGENVECTORS_NO_EIGENVECTORS">
+    <German>Es konnte kein Eigenvector berechnet werden.</German>
+    <English>No eigenvector could be computetd.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EULER">
     <German>Im Befehl 'euler' muss genau ein Parameter stehen.</German>
@@ -304,6 +298,18 @@
     <English> contains only the zero vector </English>
     <Ukrainian> містить лише нульовий вектор </Ukrainian>
     <Russian> содержит только нулевой вектор </Russian>
+  </object>
+  <object id = "MCC_KER_COULD_NOT_BE_COMPUTED_1">
+    <German>Der Kern der Matrix </German>
+    <English>The kernel of the matrix </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_KER_COULD_NOT_BE_COMPUTED_2">
+    <German> konnte nicht explizit berechnet werden.</German>
+    <English> could not be computed explicitely.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_LATEX">
     <German>Im Befehl 'latex' muss genau ein Parameter stehen. Dieser muss aus gültigen Ausdrücken bestehen, die allesamt durch Gleichheitszeichen verbunden sind.</German>

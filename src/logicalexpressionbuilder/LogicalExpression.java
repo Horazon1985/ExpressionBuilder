@@ -138,7 +138,9 @@ public abstract class LogicalExpression {
         //Falls der Ausdruck eine Variable ist
         if (priority == 5) {
             if (isValidVariable(formula)) {
-                vars.add(formula);
+                if (vars != null) {
+                    vars.add(formula);
+                }
                 return LogicalVariable.create(formula);
             }
         }

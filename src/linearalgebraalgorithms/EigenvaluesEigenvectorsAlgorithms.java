@@ -7,9 +7,7 @@ import expressionsimplifymethods.ExpressionCollection;
 import java.awt.Dimension;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;
-import matrixexpressionbuilder.MatrixFunction;
 import matrixexpressionbuilder.MatrixPower;
-import matrixexpressionbuilder.TypeMatrixFunction;
 import matrixsimplifymethods.MatrixExpressionCollection;
 import solveequationmethods.SolveMethods;
 
@@ -24,7 +22,7 @@ public class EigenvaluesEigenvectorsAlgorithms {
      */
     public static MatrixExpression getCharacteristicPolynomial(MatrixExpression matExpr, String var) throws EvaluationException {
         Dimension dim = matExpr.getDimension();
-        return new MatrixFunction(new Matrix(Variable.create(var)).mult(MatrixExpression.getId(dim.height)).sub(matExpr), TypeMatrixFunction.det);
+        return new Matrix(Variable.create(var)).mult(MatrixExpression.getId(dim.height)).sub(matExpr).det();
     }
 
     /**
@@ -79,7 +77,7 @@ public class EigenvaluesEigenvectorsAlgorithms {
      * Gibt die Eigenvektoren der Matrix matExpr zum Eigenwert eigenvalue
      * zurück, falls möglich.
      */
-    public MatrixExpressionCollection getEigenvectorsForEigenvalue(MatrixExpression matExpr, Expression eigenvalue) {
+    public static MatrixExpressionCollection getEigenvectorsForEigenvalue(MatrixExpression matExpr, Expression eigenvalue) {
 
         MatrixExpressionCollection eigenvectors = new MatrixExpressionCollection();
 
@@ -96,6 +94,37 @@ public class EigenvaluesEigenvectorsAlgorithms {
         Matrix result = new Matrix(Expression.ONE);
 
         return result;
+
+    }
+
+    /**
+     * Wenn true zurückgegeben wird, dann ist die Matrix (reell)
+     * diagonalisierbar. Ansonsten ist es nicht bekannt.
+     */
+    public static boolean isMatrixDiagonalizable(Matrix m) {
+
+        Dimension dim = m.getDimension();
+
+        if (dim.height != dim.width) {
+            return false;
+        }
+
+        ExpressionCollection eigenvalues = getEigenvalues(m);
+
+        if (eigenvalues.getBound() == dim.height) {
+            return true;
+        }
+
+        /*
+         Prüfung, ob die Summe der Dimensionen der Eigenräume gleich der Zeilenanzahl 
+         = Spaltenanzahl ist. 
+         */
+        int sumOfDimension = 0;
+        for (int i = 0; i < eigenvalues.getBound(); i++) {
+            sumOfDimension += getEigenvectorsForEigenvalue(m, eigenvalues.get(i)).getBound();
+        }
+
+         return sumOfDimension == dim.height;
 
     }
 

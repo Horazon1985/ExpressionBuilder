@@ -371,7 +371,9 @@ public abstract class Expression {
         //Falls der Ausdruck eine Variable ist.
         if (priority == 5) {
             if (isValidDerivateOfVariable(formula)) {
-                vars.add(formula);
+                if (vars != null) {
+                    vars.add(formula);
+                }
                 return Variable.create(formula);
             }
             if (isPI(formula)) {
@@ -506,12 +508,12 @@ public abstract class Expression {
      * Gibt zurück, ob this Exponentialfunktionen enthält.
      */
     public abstract boolean containsExponentialFunction();
-    
+
     /**
      * Gibt zurück, ob this trigonometrische Funktionen enthält.
      */
     public abstract boolean containsTrigonometricalFunction();
-        
+
     /**
      * Gibt zurück, ob this UNBESTIMMTE Integrale enthält.
      */
@@ -1015,7 +1017,7 @@ public abstract class Expression {
     public boolean isOperator(TypeOperator type) {
         return this instanceof Operator && ((Operator) this).getType().equals(type);
     }
-    
+
     public boolean isNotSum() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.PLUS));
     }
