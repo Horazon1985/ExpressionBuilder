@@ -25,7 +25,7 @@ public class MatrixOperator extends MatrixExpression {
 
     public MatrixOperator() {
     }
-    
+
     public MatrixOperator(TypeMatrixOperator type, Object[] params) {
         this.type = type;
         this.params = params;
@@ -102,6 +102,8 @@ public class MatrixOperator extends MatrixExpression {
                 return getMatrixOperatorDiff(params, vars);
             case div:
                 return getMatrixOperatorDiv(params, vars);
+            case grad:
+                return getMatrixOperatorGrad(params, vars);
             case integral:
                 return getMatrixOperatorIntegral(params, vars);
             case laplace:
@@ -241,8 +243,8 @@ public class MatrixOperator extends MatrixExpression {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_GRAD"));
         }
 
+        resultMatrixOperatorParams = new Object[params.length];
         try {
-            resultMatrixOperatorParams = new Object[params.length];
             resultMatrixOperatorParams[0] = MatrixExpression.build(params[0], vars);
             Dimension dim = ((MatrixExpression) resultMatrixOperatorParams[0]).getDimension();
             if (dim.height != 1 || dim.width != 1) {
@@ -415,7 +417,13 @@ public class MatrixOperator extends MatrixExpression {
         resultMatrixOperatorParams = new Object[4];
         try {
             resultMatrixOperatorParams[0] = MatrixExpression.build(params[0], vars);
-        } catch (ExpressionException e) {
+            Dimension dim = ((MatrixExpression) resultMatrixOperatorParams[0]).getDimension();
+            if (dim.height != 3 || dim.width != 1) {
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_1")
+                        + dim.height + Translator.translateExceptionMessage("MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_2")
+                        + dim.width + Translator.translateExceptionMessage("MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_3"));
+            }
+        } catch (ExpressionException | EvaluationException e) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_ROT_IS_INVALID") + e.getMessage());
         }
 
@@ -432,14 +440,13 @@ public class MatrixOperator extends MatrixExpression {
             resultMatrixOperatorParams[i] = params[i];
         }
 
-        resultMatrixOperatorParams = new Object[4];
         resultMatrixOperatorParams[1] = params[1];
         resultMatrixOperatorParams[2] = params[2];
         resultMatrixOperatorParams[3] = params[3];
         return new MatrixOperator(TypeMatrixOperator.rot, resultMatrixOperatorParams);
 
     }
-    
+
     private static MatrixOperator getMatrixOperatorSum(String[] params, HashSet<String> vars) throws ExpressionException {
 
         Object[] resultMatrixOperatorParams;
@@ -1055,23 +1062,23 @@ public class MatrixOperator extends MatrixExpression {
     private MatrixExpression simplifyTrivialRot() throws EvaluationException {
 
         MatrixExpression matExpr = ((MatrixExpression) this.params[0]).simplify();
-        
-        if (!(matExpr instanceof Matrix)){
+
+        if (!(matExpr instanceof Matrix)) {
             return this;
         }
-        
+
         Dimension dim = ((Matrix) matExpr).getDimension();
 
-        if (dim.height != 3 || dim.width != 1){
+        if (dim.height != 3 || dim.width != 1) {
             throw new EvaluationException("");
         }
-        
+
         Expression matExprX = ((Matrix) this.params[0]).getEntry(0, 0);
-        Expression matExprY = ((Matrix) this.params[0]).getEntry(0, 0);
-        Expression matExprZ = ((Matrix) this.params[0]).getEntry(0, 0);
+        Expression matExprY = ((Matrix) this.params[0]).getEntry(1, 0);
+        Expression matExprZ = ((Matrix) this.params[0]).getEntry(2, 0);
         String varX = (String) this.params[1];
-        String varY = (String) this.params[1];
-        String varZ = (String) this.params[1];
+        String varY = (String) this.params[2];
+        String varZ = (String) this.params[3];
         Expression[][] rotEntries = new Expression[3][1];
 
         rotEntries[0][0] = matExprZ.diff(varY).sub(matExprY.diff(varZ));
@@ -1081,7 +1088,7 @@ public class MatrixOperator extends MatrixExpression {
         return new Matrix(rotEntries);
 
     }
-    
+
     /**
      * Vereinfacht den Summenoperator, soweit es möglich ist.
      *

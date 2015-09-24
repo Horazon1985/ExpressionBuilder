@@ -188,8 +188,8 @@
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_1">
     <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
     <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. The argument is a </English>
-    <Ukrainian>Первий параметр оператора 'grad' має бути діючим 1x1-матричним виразом. Аргументом є </Ukrainian>
-    <Russian>Перший параматр оператора 'grad' должен быть действительным 1x1-матричным выражением. Аргументом является </Russian>
+    <Ukrainian>Первий параметр оператора 'grad' має бути діючим виразом або діючим 1x1-матричним виразом. Аргументом є </Ukrainian>
+    <Russian>Перший параматр оператора 'grad' должен быть действительным выражением или действительным 1x1-матричным выражением. Аргументом является </Russian>
   </object>
   <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_2">
     <German> x </German>
@@ -328,6 +328,24 @@
     <English>The variables in operator 'rot' must be pairwise distinct.</English>
     <Ukrainian>Змінні оператора 'rot' мають попарно відрізнятися.</Ukrainian>
     <Russian>Переменные оператора 'rot' должны попарно отличаться.</Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_1">
+    <German>Der erste Parameter im Operator 'rot' muss ein gültiger 3x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
+    <English>The first parameter in operator 'rot' must be a valid 3x1-matrix expression. The argument is a </English>
+    <Ukrainian>Первий параметр оператора 'rot' має бути діючим виразом або діючим 3x1-матричним виразом. Аргументом є </Ukrainian>
+    <Russian>Перший параматр оператора 'rot' должен быть действительным выражением или действительным 3x1-матричным выражением. Аргументом является </Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_2">
+    <German> x </German>
+    <English> x </English>
+    <Ukrainian> x </Ukrainian>
+    <Russian> x </Russian>
+  </object>
+  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_3">
+    <German> Matrix.</German>
+    <English> matrix.</English>
+    <Ukrainian> матриця.</Ukrainian>
+    <Russian> матрица.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
     <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
