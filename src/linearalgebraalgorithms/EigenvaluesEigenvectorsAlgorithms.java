@@ -79,9 +79,17 @@ public class EigenvaluesEigenvectorsAlgorithms {
      */
     public static MatrixExpressionCollection getEigenvectorsForEigenvalue(MatrixExpression matExpr, Expression eigenvalue) {
 
-        MatrixExpressionCollection eigenvectors = new MatrixExpressionCollection();
-
-        return eigenvectors;
+        try {
+            Dimension dim = matExpr.getDimension();
+            // A - k*E bilden, A = Matrix, k = Eigenwert von A.
+            MatrixExpression matrixMinusMultipleOfE = matExpr.sub(new Matrix(eigenvalue).mult(MatrixExpression.getId(dim.height))).simplify();
+            if (!(matrixMinusMultipleOfE instanceof Matrix)) {
+                return new MatrixExpressionCollection();
+            }
+            return GaussAlgorithm.computeKernelOfMatrix((Matrix) matrixMinusMultipleOfE);
+        } catch (EvaluationException e) {
+            return new MatrixExpressionCollection();
+        }
 
     }
 
@@ -124,7 +132,7 @@ public class EigenvaluesEigenvectorsAlgorithms {
             sumOfDimension += getEigenvectorsForEigenvalue(m, eigenvalues.get(i)).getBound();
         }
 
-         return sumOfDimension == dim.height;
+        return sumOfDimension == dim.height;
 
     }
 

@@ -5,7 +5,6 @@ import expressionbuilder.Expression;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
-import matrixexpressionbuilder.MatrixExpression;
 import matrixsimplifymethods.MatrixExpressionCollection;
 
 public class GaussAlgorithm {
@@ -200,30 +199,6 @@ public class GaussAlgorithm {
         }
 
         return basis;
-
-    }
-
-    /**
-     * Gibt eine Basis des Eigenvektorraumes der matrix zurück, falls matrix
-     * quadratisch ist. Ansonsten wird eine EvaluationException geworfen.
-     *
-     * @throws EvaluationException
-     */
-    public MatrixExpressionCollection computeEigenvectorBasis(Matrix matrix, Expression c) throws EvaluationException {
-
-        if (!matrix.isSquareMatrix()) {
-            throw new EvaluationException("TO DO");
-        }
-
-        try {
-            MatrixExpression m = matrix.sub(new Matrix(c).mult(MatrixExpression.getId(matrix.getRowNumber()))).simplify();
-            if (!(m instanceof Matrix)) {
-                return new MatrixExpressionCollection();
-            }
-            return computeKernelOfMatrix((Matrix) m);
-        } catch (EvaluationException e) {
-            return new MatrixExpressionCollection();
-        }
 
     }
 
