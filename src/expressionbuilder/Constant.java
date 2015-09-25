@@ -378,17 +378,17 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression expandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression expand() throws EvaluationException {
+    public Expression simplifyExpand() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression reduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
         return this;
     }
 
@@ -403,32 +403,32 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression collectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression factorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression factorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression factorizeRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression factorizeRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
         return this;
     }
 
     @Override
-    public Expression reduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() throws EvaluationException {
         return this;
     }
 
@@ -438,7 +438,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression multiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() throws EvaluationException {
         return this;
     }
 
@@ -448,7 +448,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyPolynomials() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
         return this;
     }
 

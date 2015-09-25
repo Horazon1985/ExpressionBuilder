@@ -286,6 +286,7 @@ public class SpecialEquationMethods {
             simplifyTypes.add(TypeSimplify.factorize_in_differences);
             simplifyTypes.add(TypeSimplify.reduce_quotients);
             simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
             simplifyTypes.add(TypeSimplify.simplify_functional_relations);
             simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -485,12 +486,12 @@ public class SpecialEquationMethods {
             simplifyTypes.add(TypeSimplify.sort_difference_and_division);
             simplifyTypes.add(TypeSimplify.collect_products);
             simplifyTypes.add(TypeSimplify.expand);
-            simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
             simplifyTypes.add(TypeSimplify.reduce_quotients);
             simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-            simplifyTypes.add(TypeSimplify.simplify_polynomials);
+            simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
             simplifyTypes.add(TypeSimplify.simplify_powers);
             simplifyTypes.add(TypeSimplify.multiply_powers);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);

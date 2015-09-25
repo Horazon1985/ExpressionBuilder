@@ -4,6 +4,7 @@ import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
+import expressionbuilder.ExpressionException;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -67,7 +68,7 @@ public class GeneralSimplifyTest {
         Expression f = a.mult(b.mult(a.pow(2))).mult(c);
         Expression g = a.pow(ONE.add(TWO)).mult(b.mult(c));
         try {
-            f = f.collectProducts();
+            f = f.simplifyCollectProducts();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -80,7 +81,7 @@ public class GeneralSimplifyTest {
         Expression f = a.mult(b.mult(c.sin())).div(x.mult(b.pow(5)));
         Expression g = a.mult(b.pow(ONE.sub(5)).mult(c.sin())).div(x);
         try {
-            f = f.reduceQuotients().orderDifferenceAndDivision();
+            f = f.simplifyReduceQuotients().orderDifferenceAndDivision();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -93,7 +94,7 @@ public class GeneralSimplifyTest {
         Expression f = a.mult(b).add(a.mult(c));
         Expression g = a.mult(b.add(c));
         try {
-            f = f.factorizeInSums();
+            f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -106,7 +107,7 @@ public class GeneralSimplifyTest {
         Expression f = b.div(a).add(c.div(a));
         Expression g = b.add(c).div(a);
         try {
-            f = f.factorizeInSums();
+            f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -119,7 +120,7 @@ public class GeneralSimplifyTest {
         Expression f = x.mult(b).div(a).add(c.mult(x).div(a));
         Expression g = x.mult(b.add(c)).div(a);
         try {
-            f = f.factorizeInSums();
+            f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -145,7 +146,7 @@ public class GeneralSimplifyTest {
         Expression f = x.mult(1).add(x.mult(x));
         Expression g = x.mult(ONE.add(x));
         try {
-            f = f.factorizeInSums();
+            f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -158,7 +159,7 @@ public class GeneralSimplifyTest {
         Expression f = a.mult(b).sub(a.mult(c));
         Expression g = a.mult(b.sub(c));
         try {
-            f = f.factorizeInDifferences();
+            f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -171,7 +172,7 @@ public class GeneralSimplifyTest {
         Expression f = b.div(a).sub(c.div(a));
         Expression g = b.sub(c).div(a);
         try {
-            f = f.factorizeInDifferences();
+            f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -184,7 +185,7 @@ public class GeneralSimplifyTest {
         Expression f = x.mult(b).div(a).sub(c.mult(x).div(a));
         Expression g = x.mult(b.sub(c)).div(a);
         try {
-            f = f.factorizeInDifferences();
+            f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -210,7 +211,7 @@ public class GeneralSimplifyTest {
         Expression f = x.mult(1).sub(x.mult(x));
         Expression g = x.mult(ONE.sub(x));
         try {
-            f = f.factorizeInDifferences();
+            f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -218,13 +219,104 @@ public class GeneralSimplifyTest {
     }
 
     @Test
+    public void factorizeAllButRationalsInSumsTest1() {
+        // 3*a*b+a*5*b+x = (3+5)*a*b+x
+        try {
+            Expression f = Expression.build("3*a*b+a*5*b+x", null);
+            Expression g = Expression.build("(3+5)*(a*b)+x", null);
+            f = f.simplifyFactorizeAllButRationalsInSums();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsInSumsTest2() {
+        // (a*b)/3+(b*a)/7 = (1/3+1/7)*(a*b) 
+        try {
+            Expression f = Expression.build("(a*b)/3+(b*a)/7", null);
+            Expression g = Expression.build("(1/3+1/7)*(a*b)", null);
+            f = f.simplifyFactorizeAllButRationalsInSums();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsInSumsTest3() {
+        // (11*a*b)/3+(b*a*15)/7 = (11/3+15/7)*(a*b)
+        try {
+            Expression f = Expression.build("(11*a*b)/3+(b*a*15)/7", null);
+            Expression g = Expression.build("(11/3+15/7)*(a*b)", null);
+            f = f.simplifyFactorizeAllButRationalsInSums();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsInDifferencesTest4() {
+        // 5^(1/2)*a+5^(1/2)*b wird nicht faktorisiert.
+        try {
+            Expression f = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
+            Expression g = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
+            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsInDifferencesTest1() {
+        // 3*a*b-a*5*b+x = (3-5)*a*b+x
+        try {
+            Expression f = Expression.build("3*a*b-a*5*b+x", null);
+            Expression g = Expression.build("(3-5)*(a*b)+x", null);
+            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
+    @Test
+    public void factorizeAllButRationalsInDifferencesTest2() {
+        // (a*b)/3-(b*a)/7 = (1/3-1/7)*(a*b) 
+        try {
+            Expression f = Expression.build("(a*b)/3-(b*a)/7", null);
+            Expression g = Expression.build("(1/3-1/7)*(a*b)", null);
+            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsInDifferencesTest3() {
+        // (11*a*b)/3-(b*a*15)/7 = (11/3-15/7)*(a*b)
+        try {
+            Expression f = Expression.build("(11*a*b)/3-(b*a*15)/7", null);
+            Expression g = Expression.build("(11/3-15/7)*(a*b)", null);
+            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
+    @Test
     public void expandTest() {
         // (a+b)*(c+d) = a*c + a*d + b*c + b*d
         Expression f = (a.add(b)).mult(c.add(d));
-        Expression g = a.mult(c.add(d)).add(b.mult(c.add(d)));
+        Expression g = a.mult(c).add(a.mult(d).add(b.mult(c).add(b.mult(d))));
         try {
             // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
-            f = f.expand().orderSumsAndProducts();
+            f = f.simplifyExpand().orderSumsAndProducts();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -239,7 +331,7 @@ public class GeneralSimplifyTest {
                 Expression.THREE.mult(a.pow(1)).mult(b.pow(2))).add(b.pow(3));
         try {
             // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
-            f = f.expand().orderSumsAndProducts();
+            f = f.simplifyExpand().orderSumsAndProducts();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");

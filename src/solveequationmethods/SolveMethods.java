@@ -62,8 +62,8 @@ public class SolveMethods {
         simplifyTypes.add(TypeSimplify.expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.factorize_in_sums);
         simplifyTypes.add(TypeSimplify.factorize_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
@@ -1474,8 +1474,8 @@ public class SolveMethods {
         simplifyTypes.add(TypeSimplify.expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.factorize_in_sums);
         simplifyTypes.add(TypeSimplify.factorize_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);

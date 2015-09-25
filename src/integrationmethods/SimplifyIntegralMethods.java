@@ -73,8 +73,8 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.sort_difference_and_division);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
@@ -115,8 +115,8 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
         simplifyTypes.add(TypeSimplify.expand);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
@@ -194,8 +194,8 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.expand);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
@@ -508,7 +508,7 @@ public class SimplifyIntegralMethods {
              Exponenten STUR ausmultipliziert werden (ohne Beträge etc.),
              falls diese in Substitutionen involviert sind.
              */
-            return ((Expression) result).multiplyPowers().simplifyTrivial();
+            return ((Expression) result).simplifyMultiplyPowers().simplifyTrivial();
         }
 
         // Weitere Integrationsmethoden.

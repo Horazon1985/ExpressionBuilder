@@ -8,7 +8,6 @@ import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyFunctionMethods;
 import expressionsimplifymethods.SimplifyFunctionalRelations;
-import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -142,13 +141,12 @@ public class BinaryOperation extends Expression {
         }
         return this.left.containsExponentialFunction() || this.right.containsExponentialFunction();
     }
-    
+
     @Override
     public boolean containsTrigonometricalFunction() {
         return this.left.containsTrigonometricalFunction() || this.right.containsTrigonometricalFunction();
     }
-    
-    
+
     @Override
     public boolean containsIndefiniteIntegral() {
         return this.left.containsIndefiniteIntegral() || this.right.containsIndefiniteIntegral();
@@ -777,17 +775,17 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression expandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln ausmultiplizieren.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).expandRationalFactors());
+                summands.put(i, summands.get(i).simplifyExpandRationalFactors());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isDifference() || this.isPower()) {
-            return new BinaryOperation(this.left.expandRationalFactors(), this.right.expandRationalFactors(), this.type);
+            return new BinaryOperation(this.left.simplifyExpandRationalFactors(), this.right.simplifyExpandRationalFactors(), this.type);
         }
 
         BinaryOperation expr;
@@ -795,14 +793,14 @@ public class BinaryOperation extends Expression {
             // In jedem Faktor einzeln ausmultiplizieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).expandRationalFactors());
+                factors.put(i, factors.get(i).simplifyExpandRationalFactors());
             }
             expr = (BinaryOperation) SimplifyUtilities.produceProduct(factors);
         } else {
             if (this.right instanceof Constant) {
-                expr = (BinaryOperation) this.left.expandRationalFactors().div(this.right);
+                expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right);
             } else {
-                expr = (BinaryOperation) this.left.expandRationalFactors().div(this.right.expandRationalFactors());
+                expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right.simplifyExpandRationalFactors());
             }
         }
 
@@ -839,36 +837,50 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression expand() throws EvaluationException {
+    public Expression simplifyExpand() throws EvaluationException {
+        Expression expr = this, exprExpanded = simplifySingleExpand(this);
+        // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
+        while (!expr.equals(exprExpanded)){
+            expr = exprExpanded.copy();
+            exprExpanded = simplifySingleExpand(expr);
+        }
+        return expr;
+//        return simplifySingleExpand(this);
+    }
+    
+    /**
+     * Hilfsmethode für simplifyExpand(). Multipliziert EINE Klammer vollständig aus.
+     */
+    private static Expression simplifySingleExpand(Expression f) throws EvaluationException {
 
         BinaryOperation expr;
-        if (this.isSum() || this.isDifference()) {
+        if (f.isSum() || f.isDifference()) {
 
-            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
-            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
             // In jedem Summanden einzeln ausmultiplizieren.
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).expand());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyExpand());
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, summandsRight.get(i).expand());
+                summandsRight.put(i, summandsRight.get(i).simplifyExpand());
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
-        } else if (this.isQuotient() || this.isPower()) {
+        } else if (f.isQuotient() || f.isPower()) {
 
-            expr = new BinaryOperation(this.left.expand(), this.right.expand(), this.type);
-            if (!expr.equals(this)) {
-                // In späteren Anwendungen von expand() kann noch weiter ausmultipliziert werden.
+            expr = new BinaryOperation(((BinaryOperation) f).getLeft().simplifyExpand(), ((BinaryOperation) f).getRight().simplifyExpand(), ((BinaryOperation) f).getType());
+            if (!expr.equals(f)) {
+                // In späteren Anwendungen von simplifyExpand() kann noch weiter ausmultipliziert werden.
                 return expr;
             }
 
         } else {
 
             // In jedem Faktor einzeln ausmultiplizieren.
-            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).expand());
+                factors.put(i, factors.get(i).simplifyExpand());
             }
 
             Expression productOfExpandedFactors = SimplifyUtilities.produceProduct(factors);
@@ -911,13 +923,13 @@ public class BinaryOperation extends Expression {
                 summandsLeft.put(i, SimplifyUtilities.produceProduct(
                         ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(
                                 summandsLeft.get(i)).mult(
-                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
+                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
                 summandsRight.put(i, SimplifyUtilities.produceProduct(
                         ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(
                                 summandsRight.get(i)).mult(
-                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))));
+                                SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
@@ -1003,7 +1015,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression reduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
@@ -1014,18 +1026,18 @@ public class BinaryOperation extends Expression {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).reduceLeadingsCoefficients());
+                summands.put(i, summands.get(i).simplifyReduceLeadingsCoefficients());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).reduceLeadingsCoefficients());
+                factors.put(i, factors.get(i).simplifyReduceLeadingsCoefficients());
             }
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
-            return this.left.reduceLeadingsCoefficients().pow(this.right.reduceLeadingsCoefficients());
+            return this.left.simplifyReduceLeadingsCoefficients().pow(this.right.simplifyReduceLeadingsCoefficients());
         }
 
         // Nun kann es dich nur noch um type == TypeBinary.MINUS oder um type == TypeBinary.DIV handeln.
@@ -1041,10 +1053,10 @@ public class BinaryOperation extends Expression {
 
         // Zunächst in allen Summanden/Faktoren einzeln kürzen.
         for (int i = 0; i < termsLeft.getBound(); i++) {
-            termsLeft.put(i, termsLeft.get(i).reduceLeadingsCoefficients());
+            termsLeft.put(i, termsLeft.get(i).simplifyReduceLeadingsCoefficients());
         }
         for (int i = 0; i < termsRight.getBound(); i++) {
-            termsRight.put(i, termsRight.get(i).reduceLeadingsCoefficients());
+            termsRight.put(i, termsRight.get(i).simplifyReduceLeadingsCoefficients());
         }
 
         // Nun das eigentliche Kürzen!
@@ -1137,7 +1149,7 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             if (sumsOrDifferencesWithFractionsOccur) {
-                return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferenceAndDivision().reduceQuotients();
+                return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferenceAndDivision().simplifyReduceQuotients();
             }
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
@@ -1246,18 +1258,18 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression collectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln Faktoren sammeln.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).collectProducts());
+                summands.put(i, summands.get(i).simplifyCollectProducts());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isDifference() || this.isQuotient() || this.isPower()) {
             // Im linken und rechten Teil einzeln Faktoren sammeln.
-            return new BinaryOperation(this.left.collectProducts(), this.right.collectProducts(), this.type);
+            return new BinaryOperation(this.left.simplifyCollectProducts(), this.right.simplifyCollectProducts(), this.type);
         }
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(this);
@@ -1265,7 +1277,7 @@ public class BinaryOperation extends Expression {
         //Ab hier ist type == *.
         // Zunächst in jedem Faktor einzeln Faktoren sammeln.
         for (int i = 0; i < factors.getBound(); i++) {
-            factors.put(i, factors.get(i).collectProducts());
+            factors.put(i, factors.get(i).simplifyCollectProducts());
         }
 
         SimplifyUtilities.collectFactorsInProduct(factors);
@@ -1274,25 +1286,25 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression factorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() throws EvaluationException {
 
         if (this.isProduct()) {
             // In jedem Faktor einzeln faktorisieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).factorizeInSums());
+                factors.put(i, factors.get(i).simplifyFactorizeInSums());
             }
             return SimplifyUtilities.produceProduct(factors);
         }
         if (this.isNotSum()) {
-            return new BinaryOperation(this.left.factorizeInSums(), this.right.factorizeInSums(), this.type);
+            return new BinaryOperation(this.left.simplifyFactorizeInSums(), this.right.simplifyFactorizeInSums(), this.type);
         }
 
         // Ab hier muss this als type + besitzen.
         ExpressionCollection summands = SimplifyUtilities.getSummands(this);
         // In jedem Summanden einzeln faktorisieren
         for (int i = 0; i < summands.getBound(); i++) {
-            summands.put(i, summands.get(i).factorizeInSums());
+            summands.put(i, summands.get(i).simplifyFactorizeInSums());
         }
 
         ExpressionCollection commonEnumerators, commonDenominators;
@@ -1385,34 +1397,34 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression factorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).factorizeInDifferences());
+                summands.put(i, summands.get(i).simplifyFactorizeInDifferences());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).factorizeInDifferences());
+                factors.put(i, factors.get(i).simplifyFactorizeInDifferences());
             }
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isQuotient() || this.isPower()) {
-            return new BinaryOperation(this.left.factorizeInDifferences(), this.right.factorizeInDifferences(), this.type);
+            return new BinaryOperation(this.left.simplifyFactorizeInDifferences(), this.right.simplifyFactorizeInDifferences(), this.type);
         }
 
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // In jedem Summanden einzeln faktorisieren
         for (int i = 0; i < summandsLeft.getBound(); i++) {
-            summandsLeft.put(i, summandsLeft.get(i).factorizeInDifferences());
+            summandsLeft.put(i, summandsLeft.get(i).simplifyFactorizeInDifferences());
         }
         for (int i = 0; i < summandsRight.getBound(); i++) {
-            summandsRight.put(i, summandsRight.get(i).factorizeInDifferences());
+            summandsRight.put(i, summandsRight.get(i).simplifyFactorizeInDifferences());
         }
 
         ExpressionCollection commonEnumerators, commonDenominators;
@@ -1507,35 +1519,35 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression factorizeRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
 
         if (this.isProduct()) {
             // In jedem Faktor einzeln faktorisieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).factorizeRationalsInSums());
+                factors.put(i, factors.get(i).simplifyFactorizeAllButRationalsInSums());
             }
             return SimplifyUtilities.produceProduct(factors);
         }
         if (this.isNotSum()) {
-            return new BinaryOperation(this.left.factorizeRationalsInSums(), this.right.factorizeRationalsInSums(), this.type);
+            return new BinaryOperation(this.left.simplifyFactorizeAllButRationalsInSums(), this.right.simplifyFactorizeAllButRationalsInSums(), this.type);
         }
 
         // Ab hier muss this als type + besitzen.
         ExpressionCollection summands = SimplifyUtilities.getSummands(this);
         // In jedem Summanden einzeln faktorisieren
         for (int i = 0; i < summands.getBound(); i++) {
-            summands.put(i, summands.get(i).factorizeRationalsInSums());
+            summands.put(i, summands.get(i).simplifyFactorizeAllButRationalsInSums());
         }
 
-        ExpressionCollection constantEnumeratorsLeft;
-        ExpressionCollection nonConstantEnumeratorsLeft = new ExpressionCollection();
-        ExpressionCollection constantDenominatorsLeft;
-        ExpressionCollection nonConstantDenominatorsLeft = new ExpressionCollection();
-        ExpressionCollection constantEnumeratorsRight;
-        ExpressionCollection nonConstantEnumeratorsRight = new ExpressionCollection();
-        ExpressionCollection constantDenominatorsRight;
-        ExpressionCollection nonConstantDenominatorsRight = new ExpressionCollection();
+        ExpressionCollection rationalEnumeratorsLeft;
+        ExpressionCollection nonRationalEnumeratorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsLeft;
+        ExpressionCollection nonRationalDenominatorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalEnumeratorsRight;
+        ExpressionCollection nonRationalEnumeratorsRight = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsRight;
+        ExpressionCollection nonRationalDenominatorsRight = new ExpressionCollection();
 
         Expression factorizedSummand;
 
@@ -1551,67 +1563,69 @@ public class BinaryOperation extends Expression {
                     continue;
                 }
 
-                constantEnumeratorsLeft = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(i));
-                constantEnumeratorsRight = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(j));
-                constantDenominatorsLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(i));
-                constantDenominatorsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(j));
-                nonConstantEnumeratorsLeft.clear();
-                nonConstantEnumeratorsRight.clear();
-                nonConstantDenominatorsLeft.clear();
-                nonConstantDenominatorsRight.clear();
+                rationalEnumeratorsLeft = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(i));
+                rationalEnumeratorsRight = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(j));
+                rationalDenominatorsLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(i));
+                rationalDenominatorsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(j));
+                nonRationalEnumeratorsLeft.clear();
+                nonRationalEnumeratorsRight.clear();
+                nonRationalDenominatorsLeft.clear();
+                nonRationalDenominatorsRight.clear();
 
-                for (int k = 0; k < constantEnumeratorsLeft.getBound(); k++) {
-                    if (!constantEnumeratorsLeft.get(k).isConstant()) {
-                        nonConstantEnumeratorsLeft.add(constantEnumeratorsLeft.get(k));
-                        constantEnumeratorsLeft.remove(k);
+                for (int k = 0; k < rationalEnumeratorsLeft.getBound(); k++) {
+                    if (!(rationalEnumeratorsLeft.get(k) instanceof Constant)) {
+                        nonRationalEnumeratorsLeft.add(rationalEnumeratorsLeft.get(k));
+                        rationalEnumeratorsLeft.remove(k);
                     }
                 }
-                for (int k = 0; k < constantEnumeratorsRight.getBound(); k++) {
-                    if (!constantEnumeratorsRight.get(k).isConstant()) {
-                        nonConstantEnumeratorsRight.add(constantEnumeratorsRight.get(k));
-                        constantEnumeratorsRight.remove(k);
+                for (int k = 0; k < rationalEnumeratorsRight.getBound(); k++) {
+                    if (!(rationalEnumeratorsRight.get(k) instanceof Constant)) {
+                        nonRationalEnumeratorsRight.add(rationalEnumeratorsRight.get(k));
+                        rationalEnumeratorsRight.remove(k);
                     }
                 }
-                for (int k = 0; k < constantDenominatorsLeft.getBound(); k++) {
-                    if (!constantDenominatorsLeft.get(k).isConstant()) {
-                        nonConstantDenominatorsLeft.add(constantDenominatorsLeft.get(k));
-                        constantDenominatorsLeft.remove(k);
+                for (int k = 0; k < rationalDenominatorsLeft.getBound(); k++) {
+                    if (!(rationalDenominatorsLeft.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsLeft.add(rationalDenominatorsLeft.get(k));
+                        rationalDenominatorsLeft.remove(k);
                     }
                 }
-                for (int k = 0; k < constantDenominatorsRight.getBound(); k++) {
-                    if (!constantDenominatorsRight.get(k).isConstant()) {
-                        nonConstantDenominatorsRight.add(constantDenominatorsRight.get(k));
-                        constantEnumeratorsLeft.remove(k);
-                        constantDenominatorsRight.remove(k);
+                for (int k = 0; k < rationalDenominatorsRight.getBound(); k++) {
+                    if (!(rationalDenominatorsRight.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsRight.add(rationalDenominatorsRight.get(k));
+                        rationalEnumeratorsLeft.remove(k);
+                        rationalDenominatorsRight.remove(k);
                     }
                 }
 
-                // Falls die nichtkonstanten Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
-                if (nonConstantEnumeratorsLeft.getBound() != nonConstantEnumeratorsRight.getBound()
-                        || nonConstantDenominatorsLeft.getBound() != nonConstantDenominatorsRight.getBound()
-                        || !SimplifyUtilities.difference(nonConstantEnumeratorsLeft, nonConstantEnumeratorsRight).isEmpty()
-                        || !SimplifyUtilities.difference(nonConstantDenominatorsLeft, nonConstantDenominatorsRight).isEmpty()) {
+                // Falls die nichtrationalen Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
+                if (!nonRationalEnumeratorsLeft.equivalent(nonRationalEnumeratorsRight)
+                        || !nonRationalDenominatorsLeft.equivalent(nonRationalDenominatorsRight)) {
                     continue;
                 }
 
-                if (!nonConstantEnumeratorsLeft.isEmpty() && nonConstantDenominatorsLeft.isEmpty()) {
+                if (!nonRationalEnumeratorsLeft.isEmpty() && nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceProduct(nonConstantEnumeratorsLeft).mult(SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).add(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight)));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).add(SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).mult(
+                            SimplifyUtilities.produceProduct(nonRationalEnumeratorsLeft));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
                     break;
 
-                } else if (nonConstantEnumeratorsLeft.isEmpty() && !nonConstantDenominatorsLeft.isEmpty()) {
+                } else if (nonRationalEnumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).add(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight)).div(SimplifyUtilities.produceProduct(nonConstantDenominatorsLeft));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).add(SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).div(SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
                     break;
-                } else if (!nonConstantEnumeratorsLeft.isEmpty() && !nonConstantDenominatorsLeft.isEmpty()) {
+                } else if (!nonRationalEnumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceProduct(nonConstantEnumeratorsLeft).mult(SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).add(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight))).div(SimplifyUtilities.produceProduct(nonConstantDenominatorsLeft));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).add(
+                            SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).mult(
+                                    SimplifyUtilities.produceProduct(nonRationalEnumeratorsLeft)).div(
+                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -1633,44 +1647,44 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression factorizeRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).factorizeRationalsInDifferences());
+                summands.put(i, summands.get(i).simplifyFactorizeAllButRationalsInDifferences());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).factorizeRationalsInDifferences());
+                factors.put(i, factors.get(i).simplifyFactorizeAllButRationalsInDifferences());
             }
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isQuotient() || this.isPower()) {
-            return new BinaryOperation(this.left.factorizeRationalsInDifferences(), this.right.factorizeRationalsInDifferences(), this.type);
+            return new BinaryOperation(this.left.simplifyFactorizeAllButRationalsInDifferences(), this.right.simplifyFactorizeAllButRationalsInDifferences(), this.type);
         }
 
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // In jedem Summanden einzeln faktorisieren
         for (int i = 0; i < summandsLeft.getBound(); i++) {
-            summandsLeft.put(i, summandsLeft.get(i).factorizeRationalsInDifferences());
+            summandsLeft.put(i, summandsLeft.get(i).simplifyFactorizeAllButRationalsInDifferences());
         }
         for (int i = 0; i < summandsRight.getBound(); i++) {
-            summandsRight.put(i, summandsRight.get(i).factorizeRationalsInDifferences());
+            summandsRight.put(i, summandsRight.get(i).simplifyFactorizeAllButRationalsInDifferences());
         }
 
-        ExpressionCollection constantEnumeratorsLeft;
-        ExpressionCollection nonConstantEnumeratorsLeft = new ExpressionCollection();
-        ExpressionCollection constantDenominatorsLeft;
-        ExpressionCollection nonConstantDenominatorsLeft = new ExpressionCollection();
-        ExpressionCollection constantEnumeratorsRight;
-        ExpressionCollection nonConstantEnumeratorsRight = new ExpressionCollection();
-        ExpressionCollection constantDenominatorsRight;
-        ExpressionCollection nonConstantDenominatorsRight = new ExpressionCollection();
+        ExpressionCollection rationalEnumeratorsLeft;
+        ExpressionCollection nonRationalEnumeratorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsLeft;
+        ExpressionCollection nonRationalDenominatorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalEnumeratorsRight;
+        ExpressionCollection nonRationalEnumeratorsRight = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsRight;
+        ExpressionCollection nonRationalDenominatorsRight = new ExpressionCollection();
 
         Expression factorizedSummand;
 
@@ -1686,66 +1700,68 @@ public class BinaryOperation extends Expression {
                     continue;
                 }
 
-                constantEnumeratorsLeft = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeft.get(i));
-                constantEnumeratorsRight = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
-                constantDenominatorsLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
-                constantDenominatorsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(j));
+                rationalEnumeratorsLeft = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeft.get(i));
+                rationalEnumeratorsRight = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
+                rationalDenominatorsLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
+                rationalDenominatorsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(j));
 
-                nonConstantEnumeratorsLeft.clear();
-                nonConstantEnumeratorsRight.clear();
-                nonConstantDenominatorsLeft.clear();
-                nonConstantDenominatorsRight.clear();
-                for (int k = 0; k < constantEnumeratorsLeft.getBound(); k++) {
-                    if (!constantEnumeratorsLeft.get(k).isConstant()) {
-                        nonConstantEnumeratorsLeft.add(constantEnumeratorsLeft.get(k));
-                        constantEnumeratorsLeft.remove(k);
+                nonRationalEnumeratorsLeft.clear();
+                nonRationalEnumeratorsRight.clear();
+                nonRationalDenominatorsLeft.clear();
+                nonRationalDenominatorsRight.clear();
+                for (int k = 0; k < rationalEnumeratorsLeft.getBound(); k++) {
+                    if (!(rationalEnumeratorsLeft.get(k) instanceof Constant)) {
+                        nonRationalEnumeratorsLeft.add(rationalEnumeratorsLeft.get(k));
+                        rationalEnumeratorsLeft.remove(k);
                     }
                 }
-                for (int k = 0; k < constantEnumeratorsRight.getBound(); k++) {
-                    if (!constantEnumeratorsRight.get(k).isConstant()) {
-                        nonConstantEnumeratorsRight.add(constantEnumeratorsRight.get(k));
-                        constantEnumeratorsRight.remove(k);
+                for (int k = 0; k < rationalEnumeratorsRight.getBound(); k++) {
+                    if (!(rationalEnumeratorsRight.get(k) instanceof Constant)) {
+                        nonRationalEnumeratorsRight.add(rationalEnumeratorsRight.get(k));
+                        rationalEnumeratorsRight.remove(k);
                     }
                 }
-                for (int k = 0; k < constantDenominatorsLeft.getBound(); k++) {
-                    if (!constantDenominatorsLeft.get(k).isConstant()) {
-                        nonConstantDenominatorsLeft.add(constantDenominatorsLeft.get(k));
-                        constantDenominatorsLeft.remove(k);
+                for (int k = 0; k < rationalDenominatorsLeft.getBound(); k++) {
+                    if (!(rationalDenominatorsLeft.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsLeft.add(rationalDenominatorsLeft.get(k));
+                        rationalDenominatorsLeft.remove(k);
                     }
                 }
-                for (int k = 0; k < constantDenominatorsRight.getBound(); k++) {
-                    if (!constantDenominatorsRight.get(k).isConstant()) {
-                        nonConstantDenominatorsRight.add(constantDenominatorsRight.get(k));
-                        constantDenominatorsRight.remove(k);
+                for (int k = 0; k < rationalDenominatorsRight.getBound(); k++) {
+                    if (!(rationalDenominatorsRight.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsRight.add(rationalDenominatorsRight.get(k));
+                        rationalDenominatorsRight.remove(k);
                     }
                 }
 
                 // Falls die nichtkonstanten Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
-                if (nonConstantEnumeratorsLeft.getBound() != nonConstantEnumeratorsRight.getBound()
-                        || nonConstantDenominatorsLeft.getBound() != nonConstantDenominatorsRight.getBound()
-                        || !SimplifyUtilities.difference(nonConstantEnumeratorsLeft, nonConstantEnumeratorsRight).isEmpty()
-                        || !SimplifyUtilities.difference(nonConstantDenominatorsLeft, nonConstantDenominatorsRight).isEmpty()) {
+                if (!nonRationalEnumeratorsLeft.equivalent(nonRationalEnumeratorsRight)
+                        || !nonRationalDenominatorsLeft.equivalent(nonRationalDenominatorsRight)) {
                     continue;
                 }
 
-                if (!nonConstantEnumeratorsLeft.isEmpty() && nonConstantDenominatorsLeft.isEmpty()) {
+                if (!nonRationalEnumeratorsLeft.isEmpty() && nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceProduct(nonConstantEnumeratorsLeft).mult(SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).sub(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight)));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).sub(SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).mult(
+                            SimplifyUtilities.produceProduct(nonRationalEnumeratorsLeft));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
                     break;
 
-                } else if (nonConstantEnumeratorsLeft.isEmpty() && !nonConstantDenominatorsLeft.isEmpty()) {
+                } else if (nonRationalEnumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).sub(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight)).div(SimplifyUtilities.produceProduct(nonConstantDenominatorsLeft));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).sub(SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).div(SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
                     break;
-                } else if (!nonConstantEnumeratorsLeft.isEmpty() && !nonConstantDenominatorsLeft.isEmpty()) {
+                } else if (!nonRationalEnumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
 
-                    factorizedSummand = SimplifyUtilities.produceProduct(nonConstantEnumeratorsLeft).mult(SimplifyUtilities.produceQuotient(constantEnumeratorsLeft, constantDenominatorsLeft).sub(SimplifyUtilities.produceQuotient(constantEnumeratorsRight, constantDenominatorsRight))).div(SimplifyUtilities.produceProduct(nonConstantDenominatorsLeft));
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalEnumeratorsLeft, rationalDenominatorsLeft).sub(
+                            SimplifyUtilities.produceQuotient(rationalEnumeratorsRight, rationalDenominatorsRight)).mult(
+                                    SimplifyUtilities.produceProduct(nonRationalEnumeratorsLeft)).div(
+                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -1767,24 +1783,24 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression reduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).reduceQuotients());
+                summands.put(i, summands.get(i).simplifyReduceQuotients());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).reduceQuotients());
+                factors.put(i, factors.get(i).simplifyReduceQuotients());
             }
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isDifference() || this.isPower()) {
-            return new BinaryOperation(this.left.reduceQuotients(), this.right.reduceQuotients(), this.type);
+            return new BinaryOperation(this.left.simplifyReduceQuotients(), this.right.simplifyReduceQuotients(), this.type);
         }
 
         ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
@@ -1792,10 +1808,10 @@ public class BinaryOperation extends Expression {
 
         // In jedem Faktor einzeln kürzen
         for (int i = 0; i < factorsEnumerator.getBound(); i++) {
-            factorsEnumerator.put(i, factorsEnumerator.get(i).reduceQuotients());
+            factorsEnumerator.put(i, factorsEnumerator.get(i).simplifyReduceQuotients());
         }
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
-            factorsDenominator.put(i, factorsDenominator.get(i).reduceQuotients());
+            factorsDenominator.put(i, factorsDenominator.get(i).simplifyReduceQuotients());
         }
 
         Expression base;
@@ -1909,14 +1925,14 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression multiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() throws EvaluationException {
 
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).multiplyPowers());
+                summands.put(i, summands.get(i).simplifyMultiplyPowers());
             }
 
             // Ergebnis bilden.
@@ -1927,7 +1943,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).multiplyPowers());
+                factors.put(i, factors.get(i).simplifyMultiplyPowers());
             }
 
             // Ergebnis bilden.
@@ -1935,12 +1951,12 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isDifference() || this.isQuotient()) {
 
-            return new BinaryOperation(this.left.multiplyPowers(), this.right.multiplyPowers(), this.type);
+            return new BinaryOperation(this.left.simplifyMultiplyPowers(), this.right.simplifyMultiplyPowers(), this.type);
 
         }
 
         // Hier ist this.type == TypeBinary.POW
-        Expression leftSimplified = this.left.multiplyPowers();
+        Expression leftSimplified = this.left.simplifyMultiplyPowers();
         if (leftSimplified.isPower()) {
             return ((BinaryOperation) leftSimplified).getLeft().pow(((BinaryOperation) leftSimplified).getRight().mult(this.right));
         }
@@ -2194,7 +2210,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyPolynomials() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
@@ -2204,81 +2220,60 @@ public class BinaryOperation extends Expression {
         Expression expr = this;
         Expression exprSimplified;
 
-        if (this.isSum()) {
+        /*
+         Nun muss man expr vereinfachen, aber als Vereinfachungstyp
+         darf NICHT simplifyExpandAndCollectEquivalentsIfShorter() 
+         verwendet werden.
+         */
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
+        if (this.isSum()) {
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionalgleichungen anwenden.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyPolynomials());
+                summands.put(i, summands.get(i).simplifyExpandAndCollectEquivalentsIfShorter());
             }
-
             expr = SimplifyUtilities.produceSum(summands);
-
-            exprSimplified = SimplifyPolynomialMethods.simplifyPolynomial(expr);
-            exprSimplified = SimplifyPolynomialMethods.simplifyMultiPolynomial(exprSimplified);
-
-            // Ergebnis bilden.
-            return exprSimplified;
-
-        }
-
-        if (this.isDifference()) {
-
+        } else if (this.isDifference()) {
             // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyPolynomials().sub(this.right.simplifyPolynomials());
-
-            exprSimplified = SimplifyPolynomialMethods.simplifyPolynomial(expr);
-            exprSimplified = SimplifyPolynomialMethods.simplifyMultiPolynomial(exprSimplified);
-
-            // Ergebnis bilden.
-            return exprSimplified;
-
-        }
-
-        if (expr.isProduct()) {
-
+            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().sub(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
+        } else if (expr.isProduct()) {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionalgleichungen anwenden.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyPolynomials());
+                factors.put(i, factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter());
             }
-
             expr = SimplifyUtilities.produceProduct(factors);
-            exprSimplified = SimplifyPolynomialMethods.simplifyPolynomial(expr);
-            exprSimplified = SimplifyPolynomialMethods.simplifyMultiPolynomial(exprSimplified);
-
-            // Ergebnis bilden.
-            return exprSimplified;
-
-        }
-
-        if (this.isQuotient()) {
-
+        } else if (this.isQuotient()) {
             // Im Dividenden und Divisor einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyPolynomials().div(this.right.simplifyPolynomials());
-
-            exprSimplified = SimplifyPolynomialMethods.simplifyPolynomial(expr);
-            exprSimplified = SimplifyPolynomialMethods.simplifyMultiPolynomial(exprSimplified);
-
-            // Ergebnis bilden.
-            return exprSimplified;
-
-        }
-
-        if (this.isPower()) {
-
+            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().div(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
+        } else if (this.isPower()) {
             // In Basis und Exponenten einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyPolynomials().pow(this.right.simplifyPolynomials());
-
-            exprSimplified = SimplifyPolynomialMethods.simplifyPolynomial(expr);
-            exprSimplified = SimplifyPolynomialMethods.simplifyMultiPolynomial(exprSimplified);
-
-            // Ergebnis bilden.
-            return exprSimplified;
-
+            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().pow(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
         }
 
-        return expr;
+        try {
+            exprSimplified = expr.simplifyExpand();
+            exprSimplified = exprSimplified.simplify(simplifyTypes);
+            if (exprSimplified.length() < expr.length()) {
+                return exprSimplified;
+            }
+        } catch (EvaluationException e) {
+            return expr;
+        }
+
+        return this;
 
     }
 
@@ -2464,7 +2459,7 @@ public class BinaryOperation extends Expression {
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
 
-        } 
+        }
 
         return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
                 this.right.simplifyReplaceTrigonometricalFunctionsByDefinitions(),

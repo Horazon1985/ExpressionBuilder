@@ -866,18 +866,18 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression expandRationalFactors() throws EvaluationException {
-        return new Function(this.left.expandRationalFactors(), this.type);
+    public Expression simplifyExpandRationalFactors() throws EvaluationException {
+        return new Function(this.left.simplifyExpandRationalFactors(), this.type);
     }
 
     @Override
-    public Expression expand() throws EvaluationException {
-        return new Function(this.left.expand(), this.type);
+    public Expression simplifyExpand() throws EvaluationException {
+        return new Function(this.left.simplifyExpand(), this.type);
     }
 
     @Override
-    public Expression reduceLeadingsCoefficients() throws EvaluationException {
-        return new Function(this.left.reduceLeadingsCoefficients(), this.type);
+    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+        return new Function(this.left.simplifyReduceLeadingsCoefficients(), this.type);
     }
 
     @Override
@@ -891,43 +891,43 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression collectProducts() throws EvaluationException {
-        return new Function(this.getLeft().collectProducts(), this.getType());
+    public Expression simplifyCollectProducts() throws EvaluationException {
+        return new Function(this.getLeft().simplifyCollectProducts(), this.getType());
     }
 
     @Override
-    public Expression factorizeInSums() throws EvaluationException {
-        return new Function(this.getLeft().factorizeInSums(), this.getType());
+    public Expression simplifyFactorizeInSums() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorizeInSums(), this.getType());
     }
 
     @Override
-    public Expression factorizeInDifferences() throws EvaluationException {
-        return new Function(this.getLeft().factorizeInDifferences(), this.getType());
+    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorizeInDifferences(), this.getType());
     }
 
     @Override
-    public Expression factorizeRationalsInSums() throws EvaluationException {
-        return new Function(this.getLeft().factorizeRationalsInSums(), this.getType());
+    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorizeAllButRationalsInSums(), this.getType());
     }
 
     @Override
-    public Expression factorizeRationalsInDifferences() throws EvaluationException {
-        return new Function(this.getLeft().factorizeRationalsInDifferences(), this.getType());
+    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorizeAllButRationalsInDifferences(), this.getType());
     }
 
     @Override
-    public Expression reduceQuotients() throws EvaluationException {
-        return new Function(this.getLeft().reduceQuotients(), this.getType());
+    public Expression simplifyReduceQuotients() throws EvaluationException {
+        return new Function(this.getLeft().simplifyReduceQuotients(), this.getType());
     }
 
     @Override
     public Expression simplifyFunctionalRelations() throws EvaluationException {
         return new Function(this.left.simplifyFunctionalRelations(), this.type);
     }
-
+    
     @Override
-    public Expression simplifyPolynomials() throws EvaluationException {
-        return new Function(this.left.simplifyPolynomials(), this.type);
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
+        return new Function(this.left.simplifyExpandAndCollectEquivalentsIfShorter(), this.type);
     }
 
     @Override
@@ -963,8 +963,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression multiplyPowers() throws EvaluationException {
-        return new Function(this.left.multiplyPowers(), this.type);
+    public Expression simplifyMultiplyPowers() throws EvaluationException {
+        return new Function(this.left.simplifyMultiplyPowers(), this.type);
     }
 
     @Override

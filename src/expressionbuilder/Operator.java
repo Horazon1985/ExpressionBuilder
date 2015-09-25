@@ -1470,11 +1470,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression collectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).collectProducts();
+                resultParams[i] = ((Expression) this.params[i]).simplifyCollectProducts();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1483,11 +1483,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression factorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).factorizeInSums();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1496,11 +1496,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression factorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).factorizeInDifferences();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInDifferences();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1509,11 +1509,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression factorizeRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).factorizeRationalsInSums();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeAllButRationalsInSums();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1522,11 +1522,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression factorizeRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).factorizeRationalsInDifferences();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeAllButRationalsInDifferences();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1535,11 +1535,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression reduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).reduceQuotients();
+                resultParams[i] = ((Expression) this.params[i]).simplifyReduceQuotients();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1548,11 +1548,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression expandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).expandRationalFactors();
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpandRationalFactors();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1561,11 +1561,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression expand() throws EvaluationException {
+    public Expression simplifyExpand() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).expand();
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpand();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1574,11 +1574,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression reduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).reduceLeadingsCoefficients();
+                resultParams[i] = ((Expression) this.params[i]).simplifyReduceLeadingsCoefficients();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -2066,18 +2066,18 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyPolynomials() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyPolynomials();
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpandAndCollectEquivalentsIfShorter();
             } else {
                 resultParams[i] = this.params[i];
             }
         }
         return new Operator(this.type, resultParams, this.precise);
     }
-
+    
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -2118,11 +2118,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression multiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).multiplyPowers();
+                resultParams[i] = ((Expression) this.params[i]).simplifyMultiplyPowers();
             } else {
                 resultParams[i] = this.params[i];
             }

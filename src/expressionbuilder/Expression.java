@@ -1,5 +1,7 @@
 package expressionbuilder;
 
+import expressionsimplifymethods.ExpressionCollection;
+import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1039,6 +1041,63 @@ public abstract class Expression {
     }
 
     /**
+     * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
+     */
+    public int length() {
+
+        if (this instanceof Constant || this instanceof Variable) {
+            return 1;
+        } else if (this instanceof BinaryOperation) {
+            if (this.isProduct()) {
+                ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+                int length = 0;
+                for (int i = 0; i < factors.getBound(); i++) {
+                    if (length == 0) {
+                        length = factors.get(i).length();
+                    } else if (factors.get(i).length() > 1) {
+                        length += factors.get(i).length();
+                    }
+                }
+                return length;
+            }
+            if (this.isPower()) {
+                if (((BinaryOperation) this).getLeft().length() == 1) {
+                    return ((BinaryOperation) this).getRight().length();
+                }
+                if (((BinaryOperation) this).getRight().length() == 1) {
+                    return ((BinaryOperation) this).getLeft().length();
+                }
+            }
+            return ((BinaryOperation) this).getLeft().length() + ((BinaryOperation) this).getRight().length();
+        } else if (this instanceof Function) {
+            if (((Function) this).getLeft().length() == 1) {
+                return 1;
+            }
+            return ((Function) this).getLeft().length() + 1;
+        } else if (this instanceof Operator) {
+            Object[] arguments = ((Operator) this).getParams();
+            int length = 0;
+            for (Object argument : arguments) {
+                if (argument instanceof Expression) {
+                    length += ((Expression) argument).length();
+                } else {
+                    length++;
+                }
+            }
+            return length;
+        }
+
+        // Ab hier ist this eine Instanz von SelfDefinedFunction.
+        Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
+        int length = 0;
+        for (Expression argument : arguments) {
+            length += argument.length();
+        }
+        return length;
+
+    }
+
+    /**
      * Einzelschritt: Triviale Vereinfachung.
      *
      * @throws EvaluationException
@@ -1051,21 +1110,21 @@ public abstract class Expression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression expandRationalFactors() throws EvaluationException;
+    public abstract Expression simplifyExpandRationalFactors() throws EvaluationException;
 
     /**
      * Anwendung des Distributivgesetz: a*(b + c) = a*b + a*c.
      *
      * @throws EvaluationException
      */
-    public abstract Expression expand() throws EvaluationException;
+    public abstract Expression simplifyExpand() throws EvaluationException;
 
     /**
      * Fasst Leitkoeffizienten in Brüchen/Differenzen zusammen.
      *
      * @throws EvaluationException
      */
-    public abstract Expression reduceLeadingsCoefficients() throws EvaluationException;
+    public abstract Expression simplifyReduceLeadingsCoefficients() throws EvaluationException;
 
     /**
      * Ordnet Ketten von + und von * nach rechts.
@@ -1086,43 +1145,43 @@ public abstract class Expression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression collectProducts() throws EvaluationException;
+    public abstract Expression simplifyCollectProducts() throws EvaluationException;
 
     /**
      * Versucht in einer Summe möglichst viel zu faktorisieren.
      *
      * @throws EvaluationException
      */
-    public abstract Expression factorizeInSums() throws EvaluationException;
+    public abstract Expression simplifyFactorizeInSums() throws EvaluationException;
 
     /**
      * Dasselbe wie factorizeInSums(), nur für Differenzen.
      *
      * @throws EvaluationException
      */
-    public abstract Expression factorizeInDifferences() throws EvaluationException;
+    public abstract Expression simplifyFactorizeInDifferences() throws EvaluationException;
 
     /**
      * Versucht in einer Summe gleiche nichtkonstante Summanden mit
-     * verschiedenen Koeffizienten zu sammeln.
+     * verschiedenen rationalen Koeffizienten zu sammeln.
      *
      * @throws EvaluationException
      */
-    public abstract Expression factorizeRationalsInSums() throws EvaluationException;
+    public abstract Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException;
 
     /**
-     * Dasselbe wie factorizeRationalsInSums(), nur für Differenzen.
+     * Dasselbe wie factorizeAllButRationalsInSums(), nur für Differenzen.
      *
      * @throws EvaluationException
      */
-    public abstract Expression factorizeRationalsInDifferences() throws EvaluationException;
+    public abstract Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException;
 
     /**
      * Kürzt Ausdrücke in einem Quotienten (...)-(...).
      *
      * @throws EvaluationException
      */
-    public abstract Expression reduceQuotients() throws EvaluationException;
+    public abstract Expression simplifyReduceQuotients() throws EvaluationException;
 
     /**
      * Vereinfacht Potenzen.
@@ -1138,7 +1197,7 @@ public abstract class Expression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression multiplyPowers() throws EvaluationException;
+    public abstract Expression simplifyMultiplyPowers() throws EvaluationException;
 
     /**
      * Beachtet eine Reihe vorgegebener Funktionalgleichungen.
@@ -1184,11 +1243,13 @@ public abstract class Expression {
     public abstract Expression simplifyAlgebraicExpressions() throws EvaluationException;
 
     /**
-     * Führt eine Reihe von Vereinfachungen polynomieller Ausdrücke aus.
+     * Entwickelt alle Klammern und sammelt äquivalente Ausdrücke wieder auf.
+     * Gibt Letzteres zurück, falls dieser (nach einer gewissen
+     * "Längenevaluierung") kürzer ist, als der ursprüngliche Ausdruck.
      *
      * @throws EvaluationException
      */
-    public abstract Expression simplifyPolynomials() throws EvaluationException;
+    public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
      * Standardvereinfachung allgemeiner Terme. Es wird solange iteriert, bis
@@ -1206,16 +1267,14 @@ public abstract class Expression {
 //            System.out.println(exprSimplified.writeExpression());
             exprSimplified = exprSimplified.orderDifferenceAndDivision();
             exprSimplified = exprSimplified.simplifyPowers();
-            exprSimplified = exprSimplified.collectProducts();
-            exprSimplified = exprSimplified.expandRationalFactors();
-            exprSimplified = exprSimplified.factorizeRationalsInSums();
-            exprSimplified = exprSimplified.factorizeRationalsInDifferences();
-            exprSimplified = exprSimplified.factorizeInSums();
-            exprSimplified = exprSimplified.factorizeInDifferences();
-            exprSimplified = exprSimplified.reduceQuotients();
-            exprSimplified = exprSimplified.reduceLeadingsCoefficients();
+            exprSimplified = exprSimplified.simplifyCollectProducts();
+            exprSimplified = exprSimplified.simplifyExpandRationalFactors();
+            exprSimplified = exprSimplified.simplifyFactorizeInSums();
+            exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+            exprSimplified = exprSimplified.simplifyReduceQuotients();
+            exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
             exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-            exprSimplified = exprSimplified.simplifyPolynomials();
+            exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
             if (this.containsFunction()) {
                 exprSimplified = exprSimplified.simplifyFunctionalRelations();
                 exprSimplified = exprSimplified.simplifyCollectLogarithms();
@@ -1228,16 +1287,14 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
                 exprSimplified = exprSimplified.simplifyPowers();
-                exprSimplified = exprSimplified.collectProducts();
-                exprSimplified = exprSimplified.expandRationalFactors();
-                exprSimplified = exprSimplified.factorizeRationalsInSums();
-                exprSimplified = exprSimplified.factorizeRationalsInDifferences();
-                exprSimplified = exprSimplified.factorizeInSums();
-                exprSimplified = exprSimplified.factorizeInDifferences();
-                exprSimplified = exprSimplified.reduceQuotients();
-                exprSimplified = exprSimplified.reduceLeadingsCoefficients();
+                exprSimplified = exprSimplified.simplifyCollectProducts();
+                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
+                exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+                exprSimplified = exprSimplified.simplifyReduceQuotients();
+                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-                exprSimplified = exprSimplified.simplifyPolynomials();
+                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 if (this.containsFunction()) {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     exprSimplified = exprSimplified.simplifyCollectLogarithms();
@@ -1289,43 +1346,43 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
             }
             if (simplifyTypes.contains(TypeSimplify.expand)) {
-                exprSimplified = exprSimplified.expand();
+                exprSimplified = exprSimplified.simplifyExpand();
             }
             if (simplifyTypes.contains(TypeSimplify.expand_rational_factors)) {
-                exprSimplified = exprSimplified.expandRationalFactors();
+                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
             }
             if (simplifyTypes.contains(TypeSimplify.simplify_powers)) {
                 exprSimplified = exprSimplified.simplifyPowers();
             }
             if (simplifyTypes.contains(TypeSimplify.multiply_powers)) {
-                exprSimplified = exprSimplified.multiplyPowers();
+                exprSimplified = exprSimplified.simplifyMultiplyPowers();
             }
             if (simplifyTypes.contains(TypeSimplify.collect_products)) {
-                exprSimplified = exprSimplified.collectProducts();
+                exprSimplified = exprSimplified.simplifyCollectProducts();
             }
-            if (simplifyTypes.contains(TypeSimplify.factorize_rationals_in_sums)) {
-                exprSimplified = exprSimplified.factorizeRationalsInSums();
+            if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_sums)) {
+                exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
             }
             if (simplifyTypes.contains(TypeSimplify.factorize_in_sums)) {
-                exprSimplified = exprSimplified.factorizeInSums();
+                exprSimplified = exprSimplified.simplifyFactorizeInSums();
             }
             if (simplifyTypes.contains(TypeSimplify.reduce_quotients)) {
-                exprSimplified = exprSimplified.reduceQuotients();
+                exprSimplified = exprSimplified.simplifyReduceQuotients();
             }
-            if (simplifyTypes.contains(TypeSimplify.factorize_rationals_in_differences)) {
-                exprSimplified = exprSimplified.factorizeRationalsInDifferences();
+            if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_differences)) {
+                exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
             }
             if (simplifyTypes.contains(TypeSimplify.factorize_in_differences)) {
-                exprSimplified = exprSimplified.factorizeInDifferences();
+                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
             }
             if (simplifyTypes.contains(TypeSimplify.reduce_leadings_coefficients)) {
-                exprSimplified = exprSimplified.reduceLeadingsCoefficients();
+                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
             }
             if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
                 exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
             }
-            if (simplifyTypes.contains(TypeSimplify.simplify_polynomials)) {
-                exprSimplified = exprSimplified.simplifyPolynomials();
+            if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
+                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
             }
             if (this.containsFunction()) {
                 if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
@@ -1358,43 +1415,43 @@ public abstract class Expression {
                     exprSimplified = exprSimplified.orderDifferenceAndDivision();
                 }
                 if (simplifyTypes.contains(TypeSimplify.expand)) {
-                    exprSimplified = exprSimplified.expand();
+                    exprSimplified = exprSimplified.simplifyExpand();
                 }
                 if (simplifyTypes.contains(TypeSimplify.expand_rational_factors)) {
-                    exprSimplified = exprSimplified.expandRationalFactors();
+                    exprSimplified = exprSimplified.simplifyExpandRationalFactors();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_powers)) {
                     exprSimplified = exprSimplified.simplifyPowers();
                 }
                 if (simplifyTypes.contains(TypeSimplify.multiply_powers)) {
-                    exprSimplified = exprSimplified.multiplyPowers();
+                    exprSimplified = exprSimplified.simplifyMultiplyPowers();
                 }
                 if (simplifyTypes.contains(TypeSimplify.collect_products)) {
-                    exprSimplified = exprSimplified.collectProducts();
+                    exprSimplified = exprSimplified.simplifyCollectProducts();
                 }
-                if (simplifyTypes.contains(TypeSimplify.factorize_rationals_in_sums)) {
-                    exprSimplified = exprSimplified.factorizeRationalsInSums();
+                if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_sums)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
                 }
                 if (simplifyTypes.contains(TypeSimplify.factorize_in_sums)) {
-                    exprSimplified = exprSimplified.factorizeInSums();
+                    exprSimplified = exprSimplified.simplifyFactorizeInSums();
                 }
                 if (simplifyTypes.contains(TypeSimplify.reduce_quotients)) {
-                    exprSimplified = exprSimplified.reduceQuotients();
+                    exprSimplified = exprSimplified.simplifyReduceQuotients();
                 }
-                if (simplifyTypes.contains(TypeSimplify.factorize_rationals_in_differences)) {
-                    exprSimplified = exprSimplified.factorizeRationalsInDifferences();
+                if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_differences)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
                 }
                 if (simplifyTypes.contains(TypeSimplify.factorize_in_differences)) {
-                    exprSimplified = exprSimplified.factorizeInDifferences();
+                    exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
                 }
                 if (simplifyTypes.contains(TypeSimplify.reduce_leadings_coefficients)) {
-                    exprSimplified = exprSimplified.reduceLeadingsCoefficients();
+                    exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
                     exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_polynomials)) {
-                    exprSimplified = exprSimplified.simplifyPolynomials();
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
+                    exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 }
                 if (this.containsFunction()) {
                     if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {

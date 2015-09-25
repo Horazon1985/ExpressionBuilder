@@ -358,30 +358,30 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression expandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).expandRationalFactors();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpandRationalFactors();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.expandRationalFactors(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandRationalFactors(), resultLeft);
     }
 
     @Override
-    public Expression expand() throws EvaluationException {
+    public Expression simplifyExpand() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).expand();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpand();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.expand(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpand(), resultLeft);
     }
 
     @Override
-    public Expression reduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).reduceLeadingsCoefficients();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyReduceLeadingsCoefficients();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.reduceLeadingsCoefficients(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReduceLeadingsCoefficients(), resultLeft);
     }
 
     @Override
@@ -403,57 +403,57 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression collectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).collectProducts();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyCollectProducts();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.collectProducts(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyCollectProducts(), resultLeft);
     }
 
     @Override
-    public Expression factorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).factorizeInSums();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeInSums();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.factorizeInSums(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeInSums(), resultLeft);
     }
 
     @Override
-    public Expression factorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).factorizeInDifferences();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeInDifferences();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.factorizeInDifferences(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeInDifferences(), resultLeft);
     }
 
     @Override
-    public Expression factorizeRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).factorizeRationalsInSums();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeAllButRationalsInSums();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.factorizeRationalsInSums(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeAllButRationalsInSums(), resultLeft);
     }
 
     @Override
-    public Expression factorizeRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).factorizeRationalsInDifferences();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeAllButRationalsInDifferences();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.factorizeRationalsInDifferences(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeAllButRationalsInDifferences(), resultLeft);
     }
 
     @Override
-    public Expression reduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).reduceQuotients();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyReduceQuotients();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.reduceQuotients(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReduceQuotients(), resultLeft);
     }
 
     @Override
@@ -466,14 +466,14 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyPolynomials() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyPolynomials();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpandAndCollectEquivalentsIfShorter();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyPolynomials(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandAndCollectEquivalentsIfShorter(), resultLeft);
     }
-
+    
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -502,12 +502,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression multiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).multiplyPowers();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyMultiplyPowers();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.multiplyPowers(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyMultiplyPowers(), resultLeft);
     }
 
     @Override

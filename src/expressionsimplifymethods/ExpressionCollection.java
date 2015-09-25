@@ -70,6 +70,14 @@ public class ExpressionCollection {
     }
 
     /**
+     * Gibt zurück, ob die vorliegende ExpressionCollection und exprCol Mengen
+     * mit äquivalente Termen bilden.
+     */
+    public boolean equivalent(ExpressionCollection exprCol) {
+        return SimplifyUtilities.difference(this, exprCol).isEmpty() && SimplifyUtilities.difference(exprCol, this).isEmpty();
+    }
+
+    /**
      * Gibt zurück, ob die ExpressionCollection den Ausdruck expr enthält
      * (verglichen wird mit equals()).
      */

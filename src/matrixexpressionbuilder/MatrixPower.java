@@ -313,7 +313,7 @@ public class MatrixPower extends MatrixExpression {
 
     @Override
     public MatrixExpression collectProducts() throws EvaluationException {
-        return new MatrixPower(this.left.collectProducts(), this.right.collectProducts());
+        return new MatrixPower(this.left.collectProducts(), this.right.simplifyCollectProducts());
     }
 
     @Override
