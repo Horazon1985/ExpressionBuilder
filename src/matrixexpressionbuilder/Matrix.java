@@ -226,7 +226,7 @@ public class Matrix extends MatrixExpression {
     public boolean isNilpotentMatrix() {
 
         Dimension dim = this.getDimension();
-        if (!this.isUpperTriangularMatrix() || !this.isLowerTriangularMatrix()) {
+        if (!this.isUpperTriangularMatrix() && !this.isLowerTriangularMatrix()) {
             return false;
         }
         // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.

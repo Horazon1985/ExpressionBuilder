@@ -250,6 +250,11 @@ public class MatrixFunction extends MatrixExpression {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.cos);
         }
 
+        // Fall: Cos einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.cos);
+        }
+        
         return this;
 
     }
@@ -283,6 +288,11 @@ public class MatrixFunction extends MatrixExpression {
         // Fall: Cosh einer diagonalisierbaren Matrix.
         if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.cosh);
+        }
+
+        // Fall: Cosh einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.cosh);
         }
 
         return this;
@@ -320,6 +330,11 @@ public class MatrixFunction extends MatrixExpression {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.exp);
         }
 
+        // Fall: Exponentialfunktion einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.exp);
+        }
+
         return this;
 
     }
@@ -353,6 +368,11 @@ public class MatrixFunction extends MatrixExpression {
         // Fall: Logarithmus einer diagonalisierbaren Matrix.
         if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.ln);
+        }
+
+        // Fall: Logarithmus einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.ln);
         }
 
         return this;
@@ -390,6 +410,11 @@ public class MatrixFunction extends MatrixExpression {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.sin);
         }
 
+        // Fall: Sin einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.sin);
+        }
+
         return this;
 
     }
@@ -423,6 +448,11 @@ public class MatrixFunction extends MatrixExpression {
         // Fall: Sinh einer diagonalisierbaren Matrix.
         if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.sinh);
+        }
+
+        // Fall: Sinh einer nilpotenten Matrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.sinh);
         }
 
         return this;

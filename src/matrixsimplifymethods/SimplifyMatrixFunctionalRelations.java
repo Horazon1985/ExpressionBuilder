@@ -5,6 +5,7 @@ import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import java.awt.Dimension;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
 import matrixexpressionbuilder.Matrix;
@@ -304,6 +305,10 @@ public class SimplifyMatrixFunctionalRelations {
                 }
 
                 ArrayList<Expression> taylorCoefficients = getTaylorCoefficientsOfFunction(type, maxExponent);
+                if (taylorCoefficients.isEmpty()) {
+                    // Dann war dieser Funktionstyp in der Methode nicht vorgesehen.
+                    return matExpr;
+                }
                 MatrixExpression result = MatrixExpression.getZeroMatrix(dim.height, dim.width);
                 // Ergebnispolynom bilden.
                 for (int i = 0; i < taylorCoefficients.size(); i++) {
@@ -330,37 +335,76 @@ public class SimplifyMatrixFunctionalRelations {
     private static ArrayList<Expression> getTaylorCoefficientsOfFunction(TypeMatrixFunction type, int n) throws EvaluationException {
 
         ArrayList<Expression> taylorCoefficients = new ArrayList<>();
-        Expression coefficient;
+        BigInteger denominator;
 
-        if (type.equals(TypeMatrixFunction.cos)){
-        
-        
-        
-        } else if (type.equals(TypeMatrixFunction.cosh)){
-        
-        
-        
-        } else if (type.equals(TypeMatrixFunction.exp)){
-            coefficient = Expression.ONE;
-            for (int i = 0; i <= n; i++){
-            
-            
+        if (type.equals(TypeMatrixFunction.cos)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ONE);
+            for (int i = 1; i <= n; i++) {
+                denominator = denominator.multiply(BigInteger.valueOf(i));
+                if (i % 4 == 0) {
+                    taylorCoefficients.add(Expression.ONE.div(denominator));
+                } else if (i % 4 == 2) {
+                    taylorCoefficients.add(Expression.MINUS_ONE.div(denominator));
+                } else {
+                    taylorCoefficients.add(Expression.ZERO);
+                }
             }
-        } else if (type.equals(TypeMatrixFunction.ln)){
-        
-        
-        
-        } else if (type.equals(TypeMatrixFunction.sin)){
-        
-        
-        
-        } else {
-            // Hier ist type = TypeMatrixFuncktion.sinh.
-        
-        
-        
+        } else if (type.equals(TypeMatrixFunction.cosh)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ONE);
+            for (int i = 1; i <= n; i++) {
+                denominator = denominator.multiply(BigInteger.valueOf(i));
+                if (i % 2 == 0) {
+                    taylorCoefficients.add(Expression.ONE.div(denominator));
+                } else {
+                    taylorCoefficients.add(Expression.ZERO);
+                }
+            }
+        } else if (type.equals(TypeMatrixFunction.exp)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ONE);
+            for (int i = 1; i <= n; i++) {
+                denominator = denominator.multiply(BigInteger.valueOf(i));
+                taylorCoefficients.add(Expression.ONE.div(denominator));
+            }
+        } else if (type.equals(TypeMatrixFunction.ln)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ZERO);
+            for (int i = 1; i <= n; i++) {
+                if (i % 2 == 0) {
+                    taylorCoefficients.add(Expression.MINUS_ONE.div(denominator));
+                } else {
+                    taylorCoefficients.add(Expression.ONE.div(denominator));
+                }
+                denominator = denominator.add(BigInteger.ONE);
+            }
+        } else if (type.equals(TypeMatrixFunction.sin)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ZERO);
+            for (int i = 1; i <= n; i++) {
+                denominator = denominator.multiply(BigInteger.valueOf(i));
+                if (i % 4 == 1) {
+                    taylorCoefficients.add(Expression.ONE.div(denominator));
+                } else if (i % 4 == 3) {
+                    taylorCoefficients.add(Expression.MINUS_ONE.div(denominator));
+                } else {
+                    taylorCoefficients.add(Expression.ZERO);
+                }
+            }
+        } else if (type.equals(TypeMatrixFunction.sinh)) {
+            denominator = BigInteger.ONE;
+            taylorCoefficients.add(Expression.ZERO);
+            for (int i = 1; i <= n; i++) {
+                denominator = denominator.multiply(BigInteger.valueOf(i));
+                if (i % 2 == 1) {
+                    taylorCoefficients.add(Expression.ONE.div(denominator));
+                } else {
+                    taylorCoefficients.add(Expression.ZERO);
+                }
+            }
         }
-        
+
         return taylorCoefficients;
 
     }
