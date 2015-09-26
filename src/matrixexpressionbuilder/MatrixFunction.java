@@ -3,8 +3,6 @@ package matrixexpressionbuilder;
 import computationbounds.ComputationBounds;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.Function;
-import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
@@ -57,10 +55,18 @@ public class MatrixFunction extends MatrixExpression {
 
         if (matExpr.type.equals(TypeMatrixFunction.det)) {
             return matExpr.computeDet();
+        } else if (matExpr.type.equals(TypeMatrixFunction.cos)) {
+            return matExpr.computeCos();
+        } else if (matExpr.type.equals(TypeMatrixFunction.cosh)) {
+            return matExpr.computeCosh();
         } else if (matExpr.type.equals(TypeMatrixFunction.exp)) {
             return matExpr.computeExp();
         } else if (matExpr.type.equals(TypeMatrixFunction.ln)) {
             return matExpr.computeLn();
+        } else if (matExpr.type.equals(TypeMatrixFunction.sin)) {
+            return matExpr.computeSin();
+        } else if (matExpr.type.equals(TypeMatrixFunction.sinh)) {
+            return matExpr.computeSinh();
         } else if (matExpr.type.equals(TypeMatrixFunction.tr)) {
             return matExpr.computeTr();
         } else if (matExpr.type.equals(TypeMatrixFunction.trans)) {
@@ -214,6 +220,76 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     /**
+     * Berechnet den Kosinus einer MatrixExpression, falls möglich.
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression computeCos() throws EvaluationException {
+
+        Dimension dim = this.left.getDimension();
+        if (dim.height != dim.width) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_COS_NOT_DEFINED"));
+        }
+
+        if (dim.height == 0) {
+            // Die Exponentialfunktion einer (0x0)-Matrix soll 1 sein.
+            return new Matrix(Expression.ONE);
+        }
+
+        if (dim.height == 1 && this.left.isMatrix()) {
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).cos());
+        }
+
+        // Fall: Cos einer Diagonalmatrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.cos);
+        }
+
+        // Fall: Cos einer diagonalisierbaren Matrix.
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.cos);
+        }
+
+        return this;
+
+    }
+
+    /**
+     * Berechnet den hyperbolischen Kosinus einer MatrixExpression, falls möglich.
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression computeCosh() throws EvaluationException {
+
+        Dimension dim = this.left.getDimension();
+        if (dim.height != dim.width) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_COSH_NOT_DEFINED"));
+        }
+
+        if (dim.height == 0) {
+            // Die Exponentialfunktion einer (0x0)-Matrix soll 1 sein.
+            return new Matrix(Expression.ONE);
+        }
+
+        if (dim.height == 1 && this.left.isMatrix()) {
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).cosh());
+        }
+
+        // Fall: Cosh einer Diagonalmatrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.cosh);
+        }
+
+        // Fall: Cosh einer diagonalisierbaren Matrix.
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.cosh);
+        }
+
+        return this;
+
+    }
+
+    /**
      * Berechnet die Exponentialfunktion einer MatrixExpression, falls möglich.
      *
      * @throws EvaluationException
@@ -231,23 +307,23 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         if (dim.height == 1 && this.left.isMatrix()) {
-            return new Matrix(new Function(((Matrix) this.left).getEntry(0, 0), TypeFunction.exp));
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).exp());
         }
 
         // Fall: Exponentialfunktion einer Diagonalmatrix.
         if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
-            return SimplifyMatrixFunctionalRelations.simplifyExpOfDiagonalMatrix(this);
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.exp);
         }
 
         // Fall: Exponentialfunktion einer diagonalisierbaren Matrix.
         if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
-            return SimplifyMatrixFunctionalRelations.simplifyExpOfDiagonalizableMatrix(this);
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.exp);
         }
 
         return this;
 
     }
-
+    
     /**
      * Berechnet den Logarithmus einer MatrixExpression, falls möglich.
      *
@@ -266,17 +342,87 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         if (dim.height == 1 && this.left.isMatrix()) {
-            return new Matrix(new Function(((Matrix) this.left).getEntry(0, 0), TypeFunction.ln));
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).ln());
         }
 
         // Fall: Logarithmus einer Diagonalmatrix.
         if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
-            return SimplifyMatrixFunctionalRelations.simplifyLnOfDiagonalMatrix(this);
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.ln);
         }
 
         // Fall: Logarithmus einer diagonalisierbaren Matrix.
         if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
-            return SimplifyMatrixFunctionalRelations.simplifyLnOfDiagonalizableMatrix(this);
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.ln);
+        }
+
+        return this;
+
+    }
+
+    /**
+     * Berechnet den Sinus einer MatrixExpression, falls möglich.
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression computeSin() throws EvaluationException {
+
+        Dimension dim = this.left.getDimension();
+        if (dim.height != dim.width) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_SIN_NOT_DEFINED"));
+        }
+
+        if (dim.height == 0) {
+            // Die Exponentialfunktion einer (0x0)-Matrix soll 1 sein.
+            return new Matrix(Expression.ONE);
+        }
+
+        if (dim.height == 1 && this.left.isMatrix()) {
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).sin());
+        }
+
+        // Fall: Sin einer Diagonalmatrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.sin);
+        }
+
+        // Fall: Sin einer diagonalisierbaren Matrix.
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.sin);
+        }
+
+        return this;
+
+    }
+
+    /**
+     * Berechnet den hyperbolischen Sinus einer MatrixExpression, falls möglich.
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression computeSinh() throws EvaluationException {
+
+        Dimension dim = this.left.getDimension();
+        if (dim.height != dim.width) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_SINH_NOT_DEFINED"));
+        }
+
+        if (dim.height == 0) {
+            // Die Exponentialfunktion einer (0x0)-Matrix soll 1 sein.
+            return new Matrix(Expression.ONE);
+        }
+
+        if (dim.height == 1 && this.left.isMatrix()) {
+            return new Matrix(((Matrix) this.left).getEntry(0, 0).cosh());
+        }
+
+        // Fall: Sinh einer Diagonalmatrix.
+        if (this.left.isMatrix() && ((Matrix) this.left).isDiagonalMatrix()) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalMatrix(this, TypeMatrixFunction.sinh);
+        }
+
+        // Fall: Sinh einer diagonalisierbaren Matrix.
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfDiagonalizableMatrix(this, TypeMatrixFunction.sinh);
         }
 
         return this;
@@ -607,16 +753,36 @@ public class MatrixFunction extends MatrixExpression {
             return matExprSimplified;
         }
 
-        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyExpOfConjugatedMatrix(matExpr);
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.cos);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+        
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.cosh);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+        
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.exp);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
 
-        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyLnOfConjugatedMatrix(matExpr);
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.ln);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
 
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.sin);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+        
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.sinh);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+        
         return matExpr;
 
     }

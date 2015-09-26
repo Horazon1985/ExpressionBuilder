@@ -2,6 +2,6 @@ package matrixexpressionbuilder;
 
 public enum TypeMatrixFunction {
 
-    det, exp, ln, trans, tr;
+    cos, cosh, det, exp, ln, sin, sinh, trans, tr;
     
 }

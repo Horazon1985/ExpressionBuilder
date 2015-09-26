@@ -89,6 +89,18 @@
     <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
     <Russian>Определитель одной из матриц не определён.</Russian>
   </object>
+  <object id = "MEB_MatrixFunction_COS_NOT_DEFINED">
+    <German>Der Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The cosine of an occurring matrix is not defined.</English>
+    <Ukrainian>Косинус даної матриці не визначено.</Ukrainian>
+    <Russian>Косинус данной матрицы не определён.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_COSH_NOT_DEFINED">
+    <German>Der hyperbolische Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The hyperbolic cosine of an occurring matrix is not defined.</English>
+    <Ukrainian>Гіперболичний косинус даної матриці не визначено.</Ukrainian>
+    <Russian>Гиперболический косинус данной матрицы не определён.</Russian>
+  </object>
   <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
     <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
     <English>The exponential function of an occurring matrix is not defined.</English>
@@ -99,7 +111,19 @@
     <German>Der Logarithmus einer auftretenden Matrix ist nicht definiert.</German>
     <English>The logarithm of an occurring matrix is not defined.</English>
     <Ukrainian>Логарифм функція даної матриці не визначено.</Ukrainian>
-    <Russian>Логарифм функция данной матрицы не определен.</Russian>
+    <Russian>Логарифм функция данной матрицы не определён.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_SIN_NOT_DEFINED">
+    <German>Der Sinus von einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The sine of an occurring matrix is not defined.</English>
+    <Ukrainian>Синус даної матриці не визначено.</Ukrainian>
+    <Russian>Синус данной матрицы не определён.</Russian>
+  </object>
+  <object id = "MEB_MatrixFunction_SINH_NOT_DEFINED">
+    <German>Der hyperbolische Sinus von einer auftretenden Matrix ist nicht definiert.</German>
+    <English>The hyperbolic sine of an occurring matrix is not defined.</English>
+    <Ukrainian>Гіперболичний синус даної матриці не визначено.</Ukrainian>
+    <Russian>Гиперболический синус данной матрицы не определён.</Russian>
   </object>
   <object id = "MEB_MatrixFunction_TR_NOT_DEFINED">
     <German>Die Spur einer auftretenden Matrix ist nicht definiert.</German>
