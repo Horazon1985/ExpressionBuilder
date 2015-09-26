@@ -5,6 +5,7 @@ import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import java.awt.Dimension;
+import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixBinaryOperation;
 import matrixexpressionbuilder.MatrixExpression;
@@ -197,7 +198,7 @@ public class SimplifyMatrixFunctionalRelations {
      */
     public static MatrixExpression simplifyExpOfDiagonalMatrix(MatrixExpression matExpr) {
 
-        if (matExpr instanceof MatrixFunction && ((MatrixFunction) matExpr).getType().equals(TypeMatrixFunction.exp)
+        if (matExpr.isMatrixFunction(TypeMatrixFunction.exp)
                 && ((MatrixFunction) matExpr).getLeft().isMatrix()
                 && ((Matrix) ((MatrixFunction) matExpr).getLeft()).isDiagonalMatrix()) {
 
@@ -215,6 +216,36 @@ public class SimplifyMatrixFunctionalRelations {
 
             return new Matrix(resultExtry);
         }
+        return matExpr;
+
+    }
+
+    /**
+     * Falls m eine diagonalisierbare Matrix ist, so wird diese explizit
+     * berechnet. Ansonsten wird exp(m) zurückgegeben.
+     */
+    public static MatrixExpression simplifyExpOfDiagonalizableMatrix(MatrixExpression matExpr) {
+
+        if (matExpr.isMatrixFunction(TypeMatrixFunction.exp)
+                && ((MatrixFunction) matExpr).getLeft().isMatrix()
+                && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) ((MatrixFunction) matExpr).getLeft())) {
+
+            Object eigenvectorMatrix = EigenvaluesEigenvectorsAlgorithms.getEigenvectorBasisMatrix((Matrix) ((MatrixFunction) matExpr).getLeft());
+            if (eigenvectorMatrix instanceof Matrix) {
+                try {
+                    Matrix m = (Matrix) ((MatrixFunction) matExpr).getLeft();
+                    MatrixExpression matrixInDiagonalForm = ((Matrix) eigenvectorMatrix).pow(-1).mult(m).mult((Matrix) eigenvectorMatrix).simplify();
+                    if (matrixInDiagonalForm instanceof Matrix && ((Matrix) matrixInDiagonalForm).isDiagonalMatrix()){
+                        // Das Folgende kann dann direkt explizit berechnet werden.
+                        return ((Matrix) eigenvectorMatrix).mult(((Matrix) matrixInDiagonalForm).exp()).mult(((Matrix) eigenvectorMatrix).pow(-1));
+                    }
+                } catch (EvaluationException e) {
+                    return matExpr;
+                }
+            }
+
+        }
+
         return matExpr;
 
     }
@@ -283,6 +314,36 @@ public class SimplifyMatrixFunctionalRelations {
 
             return new Matrix(resultExtry);
         }
+        return matExpr;
+
+    }
+    
+    /**
+     * Falls m eine diagonalisierbare Matrix ist, so wird diese explizit
+     * berechnet. Ansonsten wird exp(m) zurückgegeben.
+     */
+    public static MatrixExpression simplifyLnOfDiagonalizableMatrix(MatrixExpression matExpr) {
+
+        if (matExpr.isMatrixFunction(TypeMatrixFunction.ln)
+                && ((MatrixFunction) matExpr).getLeft().isMatrix()
+                && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) ((MatrixFunction) matExpr).getLeft())) {
+
+            Object eigenvectorMatrix = EigenvaluesEigenvectorsAlgorithms.getEigenvectorBasisMatrix((Matrix) ((MatrixFunction) matExpr).getLeft());
+            if (eigenvectorMatrix instanceof Matrix) {
+                try {
+                    Matrix m = (Matrix) ((MatrixFunction) matExpr).getLeft();
+                    MatrixExpression matrixInDiagonalForm = ((Matrix) eigenvectorMatrix).pow(-1).mult(m).mult((Matrix) eigenvectorMatrix).simplify();
+                    if (matrixInDiagonalForm instanceof Matrix && ((Matrix) matrixInDiagonalForm).isDiagonalMatrix()){
+                        // Das Folgende kann dann direkt explizit berechnet werden.
+                        return ((Matrix) eigenvectorMatrix).mult(((Matrix) matrixInDiagonalForm).ln()).mult(((Matrix) eigenvectorMatrix).pow(-1));
+                    }
+                } catch (EvaluationException e) {
+                    return matExpr;
+                }
+            }
+
+        }
+
         return matExpr;
 
     }

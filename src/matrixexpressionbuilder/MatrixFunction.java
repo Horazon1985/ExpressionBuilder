@@ -8,6 +8,7 @@ import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
+import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
 import matrixsimplifymethods.SimplifyMatrixFunctionalRelations;
 import translator.Translator;
 
@@ -64,7 +65,7 @@ public class MatrixFunction extends MatrixExpression {
             return matExpr.computeTr();
         } else if (matExpr.type.equals(TypeMatrixFunction.trans)) {
             return matExpr.computeTrans();
-        }    
+        }
         // Defaultfall: 
         return matExpr;
 
@@ -239,9 +240,8 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         // Fall: Exponentialfunktion einer diagonalisierbaren Matrix.
-        if (this.left.isMatrix()) {
-            // TO DO.
-//            return SimplifyMatrixFunctionalRelations.simplifyExpOfDiagonalizableMatrix(this);
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyExpOfDiagonalizableMatrix(this);
         }
 
         return this;
@@ -275,8 +275,8 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         // Fall: Logarithmus einer diagonalisierbaren Matrix.
-        if (this.left.isMatrix()) {
-            // TO DO.
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixFunctionalRelations.simplifyLnOfDiagonalizableMatrix(this);
         }
 
         return this;

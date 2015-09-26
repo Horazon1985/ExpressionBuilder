@@ -40,6 +40,14 @@ public class MatrixExpressionCollection {
         this.bound++;
     }
     
+    public void add(MatrixExpressionCollection newMatrixTerms) {
+        for (int i = 0; i < newMatrixTerms.getBound(); i++) {
+            if (newMatrixTerms.get(i) != null) {
+                this.add(newMatrixTerms.get(i));
+            }
+        }
+    }
+    
     public void remove(int i){
         this.matrixTerms.remove(i);
         for (int j = this.bound - 1; j >= 0; j--){

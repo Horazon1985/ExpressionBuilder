@@ -220,6 +220,26 @@ public class Matrix extends MatrixExpression {
     }
 
     /**
+     * Gibt zurück, ob eine Matrix A = (a_{i, j}) Dreiecksgestalt besitzt und
+     * nilpotent ist (d.h. auf der Diagonalen stehen nur Nullen).
+     */
+    public boolean isNilpotentMatrix() {
+
+        Dimension dim = this.getDimension();
+        if (!this.isUpperTriangularMatrix() || !this.isLowerTriangularMatrix()) {
+            return false;
+        }
+        // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.
+        for (int i = 0; i < dim.height; i++) {
+            if (!this.entry[i][i].equals(ZERO)) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    /**
      * Gibt die Länge des oberen linken quadratischen Blocks der Matrix A =
      * (a_{i, j}) zurück, falls A eine quadratische Matrix ist. Ansonsten wird
      * false zurückgegeben.

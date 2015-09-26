@@ -94,18 +94,6 @@ public class EigenvaluesEigenvectorsAlgorithms {
     }
 
     /**
-     * Gibt die Matrix zurück, die durch Multiplikation mit dem kgV aller Nenner
-     * aller Matrixeinträge entsteht.
-     */
-    public MatrixExpression getMultipleWithoutDenominator(Matrix matExpr) {
-
-        Matrix result = new Matrix(Expression.ONE);
-
-        return result;
-
-    }
-
-    /**
      * Wenn true zurückgegeben wird, dann ist die Matrix (reell)
      * diagonalisierbar. Ansonsten ist es nicht bekannt.
      */
@@ -133,6 +121,39 @@ public class EigenvaluesEigenvectorsAlgorithms {
         }
 
         return sumOfDimension == dim.height;
+
+    }
+
+    /**
+     * Gibt, falls die Matrix m diagonalisierbar ist, eine Matrix mit Spalten,
+     * bestehend aus allen Eigenvektoren von m, zurück. Andernfalls wird false
+     * zurückgegeben.
+     */
+    public static Object getEigenvectorBasisMatrix(Matrix m) {
+
+        if (isMatrixDiagonalizable(m)) {
+
+            ExpressionCollection eigenvalues = getEigenvalues(m);
+            MatrixExpressionCollection allEigenvectors = new MatrixExpressionCollection();
+            MatrixExpressionCollection eigenvectorsForEigenvalue;
+            for (int i = 0; i < eigenvalues.getBound(); i++) {
+                eigenvectorsForEigenvalue = getEigenvectorsForEigenvalue(m, eigenvalues.get(i));
+                allEigenvectors.add(eigenvectorsForEigenvalue);
+            }
+            
+            if (allEigenvectors.getBound() == m.getDimension().width) {
+                Expression[][] eigenvectorMatrix = new Expression[m.getDimension().height][m.getDimension().width];
+                for (int i = 0; i < m.getDimension().width; i++) {
+                    for (int j = 0; j < m.getDimension().height; j++) {
+                        eigenvectorMatrix[j][i] = ((Matrix) allEigenvectors.get(i)).getEntry(j, 0);
+                    }
+                }
+                return new Matrix(eigenvectorMatrix);
+            }
+
+        }
+
+        return false;
 
     }
 
