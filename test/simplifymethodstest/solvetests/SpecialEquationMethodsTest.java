@@ -1,4 +1,4 @@
-package simplifymethodstest;
+package simplifymethodstest.solvetests;
 
 import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;

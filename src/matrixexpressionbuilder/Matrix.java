@@ -226,16 +226,35 @@ public class Matrix extends MatrixExpression {
     public boolean isNilpotentMatrix() {
 
         Dimension dim = this.getDimension();
-        if (!this.isUpperTriangularMatrix() && !this.isLowerTriangularMatrix()) {
-            return false;
+        if (this.isUpperTriangularMatrix() || this.isLowerTriangularMatrix()) {
+            // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.
+            for (int i = 0; i < dim.height; i++) {
+                if (!this.entry[i][i].equals(ZERO)) {
+                    return false;
+                }
+            }
+            return true;
         }
-        // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.
-        for (int i = 0; i < dim.height; i++) {
-            if (!this.entry[i][i].equals(ZERO)) {
+
+        /* 
+         Nächster Test: Matrix ist rational und es gibt eine Potenz der Ordnung 
+         <= dim, die eine Nullmatrix ergibt.
+         */
+        if (this.isRationalMatrix()) {
+            int exponent = 1;
+            MatrixExpression powerOfMatrix = this;
+            try {
+                while (!powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width)) && exponent <= dim.height) {
+                    powerOfMatrix = powerOfMatrix.mult(this).simplify();
+                    exponent++;
+                }
+                return powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width));
+            } catch (EvaluationException e) {
                 return false;
             }
         }
-        return true;
+        
+        return false;
 
     }
 

@@ -1,4 +1,4 @@
-package simplifymethodstest;
+package simplifymethodstest.matrixtests;
 
 import expressionbuilder.ExpressionException;
 import java.util.HashSet;
@@ -48,7 +48,7 @@ public class LinearAlgebraTests {
             fail("Build fehlgeschlagen.");
         }
     }
-    
+
     @Test
     public void isNotDiagonalizableTest() {
         try {
@@ -59,13 +59,46 @@ public class LinearAlgebraTests {
             fail("Build fehlgeschlagen.");
         }
     }
-    
+
     @Test
     public void diagonalizeMatrixTest() {
         try {
             MatrixExpression m = MatrixExpression.build("[3,-2;2,-3]", new HashSet<String>());
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
+        } catch (ExpressionException e) {
+            fail("Build fehlgeschlagen.");
+        }
+    }
+
+    @Test
+    public void isMatrixNilpotentTest1() {
+        try {
+            MatrixExpression m = MatrixExpression.build("[-18,-24;27/2,18]", new HashSet<String>());
+            Assert.assertTrue(m instanceof Matrix);
+            Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
+        } catch (ExpressionException e) {
+            fail("Build fehlgeschlagen.");
+        }
+    }
+
+    @Test
+    public void isMatrixNilpotentTest2() {
+        try {
+            MatrixExpression m = MatrixExpression.build("[0,a,b;0,0,c;0,0,0]", new HashSet<String>());
+            Assert.assertTrue(m instanceof Matrix);
+            Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
+        } catch (ExpressionException e) {
+            fail("Build fehlgeschlagen.");
+        }
+    }
+
+    @Test
+    public void isMatrixNotNilpotentTest() {
+        try {
+            MatrixExpression m = MatrixExpression.build("[1,-2,5;6,8,11;2,4,3]", new HashSet<String>());
+            Assert.assertTrue(m instanceof Matrix);
+            Assert.assertFalse(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
             fail("Build fehlgeschlagen.");
         }
