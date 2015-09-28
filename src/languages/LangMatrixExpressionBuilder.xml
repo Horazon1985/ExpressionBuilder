@@ -65,6 +65,12 @@
     <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>
     <Russian>Оперативная память переполнена. Вычисление было прекращено.</Russian>
   </object>
+  <object id = "MEB_MatrixBinaryOperation_COMPUTATION_ABORTED">
+    <German>Berechnung abgebrochen.</German>
+    <English>Computation aborted.</English>
+    <Ukrainian>Обчислення припинено.</Ukrainian>
+    <Russian>Вычисление прекращено.</Russian>
+  </object>
   <object id = "MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED">
     <German>Die Summe oder die Differenz zweier auftretender Matrizen ist nicht definiert.</German>
     <English>The sum or the difference of two occurring matrices is not defined.</English>

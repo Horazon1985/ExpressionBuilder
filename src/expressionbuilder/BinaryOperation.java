@@ -1983,6 +1983,7 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyFunctionalRelations());
             }
 
+            // sinh(x) + cosh(x) = exp(x)
             SimplifyFunctionalRelations.sumOfTwoFunctions(summands, TypeFunction.sinh, TypeFunction.cosh, TypeFunction.exp);
             //cos(x)^2 + sin(x)^2 = 1
             SimplifyFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);

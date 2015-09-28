@@ -1106,12 +1106,12 @@ public class SimplifyIntegralMethods {
     public static Object integratePowerOfTan(int n, String var) throws EvaluationException {
 
         if (n == 1) {
-            return Expression.MINUS_ONE.mult(new Function(new Function(new Function(Variable.create(var), TypeFunction.cos), TypeFunction.abs), TypeFunction.ln));
+            return Expression.MINUS_ONE.mult(Variable.create(var).cos().abs().ln());
         } else if (n == 2) {
             return new Function(Variable.create(var), TypeFunction.tan).sub(Variable.create(var));
         } else {
             Object[] params = new Object[2];
-            params[0] = new Function(Variable.create(var), TypeFunction.tan).pow(n - 2);
+            params[0] = Variable.create(var).tan().pow(n - 2);
             params[1] = var;
             Object integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
             if (integralOfLowerPower instanceof Expression) {

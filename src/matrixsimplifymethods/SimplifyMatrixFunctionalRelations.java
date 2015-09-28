@@ -1,10 +1,12 @@
 package matrixsimplifymethods;
 
+import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import java.awt.Dimension;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
@@ -17,6 +19,166 @@ import matrixexpressionbuilder.TypeMatrixBinary;
 import matrixexpressionbuilder.TypeMatrixFunction;
 
 public class SimplifyMatrixFunctionalRelations {
+
+    /**
+     * Prüft, ob MatExpr ein (rationales) Vielfaches einer Matrixfunktion vom
+     * Typ type ist. Falls ja, wird das Argument und der Koeffizient
+     * zurückgegeben. Falls nein, so wird false zurückgegeben. Diese Methode
+     * wird benötigt, um etwa zu prüfen, ob 7*cosh(A) + 7*sinh(A) zu 7*exp(A)
+     * vereinfacht werden kann.<br>
+     * Beispiel: (1) expr = Für 2*sin(x), type = TypeMatrixFunction.sin wird {x,
+     * 2} zurückgegeben.<br>
+     * (2) expr = Für sin(A), type = TypeMatrixFunction.cos wird false
+     * zurückgegeben. (3) expr = exp(A^2), type = TypeMatrixFunction.exp wird
+     * {A^2, 1} zurückgegeben.
+     */
+    private static Object[] isMultipleOfMatrixFunction(MatrixExpression MatExpr, TypeMatrixFunction type) {
+
+        // expr ist von der Form f(x).
+        if (MatExpr.isMatrixFunction(type)) {
+            Object[] result = new Object[2];
+            result[0] = ((MatrixFunction) MatExpr).getLeft();
+            result[1] = BigDecimal.ONE;
+            return result;
+        }
+
+        // expr ist von der Form a*f(x).
+        if (MatExpr.isProduct()
+                && ((MatrixBinaryOperation) MatExpr).getLeft() instanceof Matrix
+                && ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Constant
+                && ((MatrixBinaryOperation) MatExpr).getRight().isMatrixFunction(type)) {
+            Object[] result = new Object[2];
+            result[0] = ((MatrixFunction) ((MatrixBinaryOperation) MatExpr).getRight()).getLeft();
+            result[1] = ((Constant) ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression()).getValue();
+            return result;
+        }
+
+        Object[] result = new Object[1];
+        result[0] = false;
+        return result;
+
+    }
+
+    /**
+     * Prüft, ob expr ein rationales Vielfaches eines Quadrats einer
+     * Matrixfunktion vom Typ type ist. Falls ja, wird das Argument und der
+     * Koeffizient zurückgegeben. Falls nein, so wird false zurückgegeben. Diese
+     * Methode wird benötigt, um etwa zu prüfen, ob 7*cos(A)^2 + 7*sin(A)^2 zu 7
+     * vereinfacht werden kann.
+     */
+    private static Object[] isMultipleOfSquareOfMatrixFunction(MatrixExpression matExpr, TypeMatrixFunction type) {
+
+        // expr ist von der Form f(A)^2.
+        if (matExpr.isPower()
+                && ((MatrixPower) matExpr).getRight().equals(Expression.TWO)
+                && ((MatrixPower) matExpr).getLeft().isMatrixFunction(type)) {
+            Object[] result = new Object[2];
+            result[0] = ((MatrixFunction) ((MatrixPower) matExpr).getLeft()).getLeft();
+            result[1] = BigDecimal.ONE;
+            return result;
+        }
+
+        // expr ist von der Form a*f(A)^2.
+        if (matExpr.isProduct() && ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Constant
+                && ((MatrixBinaryOperation) matExpr).getRight().isPower()
+                && ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getRight().equals(Expression.TWO)
+                && ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getLeft().isMatrixFunction(type)) {
+            Object[] result = new Object[2];
+            result[0] = ((MatrixFunction) ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getLeft()).getLeft();
+            result[1] = ((Constant) ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression()).getValue();
+            return result;
+        }
+
+        Object[] result = new Object[1];
+        result[0] = false;
+        return result;
+
+    }
+
+    /**
+     * Falls in expr der Ausdruck a*sin(A)^2 + a*cos(A)^2 auftaucht -> zu a*E
+     * vereinfachen.<br>
+     * Beispiel: A+3*sin(B)^2+C+z+3*cos(B)^2 wird vereinfacht zu A + 3*E + C.
+     */
+    public static void reduceSumOfSquaresOfSineAndCosine(MatrixExpressionCollection summands) {
+
+        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+        Dimension dim;
+
+        // Fall: sin(A)^2 steht VOR cos(A)^2
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfSquareOfMatrixFunction(summands.get(i), TypeMatrixFunction.sin);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = i + 1; j < summands.getBound(); j++) {
+
+                if (summands.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfSquareOfMatrixFunction(summands.get(j), TypeMatrixFunction.cos);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])
+                        && ((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+                    try {
+                        dim = ((MatrixExpression) isFirstSummandSuitable[0]).getDimension();
+                        summands.put(i, new Matrix(new Constant((BigDecimal) isFirstSummandSuitable[1])).mult(MatrixExpression.getId(dim.height)));
+                        summands.remove(j);
+                        break;
+                    } catch (EvaluationException e) {
+                    }
+                }
+
+            }
+
+        }
+
+        // Fall: cos(A)^2 steht VOR sin(A)^2
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfSquareOfMatrixFunction(summands.get(i), TypeMatrixFunction.cos);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = i + 1; j < summands.getBound(); j++) {
+
+                if (summands.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfSquareOfMatrixFunction(summands.get(j), TypeMatrixFunction.sin);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])
+                        && ((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+                    try {
+                        dim = ((MatrixExpression) isFirstSummandSuitable[0]).getDimension();
+                        summands.put(i, new Matrix(new Constant((BigDecimal) isFirstSummandSuitable[1])).mult(MatrixExpression.getId(dim.height)));
+                        summands.remove(j);
+                        break;
+                    } catch (EvaluationException e) {
+                    }
+                    break;
+                }
+
+            }
+
+        }
+
+    }
 
     /**
      * Vereinfacht Doppelpotenzen, falls möglich. Ansonsten wird expr

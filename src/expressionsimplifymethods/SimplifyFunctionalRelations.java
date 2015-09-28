@@ -16,11 +16,14 @@ public class SimplifyFunctionalRelations {
      * ist. Falls ja, wird das Argument und der Koeffizient (in Form von Zähler
      * und Nenner) zurückgegeben. Falls nein, so wird false zurückgegeben. Diese
      * Methode wird benötigt, um etwa zu prüfen, ob 7*cosh(x)/5 + 7*sinh(x)/5 zu
-     * 7*exp(x)/5 vereinfacht werden kann. Beispiel: (1) expr = Für 2*sin(x),
-     * type = TypeFunction.sin wird {x, 2} zurückgegeben. (2) expr = Für
-     * (-3)*exp(x)/5, type = TypeFunction.exp wird {x, -3, 5} zurückgegeben. (3)
-     * expr = Für sin(x), type = TypeFunction.cos wird false zurückgegeben. (1)
-     * expr = tan(u^2), type = TypeFunction.tan wird {u^2, 1} zurückgegeben.
+     * 7*exp(x)/5 vereinfacht werden kann.<br>
+     * Beispiel: (1) expr = Für 2*sin(x), type = TypeFunction.sin wird {x, 2}
+     * zurückgegeben.<br>
+     * (2) expr = Für (-3)*exp(x)/5, type = TypeFunction.exp wird {x, -3, 5}
+     * zurückgegeben.<br>
+     * (3) expr = Für sin(x), type = TypeFunction.cos wird false
+     * zurückgegeben.<br>
+     * (4) expr = tan(u^2), type = TypeFunction.tan wird {u^2, 1} zurückgegeben.
      */
     private static Object[] isMultipleOfFunction(Expression expr, TypeFunction type) {
 
@@ -142,8 +145,8 @@ public class SimplifyFunctionalRelations {
 
     /**
      * Falls in expr der Ausdruck sin(x)^2 + cos(x)^2 auftaucht -> zu 1
-     * vereinfachen. Beispiel: x+y+sin(a*b)^2+z+cos(a*b)^2 wird vereinfacht zu
-     * 1+x+y+z
+     * vereinfachen.<br>
+     * Beispiel: x+y+sin(a*b)^2+z+cos(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */
     public static void reduceSumOfSquaresOfSineAndCosine(ExpressionCollection summands) {
 
@@ -1265,11 +1268,11 @@ public class SimplifyFunctionalRelations {
             if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                 if (((BinaryOperation) factor).getRight().isRationalConstant()) {
-                    if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddConstant() 
+                    if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddConstant()
                             && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenConstant()) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
-                    } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenConstant() 
+                    } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenConstant()
                             && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddConstant()) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
@@ -1619,7 +1622,7 @@ public class SimplifyFunctionalRelations {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         }
                     }
-                    
+
                 }
             }
         }

@@ -9,6 +9,7 @@ import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import matrixsimplifymethods.MatrixExpressionCollection;
+import matrixsimplifymethods.SimplifyMatrixFunctionalRelations;
 import matrixsimplifymethods.SimplifyMatrixUtilities;
 import translator.Translator;
 
@@ -330,6 +331,29 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
+        
+        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+        if (Thread.interrupted()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
+        }
+        
+        MatrixBinaryOperation expr = this;
+
+        if (this.isSum()) {
+
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+            // In jedem Summanden einzeln Funktionalgleichungen anwenden.
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyMatrixFunctionalRelations());
+            }
+
+            //cos(x)^2 + sin(x)^2 = 1
+            SimplifyMatrixFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);
+
+            return SimplifyMatrixUtilities.produceSum(summands);
+
+        }
+        
         return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
     }
 
