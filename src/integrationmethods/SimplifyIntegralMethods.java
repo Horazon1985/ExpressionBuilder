@@ -204,7 +204,7 @@ public class SimplifyIntegralMethods {
             simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_by_definitions);
         }
         if (f.containsTrigonometricalFunction()) {
-        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+            simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
         }
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
@@ -1564,7 +1564,7 @@ public class SimplifyIntegralMethods {
                     paramsSubstitutedIntegral[0] = fSubstituted;
                     paramsSubstitutedIntegral[1] = substVar;
                     Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
-
+                    
                     // Nun wird versucht, das substituierte Integral zu berechnen.
                     Object F = indefiniteIntegration(substitutedIntegral, true);
 
@@ -1598,7 +1598,7 @@ public class SimplifyIntegralMethods {
              */
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-
+            
             // Im Zähler suchen.
             for (int i = 0; i < factorsEnumerator.getBound(); i++) {
 

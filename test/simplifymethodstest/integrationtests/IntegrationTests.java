@@ -74,9 +74,10 @@ public class IntegrationTests {
     }
 
     @Test
-    public void computeIntegralOfElementaryFunctionTest() {
+    public void computeIntegralsOfElementaryFunctionsTest() {
         // integral von ln(x) ist = x*ln(x)-x.
         // integral von cot(x) ist = ln(|sin(x)|).
+        // integral von 5^x ist = 5^x/ln(5).
         try {
             f = Expression.build("int(ln(x),x)", null);
             Object integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
@@ -88,6 +89,15 @@ public class IntegrationTests {
             result = Expression.build("ln(|sin(x)|)", null);
             Assert.assertTrue(integral instanceof Expression);
             Assert.assertTrue(((Expression) integral).equals(result));
+            f = Expression.build("int(5^x,x)", null);
+            integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
+            result = Expression.build("exp(ln(5)*x)/ln(5)", null);
+            Assert.assertTrue(integral instanceof Expression);
+            Assert.assertTrue(((Expression) integral).equals(result));
+            result = result.simplify();
+            // Vereinfacht ist integral = 5^x/ln(5).
+            Expression resultSimplified = Expression.build("5^x/ln(5)", null);
+            Assert.assertTrue(result.equals(resultSimplified));
         } catch (ExpressionException | EvaluationException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -121,11 +131,13 @@ public class IntegrationTests {
 
     @Test
     public void integralOfSumTest() {
-        // integral von exp(x^2) ist nicht in kompakter Form berechenbar.
+        // integral von x^2+exp(x^2) ist = x^3/3 + int(exp(x^2), x).
         try {
-            f = Expression.build("int(exp(x^2),x)", null);
+            f = Expression.build("int(x^2+exp(x^2),x)", null);
             Object integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Assert.assertTrue(integral.equals(false));
+            Expression result = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
+            Assert.assertTrue(integral instanceof Expression);
+            Assert.assertTrue(((Expression) integral).equals(result));
         } catch (ExpressionException | EvaluationException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -133,11 +145,11 @@ public class IntegrationTests {
 
     @Test
     public void integralOfConstantMultipleOfFunctionTest() {
-        // integral von x^2+exp(x^2) ist = x^3/3 + int(exp(x^2), x).
+        // integral von (5*exp(x^2))/11 ist = (5*int(exp(x^2), x))/11.
         try {
-            f = Expression.build("int(x^2+exp(x^2),x)", null);
+            f = Expression.build("int((5*exp(x^2))/11,x)", null);
             Object integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
+            Expression result = Expression.build("(5*int(exp(x^2), x))/11", null);
             Assert.assertTrue(integral instanceof Expression);
             Assert.assertTrue(((Expression) integral).equals(result));
         } catch (ExpressionException | EvaluationException e) {

@@ -1859,6 +1859,7 @@ public class SolveMethods {
             /*
              WICHTIG: Falls f = x und substitution = x^k ist, wird NICHT
              substitutiert. GRUND: Dies kann Endlosschleifen verursachen!
+             Es werden NUR lineare Substitutionen vorgenommen.
              */
             Object variableSubstituted = substituteVariable(var, substitution);
             if (variableSubstituted instanceof Expression) {

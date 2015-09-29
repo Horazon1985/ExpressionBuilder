@@ -225,6 +225,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpression result = MatrixExpression.getId(1);
             MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
 
+            // 1x1-Matrizen als Faktoren nach vorne ziehen 
+            factors = pullScalarFactorsToBeginning(factors);
+
             for (int i = factors.getBound() - 1; i >= 0; i--) {
                 if (factors.get(i) == null) {
                     continue;
@@ -241,6 +244,26 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         }
 
+    }
+
+    private MatrixExpressionCollection pullScalarFactorsToBeginning(MatrixExpressionCollection factors) {
+
+        MatrixExpressionCollection factorsOrdered = new MatrixExpressionCollection();
+        for(int i = 0; i < factors.getBound(); i++){
+            if (factors.get(i) == null){
+                continue;
+            }
+            if (factors.get(i).convertOneTimesOneMatrixToExpression() instanceof Expression){
+                factorsOrdered.add(factors.get(i));
+                factors.remove(i);
+            }
+        }
+        if (factorsOrdered.isEmpty()){
+            return factors;
+        }
+        factorsOrdered.add(factors);
+        return factorsOrdered;
+        
     }
 
     @Override

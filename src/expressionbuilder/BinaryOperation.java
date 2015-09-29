@@ -2420,8 +2420,9 @@ public class BinaryOperation extends Expression {
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
 
-        } else if (this.isPower()) {
-            return new Function(new Function(this.left, TypeFunction.ln).mult(this.right), TypeFunction.exp);
+        } else if (this.isPower() && this.left.isConstant()) {
+            // Nur dann ersetzen, wenn die Basis konstant ist.
+            return this.left.ln().mult(this.right).exp();
         }
 
         return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsByDefinitions(),
