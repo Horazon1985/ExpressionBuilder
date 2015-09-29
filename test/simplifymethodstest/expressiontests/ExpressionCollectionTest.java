@@ -3,16 +3,16 @@ package simplifymethodstest.expressiontests;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.ExpressionException;
-import expressionbuilder.Function;
-import expressionbuilder.TypeFunction;
 import expressionbuilder.Variable;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-import org.junit.Before;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;
+import org.junit.AfterClass;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class ExpressionCollectionTest {
 

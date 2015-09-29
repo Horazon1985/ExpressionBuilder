@@ -37,14 +37,15 @@ public class MatrixFunction extends MatrixExpression {
         if (this.type.equals(TypeMatrixFunction.trans)) {
             return new Dimension(this.left.getDimension().height, this.left.getDimension().width);
         }
-        if (this.type.equals(TypeMatrixFunction.exp) || this.type.equals(TypeMatrixFunction.ln)) {
-            /*
-             Voraussetzung: exp(this) oder ln(this) sind wohldefiniert, d.h.
-             this stellt eine quadratische Matrix dar.
-             */
-            return new Dimension(this.left.getDimension().width, this.left.getDimension().height);
+        if (this.type.equals(TypeMatrixFunction.det) || this.type.equals(TypeMatrixFunction.tr)) {
+            return new Dimension(1, 1);
         }
-        return new Dimension(1, 1);
+        /*
+         Alle anderen Funktionen, die durch eine Potenzreiche definiert sind. 
+         Voraussetzung: F(this) oder ln(this) sind wohldefiniert, d.h.
+         this stellt eine quadratische Matrix dar.
+         */
+        return new Dimension(this.left.getDimension().width, this.left.getDimension().height);
     }
 
     @Override
@@ -91,6 +92,16 @@ public class MatrixFunction extends MatrixExpression {
                 && this.getLeft().equivalent(((MatrixFunction) matExpr).getLeft());
     }
 
+    @Override
+    public MatrixExpression orderSumsAndProducts() throws EvaluationException {
+        return new MatrixFunction(this.left.orderSumsAndProducts(), this.type);
+    }
+
+    @Override
+    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+        return new MatrixFunction(this.left.orderDifferenceAndDivision(), this.type);
+    }
+    
     @Override
     public boolean isConstant() {
         return this.left.isConstant();
@@ -254,13 +265,14 @@ public class MatrixFunction extends MatrixExpression {
         if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
             return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.cos);
         }
-        
+
         return this;
 
     }
 
     /**
-     * Berechnet den hyperbolischen Kosinus einer MatrixExpression, falls möglich.
+     * Berechnet den hyperbolischen Kosinus einer MatrixExpression, falls
+     * möglich.
      *
      * @throws EvaluationException
      */
@@ -338,7 +350,7 @@ public class MatrixFunction extends MatrixExpression {
         return this;
 
     }
-    
+
     /**
      * Berechnet den Logarithmus einer MatrixExpression, falls möglich.
      *
@@ -787,12 +799,12 @@ public class MatrixFunction extends MatrixExpression {
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
-        
+
         matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.cosh);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
-        
+
         matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.exp);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
@@ -807,12 +819,12 @@ public class MatrixFunction extends MatrixExpression {
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
-        
+
         matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfConjugatedMatrix(matExpr, TypeMatrixFunction.sinh);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }
-        
+
         return matExpr;
 
     }

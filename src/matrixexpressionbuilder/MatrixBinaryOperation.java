@@ -42,24 +42,23 @@ public class MatrixBinaryOperation extends MatrixExpression {
         Dimension dimLeft = this.left.getDimension();
         Dimension dimRight = this.right.getDimension();
 
-        /*
-         Ausnahme: eine (1x1)-Matrix wird bei der Multiplikation (egal, ob von
-         links oder von rechts) wie ein Skalar interpretiert und eben auch so
-         behandelt.
-         */
-        if (dimLeft.height == 1 && dimLeft.width == 1) {
-            return dimRight;
-        }
-        if (dimRight.height == 1 && dimRight.width == 1) {
-            return dimLeft;
-        }
-
-        if (!this.type.equals(TypeMatrixBinary.TIMES)) {
+        if (!this.isProduct()) {
             if (dimLeft.height != dimRight.height || dimLeft.width != dimRight.width) {
                 throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED"));
             }
             return dimLeft;
         } else {
+            /*
+             Ausnahme: eine (1x1)-Matrix wird bei der Multiplikation (egal, ob von
+             links oder von rechts) wie ein Skalar interpretiert und eben auch so
+             behandelt.
+             */
+            if (dimLeft.height == 1 && dimLeft.width == 1) {
+                return dimRight;
+            }
+            if (dimRight.height == 1 && dimRight.width == 1) {
+                return dimLeft;
+            }
             if (dimLeft.width != dimRight.height) {
                 throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED"));
             }
@@ -188,21 +187,111 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public boolean isConstant(){
+    public MatrixExpression orderSumsAndProducts() throws EvaluationException {
+
+        if (this.isNotSum() && this.isNotProduct()) {
+            return new MatrixBinaryOperation(this.left.orderSumsAndProducts(), this.right.orderSumsAndProducts(), this.type);
+        }
+
+        // Fall type = +.
+        if (this.isSum()) {
+
+            Dimension dim;
+            try {
+                dim = this.getDimension();
+            } catch (EvaluationException e) {
+                return this;
+            }
+            MatrixExpression result = MatrixExpression.getZeroMatrix(dim.height, dim.width);
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+
+            for (int i = summands.getBound() - 1; i >= 0; i--) {
+                if (summands.get(i) == null) {
+                    continue;
+                }
+                summands.put(i, summands.get(i).orderSumsAndProducts());
+                if (result.isZeroMatrix()) {
+                    result = summands.get(i).orderSumsAndProducts();
+                } else {
+                    result = summands.get(i).orderSumsAndProducts().add(result);
+                }
+            }
+
+            return result;
+
+        } else {
+
+            // Fall type = *.
+            MatrixExpression result = MatrixExpression.getId(1);
+            MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
+
+            for (int i = factors.getBound() - 1; i >= 0; i--) {
+                if (factors.get(i) == null) {
+                    continue;
+                }
+                factors.put(i, factors.get(i).orderSumsAndProducts());
+                if (result.isId()) {
+                    result = factors.get(i).orderSumsAndProducts();
+                } else {
+                    result = factors.get(i).orderSumsAndProducts().mult(result);
+                }
+            }
+
+            return result;
+
+        }
+
+    }
+
+    @Override
+    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+
+        MatrixExpression result;
+
+        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+        if (Thread.interrupted()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+        }
+
+        MatrixExpressionCollection termsLeft = new MatrixExpressionCollection();
+        MatrixExpressionCollection termsRight = new MatrixExpressionCollection();
+
+        if (this.isSum() || this.isDifference()) {
+
+            SimplifyMatrixUtilities.orderDifference(this, termsLeft, termsRight);
+            for (int i = 0; i < termsLeft.getBound(); i++) {
+                termsLeft.put(i, termsLeft.get(i).orderDifferenceAndDivision());
+            }
+            for (int i = 0; i < termsRight.getBound(); i++) {
+                termsRight.put(i, termsRight.get(i).orderDifferenceAndDivision());
+            }
+            result = SimplifyMatrixUtilities.produceDifference(termsLeft, termsRight);
+
+        } else {
+            // Hier ist type == TypeMatrixBinary.TIMES.
+            result = this.left.orderDifferenceAndDivision().mult(this.right.orderDifferenceAndDivision());
+        }
+
+        return result;
+
+    }
+
+    @Override
+    public boolean isConstant() {
         return this.left.isConstant() && this.right.isConstant();
     }
-    
+
     @Override
     public boolean contains(String var) {
         return this.left.contains(var) || this.right.contains(var);
     }
-    
+
     @Override
-    public void getContainedVars(HashSet<String> vars){
+    public void getContainedVars(HashSet<String> vars) {
         this.left.getContainedVars(vars);
         this.right.getContainedVars(vars);
     }
-    
+
     @Override
     public MatrixExpression copy() {
         return new MatrixBinaryOperation(this.left.copy(), this.right.copy(), this.type);
@@ -211,19 +300,19 @@ public class MatrixBinaryOperation extends MatrixExpression {
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
-        if (this.isSum() || this.isDifference()){
+        if (this.isSum() || this.isDifference()) {
             return new MatrixBinaryOperation(this.left.diff(var), this.right.diff(var), this.type);
         }
         // Hier ist this.type == TypeMatrixBinary.TIMES
         return this.left.diff(var).mult(this.right).add(this.left.mult(this.right.diff(var)));
-        
+
     }
-    
+
     @Override
     public MatrixExpression replaceVariable(String var, Expression expr) {
         return new MatrixBinaryOperation(this.left.replaceVariable(var, expr), this.right.replaceVariable(var, expr), this.type);
     }
-    
+
     @Override
     public String writeMatrixExpression() {
 
@@ -331,13 +420,11 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
-        
+
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
             throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
         }
-        
-        MatrixBinaryOperation expr = this;
 
         if (this.isSum()) {
 
@@ -353,7 +440,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             return SimplifyMatrixUtilities.produceSum(summands);
 
         }
-        
+
         return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
     }
 

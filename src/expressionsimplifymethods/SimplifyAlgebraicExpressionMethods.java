@@ -46,13 +46,13 @@ public class SimplifyAlgebraicExpressionMethods {
 
         BigInteger a = ((Constant) expr.getLeft()).getValue().toBigInteger();
 
-        if (a.compareTo(BigInteger.ZERO) <= 0) {
+        if (a.compareTo(BigInteger.ZERO) <= 0 || m.intValue() < 0 || n.intValue() < 0) {
             return expr;
         }
 
         int p = m.intValue();
         int q = n.intValue();
-
+        
         BigInteger divisor;
         BigInteger factorOutside = BigInteger.ONE;
         int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS) + 1);

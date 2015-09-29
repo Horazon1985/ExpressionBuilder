@@ -94,11 +94,15 @@ public class EigenvaluesEigenvectorsAlgorithms {
     }
 
     /**
-     * Wenn true zurückgegeben wird, dann ist die Matrix (reell)
+     * Wenn true zurückgegeben wird, dann ist die Matrix konstant und (reell)
      * diagonalisierbar. Ansonsten ist es nicht bekannt.
      */
     public static boolean isMatrixDiagonalizable(Matrix m) {
 
+        if (!m.isConstant()){
+            return false;
+        }
+        
         Dimension dim = m.getDimension();
 
         if (dim.height != dim.width) {
@@ -140,7 +144,7 @@ public class EigenvaluesEigenvectorsAlgorithms {
                 eigenvectorsForEigenvalue = getEigenvectorsForEigenvalue(m, eigenvalues.get(i));
                 allEigenvectors.add(eigenvectorsForEigenvalue);
             }
-            
+
             if (allEigenvectors.getBound() == m.getDimension().width) {
                 Expression[][] eigenvectorMatrix = new Expression[m.getDimension().height][m.getDimension().width];
                 for (int i = 0; i < m.getDimension().width; i++) {

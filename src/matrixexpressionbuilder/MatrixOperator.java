@@ -814,6 +814,32 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression orderSumsAndProducts() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).orderSumsAndProducts();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).orderDifferenceAndDivision();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 
         // Zunächst alle Parameter, welche gültige Ausdrücke darstellen, vereinfachen.

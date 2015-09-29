@@ -13,35 +13,35 @@ import translator.Translator;
 
 public abstract class MatrixExpression {
 
-    public final static Matrix MINUS_ONE = new Matrix(new Constant(-1));
+    public final static Matrix MINUS_ONE = new Matrix(Expression.MINUS_ONE);
 
     /**
      * Falls matrix eine Matrix darstellt, so werden die einzelnen Matrixzeilen
      * in einem Stringarray zurückgegeben. Beispiel: Bei der (2x3)-Matrix matrix
-     * = "[x+y,a,b;5,sin(y),f(u,v)]" wird das Stringarray {"x+y,a,b",
-     * "5,sin(y),gcd(12,15)"} zurückgegeben.
+     * = "[x+y,a,b;5,sin(y),f(u,v)]" wird das Stringarray
+     * {"x+y","a","b","5","sin(y)","f(u,v)"} zurückgegeben.
      *
      * @throws ExpressionException
      */
     public static String[] getRowsFromMatrix(String matrix) throws ExpressionException {
-        
+
         int numberOfRows = 1;
-        for (int i = 0; i < matrix.length(); i++){
-            if (matrix.substring(i, i + 1).equals(";")){
+        for (int i = 0; i < matrix.length(); i++) {
+            if (matrix.substring(i, i + 1).equals(";")) {
                 numberOfRows++;
             }
         }
-        
+
         String[] rows = matrix.split(";");
-        if (rows.length != numberOfRows){
+        if (rows.length != numberOfRows) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_ROW_MISSING"));
         }
-            
+
         if (rows.length == 0) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_NO_ROWS"));
         }
         return rows;
-        
+
     }
 
     /**
@@ -120,7 +120,7 @@ public abstract class MatrixExpression {
 
         for (int i = 0; i < rows.length; i++) {
 
-            if (rows[i].isEmpty()){
+            if (rows[i].isEmpty()) {
                 throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
             }
             currentRow = getEntriesFromRow(rows[i]).toArray();
@@ -227,19 +227,19 @@ public abstract class MatrixExpression {
             String formulaLeft = formula.substring(0, breakpoint);
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
-            if ((formulaLeft.isEmpty()) && priority > 1) {
+            if (formulaLeft.isEmpty() && priority > 1) {
                 throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
             }
             if (formulaRight.isEmpty()) {
                 throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
             }
 
-            //Falls der Ausdruck die Form "+abc..." besitzt -> daraus "abc..." machen
-            if ((formulaLeft.isEmpty()) && (priority == 0)) {
+            //Falls der Ausdruck die Form "+A..." besitzt -> daraus "A..." machen
+            if (formulaLeft.isEmpty() && priority == 0) {
                 return build(formulaRight, vars);
             }
-            //Falls der Ausdruck die Form "-abc..." besitzt -> daraus "(-1)*abc..." machen
-            if ((formulaLeft.isEmpty()) && (priority == 1)) {
+            //Falls der Ausdruck die Form "-A..." besitzt -> daraus "(-1)*A..." machen
+            if (formulaLeft.isEmpty() && priority == 1) {
                 return MINUS_ONE.mult(build(formulaRight, vars));
             }
             switch (priority) {
@@ -249,16 +249,13 @@ public abstract class MatrixExpression {
                     return new MatrixBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeMatrixBinary.MINUS);
                 case 2:
                     return new MatrixBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeMatrixBinary.TIMES);
-                case 3:
+                default:
                     try {
                         Expression exponent = Expression.build(formulaRight, vars);
                         return new MatrixPower(build(formulaLeft, vars), exponent);
-                    } catch (NumberFormatException e) {
+                    } catch (ExpressionException e) {
                         throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED"));
                     }
-                default:
-                    //Passiert zwar nicht, aber trotzdem!
-                    return null;
             }
         }
 
@@ -266,7 +263,7 @@ public abstract class MatrixExpression {
          Falls kein binärer Operator und die Formel die Form (...) hat ->
          Klammern beseitigen
          */
-        if ((priority == 4) && (formula.substring(0, 1).equals("(")) && (formula.substring(formulaLength - 1, formulaLength).equals(")"))) {
+        if (priority == 4 && formula.substring(0, 1).equals("(") && formula.substring(formulaLength - 1, formulaLength).equals(")")) {
             return build(formula.substring(1, formulaLength - 1), vars);
         }
 
@@ -375,9 +372,7 @@ public abstract class MatrixExpression {
      */
     public boolean isId() {
 
-        boolean result = this instanceof Matrix;
-
-        if (!result) {
+        if (!(this instanceof Matrix)) {
             return false;
         }
 
@@ -388,13 +383,17 @@ public abstract class MatrixExpression {
         for (int i = 0; i < ((Matrix) this).getRowNumber(); i++) {
             for (int j = 0; j < ((Matrix) this).getColumnNumber(); j++) {
                 if (i == j) {
-                    result = result && ((Matrix) this).getEntry(i, j).equals(Expression.ONE);
+                    if (!((Matrix) this).getEntry(i, j).equals(Expression.ONE)) {
+                        return false;
+                    }
                 } else {
-                    result = result && ((Matrix) this).getEntry(i, j).equals(Expression.ZERO);
+                    if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)) {
+                        return false;
+                    }
                 }
             }
         }
-        return result;
+        return true;
 
     }
 
@@ -548,6 +547,20 @@ public abstract class MatrixExpression {
     public abstract boolean equivalent(MatrixExpression matExpr);
 
     /**
+     * Ordnet Ketten von + und von * nach rechts.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression orderSumsAndProducts() throws EvaluationException;
+
+    /**
+     * Sortiert Summen und Differenzen zu einer grpßen Differenz (...)-(...).
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression orderDifferenceAndDivision() throws EvaluationException;
+
+    /**
      * Gibt zurück, ob der Matrizenausdruck konstant ist.
      */
     public abstract boolean isConstant();
@@ -634,13 +647,17 @@ public abstract class MatrixExpression {
         try {
 
             MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.simplifyMatrixEntries();
+            MatrixExpression matExprSimplified = matExpr.orderDifferenceAndDivision();
+//            matExprSimplified = matExprSimplified.orderSumsAndProducts();
+            matExprSimplified = matExprSimplified.simplifyMatrixEntries();
             matExprSimplified = matExprSimplified.collectProducts();
             matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
             matExprSimplified = matExprSimplified.computeMatrixOperations();
 
             while (!matExpr.equals(matExprSimplified)) {
                 matExpr = matExprSimplified.copy();
+                matExprSimplified = matExprSimplified.orderDifferenceAndDivision();
+//                matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.collectProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
@@ -668,14 +685,18 @@ public abstract class MatrixExpression {
         try {
 
             MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.simplifyMatrixEntries(simplifyTypes);
+            MatrixExpression matExprSimplified = matExpr.orderDifferenceAndDivision();
+            matExprSimplified = matExprSimplified.orderSumsAndProducts();
+            matExprSimplified = matExprSimplified.simplifyMatrixEntries();
             matExprSimplified = matExprSimplified.collectProducts();
             matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
             matExprSimplified = matExprSimplified.computeMatrixOperations();
 
             while (!matExpr.equals(matExprSimplified)) {
                 matExpr = matExprSimplified.copy();
-                matExprSimplified = matExprSimplified.simplifyMatrixEntries(simplifyTypes);
+                matExprSimplified = matExprSimplified.orderDifferenceAndDivision();
+                matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.collectProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
                 matExprSimplified = matExprSimplified.computeMatrixOperations();

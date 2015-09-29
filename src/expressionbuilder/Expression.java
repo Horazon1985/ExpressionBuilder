@@ -1263,9 +1263,10 @@ public abstract class Expression {
         try {
             Expression expr = this;
 
-            Expression exprSimplified = expr.simplifyTrivial();
+            Expression exprSimplified = expr.orderDifferenceAndDivision();
+            exprSimplified = exprSimplified.orderSumsAndProducts();
+            exprSimplified = exprSimplified.simplifyTrivial();
 //            System.out.println(exprSimplified.writeExpression());
-            exprSimplified = exprSimplified.orderDifferenceAndDivision();
             exprSimplified = exprSimplified.simplifyPowers();
             exprSimplified = exprSimplified.simplifyCollectProducts();
             exprSimplified = exprSimplified.simplifyExpandRationalFactors();
@@ -1279,13 +1280,13 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.simplifyFunctionalRelations();
                 exprSimplified = exprSimplified.simplifyCollectLogarithms();
             }
-            exprSimplified = exprSimplified.orderSumsAndProducts();
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderSumsAndProducts();
+                exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.simplifyPowers();
                 exprSimplified = exprSimplified.simplifyCollectProducts();
                 exprSimplified = exprSimplified.simplifyExpandRationalFactors();
@@ -1299,7 +1300,6 @@ public abstract class Expression {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
-                exprSimplified = exprSimplified.orderSumsAndProducts();
             }
 
             /*
@@ -1308,15 +1308,15 @@ public abstract class Expression {
              */
             expr = exprSimplified.copy();
             exprSimplified = exprSimplified.simplifyTrivial();
-            exprSimplified = exprSimplified.orderSumsAndProducts();
             exprSimplified = exprSimplified.orderDifferenceAndDivision();
+            exprSimplified = exprSimplified.orderSumsAndProducts();
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
                 exprSimplified = exprSimplified.simplifyTrivial();
-                exprSimplified = exprSimplified.orderSumsAndProducts();
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderSumsAndProducts();
             }
 
             return exprSimplified;
@@ -1339,11 +1339,14 @@ public abstract class Expression {
             Expression expr = this;
             Expression exprSimplified = expr;
 
-            if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                exprSimplified = exprSimplified.simplifyTrivial();
-            }
             if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
+            }
+            if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
+                exprSimplified = exprSimplified.orderSumsAndProducts();
+            }
+            if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
+                exprSimplified = exprSimplified.simplifyTrivial();
             }
             if (simplifyTypes.contains(TypeSimplify.expand)) {
                 exprSimplified = exprSimplified.simplifyExpand();
@@ -1401,18 +1404,18 @@ public abstract class Expression {
                     exprSimplified = exprSimplified.simplifyExpandLogarithms();
                 }
             }
-            if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
-                exprSimplified = exprSimplified.orderSumsAndProducts();
-            }
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                    exprSimplified = exprSimplified.simplifyTrivial();
-                }
                 if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
                     exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                }
+                if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
+                    exprSimplified = exprSimplified.orderSumsAndProducts();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
+                    exprSimplified = exprSimplified.simplifyTrivial();
                 }
                 if (simplifyTypes.contains(TypeSimplify.expand)) {
                     exprSimplified = exprSimplified.simplifyExpand();
@@ -1470,9 +1473,6 @@ public abstract class Expression {
                         exprSimplified = exprSimplified.simplifyExpandLogarithms();
                     }
                 }
-                if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
-                    exprSimplified = exprSimplified.orderSumsAndProducts();
-                }
             }
 
             /*
@@ -1480,16 +1480,16 @@ public abstract class Expression {
              triviale Umformungen vornehmen und Terme endgültig ordnen.
              */
             expr = exprSimplified.copy();
-            exprSimplified = exprSimplified.simplifyTrivial();
-            exprSimplified = exprSimplified.orderSumsAndProducts();
             exprSimplified = exprSimplified.orderDifferenceAndDivision();
+            exprSimplified = exprSimplified.orderSumsAndProducts();
+            exprSimplified = exprSimplified.simplifyTrivial();
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                exprSimplified = exprSimplified.simplifyTrivial();
-                exprSimplified = exprSimplified.orderSumsAndProducts();
                 exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderSumsAndProducts();
+                exprSimplified = exprSimplified.simplifyTrivial();
             }
 
             return exprSimplified;

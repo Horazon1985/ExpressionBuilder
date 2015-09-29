@@ -221,7 +221,8 @@ public class Matrix extends MatrixExpression {
 
     /**
      * Gibt zurück, ob eine Matrix A = (a_{i, j}) Dreiecksgestalt besitzt und
-     * nilpotent ist (d.h. auf der Diagonalen stehen nur Nullen).
+     * nilpotent ist (d.h. auf der Diagonalen stehen nur Nullen), ODER ob A
+     * rational und nilpotent ist.
      */
     public boolean isNilpotentMatrix() {
 
@@ -253,7 +254,7 @@ public class Matrix extends MatrixExpression {
                 return false;
             }
         }
-        
+
         return false;
 
     }
@@ -502,6 +503,16 @@ public class Matrix extends MatrixExpression {
 
         return true;
 
+    }
+
+    @Override
+    public MatrixExpression orderSumsAndProducts() throws EvaluationException {
+        return this;
+    }
+
+    @Override
+    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+        return this;
     }
 
     @Override

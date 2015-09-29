@@ -246,6 +246,16 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression orderSumsAndProducts() throws EvaluationException {
+        return new MatrixPower(this.left.orderSumsAndProducts(), this.right.orderSumsAndProducts());
+    }
+
+    @Override
+    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+        return new MatrixPower(this.left.orderDifferenceAndDivision(), this.right.orderDifferenceAndDivision());
+    }
+    
+    @Override
     public boolean isConstant() {
         return this.left.isConstant() && this.right.isConstant();
     }

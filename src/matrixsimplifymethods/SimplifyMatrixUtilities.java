@@ -195,6 +195,23 @@ public class SimplifyMatrixUtilities {
     }
 
     /**
+     * Bildet die Differenz aus den Summen von allen Summanden in summandsLeft
+     * und summandsRight.
+     */
+    public static MatrixExpression produceDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+
+        if (summandsLeft.isEmpty() && summandsRight.isEmpty()) {
+            return MatrixExpression.getZeroMatrix(1, 1);
+        } else if (!summandsLeft.isEmpty() && summandsRight.isEmpty()) {
+            return produceSum(summandsLeft);
+        } else if (summandsLeft.isEmpty() && !summandsRight.isEmpty()) {
+            return MatrixExpression.MINUS_ONE.mult(produceSum(summandsRight));
+        }
+        return produceSum(summandsLeft).sub(produceSum(summandsRight));
+
+    }
+    
+    /**
      * Bildet das Produkt aus allen Termen von factors
      */
     public static MatrixExpression produceProduct(MatrixExpressionCollection factors) {
@@ -313,6 +330,27 @@ public class SimplifyMatrixUtilities {
                 throw new EvaluationException(Translator.translateExceptionMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
             }
 
+        }
+
+    }
+    
+    /**
+     * Hilfsprozeduren für das Sortieren von Summen/Differenzen und
+     * Produkten/Quotienten
+     */
+    public static void orderDifference(MatrixExpression matExpr, MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+
+        if (matExpr.isNotSum() && matExpr.isNotDifference()) {
+            summandsLeft.add(matExpr);
+            return;
+        }
+
+        if (matExpr.isSum()) {
+            orderDifference(((MatrixBinaryOperation) matExpr).getLeft(), summandsLeft, summandsRight);
+            orderDifference(((MatrixBinaryOperation) matExpr).getRight(), summandsLeft, summandsRight);
+        } else {
+            orderDifference(((MatrixBinaryOperation) matExpr).getLeft(), summandsLeft, summandsRight);
+            orderDifference(((MatrixBinaryOperation) matExpr).getRight(), summandsRight, summandsLeft);
         }
 
     }
