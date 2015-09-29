@@ -827,11 +827,11 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+    public MatrixExpression orderDifferences() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).orderDifferenceAndDivision();
+                resultParams[i] = ((Expression) this.params[i]).orderDifferencesAndQuotients();
             } else {
                 resultParams[i] = this.params[i];
             }

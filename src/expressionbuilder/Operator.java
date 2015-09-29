@@ -1457,11 +1457,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression orderDifferenceAndDivision() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).orderDifferenceAndDivision();
+                resultParams[i] = ((Expression) this.params[i]).orderDifferencesAndQuotients();
             } else {
                 resultParams[i] = this.params[i];
             }

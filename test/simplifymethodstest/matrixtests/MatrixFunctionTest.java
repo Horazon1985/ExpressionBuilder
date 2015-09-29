@@ -30,9 +30,9 @@ public class MatrixFunctionTest {
     @Test
     public void computeExpOfNilpotentMatrixTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[0,0,0;-1,0,0;2,5,0]", null);
-            Assert.assertTrue(m instanceof Matrix);
-            MatrixExpression expOfM = m.exp().simplify();
+            a = MatrixExpression.build("[0,0,0;-1,0,0;2,5,0]", null);
+            Assert.assertTrue(a instanceof Matrix);
+            MatrixExpression expOfM = a.exp().simplify();
             MatrixExpression result = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]", null);
             Assert.assertTrue(expOfM.equals(result));
         } catch (ExpressionException | EvaluationException e) {
@@ -43,12 +43,13 @@ public class MatrixFunctionTest {
     @Test
     public void computeLnOfDiagonalizableMatrixTest() {
         /* 
-         Die Matrix [3,-1;3,7] hat die Eigenwerte 4, 6 und ist daher diagonalisierbar. ln() kann daher leicht berechnet werden.
+         Die Matrix [3,-1;3,7] hat die Eigenwerte 4, 6 und ist daher diagonalisierbar. 
+         ln() kann daher leicht berechnet werden.
          */
         try {
-            MatrixExpression m = MatrixExpression.build("[3,-1;3,7]", null);
-            Assert.assertTrue(m instanceof Matrix);
-            MatrixExpression expOfM = m.ln().simplify();
+            a = MatrixExpression.build("[3,-1;3,7]", null);
+            Assert.assertTrue(a instanceof Matrix);
+            MatrixExpression expOfM =a.ln().simplify();
             MatrixExpression result = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
             Assert.assertTrue(expOfM.equals(result));
         } catch (ExpressionException | EvaluationException e) {

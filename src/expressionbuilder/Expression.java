@@ -1138,7 +1138,7 @@ public abstract class Expression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression orderDifferenceAndDivision() throws EvaluationException;
+    public abstract Expression orderDifferencesAndQuotients() throws EvaluationException;
 
     /**
      * Sammelt in einem Produkt gleiche Ausdrücke zu einem einzigen Ausdruck.
@@ -1263,7 +1263,7 @@ public abstract class Expression {
         try {
             Expression expr = this;
 
-            Expression exprSimplified = expr.orderDifferenceAndDivision();
+            Expression exprSimplified = expr.orderDifferencesAndQuotients();
             exprSimplified = exprSimplified.orderSumsAndProducts();
             exprSimplified = exprSimplified.simplifyTrivial();
 //            System.out.println(exprSimplified.writeExpression());
@@ -1284,7 +1284,7 @@ public abstract class Expression {
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
                 exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.simplifyPowers();
@@ -1308,14 +1308,14 @@ public abstract class Expression {
              */
             expr = exprSimplified.copy();
             exprSimplified = exprSimplified.simplifyTrivial();
-            exprSimplified = exprSimplified.orderDifferenceAndDivision();
+            exprSimplified = exprSimplified.orderDifferencesAndQuotients();
             exprSimplified = exprSimplified.orderSumsAndProducts();
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
                 exprSimplified = exprSimplified.simplifyTrivial();
-                exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
             }
 
@@ -1340,7 +1340,7 @@ public abstract class Expression {
             Expression exprSimplified = expr;
 
             if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
-                exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
             }
             if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
                 exprSimplified = exprSimplified.orderSumsAndProducts();
@@ -1409,7 +1409,7 @@ public abstract class Expression {
                 expr = exprSimplified.copy();
 
                 if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
-                    exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                    exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 }
                 if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
                     exprSimplified = exprSimplified.orderSumsAndProducts();
@@ -1480,14 +1480,14 @@ public abstract class Expression {
              triviale Umformungen vornehmen und Terme endgültig ordnen.
              */
             expr = exprSimplified.copy();
-            exprSimplified = exprSimplified.orderDifferenceAndDivision();
+            exprSimplified = exprSimplified.orderDifferencesAndQuotients();
             exprSimplified = exprSimplified.orderSumsAndProducts();
             exprSimplified = exprSimplified.simplifyTrivial();
 
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                exprSimplified = exprSimplified.orderDifferenceAndDivision();
+                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
                 exprSimplified = exprSimplified.simplifyTrivial();
             }

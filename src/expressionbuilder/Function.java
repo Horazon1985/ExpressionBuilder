@@ -886,8 +886,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression orderDifferenceAndDivision() throws EvaluationException {
-        return new Function(this.getLeft().orderDifferenceAndDivision(), this.getType());
+    public Expression orderDifferencesAndQuotients() throws EvaluationException {
+        return new Function(this.getLeft().orderDifferencesAndQuotients(), this.getType());
     }
 
     @Override

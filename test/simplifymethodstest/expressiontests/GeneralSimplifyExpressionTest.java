@@ -55,7 +55,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = x.mult(y).mult((a.add(b.sub(c)).exp()).div(z));
         Expression g = x.mult(y.mult(a.add(b).sub(c).exp())).div(z);
         try {
-            f = f.orderDifferenceAndDivision();
+            f = f.orderDifferencesAndQuotients();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -81,7 +81,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = a.mult(b.mult(c.sin())).div(x.mult(b.pow(5)));
         Expression g = a.mult(b.pow(ONE.sub(5)).mult(c.sin())).div(x);
         try {
-            f = f.simplifyReduceQuotients().orderDifferenceAndDivision();
+            f = f.simplifyReduceQuotients().orderDifferencesAndQuotients();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");

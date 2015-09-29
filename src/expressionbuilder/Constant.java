@@ -398,7 +398,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression orderDifferenceAndDivision() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() throws EvaluationException {
         return this;
     }
 

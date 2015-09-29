@@ -251,8 +251,8 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
-        return new MatrixPower(this.left.orderDifferenceAndDivision(), this.right.orderDifferenceAndDivision());
+    public MatrixExpression orderDifferences() throws EvaluationException {
+        return new MatrixPower(this.left.orderDifferences(), this.right.orderDifferencesAndQuotients());
     }
     
     @Override

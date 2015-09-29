@@ -558,7 +558,7 @@ public abstract class MatrixExpression {
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression orderDifferenceAndDivision() throws EvaluationException;
+    public abstract MatrixExpression orderDifferences() throws EvaluationException;
 
     /**
      * Gibt zurück, ob der Matrizenausdruck konstant ist.
@@ -647,8 +647,8 @@ public abstract class MatrixExpression {
         try {
 
             MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.orderDifferenceAndDivision();
-//            matExprSimplified = matExprSimplified.orderSumsAndProducts();
+            MatrixExpression matExprSimplified = matExpr.orderDifferences();
+            matExprSimplified = matExprSimplified.orderSumsAndProducts();
             matExprSimplified = matExprSimplified.simplifyMatrixEntries();
             matExprSimplified = matExprSimplified.collectProducts();
             matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
@@ -656,8 +656,8 @@ public abstract class MatrixExpression {
 
             while (!matExpr.equals(matExprSimplified)) {
                 matExpr = matExprSimplified.copy();
-                matExprSimplified = matExprSimplified.orderDifferenceAndDivision();
-//                matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                matExprSimplified = matExprSimplified.orderDifferences();
+                matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.collectProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
@@ -685,7 +685,7 @@ public abstract class MatrixExpression {
         try {
 
             MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.orderDifferenceAndDivision();
+            MatrixExpression matExprSimplified = matExpr.orderDifferences();
             matExprSimplified = matExprSimplified.orderSumsAndProducts();
             matExprSimplified = matExprSimplified.simplifyMatrixEntries();
             matExprSimplified = matExprSimplified.collectProducts();
@@ -694,7 +694,7 @@ public abstract class MatrixExpression {
 
             while (!matExpr.equals(matExprSimplified)) {
                 matExpr = matExprSimplified.copy();
-                matExprSimplified = matExprSimplified.orderDifferenceAndDivision();
+                matExprSimplified = matExprSimplified.orderDifferences();
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.collectProducts();

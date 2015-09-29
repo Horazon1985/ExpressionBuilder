@@ -511,7 +511,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+    public MatrixExpression orderDifferences() throws EvaluationException {
         return this;
     }
 

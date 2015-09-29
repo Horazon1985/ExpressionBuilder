@@ -50,8 +50,8 @@ public class SimplifyExpLogTest {
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
             SimplifyExpLog.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
-            Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferenceAndDivision();
-            g = g.orderDifferenceAndDivision();
+            Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferencesAndQuotients();
+            g = g.orderDifferencesAndQuotients();
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException | EvaluationException e){
             fail("Ein Ausdruck konnte nicht kompiliert werden.");

@@ -230,7 +230,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
                     continue;
                 }
                 factors.put(i, factors.get(i).orderSumsAndProducts());
-                if (result.isId()) {
+                if (result.equals(MatrixExpression.getId(1))) {
                     result = factors.get(i).orderSumsAndProducts();
                 } else {
                     result = factors.get(i).orderSumsAndProducts().mult(result);
@@ -244,7 +244,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
+    public MatrixExpression orderDifferences() throws EvaluationException {
 
         MatrixExpression result;
 
@@ -260,16 +260,16 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
             SimplifyMatrixUtilities.orderDifference(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
-                termsLeft.put(i, termsLeft.get(i).orderDifferenceAndDivision());
+                termsLeft.put(i, termsLeft.get(i).orderDifferences());
             }
             for (int i = 0; i < termsRight.getBound(); i++) {
-                termsRight.put(i, termsRight.get(i).orderDifferenceAndDivision());
+                termsRight.put(i, termsRight.get(i).orderDifferences());
             }
             result = SimplifyMatrixUtilities.produceDifference(termsLeft, termsRight);
 
         } else {
             // Hier ist type == TypeMatrixBinary.TIMES.
-            result = this.left.orderDifferenceAndDivision().mult(this.right.orderDifferenceAndDivision());
+            result = this.left.orderDifferences().mult(this.right.orderDifferences());
         }
 
         return result;

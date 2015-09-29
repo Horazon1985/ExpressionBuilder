@@ -98,8 +98,8 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression orderDifferenceAndDivision() throws EvaluationException {
-        return new MatrixFunction(this.left.orderDifferenceAndDivision(), this.type);
+    public MatrixExpression orderDifferences() throws EvaluationException {
+        return new MatrixFunction(this.left.orderDifferences(), this.type);
     }
     
     @Override

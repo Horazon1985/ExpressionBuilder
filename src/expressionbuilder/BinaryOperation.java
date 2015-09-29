@@ -1149,7 +1149,7 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             if (sumsOrDifferencesWithFractionsOccur) {
-                return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferenceAndDivision().simplifyReduceQuotients();
+                return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferencesAndQuotients().simplifyReduceQuotients();
             }
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
@@ -1214,7 +1214,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression orderDifferenceAndDivision() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() throws EvaluationException {
 
         Expression result;
 
@@ -1230,10 +1230,10 @@ public class BinaryOperation extends Expression {
 
             SimplifyUtilities.orderDifference(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
-                termsLeft.put(i, termsLeft.get(i).orderDifferenceAndDivision());
+                termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
             for (int i = 0; i < termsRight.getBound(); i++) {
-                termsRight.put(i, termsRight.get(i).orderDifferenceAndDivision());
+                termsRight.put(i, termsRight.get(i).orderDifferencesAndQuotients());
             }
             result = SimplifyUtilities.produceDifference(termsLeft, termsRight);
 
@@ -1241,16 +1241,16 @@ public class BinaryOperation extends Expression {
 
             SimplifyUtilities.orderQuotient(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
-                termsLeft.put(i, termsLeft.get(i).orderDifferenceAndDivision());
+                termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
             for (int i = 0; i < termsRight.getBound(); i++) {
-                termsRight.put(i, termsRight.get(i).orderDifferenceAndDivision());
+                termsRight.put(i, termsRight.get(i).orderDifferencesAndQuotients());
             }
             result = SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 
         } else {
             // Hier ist expr.getType() == TypeBinary.POW.
-            result = this.left.orderDifferenceAndDivision().pow(this.right.orderDifferenceAndDivision());
+            result = this.left.orderDifferencesAndQuotients().pow(this.right.orderDifferencesAndQuotients());
         }
 
         return result;

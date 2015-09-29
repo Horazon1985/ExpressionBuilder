@@ -394,12 +394,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression orderDifferenceAndDivision() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).orderDifferenceAndDivision();
+            resultLeft[i] = ((Expression) this.left[i]).orderDifferencesAndQuotients();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.orderDifferenceAndDivision(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.orderDifferencesAndQuotients(), resultLeft);
     }
 
     @Override
