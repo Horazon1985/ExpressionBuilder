@@ -36,29 +36,44 @@ public class SpecialEquationMethodsTest {
             // Test: e^(2*x)+e^(7*x+1)/(2-e^(4*x))^3 ist eine rationale Exponentialgleichung.
             Expression f = Expression.build("exp(2*x)+exp(7*x+1)/(2-exp(4*x))^3", null);
             f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, "x");
-            HashSet<Expression> factorsOfVar = new HashSet<>();
-            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", factorsOfVar));
+            HashSet<Expression> argumentsOfExp = new HashSet<>();
+            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", argumentsOfExp));
             System.out.println(f);
-            System.out.println(factorsOfVar);
+            System.out.println(argumentsOfExp);
             // Test: 5^x/(25^(x+3)-14)-12*625^x ist eine rationale Exponentialgleichung.
             Expression g = Expression.build("5^x/(25^(x+3)-14)-12*625^x", null);
             g = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(g, "x");
-            factorsOfVar.clear();
-            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(g, "x", factorsOfVar));
+            argumentsOfExp.clear();
+            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(g, "x", argumentsOfExp));
             System.out.println(g);
-            System.out.println(factorsOfVar);
+            System.out.println(argumentsOfExp);
             // Test: 7^x+2*10^x ist keine rationale Exponentialgleichung.
             Expression h = Expression.build("7^x+2*10^x", null);
             h = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(h, "x");
-            factorsOfVar.clear();
-            Assert.assertFalse(SpecialEquationMethods.isRationalFunktionInExp(h, "x", factorsOfVar));
+            argumentsOfExp.clear();
+            Assert.assertFalse(SpecialEquationMethods.isRationalFunktionInExp(h, "x", argumentsOfExp));
             System.out.println(h);
-            System.out.println(factorsOfVar);
+            System.out.println(argumentsOfExp);
         } catch (expressionbuilder.ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
 
+    @Test
+    public void isGeneralRationalExponentialEquationTest() {
+        try {
+            // Test: a^x+a^(2*x)-30 ist eine rationale Exponentialgleichung.
+            Expression f = Expression.build("a^x+a^(2*x)-30", null);
+            f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, "x");
+            HashSet<Expression> argumentsOfExp = new HashSet<>();
+            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", argumentsOfExp));
+            System.out.println(f);
+            System.out.println(argumentsOfExp);
+        } catch (expressionbuilder.ExpressionException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
     @Test
     public void solveExponentialEquationTest1() {
         try {

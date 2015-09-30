@@ -245,8 +245,9 @@ public class SimplifyExpLog {
          * In jedem Summanden werden Ausdrücke der Form y*ln(x) zu ln(x^y)
          * gemacht, falls<br>
          * y eine ungerade Zahl ist oder ein Bruch mit ungeradem Zähler.<br>
-         * x eine konstante positive Zahl ist oder ein stets positiver Ausdruck
-         * ist.
+         * x eine konstante positive Zahl oder ein stets positiver Ausdruck
+         * ist.<br>(ALT)
+         * x eine konstante positive Zahl oder ein nichtkonstanter Ausdruck ist.(NEU)
          */
         for (int i = 0; i < summands.getBound(); i++) {
 
@@ -267,7 +268,10 @@ public class SimplifyExpLog {
                 if (factorsEnumerator.get(j).isFunction(logType)) {
 
                     logArgument = ((Function) factorsEnumerator.get(j)).getLeft();
-                    if (logArgument.isAlwaysPositive()) {
+//                    if (logArgument.isAlwaysPositive()) {
+//                        factorsEnumerator.remove(j);
+//                        summands.put(i, new Function(logArgument.pow(SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator)), logType));
+                    if (logArgument.isPositive() || !logArgument.isConstant()) {
                         factorsEnumerator.remove(j);
                         summands.put(i, new Function(logArgument.pow(SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator)), logType));
                     } else {

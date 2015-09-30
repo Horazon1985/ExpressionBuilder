@@ -680,10 +680,41 @@ public class SimplifyBinaryOperationMethods {
     public static Expression simplifyDoublePowers(BinaryOperation expr) throws EvaluationException {
 
         if (expr.isPower() && expr.getLeft().isPower()) {
+            // Zunächst: Ist die Basis immer nichtnegativ, so werden die Exponenten einfach ausmultipliziert.
+            if (((BinaryOperation) expr.getLeft()).getLeft().isAlwaysNonNegative()) {
+                return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
+            }
             if (((BinaryOperation) expr.getLeft()).getRight().isEvenConstant() && expr.getRight().isRationalConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isEvenConstant()) {
                 // In diesem Fall: x^(2*k)^(n/(2*m)) = abs(x)^(k*n/m)
                 return new Function(((BinaryOperation) expr.getLeft()).getLeft(), TypeFunction.abs).pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()));
+            }
+            if (((BinaryOperation) expr.getLeft()).getRight().isRationalConstant() && expr.getRight().isIntegerConstantOrRationalConstant()) {
+                
+                /* 
+                 In diesem Fall: x^((2*m+1)/(2*n))^(p/q) bleibt expr, falls der 
+                 ausmultiplizierte und gekürzte Exponent einen ungeraden Nenner besitzt.
+                 */
+                BigInteger a = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getRight()).getLeft()).getValue().toBigInteger();
+                BigInteger b = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getRight()).getRight()).getValue().toBigInteger();
+                BigInteger c, d;
+                if (expr.getRight().isIntegerConstant()){
+                    c = ((Constant) expr.getRight()).getValue().toBigInteger();
+                    d = BigInteger.ONE;
+                } else {
+                    c = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
+                    d = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+                }
+                
+                BigInteger exponentEnumerator = a.multiply(c);
+                BigInteger exponentDenominator = b.multiply(d);
+                BigInteger gcdOfEnumeratorAndDenominator = exponentEnumerator.gcd(exponentDenominator);
+                exponentEnumerator = exponentEnumerator.divide(gcdOfEnumeratorAndDenominator);
+                exponentDenominator = exponentDenominator.divide(gcdOfEnumeratorAndDenominator);
+                if (b.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO) && !exponentDenominator.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)){
+                    return expr;
+                }
+                
             }
             // Ansonsten einfach nur Exponenten ausmultiplizieren.
             return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
