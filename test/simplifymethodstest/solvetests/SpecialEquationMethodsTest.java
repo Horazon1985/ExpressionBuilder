@@ -4,6 +4,7 @@ import expressionbuilder.Constant;
 import expressionbuilder.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.ExpressionException;
+import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;
 import org.junit.AfterClass;
@@ -65,10 +66,10 @@ public class SpecialEquationMethodsTest {
             // Test: a^x+a^(2*x)-30 ist eine rationale Exponentialgleichung.
             Expression f = Expression.build("a^x+a^(2*x)-30", null);
             f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, "x");
-            HashSet<Expression> argumentsOfExp = new HashSet<>();
-            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", argumentsOfExp));
+            HashSet<Expression> factorsOfVar = new HashSet<>();
+            assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", factorsOfVar));
             System.out.println(f);
-            System.out.println(argumentsOfExp);
+            System.out.println(factorsOfVar);
         } catch (expressionbuilder.ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
@@ -116,6 +117,22 @@ public class SpecialEquationMethodsTest {
             ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(Expression.MINUS_ONE));
+        } catch (ExpressionException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        } catch (EvaluationException e) {
+            fail("Die Gleichung f = 0 konnte nicht gelöst werden.");
+        }
+    }
+
+    @Test
+    public void solveGeneralRationalExponentialEquationTest() {
+        try {
+            // Test: a^x+a^(2*x)-30 = 0. Lösung x = ln(5)/ln(a)
+            Expression f = Expression.build("a^x+a^(2*x)-30", null);
+            SolveMethods.setSolveTries(100);
+            ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.contains(new Constant(5).ln().div(Variable.create("a").ln())));
         } catch (ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         } catch (EvaluationException e) {
