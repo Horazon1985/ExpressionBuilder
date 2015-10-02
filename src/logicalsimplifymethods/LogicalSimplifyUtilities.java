@@ -3,7 +3,7 @@ package logicalsimplifymethods;
 import logicalexpressionbuilder.LogicalBinaryOperation;
 import logicalexpressionbuilder.LogicalExpression;
 
-public class LogicalSimplifyUtilities {
+public abstract class LogicalSimplifyUtilities {
 
     /**
      * Liefert den Durchschnitt von logTermsLeft und logTermsRight (mit

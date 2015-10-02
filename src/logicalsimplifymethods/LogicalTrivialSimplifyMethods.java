@@ -1,10 +1,9 @@
 package logicalsimplifymethods;
 
-import java.util.HashMap;
 import logicalexpressionbuilder.LogicalExpression;
 import logicalexpressionbuilder.LogicalUnaryOperation;
 
-public class LogicalTrivialSimplifyMethods {
+public abstract class LogicalTrivialSimplifyMethods {
 
     /**
      * Kürzt in einer Summe (|) gleiche Summanden.

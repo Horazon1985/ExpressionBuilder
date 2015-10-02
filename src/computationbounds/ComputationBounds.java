@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class ComputationBounds {
+public abstract class ComputationBounds {
 
     public static final int BOUND_MAX_DIGITS_OF_E = getBound("Bound_MAX_DIGITS_OF_E");
     public static final int BOUND_MAX_DIGITS_OF_PI = getBound("Bound_MAX_DIGITS_OF_PI");

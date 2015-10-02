@@ -1,5 +1,7 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import computation.AnalysisMethods;
 import computation.ArithmeticMethods;
 import computation.NumericalMethods;
@@ -1444,6 +1446,20 @@ public class Operator extends Expression {
     }
 
     @Override
+    public int length() {
+        Object[] arguments = ((Operator) this).getParams();
+        int length = 0;
+        for (Object argument : arguments) {
+            if (argument instanceof Expression) {
+                length += ((Expression) argument).length();
+            } else {
+                length++;
+            }
+        }
+        return length;
+    }
+
+    @Override
     public Expression orderSumsAndProducts() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
@@ -2077,7 +2093,7 @@ public class Operator extends Expression {
         }
         return new Operator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -2136,6 +2152,19 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).simplifyReplaceExponentialFunctionsByDefinitions();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new Operator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
             } else {
                 resultParams[i] = this.params[i];
             }

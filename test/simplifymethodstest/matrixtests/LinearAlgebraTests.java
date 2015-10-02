@@ -1,6 +1,6 @@
 package simplifymethodstest.matrixtests;
 
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;

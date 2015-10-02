@@ -2,10 +2,10 @@ package matrixexpressionbuilder;
 
 import computation.AnalysisMethods;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.isValidVariable;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;

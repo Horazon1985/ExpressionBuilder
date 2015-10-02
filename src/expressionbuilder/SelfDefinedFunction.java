@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import translator.Translator;
@@ -153,7 +154,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return result || this.abstractExpression.containsTrigonometricalFunction();
     }
-    
+
     @Override
     public boolean containsIndefiniteIntegral() {
         boolean result = false;
@@ -267,13 +268,13 @@ public class SelfDefinedFunction extends Expression {
 
     @Override
     public boolean isConstant() {
-        
+
         boolean allLeftsAreConstant = true;
-        for (int i = 0; i < this.left.length; i++){
+        for (int i = 0; i < this.left.length; i++) {
             allLeftsAreConstant = allLeftsAreConstant && this.left[i].isConstant();
         }
         return this.abstractExpression.isConstant() || allLeftsAreConstant;
-        
+
     }
 
     @Override
@@ -297,7 +298,7 @@ public class SelfDefinedFunction extends Expression {
     public boolean isAlwaysNonNegative() {
         return this.abstractExpression.isAlwaysNonNegative();
     }
-    
+
     @Override
     public boolean isAlwaysPositive() {
         return this.abstractExpression.isAlwaysPositive();
@@ -350,6 +351,16 @@ public class SelfDefinedFunction extends Expression {
     @Override
     public boolean hasPositiveSign() {
         return this.abstractExpression.hasPositiveSign();
+    }
+
+    @Override
+    public int length() {
+        Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
+        int length = 0;
+        for (Expression argument : arguments) {
+            length += argument.length();
+        }
+        return length;
     }
 
     @Override
@@ -473,7 +484,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandAndCollectEquivalentsIfShorter(), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -517,6 +528,15 @@ public class SelfDefinedFunction extends Expression {
             resultLeft[i] = ((Expression) this.left[i]).simplifyReplaceExponentialFunctionsByDefinitions();
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReplaceExponentialFunctionsByDefinitions(), resultLeft);
+    }
+
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+        Expression[] resultLeft = new Expression[this.left.length];
+        for (int i = 0; i < this.left.length; i++) {
+            resultLeft[i] = ((Expression) this.left[i]).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
+        }
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var), resultLeft);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import expressionsimplifymethods.ExpressionCollection;
@@ -607,6 +608,31 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public int length() {
+        if (this.isProduct()) {
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            int length = 0;
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (length == 0) {
+                    length = factors.get(i).length();
+                } else if (factors.get(i).length() > 1) {
+                    length += factors.get(i).length();
+                }
+            }
+            return length;
+        }
+        if (this.isPower()) {
+            if (((BinaryOperation) this).getLeft().length() == 1) {
+                return ((BinaryOperation) this).getRight().length();
+            }
+            if (((BinaryOperation) this).getRight().length() == 1) {
+                return ((BinaryOperation) this).getLeft().length();
+            }
+        }
+        return ((BinaryOperation) this).getLeft().length() + ((BinaryOperation) this).getRight().length();
+    }
+
+    @Override
     public Expression simplifyTrivial() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
@@ -795,13 +821,18 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyExpandRationalFactors());
             }
-            expr = (BinaryOperation) SimplifyUtilities.produceProduct(factors);
-        } else {
-            if (this.right instanceof Constant) {
-                expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right);
-            } else {
-                expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right.simplifyExpandRationalFactors());
+            Expression productOfSimplifiedFactors = SimplifyUtilities.produceProduct(factors);
+            if (!(productOfSimplifiedFactors instanceof BinaryOperation)) {
+                return productOfSimplifiedFactors;
             }
+            expr = (BinaryOperation) productOfSimplifiedFactors;
+        } else {
+            Expression simplifiedQuotient;
+            simplifiedQuotient = this.left.simplifyExpandRationalFactors().div(this.right.simplifyExpandRationalFactors());
+            if (!(simplifiedQuotient instanceof BinaryOperation)) {
+                return simplifiedQuotient;
+            }
+            expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right.simplifyExpandRationalFactors());
         }
 
         if (expr.isProduct() && expr.getLeft() instanceof Constant) {
@@ -840,16 +871,17 @@ public class BinaryOperation extends Expression {
     public Expression simplifyExpand() throws EvaluationException {
         Expression expr = this, exprExpanded = simplifySingleExpand(this);
         // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
-        while (!expr.equals(exprExpanded)){
+        while (!expr.equals(exprExpanded)) {
             expr = exprExpanded.copy();
             exprExpanded = simplifySingleExpand(expr);
         }
         return expr;
 //        return simplifySingleExpand(this);
     }
-    
+
     /**
-     * Hilfsmethode für simplifyExpand(). Multipliziert EINE Klammer vollständig aus.
+     * Hilfsmethode für simplifyExpand(). Multipliziert EINE Klammer vollständig
+     * aus.
      */
     private static Expression simplifySingleExpand(Expression f) throws EvaluationException {
 
@@ -2004,7 +2036,11 @@ public class BinaryOperation extends Expression {
         if (this.isDifference()) {
 
             // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
-            expr = (BinaryOperation) this.left.simplifyFunctionalRelations().sub(this.right.simplifyFunctionalRelations());
+            Expression simplifiedDifference = this.left.simplifyFunctionalRelations().sub(this.right.simplifyFunctionalRelations());
+            if (!(simplifiedDifference instanceof BinaryOperation)) {
+                return simplifiedDifference;
+            }
+            expr = (BinaryOperation) simplifiedDifference;
 
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
@@ -2103,7 +2139,11 @@ public class BinaryOperation extends Expression {
         if (this.isQuotient()) {
 
             // Im Dividenden und Divisor einzeln Funktionalgleichungen anwenden.
-            expr = (BinaryOperation) this.left.simplifyFunctionalRelations().div(this.right.simplifyFunctionalRelations());
+            Expression simplifiedQuotient = this.left.simplifyFunctionalRelations().div(this.right.simplifyFunctionalRelations());
+            if (!(simplifiedQuotient instanceof BinaryOperation)) {
+                return simplifiedQuotient;
+            }
+            expr = (BinaryOperation) simplifiedQuotient;
 
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
@@ -2187,7 +2227,11 @@ public class BinaryOperation extends Expression {
         if (this.isPower()) {
 
             // In Basis und Exponenten einzeln Funktionalgleichungen anwenden.
-            expr = (BinaryOperation) this.left.simplifyFunctionalRelations().pow(this.right.simplifyFunctionalRelations());
+            Expression simplifiedPower = this.left.simplifyFunctionalRelations().pow(this.right.simplifyFunctionalRelations());
+            if (!(simplifiedPower instanceof BinaryOperation)) {
+                return simplifiedPower;
+            }
+            expr = (BinaryOperation) simplifiedPower;
 
             exprSimplified = SimplifyBinaryOperationMethods.reducePowerOfTenAndSumsOfLog10(expr);
             if (!exprSimplified.equals(this)) {
@@ -2427,6 +2471,47 @@ public class BinaryOperation extends Expression {
 
         return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsByDefinitions(),
                 this.right.simplifyReplaceExponentialFunctionsByDefinitions(),
+                this.type);
+
+    }
+
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+
+        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+        if (Thread.interrupted()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+        }
+
+        if (this.isSum()) {
+
+            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var));
+            }
+
+            // Ergebnis bilden.
+            return SimplifyUtilities.produceSum(summands);
+
+        } else if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var));
+            }
+
+            // Ergebnis bilden.
+            return SimplifyUtilities.produceProduct(factors);
+
+        } else if (this.isPower() && !this.left.contains(var)) {
+            // Nur dann ersetzen, wenn die Basis konstant ist.
+            return this.left.ln().mult(this.right).exp();
+        }
+
+        return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var),
+                this.right.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var),
                 this.type);
 
     }

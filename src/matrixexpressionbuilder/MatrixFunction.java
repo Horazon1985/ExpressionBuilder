@@ -1,7 +1,7 @@
 package matrixexpressionbuilder;
 
 import computationbounds.ComputationBounds;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;

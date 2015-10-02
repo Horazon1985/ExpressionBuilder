@@ -2,7 +2,7 @@ package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import translator.Translator;
 
-public class SimplifyTrigonometry {
+public abstract class SimplifyTrigonometry {
 
     public static final Expression MINUS_ONE = new Constant(-1);
     public static final Expression ZERO = new Constant(0);

@@ -1,5 +1,5 @@
 package logicalsimplifymethods;
 
-public class SimplifyLogicalUnaryOperationMethods {
+public abstract class SimplifyLogicalUnaryOperationMethods {
     
 }

@@ -1,7 +1,7 @@
 package matrixsimplifymethods;
 
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -18,7 +18,7 @@ import matrixexpressionbuilder.MatrixPower;
 import matrixexpressionbuilder.TypeMatrixBinary;
 import matrixexpressionbuilder.TypeMatrixFunction;
 
-public class SimplifyMatrixFunctionalRelations {
+public abstract class SimplifyMatrixFunctionalRelations {
 
     /**
      * Prüft, ob MatExpr ein (rationales) Vielfaches einer Matrixfunktion vom

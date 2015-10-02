@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -366,6 +367,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public int length() {
+        return 1;
+    }
+    
+    @Override
     public Expression simplifyTrivial() throws EvaluationException {
         if (this.name.equals("pi") && !this.precise) {
             return new Constant(Math.PI);
@@ -463,6 +469,11 @@ public class Variable extends Expression {
         return this;
     }
 
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+        return this;
+    }
+    
     @Override
     public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
         return this;

@@ -1,6 +1,6 @@
 package matrixsimplifymethods;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import java.util.HashMap;
 import matrixexpressionbuilder.Matrix;
@@ -9,65 +9,7 @@ import matrixexpressionbuilder.MatrixExpression;
 import matrixexpressionbuilder.MatrixPower;
 import translator.Translator;
 
-public class SimplifyMatrixUtilities {
-
-    /**
-     * Kopiert terms.
-     */
-    public static HashMap<Integer, MatrixExpression> copy(HashMap<Integer, MatrixExpression> matTerms) {
-
-        HashMap<Integer, MatrixExpression> result = new HashMap<>();
-        for (int i = 0; i < matTerms.size(); i++) {
-            result.put(i, matTerms.get(i).copy());
-        }
-        return result;
-
-    }
-
-    /**
-     * Liefert die Differenz termsLeft \ termsRight (mit Vielfachheiten
-     * gezählt!).
-     */
-    public static HashMap<Integer, MatrixExpression> difference(HashMap<Integer, MatrixExpression> termsLeft, HashMap<Integer, MatrixExpression> termsRight) {
-
-        int l_1 = termsLeft.size();
-        int l_2 = termsRight.size();
-
-        HashMap<Integer, MatrixExpression> result = new HashMap<>();
-        /*
-         termsLeft und termsRight werden in manchen Prozeduren noch
-         nachträglich gebraucht und sollten nicht verändert werden ->
-         termsLeft und termsRight kopieren.
-         */
-        HashMap<Integer, MatrixExpression> termsLeftCopy = copy(termsLeft);
-        HashMap<Integer, MatrixExpression> termsRightCopy = copy(termsRight);
-
-        MatrixExpression termLeft, termRight;
-        boolean equivalentTermFound;
-        for (int i = 0; i < l_1; i++) {
-            termLeft = termsLeftCopy.get(i);
-            equivalentTermFound = false;
-            for (int j = 0; j < l_2; j++) {
-                if (termsRightCopy.get(j) != null) {
-
-                    termRight = termsRightCopy.get(j);
-                    if (termLeft.equivalent(termRight)) {
-                        equivalentTermFound = true;
-                        termsLeftCopy.remove(i);
-                        termsRightCopy.remove(j);
-                        break;
-                    }
-
-                }
-            }
-            if (!equivalentTermFound) {
-                result.put(result.size(), termLeft);
-            }
-        }
-
-        return result;
-
-    }
+public abstract class SimplifyMatrixUtilities {
 
     /**
      * Liefert die Differenz termsLeft \ termsRight (mit Vielfachheiten

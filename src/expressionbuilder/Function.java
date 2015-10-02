@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyFunctionMethods;
 import expressionsimplifymethods.SimplifyFunctionalRelations;
@@ -633,6 +634,14 @@ public class Function extends Expression {
     }
 
     @Override
+    public int length() {
+        if (((Function) this).getLeft().length() == 1) {
+            return 1;
+        }
+        return ((Function) this).getLeft().length() + 1;
+    }
+
+    @Override
     public Expression simplifyTrivial() throws EvaluationException {
 
         //Zunächst linken Teil (Argument in der Funktion) vereinfachen.
@@ -924,7 +933,7 @@ public class Function extends Expression {
     public Expression simplifyFunctionalRelations() throws EvaluationException {
         return new Function(this.left.simplifyFunctionalRelations(), this.type);
     }
-    
+
     @Override
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
         return new Function(this.left.simplifyExpandAndCollectEquivalentsIfShorter(), this.type);
@@ -971,6 +980,45 @@ public class Function extends Expression {
     public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
 
         Function function = new Function(this.left.simplifyReplaceExponentialFunctionsByDefinitions(), this.type);
+
+        // Dekadischer Logarithmus.
+        if (function.getType().equals(TypeFunction.lg)) {
+            return new Function(function.getLeft(), TypeFunction.ln).div(new Function(new Constant(10), TypeFunction.ln));
+        }
+
+        // Hyperbolische Funktionen.
+        if (function.getType().equals(TypeFunction.cosh)) {
+            return new Function(((Function) function).getLeft(), TypeFunction.exp).add(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)).div(2);
+        }
+
+        if (function.getType().equals(TypeFunction.sinh)) {
+            return new Function(((Function) function).getLeft(), TypeFunction.exp).sub(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)).div(2);
+        }
+
+        if (function.getType().equals(TypeFunction.tanh)) {
+            return new Function(((Function) function).getLeft(), TypeFunction.exp).sub(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)).div(new Function(((Function) function).getLeft(), TypeFunction.exp).add(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)));
+        }
+
+        if (function.getType().equals(TypeFunction.coth)) {
+            return new Function(((Function) function).getLeft(), TypeFunction.exp).add(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)).div(new Function(((Function) function).getLeft(), TypeFunction.exp).sub(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)));
+        }
+
+        if (function.getType().equals(TypeFunction.sech)) {
+            return Expression.TWO.div(new Function(((Function) function).getLeft(), TypeFunction.exp).add(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)));
+        }
+
+        if (function.getType().equals(TypeFunction.cosech)) {
+            return Expression.TWO.div(new Function(((Function) function).getLeft(), TypeFunction.exp).sub(new Function(Expression.MINUS_ONE.mult(((Function) function).getLeft()).simplify(), TypeFunction.exp)));
+        }
+
+        return function;
+
+    }
+
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+
+        Function function = new Function(this.left.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var), this.type);
 
         // Dekadischer Logarithmus.
         if (function.getType().equals(TypeFunction.lg)) {

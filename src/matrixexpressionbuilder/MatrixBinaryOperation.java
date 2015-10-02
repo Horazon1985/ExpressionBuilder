@@ -1,7 +1,7 @@
 package matrixexpressionbuilder;
 
 import expressionbuilder.BinaryOperation;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeBinary;

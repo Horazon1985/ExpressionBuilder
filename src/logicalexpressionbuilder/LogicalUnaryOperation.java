@@ -1,6 +1,6 @@
 package logicalexpressionbuilder;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import java.util.HashSet;
 import translator.Translator;
 

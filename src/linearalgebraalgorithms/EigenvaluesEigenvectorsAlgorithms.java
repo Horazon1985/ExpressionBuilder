@@ -1,6 +1,6 @@
 package linearalgebraalgorithms;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
@@ -11,7 +11,7 @@ import matrixexpressionbuilder.MatrixPower;
 import matrixsimplifymethods.MatrixExpressionCollection;
 import solveequationmethods.SolveMethods;
 
-public class EigenvaluesEigenvectorsAlgorithms {
+public abstract class EigenvaluesEigenvectorsAlgorithms {
 
     /**
      * Gibt das charakteristische Polynom der Matrix matExpr bzgl. der Variablen

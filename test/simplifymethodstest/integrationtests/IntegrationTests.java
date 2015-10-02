@@ -1,8 +1,8 @@
 package simplifymethodstest.integrationtests;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Operator;
 import expressionbuilder.Variable;
 import integrationmethods.SimplifyIntegralMethods;
@@ -156,5 +156,10 @@ public class IntegrationTests {
             fail("Build fehlgeschlagen.");
         }
     }
+    
+    // Test zur Integration spezieller Funktionstypen.
+    
+    
+    
     
 }

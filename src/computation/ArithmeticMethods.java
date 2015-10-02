@@ -1,11 +1,11 @@
 package computation;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import translator.Translator;
 
-public class ArithmeticMethods {
+public abstract class ArithmeticMethods {
 
     /**
      * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls

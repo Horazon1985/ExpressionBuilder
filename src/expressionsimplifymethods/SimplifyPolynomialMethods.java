@@ -7,7 +7,7 @@ import expressionbuilder.Operator;
 import expressionbuilder.Variable;
 import java.math.BigInteger;
 
-public class SimplifyPolynomialMethods {
+public abstract class SimplifyPolynomialMethods {
 
     /**
      * Gibt zurück, ob expr ein Polynom in derivative Variablen var ist.

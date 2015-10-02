@@ -3,7 +3,7 @@ package matrixexpressionbuilder;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;

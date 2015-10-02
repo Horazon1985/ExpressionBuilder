@@ -1,6 +1,6 @@
 package expressionsimplifymethods;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
 import java.util.HashMap;

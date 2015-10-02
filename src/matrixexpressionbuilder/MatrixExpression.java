@@ -1,9 +1,9 @@
 package matrixexpressionbuilder;
 
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigInteger;

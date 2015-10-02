@@ -4,7 +4,7 @@ import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -15,8 +15,9 @@ import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
+import substitutionmethods.SubstitutionUtilities;
 
-public class SpecialEquationMethods {
+public abstract class SpecialEquationMethods {
 
     // Allgemeine Hilfsmethoden um festzustellen, ob ein HashSet von Expressions
     // nur Ausdrücke enthält, deren paarweise Quotienten rational sind.
@@ -127,7 +128,7 @@ public class SpecialEquationMethods {
      * f = sin(2*x) + 5*cos(3*x) true zurückgegeben, jedoch false bei f = sin(x)
      * + cos(2^(1/2)*x).
      */
-    public static boolean isRationalFunktionInTrigonometricalFunctions(Expression f, String var, HashSet<Expression> factorsOfVar) {
+    public static boolean isRationalFunktionInTrigonometricalFunctions(Expression f, String var, HashSet<Expression> argumentsInTrigonometricFunctions) {
 
         if (!f.contains(var)) {
             return true;
@@ -141,12 +142,12 @@ public class SpecialEquationMethods {
         if (f instanceof BinaryOperation) {
 
             if (f.isPower()) {
-                return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, factorsOfVar)
+                return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, argumentsInTrigonometricFunctions)
                         && ((BinaryOperation) f).getRight().isIntegerConstant();
             }
-            return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, factorsOfVar)
-                    && isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var, factorsOfVar)
-                    && areQuotientsOfTermsRational(factorsOfVar);
+            return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, argumentsInTrigonometricFunctions)
+                    && isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var, argumentsInTrigonometricFunctions)
+                    && areQuotientsOfTermsRational(argumentsInTrigonometricFunctions);
 
         }
         if (f instanceof Function) {
@@ -161,21 +162,12 @@ public class SpecialEquationMethods {
             }
 
             Expression argumentOfExp = ((Function) f).getLeft();
-            try {
-                Expression derivativeOfArgumentOfExp = argumentOfExp.diff(var).simplify();
-                if (derivativeOfArgumentOfExp.contains(var)) {
-                    return false;
-                }
-                boolean areQuotientsOfArgumentsRational = areQuotientsRational(derivativeOfArgumentOfExp, factorsOfVar);
-                if (!areQuotientsOfArgumentsRational) {
-                    return false;
-                }
-                factorsOfVar.add(derivativeOfArgumentOfExp);
+            if (areQuotientsRational(argumentOfExp, argumentsInTrigonometricFunctions)) {
+                argumentsInTrigonometricFunctions.add(argumentOfExp);
                 return true;
-            } catch (EvaluationException e) {
-                return false;
             }
-
+            return false;
+            
         }
 
         /*
@@ -265,10 +257,10 @@ public class SpecialEquationMethods {
         // Das ist die eigentliche Substitution.
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).exp().simplify();
 
-        Object fSubstituted = SolveMethods.substitute(f, var, substitution, true);
+        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
         if (fSubstituted instanceof Expression) {
 
-            String substVar = SolveMethods.getSubstitutionVariable(f);
+            String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) fSubstituted, substVar);
             zeros = new ExpressionCollection();
             ExpressionCollection currentZeros;
@@ -389,97 +381,52 @@ public class SpecialEquationMethods {
     public static ExpressionCollection solveTrigonometricalEquation(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        HashSet<Expression> factorsOfVar = new HashSet();
+        HashSet<Expression> argumentsInTrigonometricFunctions = new HashSet();
         /*
          Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
          Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!isRationalFunktionInTrigonometricalFunctions(f, var, factorsOfVar)) {
-            return zeros;
-        }
-        if (factorsOfVar.isEmpty()) {
+        if (!isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
             return zeros;
         }
 
-        BigInteger gcdOfEnumerators = null;
+        BigInteger gcdOfEnumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
-        Iterator<Expression> iter = factorsOfVar.iterator();
-        Expression firstFactorOfVar = null;
+        Iterator<Expression> iter = argumentsInTrigonometricFunctions.iterator();
+        Expression firstFactorOfArgument = iter.next();
         Expression currentQuotient;
 
-        ExpressionCollection factorsEnumerator, factorsDenominator;
-        Expression factorOfVar;
         while (iter.hasNext()) {
-            if (firstFactorOfVar == null) {
-                firstFactorOfVar = iter.next();
-                factorOfVar = firstFactorOfVar;
-            } else {
-                factorOfVar = iter.next();
-            }
-            currentQuotient = factorOfVar.div(firstFactorOfVar).simplify();
+            currentQuotient = iter.next().div(firstFactorOfArgument).simplify();
+            // Die folgende Abfrage müsste wegen Vorbedingung immer true sein. Trotzdem sicherheitshalber!
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
-                factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factorOfVar);
-                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factorOfVar);
-                /* 
-                 WICHTIGE ANNAHME: f ist vereinfacht, also jedes factorOfVar ebenfalls.
-                 Dementsprechend sind die Koeffizienten im Zähler und Nenner zusammengefasst und stehen vorne. 
-                 */
-                if (gcdOfEnumerators == null) {
-                    // Erste Initialisierung des ggT der Zählerkoeffizienten.
-                    if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = ((Constant) factorsEnumerator.get(0)).getValue().toBigInteger();
-                    } else {
-                        gcdOfEnumerators = BigInteger.ONE;
-                    }
+                if (currentQuotient.isIntegerConstant()) {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-                        gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) factorsEnumerator.get(0)).getValue().toBigInteger());
-                    } else {
-                        gcdOfEnumerators = BigInteger.ONE;
-                    }
-                }
-                if (factorsDenominator.get(0) != null && factorsDenominator.get(0).isIntegerConstant()) {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) factorsDenominator.get(0)).getValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
 
             }
         }
-
-        if (gcdOfEnumerators == null) {
-            gcdOfEnumerators = BigInteger.ONE;
-        }
-
-        iter = factorsOfVar.iterator();
-        factorOfVar = iter.next();
-        factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factorOfVar);
-        factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factorOfVar);
-        if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isIntegerConstant()) {
-            factorsEnumerator.remove(0);
-        }
-        if (factorsDenominator.get(0) != null && factorsDenominator.get(0).isIntegerConstant()) {
-            factorsDenominator.remove(0);
-        }
-        factorsEnumerator.add(new Constant(gcdOfEnumerators));
-        factorsEnumerator.add(Variable.create(var));
-        factorsDenominator.add(new Constant(lcmOfDenominators));
 
         /* 
          Das ist die eigentliche Substitution. BEISPIEL: f = sin(4*a*x/7) + 4*cos(6*a*x/7).
          Dann substitution = 2*a*x/7. Die substitutierte Gleichung lautet demnach: 
          f = sin(2*X_1) + 4*cos(3*X_1). X_1 ist dabei der Ausdruck substitution.
          */
-        Expression substitution = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).simplify();
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify();
 
-        Object fSubstitutedAsObject = SolveMethods.substitute(f, var, substitution, true);
+        Object fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution, true);
         if (fSubstitutedAsObject instanceof Expression) {
 
             Expression fSubstituted = (Expression) fSubstitutedAsObject;
-            String substVar = SolveMethods.getSubstitutionVariable(f);
+            String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
 
             HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
             simplifyTypes.add(TypeSimplify.simplify_trivial);
@@ -523,12 +470,12 @@ public class SpecialEquationMethods {
              */
             Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypes);
 
-            String polynomVar = SolveMethods.getSubstitutionVariable(fNew);
+            String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
             if (isPolynomialIn(Variable.create(substVar).cos(), fNew, substVar)) {
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
-                Object polynomial = SolveMethods.substitute(fNew, substVar, trigonometricalSubst, true);
+                Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
-                // Sicherheitsabfrage.
+                // Sicherheitsabfrage. Sollte immer true sein.
                 if (!(polynomial instanceof Expression)) {
                     return new ExpressionCollection();
                 }
@@ -553,9 +500,9 @@ public class SpecialEquationMethods {
                 fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypes);
                 if (isPolynomialIn(Variable.create(substVar).sin(), fNew, substVar)) {
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
-                    Object polynomial = SolveMethods.substitute(fNew, substVar, trigonometricalSubst, true);
+                    Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
-                    // Sicherheitsabfrage.
+                    // Sicherheitsabfrage. Sollte immer true sein.
                     if (!(polynomial instanceof Expression)) {
                         return new ExpressionCollection();
                     }

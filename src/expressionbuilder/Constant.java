@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -365,6 +366,11 @@ public class Constant extends Expression {
     public boolean hasPositiveSign() {
         return this.getValue().compareTo(BigDecimal.ZERO) >= 0;
     }
+    
+    @Override
+    public int length() {
+        return 1;
+    }
 
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
@@ -464,6 +470,11 @@ public class Constant extends Expression {
 
     @Override
     public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
+        return this;
+    }
+
+    @Override
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
         return this;
     }
 

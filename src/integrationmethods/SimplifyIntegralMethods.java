@@ -3,7 +3,7 @@ package integrationmethods;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
@@ -19,17 +19,18 @@ import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
-import solveequationmethods.SolveMethods;
+import substitutionmethods.SubstitutionUtilities;
 
-public class SimplifyIntegralMethods {
+public abstract class SimplifyIntegralMethods {
 
     /**
      * Vereinfacht den Integranden (sinnvoll) für eine bequemere Integration.
      * Beispiel: f = (x^2+x)*exp(x)*(x-2) wäre zu kompliziert mittels partieller
      * Integration zu integrieren. Sinnvoller wäre es, die beiden Polynome
      * auszumultiplizieren und DANN zu integrieren, also den Integranden f =
-     * (x^3 - x^2 - 2*x)*exp(x). WICHTIG: Falls der Integrand f ein Bruch ist,
-     * dann werden Zähler und Nenner verschieden vereinfacht.
+     * (x^3 - x^2 - 2*x)*exp(x).<br>
+     * WICHTIG: Falls der Integrand f ein Bruch ist, dann werden Zähler und
+     * Nenner verschieden vereinfacht.
      *
      * @throws EvaluationException
      */
@@ -41,7 +42,7 @@ public class SimplifyIntegralMethods {
 
         // Wenn in den Faktoren MEHR als ein Polynom auftaucht -> Polynome ausmultiplizieren.
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        Expression polynomialFactor = Expression.ZERO;
+        Expression polynomialFactor = Expression.ONE;
         /*
          Counter, welcher zählt, wie viele Polynome im Produkt auftreten.
          SINN: Falls mindestens ein Polynom auftreten -> vereinfachen (bzw.
@@ -69,8 +70,9 @@ public class SimplifyIntegralMethods {
         }
 
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
@@ -79,7 +81,6 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
         if (numberOfPolynomials > 0) {
             /*
@@ -110,8 +111,9 @@ public class SimplifyIntegralMethods {
         }
 
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
         simplifyTypes.add(TypeSimplify.expand);
@@ -121,10 +123,9 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
         /*
-         Falls f ein Produkt ist und als FAKTOREN Polynom auftreten, so sollen
+         Falls f ein Produkt ist und als Faktoren Polynome auftreten, so sollen
          diese ausmultipliziert werden. Dies ist dafür gedacht, damit z.B.
          (x^2+x+5)*((x-1)^2 - (x-2)^2) zu (x^2+x+5)*(2*x - 3) bzw.
          (x^2+x+5)*((x-1)^2 - (x-2)^2)^15 zu (x^2+x+5)*(2*x - 3)^15
@@ -162,26 +163,6 @@ public class SimplifyIntegralMethods {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
 
         /*
-         Hier ist es unerheblich, ob f ein Bruch ist, oder nicht. Es kommt nur
-         drauf an, dass zusätzlich alle Exponentialfunktionen in die Form
-         exp(...) umgeschrieben werden. Aber diese Methode wird NACH
-         prepareIntegrand() aufgerufen, und in dieser werden die
-         Exponentialfunktionen im Nenner in den Zähler gebracht (mit negativem
-         Exponenten natürlich).
-         */
-        for (int i = 0; i < factors.getBound(); i++) {
-            // a^f(x) wird durch exp(f(x)*ln(a)) ersetzt (x == var, a enthalte var nicht).
-            if (factors.get(i).isPower()
-                    && !((BinaryOperation) factors.get(i)).getLeft().contains(var)
-                    && ((BinaryOperation) factors.get(i)).getRight().contains(var)) {
-
-                factors.put(i, new Function(new Function(((BinaryOperation) factors.get(i)).getLeft(), TypeFunction.ln).mult(
-                        ((BinaryOperation) factors.get(i)).getRight()), TypeFunction.exp));
-
-            }
-        }
-
-        /*
          Verschiedene Exponentialfunktionen nun zusammenfassen (etwa
          exp(a*x+b) * ... * exp(c*x+d) = exp((a+c)*x + (b+d))).
          */
@@ -189,8 +170,9 @@ public class SimplifyIntegralMethods {
 
         // Nun den Rest integrationsspezifisch vereinfachen.
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.expand);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
@@ -199,16 +181,17 @@ public class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        // Exponentialfunktionen / trig. Funktionen sollen durch die ursprüngliche Definition ersetzt werden, wenn diese auch auftauchen!
-        if (f.containsExponentialFunction()) {
-            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_by_definitions);
-        }
         if (f.containsTrigonometricalFunction()) {
             simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
         }
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
-        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
+        /*
+         Wichtig zum Schluss: Exponentialfunktionen in var (d.h. Potenzfunktionen, 
+         bei denen die Basis bzgl. var konstant ist) werden durch ihre ursprüngliche 
+         Definition ersetzt. Dies ermöglicht es beispielsweise 2^x zu integrieren, 
+         da dies zu exp(ln(2)*x) vereinfacht wird.
+         */
+        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
 
     }
 
@@ -455,13 +438,13 @@ public class SimplifyIntegralMethods {
 
         Object result;
 
-        //Summenregel
+        // Summenregel
         result = integrateSumsAndDifferences(expr);
         if (result instanceof Expression) {
             return (Expression) result;
         }
 
-        //Faktorregel
+        // Faktorregel
         result = takeConstantFactorsOutOfIntegral(expr);
         if (result instanceof Expression) {
             return (Expression) result;
@@ -474,32 +457,32 @@ public class SimplifyIntegralMethods {
          noch irgendwo Integrale auftauchen (und diese weiter vereinfacht
          werden können).
          */
-        //Integration von Monomen
+        // Integration von Monomen
         result = integrateMonomial(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von Elementarfunktionen
+        // Integration von Elementarfunktionen
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
         if (f instanceof Function && ((Function) f).getLeft().equals(Variable.create(var))) {
             return integrateElementaryFunction(((Function) f).getType(), var);
         }
 
-        //Integration von Potenzen von Elementarfunktionen
+        // Integration von Potenzen von Elementarfunktionen
         result = integratePowerOfElementaryFunction(expr, ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration logarithmischer Ableitungen.
+        // Integration logarithmischer Ableitungen.
         result = integrateLogarithmicDerivative(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration mittels Standardsubstitution.
+        // Integration mittels Standardsubstitution.
         result = integrateByStandardSubstitution(expr);
         if (result instanceof Expression && !((Expression) result).containsIndefiniteIntegral()) {
             /*
@@ -512,55 +495,61 @@ public class SimplifyIntegralMethods {
         }
 
         // Weitere Integrationsmethoden.
-        //Partialbruchzerlegung
+        // Partialbruchzerlegung
         result = SpecialIntegrationMethods.integrateRationalFunction(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von exp(a*x+b)*sin(c*x+d)
+        // Integration von exp(a*x+b)*sin(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfExpSin(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von exp(a*x+b)*cos(c*x+d)
+        // Integration von exp(a*x+b)*cos(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfExpCos(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von sin(a*x+b)*sin(c*x+d)
+        // Integration von sin(a*x+b)*sin(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfSinSin(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von sin(a*x+b)*cos(c*x+d)
+        // Integration von sin(a*x+b)*cos(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfCosCos(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von cos(a*x+b)*cos(c*x+d)
+        // Integration von cos(a*x+b)*cos(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfSinCos(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von (a*x^2 + b*x + c)^(1/2).
+        // Integration von (a*x^2 + b*x + c)^(1/2).
         result = SpecialIntegrationMethods.integrateSqrtOfQuadraticFunction(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //Integration von 1/(a*x^2 + b*x + c)^(1/2).
+        // Integration von 1/(a*x^2 + b*x + c)^(1/2).
         result = SpecialIntegrationMethods.integrateReciprocalOfSqrtOfQuadraticFunction(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
 
-        //GANZ ZUM SCHLUSS: Partielle Integration, falls erlaubt.
+        // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
+        result = SpecialIntegrationMethods.integrateRationalFunctionInExp(expr);
+        if (result instanceof Expression){
+            return ((Expression) result).simplifyTrivial();
+        }
+        
+        // GANZ ZUM SCHLUSS: Partielle Integration, falls erlaubt.
         if (allowPartialIntegration((Expression) expr.getParams()[0], (String) expr.getParams()[1])) {
             result = integrateByPartialIntegration(expr);
             if (result instanceof Expression && !((Expression) result).containsIndefiniteIntegral()) {
@@ -1547,12 +1536,12 @@ public class SimplifyIntegralMethods {
                      also in g(x)/(factor * f'(x)) zu substituieren (gemäß der
                      Substitutionsregel).
                      */
-                    String substVar = SolveMethods.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SolveMethods.substitute(quotient, var, substitution, true);
+                    String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
                     if (substitutedRestIntegrand instanceof Boolean) {
                         continue;
                     }
-                    Object substitutedFactor = SolveMethods.substitute(factor, var, substitution, true);
+                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
                     if (substitutedFactor instanceof Boolean) {
                         continue;
                     }
@@ -1564,7 +1553,7 @@ public class SimplifyIntegralMethods {
                     paramsSubstitutedIntegral[0] = fSubstituted;
                     paramsSubstitutedIntegral[1] = substVar;
                     Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
-                    
+
                     // Nun wird versucht, das substituierte Integral zu berechnen.
                     Object F = indefiniteIntegration(substitutedIntegral, true);
 
@@ -1598,7 +1587,7 @@ public class SimplifyIntegralMethods {
              */
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-            
+
             // Im Zähler suchen.
             for (int i = 0; i < factorsEnumerator.getBound(); i++) {
 
@@ -1620,12 +1609,12 @@ public class SimplifyIntegralMethods {
                      also in g(x)/(factor * f'(x)) zu substituieren (gemäß der
                      Substitutionsregel).
                      */
-                    String substVar = SolveMethods.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SolveMethods.substitute(quotient, var, substitution, true);
+                    String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
                     if (substitutedRestIntegrand instanceof Boolean) {
                         continue;
                     }
-                    Object substitutedFactor = SolveMethods.substitute(factor, var, substitution, true);
+                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
                     if (substitutedFactor instanceof Boolean) {
                         continue;
                     }
@@ -1685,12 +1674,12 @@ public class SimplifyIntegralMethods {
                      also in g(x)/(factor * f'(x)) zu substituieren (gemäß der
                      Substitutionsregel).
                      */
-                    String substVar = SolveMethods.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SolveMethods.substitute(quotient, var, substitution, true);
+                    String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
                     if (substitutedRestIntegrand instanceof Boolean) {
                         continue;
                     }
-                    Object substitutedFactor = SolveMethods.substitute(factor, var, substitution, true);
+                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
                     if (substitutedFactor instanceof Boolean) {
                         continue;
                     }

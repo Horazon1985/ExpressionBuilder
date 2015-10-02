@@ -1,13 +1,13 @@
 package linearalgebraalgorithms;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
 import matrixsimplifymethods.MatrixExpressionCollection;
 
-public class GaussAlgorithm {
+public abstract class GaussAlgorithm {
 
     /**
      * Gibt die Zeilenstufenform der Matrix matrix zurück.

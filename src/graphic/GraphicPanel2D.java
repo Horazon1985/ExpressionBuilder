@@ -1,7 +1,7 @@
 package graphic;
 
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import java.awt.Color;

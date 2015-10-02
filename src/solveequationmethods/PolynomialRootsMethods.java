@@ -4,11 +4,12 @@ import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
+import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
@@ -16,9 +17,10 @@ import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.HashSet;
 import translator.Translator;
 
-public class PolynomialRootsMethods {
+public abstract class PolynomialRootsMethods {
 
     /**
      * Gibt zurück, ob expr ein Polynom in derivative Variablen x ist, falls die
@@ -71,8 +73,20 @@ public class PolynomialRootsMethods {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, decomposePolynomialInIrreducibleFactors(factors.get(i), var));
             }
+            // Zum Schluss noch: Gleiche Faktoren zusammenfassen.
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
 
-            return SimplifyUtilities.produceProduct(factors);
+            return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
 
         }
 
@@ -132,7 +146,7 @@ public class PolynomialRootsMethods {
 
         // Ab hier sind die Koeffizienten allesamt rationale Zahlen.
         ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection rest_coefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
+        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
 
         if (zeros.isEmpty()) {
             return f;
@@ -140,7 +154,7 @@ public class PolynomialRootsMethods {
 
         // Ab hier wurden rationale Nullstellen gefunden.
         // Zunächst: Gleiche Nullstellen zu mehrfachen Nullstellen zusammenfassen.
-        Expression result = PolynomialRootsMethods.getPolynomialFromCoefficients(rest_coefficients, var).simplify();
+        Expression result = PolynomialRootsMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
         int l = zeros.getBound();
         Expression current_zero = zeros.get(0);
         int current_multiplicity = 1;

@@ -8,7 +8,7 @@ import static logicalexpressionbuilder.LogicalExpression.TRUE;
 import logicalexpressionbuilder.LogicalUnaryOperation;
 import logicalexpressionbuilder.TypeLogicalBinary;
 
-public class SimplifyLogicalBinaryOperationMethods {
+public abstract class SimplifyLogicalBinaryOperationMethods {
 
     public static LogicalExpression trivialOperationsWithFalseTrue(LogicalBinaryOperation logExpr) {
 

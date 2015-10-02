@@ -2,7 +2,7 @@ package simplifymethodstest.expressiontests;
 
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;

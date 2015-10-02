@@ -2,14 +2,14 @@ package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import translator.Translator;
 
-public class SimplifyFunctionMethods {
+public abstract class SimplifyFunctionMethods {
 
     public static Expression approxConstantExpression(Function expr) throws EvaluationException {
         if (expr.getLeft().isConstant() && expr.getLeft().containsApproximates()) {

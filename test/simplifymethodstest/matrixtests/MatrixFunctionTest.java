@@ -1,7 +1,7 @@
 package simplifymethodstest.matrixtests;
 
-import expressionbuilder.EvaluationException;
-import expressionbuilder.ExpressionException;
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;
 import org.junit.AfterClass;

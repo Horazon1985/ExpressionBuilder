@@ -2,12 +2,12 @@ package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import java.math.BigInteger;
 import translator.Translator;
 
-public class SimplifyUtilities {
+public abstract class SimplifyUtilities {
 
     /**
      * Liefert, ob terms und termsToCompare äquivalente Einträge besitzen.

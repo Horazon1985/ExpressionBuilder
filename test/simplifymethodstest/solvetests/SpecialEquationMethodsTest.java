@@ -1,9 +1,9 @@
 package simplifymethodstest.solvetests;
 
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;
@@ -55,7 +55,7 @@ public class SpecialEquationMethodsTest {
             Assert.assertFalse(SpecialEquationMethods.isRationalFunktionInExp(h, "x", argumentsOfExp));
             System.out.println(h);
             System.out.println(argumentsOfExp);
-        } catch (expressionbuilder.ExpressionException e) {
+        } catch (exceptions.ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
@@ -70,7 +70,7 @@ public class SpecialEquationMethodsTest {
             assertTrue(SpecialEquationMethods.isRationalFunktionInExp(f, "x", factorsOfVar));
             System.out.println(f);
             System.out.println(factorsOfVar);
-        } catch (expressionbuilder.ExpressionException e) {
+        } catch (exceptions.ExpressionException e) {
             fail("f konnte nicht vereinfacht werden.");
         }
     }

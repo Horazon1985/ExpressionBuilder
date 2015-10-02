@@ -1,6 +1,6 @@
 package matrixexpressionbuilder;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;

@@ -1,8 +1,8 @@
 package simplifymethodstest.expressiontests;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyUtilities;

@@ -1,9 +1,9 @@
 package simplifymethodstest.solvetests;
 
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import org.junit.AfterClass;

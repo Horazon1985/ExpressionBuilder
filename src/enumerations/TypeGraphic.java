@@ -1,4 +1,4 @@
-package expressionbuilder;
+package enumerations;
 
 public enum TypeGraphic {
 

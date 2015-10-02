@@ -15,7 +15,7 @@ import expressionbuilder.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public class SimplifyOperatorMethods {
+public abstract class SimplifyOperatorMethods {
 
     /**
      * Falls im Summenoperator eine Summe oder eine Differenz auftaucht, so wird

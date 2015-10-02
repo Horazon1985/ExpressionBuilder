@@ -1,13 +1,13 @@
 package computation;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import translator.Translator;
 
-public class NumericalMethods {
+public abstract class NumericalMethods {
 
     /**
      * Gibt die Summe der Vektoren a und b zurück.

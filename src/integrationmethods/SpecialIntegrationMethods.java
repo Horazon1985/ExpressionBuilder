@@ -1,9 +1,10 @@
 package integrationmethods;
 
+import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
@@ -17,9 +18,12 @@ import expressionsimplifymethods.SimplifyUtilities;
 import static integrationmethods.SimplifyIntegralMethods.indefiniteIntegration;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Iterator;
 import solveequationmethods.PolynomialRootsMethods;
+import solveequationmethods.SpecialEquationMethods;
+import substitutionmethods.SubstitutionUtilities;
 
-public class SpecialIntegrationMethods {
+public abstract class SpecialIntegrationMethods {
 
     /**
      * Hauptmethode für Partialbruchzerlegung. Gibt im Erfolgsfall die
@@ -135,7 +139,7 @@ public class SpecialIntegrationMethods {
              */
             Object[][] paramsOfIntegralOfSummand = new Object[summandsOfIntegralFunction.getBound()][2];
 
-            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++) {
+            for (int i = 0; i < summandsOfIntegralFunction.getBound(); i++) {
                 paramsOfIntegralOfSummand[i][0] = summandsOfIntegralFunction.get(i);
                 paramsOfIntegralOfSummand[i][1] = var;
                 summandsOfIntegralFunction.put(i, new Operator(TypeOperator.integral, paramsOfIntegralOfSummand[i]));
@@ -934,4 +938,74 @@ public class SpecialIntegrationMethods {
 
     }
 
+    /**
+     * Integriert Funktionen vom Typ R(exp(a*x)), R = rationale Funktion.
+     */
+    public static Object integrateRationalFunctionInExp(Operator expr) throws EvaluationException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+        
+        HashSet<Expression> argumentsInExp= new HashSet<>();
+        
+        // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
+        f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, var);
+        
+        if (!SpecialEquationMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()){
+            return false;
+        }
+        
+        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger lcmOfDenominators = BigInteger.ONE;
+
+        Iterator<Expression> iter = argumentsInExp.iterator();
+        Expression firstArgument = iter.next();
+        
+        Expression derivativeOfFirstArgument;
+        try{
+            derivativeOfFirstArgument = firstArgument.diff(var).simplify();
+            if (derivativeOfFirstArgument.contains(var)){
+                return false;
+            }
+        } catch (EvaluationException e){
+            return false;
+        }
+        
+        Expression currentQuotient;
+
+        while (iter.hasNext()) {
+            currentQuotient = iter.next().div(firstArgument).simplify();
+            // Die folgende Abfrage müsste wegen Vorbedingung immer true sein. Trotzdem sicherheitshalber!
+            if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+
+                if (currentQuotient.isIntegerConstant()) {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                } else {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                }
+
+            }
+        }
+
+        // Das ist die eigentliche Substitution.
+        Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
+        
+        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
+        if (fSubstituted instanceof Expression) {
+            String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+            Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
+            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{ substitutedIntegrand, substVar });
+            Object resultFunction = indefiniteIntegration(substitutedIntegral, true);
+            if (resultFunction instanceof Expression){
+                return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
+            }
+        }
+        
+        return false;
+        
+    }
+    
 }

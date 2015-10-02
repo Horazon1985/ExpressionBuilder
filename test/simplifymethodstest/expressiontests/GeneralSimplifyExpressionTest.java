@@ -1,10 +1,10 @@
 package simplifymethodstest.expressiontests;
 
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;

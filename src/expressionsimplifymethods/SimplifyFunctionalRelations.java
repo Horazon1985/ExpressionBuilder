@@ -2,14 +2,14 @@ package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-public class SimplifyFunctionalRelations {
+public abstract class SimplifyFunctionalRelations {
 
     /**
      * Prüft, ob expr ein (rationales) Vielfaches einer Funktion vom Typ type

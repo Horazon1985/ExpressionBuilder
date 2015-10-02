@@ -4,7 +4,7 @@ import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.ONE;
@@ -21,7 +21,7 @@ import translator.Translator;
  * Viele kleine Einzelmethoden zur Vereinfachung von Ausdrücken der Klasse
  * BinaryOperation (für simplifyTrivial).
  */
-public class SimplifyBinaryOperationMethods {
+public abstract class SimplifyBinaryOperationMethods {
 
     /**
      * Falls expr einen Kehrwert darstellt und falls approximiert wird, so wird

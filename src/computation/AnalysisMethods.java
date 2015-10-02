@@ -1,23 +1,23 @@
 package computation;
 
-import translator.Translator;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.ExpressionException;
+import exceptions.ExpressionException;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.Variable;
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;
+import translator.Translator;
 
-public class AnalysisMethods {
+public abstract class AnalysisMethods {
 
     /**
      * Gibt die Summe f(var = k_0) + f(var = k_0 + 1) + ... + f(var = k_1)

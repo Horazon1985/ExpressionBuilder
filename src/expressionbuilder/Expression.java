@@ -1,7 +1,8 @@
 package expressionbuilder;
 
-import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyUtilities;
+import enumerations.TypeLanguage;
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -616,6 +617,16 @@ public abstract class Expression {
     public abstract boolean isAlwaysPositive();
 
     /**
+     * Gibt den Ausdruck als String aus.
+     */
+    public abstract String writeExpression();
+
+    @Override
+    public String toString() {
+        return this.writeExpression();
+    }
+
+    /**
      * Prüft, ob der Ausdruck ein eine rationale Konstante ist.
      */
     public boolean isRationalConstant() {
@@ -683,17 +694,7 @@ public abstract class Expression {
         }
         return false;
     }
-
-    /**
-     * Gibt den Ausdruck als String aus.
-     */
-    public abstract String writeExpression();
-
-    @Override
-    public String toString() {
-        return this.writeExpression();
-    }
-
+    
     /**
      * Hilfsmethode für writeExpression und für das Zeichnen von Ausdrücken.
      * Gibt zurück, ob der Ausdruck mit einem negativen Vorzeichen anfängt.
@@ -738,22 +739,51 @@ public abstract class Expression {
     public abstract boolean hasPositiveSign();
 
     /**
+     * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
+     */
+    public abstract int length();
+    
+    /**
      * Addiert zwei Ausdrücke.
      */
     public Expression add(Expression expr) {
+        if (this.equals(ZERO)){
+            return expr;
+        }
+        if (expr.equals(ZERO)){
+            return this;
+        }
         return new BinaryOperation(this, expr, TypeBinary.PLUS);
     }
 
     //Folgende Funktionen dienen der Kürze halber.
     public Expression add(BigDecimal a) {
+        if (this.equals(ZERO)){
+            return new Constant(a);
+        }
+        if (a.equals(BigDecimal.ZERO)){
+            return this;
+        }
         return this.add(new Constant(a));
     }
 
     public Expression add(BigInteger a) {
+        if (this.equals(ZERO)){
+            return new Constant(a);
+        }
+        if (a.equals(BigInteger.ZERO)){
+            return this;
+        }
         return this.add(new Constant(a));
     }
 
     public Expression add(int a) {
+        if (this.equals(ZERO)){
+            return new Constant(a);
+        }
+        if (a == 0){
+            return this;
+        }
         return this.add(new Constant(a));
     }
 
@@ -761,19 +791,43 @@ public abstract class Expression {
      * Subtrahiert zwei Ausdrücke.
      */
     public Expression sub(Expression expr) {
+        if (this.equals(ZERO)){
+            return MINUS_ONE.mult(expr);
+        }
+        if (expr.equals(ZERO)){
+            return this;
+        }
         return new BinaryOperation(this, expr, TypeBinary.MINUS);
     }
 
     //Folgende Funktionen dienen der Kürze halber.
     public Expression sub(BigDecimal a) {
+        if (this.equals(ZERO)){
+            return new Constant(a.negate());
+        }
+        if (a.equals(BigDecimal.ZERO)){
+            return this;
+        }
         return this.sub(new Constant(a));
     }
 
     public Expression sub(BigInteger a) {
+        if (this.equals(ZERO)){
+            return new Constant(a.negate());
+        }
+        if (a.equals(BigInteger.ZERO)){
+            return this;
+        }
         return this.sub(new Constant(a));
     }
 
     public Expression sub(int a) {
+        if (this.equals(ZERO)){
+            return new Constant(-a);
+        }
+        if (a == 0){
+            return this;
+        }
         return this.sub(new Constant(a));
     }
 
@@ -781,19 +835,55 @@ public abstract class Expression {
      * Multipliziert zwei Ausdrücke.
      */
     public Expression mult(Expression expr) {
+        if (this.equals(ZERO) || expr.equals(ZERO)){
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)){
+            return expr;
+        }
+        if (expr.equals(Expression.ONE)){
+            return this;
+        }
         return new BinaryOperation(this, expr, TypeBinary.TIMES);
     }
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression mult(BigDecimal n) {
+        if (this.equals(ZERO) || n.equals(BigDecimal.ZERO)){
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)){
+            return new Constant(n);
+        }
+        if (n.equals(BigDecimal.ONE)){
+            return this;
+        }
         return this.mult(new Constant(n));
     }
 
     public Expression mult(BigInteger n) {
+        if (this.equals(ZERO) || n.equals(BigInteger.ZERO)){
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)){
+            return new Constant(n);
+        }
+        if (n.equals(BigInteger.ONE)){
+            return this;
+        }
         return this.mult(new Constant(n));
     }
 
     public Expression mult(int n) {
+        if (this.equals(ZERO) || n == 0){
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)){
+            return new Constant(n);
+        }
+        if (n == 1){
+            return this;
+        }
         return this.mult(new Constant(n));
     }
 
@@ -801,19 +891,43 @@ public abstract class Expression {
      * Dividiert zwei Ausdrücke.
      */
     public Expression div(Expression expr) {
+        if (this.equals(ZERO)){
+            return ZERO;
+        }
+        if (expr.equals(Expression.ONE)){
+            return this;
+        }
         return new BinaryOperation(this, expr, TypeBinary.DIV);
     }
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression div(BigDecimal n) {
+        if (this.equals(ZERO)){
+            return ZERO;
+        }
+        if (n.equals(BigDecimal.ONE)){
+            return this;
+        }
         return this.div(new Constant(n));
     }
 
     public Expression div(BigInteger n) {
+        if (this.equals(ZERO)){
+            return ZERO;
+        }
+        if (n.equals(BigInteger.ONE)){
+            return this;
+        }
         return this.div(new Constant(n));
     }
 
     public Expression div(int n) {
+        if (this.equals(ZERO)){
+            return ZERO;
+        }
+        if (n == 1){
+            return this;
+        }
         return this.div(new Constant(n));
     }
 
@@ -821,19 +935,43 @@ public abstract class Expression {
      * Potenziert zwei Ausdrücke.
      */
     public Expression pow(Expression expr) {
+        if (expr.equals(ZERO)){
+            return ONE;
+        }
+        if (expr.equals(ONE)){
+            return this;
+        }
         return new BinaryOperation(this, expr, TypeBinary.POW);
     }
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression pow(BigDecimal n) {
+        if (n.equals(BigDecimal.ZERO)){
+            return ONE;
+        }
+        if (n.equals(BigDecimal.ONE)){
+            return this;
+        }
         return this.pow(new Constant(n));
     }
 
     public Expression pow(BigInteger n) {
+        if (n.equals(BigInteger.ZERO)){
+            return ONE;
+        }
+        if (n.equals(BigInteger.ONE)){
+            return this;
+        }
         return this.pow(new Constant(n));
     }
 
     public Expression pow(int n) {
+        if (n == 0){
+            return ONE;
+        }
+        if (n == 1){
+            return this;
+        }
         return this.pow(new Constant(n));
     }
 
@@ -1041,63 +1179,6 @@ public abstract class Expression {
     }
 
     /**
-     * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
-     */
-    public int length() {
-
-        if (this instanceof Constant || this instanceof Variable) {
-            return 1;
-        } else if (this instanceof BinaryOperation) {
-            if (this.isProduct()) {
-                ExpressionCollection factors = SimplifyUtilities.getFactors(this);
-                int length = 0;
-                for (int i = 0; i < factors.getBound(); i++) {
-                    if (length == 0) {
-                        length = factors.get(i).length();
-                    } else if (factors.get(i).length() > 1) {
-                        length += factors.get(i).length();
-                    }
-                }
-                return length;
-            }
-            if (this.isPower()) {
-                if (((BinaryOperation) this).getLeft().length() == 1) {
-                    return ((BinaryOperation) this).getRight().length();
-                }
-                if (((BinaryOperation) this).getRight().length() == 1) {
-                    return ((BinaryOperation) this).getLeft().length();
-                }
-            }
-            return ((BinaryOperation) this).getLeft().length() + ((BinaryOperation) this).getRight().length();
-        } else if (this instanceof Function) {
-            if (((Function) this).getLeft().length() == 1) {
-                return 1;
-            }
-            return ((Function) this).getLeft().length() + 1;
-        } else if (this instanceof Operator) {
-            Object[] arguments = ((Operator) this).getParams();
-            int length = 0;
-            for (Object argument : arguments) {
-                if (argument instanceof Expression) {
-                    length += ((Expression) argument).length();
-                } else {
-                    length++;
-                }
-            }
-            return length;
-        }
-
-        // Ab hier ist this eine Instanz von SelfDefinedFunction.
-        Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
-        int length = 0;
-        for (Expression argument : arguments) {
-            length += argument.length();
-        }
-        return length;
-
-    }
-
-    /**
      * Einzelschritt: Triviale Vereinfachung.
      *
      * @throws EvaluationException
@@ -1222,11 +1303,20 @@ public abstract class Expression {
     public abstract Expression simplifyExpandLogarithms() throws EvaluationException;
 
     /**
-     * Ersetzt Funktionen durch einfachere Funktionen (wichtig für Integrale!).
+     * Ersetzt allgemeine Exponentialfunktionen durch die eigentliche Definition
+     * (wichtig für Integrale!).
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException;
+
+    /**
+     * Ersetzt allgemeine Exponentialfunktionen, deren Basis bzgl var konstant
+     * ist, durch die eigentliche Definition (wichtig für Integrale!).
+     *
+     * @throws EvaluationException
+     */
+    public abstract Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException;
 
     /**
      * Ersetzt Funktionen durch einfachere Funktionen (wichtig für Integrale!).
@@ -1252,9 +1342,7 @@ public abstract class Expression {
     public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Terme. Es wird solange iteriert, bis
-     * sich nichts mehr ändert -> Der Ausdruck ist dann weitestgehend
-     * vereinfacht.
+     * Standardvereinfachung allgemeiner Terme. 
      *
      * @throws EvaluationException
      */

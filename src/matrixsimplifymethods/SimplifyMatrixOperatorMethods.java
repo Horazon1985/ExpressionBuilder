@@ -6,7 +6,7 @@ import matrixexpressionbuilder.MatrixExpression;
 import matrixexpressionbuilder.MatrixOperator;
 import matrixexpressionbuilder.TypeMatrixOperator;
 
-public class SimplifyMatrixOperatorMethods {
+public abstract class SimplifyMatrixOperatorMethods {
 
     /**
      * Falls im Summenoperator eine Summe oder eine Differenz von Matrizen

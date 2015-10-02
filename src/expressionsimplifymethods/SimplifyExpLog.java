@@ -2,7 +2,7 @@ package expressionsimplifymethods;
 
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import expressionbuilder.EvaluationException;
+import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-public class SimplifyExpLog {
+public abstract class SimplifyExpLog {
 
     public static void collectExponentialFunctionsInProduct(ExpressionCollection factors) {
 

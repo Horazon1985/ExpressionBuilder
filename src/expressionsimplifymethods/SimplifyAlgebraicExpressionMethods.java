@@ -9,7 +9,7 @@ import expressionbuilder.TypeBinary;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-public class SimplifyAlgebraicExpressionMethods {
+public abstract class SimplifyAlgebraicExpressionMethods {
 
     /**
      * Gibt zurück, ob expr eine ganze Zahl oder ein Bruch mit ungeradem

@@ -1,7 +1,7 @@
 package logicalexpressionbuilder;
 
-import expressionbuilder.EvaluationException;
-import expressionbuilder.ExpressionException;
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
