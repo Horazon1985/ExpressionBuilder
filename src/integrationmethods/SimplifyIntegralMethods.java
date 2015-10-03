@@ -70,7 +70,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_powers);
@@ -111,7 +111,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_powers);
@@ -170,7 +170,7 @@ public abstract class SimplifyIntegralMethods {
 
         // Nun den Rest integrationsspezifisch vereinfachen.
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.expand);

@@ -1060,19 +1060,19 @@ public class Function extends Expression {
         Function function = new Function(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(), this.type);
 
         if (function.getType().equals(TypeFunction.tan)) {
-            return new Function(function.getLeft(), TypeFunction.sin).div(new Function(function.getLeft(), TypeFunction.cos));
+            return function.getLeft().sin().div(function.getLeft().cos());
         }
 
         if (function.getType().equals(TypeFunction.cot)) {
-            return new Function(function.getLeft(), TypeFunction.cos).div(new Function(function.getLeft(), TypeFunction.sin));
+            return function.getLeft().cos().div(function.getLeft().sin());
         }
 
         if (function.getType().equals(TypeFunction.sec)) {
-            return Expression.ONE.div(new Function(function.getLeft(), TypeFunction.cos));
+            return Expression.ONE.div(function.getLeft().cos());
         }
 
         if (function.getType().equals(TypeFunction.cosec)) {
-            return Expression.ONE.div(new Function(function.getLeft(), TypeFunction.sin));
+            return Expression.ONE.div(function.getLeft().sin());
         }
 
         return function;

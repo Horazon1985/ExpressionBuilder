@@ -1,8 +1,8 @@
 package expressionbuilder;
 
-import exceptions.EvaluationException;
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
@@ -2272,14 +2272,14 @@ public class BinaryOperation extends Expression {
          */
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+//        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
 

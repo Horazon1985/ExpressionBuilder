@@ -1427,7 +1427,7 @@ public abstract class Expression {
             Expression expr = this;
             Expression exprSimplified = expr;
 
-            if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
+            if (simplifyTypes.contains(TypeSimplify.order_difference_and_division)) {
                 exprSimplified = exprSimplified.orderDifferencesAndQuotients();
             }
             if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
@@ -1496,7 +1496,7 @@ public abstract class Expression {
             while (!expr.equals(exprSimplified)) {
                 expr = exprSimplified.copy();
 
-                if (simplifyTypes.contains(TypeSimplify.sort_difference_and_division)) {
+                if (simplifyTypes.contains(TypeSimplify.order_difference_and_division)) {
                     exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 }
                 if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {

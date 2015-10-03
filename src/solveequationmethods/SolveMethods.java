@@ -58,7 +58,7 @@ public abstract class SolveMethods {
         // Zunächst beide Seiten entsprechend vereinfachen.
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
@@ -1470,7 +1470,7 @@ public abstract class SolveMethods {
 
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);

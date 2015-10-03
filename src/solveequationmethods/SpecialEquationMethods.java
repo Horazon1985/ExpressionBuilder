@@ -2,9 +2,9 @@ package solveequationmethods;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -271,7 +271,7 @@ public abstract class SpecialEquationMethods {
              */
             HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.sort_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
             simplifyTypes.add(TypeSimplify.simplify_powers);
             simplifyTypes.add(TypeSimplify.collect_products);
             simplifyTypes.add(TypeSimplify.factorize_in_sums);
@@ -429,20 +429,21 @@ public abstract class SpecialEquationMethods {
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
 
             HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.sort_difference_and_division);
             simplifyTypes.add(TypeSimplify.collect_products);
             simplifyTypes.add(TypeSimplify.expand);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.multiply_powers);
             simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
             simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
             simplifyTypes.add(TypeSimplify.reduce_quotients);
             simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
             simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.multiply_powers);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
 
             fSubstituted = fSubstituted.simplify(simplifyTypes);
             /*
@@ -471,7 +472,7 @@ public abstract class SpecialEquationMethods {
             Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypes);
 
             String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
-            if (isPolynomialIn(Variable.create(substVar).cos(), fNew, substVar)) {
+            if (isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
                 Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -498,7 +499,7 @@ public abstract class SpecialEquationMethods {
 
             } else {
                 fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypes);
-                if (isPolynomialIn(Variable.create(substVar).sin(), fNew, substVar)) {
+                if (isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
                     Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -697,7 +698,7 @@ public abstract class SpecialEquationMethods {
     /**
      * Hilfsmethode. Gibt zurück, ob g ein Polynomin f ist.
      */
-    private static boolean isPolynomialIn(Expression f, Expression g, String var) {
+    private static boolean isRationalFunctionIn(Expression f, Expression g, String var) {
 
         if (!g.contains(var)) {
             return true;
@@ -708,15 +709,12 @@ public abstract class SpecialEquationMethods {
         }
 
         if (g instanceof BinaryOperation) {
-            if (g.isSum() || g.isDifference() || g.isProduct()) {
-                return isPolynomialIn(f, ((BinaryOperation) g).getLeft(), var)
-                        && isPolynomialIn(f, ((BinaryOperation) g).getRight(), var);
-            } else if (g.isQuotient()) {
-                return isPolynomialIn(f, ((BinaryOperation) g).getLeft(), var)
-                        && !((BinaryOperation) g).getRight().contains(var);
+            if (g.isNotPower()) {
+                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var)
+                        && isRationalFunctionIn(f, ((BinaryOperation) g).getRight(), var);
             } else if (g.isPower() && ((BinaryOperation) g).getRight().isIntegerConstant()
                     && ((BinaryOperation) g).getRight().isNonNegative()) {
-                return isPolynomialIn(f, ((BinaryOperation) g).getLeft(), var);
+                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var);
             }
         }
 

@@ -1,14 +1,16 @@
 package substitutionmethods;
 
-import expressionbuilder.BinaryOperation;
 import exceptions.EvaluationException;
+import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
+import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;
 import expressionsimplifymethods.SimplifyUtilities;
+import java.util.HashSet;
 
 public abstract class SubstitutionUtilities {
 
@@ -164,14 +166,27 @@ public abstract class SubstitutionUtilities {
             }
         }
         if (beginning) {
+
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+
             if (k.equals(Expression.ONE)) {
-                Expression rest = f.sub(substitution).simplify();
+                Expression rest = f.sub(substitution).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).add((Expression) restSubstituted);
                 }
             } else {
-                Expression rest = f.sub(k.mult(substitution)).simplify();
+                Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return k.mult(Variable.create(getSubstitutionVariable(f))).add((Expression) restSubstituted);
@@ -285,17 +300,30 @@ public abstract class SubstitutionUtilities {
             }
         }
         if (beginning) {
+
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+
             if (potentialMultipleFoundInSummandsLeft != firstNonConstantFactorInSubstitutionIsInLeft) {
-                k = k.mult(-1).simplify();
+                k = k.mult(-1).simplify(simplifyTypes);
             }
             if (k.equals(Expression.ONE)) {
-                Expression rest = f.sub(substitution).simplify();
+                Expression rest = f.sub(substitution).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).add((Expression) restSubstituted);
                 }
             } else {
-                Expression rest = f.sub(k.mult(substitution)).simplify();
+                Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return k.mult(Variable.create(getSubstitutionVariable(f))).add((Expression) restSubstituted);
@@ -382,14 +410,27 @@ public abstract class SubstitutionUtilities {
             }
         }
         if (beginning) {
+
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+
             if (k.equals(Expression.ONE)) {
-                Expression rest = f.div(substitution).simplify();
+                Expression rest = f.div(substitution).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).mult((Expression) restSubstituted);
                 }
             } else {
-                Expression rest = f.div(substitution.pow(k)).simplify();
+                Expression rest = f.div(substitution.pow(k)).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).pow(k).mult((Expression) restSubstituted);
@@ -511,14 +552,26 @@ public abstract class SubstitutionUtilities {
             }
         }
         if (beginning) {
+            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_powers);
+            simplifyTypes.add(TypeSimplify.collect_products);
+            simplifyTypes.add(TypeSimplify.factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.reduce_quotients);
+            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+
             if (exponent.equals(Expression.ONE)) {
-                Expression rest = f.div(substitution).simplify();
+                Expression rest = f.div(substitution).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).mult((Expression) restSubstituted);
                 }
             } else {
-                Expression rest = f.div(substitution.pow(exponent)).simplify();
+                Expression rest = f.div(substitution.pow(exponent)).simplify(simplifyTypes);
                 Object restSubstituted = substitute(rest, var, substitution, beginning);
                 if (restSubstituted instanceof Expression) {
                     return Variable.create(getSubstitutionVariable(f)).pow(exponent).mult((Expression) restSubstituted);
