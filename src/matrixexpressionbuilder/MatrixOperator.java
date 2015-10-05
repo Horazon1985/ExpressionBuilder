@@ -1,11 +1,11 @@
 package matrixexpressionbuilder;
 
 import computation.AnalysisMethods;
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
+import exceptions.ExpressionException;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.isValidVariable;
-import exceptions.ExpressionException;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
@@ -832,6 +832,19 @@ public class MatrixOperator extends MatrixExpression {
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).orderDifferencesAndQuotients();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public MatrixExpression simplifyTrivial() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyTrivial();
             } else {
                 resultParams[i] = this.params[i];
             }

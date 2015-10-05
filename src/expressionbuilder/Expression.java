@@ -694,7 +694,7 @@ public abstract class Expression {
         }
         return false;
     }
-    
+
     /**
      * Hilfsmethode für writeExpression und für das Zeichnen von Ausdrücken.
      * Gibt zurück, ob der Ausdruck mit einem negativen Vorzeichen anfängt.
@@ -742,15 +742,15 @@ public abstract class Expression {
      * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
      */
     public abstract int length();
-    
+
     /**
      * Addiert zwei Ausdrücke.
      */
     public Expression add(Expression expr) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return expr;
         }
-        if (expr.equals(ZERO)){
+        if (expr.equals(ZERO)) {
             return this;
         }
         return new BinaryOperation(this, expr, TypeBinary.PLUS);
@@ -758,30 +758,30 @@ public abstract class Expression {
 
     //Folgende Funktionen dienen der Kürze halber.
     public Expression add(BigDecimal a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(a);
         }
-        if (a.equals(BigDecimal.ZERO)){
+        if (a.equals(BigDecimal.ZERO)) {
             return this;
         }
         return this.add(new Constant(a));
     }
 
     public Expression add(BigInteger a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(a);
         }
-        if (a.equals(BigInteger.ZERO)){
+        if (a.equals(BigInteger.ZERO)) {
             return this;
         }
         return this.add(new Constant(a));
     }
 
     public Expression add(int a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(a);
         }
-        if (a == 0){
+        if (a == 0) {
             return this;
         }
         return this.add(new Constant(a));
@@ -791,10 +791,10 @@ public abstract class Expression {
      * Subtrahiert zwei Ausdrücke.
      */
     public Expression sub(Expression expr) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return MINUS_ONE.mult(expr);
         }
-        if (expr.equals(ZERO)){
+        if (expr.equals(ZERO)) {
             return this;
         }
         return new BinaryOperation(this, expr, TypeBinary.MINUS);
@@ -802,30 +802,30 @@ public abstract class Expression {
 
     //Folgende Funktionen dienen der Kürze halber.
     public Expression sub(BigDecimal a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(a.negate());
         }
-        if (a.equals(BigDecimal.ZERO)){
+        if (a.equals(BigDecimal.ZERO)) {
             return this;
         }
         return this.sub(new Constant(a));
     }
 
     public Expression sub(BigInteger a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(a.negate());
         }
-        if (a.equals(BigInteger.ZERO)){
+        if (a.equals(BigInteger.ZERO)) {
             return this;
         }
         return this.sub(new Constant(a));
     }
 
     public Expression sub(int a) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return new Constant(-a);
         }
-        if (a == 0){
+        if (a == 0) {
             return this;
         }
         return this.sub(new Constant(a));
@@ -835,13 +835,13 @@ public abstract class Expression {
      * Multipliziert zwei Ausdrücke.
      */
     public Expression mult(Expression expr) {
-        if (this.equals(ZERO) || expr.equals(ZERO)){
+        if (this.equals(ZERO) || expr.equals(ZERO)) {
             return ZERO;
         }
-        if (this.equals(Expression.ONE)){
+        if (this.equals(Expression.ONE)) {
             return expr;
         }
-        if (expr.equals(Expression.ONE)){
+        if (expr.equals(Expression.ONE)) {
             return this;
         }
         return new BinaryOperation(this, expr, TypeBinary.TIMES);
@@ -849,39 +849,39 @@ public abstract class Expression {
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression mult(BigDecimal n) {
-        if (this.equals(ZERO) || n.equals(BigDecimal.ZERO)){
+        if (this.equals(ZERO) || n.equals(BigDecimal.ZERO)) {
             return ZERO;
         }
-        if (this.equals(Expression.ONE)){
+        if (this.equals(Expression.ONE)) {
             return new Constant(n);
         }
-        if (n.equals(BigDecimal.ONE)){
+        if (n.equals(BigDecimal.ONE)) {
             return this;
         }
         return this.mult(new Constant(n));
     }
 
     public Expression mult(BigInteger n) {
-        if (this.equals(ZERO) || n.equals(BigInteger.ZERO)){
+        if (this.equals(ZERO) || n.equals(BigInteger.ZERO)) {
             return ZERO;
         }
-        if (this.equals(Expression.ONE)){
+        if (this.equals(Expression.ONE)) {
             return new Constant(n);
         }
-        if (n.equals(BigInteger.ONE)){
+        if (n.equals(BigInteger.ONE)) {
             return this;
         }
         return this.mult(new Constant(n));
     }
 
     public Expression mult(int n) {
-        if (this.equals(ZERO) || n == 0){
+        if (this.equals(ZERO) || n == 0) {
             return ZERO;
         }
-        if (this.equals(Expression.ONE)){
+        if (this.equals(Expression.ONE)) {
             return new Constant(n);
         }
-        if (n == 1){
+        if (n == 1) {
             return this;
         }
         return this.mult(new Constant(n));
@@ -891,10 +891,10 @@ public abstract class Expression {
      * Dividiert zwei Ausdrücke.
      */
     public Expression div(Expression expr) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return ZERO;
         }
-        if (expr.equals(Expression.ONE)){
+        if (expr.equals(Expression.ONE)) {
             return this;
         }
         return new BinaryOperation(this, expr, TypeBinary.DIV);
@@ -902,30 +902,30 @@ public abstract class Expression {
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression div(BigDecimal n) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return ZERO;
         }
-        if (n.equals(BigDecimal.ONE)){
+        if (n.equals(BigDecimal.ONE)) {
             return this;
         }
         return this.div(new Constant(n));
     }
 
     public Expression div(BigInteger n) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return ZERO;
         }
-        if (n.equals(BigInteger.ONE)){
+        if (n.equals(BigInteger.ONE)) {
             return this;
         }
         return this.div(new Constant(n));
     }
 
     public Expression div(int n) {
-        if (this.equals(ZERO)){
+        if (this.equals(ZERO)) {
             return ZERO;
         }
-        if (n == 1){
+        if (n == 1) {
             return this;
         }
         return this.div(new Constant(n));
@@ -935,10 +935,10 @@ public abstract class Expression {
      * Potenziert zwei Ausdrücke.
      */
     public Expression pow(Expression expr) {
-        if (expr.equals(ZERO)){
+        if (expr.equals(ZERO)) {
             return ONE;
         }
-        if (expr.equals(ONE)){
+        if (expr.equals(ONE)) {
             return this;
         }
         return new BinaryOperation(this, expr, TypeBinary.POW);
@@ -946,30 +946,30 @@ public abstract class Expression {
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression pow(BigDecimal n) {
-        if (n.equals(BigDecimal.ZERO)){
+        if (n.equals(BigDecimal.ZERO)) {
             return ONE;
         }
-        if (n.equals(BigDecimal.ONE)){
+        if (n.equals(BigDecimal.ONE)) {
             return this;
         }
         return this.pow(new Constant(n));
     }
 
     public Expression pow(BigInteger n) {
-        if (n.equals(BigInteger.ZERO)){
+        if (n.equals(BigInteger.ZERO)) {
             return ONE;
         }
-        if (n.equals(BigInteger.ONE)){
+        if (n.equals(BigInteger.ONE)) {
             return this;
         }
         return this.pow(new Constant(n));
     }
 
     public Expression pow(int n) {
-        if (n == 0){
+        if (n == 0) {
             return ONE;
         }
-        if (n == 1){
+        if (n == 1) {
             return this;
         }
         return this.pow(new Constant(n));
@@ -1342,38 +1342,19 @@ public abstract class Expression {
     public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Terme. 
+     * Standardvereinfachung allgemeiner Terme.
      *
      * @throws EvaluationException
      */
     public Expression simplify() throws EvaluationException {
 
         try {
-            Expression expr = this;
-
-            Expression exprSimplified = expr.orderDifferencesAndQuotients();
-            exprSimplified = exprSimplified.orderSumsAndProducts();
-            exprSimplified = exprSimplified.simplifyTrivial();
-//            System.out.println(exprSimplified.writeExpression());
-            exprSimplified = exprSimplified.simplifyPowers();
-            exprSimplified = exprSimplified.simplifyCollectProducts();
-            exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-            exprSimplified = exprSimplified.simplifyFactorizeInSums();
-            exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-            exprSimplified = exprSimplified.simplifyReduceQuotients();
-            exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-            exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-            exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-            if (this.containsFunction()) {
-                exprSimplified = exprSimplified.simplifyFunctionalRelations();
-                exprSimplified = exprSimplified.simplifyCollectLogarithms();
-            }
-
-            while (!expr.equals(exprSimplified)) {
+            Expression expr, exprSimplified = this;
+            do {
                 expr = exprSimplified.copy();
-
                 exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
+//                System.out.println(exprSimplified.writeExpression());
                 exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.simplifyPowers();
                 exprSimplified = exprSimplified.simplifyCollectProducts();
@@ -1388,25 +1369,7 @@ public abstract class Expression {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
-            }
-
-            /*
-             Nun kann nichts mehr gekürzt werden. Zum Schluss nur noch
-             triviale Umformungen vornehmen und Terme endgültig ordnen.
-             */
-            expr = exprSimplified.copy();
-            exprSimplified = exprSimplified.simplifyTrivial();
-            exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-            exprSimplified = exprSimplified.orderSumsAndProducts();
-
-            while (!expr.equals(exprSimplified)) {
-                expr = exprSimplified.copy();
-
-                exprSimplified = exprSimplified.simplifyTrivial();
-                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-                exprSimplified = exprSimplified.orderSumsAndProducts();
-            }
-
+            } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Expression_STACK_OVERFLOW"));
@@ -1424,78 +1387,9 @@ public abstract class Expression {
     public Expression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
 
         try {
-            Expression expr = this;
-            Expression exprSimplified = expr;
-
-            if (simplifyTypes.contains(TypeSimplify.order_difference_and_division)) {
-                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-            }
-            if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
-                exprSimplified = exprSimplified.orderSumsAndProducts();
-            }
-            if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                exprSimplified = exprSimplified.simplifyTrivial();
-            }
-            if (simplifyTypes.contains(TypeSimplify.expand)) {
-                exprSimplified = exprSimplified.simplifyExpand();
-            }
-            if (simplifyTypes.contains(TypeSimplify.expand_rational_factors)) {
-                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-            }
-            if (simplifyTypes.contains(TypeSimplify.simplify_powers)) {
-                exprSimplified = exprSimplified.simplifyPowers();
-            }
-            if (simplifyTypes.contains(TypeSimplify.multiply_powers)) {
-                exprSimplified = exprSimplified.simplifyMultiplyPowers();
-            }
-            if (simplifyTypes.contains(TypeSimplify.collect_products)) {
-                exprSimplified = exprSimplified.simplifyCollectProducts();
-            }
-            if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_sums)) {
-                exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
-            }
-            if (simplifyTypes.contains(TypeSimplify.factorize_in_sums)) {
-                exprSimplified = exprSimplified.simplifyFactorizeInSums();
-            }
-            if (simplifyTypes.contains(TypeSimplify.reduce_quotients)) {
-                exprSimplified = exprSimplified.simplifyReduceQuotients();
-            }
-            if (simplifyTypes.contains(TypeSimplify.factorize_all_but_rationals_in_differences)) {
-                exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-            }
-            if (simplifyTypes.contains(TypeSimplify.factorize_in_differences)) {
-                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-            }
-            if (simplifyTypes.contains(TypeSimplify.reduce_leadings_coefficients)) {
-                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-            }
-            if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
-                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-            }
-            if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
-                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-            }
-            if (this.containsFunction()) {
-                if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
-                    exprSimplified = exprSimplified.simplifyFunctionalRelations();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
-                    exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsByDefinitions();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
-                    exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_collect_logarithms)) {
-                    exprSimplified = exprSimplified.simplifyCollectLogarithms();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_expand_logarithms)) {
-                    exprSimplified = exprSimplified.simplifyExpandLogarithms();
-                }
-            }
-
-            while (!expr.equals(exprSimplified)) {
+            Expression expr, exprSimplified = this;
+            do {
                 expr = exprSimplified.copy();
-
                 if (simplifyTypes.contains(TypeSimplify.order_difference_and_division)) {
                     exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 }
@@ -1561,25 +1455,7 @@ public abstract class Expression {
                         exprSimplified = exprSimplified.simplifyExpandLogarithms();
                     }
                 }
-            }
-
-            /*
-             Nun kann nichts mehr gekürzt werden. Zum Schluss nur noch
-             triviale Umformungen vornehmen und Terme endgültig ordnen.
-             */
-            expr = exprSimplified.copy();
-            exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-            exprSimplified = exprSimplified.orderSumsAndProducts();
-            exprSimplified = exprSimplified.simplifyTrivial();
-
-            while (!expr.equals(exprSimplified)) {
-                expr = exprSimplified.copy();
-
-                exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-                exprSimplified = exprSimplified.orderSumsAndProducts();
-                exprSimplified = exprSimplified.simplifyTrivial();
-            }
-
+            } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Expression_STACK_OVERFLOW"));

@@ -244,4 +244,70 @@
     <Ukrainian>Інфо</Ukrainian>
     <Russian>Инфо</Russian>
   </object>
+  <object id = "GUI_OutputOptionsDialogGUI_OUTPUT_OPTIONS_TITLE">
+    <German>Ausgabeoptionen</German>
+    <English>Output options</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SAVE_BUTTON">
+    <German>Einstellungen speichern</German>
+    <English>Save options</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_CANCEL_BUTTON">
+    <German>Abbrechen</German>
+    <English>Cancel</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTIONS_GROUP_NAME">
+    <German>Optionen für die Vereinfachung eines Ausdrucks:</German>
+    <English>Options for simplifying an expression:</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND">
+    <German>Klammern ausmultiplizieren</German>
+    <English>Expand brackets</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND_AND_COLLECT_IF_SHORTER">
+    <German>Länge verkürzen</German>
+    <English>Shorten length</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_FACTORIZE">
+    <German>Faktorisieren</German>
+    <English>Factorize</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_SIMPLIFY_ALGEBRAIC_EXPRESSIONS">
+    <German>Algebraische Relationen verwenden</German>
+    <English>Use algebraic relations</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_SIMPLIFY_FUNCTIONAL_RELATIONS">
+    <German>Funktionalgleichungen verwenden</German>
+    <English>Use functional relations</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_COLLECT_LOGARITHMS">
+    <German>Logarithmen zusammenfassen</German>
+    <English>Collect logarithms</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND_LOGARITHMS">
+    <German>Logarithmen auseinanderziehen</German>
+    <English>Expand logarithms</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
 </objects>

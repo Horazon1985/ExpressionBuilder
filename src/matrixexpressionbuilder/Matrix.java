@@ -1,10 +1,12 @@
 package matrixexpressionbuilder;
 
 import exceptions.EvaluationException;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
+import java.math.BigDecimal;
 import java.util.HashSet;
 
 public class Matrix extends MatrixExpression {
@@ -42,6 +44,14 @@ public class Matrix extends MatrixExpression {
         this.entry[0][0] = entry;
     }
 
+    /**
+     * Konstruktor: erzeugt eine (1x1)-Matrix aus mit einem Eintrag = a.
+     */
+    public Matrix(BigDecimal a) {
+        this.entry = new Expression[1][1];
+        this.entry[0][0] = new Constant(a);
+    }
+    
     public int getRowNumber() {
         return this.entry.length;
     }
@@ -627,6 +637,11 @@ public class Matrix extends MatrixExpression {
 
     }
 
+    @Override
+    public MatrixExpression simplifyTrivial(){
+        return this;
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 

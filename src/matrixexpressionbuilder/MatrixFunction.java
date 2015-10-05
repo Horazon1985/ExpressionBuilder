@@ -101,7 +101,7 @@ public class MatrixFunction extends MatrixExpression {
     public MatrixExpression orderDifferences() throws EvaluationException {
         return new MatrixFunction(this.left.orderDifferences(), this.type);
     }
-    
+
     @Override
     public boolean isConstant() {
         return this.left.isConstant();
@@ -747,21 +747,23 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression simplifyTrivial() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyTrivial(), this.type);
+    }
+
+    @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
-        MatrixExpression leftSimplified = this.left.simplifyMatrixEntries();
-        return new MatrixFunction(leftSimplified, this.type);
+        return new MatrixFunction(this.left.simplifyMatrixEntries(), this.type);
     }
 
     @Override
     public MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
-        MatrixExpression leftSimplified = this.left.simplifyMatrixEntries(simplifyTypes);
-        return new MatrixFunction(leftSimplified, this.type);
+        return new MatrixFunction(this.left.simplifyMatrixEntries(simplifyTypes), this.type);
     }
 
     @Override
     public MatrixExpression collectProducts() throws EvaluationException {
-        MatrixExpression leftSimplified = this.left.collectProducts();
-        return new MatrixFunction(leftSimplified, this.type);
+        return new MatrixFunction(this.left.collectProducts(), this.type);
     }
 
     @Override

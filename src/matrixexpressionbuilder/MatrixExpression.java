@@ -1,9 +1,9 @@
 package matrixexpressionbuilder;
 
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
 import exceptions.ExpressionException;
+import expressionbuilder.Constant;
+import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigInteger;
@@ -602,6 +602,11 @@ public abstract class MatrixExpression {
     }
 
     /**
+     * Triviale Vereinfachungen für Matrizenausdrücke.
+     */
+    public abstract MatrixExpression simplifyTrivial() throws EvaluationException;
+    
+    /**
      * Hier wird die Methode simplify() aus der Klasse
      * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
      * angewendet.
@@ -645,62 +650,18 @@ public abstract class MatrixExpression {
     public MatrixExpression simplify() throws EvaluationException {
 
         try {
+            MatrixExpression matExpr, matExprSimplified = this;
 
-            MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.orderDifferences();
-            matExprSimplified = matExprSimplified.orderSumsAndProducts();
-            matExprSimplified = matExprSimplified.simplifyMatrixEntries();
-            matExprSimplified = matExprSimplified.collectProducts();
-            matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
-            matExprSimplified = matExprSimplified.computeMatrixOperations();
-
-            while (!matExpr.equals(matExprSimplified)) {
+            do {
                 matExpr = matExprSimplified.copy();
                 matExprSimplified = matExprSimplified.orderDifferences();
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                matExprSimplified = matExprSimplified.simplifyTrivial();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.collectProducts();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
                 matExprSimplified = matExprSimplified.computeMatrixOperations();
-            }
-
-            return matExprSimplified;
-
-        } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MEB_Expression_STACK_OVERFLOW"));
-        }
-
-    }
-
-    /**
-     * Spezielle Vereinfachung allgemeiner Matrizenausdrücke. Es wird solange
-     * iteriert, bis sich nichts mehr ändert -> Der Ausdruck ist dann
-     * weitestgehend vereinfacht.
-     *
-     * @throws EvaluationException
-     */
-    public MatrixExpression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
-
-        // TO DO.
-        try {
-
-            MatrixExpression matExpr = this;
-            MatrixExpression matExprSimplified = matExpr.orderDifferences();
-            matExprSimplified = matExprSimplified.orderSumsAndProducts();
-            matExprSimplified = matExprSimplified.simplifyMatrixEntries();
-            matExprSimplified = matExprSimplified.collectProducts();
-            matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
-            matExprSimplified = matExprSimplified.computeMatrixOperations();
-
-            while (!matExpr.equals(matExprSimplified)) {
-                matExpr = matExprSimplified.copy();
-                matExprSimplified = matExprSimplified.orderDifferences();
-                matExprSimplified = matExprSimplified.orderSumsAndProducts();
-                matExprSimplified = matExprSimplified.simplifyMatrixEntries();
-                matExprSimplified = matExprSimplified.collectProducts();
-                matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
-                matExprSimplified = matExprSimplified.computeMatrixOperations();
-            }
+            } while (!matExpr.equals(matExprSimplified));
 
             return matExprSimplified;
 

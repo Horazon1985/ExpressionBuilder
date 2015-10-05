@@ -1,12 +1,10 @@
 package matrixsimplifymethods;
 
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import java.awt.Dimension;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
@@ -38,18 +36,18 @@ public abstract class SimplifyMatrixFunctionalRelations {
         if (MatExpr.isMatrixFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((MatrixFunction) MatExpr).getLeft();
-            result[1] = BigDecimal.ONE;
+            result[1] = Expression.ONE;
             return result;
         }
 
         // expr ist von der Form a*f(x).
         if (MatExpr.isProduct()
                 && ((MatrixBinaryOperation) MatExpr).getLeft() instanceof Matrix
-                && ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Constant
+                && ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression
                 && ((MatrixBinaryOperation) MatExpr).getRight().isMatrixFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((MatrixFunction) ((MatrixBinaryOperation) MatExpr).getRight()).getLeft();
-            result[1] = ((Constant) ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression()).getValue();
+            result[1] = (Expression) ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression();
             return result;
         }
 
@@ -74,18 +72,18 @@ public abstract class SimplifyMatrixFunctionalRelations {
                 && ((MatrixPower) matExpr).getLeft().isMatrixFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((MatrixFunction) ((MatrixPower) matExpr).getLeft()).getLeft();
-            result[1] = BigDecimal.ONE;
+            result[1] = Expression.ONE;
             return result;
         }
 
         // expr ist von der Form a*f(A)^2.
-        if (matExpr.isProduct() && ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Constant
+        if (matExpr.isProduct() && ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression
                 && ((MatrixBinaryOperation) matExpr).getRight().isPower()
                 && ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getRight().equals(Expression.TWO)
                 && ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getLeft().isMatrixFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((MatrixFunction) ((MatrixPower) ((MatrixBinaryOperation) matExpr).getRight()).getLeft()).getLeft();
-            result[1] = ((Constant) ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression()).getValue();
+            result[1] = (Expression) ((MatrixBinaryOperation) matExpr).getLeft().convertOneTimesOneMatrixToExpression();
             return result;
         }
 
@@ -127,10 +125,10 @@ public abstract class SimplifyMatrixFunctionalRelations {
                 }
 
                 if (((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])
-                        && ((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+                        && ((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
                     try {
                         dim = ((MatrixExpression) isFirstSummandSuitable[0]).getDimension();
-                        summands.put(i, new Matrix(new Constant((BigDecimal) isFirstSummandSuitable[1])).mult(MatrixExpression.getId(dim.height)));
+                        summands.put(i, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.getId(dim.height)));
                         summands.remove(j);
                         break;
                     } catch (EvaluationException e) {
@@ -163,15 +161,146 @@ public abstract class SimplifyMatrixFunctionalRelations {
                 }
 
                 if (((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])
-                        && ((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+                        && ((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
                     try {
                         dim = ((MatrixExpression) isFirstSummandSuitable[0]).getDimension();
-                        summands.put(i, new Matrix(new Constant((BigDecimal) isFirstSummandSuitable[1])).mult(MatrixExpression.getId(dim.height)));
+                        summands.put(i, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.getId(dim.height)));
                         summands.remove(j);
                         break;
                     } catch (EvaluationException e) {
                     }
                     break;
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Falls in matExpr der Ausdruck cosh(A)^2 - sinh(A)^2 auftaucht -> zu E
+     * vereinfachen. Falls in matExpr sinh(A)^2 - cosh(A)^2 auftaucht -> zu -E
+     * vereinfachen.<br>
+     * Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu 1+x+y+z.
+     */
+    public static void reduceDifferenceOfSquaresOfHypSineAndHypCosine(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) throws EvaluationException {
+
+        Dimension dim;
+        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+
+        // Fall: sinh(x)^2 steht VOR cosh(x)^2
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfSquareOfMatrixFunction(summandsLeft.get(i), TypeMatrixFunction.sinh);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfSquareOfMatrixFunction(summandsRight.get(j), TypeMatrixFunction.cosh);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+                        && ((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])) {
+
+                    if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
+                        dim = summandsLeft.get(i).getDimension();
+                        summandsRight.put(j, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.getId(dim.height)));
+                        summandsLeft.remove(i);
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
+
+        // Fall: cosh(x)^2 steht VOR sinh(x)^2
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfSquareOfMatrixFunction(summandsLeft.get(i), TypeMatrixFunction.cosh);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfSquareOfMatrixFunction(summandsRight.get(j), TypeMatrixFunction.sinh);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+                        && ((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])) {
+
+                    if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
+                        dim = summandsLeft.get(i).getDimension();
+                        summandsLeft.put(i, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.getId(dim.height)));
+                        summandsRight.remove(j);
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Fasst in einer Summe sinh(A) und cosh(A) zu exp(A) zusammen.
+     */
+    public static void sumOfSinhAndCoshToExp(MatrixExpressionCollection summands) {
+
+        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfMatrixFunction(summands.get(i), TypeMatrixFunction.sinh);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = 0; j < summands.getBound(); j++) {
+
+                if (i == j || summands.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfMatrixFunction(summands.get(j), TypeMatrixFunction.cosh);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+                        && ((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])) {
+
+                    if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
+                        summands.put(Math.min(i, j), new Matrix((Expression) isFirstSummandSuitable[1]).mult(((MatrixExpression) isFirstSummandSuitable[0]).exp()));
+                        summands.remove(Math.max(i, j));
+                        break;
+                    }
+
                 }
 
             }

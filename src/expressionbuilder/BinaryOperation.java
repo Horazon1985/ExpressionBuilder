@@ -2045,7 +2045,8 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
-            SimplifyFunctionalRelations.reduceCoshMinusSinhToOne(summandsLeft, summandsRight);
+            //cosh(x) - sinh(x) = exp(-x) bzw. sinh(x) - cosh(x) = -exp(-x)
+            SimplifyFunctionalRelations.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
             //cosh(x)^2 - sinh(x)^2 = 1 bzw. sinh(x)^2 - cosh(x)^2 = -1
             SimplifyFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
             //1 - tanh(x)^2 = sech(x)^2 bzw. tanh(x)^2 - 1 = -sech(x)^2

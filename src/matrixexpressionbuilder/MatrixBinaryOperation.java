@@ -1,7 +1,7 @@
 package matrixexpressionbuilder;
 
-import expressionbuilder.BinaryOperation;
 import exceptions.EvaluationException;
+import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeBinary;
@@ -404,6 +404,38 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression simplifyTrivial() throws EvaluationException {
+
+        if (this.isSum()) {
+
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+            // In jedem Summanden einzeln vereinfachen.
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyTrivial());
+            }
+
+            return SimplifyMatrixUtilities.produceSum(summands);
+
+        }
+        if (this.isProduct()) {
+            
+            MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
+            // In jedem Faktor einzeln vereinfachen.
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyTrivial());
+            }
+
+            SimplifyMatrixBinaryOperationMethods.reduceZeroProductToZero(factors);
+            SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
+            
+            return SimplifyMatrixUtilities.produceProduct(factors);
+            
+        }
+
+        return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
+    }
+    
+    @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
         return new MatrixBinaryOperation(this.left.simplifyMatrixEntries(), this.right.simplifyMatrixEntries(), this.type);
     }
@@ -457,11 +489,32 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 summands.put(i, summands.get(i).simplifyMatrixFunctionalRelations());
             }
 
-            //cos(x)^2 + sin(x)^2 = 1
+            // cos(A)^2 + sin(A)^2 = E
             SimplifyMatrixFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);
+            // cosh(A) + sinh(A) = exp(A)
+            SimplifyMatrixFunctionalRelations.sumOfSinhAndCoshToExp(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
+        }
+        if (this.isDifference()) {
+            
+            // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
+            MatrixExpression simplifiedDifference = this.left.simplifyMatrixFunctionalRelations().sub(this.right.simplifyMatrixFunctionalRelations());
+            if (!(simplifiedDifference instanceof MatrixBinaryOperation)) {
+                return simplifiedDifference;
+            }
+            
+            MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(simplifiedDifference);
+            MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(simplifiedDifference);
+
+            // cosh(A) - sinh(A) = exp(-A) bzw. sinh(A) - cosh(A) = -exp(-A)
+//            SimplifyMatrixFunctionalRelations.reduceCoshMinusSinhToOne(summandsLeft, summandsRight);
+            // cosh(A)^2 - sinh(A)^2 = E bzw. sinh(A)^2 - cosh(A)^2 = -E
+            SimplifyMatrixFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
+            
+            return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
+            
         }
 
         return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);

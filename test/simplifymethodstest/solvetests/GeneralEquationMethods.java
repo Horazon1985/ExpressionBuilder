@@ -1,9 +1,9 @@
 package simplifymethodstest.solvetests;
 
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
 import exceptions.ExpressionException;
+import expressionbuilder.Constant;
+import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import org.junit.AfterClass;
@@ -40,6 +40,21 @@ public class GeneralEquationMethods {
             Expression zeroTwo = Expression.build("-(7+ln(2/5))^(1/4)", null);
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("Die Gleichung konnte werden.");
+        }
+    }
+
+    @Test
+    public void solveZeroQuotientTest() {
+        try {
+            // Test: f = (x^2+5*x-14)/(x-2) = 0. Die Lösung ist -7. Die Nullstelle 2 des Nenners wird aussortiert.
+            Expression f = Expression.build("(x^2+5*x-14)/(x-2)", null);
+            SolveMethods.setSolveTries(100);
+            ExpressionCollection zeros = SolveMethods.solveGeneralEquation(f, Expression.ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            Expression zeroOne = new Constant(-7);
+            assertTrue(zeros.contains(zeroOne));
         } catch (ExpressionException | EvaluationException e) {
             fail("Die Gleichung konnte werden.");
         }

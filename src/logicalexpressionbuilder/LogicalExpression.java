@@ -257,46 +257,46 @@ public abstract class LogicalExpression {
      * Es folgen Methoden zur Ermittlung, ob der zugrundeliegende Ausdruck eine
      * Instanz einer speziellen Unterklasse von Expression ist.
      */
-    public boolean isNeg(){
+    public boolean isNeg() {
         return this instanceof LogicalUnaryOperation && ((LogicalUnaryOperation) this).getType().equals(TypeLogicalUnary.NEGATION);
     }
-    
-    public boolean isAnd(){
+
+    public boolean isAnd() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.AND);
     }
-    
-    public boolean isOr(){
+
+    public boolean isOr() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.OR);
     }
-    
-    public boolean isImpl(){
+
+    public boolean isImpl() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.IMPLICATION);
     }
-    
-    public boolean isEquiv(){
+
+    public boolean isEquiv() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.EQUIVALENCE);
     }
-    
-    public boolean isNotNeg(){
+
+    public boolean isNotNeg() {
         return !(this instanceof LogicalUnaryOperation && ((LogicalUnaryOperation) this).getType().equals(TypeLogicalUnary.NEGATION));
     }
-    
-    public boolean isNotAnd(){
+
+    public boolean isNotAnd() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.AND));
     }
-    
-    public boolean isNotOr(){
+
+    public boolean isNotOr() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.OR));
     }
-    
-    public boolean isNotImpl(){
+
+    public boolean isNotImpl() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.IMPLICATION));
     }
-    
-    public boolean isNotEquiv(){
+
+    public boolean isNotEquiv() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.EQUIVALENCE));
     }
-    
+
     /**
      * Gibt eine Kopie des vorliegenden logischen Ausdrucks zurück.
      */
@@ -344,10 +344,10 @@ public abstract class LogicalExpression {
     public abstract String writeLogicalExpression();
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.writeLogicalExpression();
     }
-    
+
     /**
      * Liefert einen vereinfachten logischen Ausdruck des vorliegenden logischen
      * Ausdrucks mittels einfacher Vereinfachungsoperationen.
@@ -539,33 +539,14 @@ public abstract class LogicalExpression {
     public LogicalExpression simplify() throws EvaluationException {
 
         try {
-            LogicalExpression logExpr = this;
-
-            LogicalExpression logExprSimplified = logExpr.simplifyTrivial();
-//            System.out.println(logExprSimplified.writeLogicalExpression());
-            logExprSimplified = logExprSimplified.factorizeInProducts();
-            logExprSimplified = logExprSimplified.factorizeInSums();
-
-            while (!logExpr.equals(logExprSimplified)) {
+            LogicalExpression logExpr, logExprSimplified = this;
+            do {
                 logExpr = logExprSimplified.copy();
+//                System.out.println(logExprSimplified.writeLogicalExpression());
                 logExprSimplified = logExprSimplified.simplifyTrivial();
                 logExprSimplified = logExprSimplified.factorizeInProducts();
                 logExprSimplified = logExprSimplified.factorizeInSums();
-            }
-
-            /*
-             Nun kann nichts Wesentliches mehr vereinfacht werden. Zum Schluss
-             nur noch triviale Umformungen vornehmen und Terme endgültig
-             ordnen.
-             */
-            logExpr = logExprSimplified.copy();
-            logExprSimplified = logExprSimplified.simplifyTrivial();
-
-            while (!logExpr.equals(logExprSimplified)) {
-                logExpr = logExprSimplified.copy();
-                logExprSimplified = logExprSimplified.simplifyTrivial();
-            }
-
+            } while (!logExpr.equals(logExprSimplified));
             return logExprSimplified;
         } catch (java.lang.StackOverflowError e) {
             throw new EvaluationException(Translator.translateExceptionMessage("LEB_LogicalExpression_STACK_OVERFLOW"));

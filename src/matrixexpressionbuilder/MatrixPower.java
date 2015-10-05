@@ -1,9 +1,9 @@
 package matrixexpressionbuilder;
 
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;
@@ -311,6 +311,11 @@ public class MatrixPower extends MatrixExpression {
 
     }
 
+    @Override
+    public MatrixExpression simplifyTrivial(){
+        return this.simplifyTrivial().pow(this.right);
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
         return new MatrixPower(this.left.simplifyMatrixEntries(), this.right.simplify());

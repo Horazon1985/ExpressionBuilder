@@ -87,6 +87,35 @@ public abstract class SimplifyMatrixUtilities {
     }
 
     /**
+     * Liefert Summanden im Minuenden eines Ausdrucks. VORAUSSETZUNG: Der
+     * Ausdruck muss in folgender Form sein, falls in diesem Differenzen
+     * auftauchen: (...) - (...). Verboten sind also Ausdrücke wie a-(b-c) etc.
+     * Ist expr keine Differenz, so wird expr als Minuend angesehen.<br>
+     * BEISPIEL: (a+b^2+exp(x)) - (u+v) liefert die Summanden {a, b^2, exp(x)}
+     * (als ExpressionCollection, nummeriert via 0, 1, 2).
+     */
+    public static MatrixExpressionCollection getSummandsLeftInMatrixExpression(MatrixExpression expr) {
+        if (expr.isDifference()) {
+            return getSummands(((MatrixBinaryOperation) expr).getLeft());
+        }
+        return getSummands(expr);
+    }
+
+    /**
+     * Liefert Summanden im Subtrahenden eines Ausdrucks. VORAUSSETZUNG: Der
+     * Ausdruck muss in folgender Form sein, falls in diesem Differenzen
+     * auftauchen: (...) - (...). Verboten sind also Ausdrücke wie a-(b-c) etc.
+     * Ist expr keine Differenz, so wird expr als Minuend angesehen.<br>
+     * WICHTIG: Das Ergebnis kann auch leer sein!
+     */
+    public static MatrixExpressionCollection getSummandsRightInMatrixExpression(MatrixExpression expr) {
+        if (expr.isDifference()) {
+            return getSummands(((MatrixBinaryOperation) expr).getRight());
+        }
+        return new MatrixExpressionCollection();
+    }
+
+    /**
      * Fügt der MatrixExpressionCollection factors alle Faktoren (in der
      * richtigen Reihenfolge!) von matExpr hinzu, falls man expr als Produkt
      * auffasst. Die Keys sind 0, 1, 2, ..., size - 1.
@@ -122,7 +151,7 @@ public abstract class SimplifyMatrixUtilities {
 
         MatrixExpression result = new Matrix(Expression.ZERO);
         for (int i = summands.getBound() - 1; i >= 0; i--) {
-            if (summands.get(i) == null){
+            if (summands.get(i) == null) {
                 continue;
             }
             if (result.equals(new Matrix(Expression.ZERO))) {
@@ -152,7 +181,7 @@ public abstract class SimplifyMatrixUtilities {
         return produceSum(summandsLeft).sub(produceSum(summandsRight));
 
     }
-    
+
     /**
      * Bildet das Produkt aus allen Termen von factors
      */
@@ -164,7 +193,7 @@ public abstract class SimplifyMatrixUtilities {
 
         MatrixExpression result = new Matrix(Expression.ONE);
         for (int i = factors.getBound() - 1; i >= 0; i--) {
-            if (factors.get(i) == null){
+            if (factors.get(i) == null) {
                 continue;
             }
             if (result.equals(new Matrix(Expression.ONE))) {
@@ -275,7 +304,7 @@ public abstract class SimplifyMatrixUtilities {
         }
 
     }
-    
+
     /**
      * Hilfsprozeduren für das Sortieren von Summen/Differenzen und
      * Produkten/Quotienten
@@ -296,5 +325,5 @@ public abstract class SimplifyMatrixUtilities {
         }
 
     }
-    
+
 }

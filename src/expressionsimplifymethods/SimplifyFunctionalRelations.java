@@ -1,8 +1,8 @@
 package expressionsimplifymethods;
 
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -248,9 +248,9 @@ public abstract class SimplifyFunctionalRelations {
 
     /**
      * Falls in expr der Ausdruck cosh(x)^2 - sinh(x)^2 auftaucht -> zu 1
-     * vereinfachen. Falls in expr sinh(x^2) - cosh(x)^2 auftaucht -> zu -1
-     * vereinfachen. Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu
-     * 1+x+y+z
+     * vereinfachen. Falls in expr sinh(x)^2 - cosh(x)^2 auftaucht -> zu -1
+     * vereinfachen.<br> 
+     * Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */
     public static void reduceDifferenceOfSquaresOfHypSineAndHypCosine(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) throws EvaluationException {
 
@@ -282,15 +282,15 @@ public abstract class SimplifyFunctionalRelations {
 
                     if (isFirstSummandSuitable.length == 2) {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsLeft.remove(i);
                             summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]));
+                            summandsLeft.remove(i);
                             break;
                         }
                     } else {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
                                 && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsLeft.remove(i);
                             summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
+                            summandsLeft.remove(i);
                             break;
                         }
                     }
@@ -588,7 +588,6 @@ public abstract class SimplifyFunctionalRelations {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
 
-        // Fall: F(x) steht VOR G(x)
         for (int i = 0; i < summands.getBound(); i++) {
 
             if (summands.get(i) == null) {
@@ -599,9 +598,9 @@ public abstract class SimplifyFunctionalRelations {
                 continue;
             }
 
-            for (int j = i + 1; j < summands.getBound(); j++) {
+            for (int j = 0; j < summands.getBound(); j++) {
 
-                if (summands.get(j) == null) {
+                if (i == j || summands.get(j) == null) {
                     continue;
                 }
                 isSecondSummandSuitable = isMultipleOfFunction(summands.get(j), secondType);
@@ -614,60 +613,15 @@ public abstract class SimplifyFunctionalRelations {
 
                     if (isFirstSummandSuitable.length == 2) {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
-                            summands.remove(j);
+                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
+                            summands.remove(Math.max(i, j));
                             break;
                         }
                     } else {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
                                 && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summands.remove(j);
-                            break;
-                        }
-                    }
-
-                }
-
-            }
-
-        }
-
-        // Fall: G(x) steht VOR F(x)
-        for (int i = 0; i < summands.getBound(); i++) {
-
-            if (summands.get(i) == null) {
-                continue;
-            }
-            isFirstSummandSuitable = isMultipleOfFunction(summands.get(i), secondType);
-            if (isFirstSummandSuitable.length == 1) {
-                continue;
-            }
-
-            for (int j = i + 1; j < summands.getBound(); j++) {
-
-                if (summands.get(j) == null) {
-                    continue;
-                }
-                isSecondSummandSuitable = isMultipleOfFunction(summands.get(j), firstType);
-                if (isSecondSummandSuitable.length == 1) {
-                    continue;
-                }
-
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
-                            summands.remove(j);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summands.remove(j);
+                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
+                            summands.remove(Math.max(i, j));
                             break;
                         }
                     }
@@ -806,7 +760,7 @@ public abstract class SimplifyFunctionalRelations {
     /**
      * Fasst cosh(x) - sinh(x) zu exp(-x) zusammen.
      */
-    public static void reduceCoshMinusSinhToOne(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
+    public static void reduceCoshMinusSinhToExp(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
 
@@ -881,16 +835,16 @@ public abstract class SimplifyFunctionalRelations {
 
                     if (isFirstSummandSuitable.length == 2) {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsLeft.remove(i);
                             summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)));
+                            summandsLeft.remove(i);
                             break;
                         }
                     } else {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
                                 && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsLeft.remove(i);
                             summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(
                                     Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)).div((BigDecimal) isFirstSummandSuitable[2]));
+                            summandsLeft.remove(i);
                             break;
                         }
                     }
