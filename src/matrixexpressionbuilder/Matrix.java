@@ -51,7 +51,7 @@ public class Matrix extends MatrixExpression {
         this.entry = new Expression[1][1];
         this.entry[0][0] = new Constant(a);
     }
-    
+
     public int getRowNumber() {
         return this.entry.length;
     }
@@ -638,10 +638,10 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial(){
+    public MatrixExpression simplifyTrivial() {
         return this;
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 
@@ -669,7 +669,12 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression collectProducts() {
+    public MatrixExpression simplifyCollectProducts() {
+        return this;
+    }
+
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
         return this;
     }
 

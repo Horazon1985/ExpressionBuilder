@@ -458,18 +458,18 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression collectProducts() throws EvaluationException {
+    public MatrixExpression simplifyCollectProducts() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln Faktoren sammeln.
             MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).collectProducts());
+                summands.put(i, summands.get(i).simplifyCollectProducts());
             }
             return SimplifyMatrixUtilities.produceSum(summands);
         } else if (this.isDifference()) {
             // Im linken und rechten Teil einzeln Faktoren sammeln.
-            return new MatrixBinaryOperation(this.left.collectProducts(), this.right.collectProducts(), this.type);
+            return new MatrixBinaryOperation(this.left.simplifyCollectProducts(), this.right.simplifyCollectProducts(), this.type);
         }
 
         MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
@@ -477,7 +477,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Zunächst in jedem Faktor einzeln Faktoren sammeln.
         for (int i = 0; i < factors.getBound(); i++) {
-            factors.put(i, factors.get(i).collectProducts());
+            factors.put(i, factors.get(i).simplifyCollectProducts());
         }
 
         SimplifyMatrixUtilities.collectFactorsInMatrixProduct(factors);
@@ -485,6 +485,29 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
     }
 
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
+        
+        if (this.isNotSum()) {
+            // Im linken und rechten Teil einzeln skalare Faktoren faktorisieren.
+            return new MatrixBinaryOperation(this.left.simplifyFactorizeScalarsInSums(), this.right.simplifyFactorizeScalarsInSums(), this.type);
+        } else {
+            
+            // In jedem Summanden einzeln Faktoren sammeln.
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyCollectProducts());
+            }
+            
+            // Skalare Faktoren faktorisieren.
+            SimplifyMatrixBinaryOperationMethods.factorizeScalarsInSum(summands);
+            // Nichtskalare Faktoren faktorisieren (TO DO).
+            
+            return SimplifyMatrixUtilities.produceSum(summands);
+        }
+        
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 

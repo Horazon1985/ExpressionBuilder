@@ -327,8 +327,13 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression collectProducts() throws EvaluationException {
-        return new MatrixPower(this.left.collectProducts(), this.right.simplifyCollectProducts());
+    public MatrixExpression simplifyCollectProducts() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyCollectProducts(), this.right.simplifyCollectProducts());
+    }
+    
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyFactorizeScalarsInSums(), this.right.simplifyFactorizeInSums());
     }
 
     @Override

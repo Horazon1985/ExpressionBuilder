@@ -647,8 +647,15 @@ public abstract class MatrixExpression {
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression collectProducts() throws EvaluationException;
+    public abstract MatrixExpression simplifyCollectProducts() throws EvaluationException;
 
+    /**
+     * Sammelt eineiner Summe Skalarfaktoren.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException;
+    
     /**
      * Hier wird die Methode simplify() aus der Klasse
      * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
@@ -676,7 +683,8 @@ public abstract class MatrixExpression {
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 matExprSimplified = matExprSimplified.simplifyTrivial();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
-                matExprSimplified = matExprSimplified.collectProducts();
+                matExprSimplified = matExprSimplified.simplifyCollectProducts();
+                matExprSimplified = matExprSimplified.simplifyFactorizeScalarsInSums();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
                 matExprSimplified = matExprSimplified.computeMatrixOperations();
             } while (!matExpr.equals(matExprSimplified));

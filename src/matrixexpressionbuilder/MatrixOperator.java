@@ -1202,11 +1202,13 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression collectProducts() throws EvaluationException {
+    public MatrixExpression simplifyCollectProducts() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
-                resultParams[i] = ((MatrixExpression) this.params[i]).collectProducts();
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyCollectProducts();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyCollectProducts();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1215,11 +1217,28 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeScalarsInSums();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyMatrixFunctionalRelations();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyFunctionalRelations();
             } else {
                 resultParams[i] = this.params[i];
             }

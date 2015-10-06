@@ -762,10 +762,15 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression collectProducts() throws EvaluationException {
-        return new MatrixFunction(this.left.collectProducts(), this.type);
+    public MatrixExpression simplifyCollectProducts() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyCollectProducts(), this.type);
     }
 
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyFactorizeScalarsInSums(), this.type);
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 

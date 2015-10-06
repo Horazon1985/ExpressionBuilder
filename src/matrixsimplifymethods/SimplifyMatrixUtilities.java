@@ -63,6 +63,30 @@ public abstract class SimplifyMatrixUtilities {
     }
 
     /**
+     * Liefert den Durchschnitt von termsLeft und termsRight (mit Vielfachheiten
+     * gezählt!).
+     */
+    public static MatrixExpressionCollection intersection(MatrixExpressionCollection matTermsLeft, MatrixExpressionCollection matTermsRight) {
+
+        MatrixExpressionCollection termsLeftCopy = MatrixExpressionCollection.copy(matTermsLeft);
+        MatrixExpressionCollection termsRightCopy = MatrixExpressionCollection.copy(matTermsRight);
+        MatrixExpressionCollection result = new MatrixExpressionCollection();
+
+        for (int i = 0; i < matTermsLeft.getBound(); i++) {
+            for (int j = 0; j < matTermsRight.getBound(); j++) {
+                if (termsLeftCopy.get(i) != null && termsRightCopy.get(j) != null && termsLeftCopy.get(i).equivalent(termsRightCopy.get(j))) {
+                    result.add(termsLeftCopy.get(i));
+                    termsLeftCopy.remove(i);
+                    termsRightCopy.remove(j);
+                }
+            }
+        }
+
+        return result;
+
+    }
+    
+    /**
      * Fügt der MatrixExpressionCollection summands alle Summanden von matExpr
      * hinzu, falls man matExpr als Summe auffasst. Die Keys sind 0, 1, 2, ...,
      * size - 1.
