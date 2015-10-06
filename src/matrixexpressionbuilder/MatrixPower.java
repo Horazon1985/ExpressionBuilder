@@ -254,7 +254,7 @@ public class MatrixPower extends MatrixExpression {
     public MatrixExpression orderDifferences() throws EvaluationException {
         return new MatrixPower(this.left.orderDifferences(), this.right.orderDifferencesAndQuotients());
     }
-    
+
     @Override
     public boolean isConstant() {
         return this.left.isConstant() && this.right.isConstant();
@@ -312,10 +312,10 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial(){
-        return this.simplifyTrivial().pow(this.right);
+    public MatrixExpression simplifyTrivial() throws EvaluationException {
+        return this.left.simplifyTrivial().pow(this.right);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
         return new MatrixPower(this.left.simplifyMatrixEntries(), this.right.simplify());

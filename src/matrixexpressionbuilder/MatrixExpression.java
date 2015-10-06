@@ -352,18 +352,18 @@ public abstract class MatrixExpression {
 
     public boolean isZeroMatrix() {
 
-        boolean result = this instanceof Matrix;
-
-        if (!result) {
+        if (!(this instanceof Matrix)) {
             return false;
         }
 
         for (int i = 0; i < ((Matrix) this).getRowNumber(); i++) {
             for (int j = 0; j < ((Matrix) this).getColumnNumber(); j++) {
-                result = result && ((Matrix) this).getEntry(i, j).equals(Expression.ZERO);
+                if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)){
+                    return false;
+                }
             }
         }
-        return result;
+        return true;
 
     }
 
@@ -397,6 +397,24 @@ public abstract class MatrixExpression {
 
     }
 
+    /**
+     * Gibt zurück, ob der vorliegende Matrizenausdruck ein Vielfaches einer Einheitsmatrix ist.
+     */
+    public boolean isMultipleOfId() {
+
+        if (!(this instanceof Matrix && ((Matrix) this).isDiagonalMatrix())) {
+            return false;
+        }
+
+        for (int i = 0; i < ((Matrix) this).getRowNumber(); i++) {
+            if (!((Matrix) this).getEntry(0, 0).equivalent(((Matrix) this).getEntry(i, i))){
+                return false;
+            }
+        }
+        return true;
+
+    }
+    
     /**
      * Es folgen Methoden zur Ermittlung, ob der zugrundeliegende Ausdruck eine
      * Instanz einer speziellen Unterklasse von Expression mit speziellem Typ

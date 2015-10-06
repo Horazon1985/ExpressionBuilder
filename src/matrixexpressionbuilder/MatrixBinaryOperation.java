@@ -9,6 +9,7 @@ import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import matrixsimplifymethods.MatrixExpressionCollection;
+import matrixsimplifymethods.SimplifyMatrixBinaryOperationMethods;
 import matrixsimplifymethods.SimplifyMatrixFunctionalRelations;
 import matrixsimplifymethods.SimplifyMatrixUtilities;
 import translator.Translator;
@@ -414,6 +415,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 summands.put(i, summands.get(i).simplifyTrivial());
             }
 
+            // Nullmatrizen in Summen beseitigen.
+            SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
+            
             return SimplifyMatrixUtilities.produceSum(summands);
 
         }
@@ -425,7 +429,15 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 factors.put(i, factors.get(i).simplifyTrivial());
             }
 
+            MatrixExpression matExpr = SimplifyMatrixUtilities.produceProduct(factors);
+            // Falls Vielfache von Id in Produkten auftauchen, dann als 1x1-Faktor nach vorne ziehen.
+            matExpr = SimplifyMatrixBinaryOperationMethods.factorizeMultiplesOfId(matExpr);
+
+            factors = SimplifyMatrixUtilities.getFactors(matExpr);
+            
+            // Falls Nullmatrizen in Produkten auftauchen, dann nur Nullmatrix zurückgeben.
             SimplifyMatrixBinaryOperationMethods.reduceZeroProductToZero(factors);
+            // Identitätsmatrizen in Produkten beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
             
             return SimplifyMatrixUtilities.produceProduct(factors);
