@@ -504,7 +504,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             // cos(A)^2 + sin(A)^2 = E
             SimplifyMatrixFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);
             // cosh(A) + sinh(A) = exp(A)
-            SimplifyMatrixFunctionalRelations.sumOfSinhAndCoshToExp(summands);
+            SimplifyMatrixFunctionalRelations.reduceSinhPlusCoshToExp(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
@@ -521,7 +521,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(simplifiedDifference);
 
             // cosh(A) - sinh(A) = exp(-A) bzw. sinh(A) - cosh(A) = -exp(-A)
-//            SimplifyMatrixFunctionalRelations.reduceCoshMinusSinhToOne(summandsLeft, summandsRight);
+            SimplifyMatrixFunctionalRelations.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
             // cosh(A)^2 - sinh(A)^2 = E bzw. sinh(A)^2 - cosh(A)^2 = -E
             SimplifyMatrixFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
             

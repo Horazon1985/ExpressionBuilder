@@ -32,7 +32,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
      */
     private static Object[] isMultipleOfMatrixFunction(MatrixExpression MatExpr, TypeMatrixFunction type) {
 
-        // expr ist von der Form f(x).
+        // matExpr ist von der Form f(A).
         if (MatExpr.isMatrixFunction(type)) {
             Object[] result = new Object[2];
             result[0] = ((MatrixFunction) MatExpr).getLeft();
@@ -40,9 +40,8 @@ public abstract class SimplifyMatrixFunctionalRelations {
             return result;
         }
 
-        // expr ist von der Form a*f(x).
+        // matExpr ist von der Form a*f(A).
         if (MatExpr.isProduct()
-                && ((MatrixBinaryOperation) MatExpr).getLeft() instanceof Matrix
                 && ((MatrixBinaryOperation) MatExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression
                 && ((MatrixBinaryOperation) MatExpr).getRight().isMatrixFunction(type)) {
             Object[] result = new Object[2];
@@ -268,7 +267,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
     /**
      * Fasst in einer Summe sinh(A) und cosh(A) zu exp(A) zusammen.
      */
-    public static void sumOfSinhAndCoshToExp(MatrixExpressionCollection summands) {
+    public static void reduceSinhPlusCoshToExp(MatrixExpressionCollection summands) {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
 
@@ -298,6 +297,88 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
                         summands.put(Math.min(i, j), new Matrix((Expression) isFirstSummandSuitable[1]).mult(((MatrixExpression) isFirstSummandSuitable[0]).exp()));
                         summands.remove(Math.max(i, j));
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Fasst in einer Differenz Folgendes zusammen: cosh(A) - sinh(A) zu exp(-A)
+     * und sinh(A) - cosh(A) zu -exp(-A) zusammen.
+     */
+    public static void reduceCoshMinusSinhToExp(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+
+        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+
+        // Fall: cosh(A) - sinh(A)
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfMatrixFunction(summandsLeft.get(i), TypeMatrixFunction.cosh);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfMatrixFunction(summandsRight.get(j), TypeMatrixFunction.sinh);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+                        && ((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])) {
+
+                    if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
+                        summandsLeft.put(i, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.MINUS_ONE.mult((MatrixExpression) isFirstSummandSuitable[0]).exp()));
+                        summandsRight.remove(j);
+                        break;
+                    }
+
+                }
+
+            }
+
+        }
+
+        // Fall: sinh(A) - cosh(A)
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+            isFirstSummandSuitable = isMultipleOfMatrixFunction(summandsLeft.get(i), TypeMatrixFunction.sinh);
+            if (isFirstSummandSuitable.length == 1) {
+                continue;
+            }
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+                isSecondSummandSuitable = isMultipleOfMatrixFunction(summandsRight.get(j), TypeMatrixFunction.cosh);
+                if (isSecondSummandSuitable.length == 1) {
+                    continue;
+                }
+
+                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+                        && ((MatrixExpression) isFirstSummandSuitable[0]).equivalent((MatrixExpression) isSecondSummandSuitable[0])) {
+
+                    if (((Expression) isFirstSummandSuitable[1]).equivalent((Expression) isSecondSummandSuitable[1])) {
+                        summandsRight.put(j, new Matrix((Expression) isFirstSummandSuitable[1]).mult(MatrixExpression.MINUS_ONE.mult((MatrixExpression) isFirstSummandSuitable[0]).exp()));
+                        summandsLeft.remove(i);
                         break;
                     }
 

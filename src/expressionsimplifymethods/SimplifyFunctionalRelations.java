@@ -790,14 +790,14 @@ public abstract class SimplifyFunctionalRelations {
 
                     if (isFirstSummandSuitable.length == 2) {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)));
+                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
                             summandsRight.remove(j);
                             break;
                         }
                     } else {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
                                 && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)).div((BigDecimal) isFirstSummandSuitable[2]));
+                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
                             summandsRight.remove(j);
                             break;
                         }
@@ -835,15 +835,15 @@ public abstract class SimplifyFunctionalRelations {
 
                     if (isFirstSummandSuitable.length == 2) {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)));
+                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
                             summandsLeft.remove(i);
                             break;
                         }
                     } else {
                         if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
                                 && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function(
-                                    Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]), TypeFunction.exp)).div((BigDecimal) isFirstSummandSuitable[2]));
+                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(
+                                    Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
                             summandsLeft.remove(i);
                             break;
                         }
