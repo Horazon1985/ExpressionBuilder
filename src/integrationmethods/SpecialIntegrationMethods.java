@@ -710,7 +710,7 @@ public abstract class SpecialIntegrationMethods {
         System.out.println(expandPowerOfSin(Variable.create("x"), 2));
         System.out.println(expandPowerOfSin(Variable.create("x"), 3));
         System.out.println(expandPowerOfSin(Variable.create("x"), 4));
-        
+
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
@@ -908,27 +908,73 @@ public abstract class SpecialIntegrationMethods {
     }
 
     private static Expression rewriteProductOfSinSin(Expression argumentLeft, Expression argumentRight) {
-
-        
-        return null;
-        
+        return argumentLeft.sub(argumentRight).cos().sub(argumentLeft.add(argumentRight).cos()).div(2);
     }
 
     private static Expression rewriteProductOfCosCos(Expression argumentLeft, Expression argumentRight) {
-        return argumentLeft.sub(argumentRight).cos().add(1);
+        return argumentLeft.sub(argumentRight).cos().add(argumentLeft.add(argumentRight).cos()).div(2);
     }
 
     private static Expression rewriteProductOfSinCos(Expression argumentSin, Expression argumentCos) {
+        return rewriteProductOfCosSin(argumentCos, argumentSin);
+    }
 
-        
-        return null;
-        
-    }
-    
     private static Expression rewriteProductOfCosSin(Expression argumentCos, Expression argumentSin) {
-        return rewriteProductOfSinCos(argumentSin, argumentCos);
+        return argumentCos.add(argumentSin).sin().sub(argumentCos.sub(argumentSin).sin()).div(2);
     }
-    
+
+    private static boolean isPolynomialInVariousTrigonometricalFunctions(Expression f, String var) {
+        if (!f.contains(var)) {
+            return true;
+        }
+        if (f.isSum() || f.isDifference() || f.isProduct()) {
+            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getRight(), var);
+        }
+        if (f.isQuotient()) {
+            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && !((BinaryOperation) f).getRight().contains(var);
+        }
+        if (f.isPower()) {
+            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && ((BinaryOperation) f).getRight().isIntegerConstant()
+                    && ((BinaryOperation) f).getRight().isPositive();
+        }
+        if (f.isFunction()) {
+            return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
+                    || f.isFunction(TypeFunction.sin))
+                    && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
+                    && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
+        }
+        if (f instanceof Operator) {
+            return !f.contains(var);
+        }
+        return false;
+    }
+
+    private static BigInteger getUpperBoundForSummands(Expression f, String var) {
+        BigInteger numberOfSummands = BigInteger.ONE;
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) == null) {
+                continue;
+            }
+            numberOfSummands = numberOfSummands.multiply(getUpperBoundForSummands(factors.get(i), var));
+        }
+        return numberOfSummands;
+    }
+
+    /**
+     * Integriert Funktionen vom Typ Polynom in Exponentialfunktionen und
+     * trigonometrischen Funktionen, falls der Polynomgrad unterhalb einer
+     * geeigneten Schranke liegt..
+     */
+    public static Object integratePolynomialInExponentialAndTrigonometricalFunctions(Expression f, String var) {
+
+        return false;
+
+    }
+
     /**
      * Integration von (a*x^2 + b*x + c)^(1/2). VORAUSSETZUNG: expr ist ein
      * unbestimmtes Integral. Falls der Integrand nicht vom angegebenen Typ ist,
