@@ -625,7 +625,7 @@ public abstract class AnalysisMethods {
             throws EvaluationException {
 
         HashSet vars = new HashSet();
-        f.getContainedVars(vars);
+        f.addContainedVars(vars);
 
         Expression result = new Constant(BigDecimal.ZERO);
         String var;

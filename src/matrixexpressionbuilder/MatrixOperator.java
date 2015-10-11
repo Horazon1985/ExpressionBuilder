@@ -518,8 +518,8 @@ public class MatrixOperator extends MatrixExpression {
             HashSet<String> varsInParameters = new HashSet<>();
             ((MatrixExpression) this.params[0]).getContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
-            ((Expression) this.params[2]).getContainedVars(varsInParameters);
-            ((Expression) this.params[3]).getContainedVars(varsInParameters);
+            ((Expression) this.params[2]).addContainedVars(varsInParameters);
+            ((Expression) this.params[3]).addContainedVars(varsInParameters);
 
             return varsInParameters.isEmpty();
 
@@ -528,10 +528,10 @@ public class MatrixOperator extends MatrixExpression {
         if (this.type.equals(TypeMatrixOperator.prod) || this.type.equals(TypeMatrixOperator.sum)) {
 
             HashSet<String> varsInParameters = new HashSet<>();
-            ((Expression) this.params[0]).getContainedVars(varsInParameters);
+            ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
-            ((Expression) this.params[2]).getContainedVars(varsInParameters);
-            ((Expression) this.params[3]).getContainedVars(varsInParameters);
+            ((Expression) this.params[2]).addContainedVars(varsInParameters);
+            ((Expression) this.params[3]).addContainedVars(varsInParameters);
             return varsInParameters.isEmpty();
 
         }
@@ -708,23 +708,23 @@ public class MatrixOperator extends MatrixExpression {
             String var = (String) this.params[1];
             ((MatrixExpression) this.params[0]).getContainedVars(vars);
             vars.remove(var);
-            ((Expression) this.params[2]).getContainedVars(vars);
-            ((Expression) this.params[3]).getContainedVars(vars);
+            ((Expression) this.params[2]).addContainedVars(vars);
+            ((Expression) this.params[3]).addContainedVars(vars);
             return;
         }
         if (this.type.equals(TypeMatrixOperator.prod) || this.type.equals(TypeMatrixOperator.sum)) {
             String index = (String) this.params[1];
             ((MatrixExpression) this.params[0]).getContainedVars(vars);
             vars.remove(index);
-            ((Expression) this.params[2]).getContainedVars(vars);
-            ((Expression) this.params[3]).getContainedVars(vars);
+            ((Expression) this.params[2]).addContainedVars(vars);
+            ((Expression) this.params[3]).addContainedVars(vars);
             return;
         }
 
         // Alle anderen möglichen Matrizenoperatoren
         for (Object param : this.params) {
             if (param instanceof Expression) {
-                ((Expression) param).getContainedVars(vars);
+                ((Expression) param).addContainedVars(vars);
             } else if (param instanceof MatrixExpression) {
                 ((MatrixExpression) param).getContainedVars(vars);
             }
@@ -1224,6 +1224,21 @@ public class MatrixOperator extends MatrixExpression {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeScalarsInSums();
             } else if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeScalarsInDifferences();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInDifferences();
             } else {
                 resultParams[i] = this.params[i];
             }

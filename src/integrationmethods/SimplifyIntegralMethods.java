@@ -1,9 +1,9 @@
 package integrationmethods;
 
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
@@ -471,7 +471,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         // Integration von Potenzen von Elementarfunktionen
-        result = integratePowerOfElementaryFunction(expr, ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER);
+        result = integratePowerOfElementaryFunction(expr);
         if (result instanceof Expression) {
             return ((Expression) result).simplifyTrivial();
         }
@@ -482,19 +482,6 @@ public abstract class SimplifyIntegralMethods {
             return ((Expression) result).simplifyTrivial();
         }
 
-        // Integration mittels Standardsubstitution.
-        result = integrateByStandardSubstitution(expr);
-        if (result instanceof Expression && !((Expression) result).containsIndefiniteIntegral()) {
-            /*
-             Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale
-             vorkommen. Die Methode multiplyPowers() wird hier benötigt, damit
-             Exponenten STUR ausmultipliziert werden (ohne Beträge etc.),
-             falls diese in Substitutionen involviert sind.
-             */
-            return ((Expression) result).simplifyMultiplyPowers().simplifyTrivial();
-        }
-
-        // Weitere Integrationsmethoden.
         // Partialbruchzerlegung
         result = SpecialIntegrationMethods.integrateRationalFunction(expr);
         if (result instanceof Expression) {
@@ -513,6 +500,12 @@ public abstract class SimplifyIntegralMethods {
             return ((Expression) result).simplifyTrivial();
         }
 
+        // Integration von exp(a*x+b)*cos(c*x+d)^n
+        result = SpecialIntegrationMethods.integrateProductOfExpPowerOfCos(expr);
+        if (result instanceof Expression) {
+            return ((Expression) result).simplifyTrivial();
+        }
+        
         // Integration von sin(a*x+b)*sin(c*x+d)
         result = SpecialIntegrationMethods.integrateProductOfSinSin(expr);
         if (result instanceof Expression) {
@@ -547,6 +540,18 @@ public abstract class SimplifyIntegralMethods {
         result = SpecialIntegrationMethods.integrateRationalFunctionInExp(expr);
         if (result instanceof Expression){
             return ((Expression) result).simplifyTrivial();
+        }
+        
+        // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels Standardsubstitution.
+        result = integrateByStandardSubstitution(expr);
+        if (result instanceof Expression && !((Expression) result).containsIndefiniteIntegral()) {
+            /*
+             Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale
+             vorkommen. Die Methode multiplyPowers() wird hier benötigt, damit
+             Exponenten STUR ausmultipliziert werden (ohne Beträge etc.),
+             falls diese in Substitutionen involviert sind.
+             */
+            return ((Expression) result).simplifyMultiplyPowers().simplifyTrivial();
         }
         
         // GANZ ZUM SCHLUSS: Partielle Integration, falls erlaubt.
@@ -948,7 +953,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Object integratePowerOfElementaryFunction(Operator expr, int maxIntegrablePower) throws EvaluationException {
+    public static Object integratePowerOfElementaryFunction(Operator expr) throws EvaluationException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -964,7 +969,7 @@ public abstract class SimplifyIntegralMethods {
         BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
         TypeFunction type = ((Function) ((BinaryOperation) f).getLeft()).getType();
 
-        if (exponent.compareTo(BigInteger.valueOf(maxIntegrablePower)) > 0) {
+        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER)) > 0) {
             return false;
         }
 

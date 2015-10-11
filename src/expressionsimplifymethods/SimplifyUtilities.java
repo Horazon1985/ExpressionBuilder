@@ -1,8 +1,8 @@
 package expressionsimplifymethods;
 
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import java.math.BigInteger;
 import translator.Translator;
@@ -656,11 +656,7 @@ public abstract class SimplifyUtilities {
         Expression result = Expression.ZERO;
         for (int i = summands.getBound() - 1; i >= 0; i--) {
             if (summands.get(i) != null && !summands.get(i).equals(Expression.ZERO)) {
-                if (result.equals(Expression.ZERO)) {
-                    result = summands.get(i);
-                } else {
-                    result = summands.get(i).add(result);
-                }
+                result = summands.get(i).add(result);
             }
         }
 
@@ -697,11 +693,7 @@ public abstract class SimplifyUtilities {
         Expression result = Expression.ONE;
         for (int i = factors.getBound() - 1; i >= 0; i--) {
             if (factors.get(i) != null && !factors.get(i).equals(Expression.ONE)) {
-                if (result.equals(Expression.ONE)) {
-                    result = factors.get(i);
-                } else {
-                    result = factors.get(i).mult(result);
-                }
+                result = factors.get(i).mult(result);
             }
         }
 

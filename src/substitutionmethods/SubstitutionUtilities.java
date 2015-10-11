@@ -83,7 +83,7 @@ public abstract class SubstitutionUtilities {
             return Variable.create(getSubstitutionVariable(f));
         }
         if (f.equals(Variable.create(var))) {
-            Object variableSubstituted = substituteVariable(var, substitution);
+            Object variableSubstituted = substituteVariable(var, substitution, beginning);
             if (variableSubstituted instanceof Expression) {
                 return variableSubstituted;
             }
@@ -113,7 +113,10 @@ public abstract class SubstitutionUtilities {
      * Hier wird versucht, x = var durch substitution = x/a + b mit ganzem a zu
      * substituieren (also x = a*substitution - a*b).
      */
-    private static Object substituteVariable(String var, Expression substitution) throws EvaluationException {
+    private static Object substituteVariable(String var, Expression substitution, boolean beginning) throws EvaluationException {
+        if (!beginning){
+            return false;
+        }
         Expression derivative = substitution.diff(var).simplify();
         if (derivative.equals(Expression.ZERO)) {
             return false;

@@ -104,9 +104,9 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
         for (int i = 0; i < this.left.length; i++) {
-            this.left[i].getContainedVars(vars);
+            this.left[i].addContainedVars(vars);
         }
     }
 

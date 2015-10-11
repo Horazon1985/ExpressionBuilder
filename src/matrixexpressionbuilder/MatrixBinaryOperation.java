@@ -250,21 +250,21 @@ public class MatrixBinaryOperation extends MatrixExpression {
     private MatrixExpressionCollection pullScalarFactorsToBeginning(MatrixExpressionCollection factors) {
 
         MatrixExpressionCollection factorsOrdered = new MatrixExpressionCollection();
-        for(int i = 0; i < factors.getBound(); i++){
-            if (factors.get(i) == null){
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) == null) {
                 continue;
             }
-            if (factors.get(i).convertOneTimesOneMatrixToExpression() instanceof Expression){
+            if (factors.get(i).convertOneTimesOneMatrixToExpression() instanceof Expression) {
                 factorsOrdered.add(factors.get(i));
                 factors.remove(i);
             }
         }
-        if (factorsOrdered.isEmpty()){
+        if (factorsOrdered.isEmpty()) {
             return factors;
         }
         factorsOrdered.add(factors);
         return factorsOrdered;
-        
+
     }
 
     @Override
@@ -417,12 +417,12 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
             // Nullmatrizen in Summen beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
-            
+
             return SimplifyMatrixUtilities.produceSum(summands);
 
         }
         if (this.isProduct()) {
-            
+
             MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
             // In jedem Faktor einzeln vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -434,19 +434,19 @@ public class MatrixBinaryOperation extends MatrixExpression {
             matExpr = SimplifyMatrixBinaryOperationMethods.factorizeMultiplesOfId(matExpr);
 
             factors = SimplifyMatrixUtilities.getFactors(matExpr);
-            
+
             // Falls Nullmatrizen in Produkten auftauchen, dann nur Nullmatrix zurückgeben.
             SimplifyMatrixBinaryOperationMethods.reduceZeroProductToZero(factors);
             // Identitätsmatrizen in Produkten beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
-            
+
             return SimplifyMatrixUtilities.produceProduct(factors);
-            
+
         }
 
         return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
         return new MatrixBinaryOperation(this.left.simplifyMatrixEntries(), this.right.simplifyMatrixEntries(), this.type);
@@ -487,27 +487,58 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
     @Override
     public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
-        
+
         if (this.isNotSum()) {
             // Im linken und rechten Teil einzeln skalare Faktoren faktorisieren.
             return new MatrixBinaryOperation(this.left.simplifyFactorizeScalarsInSums(), this.right.simplifyFactorizeScalarsInSums(), this.type);
         } else {
-            
+
             // In jedem Summanden einzeln Faktoren sammeln.
             MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyCollectProducts());
+                summands.put(i, summands.get(i).simplifyFactorizeScalarsInSums());
             }
-            
+
             // Skalare Faktoren faktorisieren.
             SimplifyMatrixBinaryOperationMethods.factorizeScalarsInSum(summands);
             // Nichtskalare Faktoren faktorisieren (TO DO).
-            
+
             return SimplifyMatrixUtilities.produceSum(summands);
         }
-        
+
     }
-    
+
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
+
+        if (this.isSum()) {
+            // In jedem Summanden einzeln Faktoren sammeln.
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyFactorizeScalarsInDifferences());
+            }
+            return SimplifyMatrixUtilities.produceSum(summands);
+        }
+        if (this.isProduct()) {
+            // In jedem Summanden einzeln Faktoren sammeln.
+            MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyFactorizeScalarsInDifferences());
+            }
+            return SimplifyMatrixUtilities.produceProduct(factors);
+        }
+
+        MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(this);
+        MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(this);
+
+        // Skalare Faktoren faktorisieren.
+        SimplifyMatrixBinaryOperationMethods.factorizeScalarsInDifference(summandsLeft, summandsRight);
+        // Nichtskalare Faktoren faktorisieren (TO DO).
+
+        return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
+
+    }
+
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 
@@ -533,13 +564,13 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         }
         if (this.isDifference()) {
-            
+
             // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
             MatrixExpression simplifiedDifference = this.left.simplifyMatrixFunctionalRelations().sub(this.right.simplifyMatrixFunctionalRelations());
             if (!(simplifiedDifference instanceof MatrixBinaryOperation)) {
                 return simplifiedDifference;
             }
-            
+
             MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(simplifiedDifference);
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(simplifiedDifference);
 
@@ -547,9 +578,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
             SimplifyMatrixFunctionalRelations.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
             // cosh(A)^2 - sinh(A)^2 = E bzw. sinh(A)^2 - cosh(A)^2 = -E
             SimplifyMatrixFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
-            
+
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         }
 
         return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);

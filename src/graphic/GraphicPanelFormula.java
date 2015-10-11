@@ -871,6 +871,7 @@ public class GraphicPanelFormula extends JPanel {
 
         setFont(g, fontSize);
 
+        // Ab hier ist matExpr keine 1x1-Matrix mehr!
         if (matExpr instanceof Matrix) {
 
             Matrix matrix = (Matrix) matExpr;
@@ -891,7 +892,7 @@ public class GraphicPanelFormula extends JPanel {
                         + getWidthOfSignPlus(g, fontSize)
                         + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
             } else if (matExpr.isDifference()) {
-                if (((MatrixBinaryOperation) matExpr).isSum() || ((MatrixBinaryOperation) matExpr).isDifference()) {
+                if (((MatrixBinaryOperation) matExpr).getRight().isSum() || ((MatrixBinaryOperation) matExpr).getRight().isDifference()) {
                     // Hier noch Klammern um den Subtrahenden berücksichtigen.
                     return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
                             + getWidthOfSignMinus(g, fontSize)
@@ -903,13 +904,21 @@ public class GraphicPanelFormula extends JPanel {
                             + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
                 }
             } else {
-                /*
-                 Hier ist matExpr eine Instanz von MatrixBinaryOperation mit
-                 type == TypeMatrixBinary.TIMES
-                 */
-                return getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
-                        + getWidthOfSignMult(g, fontSize)
-                        + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
+
+                // Hier ist matExpr ein Matrizenprodukt.
+                int resultLength = getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getLeft(), fontSize)
+                            + getWidthOfSignMult(g, fontSize)
+                            + getLengthOfMatrixExpression(g, ((MatrixBinaryOperation) matExpr).getRight(), fontSize);
+                if (((MatrixBinaryOperation) matExpr).getLeft().isSum() || ((MatrixBinaryOperation) matExpr).getLeft().isDifference()) {
+                    // Hier noch Klammern um den linken Faktor berücksichtigen.
+                    resultLength = resultLength + 2 * getWidthOfBracket(fontSize);
+                }
+                if (((MatrixBinaryOperation) matExpr).getRight().isSum() || ((MatrixBinaryOperation) matExpr).getRight().isDifference()) {
+                    // Hier noch Klammern um den rechten Faktor berücksichtigen.
+                    resultLength = resultLength + 2 * getWidthOfBracket(fontSize);
+                }
+                return resultLength;
+
             }
 
         } else if (matExpr instanceof MatrixPower) {
@@ -928,7 +937,7 @@ public class GraphicPanelFormula extends JPanel {
         } else if (matExpr instanceof MatrixFunction) {
 
             setFont(g, fontSize);
-            if (((MatrixFunction) matExpr).getLeft() instanceof Matrix 
+            if (((MatrixFunction) matExpr).getLeft() instanceof Matrix
                     && !(((MatrixFunction) matExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression)) {
                 // In diesem Fall braucht man keine umschließende Klammern für matExpr.
                 return g.getFontMetrics().stringWidth(((MatrixFunction) matExpr).getName())
@@ -940,7 +949,7 @@ public class GraphicPanelFormula extends JPanel {
 
         } else {
 
-            // Hier ist matExpr eine Instanz von MatrixFunction.
+            // Hier ist matExpr eine Instanz von MatrixOperator2.
             return getLengthOfMatrixOperator(g, (MatrixOperator) matExpr, fontSize);
 
         }
@@ -1253,7 +1262,7 @@ public class GraphicPanelFormula extends JPanel {
                 if (params.length == 2) {
                     return Math.max((3 * fontSize) / 2, getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize));
                 } else if (params.length == 3 && params[2] instanceof Integer) {
-                    return Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                    return Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize));
                 } else {
                     return Math.max((3 * fontSize) / 2, getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize));
                 }

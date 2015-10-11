@@ -268,7 +268,7 @@ public class MatrixPower extends MatrixExpression {
     @Override
     public void getContainedVars(HashSet<String> vars) {
         this.left.getContainedVars(vars);
-        this.right.getContainedVars(vars);
+        this.right.addContainedVars(vars);
     }
 
     @Override
@@ -334,6 +334,11 @@ public class MatrixPower extends MatrixExpression {
     @Override
     public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
         return new MatrixPower(this.left.simplifyFactorizeScalarsInSums(), this.right.simplifyFactorizeInSums());
+    }
+
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyFactorizeScalarsInDifferences(), this.right.simplifyFactorizeInDifferences());
     }
 
     @Override

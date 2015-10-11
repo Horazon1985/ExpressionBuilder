@@ -131,6 +131,48 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
 
     public static void factorizeScalarsInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
 
+        MatrixExpressionCollection factorsOfLeftSummand, factorsOfRightSummand, commonScalarFactors;
+        MatrixExpression commonFactor, restSummandLeft, restSummandRight;
+        
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+
+            factorsOfLeftSummand = SimplifyMatrixUtilities.getFactors(summandsLeft.get(i));
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+
+                factorsOfRightSummand = SimplifyMatrixUtilities.getFactors(summandsRight.get(j));
+
+                commonScalarFactors = SimplifyMatrixUtilities.intersection(factorsOfLeftSummand, factorsOfRightSummand);
+                
+                // Nun müssen unter den gemeinsamen Faktoren diejenigen ausgewählt werden, welche 1x1-Matrizen darstellen.
+                for (int k = 0; k < commonScalarFactors.getBound(); k++){
+                    if (!(commonScalarFactors.get(k).convertOneTimesOneMatrixToExpression() instanceof Expression)){
+                        commonScalarFactors.remove(k);
+                    }
+                }                
+
+                // Summanden faktorisieren, wenn gemeinsame Skalarfaktoren vorhanden sind.
+                if (!commonScalarFactors.isEmpty()){
+                    commonFactor = SimplifyMatrixUtilities.produceProduct(commonScalarFactors);
+                    restSummandLeft = SimplifyMatrixUtilities.produceProduct(SimplifyMatrixUtilities.difference(factorsOfLeftSummand, commonScalarFactors));
+                    restSummandRight = SimplifyMatrixUtilities.produceProduct(SimplifyMatrixUtilities.difference(factorsOfRightSummand, commonScalarFactors));
+                    summandsLeft.put(i, commonFactor.mult(restSummandLeft.sub(restSummandRight)));
+                    summandsRight.remove(j);
+                    break;
+                }
+                
+            }
+
+        }
+        
     }
 
 }

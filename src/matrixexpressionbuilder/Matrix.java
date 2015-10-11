@@ -559,7 +559,7 @@ public class Matrix extends MatrixExpression {
     public void getContainedVars(HashSet<String> vars) {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                this.entry[i][j].getContainedVars(vars);
+                this.entry[i][j].addContainedVars(vars);
             }
         }
     }
@@ -678,6 +678,11 @@ public class Matrix extends MatrixExpression {
         return this;
     }
 
+    @Override
+    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
+        return this;
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() {
         return this;

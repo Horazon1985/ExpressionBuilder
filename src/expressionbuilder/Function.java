@@ -243,8 +243,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
-        this.left.getContainedVars(vars);
+    public void addContainedVars(HashSet<String> vars) {
+        this.left.addContainedVars(vars);
     }
 
     @Override

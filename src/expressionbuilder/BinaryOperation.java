@@ -110,9 +110,9 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
-        this.left.getContainedVars(vars);
-        this.right.getContainedVars(vars);
+    public void addContainedVars(HashSet<String> vars) {
+        this.left.addContainedVars(vars);
+        this.right.addContainedVars(vars);
     }
 
     @Override
@@ -615,17 +615,17 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < factors.getBound(); i++) {
                 if (length == 0) {
                     length = factors.get(i).length();
-                } else if (factors.get(i).length() > 1) {
+                } else if (!(factors.get(i) instanceof Constant)) {
                     length += factors.get(i).length();
                 }
             }
             return length;
         }
         if (this.isPower()) {
-            if (((BinaryOperation) this).getLeft().length() == 1) {
+            if (((BinaryOperation) this).getLeft() instanceof Constant) {
                 return ((BinaryOperation) this).getRight().length();
             }
-            if (((BinaryOperation) this).getRight().length() == 1) {
+            if (((BinaryOperation) this).getRight() instanceof Constant) {
                 return ((BinaryOperation) this).getLeft().length();
             }
         }

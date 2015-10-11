@@ -233,7 +233,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
     }
 
     @Override

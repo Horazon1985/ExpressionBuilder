@@ -2,10 +2,12 @@ package integrationmethods;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
@@ -50,7 +52,7 @@ public abstract class SpecialIntegrationMethods {
          enthält keine Parameter, der Zähler darf welche enthalten.
          */
         HashSet varsInDenominator = new HashSet();
-        ((BinaryOperation) f).getRight().getContainedVars(varsInDenominator);
+        ((BinaryOperation) f).getRight().addContainedVars(varsInDenominator);
         if (!varsInDenominator.contains(var) || varsInDenominator.size() > 1) {
             /*
              Dies trifft AUCH DANN zu, wenn der Nenner Parameter enthält, aber
@@ -442,10 +444,10 @@ public abstract class SpecialIntegrationMethods {
         Expression r = new Constant(4).mult(coefficientsDenominator.get(2).pow(2)).div(Expression.MINUS_ONE.mult(diskr)).pow(1, 2).simplify();
 
         // Log-Summanden bilden.
-        Expression logSummand = p.mult(new Function(denominator, TypeFunction.ln));
+        Expression logSummand = p.mult(denominator.ln());
         // Arctan-Summanden bilden.
         Expression arctanArgument = Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1)).div((Expression.MINUS_ONE.mult(diskr)).pow(1, 2)).simplify();
-        Expression arctanSummand = q.mult(r).mult(new Function(arctanArgument, TypeFunction.arctan)).simplify();
+        Expression arctanSummand = q.mult(r).mult(arctanArgument.arctan()).simplify();
 
         return logSummand.add(arctanSummand);
 
@@ -465,11 +467,7 @@ public abstract class SpecialIntegrationMethods {
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2) {
-            return false;
-        }
-
-        if (!(factors.get(0) instanceof Function) || !(factors.get(1) instanceof Function)) {
+        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
             return false;
         }
 
@@ -504,7 +502,7 @@ public abstract class SpecialIntegrationMethods {
              Es wird int(exp(a*x+b)*sin(c*x+d), x) =
              exp(a*x+b)*(a*sin(c*x+d)-c*cos(c*x+d))/(a^2+c^2) zurückgegeben.
              */
-            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).sub(coefficientsInSin.get(1).mult(new Function(sinArgument, TypeFunction.cos)))).div(
+            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).sub(coefficientsInSin.get(1).mult(sinArgument.cos()))).div(
                     coefficientsInExp.get(1).pow(2).add(coefficientsInSin.get(1).pow(2)));
 
         }
@@ -526,11 +524,7 @@ public abstract class SpecialIntegrationMethods {
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2) {
-            return false;
-        }
-
-        if (!(factors.get(0) instanceof Function) || !(factors.get(1) instanceof Function)) {
+        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
             return false;
         }
 
@@ -565,7 +559,7 @@ public abstract class SpecialIntegrationMethods {
              Es wird int(exp(a*x+b)*cos(c*x+d), x) =
              exp(a*x+b)*(a*cos(c*x+d)+c*sin(c*x+d))/(a^2+c^2) zurückgegeben.
              */
-            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).add(coefficientsInCos.get(1).mult(new Function(cosArgument, TypeFunction.sin)))).div(coefficientsInExp.get(1).pow(2).add(coefficientsInCos.get(1).pow(2)));
+            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).add(coefficientsInCos.get(1).mult(cosArgument.sin()))).div(coefficientsInExp.get(1).pow(2).add(coefficientsInCos.get(1).pow(2)));
 
         }
 
@@ -586,11 +580,7 @@ public abstract class SpecialIntegrationMethods {
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2) {
-            return false;
-        }
-
-        if (!(factors.get(0) instanceof Function) || !(factors.get(1) instanceof Function)) {
+        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
             return false;
         }
 
@@ -620,18 +610,18 @@ public abstract class SpecialIntegrationMethods {
             Expression AMinusB = coefficientsInLeftSin.get(1).sub(coefficientsInRightSin.get(1)).simplify();
             if (AMinusB.equals(Expression.ZERO)) {
                 // a = c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInLeftSin.get(0).sub(coefficientsInRightSin.get(0)), TypeFunction.cos)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(new Constant(4).mult(coefficientsInLeftSin.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInLeftSin.get(0).sub(coefficientsInRightSin.get(0)).cos()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).sin().div(new Constant(4).mult(coefficientsInLeftSin.get(1)));
                 return resultSummandLeft.sub(resultSummandRight);
             } else if (APlusB.equals(Expression.ZERO)) {
                 // a = -c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInLeftSin.get(0).add(coefficientsInRightSin.get(0)), TypeFunction.cos)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(new Constant(4).mult(coefficientsInLeftSin.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInLeftSin.get(0).add(coefficientsInRightSin.get(0)).cos()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).sin().div(new Constant(4).mult(coefficientsInLeftSin.get(1)));
                 return resultSummandRight.sub(resultSummandLeft);
             } else {
                 // a != c und a != -c. I = sin((a-c)*x+(b-d))/(2*(a-c)) - sin((a+c)*x+(b+d))/(2*(a+c)).
-                resultSummandLeft = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(Expression.TWO.mult(AMinusB));
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(Expression.TWO.mult(APlusB));
+                resultSummandLeft = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).sin().div(Expression.TWO.mult(AMinusB));
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).sin().div(Expression.TWO.mult(APlusB));
                 return resultSummandLeft.sub(resultSummandRight);
             }
 
@@ -654,11 +644,7 @@ public abstract class SpecialIntegrationMethods {
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2) {
-            return false;
-        }
-
-        if (!(factors.get(0) instanceof Function) || !(factors.get(1) instanceof Function)) {
+        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
             return false;
         }
 
@@ -688,18 +674,18 @@ public abstract class SpecialIntegrationMethods {
             Expression AMinusB = coefficientsInLeftCos.get(1).sub(coefficientsInRightCos.get(1)).simplify();
             if (AMinusB.equals(Expression.ZERO)) {
                 // a = c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInLeftCos.get(0).sub(coefficientsInRightCos.get(0)), TypeFunction.cos)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(new Constant(4).mult(coefficientsInLeftCos.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInLeftCos.get(0).sub(coefficientsInRightCos.get(0)).cos()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).sin().div(new Constant(4).mult(coefficientsInLeftCos.get(1)));
                 return resultSummandLeft.add(resultSummandRight);
             } else if (APlusB.equals(Expression.ZERO)) {
                 // a = -c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInLeftCos.get(0).add(coefficientsInRightCos.get(0)), TypeFunction.cos)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(new Constant(4).mult(coefficientsInLeftCos.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInLeftCos.get(0).add(coefficientsInRightCos.get(0)).cos()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).sin().div(new Constant(4).mult(coefficientsInLeftCos.get(1)));
                 return resultSummandRight.add(resultSummandLeft);
             } else {
                 // a != c und a != -c. I = sin((a-c)*x+(b-d))/(2*(a-c)) + sin((a+c)*x+(b+d))/(2*(a+c)).
-                resultSummandLeft = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(Expression.TWO.mult(AMinusB));
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.sin).div(Expression.TWO.mult(APlusB));
+                resultSummandLeft = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).sin().div(Expression.TWO.mult(AMinusB));
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).sin().div(Expression.TWO.mult(APlusB));
                 return resultSummandLeft.sub(resultSummandRight);
             }
 
@@ -718,15 +704,18 @@ public abstract class SpecialIntegrationMethods {
      */
     public static Object integrateProductOfSinCos(Operator expr) throws EvaluationException {
 
+        System.out.println(expandPowerOfCos(Variable.create("x"), 2));
+        System.out.println(expandPowerOfCos(Variable.create("x"), 3));
+        System.out.println(expandPowerOfCos(Variable.create("x"), 4));
+        System.out.println(expandPowerOfSin(Variable.create("x"), 2));
+        System.out.println(expandPowerOfSin(Variable.create("x"), 3));
+        System.out.println(expandPowerOfSin(Variable.create("x"), 4));
+        
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2) {
-            return false;
-        }
-
-        if (!(factors.get(0) instanceof Function) || !(factors.get(1) instanceof Function)) {
+        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
             return false;
         }
 
@@ -765,18 +754,18 @@ public abstract class SpecialIntegrationMethods {
             Expression AMinusB = coefficientsInSin.get(1).sub(coefficientsInCos.get(1)).simplify();
             if (AMinusB.equals(Expression.ZERO)) {
                 // a = c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInSin.get(0).sub(coefficientsInCos.get(0)), TypeFunction.sin)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.cos).div(new Constant(4).mult(coefficientsInSin.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInSin.get(0).sub(coefficientsInCos.get(0)).sin()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).cos().div(new Constant(4).mult(coefficientsInSin.get(1)));
                 return resultSummandLeft.sub(resultSummandRight);
             } else if (APlusB.equals(Expression.ZERO)) {
                 // a = -c
-                resultSummandLeft = Variable.create(var).mult(new Function(coefficientsInSin.get(0).add(coefficientsInCos.get(0)), TypeFunction.sin)).div(Expression.TWO);
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.cos).div(new Constant(4).mult(coefficientsInSin.get(1)));
+                resultSummandLeft = Variable.create(var).mult(coefficientsInSin.get(0).add(coefficientsInCos.get(0)).sin()).div(Expression.TWO);
+                resultSummandRight = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).cos().div(new Constant(4).mult(coefficientsInSin.get(1)));
                 return resultSummandLeft.sub(resultSummandRight);
             } else {
                 // a != c und a != -c. I = -cos((a-c)*x+(b-d))/(2*(a-c)) - cos((a+c)*x+(b+d))/(2*(a+c)).
-                resultSummandLeft = new Function(((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()), TypeFunction.cos).div(Expression.TWO.mult(AMinusB));
-                resultSummandRight = new Function(((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()), TypeFunction.cos).div(Expression.TWO.mult(APlusB));
+                resultSummandLeft = ((Function) factors.get(0)).getLeft().sub(((Function) factors.get(1)).getLeft()).cos().div(Expression.TWO.mult(AMinusB));
+                resultSummandRight = ((Function) factors.get(0)).getLeft().add(((Function) factors.get(1)).getLeft()).cos().div(Expression.TWO.mult(APlusB));
                 return Expression.MINUS_ONE.mult(resultSummandLeft).sub(resultSummandRight);
             }
 
@@ -786,6 +775,160 @@ public abstract class SpecialIntegrationMethods {
 
     }
 
+    /**
+     * Hilfsmethode. Gibt zurück, ob f eine ganzzahlige, positive Potenz einer
+     * Funktion vom Type type ist.
+     */
+    private static boolean isIntegerPowerOfFunction(Expression f, TypeFunction type) {
+        return f.isPower() && ((BinaryOperation) f).getLeft().isFunction(type)
+                && ((BinaryOperation) f).getRight().isIntegerConstant()
+                && ((BinaryOperation) f).getRight().isPositive();
+    }
+
+    /**
+     * Integration von exp(a*x+b)*cos(c*x+d)^n.<br>
+     * VORAUSSETZUNG: expr ist ein unbestimmtes Integral. Falls der Integrand
+     * nicht vom angegebenen Typ ist, so wird false zurückgegeben.
+     *
+     * @throws EvaluationException
+     */
+    public static Object integrateProductOfExpPowerOfCos(Operator expr) throws EvaluationException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        if (factors.getBound() != 2
+                || !(factors.get(0).isFunction(TypeFunction.exp)
+                && isIntegerPowerOfFunction(factors.get(1), TypeFunction.cos))
+                && !(factors.get(1).isFunction(TypeFunction.exp)
+                && isIntegerPowerOfFunction(factors.get(0), TypeFunction.cos))) {
+            return false;
+        }
+
+        if (factors.get(0).isPower()) {
+            // Dann steht cos(...)^n im ersten Faktor. -> Plätze tauschen und weitermachen!
+            Expression tmpFactor = factors.get(0).copy();
+            factors.put(0, factors.get(1));
+            factors.put(1, tmpFactor);
+        }
+
+        Expression expArgument = ((Function) factors.get(0)).getLeft();
+        Expression cosArgument = ((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft();
+        BigInteger exponent = ((Constant) ((BinaryOperation) factors.get(1)).getRight()).getValue().toBigInteger();
+        if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
+                || !SimplifyPolynomialMethods.isPolynomial(cosArgument, var)) {
+            return false;
+        }
+        ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficientsInCos = PolynomialRootsMethods.getPolynomialCoefficients(cosArgument, var);
+        if (coefficientsInExp.getBound() != 2 || coefficientsInCos.getBound() != 2
+                || exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER)) > 0) {
+            return false;
+        }
+
+        int n = exponent.intValue();
+
+        /*
+         Ab hier ist der Integrand von der Form f = exp(a*x+b)*cos(c*x+d)^n.
+         Sei I = int(exp(a*x+b)*cos(c*x+d)^n, x).
+         */
+        Expression a = coefficientsInExp.get(1);
+        Expression c = coefficientsInCos.get(1);
+        Expression d = coefficientsInCos.get(0);
+
+        // a und c dürfen nicht 0 sein!
+        if (a.equals(ZERO) || c.equals(ZERO)) {
+            return false;
+        }
+
+        Expression resultFunction = ZERO;
+        Expression cosPart, sinPart;
+        for (int i = 0; i <= n; i++) {
+            cosPart = a.div(new Constant(BigInteger.valueOf(n - 2 * i).pow(2)).mult(c.pow(2)).add(a.pow(2))).mult(new Constant(n - 2 * i).mult(c.mult(Variable.create(var)).add(d)).cos());
+            sinPart = (new Constant(n - 2 * i).mult(c)).div(new Constant(BigInteger.valueOf(n - 2 * i).pow(2)).mult(c.pow(2)).add(a.pow(2))).mult(new Constant(n - 2 * i).mult(c.mult(Variable.create(var)).add(d)).sin());
+            resultFunction = resultFunction.add(new Constant(ArithmeticMethods.bin(n, i)).mult(cosPart.add(sinPart)));
+        }
+        return (factors.get(0)).mult(resultFunction).div(TWO.pow(n));
+
+    }
+
+    /* 
+     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
+     mit h_i = sin oder = cos.
+     */
+    private static Expression expandPowerOfCos(Expression argument, int n) {
+        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
+        Expression result = ZERO;
+
+        if (n % 2 == 0) {
+            for (int i = 0; i < n / 2; i++) {
+                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+            result = result.add(new Constant(ArithmeticMethods.bin(n, n / 2)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+        } else {
+            for (int i = 0; i <= (n - 1) / 2; i++) {
+                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+        }
+
+        return result;
+    }
+
+    /* 
+     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
+     mit h_i = sin oder = cos.
+     */
+    private static Expression expandPowerOfSin(Expression argument, int n) {
+
+        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
+        Expression result = ZERO;
+
+        int m;
+        if (n % 2 == 0) {
+            m = n / 2;
+            for (int i = 0; i < m; i++) {
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+            result = result.add(new Constant(ArithmeticMethods.bin(n, m)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+        } else {
+            // n = 2 * m + 1 ist ungerade.
+            m = (n - 1) / 2;
+            for (int i = 0; i <= m; i++) {
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).sin()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+        }
+
+        return result;
+
+    }
+
+    private static Expression rewriteProductOfSinSin(Expression argumentLeft, Expression argumentRight) {
+
+        
+        return null;
+        
+    }
+
+    private static Expression rewriteProductOfCosCos(Expression argumentLeft, Expression argumentRight) {
+        return argumentLeft.sub(argumentRight).cos().add(1);
+    }
+
+    private static Expression rewriteProductOfSinCos(Expression argumentSin, Expression argumentCos) {
+
+        
+        return null;
+        
+    }
+    
+    private static Expression rewriteProductOfCosSin(Expression argumentCos, Expression argumentSin) {
+        return rewriteProductOfSinCos(argumentSin, argumentCos);
+    }
+    
     /**
      * Integration von (a*x^2 + b*x + c)^(1/2). VORAUSSETZUNG: expr ist ein
      * unbestimmtes Integral. Falls der Integrand nicht vom angegebenen Typ ist,
@@ -823,7 +966,7 @@ public abstract class SpecialIntegrationMethods {
             // Dann ist f = a^(1/2)*|x - x_1| mit x_1 = -b/(2*a).
             Expression zero = Expression.MINUS_ONE.mult(coefficients.get(1)).div(Expression.TWO.mult(coefficients.get(2))).simplify();
             // F = a^(1/2)*(x - x_1)*|x - x_1|/2.
-            return coefficients.get(2).pow(1, 2).mult(Variable.create(var).sub(zero)).mult(new Function(Variable.create(var).sub(zero), TypeFunction.abs)).div(2);
+            return coefficients.get(2).pow(1, 2).mult(Variable.create(var).sub(zero)).mult(Variable.create(var).sub(zero).abs()).div(2);
         }
         if (!diskriminant.equals(Expression.ZERO) && (diskriminant.isNonNegative() || diskriminant.isAlwaysNonNegative())) {
             // Hier ist D > 0.
@@ -834,7 +977,10 @@ public abstract class SpecialIntegrationMethods {
                  F = (2*a*x + b)*(a*x^2 + b*x + c)^(1/2)/(4*a) -
                  D*arcosh((2*a*x + b)/D^(1/2))/(8*a^(3/2)).
                  */
-                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(diskriminant.mult(new Function(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)), TypeFunction.arcosh)).div(new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
+                        ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
+                                diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh()).div(
+                                        new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
             }
             if ((coefficients.get(2).isNonPositive() || Expression.MINUS_ONE.mult(coefficients.get(2)).simplify().isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
@@ -844,7 +990,10 @@ public abstract class SpecialIntegrationMethods {
                  F = (2*a*x + b)*(a*x^2 + b*x + c)^(1/2)/(4*a) +
                  D*arcsin((-2*a*x - b)/D^(1/2))/(8*(-a)^(3/2)).
                  */
-                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).add(diskriminant.mult(new Function((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)), TypeFunction.arcsin)).div(new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
+                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
+                        ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).add(
+                                diskriminant.mult((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin()).div(
+                                        new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
 
             }
         }
@@ -856,7 +1005,10 @@ public abstract class SpecialIntegrationMethods {
              F = (2*a*x + b)*(a*x^2 + b*x + c)^(1/2)/(4*a) - D*arsinh((2*a*x +
              b)/(-D)^(1/2))/(8*a^(3/2)).
              */
-            return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(diskriminant.mult(new Function(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)), TypeFunction.arsinh)).div(new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+            return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
+                    ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
+                            diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh()).div(
+                                    new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
         }
 
@@ -904,8 +1056,8 @@ public abstract class SpecialIntegrationMethods {
             // Dann ist f = 1/(a^(1/2)*|x - x_1|) mit x_1 = -b/(2*a).
             Expression zero = Expression.MINUS_ONE.mult(coefficients.get(1)).div(Expression.TWO.mult(coefficients.get(2))).simplify();
             // F = sgn(x - x_1)*ln(|x - x_1|)/a^(1/2).
-            return new Function(Variable.create(var).sub(zero), TypeFunction.sgn).mult(
-                    new Function(new Function(Variable.create(var).sub(zero), TypeFunction.abs), TypeFunction.ln)).div(coefficients.get(2).pow(1, 2));
+            return Variable.create(var).sub(zero).sgn().mult(
+                    Variable.create(var).sub(zero).abs().ln()).div(coefficients.get(2).pow(1, 2));
         }
         if (!diskriminant.equals(Expression.ZERO) && (diskriminant.isNonNegative() || diskriminant.isAlwaysNonNegative())) {
             // Hier ist D > 0.
@@ -913,14 +1065,14 @@ public abstract class SpecialIntegrationMethods {
 
                 // Fall a > 0, D > 0. Reduktion auf den Typ int(1/(x^2 - 1)^(1/2), x).
                 // F = arcosh((2*a*x + b)/D^(1/2))/(a^(1/2)).
-                return new Function(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)), TypeFunction.arcosh).div(coefficients.get(2).pow(1, 2));
+                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh().div(coefficients.get(2).pow(1, 2));
 
             }
             if ((coefficients.get(2).isNonPositive() || Expression.MINUS_ONE.mult(coefficients.get(2)).simplify().isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
 
                 // Fall a < 0, D > 0. Reduktion auf den Typ int(1/(1 - x^2)^(1/2), x).
                 // F = arcsin((-2*a*x - b)/D^(1/2))/((-a)^(1/2)).
-                return new Function(new Constant(-2).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)), TypeFunction.arcsin).div(Expression.MINUS_ONE.mult(coefficients.get(2)).pow(1, 2));
+                return new Constant(-2).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin().div(Expression.MINUS_ONE.mult(coefficients.get(2)).pow(1, 2));
 
             }
         }
@@ -929,7 +1081,7 @@ public abstract class SpecialIntegrationMethods {
 
             // Fall a > 0, D < 0. Reduktion auf den Typ int(1/(x^2 + 1)^(1/2), x).
             // F = arsinh((2*a*x + b)/(-D)^(1/2))/(a^(1/2)).
-            return new Function(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)), TypeFunction.arsinh).div(coefficients.get(2).pow(1, 2));
+            return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh().div(coefficients.get(2).pow(1, 2));
 
         }
 
@@ -945,32 +1097,32 @@ public abstract class SpecialIntegrationMethods {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
-        
-        HashSet<Expression> argumentsInExp= new HashSet<>();
-        
+
+        HashSet<Expression> argumentsInExp = new HashSet<>();
+
         // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
         f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, var);
-        
-        if (!SpecialEquationMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()){
+
+        if (!SpecialEquationMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             return false;
         }
-        
+
         BigInteger gcdOfEnumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
         Iterator<Expression> iter = argumentsInExp.iterator();
         Expression firstArgument = iter.next();
-        
+
         Expression derivativeOfFirstArgument;
-        try{
+        try {
             derivativeOfFirstArgument = firstArgument.diff(var).simplify();
-            if (derivativeOfFirstArgument.contains(var)){
+            if (derivativeOfFirstArgument.contains(var)) {
                 return false;
             }
-        } catch (EvaluationException e){
+        } catch (EvaluationException e) {
             return false;
         }
-        
+
         Expression currentQuotient;
 
         while (iter.hasNext()) {
@@ -992,20 +1144,31 @@ public abstract class SpecialIntegrationMethods {
         // Das ist die eigentliche Substitution.
         Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
-        
+
         Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
         if (fSubstituted instanceof Expression) {
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
-            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{ substitutedIntegrand, substVar });
+            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
             Object resultFunction = indefiniteIntegration(substitutedIntegral, true);
-            if (resultFunction instanceof Expression){
+            if (resultFunction instanceof Expression) {
                 return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
             }
         }
-        
+
         return false;
-        
+
     }
-    
+
+    /**
+     * Integriert Funktionen vom Typ R(sin(a*x), cos(a*x)), R = rationale
+     * Funktion.
+     */
+    public static Object integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException {
+
+        // TO DO.
+        return null;
+
+    }
+
 }

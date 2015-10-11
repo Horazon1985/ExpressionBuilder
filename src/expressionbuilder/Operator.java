@@ -291,7 +291,7 @@ public class Operator extends Expression {
         try {
             integrand = Expression.build(params[0], vars);
             // Dies dient dazu, die Variablen im Integranden zu bestimmen
-            integrand.getContainedVars(varsInIntegrand);
+            integrand.addContainedVars(varsInIntegrand);
         } catch (ExpressionException e) {
             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
         }
@@ -685,37 +685,37 @@ public class Operator extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
 
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die
          Integrationsvariable/der Index NICHT als vorkommende Variable.
          */
         if (this.type.equals(TypeOperator.integral) && this.params.length == 2) {
-            ((Expression) this.params[0]).getContainedVars(vars);
+            ((Expression) this.params[0]).addContainedVars(vars);
             return;
         }
         if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
             String var = (String) this.params[1];
-            ((Expression) this.params[0]).getContainedVars(vars);
+            ((Expression) this.params[0]).addContainedVars(vars);
             vars.remove(var);
-            ((Expression) this.params[2]).getContainedVars(vars);
-            ((Expression) this.params[3]).getContainedVars(vars);
+            ((Expression) this.params[2]).addContainedVars(vars);
+            ((Expression) this.params[3]).addContainedVars(vars);
             return;
         }
         if (this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
             String index = (String) this.params[1];
-            ((Expression) this.params[0]).getContainedVars(vars);
+            ((Expression) this.params[0]).addContainedVars(vars);
             vars.remove(index);
-            ((Expression) this.params[2]).getContainedVars(vars);
-            ((Expression) this.params[3]).getContainedVars(vars);
+            ((Expression) this.params[2]).addContainedVars(vars);
+            ((Expression) this.params[3]).addContainedVars(vars);
             return;
         }
 
         // Alle anderen möglichen Matrizenoperatoren
         for (Object param : this.params) {
             if (param instanceof Expression) {
-                ((Expression) param).getContainedVars(vars);
+                ((Expression) param).addContainedVars(vars);
             }
         }
 
@@ -1117,10 +1117,10 @@ public class Operator extends Expression {
             }
             // Bestimmte Integrale.
             HashSet<String> varsInParameters = new HashSet<>();
-            ((Expression) this.params[0]).getContainedVars(varsInParameters);
+            ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
-            ((Expression) this.params[2]).getContainedVars(varsInParameters);
-            ((Expression) this.params[3]).getContainedVars(varsInParameters);
+            ((Expression) this.params[2]).addContainedVars(varsInParameters);
+            ((Expression) this.params[3]).addContainedVars(varsInParameters);
 
             return varsInParameters.isEmpty();
 
@@ -1129,10 +1129,10 @@ public class Operator extends Expression {
         if (this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
 
             HashSet<String> varsInParameters = new HashSet<>();
-            ((Expression) this.params[0]).getContainedVars(varsInParameters);
+            ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
-            ((Expression) this.params[2]).getContainedVars(varsInParameters);
-            ((Expression) this.params[3]).getContainedVars(varsInParameters);
+            ((Expression) this.params[2]).addContainedVars(varsInParameters);
+            ((Expression) this.params[3]).addContainedVars(varsInParameters);
             return varsInParameters.isEmpty();
 
         }
@@ -1843,7 +1843,7 @@ public class Operator extends Expression {
             if (((Expression) this.params[2]).isConstant() && ((Expression) this.params[3]).isConstant()) {
                 Expression expr = (Expression) this.params[0];
                 HashSet<String> varsInIntegrand = new HashSet<>();
-                expr.getContainedVars(varsInIntegrand);
+                expr.addContainedVars(varsInIntegrand);
                 if (varsInIntegrand.isEmpty() || (varsInIntegrand.size() == 1 && varsInIntegrand.contains((String) params[1]))) {
                     // Falls keine Parameter im Integranden auftauchen -> Integral approximativ berechnen.
                     double lowerLimit = ((Expression) params[2]).evaluate();
@@ -1871,7 +1871,7 @@ public class Operator extends Expression {
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
         HashSet<String> vars = new HashSet<>();
-        expr.getContainedVars(vars);
+        expr.addContainedVars(vars);
         Iterator iter = vars.iterator();
         String var;
 

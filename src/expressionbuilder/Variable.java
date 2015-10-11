@@ -208,7 +208,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
         if (!this.name.equals("pi")) {
             vars.add(this.name);
         }

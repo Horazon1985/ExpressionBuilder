@@ -51,7 +51,7 @@ public abstract class ArithmeticMethods {
         return result;
 
     }
-    
+
     /**
      * Gibt den ggT von a und b zurück.
      */
@@ -146,9 +146,26 @@ public abstract class ArithmeticMethods {
     }
 
     /**
+     * Gibt Bin(n, k) := n!/(k!*(n - k)!), 0 <= k <= n, zurück.
+     */
+    public static BigInteger bin(int n, int k) {
+        BigInteger result = BigInteger.ZERO;
+        if (k > n / 2) {
+            return bin(n, n - k);
+        }
+        if (k >= 0 && k <= n) {
+            result = BigInteger.ONE;
+            for (int i = 1; i <= k; i++) {
+                result = result.multiply(BigInteger.valueOf(n + 1 - i)).divide(BigInteger.valueOf(i));
+            }
+        }
+        return result;
+    }
+
+    /**
      * Liefert die größte Zahl b mit b^n <= a. Falls die n-te Wurzel aus a also
      * ganzzahlig ist, gilt b^n = a.
-     * 
+     *
      * @throws EvaluationException
      */
     public static BigInteger sqrt(BigInteger a, int n) throws EvaluationException {

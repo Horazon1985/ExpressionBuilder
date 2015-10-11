@@ -490,7 +490,7 @@ public abstract class Expression {
      * vars hinzu. Ziel: Start mit vars = {} liefert alle vorkommenden
      * Variablen.
      */
-    public abstract void getContainedVars(HashSet<String> vars);
+    public abstract void addContainedVars(HashSet<String> vars);
 
     /**
      * Gibt zurück, ob this die Variable var enthält.
