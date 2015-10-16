@@ -549,6 +549,15 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+        Expression[] resultLeft = new Expression[this.left.length];
+        for (int i = 0; i < this.left.length; i++) {
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var);
+        }
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var), resultLeft);
+    }
+    
+    @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {

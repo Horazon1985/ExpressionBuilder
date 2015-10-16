@@ -26,6 +26,7 @@ public abstract class ComputationBounds {
     public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY");
     public static final int BOUND_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY");
     public static final int BOUND_MAXIMAL_INTEGRABLE_POWER = getBound("Bound_MAXIMAL_INTEGRABLE_POWER");
+    public static final int BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS = getBound("Bound_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS");
     public static final int BOUND_POWER_OF_GENERAL_MATRIX = getBound("Bound_POWER_OF_GENERAL_MATRIX");
     public static final int BOUND_POWER_OF_RATIONAL_MATRIX = getBound("Bound_POWER_OF_RATIONAL_MATRIX");
     public static final int BOUND_COMPUTE_DET_EXPLICITELY = getBound("Bound_COMPUTE_DET_EXPLICITLY");

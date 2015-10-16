@@ -1080,6 +1080,11 @@ public class Function extends Expression {
     }
 
     @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+        return new Function(this.left.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var), this.type);
+    }
+
+    @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
         return new Function(this.left.simplifyAlgebraicExpressions(), this.type);
     }

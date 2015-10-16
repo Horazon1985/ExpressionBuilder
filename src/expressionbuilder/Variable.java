@@ -60,8 +60,9 @@ public class Variable extends Expression {
     }
 
     /**
-     * Methode create: ohne Wertzuweisung (d.h. die Variable wird automatisch auf 0 gesetzt)
-     */ 
+     * Methode create: ohne Wertzuweisung (d.h. die Variable wird automatisch
+     * auf 0 gesetzt)
+     */
     public static Variable create(String name) {
         if (variables.containsKey(name)) {
             return variables.get(name);
@@ -81,7 +82,7 @@ public class Variable extends Expression {
 
     /**
      * Methode create: mit Wertzuweisung
-     */ 
+     */
     public static Variable create(String name, double value) {
         if (variables.containsKey(name)) {
             variables.get(name).value = value;
@@ -102,7 +103,7 @@ public class Variable extends Expression {
 
     /**
      * Methode create: mit Wertzuweisung als exakten Ausdruck
-     */ 
+     */
     public static Variable create(String name, Expression preciseExpression) {
         if (variables.containsKey(name)) {
             variables.get(name).preciseExpression = preciseExpression;
@@ -238,7 +239,7 @@ public class Variable extends Expression {
     public boolean containsTrigonometricalFunction() {
         return false;
     }
-    
+
     @Override
     public boolean containsIndefiniteIntegral() {
         return false;
@@ -370,7 +371,7 @@ public class Variable extends Expression {
     public int length() {
         return 1;
     }
-    
+
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
         if (this.name.equals("pi") && !this.precise) {
@@ -380,17 +381,17 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
+    public Expression simplifyExpand() {
         return this;
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() {
         return this;
     }
 
@@ -400,82 +401,87 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression orderDifferencesAndQuotients() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() {
         return this;
     }
 
     @Override
-    public Expression simplifyCollectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() {
         return this;
     }
 
     @Override
-    public Expression simplifyReduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() {
         return this;
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
+    public Expression simplifyPowers() {
         return this;
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() {
         return this;
     }
 
     @Override
-    public Expression simplifyFunctionalRelations() throws EvaluationException {
+    public Expression simplifyFunctionalRelations() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
-        return this;
-    }
-    
-    @Override
-    public Expression simplifyCollectLogarithms() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpandLogarithms() throws EvaluationException {
+    public Expression simplifyCollectLogarithms() {
         return this;
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
+    public Expression simplifyExpandLogarithms() {
         return this;
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsByDefinitions() {
         return this;
     }
-    
+
     @Override
-    public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) {
+        return this;
+    }
+
+    @Override
+    public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() {
+        return this;
+    }
+
+    @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) {
         return this;
     }
 

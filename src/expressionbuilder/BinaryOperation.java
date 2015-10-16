@@ -9,7 +9,9 @@ import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyFunctionMethods;
 import expressionsimplifymethods.SimplifyFunctionalRelations;
+import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import translator.Translator;
@@ -876,7 +878,6 @@ public class BinaryOperation extends Expression {
             exprExpanded = simplifySingleExpand(expr);
         }
         return expr;
-//        return simplifySingleExpand(this);
     }
 
     /**
@@ -2546,6 +2547,262 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
+
+        }
+
+        return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
+                this.right.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
+                this.type);
+
+    }
+
+    /* 
+     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
+     mit h_i = sin oder = cos.
+     */
+    public static boolean isPolynomialInVariousExponentialAndTrigonometricalFunctions(Expression f, String var) {
+        if (!f.contains(var)) {
+            return true;
+        }
+        if (f.isSum() || f.isDifference() || f.isProduct()) {
+            return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getRight(), var);
+        }
+        if (f.isQuotient()) {
+            return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && !((BinaryOperation) f).getRight().contains(var);
+        }
+        if (f.isPower()) {
+            return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
+                    && ((BinaryOperation) f).getRight().isIntegerConstant()
+                    && ((BinaryOperation) f).getRight().isPositive();
+        }
+        if (f.isFunction()) {
+            return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
+                    || f.isFunction(TypeFunction.sin))
+                    && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
+                    && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
+        }
+        if (f instanceof Operator) {
+            return !f.contains(var);
+        }
+        return false;
+    }
+
+    private static BigInteger getUpperBoundForSummands(Expression f, String var) {
+
+        if (f.isSum()) {
+            BigInteger numberOfSummands = BigInteger.ONE;
+            ExpressionCollection summands = SimplifyUtilities.getSummands(f);
+            for (int i = 0; i < summands.getBound(); i++) {
+                if (summands.get(i) == null) {
+                    continue;
+                }
+                numberOfSummands = numberOfSummands.add(getUpperBoundForSummands(summands.get(i), var));
+            }
+            return numberOfSummands;
+        } else if (f.isDifference()) {
+            return getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var).add(getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var));
+        } else if (f.isProduct()) {
+            BigInteger numberOfSummands = BigInteger.ONE;
+            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (factors.get(i) == null) {
+                    continue;
+                }
+                numberOfSummands = numberOfSummands.multiply(getUpperBoundForSummands(factors.get(i), var));
+            }
+            return numberOfSummands;
+        } else if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
+            return getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var);
+        } else if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()
+                && ((BinaryOperation) f).getRight().isPositive()
+                && ((Constant) ((BinaryOperation) f).getRight()).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0) {
+
+            int exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().intValue();
+            BigInteger numberOfSummandsInBaseAsBigInt = getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var);
+            if (numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.ZERO) > 0
+                    && numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0) {
+                int numberOfSummandsInBase = numberOfSummandsInBaseAsBigInt.intValue();
+                // Anzahl der Summanden in (a_1 + ... + a_n)^k ist (n - 1 + k)!/[(n - 1)! * k!]
+                return ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
+                        ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
+            }
+        }
+
+        return BigInteger.ONE;
+
+    }
+
+    private static Expression expandPowerOfCos(Expression argument, int n) {
+        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
+        Expression result = ZERO;
+
+        if (n % 2 == 0) {
+            for (int i = 0; i < n / 2; i++) {
+                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+            result = result.add(new Constant(ArithmeticMethods.bin(n, n / 2)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+        } else {
+            for (int i = 0; i <= (n - 1) / 2; i++) {
+                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+        }
+
+        return result;
+    }
+
+    /* 
+     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
+     mit h_i = sin oder = cos.
+     */
+    private static Expression expandPowerOfSin(Expression argument, int n) {
+
+        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
+        Expression result = ZERO;
+
+        int m;
+        if (n % 2 == 0) {
+            m = n / 2;
+            for (int i = 0; i < m; i++) {
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+            result = result.add(new Constant(ArithmeticMethods.bin(n, m)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+        } else {
+            // n = 2 * m + 1 ist ungerade.
+            m = (n - 1) / 2;
+            for (int i = 0; i <= m; i++) {
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).sin()).div(
+                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
+            }
+        }
+
+        return result;
+
+    }
+
+    private static Expression rewriteProductOfSinSin(Expression argumentLeft, Expression argumentRight) {
+        return argumentLeft.sub(argumentRight).cos().sub(argumentLeft.add(argumentRight).cos()).div(2);
+    }
+
+    private static Expression rewriteProductOfCosCos(Expression argumentLeft, Expression argumentRight) {
+        return argumentLeft.sub(argumentRight).cos().add(argumentLeft.add(argumentRight).cos()).div(2);
+    }
+
+    private static Expression rewriteProductOfSinCos(Expression argumentSin, Expression argumentCos) {
+        return rewriteProductOfCosSin(argumentCos, argumentSin);
+    }
+
+    private static Expression rewriteProductOfCosSin(Expression argumentCos, Expression argumentSin) {
+        return argumentCos.add(argumentSin).sin().sub(argumentCos.sub(argumentSin).sin()).div(2);
+    }
+
+    @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+
+        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+        if (Thread.interrupted()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+        }
+
+        if (this.isSum()) {
+
+            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+            }
+            return SimplifyUtilities.produceSum(summands);
+
+        } else if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+            }
+
+            Expression factorLeft, factorRight;
+            for (int i = 0; i < factors.getBound() - 1; i++) {
+
+                if (factors.get(i) == null || !factors.get(i).contains(var)) {
+                    continue;
+                }
+                factorLeft = factors.get(i);
+
+                for (int j = i + 1; j < factors.getBound(); j++) {
+                    if (factors.get(j) == null || !factors.get(j).contains(var)) {
+                        continue;
+                    }
+                    factorRight = factors.get(j);
+
+                    // Nun multiplikative Relationen anwenden.
+                    if (factorLeft.isFunction(TypeFunction.cos)) {
+                        if (factorRight.isFunction(TypeFunction.cos)) {
+                            factors.put(i, rewriteProductOfCosCos(((Function) factorLeft).getLeft(), ((Function) factorRight).getLeft()));
+                            factors.remove(j);
+                        } else if (factorRight.isFunction(TypeFunction.sin)) {
+                            factors.put(i, rewriteProductOfCosSin(((Function) factorLeft).getLeft(), ((Function) factorRight).getLeft()));
+                            factors.remove(j);
+                        }
+                    } else if (factorLeft.isFunction(TypeFunction.sin)) {
+                        if (factorRight.isFunction(TypeFunction.cos)) {
+                            factors.put(i, rewriteProductOfSinCos(((Function) factorLeft).getLeft(), ((Function) factorRight).getLeft()));
+                            factors.remove(j);
+                        } else if (factorRight.isFunction(TypeFunction.sin)) {
+                            factors.put(i, rewriteProductOfSinSin(((Function) factorLeft).getLeft(), ((Function) factorRight).getLeft()));
+                            factors.remove(j);
+                        }
+                    }
+
+                }
+            }
+
+            return SimplifyUtilities.produceProduct(factors);
+
+        } else if (this.isPower()) {
+
+            Expression expr = this.left.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var).pow(
+                    this.right.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+
+            if (expr.isPower() && ((BinaryOperation) expr).right.isIntegerConstant()
+                    && ((BinaryOperation) expr).right.isPositive()
+                    && ((Constant) ((BinaryOperation) expr).right).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0
+                    && isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) expr).left, var)) {
+
+                Expression base = ((BinaryOperation) expr).left;
+                BigInteger numberOfSummandsInBaseAsBigInt = getUpperBoundForSummands(base, var);
+                if (numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
+
+                    int numberOfSummandsInBase = numberOfSummandsInBaseAsBigInt.intValue();
+                    int exponent = ((Constant) ((BinaryOperation) expr).right).getValue().intValue();
+
+                    // Anzahl der Summanden in (a_1 + ... + a_n)^k ist (n - 1 + k)!/[(n - 1)! * k!]
+                    BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
+                            ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
+                    if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
+
+                        /* 
+                         Falls base eine echte Summe / Differenz ist, dann expand() anwenden.
+                         Falls base eine Sinus oder Kosinusfunktion ist, und das Argument var
+                         enthält, dann wird gemäß bestimmter Relationen entwickelt.
+                         */
+                        if (base.isFunction(TypeFunction.cos) && ((Function) base).getLeft().contains(var)) {
+                            return expandPowerOfCos(((Function) base).getLeft(), exponent);
+                        }
+                        if (base.isFunction(TypeFunction.sin) && ((Function) base).getLeft().contains(var)) {
+                            return expandPowerOfSin(((Function) base).getLeft(), exponent);
+                        }
+
+                    }
+
+                }
+            }
+
+            return expr;
 
         }
 

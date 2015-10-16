@@ -48,6 +48,9 @@
   <object id = "Bound_MAXIMAL_INTEGRABLE_POWER">
     <value>100</value>
   </object>
+  <object id = "Bound_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS">
+    <value>100</value>
+  </object>
   <object id = "Bound_POWER_OF_GENERAL_MATRIX">
     <value>10</value>
   </object>

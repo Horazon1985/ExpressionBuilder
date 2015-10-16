@@ -121,7 +121,7 @@ public class Constant extends Expression {
      * Macht auch enumerator/denominator einen (gekürzten) Bruch (als
      * Expression)
      */
-    public static Expression constantToQuotient(BigDecimal enumerator, BigDecimal denominator) throws EvaluationException {
+    public static Expression constantToQuotient(BigDecimal enumerator, BigDecimal denominator) {
         BigInteger[] reducedFraction = reduceFraction(enumerator, denominator);
         if (reducedFraction[1].equals(BigInteger.ONE)) {
             return new Constant(reducedFraction[0]);
@@ -228,7 +228,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
+    public Expression evaluate(HashSet<String> vars) {
         return this;
     }
 
@@ -255,12 +255,12 @@ public class Constant extends Expression {
     public boolean containsExponentialFunction() {
         return false;
     }
-    
+
     @Override
     public boolean containsTrigonometricalFunction() {
         return false;
     }
-    
+
     @Override
     public boolean containsIndefiniteIntegral() {
         return false;
@@ -366,7 +366,7 @@ public class Constant extends Expression {
     public boolean hasPositiveSign() {
         return this.getValue().compareTo(BigDecimal.ZERO) >= 0;
     }
-    
+
     @Override
     public int length() {
         return 1;
@@ -384,17 +384,17 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandRationalFactors() throws EvaluationException {
+    public Expression simplifyExpandRationalFactors() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
+    public Expression simplifyExpand() {
         return this;
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceLeadingsCoefficients() {
         return this;
     }
 
@@ -404,82 +404,87 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression orderDifferencesAndQuotients() throws EvaluationException {
+    public Expression orderDifferencesAndQuotients() {
         return this;
     }
 
     @Override
-    public Expression simplifyCollectProducts() throws EvaluationException {
+    public Expression simplifyCollectProducts() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeInSums() throws EvaluationException {
+    public Expression simplifyFactorizeInSums() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeInDifferences() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInSums() {
         return this;
     }
 
     @Override
-    public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
+    public Expression simplifyFactorizeAllButRationalsInDifferences() {
         return this;
     }
 
     @Override
-    public Expression simplifyReduceQuotients() throws EvaluationException {
+    public Expression simplifyReduceQuotients() {
         return this;
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
+    public Expression simplifyPowers() {
         return this;
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyPowers() {
         return this;
     }
 
     @Override
-    public Expression simplifyFunctionalRelations() throws EvaluationException {
+    public Expression simplifyFunctionalRelations() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() {
         return this;
     }
 
     @Override
-    public Expression simplifyCollectLogarithms() throws EvaluationException {
+    public Expression simplifyCollectLogarithms() {
         return this;
     }
 
     @Override
-    public Expression simplifyExpandLogarithms() throws EvaluationException {
+    public Expression simplifyExpandLogarithms() {
         return this;
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsByDefinitions() {
         return this;
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) {
         return this;
     }
 
     @Override
-    public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
+    public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() {
+        return this;
+    }
+
+    @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) {
         return this;
     }
 

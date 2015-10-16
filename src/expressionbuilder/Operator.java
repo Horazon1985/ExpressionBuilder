@@ -1,11 +1,12 @@
 package expressionbuilder;
 
-import exceptions.EvaluationException;
-import exceptions.ExpressionException;
 import computation.AnalysisMethods;
 import computation.ArithmeticMethods;
 import computation.NumericalMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
+import exceptions.NotPreciseIntegrableException;
 import expressionsimplifymethods.SimplifyOperatorMethods;
 import integrationmethods.SimplifyIntegralMethods;
 import java.math.BigDecimal;
@@ -1817,23 +1818,23 @@ public class Operator extends Expression {
     private Expression simplifyTrivialInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-            Object result = SimplifyIntegralMethods.indefiniteIntegration(this, true);
-            if (result instanceof Expression) {
-                return (Expression) result;
+            try {
+                return SimplifyIntegralMethods.indefiniteIntegration(this, true);
+            } catch (NotPreciseIntegrableException e) {
             }
         }
 
         if (this.params.length == 4) {
 
             // Hier wird versucht, explizit zu integrieren.
-            Object result = SimplifyIntegralMethods.definiteIntegration(this);
-            if (result instanceof Expression && this.precise) {
+            try {
                 /*
                  Nur im exakten (nichtapproximativen) Fall das
                  Urpsrungsintegral wieder zurückgeben, falls es nicht
                  berechnet werden konnte.
                  */
-                return (Expression) result;
+                return SimplifyIntegralMethods.definiteIntegration(this);
+            } catch (NotPreciseIntegrableException e) {
             }
         }
 
@@ -2178,6 +2179,19 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).simplifyReplaceTrigonometricalFunctionsByDefinitions();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new Operator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var);
             } else {
                 resultParams[i] = this.params[i];
             }

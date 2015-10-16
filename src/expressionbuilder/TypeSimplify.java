@@ -10,6 +10,7 @@ public enum TypeSimplify {
     simplify_powers, multiply_powers, simplify_functional_relations,
     simplify_replace_exponential_functions_by_definitions, 
     simplify_replace_trigonometrical_functions_by_definitions,
+    simplify_expand_powers_and_products_of_trigonometrical_functions,
     simplify_collect_logarithms, simplify_expand_logarithms;
 
 }

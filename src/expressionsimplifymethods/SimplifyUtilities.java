@@ -648,20 +648,16 @@ public abstract class SimplifyUtilities {
      * Bildet die Summe aus allen Termen von summands.
      */
     public static Expression produceSum(ExpressionCollection summands) {
-
         if (summands.isEmpty()) {
-            summands.put(0, Expression.ZERO);
+            return Expression.ZERO;
         }
-
         Expression result = Expression.ZERO;
         for (int i = summands.getBound() - 1; i >= 0; i--) {
             if (summands.get(i) != null && !summands.get(i).equals(Expression.ZERO)) {
                 result = summands.get(i).add(result);
             }
         }
-
         return result;
-
     }
 
     /**
@@ -669,36 +665,23 @@ public abstract class SimplifyUtilities {
      * und summandsRight.
      */
     public static Expression produceDifference(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
-
-        if (summandsLeft.isEmpty() && summandsRight.isEmpty()) {
-            return Expression.ZERO;
-        } else if (!summandsLeft.isEmpty() && summandsRight.isEmpty()) {
-            return produceSum(summandsLeft);
-        } else if (summandsLeft.isEmpty() && !summandsRight.isEmpty()) {
-            return Expression.MINUS_ONE.mult(produceSum(summandsRight));
-        }
         return produceSum(summandsLeft).sub(produceSum(summandsRight));
-
     }
 
     /**
      * Bildet das Produkt aus allen Termen von factors.
      */
     public static Expression produceProduct(ExpressionCollection factors) {
-
         if (factors.isEmpty()) {
-            factors.put(0, Expression.ONE);
+            return Expression.ONE;
         }
-
         Expression result = Expression.ONE;
         for (int i = factors.getBound() - 1; i >= 0; i--) {
             if (factors.get(i) != null && !factors.get(i).equals(Expression.ONE)) {
                 result = factors.get(i).mult(result);
             }
         }
-
         return result;
-
     }
 
     /**
@@ -706,16 +689,7 @@ public abstract class SimplifyUtilities {
      * factorsEnumerator und factorsDenominator.
      */
     public static Expression produceQuotient(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) {
-
-        if (factorsEnumerator.isEmpty() && factorsDenominator.isEmpty()) {
-            return Expression.ONE;
-        } else if (!factorsEnumerator.isEmpty() && factorsDenominator.isEmpty()) {
-            return produceProduct(factorsEnumerator);
-        } else if (factorsEnumerator.isEmpty() && !factorsDenominator.isEmpty()) {
-            return Expression.ONE.div(produceProduct(factorsDenominator));
-        }
         return produceProduct(factorsEnumerator).div(produceProduct(factorsDenominator));
-
     }
 
     /**

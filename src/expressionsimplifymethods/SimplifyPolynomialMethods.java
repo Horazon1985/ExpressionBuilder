@@ -62,19 +62,14 @@ public abstract class SimplifyPolynomialMethods {
                 BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
-            // Dann ist f kein Polynom
-            return BigInteger.valueOf(-1);
         }
         if (f instanceof Operator) {
             if (f.isConstant()) {
                 return BigInteger.ZERO;
             }
-            // Dann ist f kein Polynom
-            return BigInteger.valueOf(-1);
         }
-        // Sollte eigentlich nie eintreten, da Instanzen von SelfDefinedFunction 
-        // stets in Instanzen anderer Klassen vereinfacht werden.
-        return BigInteger.ZERO;
+        // Dann ist f kein Polynom
+        return BigInteger.valueOf(-1);
     }
 
     /**
@@ -122,14 +117,9 @@ public abstract class SimplifyPolynomialMethods {
             if (f.isConstant()) {
                 return BigInteger.ZERO;
             }
-            // Dann ist f kein Polynom
-            return BigInteger.valueOf(-1);
         }
-        /*
-         Sollte eigentlich nie eintreten, da Instanzen von SelfDefinedFunction 
-         stets in Instanzen anderer Klassen vereinfacht werden.
-         */
-        return BigInteger.ZERO;
+        // Dann ist f kein Polynom
+        return BigInteger.valueOf(-1);
     }
 
 }

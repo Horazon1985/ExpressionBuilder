@@ -16,10 +16,22 @@ public class ExpressionCollection {
         this.bound = 0;
     }
 
+    public ExpressionCollection(ExpressionCollection terms) {
+        this.terms = new HashMap<>();
+        this.bound = 0;
+        for (int i = 0; i < terms.bound; i++){
+            this.add(terms.get(i));
+        }
+    }
+    
     public int getBound() {
         return this.bound;
     }
 
+    public int getSize() {
+        return this.terms.size();
+    }
+    
     public boolean isEmpty() {
         return this.terms.isEmpty();
     }

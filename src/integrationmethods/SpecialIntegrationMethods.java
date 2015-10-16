@@ -3,15 +3,18 @@ package integrationmethods;
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
+import exceptions.NotPreciseIntegrableException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.TWO;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
+import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
@@ -34,8 +37,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateRationalFunction(Operator expr) throws EvaluationException {
+    public static Expression integrateRationalFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -44,7 +48,7 @@ public abstract class SpecialIntegrationMethods {
         if (f.isNotQuotient()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         /*
@@ -61,7 +65,7 @@ public abstract class SpecialIntegrationMethods {
              SimplifyIntegralMethods.takeConstantsOutOfIntegral() geschieht.
              Daher -> beenden.
              */
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         BigInteger degreeEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -70,7 +74,7 @@ public abstract class SpecialIntegrationMethods {
         // Nur bei Graden <= 100 fortfahren.
         if (degreeEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER)) > 0
                 || degreeDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER)) > 0) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
@@ -114,11 +118,11 @@ public abstract class SpecialIntegrationMethods {
                 if (factorsOfDecomposedDenominator.get(i).isPower()) {
                     if (SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) factorsOfDecomposedDenominator.get(i)).getLeft(), var)
                             && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorsOfDecomposedDenominator.get(i)).getLeft(), var).compareTo(BigInteger.ONE) > 0) {
-                        return false;
+                        throw new NotPreciseIntegrableException();
                     }
                 } else if (SimplifyPolynomialMethods.isPolynomial(factorsOfDecomposedDenominator.get(i), var)
                         && SimplifyPolynomialMethods.degreeOfPolynomial(factorsOfDecomposedDenominator.get(i), var).compareTo(BigInteger.ONE) > 0) {
-                    return false;
+                    throw new NotPreciseIntegrableException();
                 }
             }
             /*
@@ -129,7 +133,7 @@ public abstract class SpecialIntegrationMethods {
             Object partialFractionDecomposition = getPartialFractionDecomposition(((BinaryOperation) f).getLeft(), denominatorDecomposed, var);
 
             if (!(partialFractionDecomposition instanceof Expression)) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
 
             ExpressionCollection summandsOfIntegralFunction = SimplifyUtilities.getSummands((Expression) partialFractionDecomposition);
@@ -181,7 +185,7 @@ public abstract class SpecialIntegrationMethods {
             return integrateQuotientOfLinearAndQuadraticPolynomial(coefficientsEnumerator, coefficientsDenominator, var);
         }
 
-        return false;
+        throw new NotPreciseIntegrableException();
 
     }
 
@@ -328,10 +332,11 @@ public abstract class SpecialIntegrationMethods {
      * zurückgegeben.
      *
      * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
+    public static Expression integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
             ExpressionCollection coefficientsDenominator, int n, String var)
-            throws EvaluationException {
+            throws EvaluationException, NotPreciseIntegrableException {
 
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
         Expression denominator = coefficientsDenominator.get(0);
@@ -342,7 +347,7 @@ public abstract class SpecialIntegrationMethods {
         // Falls in den Nennerkoeffizienten Parameter auftreten -> false zurückgeben.
         for (int i = 0; i < 3; i++) {
             if (!coefficientsDenominator.get(i).isConstant()) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         }
 
@@ -359,7 +364,7 @@ public abstract class SpecialIntegrationMethods {
          */
         Expression diskriminant = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
         if (!diskriminant.isNonPositive() || diskriminant.equals(Expression.ZERO)) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         /*
@@ -387,7 +392,7 @@ public abstract class SpecialIntegrationMethods {
             return firstSummand.add(factor.mult(summandForRecursiveIntegral).add(factor.mult((Expression) integralOfLowerPower)));
         }
 
-        return false;
+        throw new NotPreciseIntegrableException();
 
     }
 
@@ -400,9 +405,10 @@ public abstract class SpecialIntegrationMethods {
      * zurückgegeben.
      *
      * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateQuotientOfLinearAndQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
-            ExpressionCollection coefficientsDenominator, String var) throws EvaluationException {
+    public static Expression integrateQuotientOfLinearAndQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
+            ExpressionCollection coefficientsDenominator, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression denominator = coefficientsDenominator.get(0);
         for (int i = 1; i < coefficientsDenominator.getBound(); i++) {
@@ -413,7 +419,7 @@ public abstract class SpecialIntegrationMethods {
         // Falls in den Nennerkoeffizienten Parameter auftreten -> false zurückgeben.
         for (int i = 0; i < 3; i++) {
             if (!coefficientsDenominator.get(i).isConstant()) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         }
 
@@ -430,7 +436,7 @@ public abstract class SpecialIntegrationMethods {
          */
         Expression diskr = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
         if (!diskr.isNonPositive() || diskr.equals(Expression.ZERO)) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         /*
@@ -454,119 +460,6 @@ public abstract class SpecialIntegrationMethods {
     }
 
     // Weitere Typen.
-    /**
-     * Integration von exp(a*x+b)*sin(c*x+d). VORAUSSETZUNG: expr ist ein
-     * unbestimmtes Integral. Falls der Integrand nicht vom angegebenen Typ ist,
-     * so wird false zurückgegeben.
-     *
-     * @throws EvaluationException
-     */
-    public static Object integrateProductOfExpSin(Operator expr) throws EvaluationException {
-
-        Expression f = (Expression) expr.getParams()[0];
-        String var = (String) expr.getParams()[1];
-
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
-            return false;
-        }
-
-        TypeFunction typeLeft = ((Function) factors.get(0)).getType();
-        TypeFunction typeRight = ((Function) factors.get(1)).getType();
-
-        if (typeLeft.equals(TypeFunction.sin) && typeRight.equals(TypeFunction.exp)) {
-            // Plätze tauschen und weitermachen!
-            Expression tmpFactor = factors.get(0).copy();
-            factors.put(0, factors.get(1));
-            factors.put(1, tmpFactor);
-            TypeFunction tmpType = typeLeft;
-            typeLeft = typeRight;
-            typeRight = tmpType;
-        }
-        if (typeLeft.equals(TypeFunction.exp) && typeRight.equals(TypeFunction.sin)) {
-
-            Expression expArgument = ((Function) factors.get(0)).getLeft();
-            Expression sinArgument = ((Function) factors.get(1)).getLeft();
-            if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
-                    || !SimplifyPolynomialMethods.isPolynomial(sinArgument, var)) {
-                return false;
-            }
-            ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
-            ExpressionCollection coefficientsInSin = PolynomialRootsMethods.getPolynomialCoefficients(sinArgument, var);
-            if (coefficientsInExp.getBound() != 2 || coefficientsInSin.getBound() != 2) {
-                return false;
-            }
-
-            /*
-             Ab hier ist der Integrand von der Form f = exp(a*x+b)*sin(c*x+d).
-             Es wird int(exp(a*x+b)*sin(c*x+d), x) =
-             exp(a*x+b)*(a*sin(c*x+d)-c*cos(c*x+d))/(a^2+c^2) zurückgegeben.
-             */
-            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).sub(coefficientsInSin.get(1).mult(sinArgument.cos()))).div(
-                    coefficientsInExp.get(1).pow(2).add(coefficientsInSin.get(1).pow(2)));
-
-        }
-
-        return false;
-
-    }
-
-    /**
-     * Integration von exp(a*x+b)*cos(c*x+d). VORAUSSETZUNG: expr ist ein
-     * unbestimmtes Integral. Falls der Integrand nicht vom angegebenen Typ ist,
-     * so wird false zurückgegeben.
-     *
-     * @throws EvaluationException
-     */
-    public static Object integrateProductOfExpCos(Operator expr) throws EvaluationException {
-
-        Expression f = (Expression) expr.getParams()[0];
-        String var = (String) expr.getParams()[1];
-
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        if (factors.getBound() != 2 || !factors.get(0).isFunction() || !factors.get(1).isFunction()) {
-            return false;
-        }
-
-        TypeFunction typeLeft = ((Function) factors.get(0)).getType();
-        TypeFunction typeRight = ((Function) factors.get(1)).getType();
-
-        if (typeLeft.equals(TypeFunction.cos) && typeRight.equals(TypeFunction.exp)) {
-            // Plätze tauschen und weitermachen!
-            Expression tmpFactor = factors.get(0).copy();
-            factors.put(0, factors.get(1));
-            factors.put(1, tmpFactor);
-            TypeFunction tmpType = typeLeft;
-            typeLeft = typeRight;
-            typeRight = tmpType;
-        }
-        if (typeLeft.equals(TypeFunction.exp) && typeRight.equals(TypeFunction.cos)) {
-
-            Expression expArgument = ((Function) factors.get(0)).getLeft();
-            Expression cosArgument = ((Function) factors.get(1)).getLeft();
-            if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
-                    || !SimplifyPolynomialMethods.isPolynomial(cosArgument, var)) {
-                return false;
-            }
-            ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
-            ExpressionCollection coefficientsInCos = PolynomialRootsMethods.getPolynomialCoefficients(cosArgument, var);
-            if (coefficientsInExp.getBound() != 2 || coefficientsInCos.getBound() != 2) {
-                return false;
-            }
-
-            /*
-             Ab hier ist der Integrand von der Form f = exp(a*x+b)*sin(c*x+d).
-             Es wird int(exp(a*x+b)*cos(c*x+d), x) =
-             exp(a*x+b)*(a*cos(c*x+d)+c*sin(c*x+d))/(a^2+c^2) zurückgegeben.
-             */
-            return factors.get(0).mult(coefficientsInExp.get(1).mult(factors.get(1)).add(coefficientsInCos.get(1).mult(cosArgument.sin()))).div(coefficientsInExp.get(1).pow(2).add(coefficientsInCos.get(1).pow(2)));
-
-        }
-
-        return false;
-
-    }
-
     /**
      * Integration von sin(a*x+b)*sin(c*x+d). VORAUSSETZUNG: expr ist ein
      * unbestimmtes Integral. Falls der Integrand nicht vom angegebenen Typ ist,
@@ -703,13 +596,6 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      */
     public static Object integrateProductOfSinCos(Operator expr) throws EvaluationException {
-
-        System.out.println(expandPowerOfCos(Variable.create("x"), 2));
-        System.out.println(expandPowerOfCos(Variable.create("x"), 3));
-        System.out.println(expandPowerOfCos(Variable.create("x"), 4));
-        System.out.println(expandPowerOfSin(Variable.create("x"), 2));
-        System.out.println(expandPowerOfSin(Variable.create("x"), 3));
-        System.out.println(expandPowerOfSin(Variable.create("x"), 4));
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -853,125 +739,281 @@ public abstract class SpecialIntegrationMethods {
 
     }
 
-    /* 
-     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
-     mit h_i = sin oder = cos.
-     */
-    private static Expression expandPowerOfCos(Expression argument, int n) {
-        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
-        Expression result = ZERO;
-
-        if (n % 2 == 0) {
-            for (int i = 0; i < n / 2; i++) {
-                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
-                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
-            }
-            result = result.add(new Constant(ArithmeticMethods.bin(n, n / 2)).div(new Constant(BigInteger.valueOf(2).pow(n))));
-        } else {
-            for (int i = 0; i <= (n - 1) / 2; i++) {
-                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
-                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
-            }
-        }
-
-        return result;
+    private static boolean isExponentialFunction(Expression f, String var) {
+        return f.isFunction(TypeFunction.exp) && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
+                && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
     }
 
-    /* 
-     Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
-     mit h_i = sin oder = cos.
-     */
-    private static Expression expandPowerOfSin(Expression argument, int n) {
-
-        // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
-        Expression result = ZERO;
-
-        int m;
-        if (n % 2 == 0) {
-            m = n / 2;
-            for (int i = 0; i < m; i++) {
-                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
-                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
-            }
-            result = result.add(new Constant(ArithmeticMethods.bin(n, m)).div(new Constant(BigInteger.valueOf(2).pow(n))));
-        } else {
-            // n = 2 * m + 1 ist ungerade.
-            m = (n - 1) / 2;
-            for (int i = 0; i <= m; i++) {
-                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).sin()).div(
-                        new Constant(BigInteger.valueOf(2).pow(n - 1))));
-            }
-        }
-
-        return result;
-
+    private static boolean isTrigonometricalFunction(Expression f, String var) {
+        return (f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)) && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
+                && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
     }
 
-    private static Expression rewriteProductOfSinSin(Expression argumentLeft, Expression argumentRight) {
-        return argumentLeft.sub(argumentRight).cos().sub(argumentLeft.add(argumentRight).cos()).div(2);
-    }
+    private static boolean isSumOfProductsOfExponentialAndTrigonometricalFunctions(Expression f, String var) {
 
-    private static Expression rewriteProductOfCosCos(Expression argumentLeft, Expression argumentRight) {
-        return argumentLeft.sub(argumentRight).cos().add(argumentLeft.add(argumentRight).cos()).div(2);
-    }
+        ExpressionCollection summands = SimplifyUtilities.getSummandsLeftInExpression(f);
+        summands.add(SimplifyUtilities.getSummandsRightInExpression(f));
 
-    private static Expression rewriteProductOfSinCos(Expression argumentSin, Expression argumentCos) {
-        return rewriteProductOfCosSin(argumentCos, argumentSin);
-    }
-
-    private static Expression rewriteProductOfCosSin(Expression argumentCos, Expression argumentSin) {
-        return argumentCos.add(argumentSin).sin().sub(argumentCos.sub(argumentSin).sin()).div(2);
-    }
-
-    private static boolean isPolynomialInVariousTrigonometricalFunctions(Expression f, String var) {
-        if (!f.contains(var)) {
-            return true;
-        }
-        if (f.isSum() || f.isDifference() || f.isProduct()) {
-            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
-                    && isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getRight(), var);
-        }
-        if (f.isQuotient()) {
-            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
-                    && !((BinaryOperation) f).getRight().contains(var);
-        }
-        if (f.isPower()) {
-            return isPolynomialInVariousTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
-                    && ((BinaryOperation) f).getRight().isIntegerConstant()
-                    && ((BinaryOperation) f).getRight().isPositive();
-        }
-        if (f.isFunction()) {
-            return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
-                    || f.isFunction(TypeFunction.sin))
-                    && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
-                    && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
-        }
-        if (f instanceof Operator) {
-            return !f.contains(var);
-        }
-        return false;
-    }
-
-    private static BigInteger getUpperBoundForSummands(Expression f, String var) {
-        BigInteger numberOfSummands = BigInteger.ONE;
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        for (int i = 0; i < factors.getBound(); i++) {
-            if (factors.get(i) == null) {
+        ExpressionCollection factorsEnumerator, factorsDenominator;
+        int numberOfExpFactors, numberOfTrigonometricalFactors;
+        for (int i = 0; i < summands.getBound(); i++) {
+            if (summands.get(i) == null || !summands.get(i).contains(var)) {
                 continue;
             }
-            numberOfSummands = numberOfSummands.multiply(getUpperBoundForSummands(factors.get(i), var));
+            factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(i));
+            factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(i));
+            numberOfExpFactors = 0;
+            numberOfTrigonometricalFactors = 0;
+            for (int j = 0; j < factorsEnumerator.getBound(); j++) {
+                if (factorsEnumerator.get(j).contains(var) && !isExponentialFunction(factorsEnumerator.get(j), var)
+                        && !isTrigonometricalFunction(factorsEnumerator.get(j), var)) {
+                    return false;
+                }
+                if (isExponentialFunction(factorsEnumerator.get(j), var)) {
+                    numberOfExpFactors++;
+                }
+                if (isTrigonometricalFunction(factorsEnumerator.get(j), var)) {
+                    numberOfTrigonometricalFactors++;
+                }
+            }
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+                if (factorsDenominator.get(j).contains(var)) {
+                    return false;
+                }
+            }
+            if (numberOfExpFactors > 1 || numberOfTrigonometricalFactors > 1) {
+                return false;
+            }
         }
-        return numberOfSummands;
+
+        return true;
+
+    }
+
+    private static Expression expandProductsOfExponentialAndTrigonometricalFunctions(Expression f, String var) throws EvaluationException {
+        return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
+                TypeSimplify.simplify_trivial, TypeSimplify.simplify_powers, TypeSimplify.collect_products,
+                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients, TypeSimplify.expand,
+                TypeSimplify.simplify_expand_powers_and_products_of_trigonometrical_functions);
     }
 
     /**
      * Integriert Funktionen vom Typ Polynom in Exponentialfunktionen und
      * trigonometrischen Funktionen, falls der Polynomgrad unterhalb einer
-     * geeigneten Schranke liegt..
+     * geeigneten Schranke liegt.
+     *
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integratePolynomialInExponentialAndTrigonometricalFunctions(Expression f, String var) {
+    public static Expression integratePolynomialInExponentialAndTrigonometricalFunctions(Operator expr) throws NotPreciseIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        if (!BinaryOperation.isPolynomialInVariousExponentialAndTrigonometricalFunctions(f, var)) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        try {
+            // Nun Potenzen von sin und cos durch Summen von sin und cos ersetzen.
+            Expression fExpanded = expandProductsOfExponentialAndTrigonometricalFunctions(f, var);
+            if (isSumOfProductsOfExponentialAndTrigonometricalFunctions(fExpanded, var)) {
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(fExpanded);
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(fExpanded);
+                Object integralOfSummand;
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    integralOfSummand = integrateSummandOfPolynomialInExponentialAndTrigonometricalFunctions(summandsLeft.get(i), var);
+                    if (!(integralOfSummand instanceof Expression)) {
+                        throw new NotPreciseIntegrableException();
+                    }
+                    summandsLeft.put(i, (Expression) integralOfSummand);
+                }
+                for (int i = 0; i < summandsRight.getBound(); i++) {
+                    integralOfSummand = integrateSummandOfPolynomialInExponentialAndTrigonometricalFunctions(summandsRight.get(i), var);
+                    if (!(integralOfSummand instanceof Expression)) {
+                        throw new NotPreciseIntegrableException();
+                    }
+                    summandsRight.put(i, (Expression) integralOfSummand);
+                }
+                return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+            }
+        } catch (EvaluationException e) {
+        }
+
+        throw new NotPreciseIntegrableException();
+
+    }
+
+    private static Object integrateSummandOfPolynomialInExponentialAndTrigonometricalFunctions(Expression f, String var) throws EvaluationException {
+
+        // Zuerst: Fall eines konstanten Summanden:
+        if (!f.contains(var)) {
+            return f.mult(Variable.create(var));
+        }
+
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+        ExpressionCollection constantfactorsEnumerator = new ExpressionCollection();
+        ExpressionCollection constantfactorsDenominator = new ExpressionCollection();
+
+        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+            if (!factorsEnumerator.get(i).contains(var)) {
+                constantfactorsEnumerator.add(factorsEnumerator.get(i));
+                factorsEnumerator.remove(i);
+            }
+        }
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            if (!factorsDenominator.get(i).contains(var)) {
+                constantfactorsDenominator.add(factorsDenominator.get(i));
+                factorsDenominator.remove(i);
+            }
+        }
+
+        if (!factorsDenominator.isEmpty() || factorsEnumerator.getSize() > 2) {
+            return false;
+        }
+
+        // Jetzt wird die Stammfunktion, abhängig von der Gestalt des Summanden, explizit bestimmt.
+        ExpressionCollection factors = new ExpressionCollection(factorsEnumerator);
+        Expression constantEnumerator = SimplifyUtilities.produceProduct(constantfactorsEnumerator);
+        Expression constantDenominator = SimplifyUtilities.produceProduct(constantfactorsDenominator);
+
+        // Fall: Integration von exp(a*x+b).
+        if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.exp)) {
+            Object integral = integrateExpOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von cos(a*x+b).
+        if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.cos)) {
+            Object integral = integrateCosOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von sin(a*x+b).
+        if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.sin)) {
+            Object integral = integrateSinOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von exp(a*x+b)*cos(c*x+d).
+        if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.exp) && factors.get(1).isFunction(TypeFunction.cos)) {
+            Object integral = integrateProductOfExpCos(((Function) factors.get(0)).getLeft(), ((Function) factors.get(1)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von cos(a*x+b)*exp(c*x+d).
+        if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.cos) && factors.get(1).isFunction(TypeFunction.exp)) {
+            Object integral = integrateProductOfExpCos(((Function) factors.get(1)).getLeft(), ((Function) factors.get(0)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von exp(a*x+b)*sin(c*x+d).
+        if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.exp) && factors.get(1).isFunction(TypeFunction.sin)) {
+            Object integral = integrateProductOfExpSin(((Function) factors.get(0)).getLeft(), ((Function) factors.get(1)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
+        // Fall: Integration von sin(a*x+b)*exp(c*x+d).
+        if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.sin) && factors.get(1).isFunction(TypeFunction.exp)) {
+            Object integral = integrateProductOfExpSin(((Function) factors.get(1)).getLeft(), ((Function) factors.get(0)).getLeft(), var);
+            if (integral instanceof Expression) {
+                return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            }
+        }
 
         return false;
+
+    }
+
+    /**
+     * Explizite Integration von exp(a*x+b).<br>
+     *
+     * @throws EvaluationException
+     */
+    private static Object integrateExpOfLinearFunction(Expression expArgument, String var) throws EvaluationException {
+        if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
+                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+            return false;
+        }
+        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        return expArgument.exp().div(coefficients.get(1));
+    }
+
+    /**
+     * Explizite Integration von cos(a*x+b).<br>
+     *
+     * @throws EvaluationException
+     */
+    private static Object integrateCosOfLinearFunction(Expression expArgument, String var) throws EvaluationException {
+        if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
+                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+            return false;
+        }
+        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        return expArgument.sin().div(coefficients.get(1));
+    }
+
+    /**
+     * Explizite Integration von sin(a*x+b).<br>
+     *
+     * @throws EvaluationException
+     */
+    private static Object integrateSinOfLinearFunction(Expression expArgument, String var) throws EvaluationException {
+        if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
+                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+            return false;
+        }
+        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        return MINUS_ONE.mult(expArgument.cos()).div(coefficients.get(1));
+    }
+
+    /**
+     * Integration von exp(a*x+b)*sin(c*x+d).
+     *
+     * @throws EvaluationException
+     */
+    public static Object integrateProductOfExpSin(Expression expArgument, Expression sinArgument, String var) throws EvaluationException {
+
+        ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficientsInSin = PolynomialRootsMethods.getPolynomialCoefficients(sinArgument, var);
+        if (coefficientsInExp.getBound() != 2 || coefficientsInSin.getBound() != 2) {
+            return false;
+        }
+
+        /*
+         Es wird int(exp(a*x+b)*sin(c*x+d), x) =
+         exp(a*x+b)*(a*sin(c*x+d)-c*cos(c*x+d))/(a^2+c^2) zurückgegeben.
+         */
+        return expArgument.exp().mult(coefficientsInExp.get(1).mult(sinArgument.sin()).sub(coefficientsInSin.get(1).mult(sinArgument.cos()))).div(
+                coefficientsInExp.get(1).pow(2).add(coefficientsInSin.get(1).pow(2)));
+
+    }
+
+    /**
+     * Integration von exp(a*x+b)*cos(c*x+d).
+     *
+     * @throws EvaluationException
+     */
+    public static Object integrateProductOfExpCos(Expression expArgument, Expression cosArgument, String var) throws EvaluationException {
+
+        ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficientsInCos = PolynomialRootsMethods.getPolynomialCoefficients(cosArgument, var);
+        if (coefficientsInExp.getBound() != 2 || coefficientsInCos.getBound() != 2) {
+            return false;
+        }
+
+        /*
+         Es wird int(exp(a*x+b)*cos(c*x+d), x) =
+         exp(a*x+b)*(a*cos(c*x+d)+c*sin(c*x+d))/(a^2+c^2) zurückgegeben.
+         */
+        return expArgument.exp().mult(coefficientsInExp.get(1).mult(cosArgument.cos()).add(coefficientsInCos.get(1).mult(cosArgument.sin()))).div(
+                coefficientsInExp.get(1).pow(2).add(coefficientsInCos.get(1).pow(2)));
 
     }
 
@@ -981,27 +1023,28 @@ public abstract class SpecialIntegrationMethods {
      * so wird false zurückgegeben.
      *
      * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateSqrtOfQuadraticFunction(Operator expr) throws EvaluationException {
+    public static Expression integrateSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (f.isNotPower() || !((BinaryOperation) f).getRight().equals(Expression.ONE.div(Expression.TWO))
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
         for (int i = 0; i < 2; i++) {
             if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         }
 
@@ -1059,7 +1102,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Übrige, nicht eindeutig entscheidbare Fälle.
-        return false;
+        throw new NotPreciseIntegrableException();
 
     }
 
@@ -1069,8 +1112,9 @@ public abstract class SpecialIntegrationMethods {
      * so wird false zurückgegeben.
      *
      * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateReciprocalOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException {
+    public static Expression integrateReciprocalOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1079,19 +1123,19 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE.div(Expression.TWO))
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
         for (int i = 0; i < 2; i++) {
             if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         }
 
@@ -1132,14 +1176,17 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Übrige, nicht eindeutig entscheidbare Fälle.
-        return false;
+        throw new NotPreciseIntegrableException();
 
     }
 
     /**
      * Integriert Funktionen vom Typ R(exp(a*x)), R = rationale Funktion.
+     *
+     * @throws exceptions.EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateRationalFunctionInExp(Operator expr) throws EvaluationException {
+    public static Expression integrateRationalFunctionInExp(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1150,7 +1197,7 @@ public abstract class SpecialIntegrationMethods {
         f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, var);
 
         if (!SpecialEquationMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         BigInteger gcdOfEnumerators = BigInteger.ONE;
@@ -1163,10 +1210,10 @@ public abstract class SpecialIntegrationMethods {
         try {
             derivativeOfFirstArgument = firstArgument.diff(var).simplify();
             if (derivativeOfFirstArgument.contains(var)) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         } catch (EvaluationException e) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         Expression currentQuotient;
@@ -1196,13 +1243,13 @@ public abstract class SpecialIntegrationMethods {
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
             Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
-            Object resultFunction = indefiniteIntegration(substitutedIntegral, true);
+            Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
             if (resultFunction instanceof Expression) {
                 return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
             }
         }
 
-        return false;
+        throw new NotPreciseIntegrableException();
 
     }
 
