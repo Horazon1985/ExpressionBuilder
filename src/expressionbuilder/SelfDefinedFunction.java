@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -378,12 +379,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
+    public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyExpand();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpand(type);
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpand(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpand(type), resultLeft);
     }
 
     @Override
@@ -531,12 +532,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
+            resultLeft[i] = ((Expression) this.left[i]).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var), resultLeft);
     }
 
     @Override
@@ -549,12 +550,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+    public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var);
+            resultLeft[i] = ((Expression) this.left[i]).simplifyExpandProductsOfComplexExponentialFunctions(var);
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandProductsOfComplexExponentialFunctions(var), resultLeft);
     }
     
     @Override

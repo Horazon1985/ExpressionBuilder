@@ -4,9 +4,9 @@ import computation.AnalysisMethods;
 import computation.ArithmeticMethods;
 import computation.NumericalMethods;
 import computationbounds.ComputationBounds;
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
-import exceptions.NotPreciseIntegrableException;
 import expressionsimplifymethods.SimplifyOperatorMethods;
 import integrationmethods.SimplifyIntegralMethods;
 import java.math.BigDecimal;
@@ -1578,11 +1578,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
+    public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyExpand();
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpand(type);
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1818,24 +1818,11 @@ public class Operator extends Expression {
     private Expression simplifyTrivialInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-            try {
-                return SimplifyIntegralMethods.indefiniteIntegration(this, true);
-            } catch (NotPreciseIntegrableException e) {
-            }
+            return SimplifyIntegralMethods.integrateIndefinite(this);
         }
 
-        if (this.params.length == 4) {
-
-            // Hier wird versucht, explizit zu integrieren.
-            try {
-                /*
-                 Nur im exakten (nichtapproximativen) Fall das
-                 Urpsrungsintegral wieder zurückgeben, falls es nicht
-                 berechnet werden konnte.
-                 */
-                return SimplifyIntegralMethods.definiteIntegration(this);
-            } catch (NotPreciseIntegrableException e) {
-            }
+        if (this.precise && this.params.length == 4) {
+            return SimplifyIntegralMethods.integrateDefinite(this);
         }
 
         if (!this.precise && this.params.length == 4) {
@@ -2161,11 +2148,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
+                resultParams[i] = ((Expression) this.params[i]).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -2187,11 +2174,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+    public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var);
+                resultParams[i] = ((Expression) this.params[i]).simplifyExpandProductsOfComplexExponentialFunctions(var);
             } else {
                 resultParams[i] = this.params[i];
             }

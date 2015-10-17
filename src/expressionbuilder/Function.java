@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyFunctionMethods;
@@ -880,8 +881,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
-        return new Function(this.left.simplifyExpand(), this.type);
+    public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
+        return new Function(this.left.simplifyExpand(type), this.type);
     }
 
     @Override
@@ -1016,9 +1017,9 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
-        Function function = new Function(this.left.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var), this.type);
+        Function function = new Function(this.left.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var), this.type);
 
         // Dekadischer Logarithmus.
         if (function.getType().equals(TypeFunction.lg)) {
@@ -1080,8 +1081,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
-        return new Function(this.left.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var), this.type);
+    public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
+        return new Function(this.left.simplifyExpandProductsOfComplexExponentialFunctions(var), this.type);
     }
 
     @Override

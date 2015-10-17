@@ -2,6 +2,7 @@ package expressionbuilder;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;
@@ -615,13 +616,15 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             int length = 0;
             for (int i = 0; i < factors.getBound(); i++) {
-                if (length == 0) {
-                    length = factors.get(i).length();
-                } else if (!(factors.get(i) instanceof Constant)) {
+                if (!(factors.get(i) instanceof Constant)) {
                     length += factors.get(i).length();
                 }
             }
-            return length;
+            /* 
+             Konstante Koeffizienten sollen nicht in die Länge miteinfließen, außer, 
+             der Ausdruck ist an sich konstant.
+             */
+            return Math.max(length, 1);
         }
         if (this.isPower()) {
             if (((BinaryOperation) this).getLeft() instanceof Constant) {
@@ -870,12 +873,12 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyExpand() throws EvaluationException {
-        Expression expr = this, exprExpanded = simplifySingleExpand(this);
+    public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
+        Expression expr = this, exprExpanded = simplifySingleExpand(this, type);
         // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
         while (!expr.equals(exprExpanded)) {
             expr = exprExpanded.copy();
-            exprExpanded = simplifySingleExpand(expr);
+            exprExpanded = simplifySingleExpand(expr, type);
         }
         return expr;
     }
@@ -884,7 +887,7 @@ public class BinaryOperation extends Expression {
      * Hilfsmethode für simplifyExpand(). Multipliziert EINE Klammer vollständig
      * aus.
      */
-    private static Expression simplifySingleExpand(Expression f) throws EvaluationException {
+    private static Expression simplifySingleExpand(Expression f, TypeExpansion type) throws EvaluationException {
 
         BinaryOperation expr;
         if (f.isSum() || f.isDifference()) {
@@ -893,16 +896,17 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
             // In jedem Summanden einzeln ausmultiplizieren.
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyExpand());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyExpand(type));
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, summandsRight.get(i).simplifyExpand());
+                summandsRight.put(i, summandsRight.get(i).simplifyExpand(type));
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (f.isQuotient() || f.isPower()) {
 
-            expr = new BinaryOperation(((BinaryOperation) f).getLeft().simplifyExpand(), ((BinaryOperation) f).getRight().simplifyExpand(), ((BinaryOperation) f).getType());
+            expr = new BinaryOperation(((BinaryOperation) f).getLeft().simplifyExpand(type), ((BinaryOperation) f).getRight().simplifyExpand(type),
+                    ((BinaryOperation) f).getType());
             if (!expr.equals(f)) {
                 // In späteren Anwendungen von simplifyExpand() kann noch weiter ausmultipliziert werden.
                 return expr;
@@ -913,7 +917,7 @@ public class BinaryOperation extends Expression {
             // In jedem Faktor einzeln ausmultiplizieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyExpand());
+                factors.put(i, factors.get(i).simplifyExpand(type));
             }
 
             Expression productOfExpandedFactors = SimplifyUtilities.produceProduct(factors);
@@ -935,6 +939,34 @@ public class BinaryOperation extends Expression {
         if (expr.isProduct()) {
 
             ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+
+            // Zunächst: Anzahl der resultierenden Summanden abschätzen.
+            BigInteger numberOfResultSummands = BigInteger.ONE;
+            ExpressionCollection summandsLeftOfFactor, summandsRightOfFactor;
+            for (int i = 0; i < factors.getBound(); i++) {
+                summandsLeftOfFactor = SimplifyUtilities.getSummandsLeftInExpression(factors.get(i));
+                summandsRightOfFactor = SimplifyUtilities.getSummandsRightInExpression(factors.get(i));
+                numberOfResultSummands = numberOfResultSummands.multiply(BigInteger.valueOf(summandsLeftOfFactor.getBound() + summandsRightOfFactor.getBound()));
+            }
+
+            /* 
+             Abhängig vom Modus longExpansion wird zunächst eine obere Schranke 
+             für die Anzahl der resultierenden Summanden festgelegt.
+             */
+            BigInteger boundNumberOfSummands = BigInteger.ZERO;
+            if (type.equals(TypeExpansion.POWERFUL)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
+            } else if (type.equals(TypeExpansion.MODERATE)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
+            } else if (type.equals(TypeExpansion.SHORT)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
+            }
+            
+            // Ist die Anzahl der resultierenden Summanden zu groß, dann nicht weiter ausmultiplizieren.
+            if (numberOfResultSummands.compareTo(boundNumberOfSummands) > 0) {
+                return expr;
+            }
+
             int smallestIndexOfFactorWhichIsEitherSumOrDifference = 0;
             while (smallestIndexOfFactorWhichIsEitherSumOrDifference < factors.getBound()
                     && factors.get(smallestIndexOfFactorWhichIsEitherSumOrDifference).isNotSum()
@@ -988,6 +1020,19 @@ public class BinaryOperation extends Expression {
 
         if (expr.isPower() && expr.getRight().isIntegerConstant() && expr.getRight().isNonNegative()) {
 
+            /* 
+             Abhängig vom Modus longExpansion wird zunächst eine obere Schranke 
+             für die Anzahl der resultierenden Summanden festgelegt.
+             */
+            BigInteger boundNumberOfSummands = BigInteger.ZERO;
+            if (type.equals(TypeExpansion.POWERFUL)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
+            } else if (type.equals(TypeExpansion.MODERATE)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
+            } else if (type.equals(TypeExpansion.SHORT)) {
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
+            }
+
             if (expr.getLeft().isSum()) {
 
                 ExpressionCollection summands = SimplifyUtilities.getSummands(expr.getLeft());
@@ -995,19 +1040,25 @@ public class BinaryOperation extends Expression {
                 BigInteger exponent = ((Constant) expr.getRight()).getValue().toBigInteger();
                 BigInteger numberOfSummandsInBase = BigInteger.valueOf(summands.getBound());
 
-                if (numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+                /* 
+                 Anzahl der Summanden im Ergebnis ist gewiss größer als 
+                 numberOfSummandsInBase - 1 + exponent. Daher die folgende
+                 erste Prüfung.
+                 */
+                if (numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).compareTo(boundNumberOfSummands) > 0) {
                     return expr;
                 }
 
                 // Anzahl der Summanden in (a_1 + ... + a_n)^k ist (n - 1 + k)!/[(n - 1)! * k!]
-                BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).intValue()).divide(ArithmeticMethods.factorial(numberOfSummandsInBase.intValue() - 1).multiply(ArithmeticMethods.factorial(exponent.intValue())));
+                BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).intValue()).divide(
+                        ArithmeticMethods.factorial(numberOfSummandsInBase.intValue() - 1).multiply(ArithmeticMethods.factorial(exponent.intValue())));
 
                 /*
                  Falls die (geschätzte) Anzahl der resultierenden Summanden >=
                  einer bestimmten Schranke beträgt, dann nicht
                  ausmultiplizieren.
                  */
-                if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_EXPANSION)) > 0) {
+                if (numberOfSummandsInResult.compareTo(boundNumberOfSummands) > 0) {
                     return expr;
                 }
 
@@ -1033,7 +1084,7 @@ public class BinaryOperation extends Expression {
                  einer bestimmten Schranke beträgt, dann nicht
                  ausmultiplizieren.
                  */
-                if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_EXPANSION)) > 0) {
+                if (numberOfSummandsInResult.compareTo(boundNumberOfSummands) > 0) {
                     return expr;
                 }
 
@@ -2281,37 +2332,12 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
         simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-//        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
-        if (this.isSum()) {
-            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
-            // In jedem Summanden einzeln Funktionalgleichungen anwenden.
-            for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyExpandAndCollectEquivalentsIfShorter());
-            }
-            expr = SimplifyUtilities.produceSum(summands);
-        } else if (this.isDifference()) {
-            // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().sub(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
-        } else if (expr.isProduct()) {
-            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
-            // In jedem Faktor einzeln Funktionalgleichungen anwenden.
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter());
-            }
-            expr = SimplifyUtilities.produceProduct(factors);
-        } else if (this.isQuotient()) {
-            // Im Dividenden und Divisor einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().div(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
-        } else if (this.isPower()) {
-            // In Basis und Exponenten einzeln Funktionalgleichungen anwenden.
-            expr = this.left.simplifyExpandAndCollectEquivalentsIfShorter().pow(this.right.simplifyExpandAndCollectEquivalentsIfShorter());
-        }
-
         try {
-            exprSimplified = expr.simplifyExpand();
+            // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden (Boolscher Parameter = false).
+            exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
             exprSimplified = exprSimplified.simplify(simplifyTypes);
             if (exprSimplified.length() < expr.length()) {
                 return exprSimplified;
@@ -2478,7 +2504,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) throws EvaluationException {
+    public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
@@ -2490,7 +2516,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var));
+                summands.put(i, summands.get(i).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var));
             }
 
             // Ergebnis bilden.
@@ -2501,7 +2527,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var));
+                factors.put(i, factors.get(i).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var));
             }
 
             // Ergebnis bilden.
@@ -2512,8 +2538,8 @@ public class BinaryOperation extends Expression {
             return this.left.ln().mult(this.right).exp();
         }
 
-        return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var),
-                this.right.simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var),
+        return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var),
+                this.right.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var),
                 this.type);
 
     }
@@ -2592,7 +2618,7 @@ public class BinaryOperation extends Expression {
     private static BigInteger getUpperBoundForSummands(Expression f, String var) {
 
         if (f.isSum()) {
-            BigInteger numberOfSummands = BigInteger.ONE;
+            BigInteger numberOfSummands = BigInteger.ZERO;
             ExpressionCollection summands = SimplifyUtilities.getSummands(f);
             for (int i = 0; i < summands.getBound(); i++) {
                 if (summands.get(i) == null) {
@@ -2602,7 +2628,7 @@ public class BinaryOperation extends Expression {
             }
             return numberOfSummands;
         } else if (f.isDifference()) {
-            return getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var).add(getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var));
+            return getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var).add(getUpperBoundForSummands(((BinaryOperation) f).getRight(), var));
         } else if (f.isProduct()) {
             BigInteger numberOfSummands = BigInteger.ONE;
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
@@ -2619,8 +2645,20 @@ public class BinaryOperation extends Expression {
                 && ((BinaryOperation) f).getRight().isPositive()
                 && ((Constant) ((BinaryOperation) f).getRight()).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0) {
 
+            Expression base = ((BinaryOperation) f).getLeft();
             int exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().intValue();
-            BigInteger numberOfSummandsInBaseAsBigInt = getUpperBoundForSummands(((BinaryOperation) f).getLeft(), var);
+
+            /*
+             Fall: Basis ist sin oder cos mit linearem Argument. Auf Linearität 
+             des Arguments wird nicht geprüft, da dies vor dem Aufruf sichergestellt
+             werden muss.
+             */
+            if (base.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)) {
+                return BigInteger.valueOf(exponent / 2 + 1);
+            }
+
+            // Fall: Basis ist keine trigonometrische Funktion.
+            BigInteger numberOfSummandsInBaseAsBigInt = getUpperBoundForSummands(base, var);
             if (numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.ZERO) > 0
                     && numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0) {
                 int numberOfSummandsInBase = numberOfSummandsInBaseAsBigInt.intValue();
@@ -2628,9 +2666,16 @@ public class BinaryOperation extends Expression {
                 return ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
                         ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
             }
+        } else if (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)){
+            return BigInteger.ONE;
+        } else if (f instanceof Operator) {
+            if (!f.contains(var)) {
+                return BigInteger.ONE;
+            }
         }
 
-        return BigInteger.ONE;
+        // Dann ist das kein Polynom in komplexen Exponentialfunktionen.
+        return BigInteger.valueOf(-1);
 
     }
 
@@ -2701,7 +2746,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) throws EvaluationException {
+    public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
@@ -2713,7 +2758,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+                summands.put(i, summands.get(i).simplifyExpandProductsOfComplexExponentialFunctions(var));
             }
             return SimplifyUtilities.produceSum(summands);
 
@@ -2722,7 +2767,16 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+                factors.put(i, factors.get(i).simplifyExpandProductsOfComplexExponentialFunctions(var));
+            }
+
+            Expression expr = SimplifyUtilities.produceProduct(factors);
+            BigInteger numberOfSummands = getUpperBoundForSummands(expr, var);
+
+            // Im Folgenden Fall nicht weiter ausmultiplizieren.
+            if (numberOfSummands.compareTo(BigInteger.ZERO) < 0
+                    || numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) > 0) {
+                return expr;
             }
 
             Expression factorLeft, factorRight;
@@ -2765,39 +2819,33 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isPower()) {
 
-            Expression expr = this.left.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var).pow(
-                    this.right.simplifyExpandPowersAndProductsOfTrigonometricalFunctions(var));
+            Expression expr = this.left.simplifyExpandProductsOfComplexExponentialFunctions(var).pow(this.right.simplifyExpandProductsOfComplexExponentialFunctions(var));
 
             if (expr.isPower() && ((BinaryOperation) expr).right.isIntegerConstant()
                     && ((BinaryOperation) expr).right.isPositive()
                     && ((Constant) ((BinaryOperation) expr).right).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0
                     && isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) expr).left, var)) {
 
-                Expression base = ((BinaryOperation) expr).left;
-                BigInteger numberOfSummandsInBaseAsBigInt = getUpperBoundForSummands(base, var);
-                if (numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
+                BigInteger numberOfSummands = getUpperBoundForSummands(this, var);
+                if (numberOfSummands.compareTo(BigInteger.ZERO) > 0
+                        && numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
 
-                    int numberOfSummandsInBase = numberOfSummandsInBaseAsBigInt.intValue();
+                    Expression base = ((BinaryOperation) expr).left;
                     int exponent = ((Constant) ((BinaryOperation) expr).right).getValue().intValue();
 
-                    // Anzahl der Summanden in (a_1 + ... + a_n)^k ist (n - 1 + k)!/[(n - 1)! * k!]
-                    BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
-                            ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
-                    if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
-
-                        /* 
-                         Falls base eine echte Summe / Differenz ist, dann expand() anwenden.
-                         Falls base eine Sinus oder Kosinusfunktion ist, und das Argument var
-                         enthält, dann wird gemäß bestimmter Relationen entwickelt.
-                         */
-                        if (base.isFunction(TypeFunction.cos) && ((Function) base).getLeft().contains(var)) {
-                            return expandPowerOfCos(((Function) base).getLeft(), exponent);
-                        }
-                        if (base.isFunction(TypeFunction.sin) && ((Function) base).getLeft().contains(var)) {
-                            return expandPowerOfSin(((Function) base).getLeft(), exponent);
-                        }
-
+                    /* 
+                     Falls base eine echte Summe / Differenz ist, dann expand() anwenden.
+                     Falls base eine Sinus oder Kosinusfunktion ist, und das Argument var
+                     enthält, dann wird gemäß bestimmter Relationen entwickelt.
+                     */
+                    if (base.isFunction(TypeFunction.cos) && ((Function) base).getLeft().contains(var)) {
+                        return expandPowerOfCos(((Function) base).getLeft(), exponent);
                     }
+                    if (base.isFunction(TypeFunction.sin) && ((Function) base).getLeft().contains(var)) {
+                        return expandPowerOfSin(((Function) base).getLeft(), exponent);
+                    }
+                    // "Langes" Ausmultiplizieren soll stattfinden (Boolscher Parameter = true).
+                    return this.simplifyExpand(TypeExpansion.POWERFUL);
 
                 }
             }

@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -389,7 +390,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyExpand() {
+    public Expression simplifyExpand(TypeExpansion type) {
         return this;
     }
 
@@ -474,7 +475,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(String var) {
+    public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) {
         return this;
     }
 
@@ -484,7 +485,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyExpandPowersAndProductsOfTrigonometricalFunctions(String var) {
+    public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) {
         return this;
     }
 

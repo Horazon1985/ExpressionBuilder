@@ -36,8 +36,14 @@
   <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS">
     <value>4</value>
   </object>
-  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_EXPANSION">
-    <value>10000</value>
+  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION">
+    <value>1000</value>
+  </object>
+  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION">
+    <value>50</value>
+  </object>
+  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION">
+    <value>10</value>
   </object>
   <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY">
     <value>10</value>
@@ -49,7 +55,7 @@
     <value>100</value>
   </object>
   <object id = "Bound_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS">
-    <value>100</value>
+    <value>500</value>
   </object>
   <object id = "Bound_POWER_OF_GENERAL_MATRIX">
     <value>10</value>

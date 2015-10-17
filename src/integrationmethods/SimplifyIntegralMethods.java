@@ -89,10 +89,10 @@ public abstract class SimplifyIntegralMethods {
              Falls Polynome auftauchen, dann zusätzlich alle Polynome
              ausmultiplizieren und dann zu einem Polynom zusammenfassen.
              */
-            simplifyTypes.add(TypeSimplify.expand);
+            simplifyTypes.add(TypeSimplify.expand_moderate);
             polynomialFactor = polynomialFactor.simplify(simplifyTypes);
             factors.put(indexOfLastPolynomial, polynomialFactor);
-            simplifyTypes.remove(TypeSimplify.expand);
+            simplifyTypes.remove(TypeSimplify.expand_moderate);
         }
 
         return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
@@ -118,7 +118,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.expand);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
@@ -148,7 +148,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         // Zum Schluss: Nochmal vereinfachen, aber OHNE Ausmultiplizieren.
-        simplifyTypes.remove(TypeSimplify.expand);
+        simplifyTypes.remove(TypeSimplify.expand_moderate);
         return f.simplify(simplifyTypes);
 
     }
@@ -175,7 +175,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.expand);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
@@ -193,7 +193,7 @@ public abstract class SimplifyIntegralMethods {
          Definition ersetzt. Dies ermöglicht es beispielsweise 2^x zu integrieren, 
          da dies zu exp(ln(2)*x) vereinfacht wird.
          */
-        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes).simplifyReplaceExponentialFunctionsByDefinitionsWithRespectToVariable(var);
+        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
 
     }
 
@@ -370,7 +370,20 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Hauptmethode für bestimmte Integration. Ist expr ein bestimmtes Integral
+     * Hauptmethode für bestimmte Integration. 
+     *
+     * @throws EvaluationException
+     */
+    public static Expression integrateDefinite(Operator expr) throws EvaluationException {
+        try {
+            return definiteIntegration(expr);
+        } catch (NotPreciseIntegrableException e) {
+            return expr;
+        }
+    }
+    
+    /**
+     * Interne Hauptmethode für bestimmte Integration. Ist expr ein bestimmtes Integral
      * expr == int(f, x, a, b), so wird das bestimmte Integral zurückgegeben
      * (soweit es geht, explizit). Ansonsten wird expr zurückgegeben.
      *
@@ -412,17 +425,15 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      */
     public static Expression integrateIndefinite(Operator expr) throws EvaluationException {
-
         try {
             return indefiniteIntegration(expr, true);
         } catch (NotPreciseIntegrableException e) {
             return expr;
         }
-
     }
 
     /**
-     * Hauptmethode für die unbestimmte Integration. Hier wird entweder ein
+     * Interne Hauptmethode für die unbestimmte Integration. Hier wird entweder ein
      * Ausdruck (im Erfolgsfall oder falls expr kein unbestimmtes Integral ist)
      * oder false (falls der Ausdruck nicht exakt integriert werden kann)
      * zurückgegeben.
@@ -472,7 +483,7 @@ public abstract class SimplifyIntegralMethods {
          */
         // Integration von Monomen
         try {
-            return integrateMonomial(expr);
+            return integrateMonomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
 
@@ -485,25 +496,25 @@ public abstract class SimplifyIntegralMethods {
 
         // Integration von Potenzen von Elementarfunktionen
         try {
-            return integratePowerOfElementaryFunction(expr);
+            return integratePowerOfElementaryFunction(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
 
         // Integration logarithmischer Ableitungen.
         try {
-            return integrateLogarithmicDerivative(expr);
+            return integrateLogarithmicDerivative(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
 
         // Partialbruchzerlegung
         try {
-            return SpecialIntegrationMethods.integrateRationalFunction(expr);
+            return SpecialIntegrationMethods.integrateRationalFunction(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
 
         // Integration von Polynomen in exp, sin und cos mit linearen Argumenten in var.
         try {
-            return SpecialIntegrationMethods.integratePolynomialInExponentialAndTrigonometricalFunctions(expr);
+            return SpecialIntegrationMethods.integratePolynomialInComplexExponentialFunctions(expr);
         } catch (NotPreciseIntegrableException e) {
         }
 
@@ -1265,7 +1276,7 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Rekursionsformel: int(sech(x)^n, x) = sech(x)^(n - 1)*sinh(x)/(n - 1) -
+     * Rekursionsformel: int(sech(x)^n, x) = sech(x)^(n - 1)*sinh(x)/(n - 1) +
      * (n - 2)*int(sech(x)^(n - 2), x)/(n - 1)
      *
      * @throws EvaluationException
@@ -1284,7 +1295,6 @@ public abstract class SimplifyIntegralMethods {
             params[0] = Variable.create(var).sech().pow(n - 2);
             params[1] = var;
             Expression integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
-            // TO DO: + oder -?????
             return Variable.create(var).sech().pow(n - 1).mult(Variable.create(var).sinh()).div(n - 1).add(
                     new Constant(n - 2).mult(integralOfLowerPower).div(n - 1));
         }

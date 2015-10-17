@@ -1,10 +1,11 @@
 package simplifymethodstest.expressiontests;
 
+import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
-import exceptions.ExpressionException;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -316,7 +317,7 @@ public class GeneralSimplifyExpressionTest {
         Expression g = a.mult(c).add(a.mult(d).add(b.mult(c).add(b.mult(d))));
         try {
             // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
-            f = f.simplifyExpand().orderSumsAndProducts();
+            f = f.simplifyExpand(TypeExpansion.POWERFUL).orderSumsAndProducts();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
@@ -331,7 +332,7 @@ public class GeneralSimplifyExpressionTest {
                 Expression.THREE.mult(a.pow(1)).mult(b.pow(2))).add(b.pow(3));
         try {
             // Durch orderSumsAndProducts() werden überflüssige Einsen beseitigt.
-            f = f.simplifyExpand().orderSumsAndProducts();
+            f = f.simplifyExpand(TypeExpansion.POWERFUL).orderSumsAndProducts();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");

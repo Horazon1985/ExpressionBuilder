@@ -433,7 +433,7 @@ public abstract class SpecialEquationMethods {
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
             simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.expand);
+            simplifyTypes.add(TypeSimplify.expand_moderate);
             simplifyTypes.add(TypeSimplify.simplify_powers);
             simplifyTypes.add(TypeSimplify.multiply_powers);
             simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);

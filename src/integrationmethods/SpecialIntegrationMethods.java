@@ -790,11 +790,11 @@ public abstract class SpecialIntegrationMethods {
 
     }
 
-    private static Expression expandProductsOfExponentialAndTrigonometricalFunctions(Expression f, String var) throws EvaluationException {
+    private static Expression expandProductsOfComplexExponentialFunctions(Expression f, String var) throws EvaluationException {
         return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
                 TypeSimplify.simplify_trivial, TypeSimplify.simplify_powers, TypeSimplify.collect_products,
-                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients, TypeSimplify.expand,
-                TypeSimplify.simplify_expand_powers_and_products_of_trigonometrical_functions);
+                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients, 
+                TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
     }
 
     /**
@@ -804,7 +804,7 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePolynomialInExponentialAndTrigonometricalFunctions(Operator expr) throws NotPreciseIntegrableException {
+    public static Expression integratePolynomialInComplexExponentialFunctions(Operator expr) throws NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -815,7 +815,7 @@ public abstract class SpecialIntegrationMethods {
 
         try {
             // Nun Potenzen von sin und cos durch Summen von sin und cos ersetzen.
-            Expression fExpanded = expandProductsOfExponentialAndTrigonometricalFunctions(f, var);
+            Expression fExpanded = expandProductsOfComplexExponentialFunctions(f, var);
             if (isSumOfProductsOfExponentialAndTrigonometricalFunctions(fExpanded, var)) {
                 ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(fExpanded);
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(fExpanded);
