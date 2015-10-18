@@ -794,7 +794,8 @@ public abstract class SpecialIntegrationMethods {
         return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
                 TypeSimplify.simplify_trivial, TypeSimplify.simplify_powers, TypeSimplify.collect_products,
                 TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients, 
-                TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
+                TypeSimplify.simplify_expand_products_of_complex_exponential_functions,
+                TypeSimplify.expand_moderate);
     }
 
     /**

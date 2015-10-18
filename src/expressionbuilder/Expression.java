@@ -1408,18 +1408,18 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.orderSumsAndProducts();
 //                System.out.println(exprSimplified.writeExpression());
                 exprSimplified = exprSimplified.simplifyTrivial();
-                exprSimplified = exprSimplified.simplifyPowers();
-                exprSimplified = exprSimplified.simplifyCollectProducts();
-                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-                exprSimplified = exprSimplified.simplifyFactorizeInSums();
-                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-                exprSimplified = exprSimplified.simplifyReduceQuotients();
-                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
+//                exprSimplified = exprSimplified.simplifyPowers();
+//                exprSimplified = exprSimplified.simplifyCollectProducts();
+//                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
+//                exprSimplified = exprSimplified.simplifyFactorizeInSums();
+//                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+//                exprSimplified = exprSimplified.simplifyReduceQuotients();
+//                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
+//                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+//                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 if (this.containsFunction()) {
-                    exprSimplified = exprSimplified.simplifyFunctionalRelations();
-                    exprSimplified = exprSimplified.simplifyCollectLogarithms();
+//                    exprSimplified = exprSimplified.simplifyFunctionalRelations();
+//                    exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
@@ -1444,72 +1444,50 @@ public abstract class Expression {
                 for (TypeSimplify simplifyType : simplifyTypes) {
                     if (simplifyType.equals(TypeSimplify.order_difference_and_division)) {
                         exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.order_sums_and_products)) {
+                    } else if (simplifyType.equals(TypeSimplify.order_sums_and_products)) {
                         exprSimplified = exprSimplified.orderSumsAndProducts();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
                         exprSimplified = exprSimplified.simplifyTrivial();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_short)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_short)) {
                         exprSimplified = exprSimplified.simplifyExpandShort();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_moderate)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_moderate)) {
                         exprSimplified = exprSimplified.simplifyExpandModerate();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_powerful)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_powerful)) {
                         exprSimplified = exprSimplified.simplifyExpandPowerful();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_rational_factors)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_rational_factors)) {
                         exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_powers)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_powers)) {
                         exprSimplified = exprSimplified.simplifyPowers();
-                    }
-                    if (simplifyType.equals(TypeSimplify.multiply_powers)) {
+                    } else if (simplifyType.equals(TypeSimplify.multiply_powers)) {
                         exprSimplified = exprSimplified.simplifyMultiplyPowers();
-                    }
-                    if (simplifyType.equals(TypeSimplify.collect_products)) {
+                    } else if (simplifyType.equals(TypeSimplify.collect_products)) {
                         exprSimplified = exprSimplified.simplifyCollectProducts();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_sums)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_sums)) {
                         exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_in_sums)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_in_sums)) {
                         exprSimplified = exprSimplified.simplifyFactorizeInSums();
-                    }
-                    if (simplifyType.equals(TypeSimplify.reduce_quotients)) {
+                    } else if (simplifyType.equals(TypeSimplify.reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_differences)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_differences)) {
                         exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_in_differences)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_in_differences)) {
                         exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-                    }
-                    if (simplifyType.equals(TypeSimplify.reduce_leadings_coefficients)) {
+                    } else if (simplifyType.equals(TypeSimplify.reduce_leadings_coefficients)) {
                         exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
                         exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                    }
-                    if (this.containsFunction()) {
+                    } else if (this.containsFunction()) {
                         if (simplifyType.equals(TypeSimplify.simplify_functional_relations)) {
                             exprSimplified = exprSimplified.simplifyFunctionalRelations();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsByDefinitions();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_collect_logarithms)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_collect_logarithms)) {
                             exprSimplified = exprSimplified.simplifyCollectLogarithms();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_expand_logarithms)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_expand_logarithms)) {
                             exprSimplified = exprSimplified.simplifyExpandLogarithms();
                         }
                     }
@@ -1538,78 +1516,54 @@ public abstract class Expression {
                 for (TypeSimplify simplifyType : simplifyTypes) {
                     if (simplifyType.equals(TypeSimplify.order_difference_and_division)) {
                         exprSimplified = exprSimplified.orderDifferencesAndQuotients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.order_sums_and_products)) {
+                    } else if (simplifyType.equals(TypeSimplify.order_sums_and_products)) {
                         exprSimplified = exprSimplified.orderSumsAndProducts();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
                         exprSimplified = exprSimplified.simplifyTrivial();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_short)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_short)) {
                         exprSimplified = exprSimplified.simplifyExpandShort();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_moderate)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_moderate)) {
                         exprSimplified = exprSimplified.simplifyExpandModerate();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_powerful)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_powerful)) {
                         exprSimplified = exprSimplified.simplifyExpandPowerful();
-                    }
-                    if (simplifyType.equals(TypeSimplify.expand_rational_factors)) {
+                    } else if (simplifyType.equals(TypeSimplify.expand_rational_factors)) {
                         exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_powers)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_powers)) {
                         exprSimplified = exprSimplified.simplifyPowers();
-                    }
-                    if (simplifyType.equals(TypeSimplify.multiply_powers)) {
+                    } else if (simplifyType.equals(TypeSimplify.multiply_powers)) {
                         exprSimplified = exprSimplified.simplifyMultiplyPowers();
-                    }
-                    if (simplifyType.equals(TypeSimplify.collect_products)) {
+                    } else if (simplifyType.equals(TypeSimplify.collect_products)) {
                         exprSimplified = exprSimplified.simplifyCollectProducts();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_sums)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_sums)) {
                         exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_in_sums)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_in_sums)) {
                         exprSimplified = exprSimplified.simplifyFactorizeInSums();
-                    }
-                    if (simplifyType.equals(TypeSimplify.reduce_quotients)) {
+                    } else if (simplifyType.equals(TypeSimplify.reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_differences)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_all_but_rationals_in_differences)) {
                         exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-                    }
-                    if (simplifyType.equals(TypeSimplify.factorize_in_differences)) {
+                    } else if (simplifyType.equals(TypeSimplify.factorize_in_differences)) {
                         exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-                    }
-                    if (simplifyType.equals(TypeSimplify.reduce_leadings_coefficients)) {
+                    } else if (simplifyType.equals(TypeSimplify.reduce_leadings_coefficients)) {
                         exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
                         exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-                    }
-                    if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
+                    } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                    }
-                    if (this.containsFunction()) {
+                    } else if (this.containsFunction()) {
                         if (simplifyType.equals(TypeSimplify.simplify_functional_relations)) {
                             exprSimplified = exprSimplified.simplifyFunctionalRelations();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsByDefinitions();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_expand_products_of_complex_exponential_functions)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_expand_products_of_complex_exponential_functions)) {
                             exprSimplified = exprSimplified.simplifyExpandProductsOfComplexExponentialFunctions(var);
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_collect_logarithms)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_collect_logarithms)) {
                             exprSimplified = exprSimplified.simplifyCollectLogarithms();
-                        }
-                        if (simplifyType.equals(TypeSimplify.simplify_expand_logarithms)) {
+                        } else if (simplifyType.equals(TypeSimplify.simplify_expand_logarithms)) {
                             exprSimplified = exprSimplified.simplifyExpandLogarithms();
                         }
                     }
