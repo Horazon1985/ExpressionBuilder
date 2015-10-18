@@ -1406,20 +1406,20 @@ public abstract class Expression {
                 expr = exprSimplified.copy();
                 exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
-//                System.out.println(exprSimplified.writeExpression());
+                System.out.println(exprSimplified.writeExpression());
                 exprSimplified = exprSimplified.simplifyTrivial();
-//                exprSimplified = exprSimplified.simplifyPowers();
-//                exprSimplified = exprSimplified.simplifyCollectProducts();
-//                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-//                exprSimplified = exprSimplified.simplifyFactorizeInSums();
-//                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
-//                exprSimplified = exprSimplified.simplifyReduceQuotients();
-//                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-//                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
-//                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
+                exprSimplified = exprSimplified.simplifyPowers();
+                exprSimplified = exprSimplified.simplifyCollectProducts();
+                exprSimplified = exprSimplified.simplifyExpandRationalFactors();
+                exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+                exprSimplified = exprSimplified.simplifyReduceQuotients();
+                exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
+                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 if (this.containsFunction()) {
-//                    exprSimplified = exprSimplified.simplifyFunctionalRelations();
-//                    exprSimplified = exprSimplified.simplifyCollectLogarithms();
+                    exprSimplified = exprSimplified.simplifyFunctionalRelations();
+                    exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
             } while (!expr.equals(exprSimplified));
             return exprSimplified;

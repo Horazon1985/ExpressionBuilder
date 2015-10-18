@@ -285,6 +285,9 @@ public class BinaryOperation extends Expression {
                  (-1)*x soll als -x ausgegeben werden, falls links davor eine
                  Klammer steht oder die Formel dort anfängt.
                  */
+                if (this.right.isSum() || this.right.isDifference()) {
+                    return "-(" + this.right.writeExpression() + ")";
+                }
                 return "-" + this.right.writeExpression();
             } else if (this.left.isSum() || this.left.isDifference()) {
                 leftAsText = "(" + this.left.writeExpression() + ")";
@@ -645,10 +648,121 @@ public class BinaryOperation extends Expression {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
         }
 
-        BinaryOperation expr = this;
+        // Allgemeine Vereinfachungen, falls der zugrundeliegende Ausdruck konstant ist.
+        BinaryOperation expr;
 
-        Expression exprSimplified;
+        if (this.isSum()) {
 
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummands(this);
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                summandsLeft.put(i, summandsLeft.get(i).simplifyTrivial());
+            }
+
+            ExpressionCollection summandsRight = new ExpressionCollection();
+
+            // Nullen in Summen beseitigen.
+            SimplifyBinaryOperationMethods.removeZeros(summandsLeft);
+
+            // Summanden mit negativen Koeffizienten in den Subtrahenden bringen.
+            SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
+
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant()) {
+                SimplifyBinaryOperationMethods.computeSumIfApprox(summandsLeft, summandsRight);
+            }
+
+            return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+
+        } else if (this.isDifference()) {
+
+            expr = (BinaryOperation) this.left.simplifyTrivial().sub(this.right.simplifyTrivial());
+
+            // Triviale Umformungen
+            Expression exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInDifferenceWithZeroOne(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(exprSimplified);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(exprSimplified);
+
+            // Brüche subtrahieren
+            SimplifyBinaryOperationMethods.subtractFractions(summandsLeft, summandsRight);
+
+            // Summanden mit negativen Koeffizienten in den in jeweils anderen Teil herübertragen.
+            SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
+
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant()) {
+                return SimplifyBinaryOperationMethods.computeDifferenceIfApprox(SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
+            }
+
+            return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+
+        } else if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyTrivial());
+            }
+
+            Expression exprSimplified = SimplifyUtilities.produceProduct(factors);
+            if (!exprSimplified.isProduct()) {
+                return exprSimplified;
+            }
+
+            // Falls Nullen in Produkten auftauchen: 0 zurückgeben.
+            SimplifyBinaryOperationMethods.reduceProductWithZeroToZero(factors);
+
+            // Einsen in Produkten beseitigen.
+            SimplifyBinaryOperationMethods.removeOnes(factors);
+
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant()) {
+                SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
+            }
+            
+            return SimplifyUtilities.produceProduct(factors);
+
+        } else if (this.isQuotient()) {
+
+            expr = (BinaryOperation) this.left.simplifyTrivial().div(this.right.simplifyTrivial());
+            Expression exprSimplified;
+
+            // Triviale Umformungen
+            exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInQuotientWithZeroOne(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+
+            // Division durch 0 im Approximationsmodus ausschließen, sonst dividieren.
+            exprSimplified = SimplifyBinaryOperationMethods.computeReciprocalInApprox(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+
+            // Rationale Konstanten zu einem Bruch machen (etwa 0.74/0.2 = 37/10)
+            exprSimplified = SimplifyBinaryOperationMethods.rationalConstantToQuotient(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+
+            // Negative Zähler eliminieren.
+            exprSimplified = SimplifyBinaryOperationMethods.eliminateNegativeDenominator(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant()) {
+                return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
+            }
+
+            return expr;
+
+        }
+
+        // Ab hier ist this eine Potenz.
         /*
          Hier wird das folgende kritische Problem aus dem Weg geschafft: Wird
          (-2)^(1/3) approximiert, so wird der Exponent zu 0.33333333333
@@ -656,82 +770,41 @@ public class BinaryOperation extends Expression {
          werden. Daher, wenn expr eine ungerade Wurzeln darstellt: negatives
          Vorzeichen rausschaffen!
          */
-        exprSimplified = SimplifyBinaryOperationMethods.computeOddRootOfNegativeConstantsInApprox(expr);
+        Expression exprSimplified = SimplifyBinaryOperationMethods.computeOddRootOfNegativeConstantsInApprox(this);
+        if (!exprSimplified.equals(this)) {
+            return exprSimplified;
+        }
+
+        expr = (BinaryOperation) this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
+
+        // Nun folgen Vereinfachungen von Potenzen und Wurzeln konstanter Ausdrücke, soweit möglich.
+        exprSimplified = SimplifyBinaryOperationMethods.computePowersOfIntegers(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
-        // Linken und rechten Teil bei Binäroperationen zunächst separat vereinfachen
-        if (this instanceof BinaryOperation) {
-            expr = new BinaryOperation(this.left.simplifyTrivial(), this.right.simplifyTrivial(), this.type);
-        }
-
-        // Division durch 0 im Approximationsmodus ausschließen, sonst dividieren.
-        exprSimplified = SimplifyBinaryOperationMethods.computeReciprocalInApprox(expr);
+        // Triviale Umformungen
+        exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInPowerWithZeroOne(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
-        // Im Approximationsmodus werden alle Konstanten (im Zähler, Nenner etc. approximiert).
-        exprSimplified = SimplifyBinaryOperationMethods.approxConstantExpression(expr);
+        // Macht z.B. (5/7)^(4/3) = (5/7)*(5/7)^(1/3) = 5*(5/7)^(1/3)/7
+        exprSimplified = SimplifyBinaryOperationMethods.separateIntegerPowersOfRationalConstants(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
-        // Rationale Konstanten zu einem Bruch machen (etwa 0.74/0.2 = 37/10)
-        exprSimplified = SimplifyBinaryOperationMethods.rationalConstantToQuotient(expr);
+        // Minus-Zeichen aus ungeraden Wurzeln herausziehen.
+        exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
-        // Multipliziert zwei rationale Konstanten aus
-        exprSimplified = SimplifyBinaryOperationMethods.multiplyRationalConstants(expr);
+        // Prüfen, ob Wurzeln gerader Ordnung aus negativen Konstanten gezogen werden.
+        exprSimplified = SimplifyBinaryOperationMethods.checkNegativityOfBaseInRootsOfEvenDegree(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
-        }
-
-        // Negative Zähler eliminieren.
-        exprSimplified = SimplifyBinaryOperationMethods.eliminateNegativeDenominator(expr);
-        if (!exprSimplified.equals(expr)) {
-            return exprSimplified;
-        }
-
-        /*
-         Im exakten Modus werden alle Konstanten soweit verarbeitet, solange
-         man sich im rationalen Bereich bewegt.
-         */
-        if (expr.isConstant() && !expr.containsApproximates()) {
-
-            // Brüche subtrahieren.
-            exprSimplified = SimplifyBinaryOperationMethods.subtractRationalFractions(expr);
-            if (!exprSimplified.equals(expr)) {
-                return exprSimplified;
-            }
-
-            // Nun folgen Vereinfachungen von Potenzen und Wurzeln konstanter Ausdrücke, soweit möglich.
-            exprSimplified = SimplifyBinaryOperationMethods.computePowersOfIntegers(expr);
-            if (!exprSimplified.equals(expr)) {
-                return exprSimplified;
-            }
-
-            // Prüfen, ob Wurzeln gerader Ordnung aus negativen Konstanten gezogen werden.
-            exprSimplified = SimplifyBinaryOperationMethods.checkNegativityOfBaseInRootsOfEvenDegree(expr);
-            if (!exprSimplified.equals(expr)) {
-                return exprSimplified;
-            }
-
-            // Minus-Zeichen aus ungeraden Wurzeln herausziehen.
-            exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfRoots(expr);
-            if (!exprSimplified.equals(expr)) {
-                return exprSimplified;
-            }
-
-            // Macht z.B. (5/7)^(4/3) = (5/7)*(5/7)^(1/3) = 5*(5/7)^(1/3)/7
-            exprSimplified = SimplifyBinaryOperationMethods.separateIntegerPowersOfRationalConstants(expr);
-            if (!exprSimplified.equals(expr)) {
-                return exprSimplified;
-            }
-
         }
 
         // Versuchen, Wurzeln (z.B. in Quotienten oder von ganzen Zahlen) zum Teil exakt anzugeben.
@@ -746,24 +819,8 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        // Triviale Umformungen
-        exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsWithZeroOne(expr);
-        if (!exprSimplified.equals(expr)) {
-            return exprSimplified;
-        }
-
-        // Zunächst: (a/b)^(-k) = (b/a)^k
+        // Vereinfacht: (a/b)^(-k) = (b/a)^k
         exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfQuotientsToReciprocal(expr);
-        if (!exprSimplified.equals(expr)) {
-            return exprSimplified;
-        }
-
-        /*
-         Negative Potenzen in den Nenner: v1^(c1) = 1 / v1^(-c1), falls c1 <
-         0. Hier kann aufgrund des obigen Schrittes expr.getLeft() KEIN
-         Quotient mehr sein.
-         */
-        exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfExpressionsToReciprocal(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -774,11 +831,8 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        /*
-         Bei Addition oder Subtraktion: Falls negative Koeffizienten
-         auftauchen, dann Addition zu Subtraktion machen und umgekehrt.
-         */
-        exprSimplified = SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(expr);
+        // Negative Potenzen in den Nenner: x^y = 1/x^(-y), falls b < 0. 
+        exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfExpressionsToReciprocal(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -799,6 +853,11 @@ public class BinaryOperation extends Expression {
         exprSimplified = SimplifyBinaryOperationMethods.simplifyPowersOfAbs(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
+        }
+
+        // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+        if (this.isConstant()) {
+            return SimplifyBinaryOperationMethods.computePowerIfApprox(expr);
         }
 
         return expr;
@@ -961,7 +1020,7 @@ public class BinaryOperation extends Expression {
             } else if (type.equals(TypeExpansion.SHORT)) {
                 boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
             }
-            
+
             // Ist die Anzahl der resultierenden Summanden zu groß, dann nicht weiter ausmultiplizieren.
             if (numberOfResultSummands.compareTo(boundNumberOfSummands) > 0) {
                 return expr;
@@ -2666,7 +2725,7 @@ public class BinaryOperation extends Expression {
                 return ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
                         ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
             }
-        } else if (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)){
+        } else if (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)) {
             return BigInteger.ONE;
         } else if (f instanceof Operator) {
             if (!f.contains(var)) {

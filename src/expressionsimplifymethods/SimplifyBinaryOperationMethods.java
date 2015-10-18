@@ -2,9 +2,9 @@ package expressionsimplifymethods;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.ONE;
@@ -22,6 +22,218 @@ import translator.Translator;
  * BinaryOperation (für simplifyTrivial).
  */
 public abstract class SimplifyBinaryOperationMethods {
+
+    /**
+     * Approximiert eine konstante Summe.<br>
+     * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
+     *
+     * @throws EvaluationException
+     */
+    public static void computeSumIfApprox(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) throws EvaluationException {
+
+        double result = 0;
+        boolean allSummandsSimplifiedAreConstant = true;
+
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i) != null) {
+                summandsLeft.put(i, summandsLeft.get(i).simplifyTrivial());
+            }
+            if (!(summandsLeft.get(i) instanceof Constant)) {
+                allSummandsSimplifiedAreConstant = false;
+            }
+        }
+
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+            if (summandsRight.get(i) != null) {
+                summandsRight.put(i, summandsRight.get(i).simplifyTrivial());
+            }
+            if (!(summandsRight.get(i) instanceof Constant)) {
+                allSummandsSimplifiedAreConstant = false;
+            }
+        }
+
+        if (!allSummandsSimplifiedAreConstant) {
+            return;
+        }
+
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i) != null) {
+                result = result + summandsLeft.get(i).evaluate();
+            }
+        }
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+            if (summandsRight.get(i) != null) {
+                result = result - summandsRight.get(i).evaluate();
+            }
+        }
+
+        summandsLeft.clear();
+        summandsRight.clear();
+        summandsLeft.put(0, new Constant(result));
+
+    }
+
+    /**
+     * Approximiert eine konstante Differenz.<br>
+     * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression computeDifferenceIfApprox(Expression expr) throws EvaluationException {
+        if (expr.isDifference() && expr.isConstant() && expr.containsApproximates()) {
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            if (left instanceof Constant && right instanceof Constant) {
+                return new Constant(((Constant) left).getApproxValue() - ((Constant) right).getApproxValue());
+            }
+        }
+        return expr;
+    }
+
+    /**
+     * Approximiert ein konstantes Produkt.<br>
+     * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
+     *
+     * @throws EvaluationException
+     */
+    public static void computeProductIfApprox(ExpressionCollection factors) throws EvaluationException {
+        
+        double result = 1;
+        boolean allFactorsSimplifiedAreConstant = true;
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null) {
+                factors.put(i, factors.get(i).simplifyTrivial());
+            }
+            if (!(factors.get(i) instanceof Constant)) {
+                allFactorsSimplifiedAreConstant = false;
+            }
+        }
+
+        if (!allFactorsSimplifiedAreConstant) {
+            return;
+        }
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null) {
+                result = result * factors.get(i).evaluate();
+            }
+        }
+
+        factors.clear();
+        factors.put(0, new Constant(result));
+
+    }
+
+    /**
+     * Approximiert einen konstanten Quotienten.<br>
+     * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression computeQuotientIfApprox(Expression expr) throws EvaluationException {
+        if (expr.isQuotient() && expr.isConstant() && expr.containsApproximates()) {
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            if (left instanceof Constant && right instanceof Constant) {
+                return new Constant(((Constant) left).getApproxValue() / ((Constant) right).getApproxValue());
+            }
+        }
+        return expr;
+    }
+
+    /**
+     * Approximiert eine konstante Potenz.<br>
+     * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression computePowerIfApprox(Expression expr) throws EvaluationException {
+        if (expr.isPower() && expr.isConstant() && expr.containsApproximates()) {
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            if (left instanceof Constant && right instanceof Constant) {
+                return new Constant(Math.pow(((Constant) left).getApproxValue(), ((Constant) right).getApproxValue()));
+            }
+        }
+        return expr;
+    }
+
+    /**
+     * Beseitigt Nullen in summands.
+     */
+    public static void removeZeros(ExpressionCollection summands) {
+        for (int i = 0; i < summands.getBound(); i++) {
+            if (summands.get(i) != null && summands.get(i).equals(ZERO)) {
+                summands.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Falls in factors eine Null vorkommen, werden alle Elemente von factors
+     * entfernt und die Expression ZERO hinzugefügt..
+     */
+    public static void reduceProductWithZeroToZero(ExpressionCollection factors) {
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null && factors.get(i).equals(ZERO)) {
+                factors.clear();
+                factors.add(ZERO);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Beseitigt Einsen in factors.
+     */
+    public static void removeOnes(ExpressionCollection factors) {
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null && factors.get(i).equals(ONE)) {
+                factors.remove(i);
+            }
+        }
+    }
+
+    /**
+     * Falls in summandsLeft und summandsRight Brüche auftauchen, so werden
+     * diese verrechnet. Ohne Beschränkung der Allgemeinheit tauchen diese im
+     * jeweils ersten Summanden auf.
+     */
+    public static void subtractFractions(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
+
+        if (summandsLeft.get(0) != null && summandsRight.get(0) != null
+                && summandsLeft.get(0).isIntegerConstantOrRationalConstant()
+                && summandsRight.get(0).isIntegerConstantOrRationalConstant()) {
+
+            BigInteger a, b, c, d;
+            if (summandsLeft.get(0).isIntegerConstant()) {
+                a = ((Constant) summandsLeft.get(0)).getValue().toBigInteger();
+                b = BigInteger.ONE;
+            } else {
+                a = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getLeft()).getValue().toBigInteger();
+                b = ((Constant) ((BinaryOperation) summandsLeft.get(0)).getRight()).getValue().toBigInteger();
+            }
+            if (summandsRight.get(0).isIntegerConstant()) {
+                c = ((Constant) summandsRight.get(0)).getValue().toBigInteger();
+                d = BigInteger.ONE;
+            } else {
+                c = ((Constant) ((BinaryOperation) summandsRight.get(0)).getLeft()).getValue().toBigInteger();
+                d = ((Constant) ((BinaryOperation) summandsRight.get(0)).getRight()).getValue().toBigInteger();
+            }
+
+            BigInteger enumerator = a.multiply(d).subtract(c.multiply(b));
+            BigInteger denominator = b.multiply(d);
+            BigInteger gcd = enumerator.gcd(denominator);
+            enumerator = enumerator.divide(gcd);
+            denominator = denominator.divide(gcd);
+
+            summandsLeft.put(0, new Constant(enumerator).div(denominator));
+            summandsRight.remove(0);
+
+        }
+
+    }
 
     /**
      * Falls expr einen Kehrwert darstellt und falls approximiert wird, so wird
@@ -112,7 +324,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     public static Expression multiplyRationalConstants(BinaryOperation expr) throws EvaluationException {
-        if (expr.getType().equals(TypeBinary.TIMES) && expr.getLeft().isIntegerConstantOrRationalConstant()
+        if (expr.isProduct() && expr.getLeft().isIntegerConstantOrRationalConstant()
                 && expr.getRight().isIntegerConstantOrRationalConstant() && !expr.containsApproximates()) {
             return Constant.multiplyTwoRationals(expr.getLeft(), expr.getRight());
         }
@@ -127,7 +339,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression eliminateNegativeDenominator(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.getType().equals(TypeBinary.DIV) && expr.getRight() instanceof Constant
+        if (expr.isQuotient() && expr.getRight() instanceof Constant
                 && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) < 0) {
             return MINUS_ONE.mult(expr.getLeft()).div(((Constant) expr.getRight()).getValue().negate());
         }
@@ -196,12 +408,12 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression computePowersOfIntegers(BinaryOperation expr) throws EvaluationException {
 
-        if ((expr.getLeft() instanceof Constant) && expr.getRight() instanceof Constant && !expr.containsApproximates()) {
+        if (expr.getLeft() instanceof Constant && expr.getRight() instanceof Constant && !expr.containsApproximates()) {
 
             Constant constantLeft = (Constant) expr.getLeft();
             Constant constantRight = (Constant) expr.getRight();
 
-            if (expr.getType().equals(TypeBinary.POW)) {
+            if (expr.isPower()) {
 
                 // Negative Potenzen von 0 sind nicht definiert.
                 if (constantLeft.equals(ZERO) && constantRight.getValue().compareTo(BigDecimal.ZERO) < 0) {
@@ -215,7 +427,7 @@ public abstract class SimplifyBinaryOperationMethods {
                  */
                 if (constantRight.isIntegerConstant()
                         && constantRight.getValue().compareTo(BigDecimal.ZERO) >= 0
-                        && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                        && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_RATIONALS)) <= 0) {
                     return new Constant(constantLeft.getValue().pow(constantRight.getValue().intValue()));
                 }
 
@@ -235,8 +447,8 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static BinaryOperation checkNegativityOfBaseInRootsOfEvenDegree(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.isConstant() && !expr.containsApproximates()
-                && expr.getRight().isRationalConstant() && expr.getType().equals(TypeBinary.POW)) {
+        if (expr.isPower() && expr.isConstant() && !expr.containsApproximates()
+                && expr.getRight().isRationalConstant()) {
 
             if (expr.getLeft().isNonNegative() || expr.getLeft().isNonPositive()) {
                 // Dann kann das Vorzeichen von expr.getLeft() eindeutig entschieden werden.
@@ -277,8 +489,8 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression takeMinusSignOutOfRoots(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.isConstant() && !expr.containsApproximates() && !expr.getLeft().hasPositiveSign()
-                && expr.getRight().isRationalConstant() && expr.getType().equals(TypeBinary.POW)) {
+        if (expr.isPower() && expr.isConstant() && !expr.containsApproximates()
+                && !expr.getLeft().hasPositiveSign() && expr.getRight().isRationalConstant()) {
 
             /*
              In den folgenden Schritten ist die Anwendung von
@@ -313,7 +525,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression separateIntegerPowersOfRationalConstants(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.getType().equals(TypeBinary.POW) && expr.getRight().isRationalConstant() && expr.getLeft().isIntegerConstantOrRationalConstant()) {
+        if (expr.isPower() && !expr.containsApproximates() && expr.getRight().isRationalConstant() && expr.getLeft().isIntegerConstantOrRationalConstant()) {
 
             BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
             BigInteger exponentDenominator = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
@@ -514,85 +726,87 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Diverse triviale Vereinfachungen, welche 1 oder 0 involvieren, werden
-     * vorgenommen.
+     * Diverse triviale Vereinfachungen, welche 1 oder 0 in Differenzen
+     * involvieren, werden vorgenommen.
      *
      * @throws EvaluationException
      */
-    public static Expression trivialOperationsWithZeroOne(BinaryOperation expr) throws EvaluationException {
-
-        // Triviale Umformungen
-        //0+a = a
-        if (expr.getType().equals(TypeBinary.PLUS) && expr.getLeft().equals(ZERO)) {
-            return expr.getRight();
-        }
+    public static Expression trivialOperationsInDifferenceWithZeroOne(BinaryOperation expr) throws EvaluationException {
 
         //a+0 = a und a-0 = a
-        if (expr.getType().equals(TypeBinary.PLUS) || expr.getType().equals(TypeBinary.MINUS)) {
-            if (expr.getRight().equals(ZERO)) {
-                return expr.getLeft();
-            }
+        if (expr.isDifference() && expr.getRight().equals(ZERO)) {
+            return expr.getLeft();
         }
 
         //a-a = 0
-        if (expr.getType().equals(TypeBinary.MINUS) && expr.getLeft().equals(expr.getRight())) {
+        if (expr.isDifference() && expr.getLeft().equals(expr.getRight())) {
             return ZERO;
         }
 
         //0-a = (-1)*a
-        if (expr.getType().equals(TypeBinary.MINUS) && expr.getLeft().equals(ZERO)) {
+        if (expr.isDifference() && expr.getLeft().equals(ZERO)) {
             return MINUS_ONE.mult(expr.getRight());
         }
 
-        //1*a = a
-        if (expr.getType().equals(TypeBinary.TIMES) && expr.getLeft().equals(ONE)) {
-            return expr.getRight();
-        }
+        return expr;
 
-        //a*1 = a und a/1 = a
-        if (expr.getType().equals(TypeBinary.TIMES) || expr.getType().equals(TypeBinary.DIV)) {
-            if (expr.getRight().equals(ONE)) {
-                return expr.getLeft();
-            }
-        }
+    }
 
-        //0*a = 0 und 0/a = 0
-        if (expr.getType().equals(TypeBinary.TIMES) || expr.getType().equals(TypeBinary.DIV)) {
-            if (expr.getLeft().equals(ZERO)) {
-                return ZERO;
-            }
-        }
+    /**
+     * Diverse triviale Vereinfachungen, welche 1 oder 0 in Quotienten
+     * involvieren, werden vorgenommen.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression trivialOperationsInQuotientWithZeroOne(BinaryOperation expr) throws EvaluationException {
 
-        //a/0 = FEHLER!
-        if (expr.getType().equals(TypeBinary.DIV) && expr.getRight().equals(ZERO)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO"));
-        }
-
-        //a*0 = 0
-        if (expr.getType().equals(TypeBinary.TIMES) && expr.getRight().equals(ZERO)) {
-            return ZERO;
-        }
-
-        //a^0 = 1
-        if (expr.getType().equals(TypeBinary.POW) && expr.getRight().equals(ZERO)) {
-            return ONE;
-        }
-
-        //a^1 = a
-        if (expr.getType().equals(TypeBinary.POW) && expr.getRight().equals(ONE)) {
+        // a/1 = a
+        if (expr.isQuotient() && expr.getRight().equals(ONE)) {
             return expr.getLeft();
         }
 
-        //0^a = 0
-        if (expr.getType().equals(TypeBinary.POW) && expr.getLeft().equals(ZERO)) {
+        // 0/a = 0
+        if (expr.isQuotient() && expr.getLeft().equals(ZERO)) {
+            return ZERO;
+        }
+
+        // a/0 = FEHLER!
+        if (expr.isQuotient() && expr.getRight().equals(ZERO)) {
+            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO"));
+        }
+
+        return expr;
+
+    }
+
+    /**
+     * Diverse triviale Vereinfachungen, welche 1 oder 0 in Potenzen
+     * involvieren, werden vorgenommen.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression trivialOperationsInPowerWithZeroOne(BinaryOperation expr) throws EvaluationException {
+
+        // a^0 = 1
+        if (expr.isPower() && expr.getRight().equals(ZERO)) {
+            return ONE;
+        }
+
+        // a^1 = a
+        if (expr.isPower() && expr.getRight().equals(ONE)) {
+            return expr.getLeft();
+        }
+
+        // 0^a = 0
+        if (expr.isPower() && expr.getLeft().equals(ZERO)) {
             if (expr.getRight().isConstant() && expr.getRight().isNonPositive() && !expr.getRight().equals(Expression.ZERO)) {
                 throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
             }
             return ZERO;
         }
 
-        //1^a = 1
-        if (expr.getType().equals(TypeBinary.POW) && expr.getLeft().equals(ONE)) {
+        // 1^a = 1
+        if (expr.isPower() && expr.getLeft().equals(ONE)) {
             return ONE;
         }
 
@@ -643,31 +857,42 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Falls expr eine Summe oder eine Differenz darstellt, in der negative
-     * Koeffizienten auftreten, so werden diese entsprechend vereinfacht.
-     * Ansonsten wird expr zurückgegeben. Genauer wird folgendes vereinfacht:
-     * (1) v1 + c*v2 = v1 - (-c)*v2, falls c < 0 (2) v1 - c*v2 = v1 + (-c)*v2,
-     * falls c < 0 (3) c*v1 + v2 = v2 - (-c)*v1, falls c < 0.
+     * In einer Summe oder Differenz, in der negative Koeffizienten auftreten,
+     * so werden diese entsprechend vereinfacht. Genauer wird folgendes
+     * vereinfacht: (1) x + c*y = x - (-c)*y, falls c < 0 (2) x - c*y = x +
+     * (-c)*y, falls c < 0.
      */
-    public static Expression simplifySumsAndDifferencesWithNegativeCoefficient(BinaryOperation expr) {
+    public static void simplifySumsAndDifferencesWithNegativeCoefficient(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
-        /*
-         Bei Addition: v1 + c*v2 = v1 - (-c)*v2, falls c < 0. Bei Subtraktion:
-         v1 - c*v2 = v1 + (-c)*v2, falls c < 0.
-         */
-        if ((expr.isSum() || expr.isDifference()) && !expr.getRight().hasPositiveSign()) {
-            if (expr.isSum()) {
-                return expr.getLeft().sub(MINUS_ONE.mult(expr.getRight()));
+        // Vorab: wenn alle Koeffizienten in summandsLeft negativ sind und summandsRight leer ist, dann nichts zun.
+        boolean allCoefficientsInSummandsLeftAreNegativ = true;
+        if (summandsRight.isEmpty()) {
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                if (summandsLeft.get(i) != null && summandsLeft.get(i).hasPositiveSign()) {
+                    allCoefficientsInSummandsLeftAreNegativ = false;
+                    break;
+                }
             }
-            return expr.getLeft().add(MINUS_ONE.mult(expr.getRight()));
+            if (allCoefficientsInSummandsLeftAreNegativ) {
+                return;
+            }
         }
-        /*
-         Bei Addition: c*v1 + v2 = v2 - (-c)*v1, falls c < 0.
-         */
-        if (expr.isSum() && !expr.getLeft().hasPositiveSign()) {
-            return expr.getRight().sub(MINUS_ONE.mult(expr.getLeft()));
+
+        Expression summand;
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i) != null && !summandsLeft.get(i).hasPositiveSign()) {
+                summand = summandsLeft.get(i);
+                summandsLeft.remove(i);
+                summandsRight.add(MINUS_ONE.mult(summand));
+            }
         }
-        return expr;
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+            if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
+                summand = summandsRight.get(i);
+                summandsRight.remove(i);
+                summandsLeft.add(MINUS_ONE.mult(summand));
+            }
+        }
 
     }
 
@@ -690,7 +915,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 return new Function(((BinaryOperation) expr.getLeft()).getLeft(), TypeFunction.abs).pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()));
             }
             if (((BinaryOperation) expr.getLeft()).getRight().isRationalConstant() && expr.getRight().isIntegerConstantOrRationalConstant()) {
-                
+
                 /* 
                  In diesem Fall: x^((2*m+1)/(2*n))^(p/q) bleibt expr, falls der 
                  ausmultiplizierte und gekürzte Exponent einen ungeraden Nenner besitzt.
@@ -698,23 +923,23 @@ public abstract class SimplifyBinaryOperationMethods {
                 BigInteger a = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getRight()).getLeft()).getValue().toBigInteger();
                 BigInteger b = ((Constant) ((BinaryOperation) ((BinaryOperation) expr.getLeft()).getRight()).getRight()).getValue().toBigInteger();
                 BigInteger c, d;
-                if (expr.getRight().isIntegerConstant()){
+                if (expr.getRight().isIntegerConstant()) {
                     c = ((Constant) expr.getRight()).getValue().toBigInteger();
                     d = BigInteger.ONE;
                 } else {
                     c = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
                     d = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
                 }
-                
+
                 BigInteger exponentEnumerator = a.multiply(c);
                 BigInteger exponentDenominator = b.multiply(d);
                 BigInteger gcdOfEnumeratorAndDenominator = exponentEnumerator.gcd(exponentDenominator);
                 exponentEnumerator = exponentEnumerator.divide(gcdOfEnumeratorAndDenominator);
                 exponentDenominator = exponentDenominator.divide(gcdOfEnumeratorAndDenominator);
-                if (b.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO) && !exponentDenominator.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)){
+                if (b.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO) && !exponentDenominator.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) {
                     return expr;
                 }
-                
+
             }
             // Ansonsten einfach nur Exponenten ausmultiplizieren.
             return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
