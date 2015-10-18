@@ -247,67 +247,67 @@
   <object id = "GUI_OutputOptionsDialogGUI_OUTPUT_OPTIONS_TITLE">
     <German>Ausgabeoptionen</German>
     <English>Output options</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Опції виводу</Ukrainian>
+    <Russian>Опции вывода</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SAVE_BUTTON">
     <German>Einstellungen speichern</German>
     <English>Save options</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Зберегти опції</Ukrainian>
+    <Russian>Сохпанить опции</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_CANCEL_BUTTON">
     <German>Abbrechen</German>
     <English>Cancel</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Відміна</Ukrainian>
+    <Russian>Отмена</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTIONS_GROUP_NAME">
     <German>Optionen für die Vereinfachung eines Ausdrucks:</German>
     <English>Options for simplifying an expression:</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Опції спрощення виразу:</Ukrainian>
+    <Russian>Опции упрощения віражения:</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND">
     <German>Klammern ausmultiplizieren</German>
     <English>Expand brackets</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Розкривати дужки</Ukrainian>
+    <Russian>Раскрывать скобки</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND_AND_COLLECT_IF_SHORTER">
     <German>Länge verkürzen</German>
     <English>Shorten length</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Скоротити довжину</Ukrainian>
+    <Russian>Сократить длину</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_FACTORIZE">
     <German>Faktorisieren</German>
     <English>Factorize</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Факторизувати</Ukrainian>
+    <Russian>Факторизировать</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_SIMPLIFY_ALGEBRAIC_EXPRESSIONS">
     <German>Algebraische Relationen verwenden</German>
     <English>Use algebraic relations</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Викоистовувати алгебраїчні вирази</Ukrainian>
+    <Russian>Использовать алгебраические выражения</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_SIMPLIFY_FUNCTIONAL_RELATIONS">
     <German>Funktionalgleichungen verwenden</German>
     <English>Use functional relations</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Використовувати функціональні співвідношення</Ukrainian>
+    <Russian>Использовать функциональные соотношения</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_COLLECT_LOGARITHMS">
     <German>Logarithmen zusammenfassen</German>
     <English>Collect logarithms</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Зібрати логарифми</Ukrainian>
+    <Russian>Собрать логарифмы</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND_LOGARITHMS">
     <German>Logarithmen auseinanderziehen</German>
     <English>Expand logarithms</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Розкрити логарифми</Ukrainian>
+    <Russian>Раскрыть логарифмы</Russian>
   </object>
 </objects>

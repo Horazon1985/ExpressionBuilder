@@ -754,7 +754,7 @@ public class BinaryOperation extends Expression {
             }
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant()) {
+            if (expr.isConstant()) {
                 return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
             }
 
@@ -856,7 +856,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-        if (this.isConstant()) {
+        if (expr.isConstant()) {
             return SimplifyBinaryOperationMethods.computePowerIfApprox(expr);
         }
 
