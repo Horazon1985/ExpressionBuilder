@@ -276,7 +276,7 @@ public abstract class SimplifyOperatorMethods {
             return new Operator(TypeOperator.sum, params);
         }
 
-        if (summand.isPower() && ((Constant) ((BinaryOperation) summand).getRight()).getValue().toBigInteger().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS)) > 0) {
+        if (summand.isPower() && ((Constant) ((BinaryOperation) summand).getRight()).getValue().toBigInteger().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM)) > 0) {
             // Dann ist der Exponent zu groß.
             Object[] params = new Object[4];
             params[0] = summand;
@@ -301,7 +301,7 @@ public abstract class SimplifyOperatorMethods {
 
     private static ArrayList<Expression> getPolynomialCoefficientsForSumsOfPowersOfIntegers(int n) {
 
-        if (n <= 0 || n > ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS) {
+        if (n <= 0 || n > ComputationBounds.BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM) {
             return new ArrayList<>();
         }
 

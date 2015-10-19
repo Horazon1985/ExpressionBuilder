@@ -1760,7 +1760,7 @@ public abstract class SolveMethods {
          TO DO: Lösungsmethoden für Polynome hohen Grades mit wenigen
          nichttrivialen Koeffizienten.
          */
-        if (degree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION)) > 0) {
+        if (degree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
             return zeros;
         }
 

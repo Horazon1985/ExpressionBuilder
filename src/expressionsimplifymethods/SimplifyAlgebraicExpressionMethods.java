@@ -55,9 +55,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         
         BigInteger divisor;
         BigInteger factorOutside = BigInteger.ONE;
-        int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS) + 1);
+        int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS) + 1);
         
-        if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS)) <= 0) {
+        if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
             HashMap<Integer, BigInteger> divisorsOfA = ArithmeticMethods.getDivisors(a);
 
@@ -141,9 +141,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         // Im Zähler faktorisieren.
         HashMap<Integer, BigInteger> setOfDivisors;
-        int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS) + 1);
+        int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS) + 1);
         
-        if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS)) <= 0) {
+        if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
             setOfDivisors = ArithmeticMethods.getDivisors(a);
 
@@ -183,7 +183,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         // Im Nenner faktorisieren.
-        if (b.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DIVISORS_OF_INTEGERS)) <= 0) {
+        if (b.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
             setOfDivisors = ArithmeticMethods.getDivisors(b);
 
@@ -531,9 +531,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
          */
         if (leftExponentDenominator.compareTo(BigInteger.ZERO) > 0 && rightExponentDenominator.compareTo(BigInteger.ZERO) > 0
                 && leftExponentDenominator.compareTo(rightExponentDenominator) != 0 || leftExponentDenominator.compareTo(n) > 0
-                || leftExponentDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL)) > 0
-                || rightExponentDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL)) > 0
-                || n.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_POWER_OF_BINOMIAL)) > 0) {
+                || leftExponentDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL)) > 0
+                || rightExponentDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL)) > 0
+                || n.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL)) > 0) {
             return expr;
         }
 
@@ -743,7 +743,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                         commonRootDegree = ArithmeticMethods.lcm(m, n);
 
                         // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
-                        if (ArithmeticMethods.lcm(m, n).divide(m).multiply(p).add(ArithmeticMethods.lcm(m, n).divide(n).multiply(q)).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_DEGREE_OF_COMMON_ROOT)) > 0) {
+                        if (ArithmeticMethods.lcm(m, n).divide(m).multiply(p).add(ArithmeticMethods.lcm(m, n).divide(n).multiply(q)).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT)) > 0) {
                             continue;
                         }
 

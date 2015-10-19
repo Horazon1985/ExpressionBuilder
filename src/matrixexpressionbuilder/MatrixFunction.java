@@ -185,7 +185,7 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         // Fall: Determinante einer allgemeinen quadratischen Matrix.
-        if (dim.height <= ComputationBounds.BOUND_COMPUTE_DET_EXPLICITELY) {
+        if (dim.height <= ComputationBounds.BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY) {
 
             int indexOfRowWithMaxZeros = 0, indexOfColumnWithMaxZeros = 0;
             int numberOfZerosInRow = 0, numberOfZerosInColumn = 0;

@@ -14,7 +14,7 @@ public abstract class ArithmeticMethods {
     public static HashMap<Integer, BigInteger> getDivisors(BigInteger a) {
 
         HashMap<Integer, BigInteger> result = new HashMap<>();
-        if (a.abs().compareTo(BigInteger.valueOf(1000000)) > 0) {
+        if (a.abs().compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) > 0) {
             return result;
         }
 

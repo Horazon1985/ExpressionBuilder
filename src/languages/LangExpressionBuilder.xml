@@ -125,6 +125,24 @@
     <Ukrainian>Невизначене значення.</Ukrainian>
     <Russian>Неопределённое значение.</Russian>
   </object>
+  <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED">
+    <German>Ein auftretender Operator kann nicht ausgewertet werden.</German>
+    <English>An occurring operator cannot be evaluated.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_1">
+    <German>Der Ausdruck </German>
+    <English>The expression </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_2">
+    <German> kann nicht ausgewertet werden, da er einen Operator enthält, welcher nicht weiter vereinfacht werden kann.</German>
+    <English> cannot be evaluated, because it contains an operator, which cannot be further simplified.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
   <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
     <English>Not enought parameters in operator 'diff'.</English>

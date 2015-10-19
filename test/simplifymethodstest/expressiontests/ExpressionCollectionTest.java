@@ -1,8 +1,8 @@
 package simplifymethodstest.expressiontests;
 
+import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
-import exceptions.ExpressionException;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;
@@ -47,6 +47,7 @@ public class ExpressionCollectionTest {
         terms.add(h);
         terms.add(f);
         assertTrue(terms.getBound() == 4);
+        assertTrue(terms.getSize() == 4);
     }
 
     @Test
@@ -58,6 +59,7 @@ public class ExpressionCollectionTest {
         terms.add(f);
         terms.remove(3);
         assertTrue(terms.getBound() == 3);
+        assertTrue(terms.getSize() == 3);
     }
 
     @Test
@@ -69,6 +71,7 @@ public class ExpressionCollectionTest {
         terms.add(f);
         terms.remove(1);
         assertTrue(terms.getBound() == 4);
+        assertTrue(terms.getSize() == 3);
     }
 
     @Test

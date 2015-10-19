@@ -289,6 +289,11 @@ public class Function extends Expression {
     }
 
     @Override
+    public boolean containsOperator() {
+        return this.left.containsOperator();
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         return new Function(this.left.turnToApproximate(), this.type);
     }

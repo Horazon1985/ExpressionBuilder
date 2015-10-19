@@ -572,11 +572,15 @@ public class Operator extends Expression {
 
         /*
          Bei der Auswertung von Operatoren wird zunächst versucht, den
-         Operqator soweit wie möglich zu vereinfachen. Das Ergebnis kann nur
-         dann evtl. nicht durch die üblichen Funktionen ausgedrückt werden,
-         wenn dieser entweder das Integral oder die Gammafunktion (Fakultät)
-         ist. Dann muss "mit Gewalt" ausgewertet werden.
+         Operqator soweit wie möglich zu vereinfachen. Falls das Ergebnis noch
+         Operatoren enthält, so wird ein Fehler geworfen.
          */
+        Expression operatorSimplified = this.simplifyTrivial();
+        if (operatorSimplified.containsOperator()) {
+            // Falls immer noch Operatoren auftreten -> keine explizite Auswertung möglich.
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_OPERATOR_CANNOT_BE_EVALUATED"));
+        }
+
         if (this.getType().equals(TypeOperator.diff)) {
             return simplifyTrivialDiff().evaluate();
         }
@@ -798,6 +802,11 @@ public class Operator extends Expression {
     @Override
     public boolean containsIndefiniteIntegral() {
         return this.type.equals(TypeOperator.integral) && this.params.length == 2;
+    }
+
+    @Override
+    public boolean containsOperator() {
+        return true;
     }
 
     @Override
@@ -1945,8 +1954,8 @@ public class Operator extends Expression {
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
             BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
             BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
-            if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
-                    && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
+            if (upperLimit.subtract(lowerLimit).compareTo(
+                    BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
                 return AnalysisMethods.prod(factor, (String) this.params[1], lowerLimit.intValue(), upperLimit.intValue());
@@ -1999,8 +2008,8 @@ public class Operator extends Expression {
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
             BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
             BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
-            if (lowerLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && lowerLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0
-                    && upperLimit.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0 && upperLimit.compareTo(BigInteger.valueOf(Integer.MIN_VALUE)) >= 0) {
+            if (upperLimit.subtract(lowerLimit).compareTo(
+                    BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
                 return AnalysisMethods.sum(summand, (String) this.params[1], lowerLimit.intValue(), upperLimit.intValue());

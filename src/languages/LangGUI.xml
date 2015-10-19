@@ -97,6 +97,12 @@
     <Russian>Режим представления</Russian>
     <Ukrainian>Режим зображення</Ukrainian>
   </object>
+  <object id = "GUI_MathToolForm_MENU_OPTIONS">
+    <German>Optionen</German>
+    <English>Options</English>
+    <Ukrainian>Опції</Ukrainian>
+    <Russian>Опции</Russian>
+  </object>
   <object id = "GUI_MathToolForm_MENU_ABOUT">
     <German>Über MathTool</German>
     <English>About MathTool</English>
@@ -138,6 +144,12 @@
     <English>Formula mode</English>
     <Russian>Формульный режим</Russian>
     <Ukrainian>Формульний режим</Ukrainian>
+  </object>
+  <object id = "GUI_MathToolForm_MENU_OUTPUT_OPTIONS">
+    <German>Ausgabeoptionen</German>
+    <English>Output options</English>
+    <Ukrainian>Опції виводу</Ukrainian>
+    <Russian>Опции вывода</Russian>
   </object>
 <!-- DevelopersDialogGUI -->    
   <object id = "GUI_DevelopersDialogGUI_ABOUT">

@@ -973,7 +973,7 @@ public abstract class SimplifyIntegralMethods {
         BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
         TypeFunction type = ((Function) ((BinaryOperation) f).getLeft()).getType();
 
-        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_POWER)) > 0) {
+        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 

@@ -3,9 +3,11 @@ package simplifymethodstest.expressiontests;
 import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
+import expressionbuilder.TypeSimplify;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -37,6 +39,38 @@ public class GeneralSimplifyExpressionTest {
         z = Expression.build("z", new HashSet<String>());
     }
 
+    // Tests für triviale Vereinfachung.
+    @Test
+    public void computeFractionsTest1() {
+        // Addition und Multiplikation von Brüchen: 2+3*5/2 = 19/2
+        try {
+            Expression f = Expression.build("2+3*5/2", null);
+            Expression g = new Constant(19).div(2);
+            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products, TypeSimplify.simplify_trivial);
+            Assert.assertTrue(fSimplified.equals(g));
+            fSimplified = f.simplify();
+            Assert.assertTrue(fSimplified.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
+    @Test
+    public void computeFractionsTest2() {
+        // Subtraktion und Multiplikation von Brüchen: 2-7/2+3*5/7 = 9/14
+        try {
+            Expression f = Expression.build("2-7/2+3*5/7", null);
+            Expression g = new Constant(9).div(14);
+            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products, 
+                    TypeSimplify.order_difference_and_division, TypeSimplify.simplify_trivial);
+            Assert.assertTrue(fSimplified.equals(g));
+            fSimplified = f.simplify();
+            Assert.assertTrue(fSimplified.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
     @Test
     public void orderSumsAndProductsTest() {
         // Ordnen von Summen und Produkten.

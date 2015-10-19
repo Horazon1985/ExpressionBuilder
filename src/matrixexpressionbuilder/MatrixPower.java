@@ -113,7 +113,7 @@ public class MatrixPower extends MatrixExpression {
         // Potenzen rationaler Matrizen.
         if (exponentSimplified.isIntegerConstant() && ((Matrix) leftComputed).isRationalMatrix()
                 && ((Constant) exponentSimplified).getValue().abs().compareTo(
-                        BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_RATIONAL_MATRIX)) <= 0) {
+                        BigDecimal.valueOf(ComputationBounds.BOUND_MATRIX_MAX_POWER_OF_RATIONAL_MATRIX)) <= 0) {
 
             int exponent = ((Constant) exponentSimplified).getValue().intValue();
             MatrixExpression result = MatrixExpression.getId(dim.width);
@@ -152,7 +152,7 @@ public class MatrixPower extends MatrixExpression {
 
         // Potenzen beliebiger Matrizen.
         if (exponentSimplified.isIntegerConstant() && ((Constant) exponentSimplified).getValue().abs().compareTo(
-                BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_GENERAL_MATRIX)) <= 0) {
+                BigDecimal.valueOf(ComputationBounds.BOUND_MATRIX_MAX_POWER_OF_GENERAL_MATRIX)) <= 0) {
 
             int exponent = ((Constant) exponentSimplified).getValue().intValue();
 

@@ -27,7 +27,7 @@ public class GraphicPanelPolar2D extends JPanel {
      Graphen kann dann jeweils über dje Keys 0, 1, 2, ..., this.graph.size() -
      1 zugegriffen werden.
      */
-    private final ArrayList<Expression> expr = new ArrayList<>();
+    private final ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class GraphicPanelPolar2D extends JPanel {
     }
 
     public ArrayList<Expression> getExpressions() {
-        return this.expr;
+        return this.exprs;
     }
 
     public static ArrayList<String> getInstructions() {
@@ -162,12 +162,12 @@ public class GraphicPanelPolar2D extends JPanel {
     }
 
     public void addExpression(Expression expr) {
-        this.expr.add(expr);
+        this.exprs.add(expr);
         setColors();
     }
 
     public void setColors() {
-        int numberOfColors = Math.max(this.expr.size(), this.polarGraph2D.size());
+        int numberOfColors = Math.max(this.exprs.size(), this.polarGraph2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
             if (i < GraphicPanelPolar2D.fixedColors.length) {
                 this.colors.add(GraphicPanelPolar2D.fixedColors[i]);
@@ -178,7 +178,7 @@ public class GraphicPanelPolar2D extends JPanel {
     }
 
     public void clearExpressionAndGraph() {
-        this.expr.clear();
+        this.exprs.clear();
         this.polarGraph2D.clear();
         this.colors.clear();
     }
@@ -193,9 +193,9 @@ public class GraphicPanelPolar2D extends JPanel {
         
         if (phi_0 >= phi_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_1")
-                    + (expr.size() + 2)
+                    + (exprs.size() + 2)
                     + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_2")
-                    + (expr.size() + 1)
+                    + (exprs.size() + 1)
                     + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_3"));
         }
         
@@ -205,13 +205,13 @@ public class GraphicPanelPolar2D extends JPanel {
         double globalMaxY = Double.NaN;
 
         double x, y;
-        for (int i = 0; i < expr.size(); i++) {
+        for (int i = 0; i < exprs.size(); i++) {
             for (int j = 0; j < 100; j++) {
 
                 Variable.setValue(this.var, phi_0 + j * (phi_1 - phi_0) / 100);
                 try {
-                    x = expr.get(i).evaluate() * Math.cos(phi_0 + j * (phi_1 - phi_0) / 100);
-                    y = expr.get(i).evaluate() * Math.sin(phi_0 + j * (phi_1 - phi_0) / 100);
+                    x = exprs.get(i).evaluate() * Math.cos(phi_0 + j * (phi_1 - phi_0) / 100);
+                    y = exprs.get(i).evaluate() * Math.sin(phi_0 + j * (phi_1 - phi_0) / 100);
                 } catch (EvaluationException e) {
                     x = Double.NaN;
                     y = Double.NaN;
@@ -300,7 +300,7 @@ public class GraphicPanelPolar2D extends JPanel {
         this.polarGraph2D.clear();
         double[][] pointsOnGraphs;
 
-        for (int i = 0; i < this.expr.size(); i++) {
+        for (int i = 0; i < this.exprs.size(); i++) {
 
             pointsOnGraphs = new double[1001][2];
 
@@ -309,8 +309,8 @@ public class GraphicPanelPolar2D extends JPanel {
             for (int j = 0; j <= 1000; j++) {
                 Variable.setValue(var, phiStart + (phiEnd - phiStart) * j / 1000);
                 try {
-                    pointsOnGraphs[j][0] = this.expr.get(i).evaluate() * Math.cos(phiStart + (phiEnd - phiStart) * j / 1000);
-                    pointsOnGraphs[j][1] = this.expr.get(i).evaluate() * Math.sin(phiStart + (phiEnd - phiStart) * j / 1000);
+                    pointsOnGraphs[j][0] = this.exprs.get(i).evaluate() * Math.cos(phiStart + (phiEnd - phiStart) * j / 1000);
+                    pointsOnGraphs[j][1] = this.exprs.get(i).evaluate() * Math.sin(phiStart + (phiEnd - phiStart) * j / 1000);
                 } catch (EvaluationException e) {
                     pointsOnGraphs[j][0] = Double.NaN;
                     pointsOnGraphs[j][1] = Double.NaN;

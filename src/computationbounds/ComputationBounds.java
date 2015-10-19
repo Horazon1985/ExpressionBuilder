@@ -10,30 +10,29 @@ import org.w3c.dom.NodeList;
 
 public abstract class ComputationBounds {
 
-    public static final int BOUND_MAX_DIGITS_OF_E = getBound("Bound_MAX_DIGITS_OF_E");
-    public static final int BOUND_MAX_DIGITS_OF_PI = getBound("Bound_MAX_DIGITS_OF_PI");
-    public static final int BOUND_DIVISORS_OF_INTEGERS = getBound("Bound_DIVISORS_OF_INTEGERS");
-    public static final int BOUND_POWER_OF_RATIONALS = getBound("Bound_POWER_OF_RATIONALS");
-    public static final int BOUND_ROOTDEGREE_OF_RATIONALS = getBound("Bound_ROOTDEGREE_OF_RATIONALS");
-    public static final int BOUND_INTEGER_FACTORIAL = getBound("Bound_INTEGER_FACTORIAL");
-    public static final int BOUND_FACTORIAL_WITH_DENOMINATOR_TWO = getBound("Bound_FACTORIAL_WITH_DENOMINATOR_TWO");
-    public static final int BOUND_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL = getBound("Bound_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL");
-    public static final int BOUND_POWER_OF_BINOMIAL = getBound("Bound_POWER_OF_BINOMIAL");
-    public static final int BOUND_DEGREE_OF_COMMON_ROOT = getBound("Bound_DEGREE_OF_COMMON_ROOT");
-    public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION");
-    public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS");
-    public static final int BOUND_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION = getBound("Bound_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION");
-    public static final int BOUND_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION = getBound("Bound_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION");
-    public static final int BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION = getBound("Bound_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION");
-    public static final int BOUND_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY");
-    public static final int BOUND_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY = getBound("Bound_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY");
-    public static final int BOUND_MAXIMAL_INTEGRABLE_POWER = getBound("Bound_MAXIMAL_INTEGRABLE_POWER");
-    public static final int BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS = getBound("Bound_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS");
-    public static final int BOUND_POWER_OF_GENERAL_MATRIX = getBound("Bound_POWER_OF_GENERAL_MATRIX");
-    public static final int BOUND_POWER_OF_RATIONAL_MATRIX = getBound("Bound_POWER_OF_RATIONAL_MATRIX");
-    public static final int BOUND_COMPUTE_DET_EXPLICITELY = getBound("Bound_COMPUTE_DET_EXPLICITLY");
+    public static final int BOUND_COMMAND_MAX_DIGITS_OF_E = getBound("BOUND_COMMAND_MAX_DIGITS_OF_E");
+    public static final int BOUND_COMMAND_MAX_DIGITS_OF_PI = getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI");
+    public static final int BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION = getBound("BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION");
+    public static final int BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS = getBound("BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS");
+    public static final int BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS = getBound("BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS");
+    public static final int BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS = getBound("BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS");
+    public static final int BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL = getBound("BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL");
+    public static final int BOUND_ARITHMETIC_MAX_FACTORIAL_WITH_DENOMINATOR_TWO = getBound("BOUND_ARITHMETIC_MAX_FACTORIAL_WITH_DENOMINATOR_TWO");
+    public static final int BOUND_ALGEBRA_MAX_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL = getBound("BOUND_ALGEBRA_MAX_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL");
+    public static final int BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL = getBound("BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL");
+    public static final int BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT = getBound("BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT");
+    public static final int BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION = getBound("BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION");
+    public static final int BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION = getBound("BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION");
+    public static final int BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION = getBound("BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION");
+    public static final int BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM = getBound("BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM");
+    public static final int BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT = getBound("BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT");
+    public static final int BOUND_OPERATOR_MAX_INTEGRABLE_POWER = getBound("BOUND_OPERATOR_MAX_INTEGRABLE_POWER");
+    public static final int BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS = getBound("BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS");
+    public static final int BOUND_MATRIX_MAX_POWER_OF_GENERAL_MATRIX = getBound("BOUND_MATRIX_MAX_POWER_OF_GENERAL_MATRIX");
+    public static final int BOUND_MATRIX_MAX_POWER_OF_RATIONAL_MATRIX = getBound("BOUND_MATRIX_MAX_POWER_OF_RATIONAL_MATRIX");
+    public static final int BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY = getBound("BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY");
     
-    public static int getBound(String bound_id) {
+    public static int getBound(String boundId) {
 
         try {
             URL langFile = ClassLoader.getSystemResource("computationbounds/Bounds.xml");
@@ -53,7 +52,7 @@ public abstract class ComputationBounds {
 
                     Element eElement = (Element) nNode;
 
-                    if (eElement.getAttribute("id").equals(bound_id)) {
+                    if (eElement.getAttribute("id").equals(boundId)) {
                         return Integer.parseInt(eElement.getElementsByTagName("value").item(0).getTextContent());
                     }
 
@@ -62,9 +61,7 @@ public abstract class ComputationBounds {
         } catch (Exception e) {
         }
 
-        /**
-         * Sollte nie eintreten.
-         */
+        // Sollte bei korrekter boundId nie eintreten.
         return 0;
 
     }

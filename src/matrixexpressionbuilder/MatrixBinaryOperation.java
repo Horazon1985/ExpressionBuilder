@@ -444,7 +444,16 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         }
 
-        return new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
+        // Hier liegt Matrizensubtraktion vor.
+        MatrixExpression matExpr = new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
+        
+        MatrixExpression matExprSimplified = SimplifyMatrixBinaryOperationMethods.trivialOperationsInDifferenceWithZeroIdMatrices(matExpr);
+        if (!matExprSimplified.equals(matExpr)){
+            return matExprSimplified;
+        }
+            
+        return matExpr;
+        
     }
 
     @Override

@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import java.awt.Dimension;
 import matrixexpressionbuilder.Matrix;
+import matrixexpressionbuilder.MatrixBinaryOperation;
 import matrixexpressionbuilder.MatrixExpression;
 import translator.Translator;
 
@@ -23,6 +24,21 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
         }
     }
 
+    public static MatrixExpression trivialOperationsInDifferenceWithZeroIdMatrices(MatrixExpression matExpr){
+        
+        if (matExpr.isDifference()){
+            if (((MatrixBinaryOperation) matExpr).getRight().isZeroMatrix()){
+                return ((MatrixBinaryOperation) matExpr).getLeft();
+            }
+            if (((MatrixBinaryOperation) matExpr).getLeft().isZeroMatrix()){
+                return new Matrix(Expression.MINUS_ONE).mult(((MatrixBinaryOperation) matExpr).getRight());
+            }
+        }
+        
+        return matExpr;
+    
+    }
+    
     public static MatrixExpression factorizeMultiplesOfId(MatrixExpression matExpr) {
 
         if (matExpr.isNotProduct()) {

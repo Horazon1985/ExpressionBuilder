@@ -1,69 +1,66 @@
 <objects>
 <!-- MathToolForm -->    
-  <object id = "Bound_MAX_DIGITS_OF_E">
+  <object id = "BOUND_COMMAND_MAX_DIGITS_OF_E">
     <value>100000</value>
   </object>
-  <object id = "Bound_MAX_DIGITS_OF_PI">
+  <object id = "BOUND_COMMAND_MAX_DIGITS_OF_PI">
     <value>100000</value>
   </object>
-  <object id = "Bound_DIVISORS_OF_INTEGERS">
+  <object id = "BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION">
+    <value>100</value>
+  </object>
+  <object id = "BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS">
     <value>1000000</value>
   </object>
-  <object id = "Bound_POWER_OF_RATIONALS">
+  <object id = "BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS">
     <value>10000</value>
   </object>
-  <object id = "Bound_ROOTDEGREE_OF_RATIONALS">
+  <object id = "BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS">
     <value>10000</value>
   </object>
-  <object id = "Bound_INTEGER_FACTORIAL">
+  <object id = "BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL">
     <value>10000</value>
   </object>
-  <object id = "Bound_FACTORIAL_WITH_DENOMINATOR_TWO">
+  <object id = "BOUND_ARITHMETIC_MAX_FACTORIAL_WITH_DENOMINATOR_TWO">
     <value>20000</value>
   </object>
-  <object id = "Bound_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL">
+  <object id = "BOUND_ALGEBRA_MAX_ROOTDEGREE_OF_SUMMAND_WITHIN_BINOMIAL">
     <value>5</value>
   </object>
-  <object id = "Bound_POWER_OF_BINOMIAL">
+  <object id = "BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL">
     <value>100</value>
   </object>
-  <object id = "Bound_DEGREE_OF_COMMON_ROOT">
+  <object id = "BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT">
     <value>100</value>
   </object>
-  <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION">
-    <value>100</value>
-  </object>
-  <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFYING_SUMS">
-    <value>4</value>
-  </object>
-  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION">
+  <object id = "BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION">
     <value>1000</value>
   </object>
-  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION">
+  <object id = "BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION">
     <value>50</value>
   </object>
-  <object id = "Bound_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION">
+  <object id = "BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION">
     <value>10</value>
   </object>
-  <object id = "Bound_DEGREE_OF_POLYNOMIAL_FOR_SIMPLIFY">
-    <value>10</value>
+  <object id = "BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM">
+    <value>4</value>
   </object>
-  <object id = "Bound_DEGREE_OF_MULTIPOLYNOMIAL_FOR_SIMPLIFY">
-    <value>10</value>
+  <object id = "BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT">
+    <value>1000</value>
   </object>
-  <object id = "Bound_MAXIMAL_INTEGRABLE_POWER">
+  <object id = "BOUND_OPERATOR_MAX_INTEGRABLE_POWER">
     <value>100</value>
   </object>
-  <object id = "Bound_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS">
+  <object id = "BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS">
     <value>500</value>
   </object>
-  <object id = "Bound_POWER_OF_GENERAL_MATRIX">
+  <object id = "BOUND_MATRIX_MAX_POWER_OF_GENERAL_MATRIX">
     <value>10</value>
   </object>
-  <object id = "Bound_POWER_OF_RATIONAL_MATRIX">
+  <object id = "BOUND_MATRIX_MAX_POWER_OF_RATIONAL_MATRIX">
     <value>100</value>
   </object>
-  <object id = "Bound_COMPUTE_DET_EXPLICITLY">
+  <object id = "BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY">
     <value>5</value>
   </object>
 </objects>

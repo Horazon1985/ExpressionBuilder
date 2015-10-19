@@ -524,6 +524,11 @@ public abstract class Expression {
     public abstract boolean containsIndefiniteIntegral();
 
     /**
+     * Gibt zurück, ob this Operatoren enthält.
+     */
+    public abstract boolean containsOperator();
+
+    /**
      * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
      * (precise = false).
      */
@@ -1406,7 +1411,7 @@ public abstract class Expression {
                 expr = exprSimplified.copy();
                 exprSimplified = exprSimplified.orderDifferencesAndQuotients();
                 exprSimplified = exprSimplified.orderSumsAndProducts();
-                System.out.println(exprSimplified.writeExpression());
+//                System.out.println(exprSimplified.writeExpression());
                 exprSimplified = exprSimplified.simplifyTrivial();
                 exprSimplified = exprSimplified.simplifyPowers();
                 exprSimplified = exprSimplified.simplifyCollectProducts();

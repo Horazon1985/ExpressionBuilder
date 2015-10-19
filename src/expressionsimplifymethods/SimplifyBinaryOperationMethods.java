@@ -97,7 +97,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     public static void computeProductIfApprox(ExpressionCollection factors) throws EvaluationException {
-        
+
         double result = 1;
         boolean allFactorsSimplifiedAreConstant = true;
 
@@ -291,19 +291,6 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Approximiert Konstanten im Ausdruck expr, falls dieser approximiert
-     * werden muss.
-     *
-     * @throws EvaluationException
-     */
-    public static Expression approxConstantExpression(BinaryOperation expr) throws EvaluationException {
-        if (expr.isConstant() && expr.containsApproximates()) {
-            return new Constant(expr.evaluate());
-        }
-        return expr;
-    }
-
-    /**
      * Falls expr eine rationale Zahl darstellt, wird der gekürzte Bruch,
      * welcher expr darstellt, zurückgegeben. Ansonsten wird expr zurückgegeben.
      *
@@ -312,21 +299,6 @@ public abstract class SimplifyBinaryOperationMethods {
     public static Expression rationalConstantToQuotient(BinaryOperation expr) throws EvaluationException {
         if (expr.isRationalConstant() && !expr.containsApproximates()) {
             return Constant.constantToQuotient(((Constant) expr.getLeft()).getValue(), ((Constant) expr.getRight()).getValue());
-        }
-        return expr;
-    }
-
-    /**
-     * Falls expr eine Multiplikation von rationalen Zahlen darstellt, so wird
-     * der ausmultiplizierte Bruch zurückgegeben. Ansonsten wird expr
-     * zurückgegeben.
-     *
-     * @throws EvaluationException
-     */
-    public static Expression multiplyRationalConstants(BinaryOperation expr) throws EvaluationException {
-        if (expr.isProduct() && expr.getLeft().isIntegerConstantOrRationalConstant()
-                && expr.getRight().isIntegerConstantOrRationalConstant() && !expr.containsApproximates()) {
-            return Constant.multiplyTwoRationals(expr.getLeft(), expr.getRight());
         }
         return expr;
     }
@@ -343,58 +315,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) < 0) {
             return MINUS_ONE.mult(expr.getLeft()).div(((Constant) expr.getRight()).getValue().negate());
         }
-        return expr;
-
-    }
-
-    /**
-     * Falls expr eine Differenz von rationalen Zahlen darstellt, so wird der
-     * Bruch zurückgegeben, welcher die Differenz darstellt. Ansonsten wird expr
-     * zurückgegeben.
-     *
-     * @throws EvaluationException
-     */
-    public static Expression subtractRationalFractions(BinaryOperation expr) throws EvaluationException {
-
-        if (expr.getType().equals(TypeBinary.MINUS) && expr.getLeft().isIntegerConstantOrRationalConstant()
-                && expr.getRight().isIntegerConstantOrRationalConstant() && !expr.containsApproximates()) {
-
-            if ((expr.getLeft() instanceof Constant) && (expr.getRight() instanceof Constant)) {
-
-                BigDecimal c_1 = ((Constant) expr.getLeft()).getValue();
-                BigDecimal c_2 = ((Constant) expr.getRight()).getValue();
-                return new Constant(c_1.subtract(c_2));
-
-            } else if (!(expr.getLeft() instanceof Constant) && (expr.getRight() instanceof Constant)) {
-
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
-                BigDecimal c_3 = ((Constant) expr.getRight()).getValue();
-                BigDecimal enumerator = c_1.subtract(c_2.multiply(c_3));
-                return new Constant(enumerator).div(c_2);
-
-            } else if ((expr.getLeft() instanceof Constant) && !(expr.getRight() instanceof Constant)) {
-
-                BigDecimal c_1 = ((Constant) expr.getLeft()).getValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue();
-                BigDecimal enumerator = c_1.multiply(c_3).subtract(c_2);
-                return new Constant(enumerator).div(c_3);
-
-            } else {
-
-                BigDecimal c_1 = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue();
-                BigDecimal c_2 = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue();
-                BigDecimal c_3 = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue();
-                BigDecimal c_4 = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue();
-                BigDecimal enumerator = c_1.multiply(c_4).subtract(c_2.multiply(c_3));
-                BigDecimal denominator = c_2.multiply(c_4);
-                return new Constant(enumerator).div(denominator);
-
-            }
-
-        }
-
         return expr;
 
     }
@@ -427,7 +347,7 @@ public abstract class SimplifyBinaryOperationMethods {
                  */
                 if (constantRight.isIntegerConstant()
                         && constantRight.getValue().compareTo(BigDecimal.ZERO) >= 0
-                        && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_POWER_OF_RATIONALS)) <= 0) {
+                        && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
                     return new Constant(constantLeft.getValue().pow(constantRight.getValue().intValue()));
                 }
 
@@ -587,7 +507,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                 BigInteger base = ((Constant) expr.getLeft()).getValue().toBigInteger();
 
-                if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ROOTDEGREE_OF_RATIONALS)) <= 0) {
+                if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS)) <= 0) {
 
                     HashMap<Integer, BigInteger> divisorsOfRootDegree = ArithmeticMethods.getDivisors(rootDegree);
                     int root;
@@ -912,7 +832,7 @@ public abstract class SimplifyBinaryOperationMethods {
             if (((BinaryOperation) expr.getLeft()).getRight().isEvenConstant() && expr.getRight().isRationalConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isEvenConstant()) {
                 // In diesem Fall: x^(2*k)^(n/(2*m)) = abs(x)^(k*n/m)
-                return new Function(((BinaryOperation) expr.getLeft()).getLeft(), TypeFunction.abs).pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()));
+                return ((BinaryOperation) expr.getLeft()).getLeft().abs().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()));
             }
             if (((BinaryOperation) expr.getLeft()).getRight().isRationalConstant() && expr.getRight().isIntegerConstantOrRationalConstant()) {
 
@@ -934,7 +854,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 BigInteger exponentEnumerator = a.multiply(c);
                 BigInteger exponentDenominator = b.multiply(d);
                 BigInteger gcdOfEnumeratorAndDenominator = exponentEnumerator.gcd(exponentDenominator);
-                exponentEnumerator = exponentEnumerator.divide(gcdOfEnumeratorAndDenominator);
+//                exponentEnumerator = exponentEnumerator.divide(gcdOfEnumeratorAndDenominator);
                 exponentDenominator = exponentDenominator.divide(gcdOfEnumeratorAndDenominator);
                 if (b.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO) && !exponentDenominator.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) {
                     return expr;
@@ -1445,9 +1365,7 @@ public abstract class SimplifyBinaryOperationMethods {
                     }
                 }
                 if (gcdOfAllCoefficients.equals(BigInteger.ONE)) {
-                    /**
-                     * Es kann dann nichts gekürzt werden.
-                     */
+                    // Es kann dann nichts gekürzt werden.
                     Expression[] result = new Expression[2];
                     result[0] = enumerator;
                     result[1] = denominator;
@@ -1500,9 +1418,7 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
         if (gcdOfAllCoefficients.equals(BigInteger.ONE)) {
-            /**
-             * Es kann dann nichts gekürzt werden.
-             */
+            // Es kann dann nichts gekürzt werden.
             Expression[] result = new Expression[2];
             result[0] = enumerator;
             result[1] = denominator;
@@ -2147,8 +2063,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression simplifyPowersOfAbs(BinaryOperation expr) {
 
-        if (!(expr.getLeft() instanceof Function) || !((Function) expr.getLeft()).getType().equals(TypeFunction.abs)
-                || expr.isNotPower() || !(expr.getRight().isIntegerConstant())) {
+        if (!expr.getLeft().isFunction(TypeFunction.abs) || expr.isNotPower() || !(expr.getRight().isIntegerConstant())) {
             return expr;
         }
 
@@ -2270,11 +2185,14 @@ public abstract class SimplifyBinaryOperationMethods {
         if (resultFactorsInEnumeratorOutsideOfPowerOfTen.isEmpty() && resultFactorsInDenominatorOutsideOfPowerOfTen.isEmpty()) {
             return expr;
         } else if (!resultFactorsInEnumeratorOutsideOfPowerOfTen.isEmpty() && resultFactorsInDenominatorOutsideOfPowerOfTen.isEmpty()) {
-            return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfPowerOfTen).mult(expr.getLeft().pow(SimplifyUtilities.produceSum(summandsLeft).sub(((BinaryOperation) expr.getRight()).getRight())));
+            return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfPowerOfTen).mult(expr.getLeft().pow(
+                    SimplifyUtilities.produceSum(summandsLeft).sub(((BinaryOperation) expr.getRight()).getRight())));
         } else if (resultFactorsInEnumeratorOutsideOfPowerOfTen.isEmpty() && !resultFactorsInDenominatorOutsideOfPowerOfTen.isEmpty()) {
-            return expr.getLeft().pow(((BinaryOperation) expr.getRight()).getLeft().sub(SimplifyUtilities.produceSum(summandsRight))).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfPowerOfTen));
+            return expr.getLeft().pow(((BinaryOperation) expr.getRight()).getLeft().sub(SimplifyUtilities.produceSum(summandsRight))).div(
+                    SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfPowerOfTen));
         }
-        return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfPowerOfTen).mult(expr.getLeft().pow(SimplifyUtilities.produceDifference(summandsLeft, summandsRight))).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfPowerOfTen));
+        return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfPowerOfTen).mult(expr.getLeft().pow(SimplifyUtilities.produceDifference(summandsLeft, summandsRight))).div(
+                SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfPowerOfTen));
 
     }
 

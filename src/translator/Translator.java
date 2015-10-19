@@ -1,7 +1,7 @@
 package translator;
 
-import expressionbuilder.Expression;
 import enumerations.TypeLanguage;
+import expressionbuilder.Expression;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -12,32 +12,34 @@ import org.w3c.dom.NodeList;
 
 public abstract class Translator {
 
-    public static String translateExceptionMessage(String exception_id) {
+    public static String translateExceptionMessage(String exceptionId) {
 
         // Die entsprechende XML-Datei öffnen.
         try {
             URL langFile;
-            if (exception_id.substring(0, 2).equals("CC")) {
+            if (exceptionId.substring(0, 2).equals("CC")) {
                 langFile = ClassLoader.getSystemResource("languages/LangComputationalClasses.xml");
-            } else if (exception_id.substring(0, 2).equals("EB")) {
+            } else if (exceptionId.substring(0, 2).equals("EB")) {
                 langFile = ClassLoader.getSystemResource("languages/LangExpressionBuilder.xml");
-            } else if (exception_id.substring(0, 3).equals("LEB")) {
+            } else if (exceptionId.substring(0, 3).equals("LEB")) {
                 langFile = ClassLoader.getSystemResource("languages/LangLogicalExpressionBuilder.xml");
-            } else if (exception_id.substring(0, 3).equals("MEB")) {
+            } else if (exceptionId.substring(0, 3).equals("MEB")) {
                 langFile = ClassLoader.getSystemResource("languages/LangMatrixExpressionBuilder.xml");
-            } else if (exception_id.substring(0, 3).equals("MTF")) {
+            } else if (exceptionId.substring(0, 3).equals("MTF")) {
                 langFile = ClassLoader.getSystemResource("languages/LangMathToolForm.xml");
-            } else if (exception_id.substring(0, 3).equals("MCC")) {
+            } else if (exceptionId.substring(0, 3).equals("MCC")) {
                 langFile = ClassLoader.getSystemResource("languages/LangMathCommandCompiler.xml");
-            } else if (exception_id.substring(0, 3).equals("PRM")) {
+            } else if (exceptionId.substring(0, 3).equals("PRM")) {
                 langFile = ClassLoader.getSystemResource("languages/LangPolynomialRootMethods.xml");
-            } else if (exception_id.substring(0, 2).equals("GR")) {
+            } else if (exceptionId.substring(0, 2).equals("GR")) {
                 langFile = ClassLoader.getSystemResource("languages/LangGraphic.xml");
-            } else if (exception_id.substring(0, 2).equals("SM")) {
+            } else if (exceptionId.substring(0, 2).equals("SM")) {
                 langFile = ClassLoader.getSystemResource("languages/LangSimplifyMethods.xml");
-            } else {
-                // Hier sind es die GUI-Sprachdateien
+            } else if (exceptionId.substring(0, 3).equals("GUI")) {
                 langFile = ClassLoader.getSystemResource("languages/LangGUI.xml");
+            } else {
+                // Datei für unbekannten Fehler öffnen.
+                langFile = ClassLoader.getSystemResource("languages/LangUndefinedError.xml");
             }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -55,7 +57,7 @@ public abstract class Translator {
 
                     Element eElement = (Element) nNode;
 
-                    if (eElement.getAttribute("id").equals(exception_id)) {
+                    if (eElement.getAttribute("id").equals(exceptionId)) {
                         if (Expression.getLanguage().equals(TypeLanguage.DE)) {
                             return eElement.getElementsByTagName("German").item(0).getTextContent();
                         } else if (Expression.getLanguage().equals(TypeLanguage.EN)) {

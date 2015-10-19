@@ -157,6 +157,11 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public boolean containsOperator() {
+        return this.left.containsOperator() || this.right.containsOperator();
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         return new BinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
     }
@@ -649,6 +654,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Allgemeine Vereinfachungen, falls der zugrundeliegende Ausdruck konstant ist.
+        Expression exprLeftAndRightSimplified;
         BinaryOperation expr;
 
         if (this.isSum()) {
@@ -675,7 +681,11 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isDifference()) {
 
-            expr = (BinaryOperation) this.left.simplifyTrivial().sub(this.right.simplifyTrivial());
+            exprLeftAndRightSimplified = this.left.simplifyTrivial().sub(this.right.simplifyTrivial());
+            if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
+                return exprLeftAndRightSimplified;
+            }
+            expr = (BinaryOperation) exprLeftAndRightSimplified;
 
             // Triviale Umformungen
             Expression exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInDifferenceWithZeroOne(expr);
@@ -721,12 +731,16 @@ public class BinaryOperation extends Expression {
             if (this.isConstant()) {
                 SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
             }
-            
+
             return SimplifyUtilities.produceProduct(factors);
 
         } else if (this.isQuotient()) {
 
-            expr = (BinaryOperation) this.left.simplifyTrivial().div(this.right.simplifyTrivial());
+            exprLeftAndRightSimplified = this.left.simplifyTrivial().div(this.right.simplifyTrivial());
+            if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
+                return exprLeftAndRightSimplified;
+            }
+            expr = (BinaryOperation) exprLeftAndRightSimplified;
             Expression exprSimplified;
 
             // Triviale Umformungen
@@ -775,7 +789,11 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        expr = (BinaryOperation) this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
+        exprLeftAndRightSimplified = this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
+        if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
+            return exprLeftAndRightSimplified;
+        }
+        expr = (BinaryOperation) exprLeftAndRightSimplified;
 
         // Nun folgen Vereinfachungen von Potenzen und Wurzeln konstanter Ausdrücke, soweit möglich.
         exprSimplified = SimplifyBinaryOperationMethods.computePowersOfIntegers(expr);
@@ -1014,11 +1032,11 @@ public class BinaryOperation extends Expression {
              */
             BigInteger boundNumberOfSummands = BigInteger.ZERO;
             if (type.equals(TypeExpansion.POWERFUL)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
             } else if (type.equals(TypeExpansion.MODERATE)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
             } else if (type.equals(TypeExpansion.SHORT)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
             }
 
             // Ist die Anzahl der resultierenden Summanden zu groß, dann nicht weiter ausmultiplizieren.
@@ -1085,11 +1103,11 @@ public class BinaryOperation extends Expression {
              */
             BigInteger boundNumberOfSummands = BigInteger.ZERO;
             if (type.equals(TypeExpansion.POWERFUL)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION);
             } else if (type.equals(TypeExpansion.MODERATE)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION);
             } else if (type.equals(TypeExpansion.SHORT)) {
-                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
+                boundNumberOfSummands = BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION);
             }
 
             if (expr.getLeft().isSum()) {
@@ -2834,7 +2852,7 @@ public class BinaryOperation extends Expression {
 
             // Im Folgenden Fall nicht weiter ausmultiplizieren.
             if (numberOfSummands.compareTo(BigInteger.ZERO) < 0
-                    || numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) > 0) {
+                    || numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS)) > 0) {
                 return expr;
             }
 
@@ -2887,7 +2905,7 @@ public class BinaryOperation extends Expression {
 
                 BigInteger numberOfSummands = getUpperBoundForSummands(this, var);
                 if (numberOfSummands.compareTo(BigInteger.ZERO) > 0
-                        && numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_MAXIMAL_INTEGRABLE_NUMBER_OF_SUMMANDS)) <= 0) {
+                        && numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS)) <= 0) {
 
                     Expression base = ((BinaryOperation) expr).left;
                     int exponent = ((Constant) ((BinaryOperation) expr).right).getValue().intValue();
@@ -2979,7 +2997,7 @@ public class BinaryOperation extends Expression {
          3+2*2^(1/2)). Maximal erlaubte Potenz ist <= einer bestimmten
          Schranke.
          */
-        exprSimplified = SimplifyAlgebraicExpressionMethods.expandAlgebraicExpressionsByBinomial(expr, ComputationBounds.BOUND_POWER_OF_BINOMIAL);
+        exprSimplified = SimplifyAlgebraicExpressionMethods.expandAlgebraicExpressionsByBinomial(expr, ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }

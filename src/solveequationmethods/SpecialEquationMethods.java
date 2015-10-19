@@ -761,7 +761,7 @@ public abstract class SpecialEquationMethods {
                         return f;
                     }
                     n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
-                    if (Math.abs(n) > ComputationBounds.BOUND_DEGREE_OF_POLYNOMIAL_FOR_SOLVING_EQUATION) {
+                    if (Math.abs(n) > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
                         return f;
                     }
                 }

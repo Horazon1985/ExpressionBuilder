@@ -1,7 +1,7 @@
 package graphic;
 
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import java.awt.Color;
@@ -28,7 +28,7 @@ public class GraphicPanel2D extends JPanel {
      Graphen kann dann jeweils über die Keys 0, 1, 2, ..., this.graph.size() -
      1 zugegriffen werden.
      */
-    private final ArrayList<Expression> expr = new ArrayList<>();
+    private final ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> graph2D = new ArrayList<>();
     private ArrayList<double[]> implicitGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
@@ -157,7 +157,7 @@ public class GraphicPanel2D extends JPanel {
     }
 
     public ArrayList<Expression> getExpressions() {
-        return this.expr;
+        return this.exprs;
     }
 
     public ArrayList<String> getInstructions() {
@@ -204,7 +204,7 @@ public class GraphicPanel2D extends JPanel {
     }
 
     public void addExpression(Expression expr) {
-        this.expr.add(this.expr.size(), expr);
+        this.exprs.add(this.exprs.size(), expr);
         setColors();
     }
 
@@ -214,7 +214,7 @@ public class GraphicPanel2D extends JPanel {
     }
 
     public void setColors() {
-        int numberOfColors = Math.max(this.expr.size(), this.graph2D.size());
+        int numberOfColors = Math.max(this.exprs.size(), this.graph2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
             if (i < GraphicPanel2D.fixedColors.length) {
                 this.colors.add(GraphicPanel2D.fixedColors[i]);
@@ -225,7 +225,7 @@ public class GraphicPanel2D extends JPanel {
     }
 
     public void clearExpressionAndGraph() {
-        this.expr.clear();
+        this.exprs.clear();
         this.graph2D.clear();
         this.colors.clear();
     }
@@ -294,9 +294,9 @@ public class GraphicPanel2D extends JPanel {
 
         if (varAbscStart >= varAbscEnd) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1")
-                    + (expr.size() + 1)
+                    + (exprs.size() + 1)
                     + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_2")
-                    + (expr.size() + 2)
+                    + (exprs.size() + 2)
                     + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_3"));
         }
 
@@ -306,15 +306,14 @@ public class GraphicPanel2D extends JPanel {
         double globalMaxY = Double.NaN;
 
         double y;
-        for (int i = 0; i < expr.size(); i++) {
+        for (Expression expr : exprs) {
             for (int j = 0; j < 100; j++) {
                 Variable.setValue(this.varAbsc, varAbscStart + j * (varAbscEnd - varAbscStart) / 100);
                 try {
-                    y = expr.get(i).evaluate();
-                } catch (EvaluationException e) {
+                    y = expr.evaluate();
+                }catch (EvaluationException e) {
                     y = Double.NaN;
                 }
-
                 if (!Double.isNaN(y) && !Double.isInfinite(y)) {
                     if (Double.isNaN(globalMinY)) {
                         globalMinY = y;
@@ -334,7 +333,7 @@ public class GraphicPanel2D extends JPanel {
             this.axeCenterY = (globalMaxY + globalMinY) / 2;
             this.maxY = (globalMaxY - globalMinY) / 2;
 
-            // Falls alle expr.get(i) konstant sind.
+            // Falls alle exprs.get(i) konstant sind.
             if (this.maxY < 0.000000001) {
                 this.maxY = 1;
             }
@@ -427,7 +426,7 @@ public class GraphicPanel2D extends JPanel {
         this.graph2D.clear();
         double[][] pointsOnGraphs;
 
-        for (int i = 0; i < this.expr.size(); i++) {
+        for (int i = 0; i < this.exprs.size(); i++) {
 
             pointsOnGraphs = new double[1001][2];
 
@@ -435,11 +434,11 @@ public class GraphicPanel2D extends JPanel {
              Falls this.expr.get(i) konstant ist -> den Funktionswert nur
              einmal berechnen!
              */
-            if (this.expr.get(i).isConstant()) {
+            if (this.exprs.get(i).isConstant()) {
                 Variable.setValue(varAbsc, varAbscStart);
                 double constOrdValue;
                 try {
-                    constOrdValue = this.expr.get(i).evaluate();
+                    constOrdValue = this.exprs.get(i).evaluate();
                 } catch (EvaluationException e) {
                     constOrdValue = Double.NaN;
                 }
@@ -453,7 +452,7 @@ public class GraphicPanel2D extends JPanel {
                     pointsOnGraphs[j][0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 1000;
                     Variable.setValue(varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * j / 1000);
                     try {
-                        pointsOnGraphs[j][1] = this.expr.get(i).evaluate();
+                        pointsOnGraphs[j][1] = this.exprs.get(i).evaluate();
                     } catch (EvaluationException e) {
                         pointsOnGraphs[j][1] = Double.NaN;
                     }

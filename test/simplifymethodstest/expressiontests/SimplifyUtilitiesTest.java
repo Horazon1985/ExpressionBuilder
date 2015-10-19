@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SimplifyMethodsTest {
+public class SimplifyUtilitiesTest {
 
     Expression f, g, h;
     Expression exprWithMultipleVariables;
@@ -41,68 +41,68 @@ public class SimplifyMethodsTest {
     }
 
     @Test
-    public void getFactorsOfF() {
+    public void getFactorsOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getFactorsOfG() {
+    public void getFactorsOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(g);
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getFactorsOfGIfApproximating() {
+    public void getFactorsOfGIfApproximatingTest() {
         g = g.turnToApproximate();
         ExpressionCollection factors = SimplifyUtilities.getFactors(g);
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getFactorsOfH() {
+    public void getFactorsOfHTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(h);
         assertTrue(factors.getBound() == 1);
     }
 
     @Test
-    public void getFactorsOfEnumeratorOfF() {
+    public void getFactorsOfEnumeratorOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getFactorsOfDenominatorOfF() {
+    public void getFactorsOfDenominatorOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
         assertTrue(factors.isEmpty());
     }
 
     @Test
-    public void getFactorsOfEnumeratorOfG() {
+    public void getFactorsOfEnumeratorOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfEnumeratorInExpression(g);
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getFactorsOfDenominatorOfG() {
+    public void getFactorsOfDenominatorOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfDenominatorInExpression(g);
         assertTrue(factors.isEmpty());
     }
 
     @Test
-    public void getNonConstantFactorsOfEnumeratorOfExpr() {
+    public void getNonConstantFactorsOfEnumeratorOfExprTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(exprWithMultipleVariables, "x");
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
-    public void getNonConstantFactorsOfDenominatorOfExprWithRespectToX() {
+    public void getNonConstantFactorsOfDenominatorOfExprWithRespectToXTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(exprWithMultipleVariables, "x");
         assertTrue(factors.isEmpty());
     }
 
     @Test
-    public void getNonConstantFactorsOfDenominatorOfExprWithRespectToY() {
+    public void getNonConstantFactorsOfDenominatorOfExprWithRespectToYTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(exprWithMultipleVariables, "y");
         assertTrue(factors.getBound() == 1);
     }
