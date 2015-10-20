@@ -9,7 +9,9 @@ import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.THREE;
 import static expressionbuilder.Expression.TWO;
 import static expressionbuilder.Expression.ZERO;
+import expressionbuilder.Function;
 import expressionbuilder.Operator;
+import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.Variable;
 import java.math.BigInteger;
@@ -361,4 +363,27 @@ public abstract class SimplifyOperatorMethods {
 
     }
 
+    /**
+     * Vereinfacht: prod(exp(f(k)), k, m, n) = exp(sum(f(k), k, m, n)).
+     */
+    public static Expression simplifyProductOfExponentialFunctions(Operator expr) {
+        if (!expr.getType().equals(TypeOperator.prod) || !((Expression) expr.getParams()[0]).isFunction(TypeFunction.exp)){
+            return expr;
+        }
+        return new Operator(TypeOperator.sum, new Object[]{ ((Function) expr.getParams()[0]).getLeft(), 
+            expr.getParams()[1], expr.getParams()[2], expr.getParams()[3] }, expr.getPrecise()).exp();
+    }
+
+    /**
+     * Vereinfacht: sum(ln(f(k)), k, m, n) = ln(prod(f(k), k, m, n)).
+     */
+    public static Expression simplifySumOfLogarithmicFunctions(Operator expr) {
+        if (!expr.getType().equals(TypeOperator.sum) || !(((Expression) expr.getParams()[0]).isFunction(TypeFunction.lg)
+                || ((Expression) expr.getParams()[0]).isFunction(TypeFunction.ln))){
+            return expr;
+        }
+        return new Function(new Operator(TypeOperator.prod, new Object[]{ ((Function) expr.getParams()[0]).getLeft(), 
+            expr.getParams()[1], expr.getParams()[2], expr.getParams()[3] }, expr.getPrecise()), ((Function) expr.getParams()[0]).getType());
+    }
+    
 }

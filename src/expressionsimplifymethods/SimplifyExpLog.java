@@ -1,11 +1,13 @@
 package expressionsimplifymethods;
 
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
+import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
+import expressionbuilder.TypeOperator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -230,6 +232,21 @@ public abstract class SimplifyExpLog {
 
         return new Function(logArgument, logType);
 
+    }
+    
+    /**
+     * Vereinfacht: ln(prod(f(k), k, m, n)) = sum(ln(f(k)), k, m, n).
+     */
+    public static Expression expandLogarithmOfProduct(Function expr) {
+        if (!expr.getType().equals(TypeFunction.lg) && !expr.getType().equals(TypeFunction.ln)){
+            return expr;
+        }
+        Expression logArgument = expr.getLeft();
+        if (!logArgument.isOperator(TypeOperator.prod)){
+            return expr;
+        }
+        return new Operator(TypeOperator.sum, new Object[]{ new Function(logArgument, expr.getType()), 
+            ((Operator) logArgument).getParams()[1], ((Operator) logArgument).getParams()[2], ((Operator) logArgument).getParams()[3] });
     }
 
     /**
