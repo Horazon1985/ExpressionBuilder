@@ -312,7 +312,7 @@ public abstract class LogicalExpression {
      * zum HashSet vars hinzu. ZIEL: Start mit vars = {} liefert alle
      * vorkommenden logischen Variablen.
      */
-    public abstract void getContainedVars(HashSet vars);
+    public abstract void addContainedVars(HashSet vars);
 
     /**
      * Gibt zurück, ob der vorliegende logische Ausdruck die logische Variable
@@ -400,7 +400,7 @@ public abstract class LogicalExpression {
     public LogicalExpression toCCNF() throws EvaluationException {
 
         HashSet vars = new HashSet();
-        this.getContainedVars(vars);
+        this.addContainedVars(vars);
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 
         // Variablen vars in eine Reihenfolge bringen.
@@ -470,7 +470,7 @@ public abstract class LogicalExpression {
     public LogicalExpression toCDNF() throws EvaluationException {
 
         HashSet vars = new HashSet();
-        this.getContainedVars(vars);
+        this.addContainedVars(vars);
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 
         // Variables vars in eine Reihenfolge bringen.

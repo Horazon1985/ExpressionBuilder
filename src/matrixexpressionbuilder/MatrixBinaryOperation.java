@@ -311,9 +311,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
-        this.left.getContainedVars(vars);
-        this.right.getContainedVars(vars);
+    public void addContainedVars(HashSet<String> vars) {
+        this.left.addContainedVars(vars);
+        this.right.addContainedVars(vars);
     }
 
     @Override

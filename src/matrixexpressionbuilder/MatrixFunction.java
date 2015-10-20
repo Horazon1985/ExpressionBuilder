@@ -113,8 +113,8 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
-        this.left.getContainedVars(vars);
+    public void addContainedVars(HashSet<String> vars) {
+        this.left.addContainedVars(vars);
     }
 
     @Override

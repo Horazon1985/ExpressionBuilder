@@ -266,8 +266,8 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
-        this.left.getContainedVars(vars);
+    public void addContainedVars(HashSet<String> vars) {
+        this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
     }
 

@@ -29,7 +29,7 @@ public class LogicalConstant extends LogicalExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet vars) {
+    public void addContainedVars(HashSet vars) {
     }
 
     @Override

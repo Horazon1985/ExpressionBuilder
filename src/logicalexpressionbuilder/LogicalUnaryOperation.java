@@ -33,8 +33,8 @@ public class LogicalUnaryOperation extends LogicalExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet vars) {
-        this.left.getContainedVars(vars);
+    public void addContainedVars(HashSet vars) {
+        this.left.addContainedVars(vars);
     }
 
     @Override

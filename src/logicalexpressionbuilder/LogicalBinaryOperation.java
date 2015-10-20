@@ -56,9 +56,9 @@ public class LogicalBinaryOperation extends LogicalExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet vars) {
-        this.left.getContainedVars(vars);
-        this.right.getContainedVars(vars);
+    public void addContainedVars(HashSet vars) {
+        this.left.addContainedVars(vars);
+        this.right.addContainedVars(vars);
     }
 
     @Override

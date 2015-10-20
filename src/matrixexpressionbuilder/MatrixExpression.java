@@ -591,7 +591,7 @@ public abstract class MatrixExpression {
     /**
      * Fügt einem HashSet alle im Matrizenausdruck vorkommenden Variablen hinzu.
      */
-    public abstract void getContainedVars(HashSet<String> vars);
+    public abstract void addContainedVars(HashSet<String> vars);
 
     /**
      * Legt eine neue Kopie von this an.

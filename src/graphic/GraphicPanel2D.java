@@ -28,7 +28,7 @@ public class GraphicPanel2D extends JPanel {
      Graphen kann dann jeweils über die Keys 0, 1, 2, ..., this.graph.size() -
      1 zugegriffen werden.
      */
-    private final ArrayList<Expression> exprs = new ArrayList<>();
+    private ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> graph2D = new ArrayList<>();
     private ArrayList<double[]> implicitGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
@@ -203,6 +203,11 @@ public class GraphicPanel2D extends JPanel {
         this.specialPoints = specialPoints;
     }
 
+    public void setExpressions(ArrayList<Expression> exprs){
+        this.exprs = exprs;
+        setColors();
+    }
+    
     public void addExpression(Expression expr) {
         this.exprs.add(this.exprs.size(), expr);
         setColors();

@@ -556,7 +556,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
                 this.entry[i][j].addContainedVars(vars);

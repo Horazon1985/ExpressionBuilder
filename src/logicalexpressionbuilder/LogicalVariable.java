@@ -91,7 +91,7 @@ public class LogicalVariable extends LogicalExpression {
     }
     
     @Override
-    public void getContainedVars(HashSet vars){
+    public void addContainedVars(HashSet vars){
         vars.add(this.name);
     }
 

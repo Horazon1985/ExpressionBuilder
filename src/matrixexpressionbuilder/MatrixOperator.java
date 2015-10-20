@@ -284,7 +284,7 @@ public class MatrixOperator extends MatrixExpression {
         try {
             integrand = MatrixExpression.build(params[0], vars);
             // Dies dient dazu, die Variablen im Integranden zu bestimmen.
-            integrand.getContainedVars(varsInIntegrand);
+            integrand.addContainedVars(varsInIntegrand);
         } catch (ExpressionException e) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_1_PARAMETER_IN_INT_IS_INVALID") + e.getMessage());
         }
@@ -516,7 +516,7 @@ public class MatrixOperator extends MatrixExpression {
             }
             // Bestimmte Integrale.
             HashSet<String> varsInParameters = new HashSet<>();
-            ((MatrixExpression) this.params[0]).getContainedVars(varsInParameters);
+            ((MatrixExpression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
             ((Expression) this.params[2]).addContainedVars(varsInParameters);
             ((Expression) this.params[3]).addContainedVars(varsInParameters);
@@ -694,19 +694,19 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public void getContainedVars(HashSet<String> vars) {
+    public void addContainedVars(HashSet<String> vars) {
 
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die
          Integrationsvariable/der Index NICHT als vorkommende Variable.
          */
         if (this.type.equals(TypeMatrixOperator.integral) && this.params.length == 2) {
-            ((MatrixExpression) this.params[0]).getContainedVars(vars);
+            ((MatrixExpression) this.params[0]).addContainedVars(vars);
             return;
         }
         if (this.type.equals(TypeMatrixOperator.integral) && this.params.length == 4) {
             String var = (String) this.params[1];
-            ((MatrixExpression) this.params[0]).getContainedVars(vars);
+            ((MatrixExpression) this.params[0]).addContainedVars(vars);
             vars.remove(var);
             ((Expression) this.params[2]).addContainedVars(vars);
             ((Expression) this.params[3]).addContainedVars(vars);
@@ -714,7 +714,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         if (this.type.equals(TypeMatrixOperator.prod) || this.type.equals(TypeMatrixOperator.sum)) {
             String index = (String) this.params[1];
-            ((MatrixExpression) this.params[0]).getContainedVars(vars);
+            ((MatrixExpression) this.params[0]).addContainedVars(vars);
             vars.remove(index);
             ((Expression) this.params[2]).addContainedVars(vars);
             ((Expression) this.params[3]).addContainedVars(vars);
@@ -726,7 +726,7 @@ public class MatrixOperator extends MatrixExpression {
             if (param instanceof Expression) {
                 ((Expression) param).addContainedVars(vars);
             } else if (param instanceof MatrixExpression) {
-                ((MatrixExpression) param).getContainedVars(vars);
+                ((MatrixExpression) param).addContainedVars(vars);
             }
         }
 
@@ -1040,7 +1040,7 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression result = zeroMatrix;
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
         HashSet<String> vars = new HashSet<>();
-        matExpr.getContainedVars(vars);
+        matExpr.addContainedVars(vars);
         Iterator iter = vars.iterator();
         String var;
 

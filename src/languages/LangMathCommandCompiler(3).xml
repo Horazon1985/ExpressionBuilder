@@ -404,8 +404,8 @@
   <object id = "MCC_GRAPHS_CANNOT_BE_PLOTTED_PLOT2D">
     <German>Graphen konnten nicht geplottet werden.</German>
     <English>Graphs cannot be plotted.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Не вдалося побудувати графік.</Ukrainian>
+    <Russian>Не удалось построить график.</Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_IMPLICIT_PLOT2D">
     <German>Beim Plotten impliziter Funktionen muss der Befehl 'plot2d' genau 5 Parameter enthalten: der erste ist die Gleichung, die anderen vier sind die Grenzen, innerhalb derer der Graph geplottet wird.</German>
@@ -458,8 +458,8 @@
   <object id = "MCC_IMPLICIT_GRAPH_CANNOT_BE_PLOTTED_PLOT2D">
     <German>Der Graph der implizit definierten Funktion konnte nicht geplottet werden.</German>
     <English>The graph of the implicitly defined function cannot be plotted.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Не вдалося побудувати графік неявно заданої функції.</Ukrainian>
+    <Russian>Не удалось построить график неявно заданной функции.</Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOT3D">
     <German>Im Befehl 'plot3d' müssen genau fünf Parameter stehen.</German>
@@ -512,8 +512,8 @@
   <object id = "MCC_GRAPH_CANNOT_BE_PLOTTED_PLOT3D">
     <German>Der Graph konnte nicht geplottet werden.</German>
     <English>The graph cannot be plotted.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо побудувати графік.</Ukrainian>
+    <Russian>Невозможно построить график.</Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTCURVE">
     <German>Im Befehl 'plotcurve' müssen genau drei Parameter stehen.</German>
@@ -566,8 +566,8 @@
   <object id = "MCC_CURVE_CANNOT_BE_PLOTTED_PLOTCURVE">
     <German>Die Kurve konnte nicht geplottet werden.</German>
     <English>The curve cannot be plotted.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо побудувати криву.</Ukrainian>
+    <Russian>Невозможно постоить кривую.</Russian>
   </object>
   <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_PLOTPOLAR">
     <German>Zu wenig Parameter im Befehl 'plotpolar'.</German>
