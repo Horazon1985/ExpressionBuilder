@@ -21,6 +21,7 @@ public abstract class Expression {
     public final static Constant TWO = new Constant(2);
     public final static Constant THREE = new Constant(3);
     public final static Constant FOUR = new Constant(4);
+    public final static Constant TEN = new Constant(10);
     public final static Constant MINUS_ONE = new Constant(-1);
 
     public static TypeLanguage getLanguage() {
@@ -621,6 +622,30 @@ public abstract class Expression {
      * 1+x^2+y^4 etc.)
      */
     public abstract boolean isAlwaysPositive();
+
+    /**
+     * Liefert true, falls der Ausdruck definiv immer nichtpositiv ist (z.B.
+     * -x^2-y^4 etc.)
+     */
+    public boolean isAlwaysNonPositive() {
+        try {
+            return MINUS_ONE.mult(this).simplify().isAlwaysNonNegative();
+        } catch (EvaluationException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Liefert true, falls der Ausdruck definiv immer positiv ist (z.B.
+     * -1-x^2-y^4 etc.)
+     */
+    public boolean isAlwaysNegative() {
+        try {
+            return MINUS_ONE.mult(this).simplify().isAlwaysPositive();
+        } catch (EvaluationException e) {
+            return false;
+        }
+    }
 
     /**
      * Gibt den Ausdruck als String aus.

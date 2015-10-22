@@ -292,7 +292,7 @@ public class Function extends Expression {
     public boolean containsOperator() {
         return this.left.containsOperator();
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         return new Function(this.left.turnToApproximate(), this.type);
@@ -956,16 +956,25 @@ public class Function extends Expression {
         // Zunächst linken Teil (Argument in der Funktion) vereinfachen.
         Function function = new Function(this.left.simplifyExpandLogarithms(), this.type);
 
-        // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x).
-        Expression functionSimplified = SimplifyExpLog.reduceLogarithmOfReciprocal(function);
-        if (!functionSimplified.equals(function)) {
-            return functionSimplified;
-        }
+        // Vereinfacht lg(x^y) zu y*lg(x) und lg(x*/y) = lg(x) +- lg(y), analog mit ln.
+        if (this.type.equals(TypeFunction.lg) || this.type.equals(TypeFunction.ln)) {
 
-        // Vereinfacht lg(x^y) zu y*lg(x) und ln(x^y) zu y*ln(x).
-        functionSimplified = SimplifyExpLog.reduceLogarithmOfPower(function);
-        if (!functionSimplified.equals(function)) {
-            return functionSimplified;
+            // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x).
+            Expression functionSimplified = SimplifyExpLog.reduceLogarithmOfReciprocal(function.getLeft(), this.type);
+            if (!functionSimplified.equals(function)) {
+                return functionSimplified;
+            }
+
+            functionSimplified = SimplifyExpLog.expandLogarithms(function.getLeft(), this.type);
+            if (!functionSimplified.equals(function)) {
+                return functionSimplified;
+            }
+
+            functionSimplified = SimplifyExpLog.expandLogarithmOfProduct(function.getLeft(), this.type);
+            if (!functionSimplified.equals(function)) {
+                return functionSimplified;
+            }
+
         }
 
         return function;

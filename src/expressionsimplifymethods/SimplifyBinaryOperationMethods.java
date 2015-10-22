@@ -784,36 +784,76 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static void simplifySumsAndDifferencesWithNegativeCoefficient(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
-        // Vorab: wenn alle Koeffizienten in summandsLeft negativ sind und summandsRight leer ist, dann nichts zun.
-        boolean allCoefficientsInSummandsLeftAreNegativ = true;
-        if (summandsRight.isEmpty()) {
-            for (int i = 0; i < summandsLeft.getBound(); i++) {
-                if (summandsLeft.get(i) != null && summandsLeft.get(i).hasPositiveSign()) {
-                    allCoefficientsInSummandsLeftAreNegativ = false;
-                    break;
-                }
+        /* 
+         Vorab: wenn summandsLeft nur ein Element besitzt und dieses einen negativen 
+         Koeffizienten besitzt, dann nichts zun.
+         */
+        boolean allSummandsLeftHaveNegativCoefficients = true;
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i) == null) {
+                continue;
             }
-            if (allCoefficientsInSummandsLeftAreNegativ) {
-                return;
+            if (summandsLeft.get(i) != null && summandsLeft.get(i).hasPositiveSign()) {
+                allSummandsLeftHaveNegativCoefficients = false;
+                break;
             }
         }
 
         Expression summand;
-        for (int i = 0; i < summandsLeft.getBound(); i++) {
-            if (summandsLeft.get(i) != null && !summandsLeft.get(i).hasPositiveSign()) {
-                summand = summandsLeft.get(i);
-                summandsLeft.remove(i);
-                summandsRight.add(MINUS_ONE.mult(summand));
+        if (allSummandsLeftHaveNegativCoefficients) {
+            /*
+             Dann werden alle Summanden im Minuenden, bis auf den ersten, in den 
+             Subtrahenden mit dem entsprechenden Vorzeichen verschoben.
+             */
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                if (summandsLeft.get(i) != null) {
+                    for (int j = i + 1; j < summandsLeft.getBound(); j++) {
+                        summand = summandsLeft.get(j);
+                        summandsLeft.remove(j);
+                        summandsRight.add(negateExpression(summand));
+                    }
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < summandsRight.getBound(); i++) {
-            if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
-                summand = summandsRight.get(i);
-                summandsRight.remove(i);
-                summandsLeft.add(MINUS_ONE.mult(summand));
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
+                    summand = summandsRight.get(i);
+                    summandsRight.remove(i);
+                    summandsLeft.add(negateExpression(summand));
+                }
+            }
+        } else {
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                if (summandsLeft.get(i) != null && !summandsLeft.get(i).hasPositiveSign()) {
+                    summand = summandsLeft.get(i);
+                    summandsLeft.remove(i);
+                    summandsRight.add(negateExpression(summand));
+                }
+            }
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
+                    summand = summandsRight.get(i);
+                    summandsRight.remove(i);
+                    summandsLeft.add(negateExpression(summand));
+                }
             }
         }
 
+    }
+
+    /**
+     * Hilfsmethode: negiert den Ausdruck expr;
+     */
+    private static Expression negateExpression(Expression expr) {
+        ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) instanceof Constant) {
+                factors.put(i, new Constant(BigDecimal.valueOf(-1).multiply(((Constant) factors.get(i)).getValue()),
+                        ((Constant) factors.get(i)).getPrecise()));
+                return SimplifyUtilities.produceProduct(factors);
+            }
+        }
+        return MINUS_ONE.mult(expr);
     }
 
     /**

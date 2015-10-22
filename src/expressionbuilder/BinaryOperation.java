@@ -673,7 +673,7 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant()) {
+            if (this.isConstant() && this.containsApproximates()) {
                 SimplifyBinaryOperationMethods.computeSumIfApprox(summandsLeft, summandsRight);
             }
 
@@ -703,7 +703,7 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant()) {
+            if (this.isConstant() && this.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeDifferenceIfApprox(SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
             }
 
@@ -728,7 +728,7 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.removeOnes(factors);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant()) {
+            if (this.isConstant() && this.containsApproximates()) {
                 SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
             }
 
@@ -768,7 +768,7 @@ public class BinaryOperation extends Expression {
             }
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (expr.isConstant()) {
+            if (expr.isConstant() && expr.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
             }
 
@@ -874,7 +874,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-        if (expr.isConstant()) {
+        if (expr.isConstant() && expr.containsApproximates()) {
             return SimplifyBinaryOperationMethods.computePowerIfApprox(expr);
         }
 
@@ -2438,11 +2438,11 @@ public class BinaryOperation extends Expression {
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // Faktoren vor Logarithmusfunktionen zur Basis 10 in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsLeft, TypeFunction.lg);
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsRight, TypeFunction.lg);
+        SimplifyExpLog.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.lg);
+        SimplifyExpLog.pullFactorsIntoLogarithms(summandsRight, TypeFunction.lg);
         // Faktoren vor Logarithmusfunktionen zur Basis e in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsLeft, TypeFunction.ln);
-        SimplifyExpLog.pullFactorsIntoLogarithmicFunctions(summandsRight, TypeFunction.ln);
+        SimplifyExpLog.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.ln);
+        SimplifyExpLog.pullFactorsIntoLogarithms(summandsRight, TypeFunction.ln);
         Expression expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         if (expr.isSum()) {
@@ -2454,9 +2454,9 @@ public class BinaryOperation extends Expression {
             }
 
             //Logarithmusfunktionen zur Basis 10 in einer Summe sammeln
-            SimplifyExpLog.collectLogarithmicFunctionsInSum(summands, TypeFunction.lg);
+            SimplifyExpLog.collectLogarithmsInSum(summands, TypeFunction.lg);
             //Logarithmusfunktionen zur Basis e in einer Summe sammeln
-            SimplifyExpLog.collectLogarithmicFunctionsInSum(summands, TypeFunction.ln);
+            SimplifyExpLog.collectLogarithmsInSum(summands, TypeFunction.ln);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
@@ -2470,9 +2470,9 @@ public class BinaryOperation extends Expression {
             summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
             //Logarithmusfunktionen zur Basis 10 in einer Differenz sammeln
-            SimplifyExpLog.collectLogarithmicFunctionsInDifference(summandsLeft, summandsRight, TypeFunction.lg);
+            SimplifyExpLog.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.lg);
             //Logarithmusfunktionen zur Basis e in einer Differenz sammeln
-            SimplifyExpLog.collectLogarithmicFunctionsInDifference(summandsLeft, summandsRight, TypeFunction.ln);
+            SimplifyExpLog.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.ln);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);

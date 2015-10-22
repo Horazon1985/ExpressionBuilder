@@ -294,7 +294,7 @@ public abstract class SimplifyOperatorMethods {
         } else {
             n = ((Constant) ((BinaryOperation) summand).getRight()).getValue().toBigInteger().intValue();
         }
-        
+
         ArrayList<Expression> coefficients = getPolynomialCoefficientsForSumsOfPowersOfIntegers(n);
         Expression abstractPolynomial = getPolynomialFromCoefficients(coefficients, var);
         return abstractPolynomial.replaceVariable(var, upperLimit).sub(abstractPolynomial.replaceVariable(var, lowerLimit.sub(ONE)));
@@ -345,45 +345,56 @@ public abstract class SimplifyOperatorMethods {
     }
 
     private static Expression getPolynomialFromCoefficients(ArrayList<Expression> coefficients, String var) {
-
         Expression polynomial = ZERO;
-
         for (int i = 0; i < coefficients.size(); i++) {
             if (coefficients.get(i).equals(ZERO)) {
                 continue;
             }
-            if (polynomial.equals(ZERO)) {
-                polynomial = coefficients.get(i).mult(Variable.create(var).pow(i));
-            } else {
-                polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
-            }
+            polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
         }
-
         return polynomial;
-
     }
 
     /**
      * Vereinfacht: prod(exp(f(k)), k, m, n) = exp(sum(f(k), k, m, n)).
      */
-    public static Expression simplifyProductOfExponentialFunctions(Operator expr) {
-        if (!expr.getType().equals(TypeOperator.prod) || !((Expression) expr.getParams()[0]).isFunction(TypeFunction.exp)){
-            return expr;
+    public static Expression simplifyProductOfExponentialFunctions(Expression factor, String var, Expression lowerLimit, Expression upperLimit) {
+        if (!factor.isFunction(TypeFunction.exp)) {
+            // Dann nichts tun!
+            Object[] params = new Object[4];
+            params[0] = factor;
+            params[1] = var;
+            params[2] = lowerLimit;
+            params[3] = upperLimit;
+            return new Operator(TypeOperator.prod, params);
         }
-        return new Operator(TypeOperator.sum, new Object[]{ ((Function) expr.getParams()[0]).getLeft(), 
-            expr.getParams()[1], expr.getParams()[2], expr.getParams()[3] }, expr.getPrecise()).exp();
+        Object[] params = new Object[4];
+        params[0] = ((Function) factor).getLeft();
+        params[1] = var;
+        params[2] = lowerLimit;
+        params[3] = upperLimit;
+        return new Operator(TypeOperator.sum, params).exp();
     }
 
     /**
-     * Vereinfacht: sum(ln(f(k)), k, m, n) = ln(prod(f(k), k, m, n)).
+     * Vereinfacht: sum(log(f(k)), k, m, n) = log(prod(f(k), k, m, n)), mit log = lg, ln.
      */
-    public static Expression simplifySumOfLogarithmicFunctions(Operator expr) {
-        if (!expr.getType().equals(TypeOperator.sum) || !(((Expression) expr.getParams()[0]).isFunction(TypeFunction.lg)
-                || ((Expression) expr.getParams()[0]).isFunction(TypeFunction.ln))){
-            return expr;
+    public static Expression simplifySumOfLogarithmicFunctions(Expression summand, String var, Expression lowerLimit, Expression upperLimit, TypeFunction logType) {
+        if (!summand.isFunction(logType)) {
+            // Dann nichts tun!
+            Object[] params = new Object[4];
+            params[0] = summand;
+            params[1] = var;
+            params[2] = lowerLimit;
+            params[3] = upperLimit;
+            return new Operator(TypeOperator.sum, params);
         }
-        return new Function(new Operator(TypeOperator.prod, new Object[]{ ((Function) expr.getParams()[0]).getLeft(), 
-            expr.getParams()[1], expr.getParams()[2], expr.getParams()[3] }, expr.getPrecise()), ((Function) expr.getParams()[0]).getType());
+        Object[] params = new Object[4];
+        params[0] = ((Function) summand).getLeft();
+        params[1] = var;
+        params[2] = lowerLimit;
+        params[3] = upperLimit;
+        return new Function(new Operator(TypeOperator.prod, params), logType);
     }
-    
+
 }

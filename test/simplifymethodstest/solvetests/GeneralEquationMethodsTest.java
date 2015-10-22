@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.ONE;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import org.junit.AfterClass;
@@ -14,7 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import solveequationmethods.SolveMethods;
 
-public class GeneralEquationMethods {
+public class GeneralEquationMethodsTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -111,8 +112,8 @@ public class GeneralEquationMethods {
             SolveMethods.setSolveTries(100);
             ExpressionCollection zeros = SolveMethods.solveGeneralEquation(f, Expression.ONE.div(2), "x");
             assertTrue(zeros.getBound() == 2);
-            Expression zeroOne = Expression.PI.div(6).add(Expression.TWO.mult(Expression.PI.mult(Variable.create("K_1"))));
-            Expression zeroTwo = new Constant(5).mult(Expression.PI).div(6).add(Expression.TWO.mult(Expression.PI.mult(Variable.create("K_1"))));
+            Expression zeroOne = Expression.PI.mult(ONE.div(6).add(Expression.TWO.mult(Variable.create("K_1"))));
+            Expression zeroTwo = Expression.PI.mult(new Constant(5).div(6).add(Expression.TWO.mult(Variable.create("K_1"))));
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {

@@ -13,6 +13,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import utilities.TestUtilities;
 
 public class IntegrationTests {
 
@@ -32,12 +33,13 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralOfPolynomialTest() {
-        // integral von x^3/7+x^2-5 ist = x^4/28+x^2-5.
+        // integral von x^3/7+x^2-5 ist = x^4/28+x^3/3-5*x.
         try {
             f = Expression.build("int(x^3/7+x^2-5,x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("((x^(3+1)/(3+1))/7+x^(2+1)/(2+1))-5*x", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            Expression expectedResult = Expression.build("((x^(3+1)/(3+1))/7+x^(2+1)/(2+1))-5*x", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -49,8 +51,9 @@ public class IntegrationTests {
         try {
             f = Expression.build("int(x^2*exp(x^3),x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("exp(x^3)/3", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            Expression expectedResult = Expression.build("exp(x^3)/3", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -62,10 +65,11 @@ public class IntegrationTests {
         try {
             f = Expression.build("int(x^2*cos(x),x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Variable.create("x").sin().mult(Variable.create("x").pow(2)).sub(
+            Expression expectedResult = Variable.create("x").sin().mult(Variable.create("x").pow(2)).sub(
                     Expression.TWO.mult(Expression.MINUS_ONE.mult(Variable.create("x").cos()).mult(Variable.create("x")).sub(
-                                            Expression.MINUS_ONE.mult(Variable.create("x").sin()))));
-            Assert.assertTrue(((Expression) integral).equals(result));
+                                    Expression.MINUS_ONE.mult(Variable.create("x").sin()))));
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -79,44 +83,50 @@ public class IntegrationTests {
         try {
             f = Expression.build("int(ln(x),x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("x*ln(x)-x", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            Expression expectedResult = Expression.build("x*ln(x)-x", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
             f = Expression.build("int(cot(x),x)", null);
             integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            result = Expression.build("ln(|sin(x)|)", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            expectedResult = Expression.build("ln(|sin(x)|)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
             f = Expression.build("int(5^x,x)", null);
             integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            result = Expression.build("exp(ln(5)*x)/ln(5)", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
-            result = result.simplify();
+            expectedResult = Expression.build("exp(ln(5)*x)/ln(5)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
+            expectedResult = expectedResult.simplify();
             // Vereinfacht ist integral = 5^x/ln(5).
             Expression resultSimplified = Expression.build("5^x/ln(5)", null);
-            Assert.assertTrue(result.equals(resultSimplified));
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(expectedResult.equals(resultSimplified));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
     }
-    
+
     @Test
     public void computeIntegralOfPowerOfElementaryFunctionTest() {
-        // integral von tan(x)^3 ist = tan(x)^2/2+(-(-ln(|cos(x)|))).
+        // integral von tan(x)^3 ist = tan(x)^2/2+ln(|cos(x)|).
         try {
             f = Expression.build("int(tan(x)^3,x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Variable.create("x").tan().pow(2).div(2).sub(Expression.MINUS_ONE.mult(Variable.create("x").cos().abs().ln()));
-            Assert.assertTrue(integral.equals(result));
+            Expression expectedResult = Variable.create("x").tan().pow(2).div(2).add(Variable.create("x").cos().abs().ln());
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
     }
-    
+
     @Test
     public void integralOfGaussianFunctionNotExistsTest() {
         // integral von exp(x^2) ist nicht in kompakter Form berechenbar.
         try {
             f = Expression.build("int(exp(x^2),x)", null);
             Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
+            TestUtilities.printResult(f, integral);
             Assert.assertTrue(integral.equals(f));
         } catch (ExpressionException | EvaluationException e) {
             fail("Build fehlgeschlagen.");
@@ -129,8 +139,9 @@ public class IntegrationTests {
         try {
             f = Expression.build("int(x^2+exp(x^2),x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            Expression expectedResult = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
@@ -142,16 +153,13 @@ public class IntegrationTests {
         try {
             f = Expression.build("int((5*exp(x^2))/11,x)", null);
             Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
-            Expression result = Expression.build("(5*int(exp(x^2), x))/11", null);
-            Assert.assertTrue(((Expression) integral).equals(result));
+            Expression expectedResult = Expression.build("(5*int(exp(x^2), x))/11", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
         } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
             fail("Build fehlgeschlagen.");
         }
     }
-    
+
     // Test zur Integration spezieller Funktionstypen.
-    
-    
-    
-    
 }

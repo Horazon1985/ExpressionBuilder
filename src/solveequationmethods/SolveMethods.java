@@ -1,9 +1,9 @@
 package solveequationmethods;
 
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
@@ -732,35 +732,23 @@ public abstract class SolveMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.lg)) {
+        if (g.isFunction(TypeFunction.lg)) {
             try {
-                ExpressionCollection possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
-                // Nichtpositive Lösungen aussortieren.
-                for (int i = 0; i < possibleZeros.getBound(); i++) {
-                    if (possibleZeros.get(i).isPositive()) {
-                        zeros.add(possibleZeros.get(i));
-                    }
-                }
-                if (zeros.isEmpty()) {
+                zeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
+                if (zeros == NO_SOLUTIONS) {
                     return NO_SOLUTIONS;
                 }
             } catch (EvaluationException e) {
                 return NO_SOLUTIONS;
             }
         } else if (!g.contains(var)) {
-            if (g.isNonPositive()) {
+            if (argument.isAlwaysNonPositive()) {
                 // Gleichung ist unlösbar. 
                 return NO_SOLUTIONS;
             }
             try {
-                ExpressionCollection possibleZeros = solveGeneralEquation(argument, new Constant(10).pow(g), var);
-                // Nichtpositive Lösungen aussortieren.
-                for (int i = 0; i < possibleZeros.getBound(); i++) {
-                    if (possibleZeros.get(i).isPositive()) {
-                        zeros.add(possibleZeros.get(i));
-                    }
-                }
-                if (zeros.isEmpty()) {
+                zeros = solveGeneralEquation(argument, new Constant(10).pow(g), var);
+                if (zeros == NO_SOLUTIONS) {
                     return NO_SOLUTIONS;
                 }
             } catch (EvaluationException e) {
@@ -780,35 +768,23 @@ public abstract class SolveMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.ln)) {
+        if (g.isFunction(TypeFunction.ln)) {
             try {
-                ExpressionCollection possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
-                // Nichtpositive Lösungen aussortieren.
-                for (int i = 0; i < possibleZeros.getBound(); i++) {
-                    if (possibleZeros.get(i).isPositive()) {
-                        zeros.add(possibleZeros.get(i));
-                    }
-                }
-                if (zeros.isEmpty()) {
+                zeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
+                if (zeros == NO_SOLUTIONS) {
                     return NO_SOLUTIONS;
                 }
             } catch (EvaluationException e) {
                 return NO_SOLUTIONS;
             }
         } else if (!g.contains(var)) {
-            if (g.isNonPositive()) {
+            if (argument.isAlwaysNonPositive()) {
                 // Gleichung ist unlösbar. 
                 return NO_SOLUTIONS;
             }
             try {
-                ExpressionCollection possibleZeros = solveGeneralEquation(argument, new Function(g, TypeFunction.exp), var);
-                // Nichtpositive Lösungen aussortieren.
-                for (int i = 0; i < possibleZeros.getBound(); i++) {
-                    if (possibleZeros.get(i).isPositive()) {
-                        zeros.add(possibleZeros.get(i));
-                    }
-                }
-                if (zeros.isEmpty()) {
+                zeros = solveGeneralEquation(argument, g.exp(), var);
+                if (zeros == NO_SOLUTIONS) {
                     return NO_SOLUTIONS;
                 }
             } catch (EvaluationException e) {
@@ -829,7 +805,7 @@ public abstract class SolveMethods {
         ExpressionCollection zeros = new ExpressionCollection();
         ExpressionCollection possibleZeros;
         ExpressionCollection zerosPositive;
-        ExpressionCollection zerosNegative = new ExpressionCollection();
+        ExpressionCollection zerosNegative;
 
         // Lösungsfamilien erzeugen!
         if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
@@ -1820,6 +1796,5 @@ public abstract class SolveMethods {
         }
 
     }
-
 
 }

@@ -50,7 +50,7 @@ public class MatrixFunctionTest {
             a = MatrixExpression.build("[3,-1;3,7]", null);
             Assert.assertTrue(a instanceof Matrix);
             MatrixExpression expOfM =a.ln().simplify();
-            MatrixExpression result = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
+            MatrixExpression result = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln(6^(3/2)/8),ln(6^(3/2)/2)]", null);
             Assert.assertTrue(expOfM.equals(result));
         } catch (ExpressionException | EvaluationException e) {
             fail("Build fehlgeschlagen.");

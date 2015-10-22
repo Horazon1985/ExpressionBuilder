@@ -195,6 +195,17 @@ public abstract class SimplifyExpLog {
     }
 
     /**
+     * Vereinfacht: ln(1/x) bzw. lg(1/x) zu -ln(x) bzw. -lg(x), falls expr eine
+     * Logarithmusfunktion darstellt.
+     */
+    public static Expression reduceLogarithmOfReciprocal(Expression logArgument, TypeFunction logType) {
+        if (logArgument.isQuotient() && ((BinaryOperation) logArgument).getLeft().equals(Expression.ONE)) {
+            Expression.MINUS_ONE.mult(new Function(((BinaryOperation) logArgument).getRight(), logType));
+        }
+        return new Function(logArgument, logType);
+    }
+
+    /**
      * Zieht Logarithmen auseinander.
      */
     public static Expression expandLogarithms(Expression logArgument, TypeFunction logType) {
@@ -213,14 +224,16 @@ public abstract class SimplifyExpLog {
 
             for (int i = 0; i < factorsEnumerator.getBound(); i++) {
                 if (factorsEnumerator.get(i).isPower()) {
-                    resultSummandsLeft.put(i, ((BinaryOperation) factorsEnumerator.get(i)).getRight().mult(new Function(((BinaryOperation) factorsEnumerator.get(i)).getLeft(), logType)));
+                    resultSummandsLeft.put(i, ((BinaryOperation) factorsEnumerator.get(i)).getRight().mult(
+                            new Function(((BinaryOperation) factorsEnumerator.get(i)).getLeft(), logType)));
                 } else {
                     resultSummandsLeft.put(i, new Function(factorsEnumerator.get(i), logType));
                 }
             }
             for (int i = 0; i < factorsDenominator.getBound(); i++) {
                 if (factorsDenominator.get(i).isPower()) {
-                    resultSummandsRight.put(i, ((BinaryOperation) factorsDenominator.get(i)).getRight().mult(new Function(((BinaryOperation) factorsDenominator.get(i)).getLeft(), logType)));
+                    resultSummandsRight.put(i, ((BinaryOperation) factorsDenominator.get(i)).getRight().mult(
+                            new Function(((BinaryOperation) factorsDenominator.get(i)).getLeft(), logType)));
                 } else {
                     resultSummandsRight.put(i, new Function(factorsDenominator.get(i), logType));
                 }
@@ -233,20 +246,17 @@ public abstract class SimplifyExpLog {
         return new Function(logArgument, logType);
 
     }
-    
+
     /**
      * Vereinfacht: ln(prod(f(k), k, m, n)) = sum(ln(f(k)), k, m, n).
      */
-    public static Expression expandLogarithmOfProduct(Function expr) {
-        if (!expr.getType().equals(TypeFunction.lg) && !expr.getType().equals(TypeFunction.ln)){
-            return expr;
+    public static Expression expandLogarithmOfProduct(Expression logArgument, TypeFunction logType) {
+        if (!logArgument.isOperator(TypeOperator.prod)) {
+            return new Function(logArgument, logType);
         }
-        Expression logArgument = expr.getLeft();
-        if (!logArgument.isOperator(TypeOperator.prod)){
-            return expr;
-        }
-        return new Operator(TypeOperator.sum, new Object[]{ new Function(logArgument, expr.getType()), 
-            ((Operator) logArgument).getParams()[1], ((Operator) logArgument).getParams()[2], ((Operator) logArgument).getParams()[3] });
+        return new Operator(TypeOperator.sum, new Object[]{new Function(logArgument, logType),
+            ((Operator) logArgument).getParams()[1], ((Operator) logArgument).getParams()[2],
+            ((Operator) logArgument).getParams()[3]}, ((Operator) logArgument).getPrecise());
     }
 
     /**
@@ -254,7 +264,7 @@ public abstract class SimplifyExpLog {
      * einer Summe vorliegt und wenn mindestens zwei logarithmische Summanden
      * vorliegen.
      */
-    public static void pullFactorsIntoLogarithmicFunctions(ExpressionCollection summands, TypeFunction logType) {
+    public static void pullFactorsIntoLogarithms(ExpressionCollection summands, TypeFunction logType) {
 
         ExpressionCollection factorsEnumerator, factorsDenominator;
 
@@ -263,8 +273,8 @@ public abstract class SimplifyExpLog {
          * gemacht, falls<br>
          * y eine ungerade Zahl ist oder ein Bruch mit ungeradem Zähler.<br>
          * x eine konstante positive Zahl oder ein stets positiver Ausdruck
-         * ist.<br>(ALT)
-         * x eine konstante positive Zahl oder ein nichtkonstanter Ausdruck ist.(NEU)
+         * ist.<br>(ALT) x eine konstante positive Zahl oder ein nichtkonstanter
+         * Ausdruck ist.(NEU)
          */
         for (int i = 0; i < summands.getBound(); i++) {
 
@@ -319,7 +329,7 @@ public abstract class SimplifyExpLog {
      * logarithmische Summanden vorliegen. Beispiel:
      * (x+ln(a)+y+2*ln(b))-(z+ln(c)) wird zu (x+y+ln(a*b^2/c))-z
      */
-    public static void collectLogarithmicFunctionsInSum(ExpressionCollection summands, TypeFunction logType) {
+    public static void collectLogarithmsInSum(ExpressionCollection summands, TypeFunction logType) {
 
         Expression logArgument = Expression.ONE;
         /*
@@ -357,7 +367,7 @@ public abstract class SimplifyExpLog {
      * logarithmische Summanden vorliegen. Beispiel:
      * (x+ln(a)+y+2*ln(b))-(z+ln(c)) wird zu (x+y+ln(a*b^2/c))-z
      */
-    public static void collectLogarithmicFunctionsInDifference(ExpressionCollection summandsLeft, ExpressionCollection summandsRight, TypeFunction logType) {
+    public static void collectLogarithmsInDifference(ExpressionCollection summandsLeft, ExpressionCollection summandsRight, TypeFunction logType) {
 
         Expression logArgumentLeft = Expression.ONE;
         Expression logArgumentRight = Expression.ONE;
@@ -939,28 +949,6 @@ public abstract class SimplifyExpLog {
                         SimplifyUtilities.produceSum(resultSummandsRightOutsideOfLn));
     }
 
-    /**
-     * Vereinfacht: ln(1/x) bzw. lg(1/x) zu -ln(x) bzw. -lg(x), falls expr eine
-     * Logarithmusfunktion darstellt.
-     */
-    public static Expression reduceLogarithmOfReciprocal(Function expr) {
-        if (!(expr.getType().equals(TypeFunction.lg) || expr.getType().equals(TypeFunction.ln)) || !expr.getLeft().isQuotient() || !((BinaryOperation) expr.getLeft()).getLeft().equals(Expression.ONE)) {
-            return expr;
-        }
-        return Expression.MINUS_ONE.mult(new Function(((BinaryOperation) expr.getLeft()).getRight(), expr.getType()));
-    }
-    
-    /**
-     * Vereinfacht: ln(x^y) bzw. y*lg(1/x) zu ln(x^y) bzw. y*ln(x), falls expr eine
-     * Logarithmusfunktion darstellt.
-     */
-    public static Expression reduceLogarithmOfPower(Function expr) {
-        if (!(expr.getType().equals(TypeFunction.lg) || expr.getType().equals(TypeFunction.ln)) || !expr.getLeft().isPower()) {
-            return expr;
-        }
-        return ((BinaryOperation) expr.getLeft()).getRight().mult(new Function(((BinaryOperation) expr.getLeft()).getLeft(), expr.getType()));
-    }
-    
     /**
      * Liefert die Anzahl der Nullen am Ende der Zahl. Beispielsweise liefert es
      * bei 570000 dann 4.

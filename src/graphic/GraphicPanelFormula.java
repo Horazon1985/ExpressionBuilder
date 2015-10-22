@@ -1358,6 +1358,9 @@ public class GraphicPanelFormula extends JPanel {
     private int getLengthOfConstant(Graphics g, Constant expr, int fontSize) {
         setFont(g, fontSize);
         String s = expr.writeExpression();
+        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0){
+            return getWidthOfSignMinus(g, fontSize) + g.getFontMetrics().stringWidth(s.substring(1, s.length()));
+        }
         return g.getFontMetrics().stringWidth(s);
     }
 
@@ -2077,6 +2080,13 @@ public class GraphicPanelFormula extends JPanel {
 
     private void drawConstant(Graphics g, Constant expr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
+        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0){
+            Constant exprNeg = new Constant(expr.getValue().negate());
+            // Minuszeichen wird mit der internen Methode separat gezeichnet (der Einheitlichkeit halber).
+            drawSignMinus(g, x_0, y_0 - (getHeightOfCenterOfExpression(g, exprNeg, fontSize) - fontSize / 2), fontSize);
+            g.drawString(exprNeg.writeExpression(), x_0 + getWidthOfSignMinus(g, fontSize), y_0);
+            return;
+        }
         g.drawString(expr.writeExpression(), x_0, y_0);
     }
 

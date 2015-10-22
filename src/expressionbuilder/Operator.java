@@ -1986,9 +1986,15 @@ public class Operator extends Expression {
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
+        // Falls die Faktoren Exponentialfunktionen sind.
+        if (factor.isFunction(TypeFunction.exp)) {
+            return SimplifyOperatorMethods.simplifyProductOfExponentialFunctions(factor, (String) this.params[1],
+                    (Expression) this.params[2], (Expression) this.params[3]);
+        }
+
         // Sonstiger Fall.
         Object[] resultParams = new Object[4];
-        resultParams[0] = factor.simplify();
+        resultParams[0] = factor.simplifyTrivial();
         resultParams[1] = this.params[1];
         resultParams[2] = this.params[2];
         resultParams[3] = this.params[3];
@@ -2028,10 +2034,20 @@ public class Operator extends Expression {
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
-        // Konstante Faktoren im Zähler und Nenner herausziehen.
+        // Konstante Faktoren im Zähler und Nenner der Summanden herausziehen.
         if (summand.isProduct() || summand.isQuotient()) {
             return SimplifyOperatorMethods.takeConstantsOutOfSums((BinaryOperation) summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
+        }
+
+        // Falls die Summanden Logarithmusfunktionen sind.
+        if (summand.isFunction(TypeFunction.lg)) {
+            return SimplifyOperatorMethods.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
+                    (Expression) this.params[2], (Expression) this.params[3], TypeFunction.lg);
+        }
+        if (summand.isFunction(TypeFunction.ln)) {
+            return SimplifyOperatorMethods.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
+                    (Expression) this.params[2], (Expression) this.params[3], TypeFunction.ln);
         }
 
         // Summen von Potenzen ganzer Zahlen explizit berechnen.
