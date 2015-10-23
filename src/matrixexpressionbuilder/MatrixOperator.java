@@ -1247,6 +1247,36 @@ public class MatrixOperator extends MatrixExpression {
     }
     
     @Override
+    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeInSums();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
+    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeInDifferences();
+            } else if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInDifferences();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {

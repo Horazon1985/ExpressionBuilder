@@ -664,6 +664,20 @@ public abstract class MatrixExpression {
     public abstract MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException;
     
     /**
+     * Faktorisiert in einer Summe.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression simplifyFactorizeInSums() throws EvaluationException;
+    
+    /**
+     * Faktorisiert in einer Differenz.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException;
+    
+    /**
      * Hier wird die Methode simplify() aus der Klasse
      * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
      * angewendet.
@@ -693,6 +707,8 @@ public abstract class MatrixExpression {
                 matExprSimplified = matExprSimplified.simplifyCollectProducts();
                 matExprSimplified = matExprSimplified.simplifyFactorizeScalarsInSums();
                 matExprSimplified = matExprSimplified.simplifyFactorizeScalarsInDifferences();
+                matExprSimplified = matExprSimplified.simplifyFactorizeInSums();
+                matExprSimplified = matExprSimplified.simplifyFactorizeInDifferences();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
                 matExprSimplified = matExprSimplified.computeMatrixOperations();
             } while (!matExpr.equals(matExprSimplified));

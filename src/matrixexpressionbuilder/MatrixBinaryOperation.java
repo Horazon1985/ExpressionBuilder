@@ -510,7 +510,6 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
             // Skalare Faktoren faktorisieren.
             SimplifyMatrixBinaryOperationMethods.factorizeScalarsInSum(summands);
-            // Nichtskalare Faktoren faktorisieren (TO DO).
 
             return SimplifyMatrixUtilities.produceSum(summands);
         }
@@ -542,12 +541,73 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Skalare Faktoren faktorisieren.
         SimplifyMatrixBinaryOperationMethods.factorizeScalarsInDifference(summandsLeft, summandsRight);
-        // Nichtskalare Faktoren faktorisieren (TO DO).
 
         return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
     }
 
+    @Override
+    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
+
+        if (this.isProduct()) {
+            // In jedem Faktor einzeln faktorisieren.
+            MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyFactorizeInSums());
+            }
+            return SimplifyMatrixUtilities.produceProduct(factors);
+        }
+        if (this.isNotSum()) {
+            return new MatrixBinaryOperation(this.left.simplifyFactorizeInSums(), this.right.simplifyFactorizeInSums(), this.type);
+        }
+
+        // Ab hier muss this als type + besitzen.
+        MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+        // In jedem Summanden einzeln faktorisieren
+        for (int i = 0; i < summands.getBound(); i++) {
+            summands.put(i, summands.get(i).simplifyFactorizeInSums());
+        }
+
+        // Faktorisierung in Summen.
+        SimplifyMatrixBinaryOperationMethods.factorizeInSum(summands);
+
+        // Ergebnis bilden.
+        return SimplifyMatrixUtilities.produceSum(summands);
+    
+    }
+    
+    @Override
+    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
+
+        if (this.isSum()) {
+            // In jedem Faktor einzeln faktorisieren.
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyFactorizeInDifferences());
+            }
+            return SimplifyMatrixUtilities.produceSum(summands);
+        }
+        if (this.isProduct()) {
+            // In jedem Faktor einzeln faktorisieren.
+            MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyFactorizeInDifferences());
+            }
+            return SimplifyMatrixUtilities.produceProduct(factors);
+        }
+
+        // Ab hier muss this als type - besitzen.
+        MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(this);
+        MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(this);
+
+        // Faktorisierung in Differenzen.
+        SimplifyMatrixBinaryOperationMethods.factorizeInDifference(summandsLeft, summandsRight);
+
+        // Ergebnis bilden.
+        return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
+        
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 

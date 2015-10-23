@@ -777,6 +777,16 @@ public class MatrixFunction extends MatrixExpression {
     }
     
     @Override
+    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyFactorizeInSums(), this.type);
+    }
+    
+    @Override
+    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyFactorizeInDifferences(), this.type);
+    }
+    
+    @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 
         MatrixExpression matExpr = new MatrixFunction(this.left.simplifyMatrixFunctionalRelations(), this.type);
