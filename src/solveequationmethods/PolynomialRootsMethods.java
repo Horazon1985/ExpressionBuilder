@@ -2,9 +2,9 @@ package solveequationmethods;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
@@ -55,8 +55,9 @@ public abstract class PolynomialRootsMethods {
     }
 
     /**
-     * Zerlegt ein Polynom in Linearteile, soweit es geht. Beispielsweise wird
-     * 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) zu (x-1)^2*(x-2)*(x^2+1) faktorisiert.
+     * Zerlegt ein Polynom in Linearteile, soweit es geht.<br>
+     * BEISPIEL wird 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) zu (x-1)^2*(x-2)*(x^2+1)
+     * faktorisiert.
      */
     public static Expression decomposePolynomialInIrreducibleFactors(Expression f, String var)
             throws EvaluationException {
@@ -118,17 +119,17 @@ public abstract class PolynomialRootsMethods {
             Expression diskr = a.get(1).pow(2).sub(Expression.FOUR.mult(a.get(0)).mult(a.get(2))).simplify();
             if (diskr.isAlwaysNonNegative()) {
 
-                Expression zero_1 = Expression.MINUS_ONE.mult(a.get(1)).add(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                Expression zero_2 = Expression.MINUS_ONE.mult(a.get(1)).sub(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                if (zero_1.equivalent(zero_2)) {
+                Expression zeroOne = Expression.MINUS_ONE.mult(a.get(1)).add(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
+                Expression zeroTwo = Expression.MINUS_ONE.mult(a.get(1)).sub(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
+                if (zeroOne.equivalent(zeroTwo)) {
                     // Falls beide Nullstellen gleich sind, etwa == a, dann (x - a)^2 zurückgeben.
-                    return Variable.create(var).sub(zero_1).simplify().pow(2);
+                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
                 } else {
                     /*
                      Falls beide Nullstellen verschieden sind, etwa == a und
                      == b, dann (x - a)*(x - b) zurückgeben.
                      */
-                    return Variable.create(var).sub(zero_1).simplify().mult(Variable.create(var).sub(zero_2).simplify());
+                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
                 }
 
             }
@@ -156,23 +157,23 @@ public abstract class PolynomialRootsMethods {
         // Zunächst: Gleiche Nullstellen zu mehrfachen Nullstellen zusammenfassen.
         Expression result = PolynomialRootsMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
         int l = zeros.getBound();
-        Expression current_zero = zeros.get(0);
-        int current_multiplicity = 1;
+        Expression currentZero = zeros.get(0);
+        int currentMultiplicity = 1;
 
         while (!zeros.isEmpty()) {
 
             for (int i = 0; i < l; i++) {
                 if (zeros.get(i) != null) {
-                    current_zero = zeros.get(i);
-                    current_multiplicity = 1;
+                    currentZero = zeros.get(i);
+                    currentMultiplicity = 1;
                     zeros.remove(i);
                     break;
                 }
             }
 
             for (int i = 0; i < l; i++) {
-                if (zeros.get(i) != null && zeros.get(i).equals(current_zero)) {
-                    current_multiplicity++;
+                if (zeros.get(i) != null && zeros.get(i).equals(currentZero)) {
+                    currentMultiplicity++;
                     zeros.remove(i);
                 }
             }
@@ -180,16 +181,16 @@ public abstract class PolynomialRootsMethods {
             // Entsprechende Potenz des Linearfaktors an result dranmultiplizieren.
             if (result.equals(Expression.ONE)) {
                 // simplify() dient dazu, dass z. B. x - (-2) zu x + 2 vereinfacht wird.
-                if (current_multiplicity == 1) {
-                    result = Variable.create(var).sub(current_zero).simplify();
+                if (currentMultiplicity == 1) {
+                    result = Variable.create(var).sub(currentZero).simplify();
                 } else {
-                    result = Variable.create(var).sub(current_zero).simplify().pow(current_multiplicity);
+                    result = Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity);
                 }
             } else {
-                if (current_multiplicity == 1) {
-                    result = result.mult(Variable.create(var).sub(current_zero).simplify());
+                if (currentMultiplicity == 1) {
+                    result = result.mult(Variable.create(var).sub(currentZero).simplify());
                 } else {
-                    result = result.mult(Variable.create(var).sub(current_zero).simplify().pow(current_multiplicity));
+                    result = result.mult(Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity));
                 }
             }
 

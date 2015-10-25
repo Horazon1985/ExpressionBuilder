@@ -2611,7 +2611,7 @@ public class BinaryOperation extends Expression {
             return SimplifyUtilities.produceProduct(factors);
 
         } else if (this.isPower() && !this.left.contains(var)) {
-            // Nur dann ersetzen, wenn die Basis konstant ist.
+            // Nur dann ersetzen, wenn die Basis bzgl. var konstant ist.
             return this.left.ln().mult(this.right).exp();
         }
 
@@ -2659,6 +2659,43 @@ public class BinaryOperation extends Expression {
 
     }
 
+    @Override
+    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
+        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+        if (Thread.interrupted()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+        }
+
+        if (this.isSum()) {
+
+            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var));
+            }
+
+            // Ergebnis bilden.
+            return SimplifyUtilities.produceSum(summands);
+
+        } else if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var));
+            }
+
+            // Ergebnis bilden.
+            return SimplifyUtilities.produceProduct(factors);
+
+        }
+
+        return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var),
+                this.right.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var),
+                this.type);
+
+    }
+    
     /* 
      Es folgen Methoden für die Integration von Funktionen vom Typ exp(ax+b) * h_1(c_1x+d_1)^n_1 * ... h_m(c_mx+d_m)^n_m
      mit h_i = sin oder = cos.

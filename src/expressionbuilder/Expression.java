@@ -325,7 +325,7 @@ public abstract class Expression {
             String formulaLeft = formula.substring(0, breakpoint);
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
-            if ((formulaLeft.isEmpty()) && priority > 1) {
+            if (formulaLeft.isEmpty() && priority > 1) {
                 throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY"));
             }
             if (formulaRight.isEmpty()) {
@@ -333,14 +333,20 @@ public abstract class Expression {
             }
 
             //Falls der Ausdruck die Form "+abc..." besitzt -> daraus "abc..." machen
-            if ((formulaLeft.isEmpty()) && (priority == 0)) {
+            if (formulaLeft.isEmpty() && priority == 0) {
                 return build(formulaRight, vars);
             }
             //Falls der Ausdruck die Form "-abc..." besitzt -> daraus "(-1)*abc..." machen
-            if ((formulaLeft.isEmpty()) && (priority == 1)) {
+            if (formulaLeft.isEmpty() && priority == 1) {
                 Expression right = build(formulaRight, vars);
+                /* 
+                 Konstanten und Verhältnisse von Konstanten bilden Ausnahmen: Dann wird das 
+                 Minuszeichen direkt in den Zähler gezogen.
+                 */
                 if (right instanceof Constant) {
                     return new Constant(((Constant) right).getValue().negate());
+                } else if (right.isRationalConstant()) {
+                    return new Constant(((Constant) ((BinaryOperation) right).getLeft()).getValue().negate()).div(((BinaryOperation) right).getRight());
                 }
                 return MINUS_ONE.mult(build(formulaRight, vars));
             }
@@ -1401,6 +1407,14 @@ public abstract class Expression {
     public abstract Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException;
 
     /**
+     * Ersetzt Funktionen durch einfachere Funktionen, wenn sie von var abhängen
+     * (wichtig für Integrale!).
+     *
+     * @throws EvaluationException
+     */
+    public abstract Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException;
+
+    /**
      * Ersetzt Funktionen durch einfachere Funktionen (wichtig für Integrale!).
      *
      * @throws EvaluationException
@@ -1589,6 +1603,8 @@ public abstract class Expression {
                             exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
                         } else if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
                             exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsByDefinitions();
+                        } else if (simplifyType.equals(TypeSimplify.simplify_replace_trigonometrical_functions_with_respect_to_variable_by_definitions)) {
+                            exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var);
                         } else if (simplifyType.equals(TypeSimplify.simplify_expand_products_of_complex_exponential_functions)) {
                             exprSimplified = exprSimplified.simplifyExpandProductsOfComplexExponentialFunctions(var);
                         } else if (simplifyType.equals(TypeSimplify.simplify_collect_logarithms)) {

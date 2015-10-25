@@ -1035,6 +1035,11 @@ public class Function extends Expression {
 
         Function function = new Function(this.left.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var), this.type);
 
+        // Nur ersetzen, wenn das Argument der Funktion function von var abhängt.
+        if (!function.contains(var)) {
+            return function;
+        }
+
         // Dekadischer Logarithmus.
         if (function.getType().equals(TypeFunction.lg)) {
             return new Function(function.getLeft(), TypeFunction.ln).div(new Function(new Constant(10), TypeFunction.ln));
@@ -1073,6 +1078,36 @@ public class Function extends Expression {
     public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
 
         Function function = new Function(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(), this.type);
+
+        if (function.getType().equals(TypeFunction.tan)) {
+            return function.getLeft().sin().div(function.getLeft().cos());
+        }
+
+        if (function.getType().equals(TypeFunction.cot)) {
+            return function.getLeft().cos().div(function.getLeft().sin());
+        }
+
+        if (function.getType().equals(TypeFunction.sec)) {
+            return Expression.ONE.div(function.getLeft().cos());
+        }
+
+        if (function.getType().equals(TypeFunction.cosec)) {
+            return Expression.ONE.div(function.getLeft().sin());
+        }
+
+        return function;
+
+    }
+
+    @Override
+    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
+
+        Function function = new Function(this.left.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var), this.type);
+        
+        // Nur ersetzen, wenn das Argument der Funktion function von var abhängt.
+        if (!function.contains(var)){
+            return function;
+        }
 
         if (function.getType().equals(TypeFunction.tan)) {
             return function.getLeft().sin().div(function.getLeft().cos());

@@ -17,7 +17,9 @@ import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
+import expressionsimplifymethods.RationalFunctionMethods;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
+import expressionsimplifymethods.SimplifyExponentialRelations;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import static integrationmethods.SimplifyIntegralMethods.indefiniteIntegration;
@@ -25,7 +27,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import solveequationmethods.PolynomialRootsMethods;
-import solveequationmethods.SpecialEquationMethods;
 import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SpecialIntegrationMethods {
@@ -130,6 +131,14 @@ public abstract class SpecialIntegrationMethods {
              paarweise verschiedenen Potenzen von Linearfaktoren.
              */
             // Koeffizienten der einzelnen Partialbrüche bestimmen.
+            Expression constantCoefficientOfDenominator = Expression.ONE;
+            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++){
+                if (factorsOfDecomposedDenominator.get(i) != null && !factorsOfDecomposedDenominator.get(i).contains(var)){
+                    constantCoefficientOfDenominator = constantCoefficientOfDenominator.mult(factorsOfDecomposedDenominator.get(i));
+                    factorsOfDecomposedDenominator.remove(i);
+                }
+            }
+            denominatorDecomposed = SimplifyUtilities.produceProduct(factorsOfDecomposedDenominator);
             Object partialFractionDecomposition = getPartialFractionDecomposition(((BinaryOperation) f).getLeft(), denominatorDecomposed, var);
 
             if (!(partialFractionDecomposition instanceof Expression)) {
@@ -151,7 +160,7 @@ public abstract class SpecialIntegrationMethods {
                 summandsOfIntegralFunction.put(i, new Operator(TypeOperator.integral, paramsOfIntegralOfSummand[i]));
             }
 
-            return SimplifyUtilities.produceSum(summandsOfIntegralFunction);
+            return SimplifyUtilities.produceSum(summandsOfIntegralFunction).div(constantCoefficientOfDenominator);
 
         }
 
@@ -198,7 +207,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      */
     public static Object getPartialFractionDecomposition(Expression enumerator, Expression denominator, String var)
-            throws EvaluationException {
+            throws EvaluationException, NotPreciseIntegrableException {
 
         if (denominator.isNotProduct()) {
             return false;
@@ -243,13 +252,24 @@ public abstract class SpecialIntegrationMethods {
          */
         ExpressionCollection coefficientsOfCurrentLinearFactor = new ExpressionCollection();
 
+        ExpressionCollection c;
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
 
             // Polstellen a_i wird ermittelt.
             if (factorsDenominator.get(i).isPower()) {
-                zero = ((BinaryOperation) factorsDenominator.get(i)).getLeft().replaceVariable(var, Expression.ZERO).mult(-1).simplify();
+                c = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) factorsDenominator.get(i)).getLeft(), var);
+                // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
+                if (c.get(1).equals(ZERO)){
+                    throw new NotPreciseIntegrableException();
+                }
+                zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
             } else {
-                zero = factorsDenominator.get(i).replaceVariable(var, Expression.ZERO).mult(-1).simplify();
+                c = PolynomialRootsMethods.getPolynomialCoefficients(factorsDenominator.get(i), var);
+                // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
+                if (c.get(1).equals(ZERO)){
+                    throw new NotPreciseIntegrableException();
+                }
+                zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
             }
             coefficientsOfCurrentLinearFactor.clear();
             coefficientsOfCurrentLinearFactor.put(0, Expression.MINUS_ONE.mult(zero).simplify());
@@ -1195,9 +1215,9 @@ public abstract class SpecialIntegrationMethods {
         HashSet<Expression> argumentsInExp = new HashSet<>();
 
         // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
-        f = SpecialEquationMethods.separateConstantPartsInRationalExponentialEquations(f, var);
+        f = SimplifyExponentialRelations.separateConstantPartsInRationalExponentialEquations(f, var);
 
-        if (!SpecialEquationMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+        if (!RationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -1257,11 +1277,71 @@ public abstract class SpecialIntegrationMethods {
     /**
      * Integriert Funktionen vom Typ R(sin(a*x), cos(a*x)), R = rationale
      * Funktion.
+     * 
+     * @throws exceptions.EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Object integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException {
+    public static Expression integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
-        // TO DO.
-        return null;
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        HashSet<Expression> argumentsInExp = new HashSet<>();
+
+        if (!RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger lcmOfDenominators = BigInteger.ONE;
+
+        Iterator<Expression> iter = argumentsInExp.iterator();
+        Expression firstArgument = iter.next();
+
+        Expression derivativeOfFirstArgument;
+        try {
+            derivativeOfFirstArgument = firstArgument.diff(var).simplify();
+            if (derivativeOfFirstArgument.contains(var)) {
+                throw new NotPreciseIntegrableException();
+            }
+        } catch (EvaluationException e) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        Expression currentQuotient;
+
+        while (iter.hasNext()) {
+            currentQuotient = iter.next().div(firstArgument).simplify();
+            // Die folgende Abfrage müsste wegen Vorbedingung immer true sein. Trotzdem sicherheitshalber!
+            if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+
+                if (currentQuotient.isIntegerConstant()) {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                } else {
+                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                }
+
+            }
+        }
+
+        // Das ist die eigentliche Substitution.
+        Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
+
+        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
+        if (fSubstituted instanceof Expression) {
+            String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+            Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
+            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
+            Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+            if (resultFunction instanceof Expression) {
+                return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
+            }
+        }
+
+        throw new NotPreciseIntegrableException();
 
     }
 

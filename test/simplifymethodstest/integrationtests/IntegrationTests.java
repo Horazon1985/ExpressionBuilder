@@ -162,4 +162,33 @@ public class IntegrationTests {
     }
 
     // Test zur Integration spezieller Funktionstypen.
+    // Integration mittels Partialbruchzerlegung
+    @Test
+    public void integralOfRationalFunctionTest() {
+        // integral von (2*x^2+14*x+8)/(x^3+7*x^2+7*x-15) = ln(|x-1|)+2*ln(|3+x|)-ln(|5+x|).
+        try {
+            f = Expression.build("int((2*x^2+14*x+8)/(x^3+7*x^2+7*x-15),x)", null);
+            Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
+            Expression expectedResult = Expression.build("(ln(|x-1|)+2*ln(|3+x|))-ln(|5+x|)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
+            fail("Build fehlgeschlagen.");
+        }
+    }
+    
+    @Test
+    public void integralOfRationalFunctionTest2() {
+        // integral von (3*x+4)/(2*x^2+5*x+3) = x/3-ln((3+exp(x))^(1/3)).
+        try {
+            f = Expression.build("int((3*x+4)/(2*x^2+5*x+3),x)", null);
+            Expression integral = SimplifyIntegralMethods.indefiniteIntegration((Operator) f, true);
+            Expression expectedResult = Expression.build("(2*ln(|1+x|)+2*(ln(|3+2*x|)/2))/2", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(((Expression) integral).equals(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotPreciseIntegrableException e) {
+            fail("Build fehlgeschlagen.");
+        }
+    }
+    
 }

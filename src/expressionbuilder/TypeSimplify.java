@@ -12,6 +12,7 @@ public enum TypeSimplify {
     simplify_replace_exponential_functions_by_definitions, 
     simplify_replace_exponential_functions_with_respect_to_variable_by_definitions, 
     simplify_replace_trigonometrical_functions_by_definitions,
+    simplify_replace_trigonometrical_functions_with_respect_to_variable_by_definitions, 
     simplify_expand_products_of_complex_exponential_functions,
     simplify_collect_logarithms, simplify_expand_logarithms;
 

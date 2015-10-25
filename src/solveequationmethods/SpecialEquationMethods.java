@@ -1,7 +1,6 @@
 package solveequationmethods;
 
 import computation.ArithmeticMethods;
-import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
@@ -11,7 +10,8 @@ import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyUtilities;
+import expressionsimplifymethods.RationalFunctionMethods;
+import expressionsimplifymethods.SimplifyExponentialRelations;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,192 +19,6 @@ import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SpecialEquationMethods {
 
-    // Allgemeine Hilfsmethoden um festzustellen, ob ein HashSet von Expressions
-    // nur Ausdrücke enthält, deren paarweise Quotienten rational sind.
-    /**
-     * Hilfsmethode. Gibt zurück, ob alle Verhältnisse von Ausdrücken in terms
-     * und expr rational sind.
-     */
-    private static boolean areQuotientsRational(Expression expr, HashSet<Expression> terms) {
-
-        try {
-            Iterator iter = terms.iterator();
-            while (iter.hasNext()) {
-                if (!((Expression) iter.next()).div(expr).simplify().isIntegerConstantOrRationalConstant()) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (EvaluationException e) {
-            return false;
-        }
-
-    }
-
-    /**
-     * Hilfsmethode. Gibt zurück, ob alle paarweisen Verhältnisse von Ausdrücken
-     * in terms rational sind.
-     */
-    private static boolean areQuotientsOfTermsRational(HashSet<Expression> terms) {
-
-        Iterator iter = terms.iterator();
-        Expression expr;
-        while (iter.hasNext()) {
-            expr = (Expression) iter.next();
-            if (!expr.equals(Expression.ZERO)) {
-                return areQuotientsRational(expr, terms);
-            }
-        }
-        // Dies kann nur eintreten, falls alle Elemente von terms gleich ZERO sind.
-        return true;
-
-    }
-
-    /**
-     * Entscheidet, ob f bzgl. der Variablen var eine rationale Funktion in
-     * einer Exponentialfunktion ist. Beispielsweise wird bei f = exp(2*x) +
-     * 5*exp(3*x) true zurückgegeben, jedoch false bei f = exp(x) +
-     * exp(2^(1/2)*x).
-     */
-    public static boolean isRationalFunktionInExp(Expression f, String var, HashSet<Expression> argumentsInExp) {
-
-        if (!f.contains(var)) {
-            return true;
-        }
-        if (f instanceof Constant) {
-            return true;
-        }
-        if (f instanceof Variable) {
-            return !((Variable) f).getName().equals(var);
-        }
-        if (f instanceof BinaryOperation) {
-
-            if (f.isPower()) {
-
-                if (!((BinaryOperation) f).getLeft().contains(var)) {
-                    // a^f(x), a von x unabhängig, wird umgeformt zu exp(ln(a)*f(x)).
-                    Function fAsExp = ((BinaryOperation) f).getLeft().ln().mult(((BinaryOperation) f).getRight()).exp();
-                    return isRationalFunktionInExp(fAsExp, var, argumentsInExp);
-                }
-                /* 
-                 Sonstiger Fall: f(x)^g(x) ist nur dann eine rationale Exponentialgleichung, wenn f(x)
-                 eine ist und wenn g(x) eine konstante ganze Zahl ist.
-                 */
-                return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, argumentsInExp)
-                        && ((BinaryOperation) f).getRight().isIntegerConstant();
-
-            }
-            return isRationalFunktionInExp(((BinaryOperation) f).getLeft(), var, argumentsInExp)
-                    && isRationalFunktionInExp(((BinaryOperation) f).getRight(), var, argumentsInExp)
-                    && areQuotientsOfTermsRational(argumentsInExp);
-
-        }
-        if (f instanceof Function) {
-
-            if (!((Function) f).getType().equals(TypeFunction.exp)) {
-                return false;
-            }
-
-            Expression argumentOfExp = ((Function) f).getLeft();
-            if (areQuotientsRational(argumentOfExp, argumentsInExp)) {
-                argumentsInExp.add(argumentOfExp);
-                return true;
-            }
-            return false;
-
-        }
-
-        /*
-         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
-         welchem var vorkommt, dann false zurückgeben.
-         */
-        return !f.contains(var);
-
-    }
-
-    /**
-     * Entscheidet, ob f bzgl. der Variablen var eine algebraische Funktion in
-     * den trigonometrischen Funktionen sin und cos ist. Beispielsweise wird bei
-     * f = sin(2*x) + 5*cos(3*x) true zurückgegeben, jedoch false bei f = sin(x)
-     * + cos(2^(1/2)*x).
-     */
-    public static boolean isRationalFunktionInTrigonometricalFunctions(Expression f, String var, HashSet<Expression> argumentsInTrigonometricFunctions) {
-
-        if (!f.contains(var)) {
-            return true;
-        }
-        if (f instanceof Constant) {
-            return true;
-        }
-        if (f instanceof Variable) {
-            return !((Variable) f).getName().equals(var);
-        }
-        if (f instanceof BinaryOperation) {
-
-            if (f.isPower()) {
-                return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, argumentsInTrigonometricFunctions)
-                        && ((BinaryOperation) f).getRight().isIntegerConstant();
-            }
-            return isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var, argumentsInTrigonometricFunctions)
-                    && isRationalFunktionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var, argumentsInTrigonometricFunctions)
-                    && areQuotientsOfTermsRational(argumentsInTrigonometricFunctions);
-
-        }
-        if (f instanceof Function) {
-
-            if (!((Function) f).getType().equals(TypeFunction.sin)
-                    && !((Function) f).getType().equals(TypeFunction.cos)
-                    && !((Function) f).getType().equals(TypeFunction.tan)
-                    && !((Function) f).getType().equals(TypeFunction.cot)
-                    && !((Function) f).getType().equals(TypeFunction.sec)
-                    && !((Function) f).getType().equals(TypeFunction.cosec)) {
-                return false;
-            }
-
-            Expression argumentOfExp = ((Function) f).getLeft();
-            if (areQuotientsRational(argumentOfExp, argumentsInTrigonometricFunctions)) {
-                argumentsInTrigonometricFunctions.add(argumentOfExp);
-                return true;
-            }
-            return false;
-            
-        }
-
-        /*
-         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
-         welchem var vorkommt, dann false zurückgeben.
-         */
-        return !f.contains(var);
-
-    }
-
-    private static boolean doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(Expression f, String var) {
-
-        if (!f.contains(var) || f instanceof Variable) {
-            return true;
-        }
-
-        if (f instanceof BinaryOperation) {
-            return doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(((BinaryOperation) f).getLeft(), var)
-                    && doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(((BinaryOperation) f).getRight(), var);
-        }
-
-        if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)
-                || f.isFunction(TypeFunction.tan) || f.isFunction(TypeFunction.cot)
-                || f.isFunction(TypeFunction.sec) || f.isFunction(TypeFunction.cosec)) {
-            Expression argument = ((Function) f).getLeft();
-            /*
-             Ohne Einschränkung kann man annehmen, dass wenn argument ein ganzes Vielfaches
-             von var ist, dass dann das Vielfache links steht.
-             */
-            return !argument.contains(var) || argument.equals(Variable.create(var))
-                    || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant()
-                    && ((BinaryOperation) argument).getRight().equals(Variable.create(var));
-        }
-
-        return false;
-
-    }
 
     /**
      * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
@@ -219,7 +33,7 @@ public abstract class SpecialEquationMethods {
         HashSet<Expression> argumentsInExp = new HashSet();
 
         // Konstante Summanden aus der Exponentialfunktion rausziehen.
-        f = separateConstantPartsInRationalExponentialEquations(f, var);
+        f = SimplifyExponentialRelations.separateConstantPartsInRationalExponentialEquations(f, var);
 
         /*
          Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
@@ -227,7 +41,7 @@ public abstract class SpecialEquationMethods {
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+        if (!RationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             return zeros;
         }
 
@@ -305,71 +119,6 @@ public abstract class SpecialEquationMethods {
 
     }
 
-    /**
-     * Gibt einen Ausdruck zurück, indem in Exponentialfunktionen bzgl. var der
-     * von var abhängige Teil von dem von var unabhängigen Teil getrennt wurde.
-     * BEISPIEL: Für f = 3 + 2^(x+7) - x^2*exp(8 - sin(x)) wird 3 + 2^7*2^x -
-     * x^2*exp(8)*exp(-sin(x)) zurückgegeben.
-     */
-    public static Expression separateConstantPartsInRationalExponentialEquations(Expression f, String var) {
-
-        // Im Folgenden sei x = var;
-        if (!f.contains(var) || f instanceof Constant || f instanceof Variable) {
-            return f;
-        }
-        if (f instanceof BinaryOperation) {
-
-            if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var)) {
-
-                // a^(c + f(x)), a und c von x unabhängig, wird umgeformt zu a^c*a^f(x).
-                Expression base = ((BinaryOperation) f).getLeft();
-                ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
-                ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
-                ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
-                ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
-                Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
-                if (exponentLeft.equals(Expression.ZERO)) {
-                    return f;
-                }
-                return base.pow(SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant)).mult(
-                        base.pow(SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant)));
-
-            }
-            return new BinaryOperation(
-                    separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getLeft(), var),
-                    separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getRight(), var),
-                    ((BinaryOperation) f).getType());
-
-        }
-        if (f instanceof Function) {
-
-            if (!((Function) f).getType().equals(TypeFunction.exp)) {
-                return new Function(separateConstantPartsInRationalExponentialEquations(((Function) f).getLeft(), var),
-                        ((Function) f).getType());
-            }
-
-            Expression argumentOfExp = ((Function) f).getLeft();
-            // exp(c + f(x)), c von x unabhängig, wird umgeformt zu exp(c)*exp(f(x)).
-            ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(argumentOfExp, var);
-            ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(argumentOfExp, var);
-            ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(argumentOfExp, var);
-            ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(argumentOfExp, var);
-            Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
-            if (exponentLeft.equals(Expression.ZERO)) {
-                return f;
-            }
-            return SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant).exp().mult(
-                    SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant).exp());
-
-        }
-
-        /*
-         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
-         welchem var vorkommt, dann false zurückgeben.
-         */
-        return f;
-
-    }
 
     /**
      * Hauptmethode zum Lösen von trigonometrischen Gleichungen f = 0. Ist f
@@ -388,7 +137,7 @@ public abstract class SpecialEquationMethods {
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
+        if (!RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
             return zeros;
         }
 
@@ -451,7 +200,7 @@ public abstract class SpecialEquationMethods {
              folgenden Typ sein: Alle Argumente, die in trigonometrischen Funktionen vorkommen,
              müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
              */
-            if (!doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
+            if (!RationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
                 return new ExpressionCollection();
             }
 
@@ -461,7 +210,7 @@ public abstract class SpecialEquationMethods {
              WICHTIG: Beim Vereinfachen darf hier nicht simplifyFunctionalRelations() verwendet werden,
              da dann beispielsweise sin(x)*cos(x) wieder zu sin(2*x)/2 vereinfacht wird.
              */
-            fSubstituted = expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypes);
+            fSubstituted = RationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypes);
 
             /*
              Jetzt werden zwei Versuche unternommen: (1) Sinusausdrücke durch Cosinusausdrücke zu ersetzen.
@@ -472,7 +221,7 @@ public abstract class SpecialEquationMethods {
             Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypes);
 
             String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
-            if (isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
+            if (RationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
                 Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -499,7 +248,7 @@ public abstract class SpecialEquationMethods {
 
             } else {
                 fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypes);
-                if (isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
+                if (RationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
                     Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -533,104 +282,9 @@ public abstract class SpecialEquationMethods {
     }
 
     /**
-     * Hier beginnen Methoden und Hilfsmethoden für die Lösung spezieller
-     * trigonometrischer Gleichungen.
-     */
-    /**
-     * Hilfsmethode. Gibt n! zurück, falls n >= 0 ist, sonst 0.
-     */
-    private static BigInteger fac(int n) {
-        BigInteger result = BigInteger.ONE;
-        for (int i = 2; i <= n; i++) {
-            result = result.multiply(BigInteger.valueOf(i));
-        }
-        return result;
-    }
-
-    /**
-     * Hilfsmethode. Gibt n!/(k! * (n - k)!) zurück, falls 0 <= k <= n, sonst 0.
-     */
-    private static BigInteger binCoefficient(int n, int k) {
-        if (k < 0 || k > n) {
-            return BigInteger.ZERO;
-        }
-        return fac(n).divide(fac(k).multiply(fac(n - k)));
-    }
-
-    /**
-     * Sei x = var. Diese Methode gibt sin(n*x) zurück.
-     */
-    private static Expression getSinOfMultipleArgument(String var, int n) {
-
-        if (n == 0) {
-            return Expression.ZERO;
-        } else if (n < 0) {
-            return Expression.MINUS_ONE.mult(getSinOfMultipleArgument(var, -n));
-        }
-
-        // Ab hier ist n > 0.
-        Expression sinOfArgument = Variable.create(var).sin();
-        Expression cosOfArgument = Variable.create(var).cos();
-        Expression result = Expression.ZERO;
-
-        for (int i = 1; i <= n; i++) {
-            if (i % 2 == 0) {
-                continue;
-            }
-            if (i == 1) {
-                result = new Constant(n).mult(sinOfArgument.mult(cosOfArgument.pow(n - 1)));
-            } else {
-                if (i % 4 == 1) {
-                    result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                } else {
-                    result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                }
-            }
-        }
-
-        return result;
-
-    }
-
-    /**
-     * Sei x = var. Diese Methode gibt cos(n*x) zurück.
-     */
-    private static Expression getCosOfMultipleArgument(String var, int n) {
-
-        if (n == 0) {
-            return Expression.ONE;
-        } else if (n < 0) {
-            return getCosOfMultipleArgument(var, -n);
-        }
-
-        // Ab hier ist n > 0.
-        Expression sinOfArgument = Variable.create(var).sin();
-        Expression cosOfArgument = Variable.create(var).cos();
-        Expression result = Expression.ZERO;
-
-        for (int i = 0; i <= n; i++) {
-            if (i % 2 == 1) {
-                continue;
-            }
-            if (i == 0) {
-                result = cosOfArgument.pow(n);
-            } else {
-                if (i % 4 == 0) {
-                    result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                } else {
-                    result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                }
-            }
-        }
-
-        return result;
-
-    }
-
-    /**
      * Ersetzt in einem Ausdruck gerade Potenzen vom Sinus durch
-     * Cosinus-Ausdrücke. BEISPIELS: sin(x)^4 wird durch (1 - cos(x)^2)^2
-     * ersetzt.
+     * Cosinus-Ausdrücke.<br>
+     * BEISPIEL: sin(x)^4 wird durch (1 - cos(x)^2)^2 ersetzt.
      */
     private static Expression substituteInTrigonometricalEquationSinByCos(Expression f) {
 
@@ -664,7 +318,8 @@ public abstract class SpecialEquationMethods {
 
     /**
      * Ersetzt in einem Ausdruck gerade Potenzen vom Cosinus durch
-     * Sinus-Ausdrücke. BEISPIELS: cos(x)^6 wird durch (1 - sin(x)^2)^3 ersetzt.
+     * Sinus-Ausdrücke.<br>
+     * BEISPIEL: cos(x)^6 wird durch (1 - sin(x)^2)^3 ersetzt.
      */
     private static Expression substituteInTrigonometricalEquationCosBySin(Expression f) {
 
@@ -695,88 +350,5 @@ public abstract class SpecialEquationMethods {
 
     }
 
-    /**
-     * Hilfsmethode. Gibt zurück, ob g ein Polynomin f ist.
-     */
-    private static boolean isRationalFunctionIn(Expression f, Expression g, String var) {
-
-        if (!g.contains(var)) {
-            return true;
-        }
-
-        if (g.equivalent(f)) {
-            return true;
-        }
-
-        if (g instanceof BinaryOperation) {
-            if (g.isNotPower()) {
-                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var)
-                        && isRationalFunctionIn(f, ((BinaryOperation) g).getRight(), var);
-            } else if (g.isPower() && ((BinaryOperation) g).getRight().isIntegerConstant()
-                    && ((BinaryOperation) g).getRight().isNonNegative()) {
-                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var);
-            }
-        }
-
-        /*
-         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
-         welchem var vorkommt, dann false zurückgeben.
-         */
-        return false;
-
-    }
-
-    /**
-     * Ersetzt in einer rationalen Funktion in trigonometrischen Funktionen
-     * Ausdrücke cos(n*x) und sin(m*x) durch die Ausdrücke sin(x) und cos(x).
-     * VORAUSSETZUNG: f ist eine rationale Funktion in trigonometrischen
-     * Funktionen (in der Variablen var). Ferner muss m und n im Integerbereich
-     * liegen.
-     */
-    private static Expression expandRationalFunctionInTrigonometricalFunctions(Expression f, String var) {
-
-        if (f instanceof BinaryOperation) {
-            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var),
-                    expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var),
-                    ((BinaryOperation) f).getType());
-        }
-
-        if (f.isFunction() && f.contains(var)) {
-            Expression argument = ((Function) f).getLeft();
-            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)
-                    && (argument.equals(Variable.create(var)) || argument.isProduct()
-                    && ((BinaryOperation) argument).getLeft().isIntegerConstant()
-                    && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
-
-                /*
-                 Es werden nur Ausdrücke der Form sin(n*x) oder cos(n*x) vereinfach, wenn
-                 |n| <= maximaler Grad eines Polynoms für das Lösen von Polynomgleichungen
-                 gilt. GRUND: sin(n*x) und cos(n*x) werden zu Polynomen vom Grad n in
-                 sin(x) und cos(x). 
-                 */
-                int n = 1;
-                if (argument.isProduct()) {
-                    if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(
-                            BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
-                        return f;
-                    }
-                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
-                    if (Math.abs(n) > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
-                        return f;
-                    }
-                }
-
-                if (f.isFunction(TypeFunction.sin)) {
-                    return getSinOfMultipleArgument(var, n);
-                } else if (f.isFunction(TypeFunction.cos)) {
-                    return getCosOfMultipleArgument(var, n);
-                }
-
-            }
-        }
-
-        return f;
-
-    }
 
 }

@@ -487,6 +487,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var){
+        return this;
+    }
+    
+    @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) {
         return this;
     }

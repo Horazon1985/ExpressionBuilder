@@ -2199,6 +2199,19 @@ public class Operator extends Expression {
     }
 
     @Override
+    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var);
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new Operator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
