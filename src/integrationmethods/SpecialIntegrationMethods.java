@@ -132,8 +132,8 @@ public abstract class SpecialIntegrationMethods {
              */
             // Koeffizienten der einzelnen Partialbrüche bestimmen.
             Expression constantCoefficientOfDenominator = Expression.ONE;
-            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++){
-                if (factorsOfDecomposedDenominator.get(i) != null && !factorsOfDecomposedDenominator.get(i).contains(var)){
+            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++) {
+                if (factorsOfDecomposedDenominator.get(i) != null && !factorsOfDecomposedDenominator.get(i).contains(var)) {
                     constantCoefficientOfDenominator = constantCoefficientOfDenominator.mult(factorsOfDecomposedDenominator.get(i));
                     factorsOfDecomposedDenominator.remove(i);
                 }
@@ -206,11 +206,11 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    public static Object getPartialFractionDecomposition(Expression enumerator, Expression denominator, String var)
+    public static Expression getPartialFractionDecomposition(Expression enumerator, Expression denominator, String var)
             throws EvaluationException, NotPreciseIntegrableException {
 
         if (denominator.isNotProduct()) {
-            return false;
+            throw new NotPreciseIntegrableException();
         }
 
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(denominator);
@@ -220,11 +220,11 @@ public abstract class SpecialIntegrationMethods {
             if (factorsDenominator.get(i).isPower()) {
                 if (!((BinaryOperation) factorsDenominator.get(i)).getRight().isIntegerConstant()
                         || !((BinaryOperation) factorsDenominator.get(i)).getRight().isNonNegative()) {
-                    return false;
+                    throw new NotPreciseIntegrableException();
                 }
             } else if (SimplifyPolynomialMethods.isPolynomial(factorsDenominator.get(i), var)
                     && SimplifyPolynomialMethods.degreeOfPolynomial(factorsDenominator.get(i), var).compareTo(BigInteger.ONE) > 0) {
-                return false;
+                throw new NotPreciseIntegrableException();
             }
         }
 
@@ -259,14 +259,14 @@ public abstract class SpecialIntegrationMethods {
             if (factorsDenominator.get(i).isPower()) {
                 c = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) factorsDenominator.get(i)).getLeft(), var);
                 // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
-                if (c.get(1).equals(ZERO)){
+                if (c.get(1).equals(ZERO)) {
                     throw new NotPreciseIntegrableException();
                 }
                 zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
             } else {
                 c = PolynomialRootsMethods.getPolynomialCoefficients(factorsDenominator.get(i), var);
                 // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
-                if (c.get(1).equals(ZERO)){
+                if (c.get(1).equals(ZERO)) {
                     throw new NotPreciseIntegrableException();
                 }
                 zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
@@ -301,7 +301,7 @@ public abstract class SpecialIntegrationMethods {
                 currentDifference = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) currentDifference);
                 if (!(currentDifference instanceof BinaryOperation)) {
                     // Dürfte eigentlich nicht passieren, aber sicherheitshalber.
-                    return false;
+                    throw new NotPreciseIntegrableException();
                 }
 
                 // Multiplikation mit (x - a_i)^j, 1 <= j <= n_i, und Kürzen der gemeinsamen Linearfaktoren.
@@ -813,7 +813,7 @@ public abstract class SpecialIntegrationMethods {
     private static Expression expandProductsOfComplexExponentialFunctions(Expression f, String var) throws EvaluationException {
         return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
                 TypeSimplify.simplify_trivial, TypeSimplify.simplify_powers, TypeSimplify.collect_products,
-                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients, 
+                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients,
                 TypeSimplify.simplify_expand_products_of_complex_exponential_functions,
                 TypeSimplify.expand_moderate);
     }
@@ -1277,7 +1277,7 @@ public abstract class SpecialIntegrationMethods {
     /**
      * Integriert Funktionen vom Typ R(sin(a*x), cos(a*x)), R = rationale
      * Funktion.
-     * 
+     *
      * @throws exceptions.EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
