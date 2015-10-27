@@ -344,7 +344,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression computePowersOfIntegers(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.getLeft() instanceof Constant && expr.getRight() instanceof Constant && !expr.containsApproximates()) {
+        if (expr.getLeft().isIntegerConstant() && expr.getRight().isIntegerConstant() && !expr.containsApproximates()) {
 
             Constant constantLeft = (Constant) expr.getLeft();
             Constant constantRight = (Constant) expr.getRight();
@@ -361,8 +361,7 @@ public abstract class SimplifyBinaryOperationMethods {
                  Schranke ist. Die Schranke für den Exponenten bewegt sich im
                  int-Bereich.
                  */
-                if (constantRight.isIntegerConstant()
-                        && constantRight.getValue().compareTo(BigDecimal.ZERO) >= 0
+                if (constantRight.getValue().compareTo(BigDecimal.ZERO) >= 0
                         && constantRight.getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
                     return new Constant(constantLeft.getValue().pow(constantRight.getValue().intValue()));
                 }
@@ -374,6 +373,45 @@ public abstract class SimplifyBinaryOperationMethods {
         return expr;
     }
 
+    /**
+     * Falls expr eine ganzzahlige Potenz eines Bruches darstellt, so wird
+     * diese Potenz ausgerechnet und zurückgegeben, falls der Exponent eine
+     * bestimmte Schranke nicht übersteigt. Ansonsten wird expr zurückgegeben.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression computePowersOfFractions(BinaryOperation expr) throws EvaluationException {
+
+        if (expr.getLeft().isRationalConstant() && expr.getRight().isIntegerConstant() && !expr.containsApproximates()) {
+
+            BigInteger enumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue().toBigInteger();
+            BigInteger denominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
+            BigInteger exponent = ((Constant) expr.getRight()).getValue().toBigInteger();
+
+            if (expr.isPower()) {
+
+                // Negative Potenzen von 0 sind nicht definiert.
+                if (enumerator.equals(BigInteger.ZERO) && exponent.compareTo(BigInteger.ZERO) < 0) {
+                    throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
+                }
+                /*
+                 Potenzen von ganzen Zahlen sollen nur vereinfacht werden,
+                 wenn die Basis >= 0 und der Exponent <= einer bestimmten
+                 Schranke ist. Die Schranke für den Exponenten bewegt sich im
+                 int-Bereich.
+                 */
+                if (exponent.compareTo(BigInteger.ZERO) >= 0
+                        && exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
+                    return new Constant(enumerator.pow(exponent.intValue())).div(denominator.pow(exponent.intValue()));
+                }
+
+            }
+
+        }
+
+        return expr;
+    }
+    
     /**
      * Falls der Ausdruck expr eine Wurzel gerader Ordnung aus einem negativen
      * Ausdruck darstellt, so wird eine entsprechende EvaluationException

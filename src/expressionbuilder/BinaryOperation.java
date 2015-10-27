@@ -796,11 +796,18 @@ public class BinaryOperation extends Expression {
         expr = (BinaryOperation) exprLeftAndRightSimplified;
 
         // Nun folgen Vereinfachungen von Potenzen und Wurzeln konstanter Ausdrücke, soweit möglich.
+        // Berechnung ganzzahliger Potenzen ganzer Zahlen.
         exprSimplified = SimplifyBinaryOperationMethods.computePowersOfIntegers(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
+        // Berechnung ganzzahliger Potenzen von Brüchen.
+        exprSimplified = SimplifyBinaryOperationMethods.computePowersOfFractions(expr);
+        if (!exprSimplified.equals(expr)) {
+            return exprSimplified;
+        }
+        
         // Triviale Umformungen
         exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInPowerWithZeroOne(expr);
         if (!exprSimplified.equals(expr)) {
