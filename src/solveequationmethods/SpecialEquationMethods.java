@@ -10,8 +10,8 @@ import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.RationalFunctionMethods;
 import expressionsimplifymethods.SimplifyExponentialRelations;
+import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,6 +19,45 @@ import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SpecialEquationMethods {
 
+    private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
+    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesRationalExponentialEquation() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.factorize_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalEquation() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.multiply_powers);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+        return simplifyTypes;
+    }
 
     /**
      * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
@@ -41,7 +80,7 @@ public abstract class SpecialEquationMethods {
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!RationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             return zeros;
         }
 
@@ -79,28 +118,15 @@ public abstract class SpecialEquationMethods {
             zeros = new ExpressionCollection();
             ExpressionCollection currentZeros;
             // Rücksubstitution.
-            /*
-             Für die Vereinfachung der Lösungen sollen HIER Logarithmen auseinandergezogen werden, 
-             da es für diesen Zweck besser ist.
-             */
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
             for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                 try {
                     currentZeros = SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var);
                     for (int j = 0; j < currentZeros.getBound(); j++) {
-                        currentZeros.put(j, currentZeros.get(j).simplify(simplifyTypes));
+                        /*
+                         Für die Vereinfachung der Lösungen sollen HIER Logarithmen auseinandergezogen werden, 
+                         da es für diesen Zweck besser ist.
+                         */
+                        currentZeros.put(j, currentZeros.get(j).simplify(simplifyTypesRationalExponentialEquation));
                     }
                     // Lösungen hinzufügen.
                     zeros.add(currentZeros);
@@ -119,7 +145,6 @@ public abstract class SpecialEquationMethods {
 
     }
 
-
     /**
      * Hauptmethode zum Lösen von trigonometrischen Gleichungen f = 0. Ist f
      * keine trigonometrische Gleichung, so wird eine leere ExpressionCollection
@@ -137,7 +162,7 @@ public abstract class SpecialEquationMethods {
          werden keine Lösungen ermittelt (diese Methode ist dafür nicht
          zuständig).
          */
-        if (!RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
             return zeros;
         }
 
@@ -176,31 +201,13 @@ public abstract class SpecialEquationMethods {
 
             Expression fSubstituted = (Expression) fSubstitutedAsObject;
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.expand_moderate);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.multiply_powers);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-            simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-            simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
-
-            fSubstituted = fSubstituted.simplify(simplifyTypes);
+            fSubstituted = fSubstituted.simplify(simplifyTypesRationalTrigonometricalEquation);
             /*
              Das Folgende ist eine Sicherheitsabfrage: Die substituierte Gleichung sollte vom 
              folgenden Typ sein: Alle Argumente, die in trigonometrischen Funktionen vorkommen,
              müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
              */
-            if (!RationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
+            if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
                 return new ExpressionCollection();
             }
 
@@ -210,7 +217,7 @@ public abstract class SpecialEquationMethods {
              WICHTIG: Beim Vereinfachen darf hier nicht simplifyFunctionalRelations() verwendet werden,
              da dann beispielsweise sin(x)*cos(x) wieder zu sin(2*x)/2 vereinfacht wird.
              */
-            fSubstituted = RationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypes);
+            fSubstituted = SimplifyRationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypesRationalTrigonometricalEquation);
 
             /*
              Jetzt werden zwei Versuche unternommen: (1) Sinusausdrücke durch Cosinusausdrücke zu ersetzen.
@@ -218,10 +225,10 @@ public abstract class SpecialEquationMethods {
              der so entstandene Ausdruck ein Polynom in einem Cosinus- oder einem Sinusausdruck ist.
              WICHTIG:
              */
-            Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypes);
+            Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
 
             String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
-            if (RationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
+            if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
                 Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -247,8 +254,8 @@ public abstract class SpecialEquationMethods {
                 }
 
             } else {
-                fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypes);
-                if (RationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
+                fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
+                if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
                     Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
 
@@ -349,6 +356,5 @@ public abstract class SpecialEquationMethods {
         return f;
 
     }
-
 
 }

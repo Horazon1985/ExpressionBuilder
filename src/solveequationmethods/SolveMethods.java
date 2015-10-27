@@ -13,7 +13,7 @@ import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.RationalFunctionMethods;
+import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
@@ -1518,12 +1518,12 @@ public abstract class SolveMethods {
         }
 
         // Fall: f ist eine rationale Funktion in einer Exponentialfunktion.
-        if (RationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
             return SpecialEquationMethods.solveExponentialEquation(f, var);
         }
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
-        if (RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
             return SpecialEquationMethods.solveTrigonometricalEquation(f, var);
         }
 
@@ -1579,13 +1579,13 @@ public abstract class SolveMethods {
          */
         Expression fByDefinition = f.simplifyReplaceExponentialFunctionsByDefinitions();
         HashSet<Expression> factorsOfVar = new HashSet<>();
-        if (RationalFunctionMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
             if (!fByDefinition.equals(f)) {
                 return SpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
             }
         }
         fByDefinition = f.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-        if (RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, factorsOfVar)) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, factorsOfVar)) {
             if (!fByDefinition.equals(f)) {
                 return solveZeroEquation(fByDefinition, var);
             }

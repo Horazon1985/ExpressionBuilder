@@ -1,7 +1,10 @@
 package expressionsimplifymethods;
 
+import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import expressionbuilder.Function;
+import expressionbuilder.TypeFunction;
 import expressionbuilder.Variable;
 import java.math.BigInteger;
 
@@ -118,6 +121,10 @@ public abstract class SimplifyTrigonometricalRelations {
         Expression nonConstantSummand = SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantSummandsRight);
         Expression constantSummand = SimplifyUtilities.produceDifference(constantSummandsLeft, constantSummandsRight);
 
+        if (constantSummand.equals(Expression.ZERO)) {
+            // Dann gibt es keinen konstanten Summanden im Argument.
+            return nonConstantSummand.sin();
+        }
         return nonConstantSummand.sin().mult(constantSummand.cos()).add(nonConstantSummand.cos().mult(constantSummand.sin()));
 
     }
@@ -137,8 +144,40 @@ public abstract class SimplifyTrigonometricalRelations {
         Expression nonConstantSummand = SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantSummandsRight);
         Expression constantSummand = SimplifyUtilities.produceDifference(constantSummandsLeft, constantSummandsRight);
 
+        if (constantSummand.equals(Expression.ZERO)) {
+            // Dann gibt es keinen konstanten Summanden im Argument.
+            return nonConstantSummand.cos();
+        }
         return nonConstantSummand.cos().mult(constantSummand.cos()).sub(nonConstantSummand.sin().mult(constantSummand.sin()));
 
+    }
+
+    /**
+     * Gibt einen Ausdruck zurück, indem in trigonometrische Funktionen bzgl.
+     * var der von var abhängige Teil von dem von var unabhängigen Teil getrennt
+     * wurde.<br>
+     * BEISPIEL: Für f = 5+sin(2*x+7) wird 5 + sin(2*x)*cos(7)+cos(2*x)*sin(7)
+     * zurückgegeben.
+     */
+    public static Expression separateConstantPartsInRationalTrigonometricalEquations(Expression f, String var) {
+        if (!f.contains(var) || f instanceof Constant || f instanceof Variable) {
+            return f;
+        }
+        if (f instanceof BinaryOperation) {
+            return new BinaryOperation(separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getLeft(), var), separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
+        }
+        if (f instanceof Function && f.contains(var)) {
+            if (!((Function) f).getType().equals(TypeFunction.cos) && !((Function) f).getType().equals(TypeFunction.sin)) {
+                return new Function(separateConstantPartsInRationalTrigonometricalEquations(((Function) f).getLeft(), var), ((Function) f).getType());
+            }
+            Expression argumentOfTrigonometricalFunction = ((Function) f).getLeft();
+            if (((Function) f).getType().equals(TypeFunction.cos)) {
+                return simplifyAdditionTheoremForCosinus(argumentOfTrigonometricalFunction, var);
+            } else {
+                return simplifyAdditionTheoremForSinus(argumentOfTrigonometricalFunction, var);
+            }
+        }
+        return f;
     }
 
 }

@@ -536,6 +536,13 @@ public abstract class SimplifyIntegralMethods {
             return result.simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
+        
+        // Integragtion von R(cos(a*x), sin(a*x)), R(t) = rationale Funktion in t.
+        try {
+            result = SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr);
+            return result.simplifyTrivial();
+        } catch (NotPreciseIntegrableException e) {
+        }
 
         // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels Standardsubstitution.
         try {

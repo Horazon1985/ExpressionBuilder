@@ -561,28 +561,28 @@ public class BinaryOperation extends Expression {
                             if (summandsLeftOfThis.get(i).hasPositiveSign()) {
                                 summandsLeftOfThisWithSign.add(summandsLeftOfThis.get(i));
                             } else {
-                                summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftOfThis.get(i)).simplify());
+                                summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftOfThis.get(i)).orderSumsAndProducts());
                             }
                         }
                         for (int i = 0; i < summandsRightOfThis.getBound(); i++) {
                             if (summandsRightOfThis.get(i).hasPositiveSign()) {
                                 summandsRightOfThisWithSign.add(summandsRightOfThis.get(i));
                             } else {
-                                summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).simplify());
+                                summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).orderSumsAndProducts());
                             }
                         }
                         for (int i = 0; i < summandsLeftOfExpr.getBound(); i++) {
                             if (summandsLeftOfExpr.get(i).hasPositiveSign()) {
                                 summandsLeftOfExprWithSign.add(summandsLeftOfExpr.get(i));
                             } else {
-                                summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).simplify());
+                                summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).orderSumsAndProducts());
                             }
                         }
                         for (int i = 0; i < summandsRightOfExpr.getBound(); i++) {
                             if (summandsRightOfExpr.get(i).hasPositiveSign()) {
                                 summandsRightOfExprWithSign.add(summandsRightOfExpr.get(i));
                             } else {
-                                summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).simplify());
+                                summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).orderSumsAndProducts());
                             }
                         }
                         return summandsLeftOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
@@ -849,7 +849,7 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        // Negative Potenzen in den Nenner: x^y = 1/x^(-y), falls b < 0. 
+        // Negative Potenzen in den Nenner: x^y = 1/x^(-y), falls y < 0. 
         exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfExpressionsToReciprocal(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;

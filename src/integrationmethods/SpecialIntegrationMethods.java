@@ -4,10 +4,12 @@ import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import exceptions.NotPreciseIntegrableException;
+import exceptions.NotSubstitutableException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
@@ -17,10 +19,11 @@ import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.RationalFunctionMethods;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyExponentialRelations;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
+import expressionsimplifymethods.SimplifyRationalFunctionMethods;
+import expressionsimplifymethods.SimplifyTrigonometricalRelations;
 import expressionsimplifymethods.SimplifyUtilities;
 import static integrationmethods.SimplifyIntegralMethods.indefiniteIntegration;
 import java.math.BigInteger;
@@ -30,6 +33,28 @@ import solveequationmethods.PolynomialRootsMethods;
 import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SpecialIntegrationMethods {
+
+    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunctions = getSimplifyTypesRationalTrigonometricalFunctions();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunctions() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.multiply_powers);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+        return simplifyTypes;
+    }
 
     /**
      * Hauptmethode für Partialbruchzerlegung. Gibt im Erfolgsfall die
@@ -1217,7 +1242,7 @@ public abstract class SpecialIntegrationMethods {
         // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
         f = SimplifyExponentialRelations.separateConstantPartsInRationalExponentialEquations(f, var);
 
-        if (!RationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -1261,13 +1286,22 @@ public abstract class SpecialIntegrationMethods {
 
         Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
         if (fSubstituted instanceof Expression) {
+
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+            /*
+             Das Folgende ist eine Sicherheitsabfrage: Die substituierte Gleichung sollte vom 
+             folgenden Typ sein: Alle Argumente, die in trigonometrischen Funktionen vorkommen,
+             müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
+             */
+            if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable((Expression) fSubstituted, substVar)) {
+                throw new NotPreciseIntegrableException();
+            }
+
             Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
+
             Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
             Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
-            if (resultFunction instanceof Expression) {
-                return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
-            }
+            return resultFunction.replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
         }
 
         throw new NotPreciseIntegrableException();
@@ -1286,16 +1320,19 @@ public abstract class SpecialIntegrationMethods {
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
-        HashSet<Expression> argumentsInExp = new HashSet<>();
+        HashSet<Expression> argumentsInTrigonometricalFunctions = new HashSet<>();
 
-        if (!RationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
+        // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
+        f = SimplifyTrigonometricalRelations.separateConstantPartsInRationalTrigonometricalEquations(f, var);
+
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricalFunctions) || argumentsInTrigonometricalFunctions.isEmpty()) {
             throw new NotPreciseIntegrableException();
         }
 
         BigInteger gcdOfEnumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
-        Iterator<Expression> iter = argumentsInExp.iterator();
+        Iterator<Expression> iter = argumentsInTrigonometricalFunctions.iterator();
         Expression firstArgument = iter.next();
 
         Expression derivativeOfFirstArgument;
@@ -1327,21 +1364,89 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Das ist die eigentliche Substitution.
-        Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
+        Expression factorOfTrigonometricalArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).simplify();
 
-        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
-        if (fSubstituted instanceof Expression) {
+        Object fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution, true);
+        if (fSubstitutedAsObject instanceof Expression) {
+            Expression fSubstituted = (Expression) fSubstitutedAsObject;
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-            Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
-            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
-            Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
-            if (resultFunction instanceof Expression) {
-                return ((Expression) resultFunction).replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
+
+            /*
+             Das Folgende ist eine Sicherheitsabfrage: Die substituierte Gleichung sollte vom 
+             folgenden Typ sein: Alle Argumente, die in trigonometrischen Funktionen vorkommen,
+             müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
+             */
+            if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
+                throw new NotPreciseIntegrableException();
             }
+
+            /*
+             Nun ist fSubstituted eine rationale Funtion in sin(n*X_1) und cos(m*X_1), X_1 = substVar.
+             Jetzt muss fSubstituted als rationale Function in sin(X_1) und cos(X_1) dargestellt werden.
+             WICHTIG: Beim Vereinfachen darf hier nicht simplifyFunctionalRelations() verwendet werden,
+             da dann beispielsweise sin(x)*cos(x) wieder zu sin(2*x)/2 vereinfacht wird.
+             */
+            fSubstituted = SimplifyRationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypesRationalTrigonometricalFunctions);
+            /*
+             Jetzt erfolgt die eigentliche Substitution: cos(x) = (1-t^2)/(1+t^2),
+             sin(x) = 2t/(1+t^2), dx = 2/(1+t^2)*dt.
+             */
+            String substVarForIntegral = SubstitutionUtilities.getSubstitutionVariable(fSubstituted);
+            Expression substForCos = ONE.sub(Variable.create(substVarForIntegral).pow(2)).div(ONE.add(Variable.create(substVarForIntegral).pow(2)));
+            Expression substForSin = TWO.mult(Variable.create(substVarForIntegral)).div(ONE.add(Variable.create(substVarForIntegral).pow(2)));
+            Expression substForDX = TWO.div(ONE.add(Variable.create(substVarForIntegral).pow(2)));
+
+            Expression substitutedIntegrand = substituteExpressionByAnotherExpression(fSubstituted,
+                    Variable.create(substVar).cos(), substForCos);
+            substitutedIntegrand = substituteExpressionByAnotherExpression(substitutedIntegrand,
+                    Variable.create(substVar).sin(), substForSin);
+
+            if (!substitutedIntegrand.contains(substVarForIntegral)) {
+                // Dann konnte weder sin, noch cos substitutiert werden. Dies sollte hier eigentlich nicht passieren.
+                throw new NotPreciseIntegrableException();
+            }
+
+            substitutedIntegrand = substitutedIntegrand.mult(substForDX).div(factorOfTrigonometricalArgument);
+            Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVarForIntegral});
+            Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+            // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+            if (resultFunction.containsIndefiniteIntegral()){
+                throw new NotPreciseIntegrableException();
+            }
+            return resultFunction.replaceVariable(substVarForIntegral,
+                    TWO.mult(factorOfTrigonometricalArgument.mult(Variable.create(var)).arctan()));
+
         }
 
         throw new NotPreciseIntegrableException();
+
+    }
+
+    /**
+     * Hilfsmethode für integrateRationalFunctionInTrigonometricalFunctions().
+     * Substituiert, falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind
+     * zu exprToSubstitute, durch subst. Andernfalls wird eine
+     * NotSubstitutableException geworfen.
+     *
+     * @throws NotSubstitutableException
+     */
+    private static Expression substituteExpressionByAnotherExpression(Expression f, Expression exprToSubstitute, Expression subst)
+            throws EvaluationException {
+
+        if (f.equivalent(exprToSubstitute)) {
+            return subst;
+        }
+        if (f instanceof BinaryOperation) {
+            return new BinaryOperation(substituteExpressionByAnotherExpression(((BinaryOperation) f).getLeft(), exprToSubstitute, subst),
+                    substituteExpressionByAnotherExpression(((BinaryOperation) f).getRight(), exprToSubstitute, subst),
+                    ((BinaryOperation) f).getType());
+        }
+        if (f.isFunction()) {
+            return new Function(substituteExpressionByAnotherExpression(((Function) f).getLeft(), exprToSubstitute, subst), ((Function) f).getType());
+        }
+
+        return f;
 
     }
 

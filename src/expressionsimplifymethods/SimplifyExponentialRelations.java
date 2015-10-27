@@ -21,16 +21,12 @@ public class SimplifyExponentialRelations {
             return f;
         }
         if (f instanceof BinaryOperation) {
-            if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var)) {
+            if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var)) {
                 Expression base = ((BinaryOperation) f).getLeft();
                 ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
                 ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((BinaryOperation) f).getRight(), var);
                 ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
                 ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(((BinaryOperation) f).getRight(), var);
-                Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
-                if (exponentLeft.equals(Expression.ZERO)) {
-                    return f;
-                }
                 return base.pow(SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant)).mult(base.pow(SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant)));
             }
             return new BinaryOperation(separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getLeft(), var), separateConstantPartsInRationalExponentialEquations(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
@@ -40,15 +36,16 @@ public class SimplifyExponentialRelations {
                 return new Function(separateConstantPartsInRationalExponentialEquations(((Function) f).getLeft(), var), ((Function) f).getType());
             }
             Expression argumentOfExp = ((Function) f).getLeft();
-            ExpressionCollection summandsLeftConstant = SimplifyUtilities.getConstantSummandsLeftInExpression(argumentOfExp, var);
-            ExpressionCollection summandsLeftNonConstant = SimplifyUtilities.getNonConstantSummandsLeftInExpression(argumentOfExp, var);
-            ExpressionCollection summandsRightConstant = SimplifyUtilities.getConstantSummandsRightInExpression(argumentOfExp, var);
-            ExpressionCollection summandsRightNonConstant = SimplifyUtilities.getNonConstantSummandsRightInExpression(argumentOfExp, var);
-            Expression exponentLeft = SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant);
-            if (exponentLeft.equals(Expression.ZERO)) {
+            ExpressionCollection constantSummandsLeft = SimplifyUtilities.getConstantSummandsLeftInExpression(argumentOfExp, var);
+            ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(argumentOfExp, var);
+            ExpressionCollection constantSummandsRight = SimplifyUtilities.getConstantSummandsRightInExpression(argumentOfExp, var);
+            ExpressionCollection nonConstantsummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(argumentOfExp, var);
+            Expression constantSummand = SimplifyUtilities.produceDifference(constantSummandsLeft, constantSummandsRight);
+            if (constantSummand.equals(Expression.ZERO)) {
+                // Dann gibt es keinen konstanten Summanden im Argument.
                 return f;
             }
-            return SimplifyUtilities.produceDifference(summandsLeftConstant, summandsRightConstant).exp().mult(SimplifyUtilities.produceDifference(summandsLeftNonConstant, summandsRightNonConstant).exp());
+            return SimplifyUtilities.produceDifference(constantSummandsLeft, constantSummandsRight).exp().mult(SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantsummandsRight).exp());
         }
         return f;
     }

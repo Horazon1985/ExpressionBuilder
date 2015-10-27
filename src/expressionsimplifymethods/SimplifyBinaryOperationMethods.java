@@ -160,6 +160,22 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
+     * Negiert den Ausdruck expr.
+     */
+    private static Expression negateExpression(Expression expr) {
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
+        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+            if (factorsEnumerator.get(i) instanceof Constant) {
+                factorsEnumerator.put(i, new Constant(BigDecimal.valueOf(-1).multiply(((Constant) factorsEnumerator.get(i)).getValue()),
+                        ((Constant) factorsEnumerator.get(i)).getPrecise()));
+                return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+            }
+        }
+        return MINUS_ONE.mult(expr);
+    }
+
+    /**
      * Beseitigt Nullen in summands.
      */
     public static void removeZeros(ExpressionCollection summands) {
@@ -735,17 +751,25 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Falls expr eine Potenz eines Quotienten darstellt, bei der der Exponent
-     * rational und negativ ist, so wird dieser in einen Kehrwert (mit
-     * entsprechendem positiven Exponenten) umgewandelt und zurückgegeben.
-     * Ansonsten wird expr zurückgegeben. Beispiel: bei expr = (a/b)^(-3/2) wird
-     * (b/a)^(3/2) zurückgegeben.
+     * Falls expr eine Potenz eines Quotienten oder des Betrags eines Quotienten
+     * darstellt, bei der der Exponent konstant und negativ ist, so wird dieser
+     * in einen Kehrwert (mit entsprechendem positiven Exponenten) umgewandelt
+     * und zurückgegeben. Ansonsten wird expr zurückgegeben. Beispiel: bei expr
+     * = (a/b)^(-3/2) wird (b/a)^(3/2) zurückgegeben.
      */
     public static Expression negativePowersOfQuotientsToReciprocal(BinaryOperation expr) {
 
-        if (expr.isPower() && expr.getLeft().isQuotient() && expr.getRight().isIntegerConstantOrRationalConstantNegative()) {
-            return ((BinaryOperation) expr.getLeft()).getRight().div(((BinaryOperation) expr.getLeft()).getLeft()).pow(
-                    MINUS_ONE.mult(expr.getRight()));
+        if (expr.isPower() && (expr.getLeft().isQuotient() || expr.getLeft().isFunction(TypeFunction.abs)
+                && ((Function) expr.getLeft()).getLeft().isQuotient())
+                && expr.getRight().isNegative()) {
+
+            if (expr.getLeft().isQuotient()) {
+                return ((BinaryOperation) expr.getLeft()).getRight().div(((BinaryOperation) expr.getLeft()).getLeft()).pow(
+                        negateExpression(expr.getRight()));
+            }
+            Expression argumentOfAbs = ((Function) expr.getLeft()).getLeft();
+            return ((BinaryOperation) argumentOfAbs).getRight().div(((BinaryOperation) argumentOfAbs).getLeft()).abs().pow(
+                    negateExpression(expr.getRight()));
         }
         return expr;
 
@@ -755,8 +779,8 @@ public abstract class SimplifyBinaryOperationMethods {
      * Falls expr eine Potenz darstellt, wobei die Basis KEIN Quotient ist, bei
      * der der Exponent rational und negativ ist, so wird dieser in einen
      * Kehrwert (mit entsprechendem positiven Exponenten) umgewandelt und
-     * zurückgegeben. Beispiel: bei expr = a^(-3/2) wird 1/a^(3/2)
-     * zurückgegeben.
+     * zurückgegeben.<br>
+     * BEISPIEL: bei expr = a^(-3/2) wird 1/a^(3/2) zurückgegeben.
      */
     public static Expression negativePowersOfExpressionsToReciprocal(BinaryOperation expr) {
         if (expr.isPower() && expr.getLeft().isNotQuotient() && expr.getRight().isIntegerConstantOrRationalConstantNegative()) {
@@ -842,21 +866,6 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Hilfsmethode: negiert den Ausdruck expr;
-     */
-    private static Expression negateExpression(Expression expr) {
-        ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
-        for (int i = 0; i < factors.getBound(); i++) {
-            if (factors.get(i) instanceof Constant) {
-                factors.put(i, new Constant(BigDecimal.valueOf(-1).multiply(((Constant) factors.get(i)).getValue()),
-                        ((Constant) factors.get(i)).getPrecise()));
-                return SimplifyUtilities.produceProduct(factors);
-            }
-        }
-        return MINUS_ONE.mult(expr);
-    }
-
-    /**
      * Vereinfacht Doppelpotenzen, falls möglich. Ansonsten wird expr
      * zurückgegeben.
      *
@@ -894,7 +903,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 BigInteger exponentEnumerator = a.multiply(c);
                 BigInteger exponentDenominator = b.multiply(d);
                 BigInteger gcdOfEnumeratorAndDenominator = exponentEnumerator.gcd(exponentDenominator);
-//                exponentEnumerator = exponentEnumerator.divide(gcdOfEnumeratorAndDenominator);
                 exponentDenominator = exponentDenominator.divide(gcdOfEnumeratorAndDenominator);
                 if (b.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO) && !exponentDenominator.mod(BigInteger.valueOf(2)).equals(BigInteger.ZERO)) {
                     return expr;

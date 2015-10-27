@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class RationalFunctionMethods {
+public class SimplifyRationalFunctionMethods {
 
     /**
      * Hilfsmethode. Gibt zurück, ob alle paarweisen Verhältnisse von Ausdrücken
@@ -84,7 +84,8 @@ public class RationalFunctionMethods {
         }
         if (f.isFunction() && f.contains(var)) {
             Expression argument = ((Function) f).getLeft();
-            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos) && (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
+            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos) && 
+                    (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
                 /*
                  Es werden nur Ausdrücke der Form sin(n*x) oder cos(n*x) vereinfach, wenn
                  |n| <= maximaler Grad eines Polynoms für das Lösen von Polynomgleichungen

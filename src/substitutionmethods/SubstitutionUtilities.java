@@ -114,7 +114,7 @@ public abstract class SubstitutionUtilities {
      * substituieren (also x = a*substitution - a*b).
      */
     private static Object substituteVariable(String var, Expression substitution, boolean beginning) throws EvaluationException {
-        if (!beginning){
+        if (!beginning) {
             return false;
         }
         Expression derivative = substitution.diff(var).simplify();
