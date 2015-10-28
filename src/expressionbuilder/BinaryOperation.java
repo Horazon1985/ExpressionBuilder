@@ -667,7 +667,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = new ExpressionCollection();
 
             // Nullen in Summen beseitigen.
-            SimplifyBinaryOperationMethods.removeZeros(summandsLeft);
+            SimplifyBinaryOperationMethods.removeZerosInSums(summandsLeft);
 
             // Summanden mit negativen Koeffizienten in den Subtrahenden bringen.
             SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
@@ -725,7 +725,7 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceProductWithZeroToZero(factors);
 
             // Einsen in Produkten beseitigen.
-            SimplifyBinaryOperationMethods.removeOnes(factors);
+            SimplifyBinaryOperationMethods.removeOnesInProducts(factors);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (this.isConstant() && this.containsApproximates()) {
@@ -821,7 +821,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Minus-Zeichen aus ungeraden Wurzeln herausziehen.
-        exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfRoots(expr);
+        exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfOddRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -838,6 +838,12 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
+        // Versuchen, ganzzahlige Anteile von Exponenten abzuspalten.
+        exprSimplified = SimplifyBinaryOperationMethods.separateIntegerPowersOfRationalConstants(expr);
+        if (!exprSimplified.equals(expr)) {
+            return exprSimplified;
+        }
+        
         // Vereinfache Potenzen von Quotienten, falls im Zähler oder im Nenner ganze Zahlen auftauchen.
         exprSimplified = SimplifyBinaryOperationMethods.simplifyPowerOfQuotient(expr);
         if (!exprSimplified.equals(expr)) {

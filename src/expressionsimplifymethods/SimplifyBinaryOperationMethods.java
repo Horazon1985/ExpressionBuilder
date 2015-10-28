@@ -178,7 +178,7 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Beseitigt Nullen in summands.
      */
-    public static void removeZeros(ExpressionCollection summands) {
+    public static void removeZerosInSums(ExpressionCollection summands) {
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) != null && summands.get(i).equals(ZERO)) {
                 summands.remove(i);
@@ -203,7 +203,7 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Beseitigt Einsen in factors.
      */
-    public static void removeOnes(ExpressionCollection factors) {
+    public static void removeOnesInProducts(ExpressionCollection factors) {
         for (int i = 0; i < factors.getBound(); i++) {
             if (factors.get(i) != null && factors.get(i).equals(ONE)) {
                 factors.remove(i);
@@ -374,9 +374,9 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Falls expr eine ganzzahlige Potenz eines Bruches darstellt, so wird
-     * diese Potenz ausgerechnet und zurückgegeben, falls der Exponent eine
-     * bestimmte Schranke nicht übersteigt. Ansonsten wird expr zurückgegeben.
+     * Falls expr eine ganzzahlige Potenz eines Bruches darstellt, so wird diese
+     * Potenz ausgerechnet und zurückgegeben, falls der Exponent eine bestimmte
+     * Schranke nicht übersteigt. Ansonsten wird expr zurückgegeben.
      *
      * @throws EvaluationException
      */
@@ -411,7 +411,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
         return expr;
     }
-    
+
     /**
      * Falls der Ausdruck expr eine Wurzel gerader Ordnung aus einem negativen
      * Ausdruck darstellt, so wird eine entsprechende EvaluationException
@@ -455,13 +455,13 @@ public abstract class SimplifyBinaryOperationMethods {
 
     /**
      * Zieht, falls möglich, ein negatives Vorzeichen aus Wurzeln ungerader
-     * Ordnung. Ansonsten wird expr zurückgegeben. Beispiel: bei expr =
-     * ((-7)*a)^(3/5) wird -(7*a)^(3/5)zurückgegeben, bei expr = ((-7)*a)^(4/5)
-     * wird (7*a)^(4/5) zurückgegeben.
+     * Ordnung. Ansonsten wird expr zurückgegeben.<br>
+     * BEISPIEL: bei expr = ((-7)*a)^(3/5) wird -(7*a)^(3/5)zurückgegeben, bei
+     * expr = ((-7)*a)^(4/5) wird (7*a)^(4/5) zurückgegeben.
      *
      * @throws EvaluationException
      */
-    public static Expression takeMinusSignOutOfRoots(BinaryOperation expr) throws EvaluationException {
+    public static Expression takeMinusSignOutOfOddRoots(BinaryOperation expr) throws EvaluationException {
 
         if (expr.isPower() && expr.isConstant() && !expr.containsApproximates()
                 && !expr.getLeft().hasPositiveSign() && expr.getRight().isRationalConstant()) {
@@ -490,10 +490,11 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Falls expr eine rationale Potenz einer rationalen Zahl a darstellt, so
      * wird multiplikativ die höchste ganze Potenz der Basis a abgespalten.
-     * Ansonsten wird expr zurückgegeben. Beispiel: bei expr = (7/4)^(22/5) wird
-     * (7/4)^4*(7/4)^(2/5) zurückgegeben. (7/4)^4 wird zudem intern vereinfacht.
-     * Die Vereinfachung von Potenzen mit ganzzahligem Exponenten geschieht nur
-     * solange, wie der Exponent bestimmte Schranken nicht überschreitet.
+     * Ansonsten wird expr zurückgegeben.<br>
+     * BEISPIEL: bei expr = (7/4)^(22/5) wird (7/4)^4*(7/4)^(2/5) zurückgegeben.
+     * (7/4)^4 wird zudem intern vereinfacht. Die Vereinfachung von Potenzen mit
+     * ganzzahligem Exponenten geschieht nur solange, wie der Exponent bestimmte
+     * Schranken nicht überschreitet.
      *
      * @throws EvaluationException
      */
@@ -509,7 +510,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 integerPartOfExponent = integerPartOfExponent.subtract(BigInteger.ONE);
             }
             exponentEnumerator = exponentEnumerator.subtract(exponentDenominator.multiply(integerPartOfExponent));
-            if (integerPartOfExponent.compareTo(BigInteger.ZERO) != 0 && integerPartOfExponent.abs().compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+            if (integerPartOfExponent.compareTo(BigInteger.ZERO) != 0 && integerPartOfExponent.abs().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
                 return expr.getLeft().pow(integerPartOfExponent).simplifyTrivial().mult(expr.getLeft().pow(exponentEnumerator, exponentDenominator));
             }
 
@@ -523,8 +524,8 @@ public abstract class SimplifyBinaryOperationMethods {
      * Falls expr eine Potenz mit rationaler Basis und rationalem Exponenten
      * darstellt, so wird versucht, gewisse Wurzeln/gebrochene Potenzen ZUM TEIL
      * ODER GANZ exakt angegeben werden können. Ansonsten wird expr
-     * zurückgegeben. Biepsiel: 4^(1/4) = 2^(1/2), 4^(x/4) = 2^(x/2), 9^(7/4) =
-     * 3^(7/2) etc.
+     * zurückgegeben.<br>
+     * BEISPIEL: 4^(1/4) = 2^(1/2), 4^(x/4) = 2^(x/2), 9^(7/4) = 3^(7/2) etc.
      *
      * @throws EvaluationException
      */
