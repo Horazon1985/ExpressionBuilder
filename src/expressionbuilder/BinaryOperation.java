@@ -2975,8 +2975,8 @@ public class BinaryOperation extends Expression {
 
         }
 
-        return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
-                this.right.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
+        return new BinaryOperation(this.left.simplifyExpandProductsOfComplexExponentialFunctions(var),
+                this.right.simplifyExpandProductsOfComplexExponentialFunctions(var),
                 this.type);
 
     }
