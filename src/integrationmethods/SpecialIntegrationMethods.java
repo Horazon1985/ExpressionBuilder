@@ -112,11 +112,7 @@ public abstract class SpecialIntegrationMethods {
             ExpressionCollection[] resultOfPolynomialDivision = PolynomialRootsMethods.polynomialDivision(coefficientsEnumerator, coefficientsDenominator);
             Expression integralOfPolynomialPart = Expression.ZERO;
             for (int i = 0; i < resultOfPolynomialDivision[0].getBound(); i++) {
-                if (integralOfPolynomialPart.equals(Expression.ZERO)) {
-                    integralOfPolynomialPart = resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1);
-                } else {
-                    integralOfPolynomialPart = integralOfPolynomialPart.add(resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1));
-                }
+                integralOfPolynomialPart = integralOfPolynomialPart.add(resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1));
             }
 
             Object[] paramsIntegralOfFractionalPart = new Object[2];
@@ -1333,7 +1329,7 @@ public abstract class SpecialIntegrationMethods {
             Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVarForIntegral});
             Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
             // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
-            if (resultFunction.containsIndefiniteIntegral()){
+            if (resultFunction.containsIndefiniteIntegral()) {
                 throw new NotPreciseIntegrableException();
             }
             return resultFunction.replaceVariable(substVarForIntegral,
