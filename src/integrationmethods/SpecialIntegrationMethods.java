@@ -71,9 +71,7 @@ public abstract class SpecialIntegrationMethods {
         String var = (String) expr.getParams()[1];
 
         // Falls f keine rationale Function ist -> abbrechen.
-        if (f.isNotQuotient()
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)) {
+        if (!PartialFractionDecompositionMethods.isRationalFunctionInCanonicalForm(f, var)) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -366,7 +364,8 @@ public abstract class SpecialIntegrationMethods {
 
     /**
      * Integriert (a*x + b)/(c*x^2 + d*x + e)^n mit ganzem n >= 2 und
-     * ireduziblem Nenner. VORAUSSETZUNG: coefficientsEnumerator.size() == 2,
+     * ireduziblem Nenner.<br>
+     * VORAUSSETZUNG: coefficientsEnumerator.size() == 2,
      * coefficientsDenominator.size() == 3 und die Elemente in
      * coefficientsEnumerator enthalten var nicht und die Elemente von
      * coefficientsDenominator sind konstant. Andernfalls wird false
@@ -419,7 +418,7 @@ public abstract class SpecialIntegrationMethods {
         Expression factor = Expression.TWO.mult(coefficientsEnumerator.get(0)).mult(coefficientsDenominator.get(2)).div(Expression.TWO.mult(coefficientsDenominator.get(2))).simplify();
 
         /*
-         summand_for_recursive_integral = (2*c*x + d)/((n - 1)*(4*c*e -
+         summandForRecursiveIntegral = (2*c*x + d)/((n - 1)*(4*c*e -
          d^2)*(c*x^2 + d*x + e)^(n - 1))
          */
         Expression summandForRecursiveIntegral = Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1)).div(new Constant(n - 1).mult(new Constant(4).mult(coefficientsDenominator.get(2)).mult(coefficientsDenominator.get(0)).sub(coefficientsDenominator.get(1).pow(2))).mult(denominator.pow(n - 1))).simplify();

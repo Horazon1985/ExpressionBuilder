@@ -298,40 +298,32 @@ public abstract class PolynomialRootsMethods {
     }
 
     public static Expression getPolynomialFromCoefficients(ExpressionCollection coefficients, String var) {
-
         Expression result = Expression.ZERO;
         for (int i = 0; i < coefficients.getBound(); i++) {
-            if (i == 0) {
-                result = coefficients.get(0);
-            } else {
-                result = result.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
-            }
+            result = result.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
         }
         return result;
-
     }
 
     /**
      * Hilfsfunktion: liefert f/x^exponent, wobei x = var.
      */
     public static Expression divideExpressionByPowerOfVar(Expression f, String var, BigInteger exponent) throws EvaluationException {
-        if (f instanceof BinaryOperation && (((BinaryOperation) f).getType().equals(TypeBinary.PLUS)
-                || ((BinaryOperation) f).getType().equals(TypeBinary.MINUS))) {
+        if (f.isSum() || f.isDifference()) {
             return new BinaryOperation(divideExpressionByPowerOfVar(((BinaryOperation) f).getLeft(), var, exponent),
                     divideExpressionByPowerOfVar(((BinaryOperation) f).getRight(), var, exponent), ((BinaryOperation) f).getType()).simplify();
         }
         return f.div(Variable.create(var).pow(exponent)).simplify();
     }
 
-    /*
-     Liefert, den maximalen Grad d eines Monoms, so dass das durch die
-     Koeffizienten coefficientsOfDivisionRest gegebene Polynom eine
-     Substitution durch ein Monom des Grades d erlaubt. Beispiel: Beim Polynom
-     x^15 + 2*x^10 + 7*x^5 + 1 wird der Wert 5 zurückgegeben. -> Später
-     Substitution x^5 = t möglich.
+    /**
+     * Liefert, den maximalen Grad d eines Monoms, so dass das durch die
+     * Koeffizienten coefficientsOfDivisionRest gegebene Polynom eine
+     * Substitution durch ein Monom des Grades d erlaubt.<br>
+     * BEISPIEL: Beim Polynom x^15 + 2*x^10 + 7*x^5 + 1 wird der Wert 5
+     * zurückgegeben. -> Später Substitution x^5 = t möglich.
      */
-    public static int getMaximalMonomial(ExpressionCollection coefficients, String var) {
-
+    private static int getMaximalMonomial(ExpressionCollection coefficients, String var) {
         int result = 0;
         for (int i = 0; i < coefficients.getBound(); i++) {
             if (i != 0 && !coefficients.get(i).equals(Expression.ZERO)) {
@@ -343,16 +335,14 @@ public abstract class PolynomialRootsMethods {
             }
         }
         return result;
-
     }
 
     /**
-     * Mach aus einem Polynom derivative Form a_{km}*x^{km} + ... + a_m*x^m +
-     * a_0 (welches durch die Koeffizienten coefficientsOfDivisionRest gegeben
-     * ist) das Polynom a_{km}*y^period + ... + a_m*y + a_0.
+     * Macht aus einem Polynom der Form a_{km}*x^{km} + ... + a_m*x^m + a_0
+     * (welches durch die Koeffizienten coefficients gegeben ist) das Polynom
+     * a_{km}*y^k + ... + a_m*y + a_0.
      */
     public static ExpressionCollection substituteMonomialInPolynomial(ExpressionCollection coefficients, int m, String var) {
-
         ExpressionCollection resultCoefficient = new ExpressionCollection();
         for (int i = 0; i < coefficients.getBound(); i++) {
             if (i % m == 0) {
@@ -360,7 +350,6 @@ public abstract class PolynomialRootsMethods {
             }
         }
         return resultCoefficient;
-
     }
 
     /**
@@ -693,15 +682,15 @@ public abstract class PolynomialRootsMethods {
 
         if (!diskriminant.isConstant()) {
             // Rein abstrakt nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, (Expression.MINUS_ONE).mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
-            zeros.put(1, (Expression.MINUS_ONE).mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
+            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
+            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
             return zeros;
         }
 
         if (diskriminant.isNonNegative() && !diskriminant.equals(Expression.ZERO)) {
             // Nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, (Expression.MINUS_ONE).mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
-            zeros.put(1, (Expression.MINUS_ONE).mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
+            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
+            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
             return zeros;
         } else if (diskriminant.equals(Expression.ZERO)) {
             zeros.put(0, p.div(-2).simplify());
@@ -744,15 +733,14 @@ public abstract class PolynomialRootsMethods {
             Expression radikand = new Constant(-27).div(p.pow(3)).simplify();
             if (!radikand.isConstant() || radikand.isNonNegative()) {
                 // Casus irreduzibilis.
-                Expression arg = new Function(Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)),
-                        TypeFunction.arccos).div(3).simplify();
+                Expression arg = Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
                 Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2).simplify();
-                zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(A.div(3)).simplify());
-                zeros.put(1, (Expression.MINUS_ONE).mult(factor).mult((new Function(arg.add(Expression.PI.div(3)), TypeFunction.cos))).sub(A.div(3)).simplify());
-                zeros.put(2, (Expression.MINUS_ONE).mult(factor).mult((new Function(arg.sub(Expression.PI.div(3)), TypeFunction.cos))).sub(A.div(3)).simplify());
+                zeros.put(0, factor.mult(arg.cos()).sub(A.div(3)).simplify());
+                zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
+                zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             } else {
                 Expression u = (diskriminant.pow(Expression.ONE.div(2)).sub(q.div(2)).simplify()).pow(1, 3);
-                Expression v = (Expression.MINUS_ONE).mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
+                Expression v = Expression.MINUS_ONE.mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
                 zeros.put(0, u.add(v).sub(A.div(3)).simplify());
             }
             return zeros;
@@ -764,8 +752,8 @@ public abstract class PolynomialRootsMethods {
                     TypeFunction.arccos).div(3).simplify();
             Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2);
             zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(A.div(3)).simplify());
-            zeros.put(1, (Expression.MINUS_ONE).mult(factor).mult((new Function(arg.add(Expression.PI.div(3)), TypeFunction.cos))).sub(A.div(3)).simplify());
-            zeros.put(2, (Expression.MINUS_ONE).mult(factor).mult((new Function(arg.sub(Expression.PI.div(3)), TypeFunction.cos))).sub(A.div(3)).simplify());
+            zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             return zeros;
         } else if (diskriminant.equals(Expression.ZERO)) {
             // Auflösung nach Cardano-Formel: x = 2*(-q/2)^(1/3).
@@ -779,7 +767,7 @@ public abstract class PolynomialRootsMethods {
          diskriminant^(1/2))^(1/3).
          */
         Expression u = (diskriminant.pow(1, 2).sub(q.div(2)).simplify()).pow(1, 3);
-        Expression v = (Expression.MINUS_ONE).mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
+        Expression v = Expression.MINUS_ONE.mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
         zeros.put(0, u.add(v).sub(A.div(3)).simplify());
         return zeros;
 
