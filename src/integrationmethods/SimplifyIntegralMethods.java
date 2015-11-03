@@ -506,6 +506,17 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
 
+        // Integration elementarer Partialbrüche
+        try {
+            return SpecialIntegrationMethods.integrateQuotientOfLinearAndQuadraticPolynomial(expr).simplifyTrivial();
+        } catch (NotPreciseIntegrableException e) {
+        }
+        
+        try {
+            return SpecialIntegrationMethods.integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
+        } catch (NotPreciseIntegrableException e) {
+        }
+        
         // Partialbruchzerlegung
         try {
             return SpecialIntegrationMethods.integrateRationalFunction(expr).simplifyTrivial();
@@ -532,15 +543,13 @@ public abstract class SimplifyIntegralMethods {
 
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
-            result = SpecialIntegrationMethods.integrateRationalFunctionInExp(expr);
-            return result.simplifyTrivial();
+            return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
         
         // Integragtion von R(cos(a*x), sin(a*x)), R(t) = rationale Funktion in t.
         try {
-            result = SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr);
-            return result.simplifyTrivial();
+            return SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
 

@@ -101,122 +101,23 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
-        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
+        Expression partialFractionDecompositionOfF = PartialFractionDecompositionMethods.getPartialFractionDecomposition(f, var);
 
-        // Zunächst Polynomdivision durchführen und Zwischenergebnis ausgeben, wenn nötig.
-        if (coefficientsEnumerator.getBound() >= coefficientsDenominator.getBound()) {
-
-            ExpressionCollection[] resultOfPolynomialDivision = PolynomialRootsMethods.polynomialDivision(coefficientsEnumerator, coefficientsDenominator);
-            Expression integralOfPolynomialPart = Expression.ZERO;
-            for (int i = 0; i < resultOfPolynomialDivision[0].getBound(); i++) {
-                integralOfPolynomialPart = integralOfPolynomialPart.add(resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1));
-            }
-
-            Object[] paramsIntegralOfFractionalPart = new Object[2];
-            paramsIntegralOfFractionalPart[0] = PolynomialRootsMethods.getPolynomialFromCoefficients(resultOfPolynomialDivision[1], var).div(
-                    ((BinaryOperation) f).getRight());
-            paramsIntegralOfFractionalPart[1] = var;
-            Operator integralOfFractionalPart = new Operator(TypeOperator.integral, paramsIntegralOfFractionalPart);
-
-            return integralOfPolynomialPart.add(integralOfFractionalPart);
-
+        if (f.equals(partialFractionDecompositionOfF)){
+            // Dann konnte f nicht in Partialbrüche zerlegt werden.
+            throw new NotPreciseIntegrableException();
+        }
+        
+        ExpressionCollection summands = SimplifyUtilities.getSummands(partialFractionDecompositionOfF);
+        
+        for (int i = 0; i < summands.getBound(); i++){
+            summands.put(i, new Operator(TypeOperator.integral, new Object[]{ summands.get(i), var } ).simplifyTrivial());
         }
 
-        // Ab hier ist deg(Zähler) < deg(Nenner).
-        // Nenner wird zerlegt, soweit es möglich ist.
-        Expression denominatorDecomposed = PolynomialRootsMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) f).getRight(), var);
-
-        /*
-         Zunächst: Partialbruchzerlegung wird angewendet, falls NUR
-         Linearfaktoren in der Zerlegung des Nenners auftauchen.
-         */
-        ExpressionCollection factorsOfDecomposedDenominator = SimplifyUtilities.getFactors(denominatorDecomposed);
-        if (factorsOfDecomposedDenominator.getBound() > 1) {
-
-            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++) {
-                if (factorsOfDecomposedDenominator.get(i).isPower()) {
-                    if (SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) factorsOfDecomposedDenominator.get(i)).getLeft(), var)
-                            && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorsOfDecomposedDenominator.get(i)).getLeft(), var).compareTo(BigInteger.ONE) > 0) {
-                        throw new NotPreciseIntegrableException();
-                    }
-                } else if (SimplifyPolynomialMethods.isPolynomial(factorsOfDecomposedDenominator.get(i), var)
-                        && SimplifyPolynomialMethods.degreeOfPolynomial(factorsOfDecomposedDenominator.get(i), var).compareTo(BigInteger.ONE) > 0) {
-                    throw new NotPreciseIntegrableException();
-                }
-            }
-            /*
-             Ab hier ist der Nenner ein Produkt vom (Leitkoeffizienten und)
-             paarweise verschiedenen Potenzen von Linearfaktoren.
-             */
-            // Koeffizienten der einzelnen Partialbrüche bestimmen.
-            Expression constantCoefficientOfDenominator = Expression.ONE;
-            for (int i = 0; i < factorsOfDecomposedDenominator.getBound(); i++) {
-                if (factorsOfDecomposedDenominator.get(i) != null && !factorsOfDecomposedDenominator.get(i).contains(var)) {
-                    constantCoefficientOfDenominator = constantCoefficientOfDenominator.mult(factorsOfDecomposedDenominator.get(i));
-                    factorsOfDecomposedDenominator.remove(i);
-                }
-            }
-            denominatorDecomposed = SimplifyUtilities.produceProduct(factorsOfDecomposedDenominator);
-            Object partialFractionDecomposition = getPartialFractionDecomposition(((BinaryOperation) f).getLeft(), denominatorDecomposed, var);
-
-            if (!(partialFractionDecomposition instanceof Expression)) {
-                throw new NotPreciseIntegrableException();
-            }
-
-            ExpressionCollection summandsOfIntegralFunction = SimplifyUtilities.getSummands((Expression) partialFractionDecomposition);
-            /*
-             WICHTIG: Auch wenn einige Koeffizienten in der
-             Partialbruchzerlegung negativ sind, so sind es alles SUMMANDEN,
-             denn das Ergebnis in getPartialFractionDecomposition() wird beim
-             Zurückgeben NICHT vereinfacht.
-             */
-            Object[][] paramsOfIntegralOfSummand = new Object[summandsOfIntegralFunction.getBound()][2];
-
-            for (int i = 0; i < summandsOfIntegralFunction.getBound(); i++) {
-                paramsOfIntegralOfSummand[i][0] = summandsOfIntegralFunction.get(i);
-                paramsOfIntegralOfSummand[i][1] = var;
-                summandsOfIntegralFunction.put(i, new Operator(TypeOperator.integral, paramsOfIntegralOfSummand[i]));
-            }
-
-            return SimplifyUtilities.produceSum(summandsOfIntegralFunction).div(constantCoefficientOfDenominator);
-
-        }
-
-        /*
-         Falls f = (a*x+b)/(c*x^2+d*x+e)^n mit n >= 2 ->
-         integrateQuotientLinearQuadraticPolynomial() anwenden. Hier ist der
-         Nenner bereits IRREDUZIBEL.
-         */
-        if (coefficientsEnumerator.getBound() <= 2 && denominatorDecomposed.isPower()
-                && ((BinaryOperation) denominatorDecomposed).getRight().isIntegerConstant()
-                && ((BinaryOperation) denominatorDecomposed).getRight().isNonNegative()) {
-
-            ExpressionCollection coefficientsOfBaseOfDenominatorDecomposed = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) denominatorDecomposed).getLeft(), var);
-            if (coefficientsOfBaseOfDenominatorDecomposed.getBound() == 3) {
-                /*
-                 Da der Grad des Nenners hier <= 100 ist, ist
-                 denominatorDecomposed.size() <= 51.
-                 */
-                int n = ((Constant) ((BinaryOperation) denominatorDecomposed).getRight()).getValue().intValue();
-                return integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(coefficientsEnumerator, coefficientsOfBaseOfDenominatorDecomposed, n, var);
-            }
-
-        }
-
-        /*
-         Falls f = (a*x+b)/(c*x^2+d*x+e) ->
-         integrateQuotientLinearQuadraticPolynomial() anwenden. Hier ist der
-         Nenner bereits IRREDUZIBEL.
-         */
-        if (coefficientsEnumerator.getBound() <= 2 && coefficientsDenominator.getBound() == 3) {
-            return integrateQuotientOfLinearAndQuadraticPolynomial(coefficientsEnumerator, coefficientsDenominator, var);
-        }
-
-        throw new NotPreciseIntegrableException();
-
+        return SimplifyUtilities.produceSum(summands);
+        
     }
-
+    
     /**
      * Liefert die Partialbruchzerlegung. VORAUSSETZUNG: Nenner ist bereits
      * soweit es geht in Potenzen irreduzibler Faktoren zerlegt. Er wird hier
@@ -374,10 +275,37 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
-            ExpressionCollection coefficientsDenominator, int n, String var)
+    public static Expression integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(Operator expr)
             throws EvaluationException, NotPreciseIntegrableException {
 
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+        
+        if (f.isNotQuotient() || ((BinaryOperation) f).getRight().isNotPower()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isIntegerConstant()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositive()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var) 
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)){
+            throw new NotPreciseIntegrableException();
+        }
+        
+        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
+
+        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
+            throw new NotPreciseIntegrableException();
+        }
+        
+        int n = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().intValue();
+        
+        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3){
+            throw new NotPreciseIntegrableException();
+        }
+
+        
+        
+        
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
         Expression denominator = coefficientsDenominator.get(0);
         for (int i = 1; i < coefficientsDenominator.getBound(); i++) {
@@ -447,16 +375,26 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateQuotientOfLinearAndQuadraticPolynomial(ExpressionCollection coefficientsEnumerator,
-            ExpressionCollection coefficientsDenominator, String var) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfLinearAndQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
-        Expression denominator = coefficientsDenominator.get(0);
-        for (int i = 1; i < coefficientsDenominator.getBound(); i++) {
-            denominator = denominator.add(coefficientsDenominator.get(i).mult(Variable.create(var)).pow(i));
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+        
+        if (f.isNotQuotient() 
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var) 
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)){
+            throw new NotPreciseIntegrableException();
+        }
+        
+        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
+
+        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3){
+            throw new NotPreciseIntegrableException();
         }
 
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
-        // Falls in den Nennerkoeffizienten Parameter auftreten -> false zurückgeben.
+        // Falls in den Nennerkoeffizienten Parameter auftreten -> Fehler werfen.
         for (int i = 0; i < 3; i++) {
             if (!coefficientsDenominator.get(i).isConstant()) {
                 throw new NotPreciseIntegrableException();
@@ -490,7 +428,7 @@ public abstract class SpecialIntegrationMethods {
         Expression r = new Constant(4).mult(coefficientsDenominator.get(2).pow(2)).div(Expression.MINUS_ONE.mult(diskr)).pow(1, 2).simplify();
 
         // Log-Summanden bilden.
-        Expression logSummand = p.mult(denominator.ln());
+        Expression logSummand = p.mult(((BinaryOperation) f).getRight().ln());
         // Arctan-Summanden bilden.
         Expression arctanArgument = Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1)).div((Expression.MINUS_ONE.mult(diskr)).pow(1, 2)).simplify();
         Expression arctanSummand = q.mult(r).mult(arctanArgument.arctan()).simplify();

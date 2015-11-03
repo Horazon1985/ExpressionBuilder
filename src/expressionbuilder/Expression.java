@@ -1461,7 +1461,7 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                 exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                if (this.containsFunction()) {
+                if (exprSimplified.containsFunction()) {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
@@ -1522,7 +1522,7 @@ public abstract class Expression {
                         exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                    } else if (this.containsFunction()) {
+                    } else if (exprSimplified.containsFunction()) {
                         if (simplifyType.equals(TypeSimplify.simplify_functional_relations)) {
                             exprSimplified = exprSimplified.simplifyFunctionalRelations();
                         } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
@@ -1594,7 +1594,7 @@ public abstract class Expression {
                         exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                    } else if (this.containsFunction()) {
+                    } else if (exprSimplified.containsFunction()) {
                         if (simplifyType.equals(TypeSimplify.simplify_functional_relations)) {
                             exprSimplified = exprSimplified.simplifyFunctionalRelations();
                         } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
@@ -1688,7 +1688,7 @@ public abstract class Expression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                     exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 }
-                if (this.containsFunction()) {
+                if (exprSimplified.containsFunction()) {
                     if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
                         exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     }

@@ -178,11 +178,11 @@ public class IntegrationTests {
     
     @Test
     public void integralOfRationalFunctionTest2() {
-        // Integral von (3*x+4)/(2*x^2+5*x+3) = x/3-ln((3+exp(x))^(1/3)).
+        // Integral von (3*x+4)/(2*x^2+5*x+3) = (2*ln(|1+x|)+2*(ln(|3+2*x|)/2))/2.
         try {
             f = Expression.build("int((3*x+4)/(2*x^2+5*x+3),x)", null);
             Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("(2*ln(|1+x|)+2*(ln(|3+2*x|)/2))/2", null);
+            Expression expectedResult = Expression.build("ln(|1+x|)+ln(|3+2*x|)/2", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -206,7 +206,7 @@ public class IntegrationTests {
     
     @Test
     public void integralOfRationalFunctionInExpTest2() {
-        // Integral von 1/(3+exp(2*x/7)) = x/3-ln((3+exp(x))^(1/3)).
+        // Integral von 1/(3+exp(2*x/7)) = x/3-ln((3+exp((2*x)/7))^(7/6)).
         try {
             f = Expression.build("int(1/(3+exp(2*x/7)),x)", null);
             Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
@@ -242,7 +242,7 @@ public class IntegrationTests {
             f = Expression.build("int(1/(sin(x)+cos(x)),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("ln(|((2^(1/2)+2*arctan(x))-1)/(2*arctan(x)-(1+2^(1/2)))|^(1/2^(1/2)))", null);
+            Expression expectedResult = Expression.build("ln(|(2^(1/2)+2*arctan(x))-1|^(1/2^(1/2))/|2*arctan(x)-(1+2^(1/2))|^(1/2^(1/2)))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {

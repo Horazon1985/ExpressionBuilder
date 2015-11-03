@@ -19,7 +19,11 @@ import solveequationmethods.PolynomialRootsMethods;
 
 public abstract class PartialFractionDecompositionMethods {
 
-    private class PartialFractionDecompositionNotComputableException extends MathToolException {
+    /**
+     * Private Fehlerklasse für den Fall, dass die Partialbruchzerlegung nicht
+     * ermittelt werden konnte.
+     */
+    private static class PartialFractionDecompositionNotComputableException extends MathToolException {
 
         private static final String NO_EXPLICIT_PFD_MESSAGE = "Function admits no explicit partial fraction decomposition.";
 
@@ -37,64 +41,89 @@ public abstract class PartialFractionDecompositionMethods {
      * Hauptmethode für die Zerlegung einer rationalen Funktion f in
      * Partialbrüche.
      */
-    public static Expression getPartialFractionDecomposition2(Expression f, String var) throws EvaluationException {
+    public static Expression getPartialFractionDecomposition(Expression f, String var) throws EvaluationException {
 
-        if (!isRationalFunctionInCanonicalForm(f, var)) {
+        try {
+
+            if (!isRationalFunctionInCanonicalForm(f, var)) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            // Ab hier ist f eine echte rationale Funktion.
+            BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+            BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+
+            if (degEnumerator.compareTo(BigInteger.ZERO) < 0
+                    || degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
+                    || degDenominator.compareTo(BigInteger.ZERO) < 0
+                    || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            // Grad des Nenners.
+            int n = degDenominator.intValue();
+
+            Expression[] polynomialAndFractionalPartOfF = performPolynomialDivisionForFractionalDecomposition(f, var);
+
+            Expression polynomialPart = polynomialAndFractionalPartOfF[0];
+            Expression fractionalPart = polynomialAndFractionalPartOfF[1];
+
+            // Sicherheitsabfrage.
+            if (fractionalPart.isNotQuotient()) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            ExpressionCollection coefficientsForCompare = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+
+            // f schreiben als: Zähler ausmultipliziert und zusammengefasst, Nenner faktorisiert.
+            fractionalPart = PolynomialRootsMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
+                    PolynomialRootsMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
+
+            if (!isDenominatorOfCorrectForm(((BinaryOperation) fractionalPart).getRight(), var)) {
+                // Dann kann keine Partialbruchzerlegung ermittelt werden.
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            // Ansatz für die Partialbruchzerlegung herstellen.
+            //Zunächst: Konstanten aus dem Nenner herausziehen.
+            Expression constantFactorInDenominator = SimplifyUtilities.produceProduct(SimplifyUtilities.getConstantFactors(((BinaryOperation) fractionalPart).getRight(), var));
+            fractionalPart = ((BinaryOperation) fractionalPart).getLeft().div(
+                    SimplifyUtilities.produceProduct(SimplifyUtilities.getNonConstantFactors(((BinaryOperation) fractionalPart).getRight(), var)));
+            if (fractionalPart.isNotQuotient()) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            Expression approachForPFD = getPartialFractionDecompositionApproach((BinaryOperation) fractionalPart, var);
+
+            if (!(approachForPFD instanceof BinaryOperation)) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            // Ansatz auf einen Nenner bringen und Zähler betrachten.
+            Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
+
+            if (approachForPFDAsOneFraction.isNotQuotient()) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            // fractionalPart ist ein Quotient!
+            Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFDAsOneFraction).getLeft();
+
+            // Nun Koeffizientenvergleich durchführen.
+            enumeratorInPFDApproach = enumeratorInPFDApproach.simplifyExpandPowerful();
+            ExpressionCollection coefficientsOfEnumeratorInPFDApproach = PolynomialRootsMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
+
+            Expression[] coefficientsForPFD = getCoefficientsForPFD(coefficientsOfEnumeratorInPFDApproach, coefficientsForCompare, n);
+
+            for (int i = 0; i < n; i++) {
+                approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i].div(constantFactorInDenominator));
+            }
+
+            return polynomialPart.add(approachForPFD);
+
+        } catch (PartialFractionDecompositionNotComputableException e) {
             return f;
         }
-
-        // Ab hier ist f eine echte rationale Funktion.
-        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
-
-        if (degEnumerator.compareTo(BigInteger.ZERO) < 0
-                || degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
-                || degDenominator.compareTo(BigInteger.ZERO) < 0
-                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
-            return f;
-        }
-
-        // Grad des Nenners.
-        int n = degDenominator.intValue();
-
-        Expression[] polynomialAndFractionalPartOfF = performPolynomialDivisionForFractionalDecomposition(f, var);
-
-        Expression polynomialPart = polynomialAndFractionalPartOfF[0];
-        Expression fractionalPart = polynomialAndFractionalPartOfF[1];
-
-        // Sicherheitsabfrage.
-        if (!fractionalPart.isNotQuotient() || !isDenominatorOfCorrectForm(((BinaryOperation) fractionalPart).getRight(), var)) {
-            return f;
-        }
-
-        ExpressionCollection coefficientsForCompare = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
-
-        // f schreiben als: Zähler ausmultipliziert und zusammengefasst, Nenner faktorisiert.
-        fractionalPart = PolynomialRootsMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
-                PolynomialRootsMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
-
-        // Ansatz für die Partialbruchzerlegung herstellen.
-        Expression approachForPFD = getPartialFractionDecompositionApproach((BinaryOperation) fractionalPart, var);
-
-        if (!(approachForPFD instanceof BinaryOperation)) {
-            return f;
-        }
-
-        // Ansatz auf einen Nenner bringen und Zähler betrachten.
-        approachForPFD = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
-
-        if (approachForPFD.isNotQuotient()) {
-            return f;
-        }
-
-        // fractionalPart ist ein Quotient!
-        Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFD).getLeft();
-
-        // Nun Koeffizientenvergleich durchführen.
-        enumeratorInPFDApproach = enumeratorInPFDApproach.simplifyExpandPowerful();
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
-
-        return null;
 
     }
 
@@ -107,10 +136,9 @@ public abstract class PartialFractionDecompositionMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var);
     }
 
-    private static Expression[] performPolynomialDivisionForFractionalDecomposition(Expression f, String var) throws EvaluationException {
+    private static Expression[] performPolynomialDivisionForFractionalDecomposition(Expression f, String var) throws EvaluationException, PartialFractionDecompositionNotComputableException {
         if (!isRationalFunctionInCanonicalForm(f, var)) {
-            // Nichts tun.
-            return new Expression[]{ZERO, f};
+            throw new PartialFractionDecompositionNotComputableException();
         }
 
         ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
@@ -174,7 +202,7 @@ public abstract class PartialFractionDecompositionMethods {
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(f.getRight());
         int degOfFactorBase, exponent;
         Expression currentBase, currentEnumeratorInPFD;
-        int indexOfPFDVar = 1;
+        int indexOfPFDVar = 0;
 
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
             if (factorsDenominator.get(i).isPower()
@@ -190,7 +218,7 @@ public abstract class PartialFractionDecompositionMethods {
                 currentBase = factorsDenominator.get(i);
             }
 
-            for (int j = 0; j < exponent; j++) {
+            for (int j = 1; j <= exponent; j++) {
                 currentEnumeratorInPFD = Expression.ZERO;
                 for (int k = 0; k < degOfFactorBase; k++) {
                     currentEnumeratorInPFD = currentEnumeratorInPFD.add(
@@ -209,7 +237,8 @@ public abstract class PartialFractionDecompositionMethods {
         return "A_" + i;
     }
 
-    private static Expression[] getCoefficientsForPFD(ExpressionCollection coefficientsOfEnumeratorInPFDApproach, ExpressionCollection coefficientsInEnumeratorForCompare, int n, String var) throws EvaluationException {
+    private static Expression[] getCoefficientsForPFD(ExpressionCollection coefficientsOfEnumeratorInPFDApproach,
+            ExpressionCollection coefficientsInEnumeratorForCompare, int n) throws EvaluationException, PartialFractionDecompositionNotComputableException {
 
         // Matrix für das entsprechende Gleichungssystem bilden.
         Expression[][] matrixEntries = new Expression[n][n + 1];
@@ -217,8 +246,8 @@ public abstract class PartialFractionDecompositionMethods {
         // Koeffizienten der entsprechenden Unbestimmten in der Partialbruchzerlegung eintragen.
         Expression currentCoefficientForCompare;
         for (int i = 0; i < n; i++) {
-            if (coefficientsInEnumeratorForCompare.get(i) != null) {
-                currentCoefficientForCompare = coefficientsInEnumeratorForCompare.get(i);
+            if (coefficientsOfEnumeratorInPFDApproach.get(i) != null) {
+                currentCoefficientForCompare = coefficientsOfEnumeratorInPFDApproach.get(i);
             } else {
                 currentCoefficientForCompare = ZERO;
             }
@@ -242,14 +271,26 @@ public abstract class PartialFractionDecompositionMethods {
         matrix = GaussAlgorithm.computeRowEcholonForm(matrix);
 
         // Nun sukzessive nach den gesuchten Koeffizienten auflösen.
+        /* 
+         Zunächst eine Sicherheitsabfrage, ob alle Koeffizienten auf der 
+         Diagonalen != 0 sind. Das sollte bei jeder ordentlichen Partialbruchzerlegung 
+         der Fall sein.
+         */
+        for (int i = 0; i < n; i++) {
+            if (matrix.getEntry(i, i).equals(ZERO)) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+        }
+
         Expression[] coefficientsForPFD = new Expression[n];
         Expression currentCoefficient;
-        for (int i = 0; i < n; i++) {
+        for (int i = n - 1; i >= 0; i--) {
             currentCoefficient = matrix.getEntry(i, n);
             for (int j = n - 1; j > i; j--) {
                 currentCoefficient = currentCoefficient.sub(matrix.getEntry(i, j).mult(coefficientsForPFD[j]));
             }
             currentCoefficient = currentCoefficient.div(matrix.getEntry(i, i)).simplify();
+            coefficientsForPFD[i] = currentCoefficient;
         }
 
         return coefficientsForPFD;
