@@ -11,7 +11,6 @@ import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
-import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
@@ -19,7 +18,6 @@ import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyExponentialRelations;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyRationalFunctionMethods;
@@ -103,163 +101,18 @@ public abstract class SpecialIntegrationMethods {
 
         Expression partialFractionDecompositionOfF = PartialFractionDecompositionMethods.getPartialFractionDecomposition(f, var);
 
-        if (f.equals(partialFractionDecompositionOfF)){
+        if (f.equals(partialFractionDecompositionOfF)) {
             // Dann konnte f nicht in Partialbrüche zerlegt werden.
             throw new NotPreciseIntegrableException();
         }
-        
+
         ExpressionCollection summands = SimplifyUtilities.getSummands(partialFractionDecompositionOfF);
-        
-        for (int i = 0; i < summands.getBound(); i++){
-            summands.put(i, new Operator(TypeOperator.integral, new Object[]{ summands.get(i), var } ).simplifyTrivial());
+
+        for (int i = 0; i < summands.getBound(); i++) {
+            summands.put(i, new Operator(TypeOperator.integral, new Object[]{summands.get(i), var}).simplifyTrivial());
         }
 
         return SimplifyUtilities.produceSum(summands);
-        
-    }
-    
-    /**
-     * Liefert die Partialbruchzerlegung. VORAUSSETZUNG: Nenner ist bereits
-     * soweit es geht in Potenzen irreduzibler Faktoren zerlegt. Er wird hier
-     * NICHT WEITER zerlegt, sondern es wird mit der vorhandenen Zerlegung
-     * gearbeitet.
-     *
-     * @throws EvaluationException
-     */
-    public static Expression getPartialFractionDecomposition(Expression enumerator, Expression denominator, String var)
-            throws EvaluationException, NotPreciseIntegrableException {
-
-        if (denominator.isNotProduct()) {
-            throw new NotPreciseIntegrableException();
-        }
-
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(denominator);
-
-        // Es wird nur zerlegt, wenn alle Faktoren im Nenner Potenzen von linearen Polynom sind.
-        for (int i = 0; i < factorsDenominator.getBound(); i++) {
-            if (factorsDenominator.get(i).isPower()) {
-                if (!((BinaryOperation) factorsDenominator.get(i)).getRight().isIntegerConstant()
-                        || !((BinaryOperation) factorsDenominator.get(i)).getRight().isNonNegative()) {
-                    throw new NotPreciseIntegrableException();
-                }
-            } else if (SimplifyPolynomialMethods.isPolynomial(factorsDenominator.get(i), var)
-                    && SimplifyPolynomialMethods.degreeOfPolynomial(factorsDenominator.get(i), var).compareTo(BigInteger.ONE) > 0) {
-                throw new NotPreciseIntegrableException();
-            }
-        }
-
-        /*
-         Bestimmung der Koeffizienten der Partialbruchdarstellung. Im
-         Folgenden sei x = var; Ist f = enumerator/denominator = g/prod((x -
-         a_i)^n_i, i, 1, k), dann ist f = sum(C_i1/(x - a_i) + ... + C_in_i/(x
-         - a_i)^n_i, i, 1, k). In den folgenden Kommentaren werden diese
-         Notationen übernommen.
-         */
-        // decomposition wird die Partialbruchzerlegung sein.
-        Expression decomposition = Expression.ZERO;
-        // currentExponent ist der jeweilige Exponent des aktuellen Linearfaktors.
-        int currentExponent;
-        /*
-         currentFactorInDenominator = (x - a_i)^n_i für das aktuelle i,
-         currentDifference ist in jedem Schritt f - (C_i1/(x - a_i) + ... +
-         C_in_i/(x - a_i)^n_i) für das aktuelle i.
-         */
-        Expression currentFactorInDenominator, currentDifference, zero;
-        ExpressionCollection coefficientsOfEnumeratorOfDifference;
-        /*
-         coefficients_current_linear_factor ist die HashMap der
-         Polynomkoeffizienten zu x - a_i, also: 0 -> -a_i, 1 -> 1.
-         */
-        ExpressionCollection coefficientsOfCurrentLinearFactor = new ExpressionCollection();
-
-        ExpressionCollection c;
-        for (int i = 0; i < factorsDenominator.getBound(); i++) {
-
-            // Polstellen a_i wird ermittelt.
-            if (factorsDenominator.get(i).isPower()) {
-                c = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) factorsDenominator.get(i)).getLeft(), var);
-                // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
-                if (c.get(1).equals(ZERO)) {
-                    throw new NotPreciseIntegrableException();
-                }
-                zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
-            } else {
-                c = PolynomialRootsMethods.getPolynomialCoefficients(factorsDenominator.get(i), var);
-                // Sicherheitshalber (c.get(1) kann bei korrektem Algorithmus nicht 0 sein).
-                if (c.get(1).equals(ZERO)) {
-                    throw new NotPreciseIntegrableException();
-                }
-                zero = MINUS_ONE.mult(c.get(0)).div(c.get(1)).simplify();
-            }
-            coefficientsOfCurrentLinearFactor.clear();
-            coefficientsOfCurrentLinearFactor.put(0, Expression.MINUS_ONE.mult(zero).simplify());
-            coefficientsOfCurrentLinearFactor.put(1, Expression.ONE);
-
-            // Für jeden Linearfaktor im Nenner wird der maximale Exponent ermittelt.
-            if (factorsDenominator.get(i).isPower()) {
-                currentExponent = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().intValue();
-            } else {
-                currentExponent = 1;
-            }
-
-            // Koeffizienten in der Partialbruchzerlegung
-            Expression[] C_ij = new Expression[currentExponent];
-            currentFactorInDenominator = factorsDenominator.get(i);
-
-            for (int j = currentExponent; j >= 1; j--) {
-
-                /*
-                 Differenz bilden, also current_difference = f - C_i1/(x -
-                 a_i) + C_i2/(x - a_i^2) - ... - C_i(j - 1)/(x - a_i)^(j - 1).
-                 */
-                currentDifference = enumerator.div(denominator);
-                for (int k = currentExponent; k > j; k--) {
-                    currentDifference = currentDifference.sub(C_ij[k - 1].div(Variable.create(var).sub(zero).pow(k).simplify()));
-                }
-
-                // Alles in currentDifference auf einen Nenner bringen.
-                currentDifference = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) currentDifference);
-                if (!(currentDifference instanceof BinaryOperation)) {
-                    // Dürfte eigentlich nicht passieren, aber sicherheitshalber.
-                    throw new NotPreciseIntegrableException();
-                }
-
-                // Multiplikation mit (x - a_i)^j, 1 <= j <= n_i, und Kürzen der gemeinsamen Linearfaktoren.
-                currentDifference = ((BinaryOperation) currentDifference).getLeft().mult(Variable.create(var).sub(zero).pow(j)).div(((BinaryOperation) currentDifference).getRight());
-
-                // Polynomkoeffizienten im neuen Nenner berechnen.
-                coefficientsOfEnumeratorOfDifference = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) currentDifference).getLeft(), var);
-                for (int k = currentExponent; k > 0; k--) {
-                    coefficientsOfEnumeratorOfDifference = PolynomialRootsMethods.polynomialDivision(coefficientsOfEnumeratorOfDifference,
-                            coefficientsOfCurrentLinearFactor)[0];
-                }
-
-                // Entsprechende Potenz des Linearfaktors aus dem Nenner entfernen.
-                factorsDenominator.remove(i);
-                // Entsprechenden Koeffizienten C_ij in der Partialbruchzerlegung berechnen.
-                C_ij[j - 1] = PolynomialRootsMethods.getPolynomialFromCoefficients(coefficientsOfEnumeratorOfDifference, var).div(SimplifyUtilities.produceProduct(factorsDenominator)).replaceVariable(var, zero).simplify();
-                if (decomposition.equals(Expression.ZERO)) {
-                    if (j > 1) {
-                        decomposition = C_ij[j - 1].div(Variable.create(var).sub(zero).pow(j));
-                    } else {
-                        decomposition = C_ij[j - 1].div(Variable.create(var).sub(zero));
-                    }
-                } else {
-                    if (j > 1) {
-                        decomposition = decomposition.add(C_ij[j - 1].div(Variable.create(var).sub(zero).pow(j)));
-                    } else {
-                        decomposition = decomposition.add(C_ij[j - 1].div(Variable.create(var).sub(zero)));
-                    }
-                }
-
-                // Entsprechende Potenz des Linearfaktors dem Nenner wieder hinzufügen, die oben entfernt wurde.
-                factorsDenominator.put(i, currentFactorInDenominator);
-
-            }
-
-        }
-
-        return decomposition;
 
     }
 
@@ -280,32 +133,29 @@ public abstract class SpecialIntegrationMethods {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
-        
+
         if (f.isNotQuotient() || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isIntegerConstant()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositive()
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var) 
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)){
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
             throw new NotPreciseIntegrableException();
         }
-        
+
         ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
         BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
 
-        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
-            throw new NotPreciseIntegrableException();
-        }
-        
-        int n = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().intValue();
-        
-        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3){
+        if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        
-        
-        
+        int n = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().intValue();
+
+        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
+            throw new NotPreciseIntegrableException();
+        }
+
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
         Expression denominator = coefficientsDenominator.get(0);
         for (int i = 1; i < coefficientsDenominator.getBound(); i++) {
@@ -326,41 +176,40 @@ public abstract class SpecialIntegrationMethods {
             }
         }
 
+        Expression a = coefficientsDenominator.get(2);
+        Expression b = coefficientsDenominator.get(1);
+        Expression c = coefficientsDenominator.get(0);
+        Expression d = coefficientsEnumerator.get(1);
+        Expression e = coefficientsEnumerator.get(0);
+
         /*
          Falls der Nenner reduzibel ist -> Falsche Methode (es muss auf
          Partialbruchzerlegung zurückgegriffen werden).
          */
-        Expression diskriminant = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
-        if (!diskriminant.isNonPositive() || diskriminant.equals(Expression.ZERO)) {
+        Expression diskriminant = new Constant(4).mult(a).mult(c).sub(b.pow(2)).simplify();
+        if (diskriminant.isNonPositive()) {
             throw new NotPreciseIntegrableException();
         }
 
         /*
-         Im Folgenden sei: a = a.get(1), b = a.get(0), c = a.get(2), d =
-         a.get(1), e = a.get(0), x = var.
+         Im Folgenden sei: a = b.get(1), b = b.get(0), c = b.get(2), d =
+         a.get(1), e = a.get(0), D = discriminant, x = var.
          */
-        // firstSummand = -a*(2*c*x + d)/((2n - 2)*c*(c*x^2 + d*x + e)^(n - 1))
-        Expression firstSummand = Expression.MINUS_ONE.mult(coefficientsEnumerator.get(1)).mult(Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1))).div(new Constant(2 * n - 2).mult(coefficientsDenominator.get(2)).mult(denominator.pow(n - 1))).simplify();
+        // firstSummand = ((2*a*e-b*d)*x + (e*b-2*c*d))/((n - 1)*D*(a*x^2 + b*x + c)^(n - 1))
+        Expression firstSummand = TWO.mult(a).mult(e).sub(b.mult(d)).mult(Variable.create(var)).add(
+                e.mult(b).sub(TWO.mult(c).mult(d))).div(
+                        new Constant(n - 1).mult(diskriminant).mult(denominator.pow(n - 1))).simplify();
 
-        // factor = (2*b*c - a*d)/(2*c)
-        Expression factor = Expression.TWO.mult(coefficientsEnumerator.get(0)).mult(coefficientsDenominator.get(2)).div(Expression.TWO.mult(coefficientsDenominator.get(2))).simplify();
+        // factor = (2*n - 3)*(2*a*e - b*d)/((n - 1)*D)
+        Expression factor = new Constant(2 * n - 3).mult(TWO.mult(a).mult(e).sub(b.mult(d))).div(new Constant(n - 1).mult(diskriminant)).simplify();
 
-        /*
-         summandForRecursiveIntegral = (2*c*x + d)/((n - 1)*(4*c*e -
-         d^2)*(c*x^2 + d*x + e)^(n - 1))
-         */
-        Expression summandForRecursiveIntegral = Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1)).div(new Constant(n - 1).mult(new Constant(4).mult(coefficientsDenominator.get(2)).mult(coefficientsDenominator.get(0)).sub(coefficientsDenominator.get(1).pow(2))).mult(denominator.pow(n - 1))).simplify();
-
+        // Integral = firstSummand + factor*int(1/(a*x^2+b*x+c)^(n-1),x).
         Object[] params = new Object[2];
-        params[0] = Expression.ONE.div(denominator.pow(n - 1));
+        params[0] = ONE.div(denominator.pow(n - 1));
         params[1] = var;
-        Object integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
-
-        if (integralOfLowerPower instanceof Expression) {
-            return firstSummand.add(factor.mult(summandForRecursiveIntegral).add(factor.mult((Expression) integralOfLowerPower)));
-        }
-
-        throw new NotPreciseIntegrableException();
+        Expression integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
+        
+        return firstSummand.add(factor.mult(integralOfLowerPower));
 
     }
 
@@ -379,17 +228,17 @@ public abstract class SpecialIntegrationMethods {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
-        
-        if (f.isNotQuotient() 
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var) 
-                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)){
+
+        if (f.isNotQuotient()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)) {
             throw new NotPreciseIntegrableException();
         }
-        
+
         ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
-        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3){
+        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 

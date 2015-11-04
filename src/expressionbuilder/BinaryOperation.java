@@ -635,14 +635,18 @@ public class BinaryOperation extends Expression {
             return Math.max(length, 1);
         }
         if (this.isPower()) {
-            if (((BinaryOperation) this).getLeft() instanceof Constant) {
+            if (this.left instanceof Constant) {
                 return ((BinaryOperation) this).getRight().length();
             }
-            if (((BinaryOperation) this).getRight() instanceof Constant) {
+            if (this.right instanceof Constant) {
                 return ((BinaryOperation) this).getLeft().length();
             }
         }
-        return ((BinaryOperation) this).getLeft().length() + ((BinaryOperation) this).getRight().length();
+        if (this.isQuotient()) {
+            // Hier wird eher die Länge des Bruches gewertet, nicht die des ausgeschriebenen Strings.
+            return Math.max(this.left.length(), this.right.length());
+        }
+        return this.left.length() + this.right.length();
     }
 
     @Override
@@ -993,14 +997,18 @@ public class BinaryOperation extends Expression {
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
-        } else if (f.isQuotient() || f.isPower()) {
+        } else if (f.isQuotient()) {
 
-            expr = new BinaryOperation(((BinaryOperation) f).getLeft().simplifyExpand(type), ((BinaryOperation) f).getRight().simplifyExpand(type),
-                    ((BinaryOperation) f).getType());
-            if (!expr.equals(f)) {
-                // In späteren Anwendungen von simplifyExpand() kann noch weiter ausmultipliziert werden.
-                return expr;
+            return ((BinaryOperation) f).getLeft().simplifyExpand(type).div(((BinaryOperation) f).getRight().simplifyExpand(type));
+
+        } else if (f.isPower()) {
+
+            Expression powerExpanded = ((BinaryOperation) f).getLeft().simplifyExpand(type).pow(((BinaryOperation) f).getRight().simplifyExpand(type));
+            if (!(powerExpanded instanceof BinaryOperation)){
+                return powerExpanded;
             }
+            
+            expr = (BinaryOperation) ((BinaryOperation) f).getLeft().simplifyExpand(type).pow(((BinaryOperation) f).getRight().simplifyExpand(type));
 
         } else {
 
@@ -2418,6 +2426,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.simplify_powers);
         simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.expand_rational_factors);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
         simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
         simplifyTypes.add(TypeSimplify.reduce_quotients);
