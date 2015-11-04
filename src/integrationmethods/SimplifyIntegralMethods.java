@@ -507,11 +507,13 @@ public abstract class SimplifyIntegralMethods {
         }
 
         // Integration elementarer Partialbrüche
+        // Typ: (A*x + B) / (a*x^2 + b*x + c).
         try {
             return SpecialIntegrationMethods.integrateQuotientOfLinearAndQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
         
+        // Typ: (A*x + B) / (a*x^2 + b*x + c)^k, k > 1.
         try {
             return SpecialIntegrationMethods.integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
@@ -535,12 +537,12 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
 
-        // Integration von 1/(a*x^2 + b*x + c)^(1/2).
+        // Integration von 1/(a*x^2 + b*x + c)^((2*n + 1)/2).
         try {
-            return SpecialIntegrationMethods.integrateReciprocalOfSqrtOfQuadraticFunction(expr);
+            return SpecialIntegrationMethods.integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(expr);
         } catch (NotPreciseIntegrableException e) {
         }
-
+        
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();
