@@ -11,6 +11,7 @@ import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
@@ -162,7 +163,7 @@ public abstract class SpecialIntegrationMethods {
             denominator = denominator.add(coefficientsDenominator.get(i).mult(Variable.create(var)).pow(i));
         }
 
-        // Falls in den Nennerkoeffizienten Parameter auftreten -> false zurückgeben.
+        // Falls in den Nennerkoeffizienten Parameter auftreten -> Fehler werfen.
         for (int i = 0; i < 3; i++) {
             if (!coefficientsDenominator.get(i).isConstant()) {
                 throw new NotPreciseIntegrableException();
@@ -882,7 +883,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
+        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> Fehler werfen.
         for (int i = 0; i < 2; i++) {
             if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
                 throw new NotPreciseIntegrableException();
@@ -938,7 +939,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -965,8 +966,8 @@ public abstract class SpecialIntegrationMethods {
         }
 
         n = (exponentEnumerator.intValue() - 1) / 2;
-        
-        if (n == 0){
+
+        if (n == 0) {
             return integrateReciprocalOfSqrtOfQuadraticFunction(expr);
         }
 
@@ -976,9 +977,11 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
+        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> fehler werfen.
         for (int i = 0; i < 2; i++) {
-            if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
+            if (!coefficients.get(i).isConstant() 
+                    && !coefficients.get(i).isAlwaysNonNegative() 
+                    && !coefficients.get(i).isAlwaysNonPositive()) {
                 throw new NotPreciseIntegrableException();
             }
         }
@@ -988,20 +991,109 @@ public abstract class SpecialIntegrationMethods {
         Expression b = coefficients.get(1);
         Expression c = coefficients.get(0);
         Expression discriminant = new Constant(4).mult(a).mult(c).sub(b.pow(2)).simplify();
-        Expression radikand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
+        Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
 
         // firstSummand = (4*a*x+b)/((2*n-1)*D*R^((2*n-1)/2)
         Expression firstSummand = new Constant(4).mult(a).mult(Variable.create(var)).add(b).div(
-                new Constant(2 * n - 1).mult(discriminant).mult(radikand.pow(2 * n - 1, 2)));
+                new Constant(2 * n - 1).mult(discriminant).mult(radicand.pow(2 * n - 1, 2)));
 
         // factor = 8*a*(n - 1)/((2*n - 1)*D)
         Expression factor = new Constant(8 * n - 8).mult(a).div(new Constant(2 * n - 1).mult(discriminant));
 
         // Integral = firstSummand + factor*int(1/(a*x^2+b*x+c)^((2*n - 1)/2),x).
         Object[] params = new Object[2];
-        params[0] = ONE.div(radikand.pow(2 * n - 1, 2));
+        params[0] = ONE.div(radicand.pow(2 * n - 1, 2));
         params[1] = var;
         Expression integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
+
+        return firstSummand.add(factor.mult(integralOfLowerPower));
+
+    }
+
+    /**
+     * Integration von (d*x + e)/(a*x^2 + b*x + c)^((2*n + 1)/2).<br>
+     * VORAUSSETZUNG: expr ist ein unbestimmtes Integral. Falls der Integrand
+     * nicht vom angegebenen Typ ist, so wird false zurückgegeben.
+     *
+     * @throws EvaluationException
+     * @throws exceptions.NotPreciseIntegrableException
+     */
+    public static Expression integrateQuotientOfLinearAndOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        if (f.isNotQuotient()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
+                || ((BinaryOperation) f).getRight().isNotPower()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isRationalConstant()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+
+        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        // Fehlende Koeffizienten im Zählen mit Nullen auffüllen.
+        for (int i = 0; i < 2; i++){
+            if (coefficientsEnumerator.get(i) == null){
+                coefficientsEnumerator.put(i, ZERO);
+            }
+        }
+        
+        int n;
+
+        if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
+                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isOddConstant()
+                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositive()) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+
+        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        n = (exponentEnumerator.intValue() - 1) / 2;
+
+        if (coefficientsDenominator.getBound() != 3) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> Fehler werfen.
+        for (int i = 0; i < 2; i++) {
+            if (!coefficientsDenominator.get(i).isConstant() && !coefficientsDenominator.get(i).isAlwaysNonNegative()
+                    && !coefficientsDenominator.get(i).isAlwaysNonPositive()) {
+                throw new NotPreciseIntegrableException();
+            }
+        }
+
+        // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
+        // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), d = b.get(1), e = b.get(0), x = var.
+        Expression a = coefficientsDenominator.get(2);
+        Expression b = coefficientsDenominator.get(1);
+        Expression d = coefficientsEnumerator.get(1);
+        Expression e = coefficientsEnumerator.get(0);
+        
+        // radicand = a*x^2 + b*x + c
+        Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
+
+        // firstSummand = d/((1-2*n)*a*R^((2*n-1)/2)
+        Expression firstSummand = d.div(new Constant(1 - 2*n).mult(radicand.pow(2*n - 1, 2)));
+
+        // factor = e - (d*b)/(2*a)
+        Expression factor = e.sub(d.mult(b).div(TWO.mult(a)));
+
+        // Integral = firstSummand + factor*int(1/(a*x^2+b*x+c)^((2*n + 1)/2),x).
+        Object[] params = new Object[2];
+        params[0] = ONE.div(((BinaryOperation) f).getRight());
+        params[1] = var;
+        Expression integralOfLowerPower = integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(new Operator(TypeOperator.integral, params));
 
         return firstSummand.add(factor.mult(integralOfLowerPower));
 

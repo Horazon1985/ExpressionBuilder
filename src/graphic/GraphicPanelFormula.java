@@ -1134,17 +1134,20 @@ public class GraphicPanelFormula extends JPanel {
 
             if (((Operator) expr).getType().equals(TypeOperator.diff)) {
 
+                int h = getHeightOfExpression(g, (Expression) params[0], fontSize);
+                int h_center = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
+                
                 if (params.length == 2) {
 
-                    return Math.max(3 * fontSize, getHeightOfExpression(g, (Expression) params[0], fontSize));
+                    return Math.max((3 * fontSize) / 2, h_center) + Math.max((3 * fontSize) / 2, h - h_center);
 
                 } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                    return Math.max(3 * fontSize + 2 * getSizeForSup(fontSize), getHeightOfExpression(g, (Expression) params[0], fontSize));
+                    return Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), h_center) + Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), h - h_center);
 
                 } else {
 
-                    return Math.max(3 * fontSize + getSizeForSup(fontSize), getHeightOfExpression(g, (Expression) params[0], fontSize));
+                    return Math.max((3 * fontSize) / 2, h_center) + Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), h - h_center);
 
                 }
 
@@ -1358,7 +1361,7 @@ public class GraphicPanelFormula extends JPanel {
     private int getLengthOfConstant(Graphics g, Constant expr, int fontSize) {
         setFont(g, fontSize);
         String s = expr.writeExpression();
-        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0){
+        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
             return getWidthOfSignMinus(g, fontSize) + g.getFontMetrics().stringWidth(s.substring(1, s.length()));
         }
         return g.getFontMetrics().stringWidth(s);
@@ -2080,7 +2083,7 @@ public class GraphicPanelFormula extends JPanel {
 
     private void drawConstant(Graphics g, Constant expr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0){
+        if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
             Constant exprNeg = new Constant(expr.getValue().negate());
             // Minuszeichen wird mit der internen Methode separat gezeichnet (der Einheitlichkeit halber).
             drawSignMinus(g, x_0, y_0 - (getHeightOfCenterOfExpression(g, exprNeg, fontSize) - fontSize / 2), fontSize);
