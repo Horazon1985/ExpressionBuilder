@@ -531,9 +531,9 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
 
-        // Integration von (a*x^2 + b*x + c)^(1/2).
+        // Integration von (a*x^2 + b*x + c)^((2*n + 1)/2).
         try {
-            return SpecialIntegrationMethods.integrateSqrtOfQuadraticFunction(expr);
+            return SpecialIntegrationMethods.integrateOddPowerOfSqrtOfQuadraticFunction(expr);
         } catch (NotPreciseIntegrableException e) {
         }
         
