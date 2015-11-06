@@ -525,7 +525,12 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
 
-        // Integration von Polynomen in exp, sin und cos mit linearen Argumenten in var.
+        // Integration von Polynomen in x, exp, sin und cos mit linearen Argumenten in var.
+        try {
+            return SpecialIntegrationMethods.integrateProductOfPolynomialAndPowerOfTrigonometricFunction(expr);
+        } catch (NotPreciseIntegrableException e) {
+        }
+        
         try {
             return SpecialIntegrationMethods.integratePolynomialInComplexExponentialFunctions(expr);
         } catch (NotPreciseIntegrableException e) {
