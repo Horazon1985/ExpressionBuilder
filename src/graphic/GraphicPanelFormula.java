@@ -577,7 +577,7 @@ public class GraphicPanelFormula extends JPanel {
             } else {
                 l_right = getLengthOfLogicalExpression(g, logExpr.getRight(), fontSize);
             }
-            return l_left + getWidthOfSignOr(g, fontSize) + l_right;
+            return l_left + getWidthOfSignOr(fontSize) + l_right;
 
         } else if (logExpr.isOr()) {
 
@@ -594,7 +594,7 @@ public class GraphicPanelFormula extends JPanel {
             } else {
                 l_right = getLengthOfLogicalExpression(g, logExpr.getRight(), fontSize);
             }
-            return l_left + getWidthOfSignOr(g, fontSize) + l_right;
+            return l_left + getWidthOfSignOr(fontSize) + l_right;
 
         } else if (logExpr.isImpl()) {
 
@@ -611,13 +611,13 @@ public class GraphicPanelFormula extends JPanel {
             } else {
                 l_right = getLengthOfLogicalExpression(g, logExpr.getRight(), fontSize);
             }
-            return l_left + getWidthOfSignImplication(g, fontSize) + l_right;
+            return l_left + getWidthOfSignImplication(fontSize) + l_right;
 
         }
 
         // Ansonsten ist logExpr eine Äquivalenz.
         return getLengthOfLogicalExpression(g, logExpr.getLeft(), fontSize)
-                + getWidthOfSignEquivalence(g, fontSize)
+                + getWidthOfSignEquivalence(fontSize)
                 + getLengthOfLogicalExpression(g, logExpr.getRight(), fontSize);
 
     }
@@ -1866,14 +1866,14 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Gibt die Länge des UND-Symbols zurück.
      */
-    private int getWidthOfSignAnd(Graphics g, int fontSize) {
+    private int getWidthOfSignAnd(int fontSize) {
         return fontSize;
     }
 
     /**
      * Gibt die Länge des des ODER-Symbols zurück.
      */
-    private int getWidthOfSignOr(Graphics g, int fontSize) {
+    private int getWidthOfSignOr(int fontSize) {
         return fontSize;
     }
 
@@ -1888,17 +1888,15 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Gibt die Länge des des Implikationssymbols zurück.
      */
-    private int getWidthOfSignImplication(Graphics g, int fontSize) {
-        setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u27F9");
+    private int getWidthOfSignImplication(int fontSize) {
+        return fontSize;
     }
 
     /**
      * Gibt die Länge des des Äquivalenzsymbols zurück.
      */
-    private int getWidthOfSignEquivalence(Graphics g, int fontSize) {
-        setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u27FA");
+    private int getWidthOfSignEquivalence(int fontSize) {
+        return fontSize;
     }
 
     private void drawOpeningBracket(Graphics g, int x_0, int y_0, int fontSize, int height) {
@@ -1953,7 +1951,7 @@ public class GraphicPanelFormula extends JPanel {
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
         g2.setStroke(new BasicStroke(thick));
         //Waagerechter Strich
-        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize / 3), y_0 - fontSize / 2);
+        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
         //Senkrechter Strich
         g2.drawLine(x_0 + fontSize / 2, y_0 - (2 * fontSize) / 3, x_0 + fontSize / 2, y_0 - fontSize / 3);
     }
@@ -1964,7 +1962,7 @@ public class GraphicPanelFormula extends JPanel {
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
         g2.setStroke(new BasicStroke(thick));
         //Waagerechter Strich
-        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize / 3), y_0 - fontSize / 2);
+        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
     }
 
     private void drawSignMult(Graphics g, int x_0, int y_0, int fontSize) {
@@ -2069,16 +2067,34 @@ public class GraphicPanelFormula extends JPanel {
      * Zeichnen des Implikationssymbols.
      */
     private void drawSignImplication(Graphics g, int x_0, int y_0, int fontSize) {
-        setFont(g, fontSize);
-        g.drawString("\u27F9", x_0, y_0);
+        Graphics2D g2 = (Graphics2D) g;
+        // Strichdicke abhängig von fontSize berechnen.
+        int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
+        g2.setStroke(new BasicStroke(thick));
+        // Zwei waagerechter Strich
+        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
+        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
+        // Zwei Pfeilspitzenstriche
+        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
     }
 
     /**
      * Zeichnen des Äquivalenzsymbols.
      */
     private void drawSignEquivalence(Graphics g, int x_0, int y_0, int fontSize) {
-        setFont(g, fontSize);
-        g.drawString("\u27FA", x_0, y_0);
+        Graphics2D g2 = (Graphics2D) g;
+        // Strichdicke abhängig von fontSize berechnen.
+        int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
+        g2.setStroke(new BasicStroke(thick));
+        // Zwei waagerechter Strich
+        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
+        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
+        // Vier Pfeilspitzenstriche
+        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
+        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
     }
 
     private void drawConstant(Graphics g, Constant expr, int x_0, int y_0, int fontSize) {
@@ -2990,7 +3006,7 @@ public class GraphicPanelFormula extends JPanel {
             }
 
             drawSignAnd(g, x_0 + distanceFromBeginning, y_0, fontSize);
-            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(g, fontSize);
+            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(fontSize);
 
             if (logExpr.getRight().isOr() || logExpr.getRight().isImpl() || logExpr.getRight().isEquiv()) {
                 drawOpeningBracket(g, x_0 + distanceFromBeginning, y_0, fontSize, fontSize);
@@ -3017,7 +3033,7 @@ public class GraphicPanelFormula extends JPanel {
             }
 
             drawSignOr(g, x_0 + distanceFromBeginning, y_0, fontSize);
-            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(g, fontSize);
+            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(fontSize);
 
             if (logExpr.getRight().isImpl() || logExpr.getRight().isEquiv()) {
                 drawOpeningBracket(g, x_0 + distanceFromBeginning, y_0, fontSize, fontSize);
@@ -3044,7 +3060,7 @@ public class GraphicPanelFormula extends JPanel {
             }
 
             drawSignImplication(g, x_0 + distanceFromBeginning, y_0, fontSize);
-            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(g, fontSize);
+            distanceFromBeginning = distanceFromBeginning + getWidthOfSignAnd(fontSize);
 
             if (logExpr.getRight().isEquiv()) {
                 drawOpeningBracket(g, x_0 + distanceFromBeginning, y_0, fontSize, fontSize);
@@ -3059,7 +3075,7 @@ public class GraphicPanelFormula extends JPanel {
         } else if (logExpr.isEquiv()) {
             drawLogicalExpression(g, logExpr.getLeft(), x_0, y_0, fontSize);
             drawSignEquivalence(g, x_0 + getLengthOfLogicalExpression(g, logExpr.getLeft(), fontSize), y_0, fontSize);
-            drawLogicalExpression(g, logExpr.getRight(), x_0 + l_left + getWidthOfSignEquivalence(g, fontSize), y_0, fontSize);
+            drawLogicalExpression(g, logExpr.getRight(), x_0 + l_left + getWidthOfSignEquivalence(fontSize), y_0, fontSize);
         }
 
     }
