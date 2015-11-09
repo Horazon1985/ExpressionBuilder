@@ -73,7 +73,7 @@ public abstract class PartialFractionDecompositionMethods {
                 throw new PartialFractionDecompositionNotComputableException();
             }
 
-            ExpressionCollection coefficientsForCompare = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+            ExpressionCollection coefficientsForCompare = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) fractionalPart).getLeft(), var);
 
             // f schreiben als: Zähler ausmultipliziert und zusammengefasst, Nenner faktorisiert.
             fractionalPart = PolynomialRootsMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
@@ -94,26 +94,38 @@ public abstract class PartialFractionDecompositionMethods {
             }
 
             Expression approachForPFD = getPartialFractionDecompositionApproach((BinaryOperation) fractionalPart, var);
+            Expression[] coefficientsForPFD;
 
             if (!(approachForPFD instanceof BinaryOperation)) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
 
-            // Ansatz auf einen Nenner bringen und Zähler betrachten.
-            Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
+            try {
+                /* 
+                 Elementarer Ansatz: falls der Nenner von f ein Produkt paarweise verschiedener 
+                 Linearfaktoren ist, so können die Koeffizienten schnell ermittelt werden.
+                 */
+                coefficientsForPFD = getCoefficientsForPFDInSeparableCase(fractionalPart, approachForPFD, var);
+            } catch (PartialFractionDecompositionNotComputableException e) {
+                /* 
+                 Sonstiger Fall: Ansatz auf einen Nenner bringen und Zähler betrachten.
+                 Danach lineares Gleichungssystem für die Koeffizienten aufstellen und lösen.
+                 */
+                Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
 
-            if (approachForPFDAsOneFraction.isNotQuotient()) {
-                throw new PartialFractionDecompositionNotComputableException();
+                if (approachForPFDAsOneFraction.isNotQuotient()) {
+                    throw new PartialFractionDecompositionNotComputableException();
+                }
+
+                // fractionalPart ist ein Quotient!
+                Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFDAsOneFraction).getLeft();
+
+                // Nun Koeffizientenvergleich durchführen.
+                enumeratorInPFDApproach = enumeratorInPFDApproach.simplifyExpandPowerful();
+                ExpressionCollection coefficientsOfEnumeratorInPFDApproach = PolynomialRootsMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
+
+                coefficientsForPFD = getCoefficientsForPFD(coefficientsOfEnumeratorInPFDApproach, coefficientsForCompare, n);
             }
-
-            // fractionalPart ist ein Quotient!
-            Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFDAsOneFraction).getLeft();
-
-            // Nun Koeffizientenvergleich durchführen.
-            enumeratorInPFDApproach = enumeratorInPFDApproach.simplifyExpandPowerful();
-            ExpressionCollection coefficientsOfEnumeratorInPFDApproach = PolynomialRootsMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
-
-            Expression[] coefficientsForPFD = getCoefficientsForPFD(coefficientsOfEnumeratorInPFDApproach, coefficientsForCompare, n);
 
             for (int i = 0; i < n; i++) {
                 approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i].div(constantFactorInDenominator));
@@ -294,6 +306,95 @@ public abstract class PartialFractionDecompositionMethods {
         }
 
         return coefficientsForPFD;
+
+    }
+
+    /**
+     * Hilfsmethode: ermittelt (schnell) die Koeffizienten für die
+     * Partialbruchzerlegung von f, falls der Nenner von f ein Produkt von
+     * paarweise verschiedenen Linearfaktoren ist.
+     *
+     * @throws EvaluationException
+     * @throws PartialFractionDecompositionNotComputableException
+     */
+    private static Expression[] getCoefficientsForPFDInSeparableCase(Expression f, Expression approachForPFD, String var) throws EvaluationException, PartialFractionDecompositionNotComputableException {
+
+        if (!isDenominatorOfRationalFunctionInSeparableForm(f, var) || !isDenominatorOfRationalFunctionInSeparableForm(f, var)) {
+            throw new PartialFractionDecompositionNotComputableException();
+        }
+
+        int n = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var).intValue();
+        Expression[] coefficientsForPFD = new Expression[n];
+        ExpressionCollection summandsApproach = SimplifyUtilities.getSummands(approachForPFD);
+        ExpressionCollection coefficientsDenominator;
+        Expression summand, currentZero, currentCoefficient;
+        String varName;
+        int index;
+
+        for (int i = 0; i < summandsApproach.getBound(); i++) {
+            summand = summandsApproach.get(i);
+            if (summand.isNotQuotient()) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+            if (!(((BinaryOperation) summand).getLeft() instanceof Variable)) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+            varName = ((Variable) ((BinaryOperation) summand).getLeft()).getName();
+
+            try {
+                index = Integer.parseInt(varName.substring(2, varName.length()));
+                coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) summand).getRight(), var);
+                currentZero = Expression.MINUS_ONE.mult(coefficientsDenominator.get(0)).div(coefficientsDenominator.get(1)).simplify();
+                currentCoefficient = f.mult(((BinaryOperation) summand).getRight()).simplify().replaceVariable(var, currentZero).simplify();
+                coefficientsForPFD[index] = currentCoefficient;
+            } catch (Exception e) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (coefficientsForPFD[i] == null) {
+                throw new PartialFractionDecompositionNotComputableException();
+            }
+        }
+
+        return coefficientsForPFD;
+
+    }
+
+    private static boolean isDenominatorOfRationalFunctionInSeparableForm(Expression f, String var) {
+
+        if (!isRationalFunctionInCanonicalForm(f, var)) {
+            return false;
+        }
+
+        // Hier sind beide Grade >= 0.
+        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+
+        if (degEnumerator.compareTo(degDenominator) >= 0) {
+            return false;
+        }
+
+        // Nun wird geprüft, ob der Nenner in paarweise verschiedene Linearfaktoren zerlegt ist.
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(((BinaryOperation) f).getRight());
+        BigInteger degOfFactor;
+
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            degOfFactor = SimplifyPolynomialMethods.degreeOfPolynomial(factorsDenominator.get(i), var);
+            if (degOfFactor.compareTo(BigInteger.ONE) > 0) {
+                return false;
+            }
+            for (int j = i + 1; j < factorsDenominator.getBound(); j++) {
+                if (factorsDenominator.get(i).equivalent(factorsDenominator.get(j))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
 
     }
 

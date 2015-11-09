@@ -940,9 +940,6 @@ public abstract class Expression {
      * Dividiert zwei Ausdrücke.
      */
     public Expression div(Expression expr) {
-        if (this.equals(ZERO)) {
-            return ZERO;
-        }
         if (expr.equals(Expression.ONE)) {
             return this;
         }
@@ -951,7 +948,7 @@ public abstract class Expression {
 
     // Folgende Funktionen dienen der Kürze halber.
     public Expression div(BigDecimal n) {
-        if (this.equals(ZERO)) {
+        if (this.equals(ZERO) && !n.equals(BigDecimal.ZERO)) {
             return ZERO;
         }
         if (n.equals(BigDecimal.ONE)) {
@@ -961,7 +958,7 @@ public abstract class Expression {
     }
 
     public Expression div(BigInteger n) {
-        if (this.equals(ZERO)) {
+        if (this.equals(ZERO) && !n.equals(BigInteger.ZERO)) {
             return ZERO;
         }
         if (n.equals(BigInteger.ONE)) {
@@ -971,7 +968,7 @@ public abstract class Expression {
     }
 
     public Expression div(int n) {
-        if (this.equals(ZERO)) {
+        if (this.equals(ZERO) && n != 0) {
             return ZERO;
         }
         if (n == 1) {

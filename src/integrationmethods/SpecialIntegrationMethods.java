@@ -385,7 +385,7 @@ public abstract class SpecialIntegrationMethods {
                 && factors.get(1).isPower()
                 && ((BinaryOperation) factors.get(1)).getRight().isIntegerConstant()
                 && ((BinaryOperation) factors.get(1)).getRight().isPositive()
-                && (((BinaryOperation) factors.get(1)).getLeft().isFunction(TypeFunction.cos) 
+                && (((BinaryOperation) factors.get(1)).getLeft().isFunction(TypeFunction.cos)
                 || ((BinaryOperation) factors.get(1)).getLeft().isFunction(TypeFunction.sin))
                 && SimplifyPolynomialMethods.isPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var)) {
 
@@ -400,10 +400,10 @@ public abstract class SpecialIntegrationMethods {
             }
 
             f = expandProductsOfComplexExponentialFunctions(f, var);
-            Operator exprExpanded = new Operator(TypeOperator.integral, new Object[]{ f, var });
+            Operator exprExpanded = new Operator(TypeOperator.integral, new Object[]{f, var});
             // Jetzt gelingt eine Integration mittels partieller Integration.
             return indefiniteIntegration(exprExpanded, true);
-            
+
         }
 
         throw new NotPreciseIntegrableException();
@@ -1205,9 +1205,10 @@ public abstract class SpecialIntegrationMethods {
     }
 
     /**
-     * Hilfsmethode für integrateRationalFunctionInTrigonometricalFunctions().
-     * Substituiert, falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind
-     * zu exprToSubstitute, durch subst. Andernfalls wird eine
+     * Elementare Hilfsmethode für
+     * integrateRationalFunctionInTrigonometricalFunctions(). Substituiert,
+     * falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind zu
+     * exprToSubstitute, durch subst. Andernfalls wird eine
      * NotSubstitutableException geworfen.
      *
      * @throws NotSubstitutableException

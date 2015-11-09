@@ -741,7 +741,7 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
         // 0/a = 0
-        if (expr.isQuotient() && expr.getLeft().equals(ZERO)) {
+        if (expr.isQuotient() && expr.getLeft().equals(ZERO) && !expr.getRight().equals(ZERO)) {
             return ZERO;
         }
 
