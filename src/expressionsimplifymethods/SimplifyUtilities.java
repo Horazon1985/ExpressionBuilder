@@ -13,23 +13,7 @@ public abstract class SimplifyUtilities {
      * Liefert, ob terms und termsToCompare äquivalente Einträge besitzen.
      */
     public static boolean equivalent(ExpressionCollection terms, ExpressionCollection termsToCompare) {
-
-        if (terms.getBound() != termsToCompare.getBound()) {
-            return false;
-        }
-
-        for (int i = 0; i < terms.getBound(); i++) {
-            if ((terms.get(i) == null && termsToCompare.get(i) != null)
-                    || (terms.get(i) != null && termsToCompare.get(i) == null)) {
-                return false;
-            }
-            if (terms.get(i) != null && !terms.get(i).equivalent(termsToCompare.get(i))) {
-                return false;
-            }
-        }
-
-        return true;
-
+        return difference(terms, termsToCompare).isEmpty() && difference(termsToCompare, terms).isEmpty();
     }
 
     /**

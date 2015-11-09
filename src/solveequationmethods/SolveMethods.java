@@ -1741,7 +1741,7 @@ public abstract class SolveMethods {
             return zeros;
         }
 
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(f, var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
         zeros = SimplifyUtilities.union(zeros, PolynomialRootsMethods.solvePolynomialEquation(coefficients, var));
         return zeros;
 

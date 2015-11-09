@@ -176,7 +176,6 @@ public class ExpressionCollection {
                 result.put(i, terms.get(i).copy());
             }
         }
-        result.bound = terms.bound;
         return result;
 
     }

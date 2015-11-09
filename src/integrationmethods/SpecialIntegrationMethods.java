@@ -143,8 +143,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
-        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
         BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
 
         if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
@@ -236,8 +236,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
-        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
+        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
         if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
@@ -531,7 +531,7 @@ public abstract class SpecialIntegrationMethods {
                 || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
-        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return expArgument.exp().div(coefficients.get(1));
     }
 
@@ -545,7 +545,7 @@ public abstract class SpecialIntegrationMethods {
                 || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
-        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return expArgument.sin().div(coefficients.get(1));
     }
 
@@ -559,7 +559,7 @@ public abstract class SpecialIntegrationMethods {
                 || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
-        ExpressionCollection coefficients = solveequationmethods.PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return MINUS_ONE.mult(expArgument.cos()).div(coefficients.get(1));
     }
 
@@ -570,8 +570,8 @@ public abstract class SpecialIntegrationMethods {
      */
     public static Expression integrateProductOfExpSin(Expression expArgument, Expression sinArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
 
-        ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
-        ExpressionCollection coefficientsInSin = PolynomialRootsMethods.getPolynomialCoefficients(sinArgument, var);
+        ExpressionCollection coefficientsInExp = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficientsInSin = SimplifyPolynomialMethods.getPolynomialCoefficients(sinArgument, var);
         if (coefficientsInExp.getBound() != 2 || coefficientsInSin.getBound() != 2) {
             throw new NotPreciseIntegrableException();
         }
@@ -592,8 +592,8 @@ public abstract class SpecialIntegrationMethods {
      */
     public static Expression integrateProductOfExpCos(Expression expArgument, Expression cosArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
 
-        ExpressionCollection coefficientsInExp = PolynomialRootsMethods.getPolynomialCoefficients(expArgument, var);
-        ExpressionCollection coefficientsInCos = PolynomialRootsMethods.getPolynomialCoefficients(cosArgument, var);
+        ExpressionCollection coefficientsInExp = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
+        ExpressionCollection coefficientsInCos = SimplifyPolynomialMethods.getPolynomialCoefficients(cosArgument, var);
         if (coefficientsInExp.getBound() != 2 || coefficientsInCos.getBound() != 2) {
             throw new NotPreciseIntegrableException();
         }
@@ -625,7 +625,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
             throw new NotPreciseIntegrableException();
@@ -718,7 +718,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
             throw new NotPreciseIntegrableException();
@@ -785,7 +785,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
             throw new NotPreciseIntegrableException();
@@ -879,7 +879,7 @@ public abstract class SpecialIntegrationMethods {
             return integrateReciprocalOfSqrtOfQuadraticFunction(expr);
         }
 
-        ExpressionCollection coefficients = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
             throw new NotPreciseIntegrableException();
@@ -939,8 +939,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
-        ExpressionCollection coefficientsDenominator = PolynomialRootsMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();

@@ -54,151 +54,6 @@ public abstract class PolynomialRootsMethods {
 
     }
 
-    /**
-     * Zerlegt ein Polynom in Linearteile, soweit es geht.<br>
-     * BEISPIEL wird 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) zu (x-1)^2*(x-2)*(x^2+1)
-     * faktorisiert.
-     */
-    public static Expression decomposePolynomialInIrreducibleFactors(Expression f, String var)
-            throws EvaluationException {
-
-        // Sicherheitsabfrage: Falls f kein Polynom ist, dann f wieder ausgeben.
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
-            return f;
-        }
-
-        if (f.isProduct()) {
-
-            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-            // Jeden Faktor einzeln zerlegen.
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, decomposePolynomialInIrreducibleFactors(factors.get(i), var));
-            }
-            // Zum Schluss noch: Gleiche Faktoren zusammenfassen.
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-
-            return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
-
-        }
-
-        if (f.isPower()
-                && ((BinaryOperation) f).getRight().isIntegerConstant()
-                && ((BinaryOperation) f).getRight().isNonNegative()) {
-
-            Expression baseDecomposed = decomposePolynomialInIrreducibleFactors(((BinaryOperation) f).getLeft(), var);
-            ExpressionCollection factors = SimplifyUtilities.getFactors(baseDecomposed);
-            // Jeden Faktor der Basis einzeln potenzieren.
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).pow(((BinaryOperation) f).getRight()));
-            }
-            return SimplifyUtilities.produceProduct(factors);
-
-        }
-
-        /*
-         Ab hier werden einfach die Polynomkoeffizienten von f bestimmt und es
-         wird versucht, f so weit es geht zu zerlegen.
-         */
-        ExpressionCollection a = PolynomialRootsMethods.getPolynomialCoefficients(f, var);
-
-        /*
-         Zunächst Sonderfall: f ist ein reduzibles quadratisches Polynom.
-         Polynome vom Grad 3 und 4 werden ausgelassen (zu umständlich).
-         */
-        if (a.getBound() == 3) {
-            Expression diskr = a.get(1).pow(2).sub(Expression.FOUR.mult(a.get(0)).mult(a.get(2))).simplify();
-            if (diskr.isAlwaysNonNegative()) {
-
-                Expression zeroOne = Expression.MINUS_ONE.mult(a.get(1)).add(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                Expression zeroTwo = Expression.MINUS_ONE.mult(a.get(1)).sub(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                if (zeroOne.equivalent(zeroTwo)) {
-                    // Falls beide Nullstellen gleich sind, etwa == a, dann (x - a)^2 zurückgeben.
-                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
-                } else {
-                    /*
-                     Falls beide Nullstellen verschieden sind, etwa == a und
-                     == b, dann (x - a)*(x - b) zurückgeben.
-                     */
-                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
-                }
-
-            }
-        }
-
-        /*
-         Prüfen: ist eines der Koeffizienten nicht rational, dann wird nicht
-         weiter zerlegt (weil zu kompliziert).
-         */
-        for (int i = 0; i < a.getBound(); i++) {
-            if (!a.get(i).isIntegerConstantOrRationalConstant()) {
-                return f;
-            }
-        }
-
-        // Ab hier sind die Koeffizienten allesamt rationale Zahlen.
-        ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
-
-        if (zeros.isEmpty()) {
-            return f;
-        }
-
-        // Ab hier wurden rationale Nullstellen gefunden.
-        // Zunächst: Gleiche Nullstellen zu mehrfachen Nullstellen zusammenfassen.
-        Expression result = PolynomialRootsMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
-        int l = zeros.getBound();
-        Expression currentZero = zeros.get(0);
-        int currentMultiplicity = 1;
-
-        while (!zeros.isEmpty()) {
-
-            for (int i = 0; i < l; i++) {
-                if (zeros.get(i) != null) {
-                    currentZero = zeros.get(i);
-                    currentMultiplicity = 1;
-                    zeros.remove(i);
-                    break;
-                }
-            }
-
-            for (int i = 0; i < l; i++) {
-                if (zeros.get(i) != null && zeros.get(i).equals(currentZero)) {
-                    currentMultiplicity++;
-                    zeros.remove(i);
-                }
-            }
-
-            // Entsprechende Potenz des Linearfaktors an result dranmultiplizieren.
-            if (result.equals(Expression.ONE)) {
-                // simplify() dient dazu, dass z. B. x - (-2) zu x + 2 vereinfacht wird.
-                if (currentMultiplicity == 1) {
-                    result = Variable.create(var).sub(currentZero).simplify();
-                } else {
-                    result = Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity);
-                }
-            } else {
-                if (currentMultiplicity == 1) {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify());
-                } else {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity));
-                }
-            }
-
-        }
-
-        return result;
-
-    }
 
     /**
      * Falls isPolynomialAfterSubstitutionByRoots() true zurückgibt, gibt es den
@@ -244,66 +99,6 @@ public abstract class PolynomialRootsMethods {
 
     }
 
-    /**
-     * Ermittelt die Koeffizienten, falls f ein Polynom in derivative Variablen
-     * var ist. Ist f kein Polynom, so wird eine leere ExpressionCollection
-     * zurückgegeben.
-     */
-    public static ExpressionCollection getPolynomialCoefficients(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection coefficients = new ExpressionCollection();
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
-            return coefficients;
-        }
-
-        // Ab hier ist f ein Polynom.
-        BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
-        BigInteger ord = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
-
-        if (deg.compareTo(BigInteger.ZERO) < 0) {
-            return coefficients;
-        }
-        if (deg.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
-        }
-
-        Expression derivative = f;
-        BigDecimal factorial = BigDecimal.ONE;
-        for (int i = 0; i < ord.intValue(); i++) {
-            if (i > 0) {
-                factorial = factorial.multiply(BigDecimal.valueOf(i));
-            }
-            derivative = derivative.diff(var).simplify();
-            coefficients.put(i, Expression.ZERO);
-        }
-
-        Expression coefficient;
-        for (int i = ord.intValue(); i <= deg.intValue(); i++) {
-            if (i > 0) {
-                factorial = factorial.multiply(BigDecimal.valueOf(i));
-            }
-            coefficient = derivative.copy();
-            coefficient = coefficient.replaceVariable(var, Expression.ZERO).div(factorial).simplify();
-            coefficients.put(i, coefficient);
-            derivative = derivative.diff(var).simplify();
-        }
-
-        // Falls Leitkoeffizient = 0 -> Grad um 1 senken, bis Leitkoeffizient != 0.
-        while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
-            coefficients.remove(coefficients.getBound() - 1);
-        }
-
-        return coefficients;
-
-    }
-
-    public static Expression getPolynomialFromCoefficients(ExpressionCollection coefficients, String var) {
-        Expression result = Expression.ZERO;
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            result = result.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
-        }
-        return result;
-    }
 
     /**
      * Hilfsfunktion: liefert f/x^exponent, wobei x = var.
@@ -393,7 +188,7 @@ public abstract class PolynomialRootsMethods {
         }
 
         // Fall: f is ein Polynom mit zyklischen Koeffizienten.
-        m = PolynomialRootsMethods.getPeriodOfCoefficients(coefficients);
+        m = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         if (m < coefficients.getBound()) {
             return PolynomialRootsMethods.solveCyclicPolynomialEquation(coefficients, var);
         }
@@ -514,64 +309,6 @@ public abstract class PolynomialRootsMethods {
 
     }
 
-    /**
-     * Polynomdivision des Polynoms coefficientsEnumerator[n]*x^n + ... +
-     * coeffcicientsEnumerator.get(1)*x + coeffcicientsEnumerator.get(0) durch
-     * coefficientsDenominator[m]*x^m + ... + coefficientsDenominator[0].
-     * Zurückgegeben wird ein Array aus zwei ExpressionCollections, im 0-ten
-     * Arrayeintrag stehen die Koeffizienten des Quotienten, im 1-ten
-     * Arrayeintrag die Koeffizienten des Divisionsrests.
-     *
-     * @throws EvaluationException
-     */
-    public static ExpressionCollection[] polynomialDivision(ExpressionCollection coefficientsEnumerator, ExpressionCollection coefficientsDenominator)
-            throws EvaluationException {
-
-        // Ergebnisformat: 0 - Quotient, 1 - Divisionsrest.
-        ExpressionCollection[] quotient = new ExpressionCollection[2];
-        quotient[0] = new ExpressionCollection();
-        quotient[1] = new ExpressionCollection();
-        ExpressionCollection multipleOfDenominator = new ExpressionCollection();
-        if (coefficientsEnumerator.getBound() < coefficientsDenominator.getBound()) {
-            quotient[0].put(0, Expression.ZERO);
-            for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
-                quotient[1].put(i, coefficientsDenominator.get(i));
-            }
-            return quotient;
-        }
-
-        int degreeDenominator = coefficientsDenominator.getBound() - 1;
-
-        ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsEnumerator);
-
-        /*
-         Polynomdivisionsalgorithmus anwenden. Am Ende ist der Divisionsrest
-         in coeffcicientsEnumeratorCopy gespeichert. Dieser wird aber im
-         Ergebnis verworfen.
-         */
-        for (int i = coeffcicientsEnumeratorCopy.getBound() - 1; i >= degreeDenominator; i--) {
-            quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify());
-            for (int j = degreeDenominator; j >= 0; j--) {
-                multipleOfDenominator.put(j, (coefficientsDenominator.get(j).mult(coeffcicientsEnumeratorCopy.get(i))).div(coefficientsDenominator.get(degreeDenominator)).simplify());
-            }
-            for (int j = degreeDenominator; j >= 0; j--) {
-                coeffcicientsEnumeratorCopy.put(i + j - degreeDenominator, coeffcicientsEnumeratorCopy.get(i + j - degreeDenominator).sub(multipleOfDenominator.get(j)).simplify());
-            }
-        }
-
-        int indexOfLeadingCoefficientInRest = degreeDenominator - 1;
-        while (indexOfLeadingCoefficientInRest >= 0 && coeffcicientsEnumeratorCopy.get(indexOfLeadingCoefficientInRest).equals(Expression.ZERO)) {
-            indexOfLeadingCoefficientInRest--;
-        }
-
-        // Divisionsrest in result[1] kopieren und ausgeben.
-        for (int i = 0; i <= indexOfLeadingCoefficientInRest; i++) {
-            quotient[1].put(i, coeffcicientsEnumeratorCopy.get(i));
-        }
-
-        return quotient;
-
-    }
 
     /**
      * Falls die Koeffizienten coefficients[i] des Polynoms alle rational sind,
@@ -637,7 +374,7 @@ public abstract class PolynomialRootsMethods {
                 rationalZeros.put(rationalZeros.getBound(), new Constant(zero[0]).div(zero[1]).simplify());
                 divisor.put(0, new Constant(zero[0].negate()));
                 divisor.put(1, new Constant(zero[1]));
-                coefficientsOfDivisionQuotient = polynomialDivision(coefficientsOfDivisionQuotient, divisor)[0];
+                coefficientsOfDivisionQuotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsOfDivisionQuotient, divisor)[0];
             } else {
                 break;
             }
@@ -773,39 +510,6 @@ public abstract class PolynomialRootsMethods {
 
     }
 
-    /**
-     * Liefert die kleinste Periode, unter welcher die Koeffizienten
-     * coefficients periodisch sind.
-     */
-    public static int getPeriodOfCoefficients(ExpressionCollection coefficients) {
-
-        int l = coefficients.getBound();
-        HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
-
-        ExpressionCollection periodForCompare, currentPeriod;
-        boolean periodFound = true;
-
-        for (int i = 0; i < cycleLengths.size(); i++) {
-
-            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLengths.get(i).intValue());
-
-            for (int j = 1; j < coefficients.getBound() / cycleLengths.get(i).intValue(); j++) {
-                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLengths.get(i).intValue(), (j + 1) * cycleLengths.get(i).intValue());
-                if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
-                    periodFound = false;
-                    break;
-                }
-            }
-
-            if (periodFound) {
-                return cycleLengths.get(i).intValue();
-            }
-
-        }
-
-        return coefficients.getBound();
-
-    }
 
     /**
      * Ermittelt die Nullstellen des Polynoms mit den Koeffizienten
@@ -815,7 +519,7 @@ public abstract class PolynomialRootsMethods {
      */
     public static ExpressionCollection solveCyclicPolynomialEquation(ExpressionCollection coefficients, String var) throws EvaluationException {
 
-        int period = getPeriodOfCoefficients(coefficients);
+        int period = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         int n = coefficients.getBound() / period;
         ExpressionCollection result = solvePolynomialEquation(ExpressionCollection.copy(coefficients, 0, period), var);
 
@@ -887,7 +591,7 @@ public abstract class PolynomialRootsMethods {
         if (m.compareTo(BigInteger.ONE) > 0) {
 
             Expression fSubstituted = substituteVariableByPowerOfVariable(f, var, m).simplify();
-            zeros = solvePolynomialEquation(getPolynomialCoefficients(fSubstituted, var), var);
+            zeros = solvePolynomialEquation(SimplifyPolynomialMethods.getPolynomialCoefficients(fSubstituted, var), var);
             if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
 
                 ExpressionCollection zerosAfterResubstitution = new ExpressionCollection();
