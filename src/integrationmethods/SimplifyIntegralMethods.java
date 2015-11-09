@@ -25,6 +25,59 @@ import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SimplifyIntegralMethods {
 
+    private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = getSimplifyTypesPrepareIntegrand();
+    private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = getSimplifyTypesPrepareDominatorOfIntegrand();
+    private static final HashSet<TypeSimplify> simplifyTypesMultiplyOutIntegrand = getSimplifyTypesMultiplyOutIntegrand();
+    
+    private static HashSet<TypeSimplify> getSimplifyTypesPrepareIntegrand(){
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+        return simplifyTypes;
+    }
+    
+    private static HashSet<TypeSimplify> getSimplifyTypesPrepareDominatorOfIntegrand(){
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+        return simplifyTypes;
+    }
+    
+    private static HashSet<TypeSimplify> getSimplifyTypesMultiplyOutIntegrand(){
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_powers);
+        simplifyTypes.add(TypeSimplify.collect_products);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.reduce_quotients);
+        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        return simplifyTypes;
+    }
+    
     /**
      * Vereinfacht den Integranden (sinnvoll) für eine bequemere Integration.
      * Beispiel: f = (x^2+x)*exp(x)*(x-2) wäre zu kompliziert mittels partieller
@@ -71,31 +124,18 @@ public abstract class SimplifyIntegralMethods {
 
         }
 
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-
         if (numberOfPolynomials > 0) {
             /*
              Falls Polynome auftauchen, dann zusätzlich alle Polynome
              ausmultiplizieren und dann zu einem Polynom zusammenfassen.
              */
-            simplifyTypes.add(TypeSimplify.expand_moderate);
-            polynomialFactor = polynomialFactor.simplify(simplifyTypes);
+            simplifyTypesPrepareIntegrand.add(TypeSimplify.expand_moderate);
+            polynomialFactor = polynomialFactor.simplify(simplifyTypesPrepareIntegrand);
             factors.put(indexOfLastPolynomial, polynomialFactor);
-            simplifyTypes.remove(TypeSimplify.expand_moderate);
+            simplifyTypesPrepareIntegrand.remove(TypeSimplify.expand_moderate);
         }
 
-        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
+        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypesPrepareIntegrand);
 
     }
 
@@ -112,20 +152,6 @@ public abstract class SimplifyIntegralMethods {
             return prepareIntegrand(((BinaryOperation) f).getLeft(), var).div(prepareIntegrand(((BinaryOperation) f).getRight(), var));
         }
 
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.expand_moderate);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-
         /*
          Falls f ein Produkt ist und als Faktoren Polynome auftreten, so sollen
          diese ausmultipliziert werden. Dies ist dafür gedacht, damit z.B.
@@ -137,19 +163,19 @@ public abstract class SimplifyIntegralMethods {
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             for (int i = 0; i < factors.getBound(); i++) {
                 if (factors.get(i).isPower()) {
-                    factors.put(i, ((BinaryOperation) factors.get(i)).getLeft().simplify(simplifyTypes).pow(((BinaryOperation) factors.get(i)).getRight()));
+                    factors.put(i, ((BinaryOperation) factors.get(i)).getLeft().simplify(simplifyTypesPrepareDominatorOfIntegrand).pow(((BinaryOperation) factors.get(i)).getRight()));
                 } else {
-                    factors.put(i, factors.get(i).simplify(simplifyTypes));
+                    factors.put(i, factors.get(i).simplify(simplifyTypesPrepareDominatorOfIntegrand));
                 }
             }
             f = SimplifyUtilities.produceProduct(factors);
         } else if (f.isPower()) {
-            f = ((BinaryOperation) f).getLeft().simplify(simplifyTypes).pow(((BinaryOperation) f).getRight());
+            f = ((BinaryOperation) f).getLeft().simplify(simplifyTypesPrepareDominatorOfIntegrand).pow(((BinaryOperation) f).getRight());
         }
 
         // Zum Schluss: Nochmal vereinfachen, aber OHNE Ausmultiplizieren.
-        simplifyTypes.remove(TypeSimplify.expand_moderate);
-        return f.simplify(simplifyTypes);
+        simplifyTypesPrepareDominatorOfIntegrand.remove(TypeSimplify.expand_moderate);
+        return f.simplify(simplifyTypesPrepareDominatorOfIntegrand);
 
     }
 
@@ -171,20 +197,8 @@ public abstract class SimplifyIntegralMethods {
         SimplifyExpLog.collectExponentialFunctionsInProduct(factors);
 
         // Nun den Rest integrationsspezifisch vereinfachen.
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         if (f.containsTrigonometricalFunction()) {
-            simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+            simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
         }
 
         /*
@@ -193,7 +207,7 @@ public abstract class SimplifyIntegralMethods {
          Definition ersetzt. Dies ermöglicht es beispielsweise 2^x zu integrieren, 
          da dies zu exp(ln(2)*x) vereinfacht wird.
          */
-        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
+        return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypesMultiplyOutIntegrand).simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
 
     }
 
