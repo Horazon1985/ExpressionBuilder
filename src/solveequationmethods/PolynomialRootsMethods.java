@@ -9,16 +9,12 @@ import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
-import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.HashSet;
-import translator.Translator;
 
 public abstract class PolynomialRootsMethods {
 
@@ -200,16 +196,16 @@ public abstract class PolynomialRootsMethods {
                 return zeros;
             }
 
-            ExpressionCollection rationalZerosWithMultiplicities = new ExpressionCollection();
+            ExpressionCollection rationalZeros = new ExpressionCollection();
             /*
              Polynomdivision durch alle Linearfaktoren, welche zu den bisher
              gefundenen rationalen Nullstellen gehören.
              */
-            coefficients = findAllRationalZerosOfPolynomial(coefficients, rationalZerosWithMultiplicities);
-            degree = degree - rationalZerosWithMultiplicities.getBound();
+            coefficients = findAllRationalZerosOfPolynomial(coefficients, rationalZeros);
+            degree = degree - rationalZeros.getBound();
 
             // Mehrfache Lösungen beseitigen!
-            ExpressionCollection rationalZeros = SimplifyUtilities.removeMultipleEntries(rationalZerosWithMultiplicities);
+            rationalZeros.removeMultipleTerms();
 
             if (!rationalZeros.isEmpty()) {
                 zeros = SimplifyUtilities.union(zeros, rationalZeros);

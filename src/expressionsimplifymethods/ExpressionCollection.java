@@ -181,21 +181,26 @@ public class ExpressionCollection {
     }
 
     /**
-     * Gibt eine ExpressionCollection zurück, in der keine äquivalenten Terme
-     * mehrfach auftreten.
+     * Entfernt alle mehrfachen Kopien bereits vorhandener Terme.
      */
     public void removeMultipleTerms() {
 
         for (int i = 0; i < this.bound; i++) {
             if (terms.get(i) == null) {
-                continue;
+                for (int j = i + 1; j < this.bound; j++){
+                    if (terms.get(j) == null){
+                        continue;
+                    }
+                    terms.put(i, terms.get(j));
+                    remove(j);
+                }
             }
             for (int j = i + 1; j < this.bound; j++) {
                 if (terms.get(j) == null) {
                     continue;
                 }
                 if (this.terms.get(j).equivalent(this.terms.get(i))) {
-                    this.remove(j);
+                    remove(j);
                 }
             }
         }

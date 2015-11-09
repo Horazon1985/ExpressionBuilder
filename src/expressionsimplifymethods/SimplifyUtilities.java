@@ -17,35 +17,6 @@ public abstract class SimplifyUtilities {
     }
 
     /**
-     * Gibt eine ExpressionCollection zurück, in der alle Elemente von terms
-     * enthalten sind, wo aber keine äquivalenten Elemente doppelt auftreten.
-     */
-    public static ExpressionCollection removeMultipleEntries(ExpressionCollection terms) {
-
-        ExpressionCollection result = new ExpressionCollection();
-        boolean entryIsAlreadyContained;
-
-        for (int i = 0; i < terms.getBound(); i++) {
-            if (terms.get(i) == null) {
-                continue;
-            }
-            entryIsAlreadyContained = false;
-            for (int j = 0; j < result.getBound(); j++) {
-                if (result.get(j).equivalent(terms.get(i))) {
-                    entryIsAlreadyContained = true;
-                    break;
-                }
-            }
-            if (!entryIsAlreadyContained) {
-                result.add(terms.get(i));
-            }
-        }
-
-        return result;
-
-    }
-
-    /**
      * Liefert den Durchschnitt von termsLeft und termsRight (mit Vielfachheiten
      * gezählt!).
      */

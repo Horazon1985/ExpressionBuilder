@@ -115,6 +115,21 @@ public class ExpressionCollectionTest {
     }
 
     @Test
+    public void removeMultipliTermsTest() {
+        ExpressionCollection terms = new ExpressionCollection();
+        terms.add(Expression.ONE);
+        terms.add(Expression.TWO);
+        terms.add(Expression.TWO);
+        terms.add(Expression.TWO);
+        terms.add(Expression.THREE);
+        terms.removeMultipleTerms();
+        assertTrue(terms.getBound() == 3);
+        assertTrue(terms.get(0).equals(Expression.ONE));
+        assertTrue(terms.get(1).equals(Expression.TWO));
+        assertTrue(terms.get(2).equals(Expression.THREE));
+    }
+    
+    @Test
     public void containsTest() {
         ExpressionCollection terms = new ExpressionCollection();
         try {
