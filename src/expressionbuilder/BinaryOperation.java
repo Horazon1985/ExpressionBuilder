@@ -1008,7 +1008,7 @@ public class BinaryOperation extends Expression {
                 return powerExpanded;
             }
             
-            expr = (BinaryOperation) ((BinaryOperation) f).getLeft().simplifyExpand(type).pow(((BinaryOperation) f).getRight().simplifyExpand(type));
+            expr = (BinaryOperation) powerExpanded;
 
         } else {
 
