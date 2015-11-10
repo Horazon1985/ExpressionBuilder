@@ -174,12 +174,12 @@ public abstract class SubstitutionUtilities {
             simplifyTypes.add(TypeSimplify.order_difference_and_division);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+            simplifyTypes.add(TypeSimplify.simplify_collect_products);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
 
             if (k.equals(Expression.ONE)) {
@@ -308,12 +308,12 @@ public abstract class SubstitutionUtilities {
             simplifyTypes.add(TypeSimplify.order_difference_and_division);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+            simplifyTypes.add(TypeSimplify.simplify_collect_products);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
 
             if (potentialMultipleFoundInSummandsLeft != firstNonConstantFactorInSubstitutionIsInLeft) {
@@ -418,12 +418,12 @@ public abstract class SubstitutionUtilities {
             simplifyTypes.add(TypeSimplify.order_difference_and_division);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+            simplifyTypes.add(TypeSimplify.simplify_collect_products);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
 
             if (k.equals(Expression.ONE)) {
@@ -559,12 +559,12 @@ public abstract class SubstitutionUtilities {
             simplifyTypes.add(TypeSimplify.order_difference_and_division);
             simplifyTypes.add(TypeSimplify.order_sums_and_products);
             simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+            simplifyTypes.add(TypeSimplify.simplify_collect_products);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
             simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
 
             if (exponent.equals(Expression.ONE)) {

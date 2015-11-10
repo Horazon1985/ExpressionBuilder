@@ -1,10 +1,16 @@
 package expressionsimplifymethods;
 
 import computation.ArithmeticMethods;
+import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
+import exceptions.MathToolException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.PI;
+import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
@@ -16,6 +22,41 @@ import solveequationmethods.PolynomialRootsMethods;
 import translator.Translator;
 
 public abstract class SimplifyPolynomialMethods {
+
+    private static final HashSet<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesDecomposePolynomial() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        return simplifyTypes;
+    }
+
+    /**
+     * Private Fehlerklasse für den Fall, dass die Partialbruchzerlegung nicht
+     * ermittelt werden konnte.
+     */
+    private static class PolynomialNotDecomposableException extends MathToolException {
+
+        private static final String NO_EXPLICIT_DECOMPOSITION_MESSAGE = "Polynomial admits no explicit decomposition.";
+
+        public PolynomialNotDecomposableException() {
+            super(NO_EXPLICIT_DECOMPOSITION_MESSAGE);
+        }
+
+        public PolynomialNotDecomposableException(String s) {
+            super(s);
+        }
+
+    }
 
     /**
      * Gibt zurück, ob expr ein Polynom in derivative Variablen var ist.
@@ -195,18 +236,7 @@ public abstract class SimplifyPolynomialMethods {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, decomposePolynomialInIrreducibleFactors(factors.get(i), var));
             }
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_powers);
-            simplifyTypes.add(TypeSimplify.collect_products);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.reduce_quotients);
-            simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-            return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypes);
+            return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypesDecomposePolynomial);
         }
         if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
             Expression baseDecomposed = decomposePolynomialInIrreducibleFactors(((BinaryOperation) f).getLeft(), var);
@@ -217,18 +247,36 @@ public abstract class SimplifyPolynomialMethods {
             return SimplifyUtilities.produceProduct(factors);
         }
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+
         if (a.getBound() == 3) {
-            Expression diskr = a.get(1).pow(2).sub(Expression.FOUR.mult(a.get(0)).mult(a.get(2))).simplify();
-            if (diskr.isAlwaysNonNegative()) {
-                Expression zeroOne = Expression.MINUS_ONE.mult(a.get(1)).add(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                Expression zeroTwo = Expression.MINUS_ONE.mult(a.get(1)).sub(diskr.pow(1, 2)).div(Expression.TWO.mult(a.get(2)));
-                if (zeroOne.equivalent(zeroTwo)) {
-                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
-                } else {
-                    return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
-                }
+            try {
+                return decomposeQuadraticPolynomial(a, var);
+            } catch (PolynomialNotDecomposableException e) {
             }
         }
+
+//        if (a.getBound() == 4) {
+//            try {
+//                return decomposeCubicPolynomial(a, var);
+//            } catch (PolynomialNotDecomposableException e) {
+//            }
+//        }
+        boolean polynomialIsCyclic = true;
+        for (int i = 1; i < a.getBound() - 1; i++) {
+            if (!a.get(i).equals(ZERO)) {
+                polynomialIsCyclic = false;
+                break;
+            }
+        }
+
+        if (polynomialIsCyclic) {
+            try {
+                Expression b = MINUS_ONE.mult(a.get(0)).div(a.get(a.getBound() - 1)).simplify();
+                return decomposeCyclicPolynomial(a.getBound() - 1, b, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
+        }
+
         for (int i = 0; i < a.getBound(); i++) {
             if (!a.get(i).isIntegerConstantOrRationalConstant()) {
                 return f;
@@ -273,6 +321,119 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
         return result;
+    }
+
+    /**
+     * Faktorisiert quadratische Polynome.
+     */
+    private static Expression decomposeQuadraticPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        Expression discriminant = a.get(1).pow(2).sub(Expression.FOUR.mult(a.get(0)).mult(a.get(2))).simplify();
+        if (discriminant.isAlwaysNonNegative()) {
+            Expression zeroOne = Expression.MINUS_ONE.mult(a.get(1)).add(discriminant.pow(1, 2)).div(Expression.TWO.mult(a.get(2))).simplify();
+            Expression zeroTwo = Expression.MINUS_ONE.mult(a.get(1)).sub(discriminant.pow(1, 2)).div(Expression.TWO.mult(a.get(2))).simplify();
+            if (zeroOne.equivalent(zeroTwo)) {
+                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
+            } else {
+                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
+            }
+        }
+
+        throw new PolynomialNotDecomposableException();
+
+    }
+
+    /**
+     * Faktorisiert kubische Polynome.
+     */
+    private static Expression decomposeCubicPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        Expression A = a.get(2).div(a.get(3)).simplify();
+        Expression B = a.get(1).div(a.get(3)).simplify();
+        Expression C = a.get(0).div(a.get(3)).simplify();
+
+        // Gelöst wird nun die Gleichung x^3 + Ax^2 + Bx + C = 0
+        /*
+         Substitution x = z - A/3 (später muss zurücksubstituiert werden): p =
+         B - A^2/3, q = 2A^3/27 - AB/3 + C. Gelöst wird nun die Gleichung z^3
+         + pz + q = 0
+         */
+        Expression p = B.sub(A.pow(2).div(3)).simplify();
+        Expression q = Expression.TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
+
+        // Diskriminante diskr = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
+        Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
+
+        if (discriminant.isAlwaysNonNegative() || discriminant.isAlwaysNonPositive()) {
+            ExpressionCollection zeros = PolynomialRootsMethods.solveCubicEquation(a);
+//            if (zeroOne.equivalent(zeroTwo)) {
+//                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
+//            } else {
+//                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
+//            }
+        }
+
+        throw new PolynomialNotDecomposableException();
+
+    }
+
+    /**
+     * Faktorisiert Polynome vom Typ x^n - a.
+     */
+    private static Expression decomposeCyclicPolynomial(int n, Expression a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        if (n <= 2 || n > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION
+                || !a.isAlwaysPositive() && !a.isAlwaysNegative()) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        Expression decomposedPolynomial = Expression.ONE;
+        Expression quadraticFactor;
+
+        // Im Folgenden dient simplify() dazu, die Werte a^(1/n)*cos(2*k*pi/n) zu vereinfachen, falls möglich.
+        if (a.isAlwaysPositive()) {
+
+            if (n % 2 == 0) {
+                decomposedPolynomial = Variable.create(var).sub(a.pow(1, n)).simplify().mult(Variable.create(var).add(a.pow(1, n)).simplify());
+                for (int i = 1; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                                    a.pow(2, n)).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            } else {
+                decomposedPolynomial = Variable.create(var).sub(a.pow(1, n)).simplify();
+                for (int i = 0; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                                    a.pow(2, n)).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            }
+
+        } else {
+
+            if (n % 2 == 0) {
+                for (int i = 0; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(a.pow(1, n)).mult(TWO.mult(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                                    a.pow(2, n)).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            } else {
+                decomposedPolynomial = Variable.create(var).add(a.pow(1, n)).simplify();
+                for (int i = 0; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(a.pow(1, n)).mult(TWO.mult(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                                    a.pow(2, n)).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            }
+
+        }
+
+        return decomposedPolynomial;
+
     }
 
     /**

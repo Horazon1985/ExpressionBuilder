@@ -186,7 +186,7 @@ public abstract class PolynomialRootsMethods {
         // Fall: f is ein Polynom mit zyklischen Koeffizienten.
         m = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         if (m < coefficients.getBound()) {
-            return PolynomialRootsMethods.solveCyclicPolynomialEquation(coefficients, var);
+            return PolynomialRootsMethods.solvePeriodicPolynomialEquation(coefficients, var);
         }
 
         // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= 100 ist.
@@ -411,21 +411,21 @@ public abstract class PolynomialRootsMethods {
         Expression q = coefficients.get(0).div(coefficients.get(2)).simplify();
 
         // Diskriminante diskr = p^2/4 - q.
-        Expression diskriminant = p.pow(2).div(4).sub(q).simplify();
+        Expression discriminant = p.pow(2).div(4).sub(q).simplify();
 
-        if (!diskriminant.isConstant()) {
+        if (!discriminant.isAlwaysNonNegative() && !discriminant.isAlwaysNonPositive()) {
             // Rein abstrakt nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
-            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
+            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
+            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
             return zeros;
         }
 
-        if (diskriminant.isNonNegative() && !diskriminant.equals(Expression.ZERO)) {
+        if (discriminant.isAlwaysNonNegative() && !discriminant.equals(Expression.ZERO)) {
             // Nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(diskriminant.pow(1, 2)).simplify());
-            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(diskriminant.pow(1, 2)).simplify());
+            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
+            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
             return zeros;
-        } else if (diskriminant.equals(Expression.ZERO)) {
+        } else if (discriminant.equals(Expression.ZERO)) {
             zeros.put(0, p.div(-2).simplify());
             return zeros;
         }
@@ -458,13 +458,13 @@ public abstract class PolynomialRootsMethods {
         Expression p = B.sub(A.pow(2).div(3)).simplify();
         Expression q = Expression.TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
 
-        // Diskriminante diskr = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
-        Expression diskriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
+        // Diskriminante discriminant = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
+        Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
 
-        if (!diskriminant.isConstant()) {
+        if (!discriminant.isAlwaysNonNegative() && !discriminant.isAlwaysNonPositive()) {
 
-            Expression radikand = new Constant(-27).div(p.pow(3)).simplify();
-            if (!radikand.isConstant() || radikand.isNonNegative()) {
+            Expression radicand = new Constant(-27).div(p.pow(3)).simplify();
+            if (!radicand.isConstant() || radicand.isNonNegative()) {
                 // Casus irreduzibilis.
                 Expression arg = Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
                 Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2).simplify();
@@ -472,14 +472,14 @@ public abstract class PolynomialRootsMethods {
                 zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
                 zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             } else {
-                Expression u = (diskriminant.pow(Expression.ONE.div(2)).sub(q.div(2)).simplify()).pow(1, 3);
-                Expression v = Expression.MINUS_ONE.mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
+                Expression u = (discriminant.pow(Expression.ONE.div(2)).sub(q.div(2)).simplify()).pow(1, 3);
+                Expression v = Expression.MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
                 zeros.put(0, u.add(v).sub(A.div(3)).simplify());
             }
             return zeros;
         }
 
-        if (diskriminant.isNonPositive() && !diskriminant.equals(Expression.ZERO)) {
+        if (discriminant.isNonPositive() && !discriminant.equals(Expression.ZERO)) {
             // Casus irreduzibilis.
             Expression arg = new Function(Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)),
                     TypeFunction.arccos).div(3).simplify();
@@ -488,19 +488,19 @@ public abstract class PolynomialRootsMethods {
             zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             return zeros;
-        } else if (diskriminant.equals(Expression.ZERO)) {
+        } else if (discriminant.equals(Expression.ZERO)) {
             // Auflösung nach Cardano-Formel: x = 2*(-q/2)^(1/3).
             zeros.put(0, Expression.TWO.mult((q.div(-2)).pow(1, 3)).sub(A.div(3)).simplify());
             return zeros;
         }
 
         /*
-         In diesem Fall ist diskriminant positiv. Auflösung nach
+         In diesem Fall ist discriminant positiv. Auflösung nach
          Cardano-Formel: x = (-q/2 + diskriminant^(1/2))^(1/3) + (-q/2 -
          diskriminant^(1/2))^(1/3).
          */
-        Expression u = (diskriminant.pow(1, 2).sub(q.div(2)).simplify()).pow(1, 3);
-        Expression v = Expression.MINUS_ONE.mult(diskriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
+        Expression u = (discriminant.pow(1, 2).sub(q.div(2)).simplify()).pow(1, 3);
+        Expression v = Expression.MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
         zeros.put(0, u.add(v).sub(A.div(3)).simplify());
         return zeros;
 
@@ -513,7 +513,7 @@ public abstract class PolynomialRootsMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveCyclicPolynomialEquation(ExpressionCollection coefficients, String var) throws EvaluationException {
+    public static ExpressionCollection solvePeriodicPolynomialEquation(ExpressionCollection coefficients, String var) throws EvaluationException {
 
         int period = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         int n = coefficients.getBound() / period;

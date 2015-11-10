@@ -7,6 +7,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
+import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
@@ -15,7 +16,6 @@ import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import linearalgebraalgorithms.GaussAlgorithm;
 import matrixexpressionbuilder.Matrix;
-import solveequationmethods.PolynomialRootsMethods;
 
 public abstract class PartialFractionDecompositionMethods {
 
@@ -44,7 +44,7 @@ public abstract class PartialFractionDecompositionMethods {
     public static Expression getPartialFractionDecomposition(Expression f, String var) throws EvaluationException {
 
         try {
-
+            
             if (!isRationalFunctionInCanonicalForm(f, var)) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
@@ -120,7 +120,11 @@ public abstract class PartialFractionDecompositionMethods {
                 Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFDAsOneFraction).getLeft();
 
                 // Nun Koeffizientenvergleich durchführen.
-                enumeratorInPFDApproach = enumeratorInPFDApproach.simplifyExpandPowerful();
+                enumeratorInPFDApproach = enumeratorInPFDApproach.simplify(TypeSimplify.order_difference_and_division,
+                        TypeSimplify.order_sums_and_products, TypeSimplify.simplify_trivial,
+                        TypeSimplify.simplify_expand_powerful, TypeSimplify.simplify_expand_rational_factors, 
+                        TypeSimplify.simplify_pull_apart_powers, TypeSimplify.simplify_collect_products, TypeSimplify.simplify_reduce_quotients,
+                        TypeSimplify.simplify_reduce_leadings_coefficients);
                 ExpressionCollection coefficientsOfEnumeratorInPFDApproach = SimplifyPolynomialMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
 
                 coefficientsForPFD = getCoefficientsForPFD(coefficientsOfEnumeratorInPFDApproach, coefficientsForCompare, n);

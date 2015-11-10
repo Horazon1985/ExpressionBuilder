@@ -514,21 +514,21 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
+    public Expression simplifyPullApartPowers() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyPowers();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyPullApartPowers();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyPowers(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyPullApartPowers(), resultLeft);
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyExponents() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyMultiplyPowers();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyMultiplyExponents();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyMultiplyPowers(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyMultiplyExponents(), resultLeft);
     }
 
     @Override

@@ -982,13 +982,13 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
-        return new Function(this.left.simplifyPowers(), this.type);
+    public Expression simplifyPullApartPowers() throws EvaluationException {
+        return new Function(this.left.simplifyPullApartPowers(), this.type);
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
-        return new Function(this.left.simplifyMultiplyPowers(), this.type);
+    public Expression simplifyMultiplyExponents() throws EvaluationException {
+        return new Function(this.left.simplifyMultiplyExponents(), this.type);
     }
 
     @Override

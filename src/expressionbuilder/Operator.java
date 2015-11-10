@@ -2134,11 +2134,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
+    public Expression simplifyPullApartPowers() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyPowers();
+                resultParams[i] = ((Expression) this.params[i]).simplifyPullApartPowers();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -2147,11 +2147,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyExponents() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyMultiplyPowers();
+                resultParams[i] = ((Expression) this.params[i]).simplifyMultiplyExponents();
             } else {
                 resultParams[i] = this.params[i];
             }

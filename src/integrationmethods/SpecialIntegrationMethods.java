@@ -28,7 +28,6 @@ import static integrationmethods.SimplifyIntegralMethods.indefiniteIntegration;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
-import solveequationmethods.PolynomialRootsMethods;
 import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SpecialIntegrationMethods {
@@ -40,14 +39,14 @@ public abstract class SpecialIntegrationMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.multiply_powers);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
@@ -341,10 +340,10 @@ public abstract class SpecialIntegrationMethods {
 
     private static Expression expandProductsOfComplexExponentialFunctions(Expression f, String var) throws EvaluationException {
         return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
-                TypeSimplify.simplify_trivial, TypeSimplify.simplify_powers, TypeSimplify.collect_products,
-                TypeSimplify.reduce_quotients, TypeSimplify.reduce_leadings_coefficients,
+                TypeSimplify.simplify_trivial, TypeSimplify.simplify_pull_apart_powers, TypeSimplify.simplify_collect_products,
+                TypeSimplify.simplify_reduce_quotients, TypeSimplify.simplify_reduce_leadings_coefficients,
                 TypeSimplify.simplify_expand_products_of_complex_exponential_functions,
-                TypeSimplify.expand_moderate);
+                TypeSimplify.simplify_expand_moderate);
     }
 
     /**

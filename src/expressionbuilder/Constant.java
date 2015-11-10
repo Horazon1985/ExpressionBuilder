@@ -445,12 +445,12 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyPowers() {
+    public Expression simplifyPullApartPowers() {
         return this;
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() {
+    public Expression simplifyMultiplyExponents() {
         return this;
     }
 

@@ -34,12 +34,12 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
@@ -50,13 +50,13 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.expand_moderate);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
@@ -67,13 +67,13 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         return simplifyTypes;
     }
@@ -129,10 +129,10 @@ public abstract class SimplifyIntegralMethods {
              Falls Polynome auftauchen, dann zusätzlich alle Polynome
              ausmultiplizieren und dann zu einem Polynom zusammenfassen.
              */
-            simplifyTypesPrepareIntegrand.add(TypeSimplify.expand_moderate);
+            simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_expand_moderate);
             polynomialFactor = polynomialFactor.simplify(simplifyTypesPrepareIntegrand);
             factors.put(indexOfLastPolynomial, polynomialFactor);
-            simplifyTypesPrepareIntegrand.remove(TypeSimplify.expand_moderate);
+            simplifyTypesPrepareIntegrand.remove(TypeSimplify.simplify_expand_moderate);
         }
 
         return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypesPrepareIntegrand);
@@ -174,7 +174,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         // Zum Schluss: Nochmal vereinfachen, aber OHNE Ausmultiplizieren.
-        simplifyTypesPrepareDominatorOfIntegrand.remove(TypeSimplify.expand_moderate);
+        simplifyTypesPrepareDominatorOfIntegrand.remove(TypeSimplify.simplify_expand_moderate);
         return f.simplify(simplifyTypesPrepareDominatorOfIntegrand);
 
     }
@@ -577,14 +577,14 @@ public abstract class SimplifyIntegralMethods {
         // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels Standardsubstitution.
         try {
             result = integrateByStandardSubstitution(expr);
-            if (!((Expression) result).containsIndefiniteIntegral()) {
+            if (!result.containsIndefiniteIntegral()) {
                 /*
                  Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale
-                 vorkommen. Die Methode multiplyPowers() wird hier benötigt, damit
+                 vorkommen. Die Methode simplifyMultiplyExponents() wird hier benötigt, damit
                  Exponenten STUR ausmultipliziert werden (ohne Beträge etc.),
                  falls diese in Substitutionen involviert sind.
                  */
-                return ((Expression) result).simplifyMultiplyPowers().simplifyTrivial();
+                return result.simplifyMultiplyExponents().simplifyTrivial();
             }
         } catch (NotPreciseIntegrableException e) {
         }
@@ -593,7 +593,7 @@ public abstract class SimplifyIntegralMethods {
         if (allowPartialIntegration((Expression) expr.getParams()[0], (String) expr.getParams()[1])) {
             try {
                 result = integrateByPartialIntegration(expr);
-                if (!((Expression) result).containsIndefiniteIntegral()) {
+                if (!result.containsIndefiniteIntegral()) {
                     // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
                     return (Expression) result;
                 }

@@ -2056,14 +2056,14 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyPowers() throws EvaluationException {
+    public Expression simplifyPullApartPowers() throws EvaluationException {
 
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyPowers());
+                summands.put(i, summands.get(i).simplifyPullApartPowers());
             }
 
             // Ergebnis bilden.
@@ -2076,7 +2076,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyPowers());
+                factors.put(i, factors.get(i).simplifyPullApartPowers());
             }
 
             // Ergebnis bilden.
@@ -2085,11 +2085,11 @@ public class BinaryOperation extends Expression {
         }
 
         if (this.isDifference() || this.isQuotient()) {
-            return new BinaryOperation(this.left.simplifyPowers(), this.right.simplifyPowers(), this.type);
+            return new BinaryOperation(this.left.simplifyPullApartPowers(), this.right.simplifyPullApartPowers(), this.type);
         }
 
         // Ab hier ist type == TypeBinary.POW
-        Expression expr = this.left.simplifyPowers().pow(this.right.simplifyPowers());
+        Expression expr = this.left.simplifyPullApartPowers().pow(this.right.simplifyPullApartPowers());
         Expression exprSimplified;
 
         exprSimplified = SimplifyExpLog.splitPowersInProduct(expr);
@@ -2107,14 +2107,14 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyMultiplyPowers() throws EvaluationException {
+    public Expression simplifyMultiplyExponents() throws EvaluationException {
 
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyMultiplyPowers());
+                summands.put(i, summands.get(i).simplifyMultiplyExponents());
             }
 
             // Ergebnis bilden.
@@ -2125,7 +2125,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyMultiplyPowers());
+                factors.put(i, factors.get(i).simplifyMultiplyExponents());
             }
 
             // Ergebnis bilden.
@@ -2133,12 +2133,12 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isDifference() || this.isQuotient()) {
 
-            return new BinaryOperation(this.left.simplifyMultiplyPowers(), this.right.simplifyMultiplyPowers(), this.type);
+            return new BinaryOperation(this.left.simplifyMultiplyExponents(), this.right.simplifyMultiplyExponents(), this.type);
 
         }
 
         // Hier ist this.type == TypeBinary.POW
-        Expression leftSimplified = this.left.simplifyMultiplyPowers();
+        Expression leftSimplified = this.left.simplifyMultiplyExponents();
         if (leftSimplified.isPower()) {
             return ((BinaryOperation) leftSimplified).getLeft().pow(((BinaryOperation) leftSimplified).getRight().mult(this.right));
         }
@@ -2424,13 +2424,13 @@ public class BinaryOperation extends Expression {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_powers);
-        simplifyTypes.add(TypeSimplify.collect_products);
-        simplifyTypes.add(TypeSimplify.expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.reduce_quotients);
-        simplifyTypes.add(TypeSimplify.reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
 
