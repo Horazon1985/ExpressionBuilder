@@ -10,10 +10,26 @@ import translator.Translator;
 public abstract class SimplifyUtilities {
 
     /**
-     * Liefert, ob terms und termsToCompare äquivalente Einträge besitzen.
+     * Liefert, ob terms und termsToCompare äquivalente Einträge in derselben
+     * Reihenfolge besitzen.
      */
     public static boolean equivalent(ExpressionCollection terms, ExpressionCollection termsToCompare) {
-        return difference(terms, termsToCompare).isEmpty() && difference(termsToCompare, terms).isEmpty();
+        if (terms.getBound() != termsToCompare.getBound()) {
+            return false;
+        }
+        for (int i = 0; i < terms.getBound(); i++) {
+            if (terms.get(i) == null && termsToCompare.get(i) != null
+                    || termsToCompare.get(i) == null && terms.get(i) != null) {
+                return false;
+            }
+            if (terms.get(i) == null && termsToCompare.get(i) == null) {
+                continue;
+            }
+            if (!terms.get(i).equivalent(termsToCompare.get(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

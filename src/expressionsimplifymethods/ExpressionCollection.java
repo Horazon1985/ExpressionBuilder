@@ -19,11 +19,11 @@ public class ExpressionCollection {
     public ExpressionCollection(ExpressionCollection terms) {
         this.terms = new HashMap<>();
         this.bound = 0;
-        for (int i = 0; i < terms.bound; i++){
+        for (int i = 0; i < terms.bound; i++) {
             this.add(terms.get(i));
         }
     }
-    
+
     public int getBound() {
         return this.bound;
     }
@@ -31,7 +31,7 @@ public class ExpressionCollection {
     public int getSize() {
         return this.terms.size();
     }
-    
+
     public boolean isEmpty() {
         return this.terms.isEmpty();
     }
@@ -165,19 +165,18 @@ public class ExpressionCollection {
     }
 
     /**
-     * Kopiert terms(m), ..., terms(n - 1) bzw. ganz terms im Falle von
-     * Indexüberläufen.
+     * Gibt eine ExpressionCollection zurück, die genau aus den Elemente
+     * terms(m), ..., terms(n - 1) bzw. ganz terms im Falle von Indexüberläufen
+     * besteht.
      */
     public static ExpressionCollection copy(ExpressionCollection terms, int m, int n) {
-
         ExpressionCollection result = new ExpressionCollection();
         for (int i = m; i < n; i++) {
             if (terms.get(i) != null) {
-                result.put(i, terms.get(i).copy());
+                result.add(terms.get(i).copy());
             }
         }
         return result;
-
     }
 
     /**
@@ -187,8 +186,8 @@ public class ExpressionCollection {
 
         for (int i = 0; i < this.bound; i++) {
             if (terms.get(i) == null) {
-                for (int j = i + 1; j < this.bound; j++){
-                    if (terms.get(j) == null){
+                for (int j = i + 1; j < this.bound; j++) {
+                    if (terms.get(j) == null) {
                         continue;
                     }
                     terms.put(i, terms.get(j));
