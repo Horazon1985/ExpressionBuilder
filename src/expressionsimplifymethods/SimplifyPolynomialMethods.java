@@ -249,6 +249,13 @@ public abstract class SimplifyPolynomialMethods {
         }
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
 
+        if (isPolynomialRational(a)) {
+            try {
+                return decomposeRationalPolynomial(a, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
+        }
+
         if (a.getBound() == 3) {
             try {
                 return decomposeQuadraticPolynomial(a, var);
@@ -280,16 +287,9 @@ public abstract class SimplifyPolynomialMethods {
         } catch (PolynomialNotDecomposableException e) {
         }
 
-        if (isPolynomialRational(a)) {
-            try {
-                return decomposeRationalPolynomial(a, var);
-            } catch (PolynomialNotDecomposableException e) {
-            }
-        }
-
         // Dann konnte das Polynom nicht faktorisiert werden.
         return f;
-        
+
     }
 
     /**
@@ -459,7 +459,7 @@ public abstract class SimplifyPolynomialMethods {
 
         polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
         secondFactor = decomposePolynomialInIrreducibleFactors(secondFactor, var);
-        
+
         return polynomialOfPrimitivePeriod.mult(secondFactor);
 
     }
@@ -534,22 +534,10 @@ public abstract class SimplifyPolynomialMethods {
                     zeros.remove(i);
                 }
             }
-            if (result.equals(Expression.ONE)) {
-                if (currentMultiplicity == 1) {
-                    result = Variable.create(var).sub(currentZero).simplify();
-                } else {
-                    result = Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity);
-                }
-            } else {
-                if (currentMultiplicity == 1) {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify());
-                } else {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity));
-                }
-            }
+            result = result.mult((Variable.create(var).sub(currentZero).simplify()).pow(currentMultiplicity));
         }
-        
-        return result;
+
+        return a.get(a.getBound() - 1).mult(result);
 
     }
 
