@@ -22,7 +22,6 @@ public class PolynomialTests {
     public static void tearDownClass() throws Exception {
     }
 
-    // Tests für triviale Vereinfachung.
     @Test
     public void decomposePolynomialTest1() {
         // Zerlegung von x^5-7 in irreduzible Faktoren.
@@ -36,5 +35,17 @@ public class PolynomialTests {
         }
     }
     
+    @Test
+    public void decomposePolynomialTest2() {
+        // Zerlegung von 4*x^5-7*x^4+2*x^3+4*x^2-7*x+2 in irreduzible Faktoren.
+        try {
+            f = Expression.build("4*x^5+3*x^4+25*x^3+4*x^2+3*x+25", null);
+            fFactorized = Expression.build("(4*x^2+3*x+25)*(1+x)*((1+x^2)-x)", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
     
 }

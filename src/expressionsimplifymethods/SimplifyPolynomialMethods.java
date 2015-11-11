@@ -8,6 +8,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.PI;
 import static expressionbuilder.Expression.TWO;
 import static expressionbuilder.Expression.ZERO;
@@ -254,22 +255,14 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
         }
-
-//        if (a.getBound() == 4) {
-//            try {
-//                return decomposeCubicPolynomial(a, var);
-//            } catch (PolynomialNotDecomposableException e) {
-//            }
-//        }
-        boolean polynomialIsCyclic = true;
-        for (int i = 1; i < a.getBound() - 1; i++) {
-            if (!a.get(i).equals(ZERO)) {
-                polynomialIsCyclic = false;
-                break;
+        if (a.getBound() == 4) {
+            try {
+                return decomposeCubicPolynomial(a, var);
+            } catch (PolynomialNotDecomposableException e) {
             }
         }
 
-        if (polynomialIsCyclic) {
+        if (isPolynomialCyclic(a)) {
             try {
                 Expression b = MINUS_ONE.mult(a.get(0)).div(a.get(a.getBound() - 1)).simplify();
                 return decomposeCyclicPolynomial(a.getBound() - 1, b, var);
@@ -277,50 +270,50 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
 
+        try {
+            return decomposePeriodicPolynomial(a, var);
+        } catch (PolynomialNotDecomposableException e) {
+        }
+
+        try {
+            return decomposePolynomialInMonomial(a, var);
+        } catch (PolynomialNotDecomposableException e) {
+        }
+
+        if (isPolynomialRational(a)) {
+            try {
+                return decomposeRationalPolynomial(a, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
+        }
+
+        // Dann konnte das Polynom nicht faktorisiert werden.
+        return f;
+        
+    }
+
+    /**
+     * Prüfung, ob ein Polynom zyklisch ist.
+     */
+    private static boolean isPolynomialCyclic(ExpressionCollection a) {
+        for (int i = 1; i < a.getBound() - 1; i++) {
+            if (!a.get(i).equals(ZERO)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Prüfung, ob ein Polynom rational ist.
+     */
+    private static boolean isPolynomialRational(ExpressionCollection a) {
         for (int i = 0; i < a.getBound(); i++) {
             if (!a.get(i).isIntegerConstantOrRationalConstant()) {
-                return f;
+                return false;
             }
         }
-        ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
-        if (zeros.isEmpty()) {
-            return f;
-        }
-        Expression result = SimplifyPolynomialMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
-        int l = zeros.getBound();
-        Expression currentZero = zeros.get(0);
-        int currentMultiplicity = 1;
-        while (!zeros.isEmpty()) {
-            for (int i = 0; i < l; i++) {
-                if (zeros.get(i) != null) {
-                    currentZero = zeros.get(i);
-                    currentMultiplicity = 1;
-                    zeros.remove(i);
-                    break;
-                }
-            }
-            for (int i = 0; i < l; i++) {
-                if (zeros.get(i) != null && zeros.get(i).equals(currentZero)) {
-                    currentMultiplicity++;
-                    zeros.remove(i);
-                }
-            }
-            if (result.equals(Expression.ONE)) {
-                if (currentMultiplicity == 1) {
-                    result = Variable.create(var).sub(currentZero).simplify();
-                } else {
-                    result = Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity);
-                }
-            } else {
-                if (currentMultiplicity == 1) {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify());
-                } else {
-                    result = result.mult(Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity));
-                }
-            }
-        }
-        return result;
+        return true;
     }
 
     /**
@@ -361,16 +354,26 @@ public abstract class SimplifyPolynomialMethods {
         Expression p = B.sub(A.pow(2).div(3)).simplify();
         Expression q = Expression.TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
 
-        // Diskriminante diskr = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
+        // Diskriminante discriminant = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
         Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
 
-        if (discriminant.isAlwaysNonNegative() || discriminant.isAlwaysNonPositive()) {
+        if (discriminant.equals(ZERO) || discriminant.isAlwaysPositive() || discriminant.isAlwaysNegative()) {
             ExpressionCollection zeros = PolynomialRootsMethods.solveCubicEquation(a);
-//            if (zeroOne.equivalent(zeroTwo)) {
-//                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().pow(2));
-//            } else {
-//                return a.get(2).mult(Variable.create(var).sub(zeroOne).simplify().mult(Variable.create(var).sub(zeroTwo).simplify()));
-//            }
+            if (discriminant.isAlwaysPositive()) {
+                // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
+                Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
+                        zeros.get(0).add(A).mult(Variable.create(var))).add(
+                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
+            }
+            if (discriminant.equals(ZERO)) {
+                return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).pow(2).simplify()).mult(Variable.create(var).sub(zeros.get(1)).simplify());
+            }
+            if (discriminant.isAlwaysNegative()) {
+                return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
+                        Variable.create(var).sub(zeros.get(1)).simplify()).mult(
+                                Variable.create(var).sub(zeros.get(2)).simplify());
+            }
         }
 
         throw new PolynomialNotDecomposableException();
@@ -433,6 +436,120 @@ public abstract class SimplifyPolynomialMethods {
         }
 
         return decomposedPolynomial;
+
+    }
+
+    /**
+     * Faktorisiert Polynome mit periodischen Koeffizienten.
+     */
+    private static Expression decomposePeriodicPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        int m = getPeriodOfCoefficients(a);
+
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == a.getBound()) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        Expression polynomialOfPrimitivePeriod = SimplifyPolynomialMethods.getPolynomialFromCoefficients(ExpressionCollection.copy(a, 0, m), var);
+        Expression secondFactor = ONE;
+
+        for (int i = 1; i < a.getBound() / m; i++) {
+            secondFactor = secondFactor.add(Variable.create(var).pow(i * m));
+        }
+
+        polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
+        secondFactor = decomposePolynomialInIrreducibleFactors(secondFactor, var);
+        
+        return polynomialOfPrimitivePeriod.mult(secondFactor);
+
+    }
+
+    /**
+     * Faktorisiert Polynome, deren Monome Exponenten mit nichttrivialem ggT
+     * besitzen.
+     */
+    private static Expression decomposePolynomialInMonomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        int m = getGGTOfAllExponents(a);
+
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m <= 1) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        ExpressionCollection coefficients = new ExpressionCollection();
+        for (int i = 0; i < a.getBound(); i++) {
+            if (i % m == 0) {
+                coefficients.add(a.get(i));
+            }
+        }
+
+        Expression polynomialToDecompose = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, var);
+        polynomialToDecompose = decomposePolynomialInIrreducibleFactors(polynomialToDecompose, var);
+
+        if (polynomialToDecompose.isProduct()) {
+
+            // In diesem Fall konnte das Polynom faktorisiert werden.
+            Expression decomposedPolynomial = polynomialToDecompose.replaceVariable(var, Variable.create(var).pow(m)).simplify(simplifyTypesDecomposePolynomial);
+            ExpressionCollection factors = SimplifyUtilities.getFactors(decomposedPolynomial);
+            if (factors.getBound() > 1) {
+                for (int i = 0; i < factors.getBound(); i++) {
+                    factors.put(i, decomposePolynomialInIrreducibleFactors(factors.get(i), var));
+                }
+                return SimplifyUtilities.produceProduct(factors);
+            }
+
+        }
+
+        throw new PolynomialNotDecomposableException();
+
+    }
+
+    /**
+     * Faktorisiert rationale Polynome.
+     */
+    private static Expression decomposeRationalPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        ExpressionCollection zeros = new ExpressionCollection();
+        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
+        if (zeros.isEmpty()) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        Expression result = SimplifyPolynomialMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
+        int l = zeros.getBound();
+        Expression currentZero = zeros.get(0);
+        int currentMultiplicity = 1;
+        while (!zeros.isEmpty()) {
+            for (int i = 0; i < l; i++) {
+                if (zeros.get(i) != null) {
+                    currentZero = zeros.get(i);
+                    currentMultiplicity = 1;
+                    zeros.remove(i);
+                    break;
+                }
+            }
+            for (int i = 0; i < l; i++) {
+                if (zeros.get(i) != null && zeros.get(i).equals(currentZero)) {
+                    currentMultiplicity++;
+                    zeros.remove(i);
+                }
+            }
+            if (result.equals(Expression.ONE)) {
+                if (currentMultiplicity == 1) {
+                    result = Variable.create(var).sub(currentZero).simplify();
+                } else {
+                    result = Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity);
+                }
+            } else {
+                if (currentMultiplicity == 1) {
+                    result = result.mult(Variable.create(var).sub(currentZero).simplify());
+                } else {
+                    result = result.mult(Variable.create(var).sub(currentZero).simplify().pow(currentMultiplicity));
+                }
+            }
+        }
+        
+        return result;
 
     }
 
@@ -504,6 +621,26 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
         return coefficients.getBound();
+    }
+
+    /**
+     * Liefert den ggT aller Exponenten nichttrivialer Monome des Polynoms mit
+     * Koeffizienten coefficients.<br>
+     * BEISPIEL: Beim Polynom x^15 + 2*x^10 + 7*x^5 + 1 wird der Wert 5
+     * zurückgegeben. -> Später Substitution x^5 = t möglich.
+     */
+    public static int getGGTOfAllExponents(ExpressionCollection coefficients) {
+        int result = 0;
+        for (int i = 0; i < coefficients.getBound(); i++) {
+            if (i != 0 && !coefficients.get(i).equals(Expression.ZERO)) {
+                if (result == 0) {
+                    result = i;
+                } else {
+                    result = ArithmeticMethods.gcd(result, i);
+                }
+            }
+        }
+        return result;
     }
 
 }

@@ -475,11 +475,11 @@ public abstract class SimplifyBinaryOperationMethods {
              */
             if (((BinaryOperation) expr.getRight()).getLeft().isEvenConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isOddConstant()) {
-                return MINUS_ONE.mult(expr.getLeft()).simplifyTrivial().pow(expr.getRight());
+                return negateExpression(expr.getLeft()).pow(expr.getRight());
             }
             if (((BinaryOperation) expr.getRight()).getLeft().isOddConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isOddConstant()) {
-                return MINUS_ONE.mult(MINUS_ONE.mult(expr.getLeft()).simplifyTrivial().pow(expr.getRight()));
+                return MINUS_ONE.mult(negateExpression(expr.getLeft()).pow(expr.getRight()));
             }
 
         }

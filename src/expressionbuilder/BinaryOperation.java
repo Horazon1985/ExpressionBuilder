@@ -330,14 +330,14 @@ public class BinaryOperation extends Expression {
 
         // Hier handelt es sich um eine Potenz.
         if (this.left instanceof BinaryOperation
-                || (this.left instanceof Constant && this.left.isNonPositive() && !this.left.equals(Expression.ZERO))) {
+                || (this.left instanceof Constant && ((Constant) this.left).getValue().compareTo(BigDecimal.ZERO) < 0)) {
             leftAsText = "(" + this.left.writeExpression() + ")";
         } else {
             leftAsText = this.left.writeExpression();
         }
 
         if (this.right instanceof BinaryOperation
-                || (this.right instanceof Constant && this.right.isNonPositive() && !this.right.equals(Expression.ZERO))) {
+                || (this.right instanceof Constant && ((Constant) this.right).getValue().compareTo(BigDecimal.ZERO) < 0)) {
             rightAsText = "(" + this.right.writeExpression() + ")";
         } else {
             rightAsText = this.right.writeExpression();

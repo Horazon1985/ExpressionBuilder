@@ -6,6 +6,10 @@ import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.PI;
+import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
@@ -49,7 +53,6 @@ public abstract class PolynomialRootsMethods {
         return false;
 
     }
-
 
     /**
      * Falls isPolynomialAfterSubstitutionByRoots() true zurückgibt, gibt es den
@@ -95,7 +98,6 @@ public abstract class PolynomialRootsMethods {
 
     }
 
-
     /**
      * Hilfsfunktion: liefert f/x^exponent, wobei x = var.
      */
@@ -105,27 +107,6 @@ public abstract class PolynomialRootsMethods {
                     divideExpressionByPowerOfVar(((BinaryOperation) f).getRight(), var, exponent), ((BinaryOperation) f).getType()).simplify();
         }
         return f.div(Variable.create(var).pow(exponent)).simplify();
-    }
-
-    /**
-     * Liefert, den maximalen Grad d eines Monoms, so dass das durch die
-     * Koeffizienten coefficientsOfDivisionRest gegebene Polynom eine
-     * Substitution durch ein Monom des Grades d erlaubt.<br>
-     * BEISPIEL: Beim Polynom x^15 + 2*x^10 + 7*x^5 + 1 wird der Wert 5
-     * zurückgegeben. -> Später Substitution x^5 = t möglich.
-     */
-    private static int getMaximalMonomial(ExpressionCollection coefficients, String var) {
-        int result = 0;
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            if (i != 0 && !coefficients.get(i).equals(Expression.ZERO)) {
-                if (result == 0) {
-                    result = i;
-                } else {
-                    result = ArithmeticMethods.gcd(result, i);
-                }
-            }
-        }
-        return result;
     }
 
     /**
@@ -156,7 +137,7 @@ public abstract class PolynomialRootsMethods {
          Fall: f is ein Polynom in nichttrivialen Monomen. -> Substitution x^m
          = y und dann zuerst nach y auflösen und dann nach x.
          */
-        int m = getMaximalMonomial(coefficients, var);
+        int m = SimplifyPolynomialMethods.getGGTOfAllExponents(coefficients);
         if (m > 1 && degree / m <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
             ExpressionCollection coefficientsOfSubstitutedPolynomial = substituteMonomialInPolynomial(coefficients, m, var);
             ExpressionCollection zerosOfSubstitutedPolynomial = solvePolynomialEquation(coefficientsOfSubstitutedPolynomial, var);
@@ -304,7 +285,6 @@ public abstract class PolynomialRootsMethods {
         return new BigInteger[0];
 
     }
-
 
     /**
      * Falls die Koeffizienten coefficients[i] des Polynoms alle rational sind,
@@ -456,56 +436,52 @@ public abstract class PolynomialRootsMethods {
          + pz + q = 0
          */
         Expression p = B.sub(A.pow(2).div(3)).simplify();
-        Expression q = Expression.TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
+        Expression q = TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
 
         // Diskriminante discriminant = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
         Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
 
         if (!discriminant.isAlwaysNonNegative() && !discriminant.isAlwaysNonPositive()) {
-
-            Expression radicand = new Constant(-27).div(p.pow(3)).simplify();
-            if (!radicand.isConstant() || radicand.isNonNegative()) {
-                // Casus irreduzibilis.
-                Expression arg = Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
-                Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2).simplify();
-                zeros.put(0, factor.mult(arg.cos()).sub(A.div(3)).simplify());
-                zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
-                zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
-            } else {
-                Expression u = (discriminant.pow(Expression.ONE.div(2)).sub(q.div(2)).simplify()).pow(1, 3);
-                Expression v = Expression.MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
-                zeros.put(0, u.add(v).sub(A.div(3)).simplify());
-            }
+            /* 
+             Dann ist die Diskriminante nichtkonstant und hat kein eindeutiges Vorzeichen. 
+             In diesem Fall drei abstrakte Lösungen (gemäß Casus irreduzibilis) zurückgeben.
+             */
+            Expression arg = MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
+            Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2).simplify();
+            zeros.put(0, factor.mult(arg.cos()).sub(A.div(3)).simplify());
+            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(PI.div(3)).cos()).sub(A.div(3)).simplify());
             return zeros;
         }
 
-        if (discriminant.isNonPositive() && !discriminant.equals(Expression.ZERO)) {
+        if (discriminant.isAlwaysNegative()) {
             // Casus irreduzibilis.
-            Expression arg = new Function(Expression.MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)),
-                    TypeFunction.arccos).div(3).simplify();
+            Expression arg = MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
             Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2);
             zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(A.div(3)).simplify());
-            zeros.put(1, Expression.MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
-            zeros.put(2, Expression.MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
             return zeros;
-        } else if (discriminant.equals(Expression.ZERO)) {
-            // Auflösung nach Cardano-Formel: x = 2*(-q/2)^(1/3).
-            zeros.put(0, Expression.TWO.mult((q.div(-2)).pow(1, 3)).sub(A.div(3)).simplify());
+        } else if (discriminant.equals(ZERO)) {
+            // Auflösung nach Cardano-Formel: 
+            // Doppellösung z = (q/2)^(1/3)
+            zeros.put(0, (q.div(2).pow(1, 3)).sub(A.div(3)).simplify());
+            // Einfache Lösung z = (-4q)^(1/3)
+            zeros.put(1, new Constant(-4).mult(q).pow(1, 3).sub(A.div(3)).simplify());
             return zeros;
         }
 
         /*
          In diesem Fall ist discriminant positiv. Auflösung nach
-         Cardano-Formel: x = (-q/2 + diskriminant^(1/2))^(1/3) + (-q/2 -
-         diskriminant^(1/2))^(1/3).
+         Cardano-Formel: z = (-q/2 + discriminant^(1/2))^(1/3) + (-q/2 -
+         discriminant^(1/2))^(1/3).
          */
         Expression u = (discriminant.pow(1, 2).sub(q.div(2)).simplify()).pow(1, 3);
-        Expression v = Expression.MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
+        Expression v = MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
         zeros.put(0, u.add(v).sub(A.div(3)).simplify());
         return zeros;
 
     }
-
 
     /**
      * Ermittelt die Nullstellen des Polynoms mit den Koeffizienten

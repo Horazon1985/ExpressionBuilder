@@ -142,6 +142,14 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
+        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+
+        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
+            throw new NotPreciseIntegrableException();
+        }
+        
         ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
         BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
@@ -235,6 +243,14 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
+        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+
+        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
+            throw new NotPreciseIntegrableException();
+        }
+        
         ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
@@ -770,7 +786,7 @@ public abstract class SpecialIntegrationMethods {
      * nicht vom angegebenen Typ ist, so wird false zurückgegeben.
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
     private static Expression integrateReciprocalOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
@@ -784,6 +800,12 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        
+        if (degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
+            throw new NotPreciseIntegrableException();
+        }
+        
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
@@ -923,7 +945,7 @@ public abstract class SpecialIntegrationMethods {
      * nicht vom angegebenen Typ ist, so wird false zurückgegeben.
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
     public static Expression integrateQuotientOfLinearAndOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
@@ -938,6 +960,14 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
+        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        
+        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0){
+            throw new NotPreciseIntegrableException();
+        }
+        
         ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
