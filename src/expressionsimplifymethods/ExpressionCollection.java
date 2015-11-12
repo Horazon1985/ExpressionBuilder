@@ -1,8 +1,11 @@
 package expressionsimplifymethods;
 
 import exceptions.EvaluationException;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -21,6 +24,24 @@ public class ExpressionCollection {
         this.bound = 0;
         for (int i = 0; i < terms.bound; i++) {
             this.add(terms.get(i));
+        }
+    }
+
+    public ExpressionCollection(Object... terms) {
+        this.terms = new HashMap<>();
+        this.bound = 0;
+        for (Object term : terms) {
+            if (term != null) {
+                if (term instanceof Expression) {
+                    this.add((Expression) term);
+                } else if (term instanceof BigInteger) {
+                    this.add(new Constant((BigInteger) term));
+                } else if (term instanceof BigDecimal) {
+                    this.add(new Constant((BigDecimal) term));
+                } else if (term instanceof Integer) {
+                    this.add(new Constant((int) term));
+                }
+            }
         }
     }
 

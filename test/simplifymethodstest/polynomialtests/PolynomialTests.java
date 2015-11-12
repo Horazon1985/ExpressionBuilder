@@ -25,6 +25,24 @@ public class PolynomialTests {
     public static void tearDownClass() throws Exception {
     }
 
+    @Test
+    public void periodicCoefficientsTest1() {
+        ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 1, -4);
+        Assert.assertTrue(SimplifyPolynomialMethods.getPeriodOfCoefficients(c) == 3);
+    }
+
+    @Test
+    public void periodicCoefficientsTest2() {
+        ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 7, -4);
+        Assert.assertTrue(SimplifyPolynomialMethods.getPeriodOfCoefficients(c) == 6);
+    }
+
+    @Test
+    public void antiperiodicCoefficientsTest1() {
+        ExpressionCollection c = new ExpressionCollection(2, 1, -4, -2, -1, 4, 2, 1, 4);
+        Assert.assertTrue(SimplifyPolynomialMethods.getAntiperiodOfCoefficients(c) == 3);
+    }
+
     // Tests für Polynomdivision.
     @Test
     public void polynomialDivisionTest1() {
@@ -40,7 +58,7 @@ public class PolynomialTests {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     // Tests für die Berechnung des ggT von Polynomen.
     @Test
     public void getGGTOfPolynomialsTest1() {

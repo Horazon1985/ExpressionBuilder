@@ -714,27 +714,46 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static int getAntiperiodOfCoefficients(ExpressionCollection coefficients) {
 
-        int l = getPeriodOfCoefficients(coefficients);
-        if (l % 2 != 0) {
-            return coefficients.getBound();
-        }
+        int l = coefficients.getBound();
+        HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
+        ExpressionCollection periodForCompare;
+        ExpressionCollection currentPeriod;
+        Expression sum;
 
-        ExpressionCollection firstHalfOfPeriod = ExpressionCollection.copy(coefficients, 0, l / 2);
-        ExpressionCollection secondHalfOfPeriod = ExpressionCollection.copy(coefficients, l / 2 + 1, l);
-
-        Expression sumOfTerms;
-
-        try {
-            for (int i = 0; i < l / 2; i++) {
-                sumOfTerms = firstHalfOfPeriod.get(i).add(secondHalfOfPeriod.get(i)).simplify();
-                if (!sumOfTerms.equals(ZERO)) {
-                    return coefficients.getBound();
+        boolean periodFound;
+        for (int i = 0; i < cycleLengths.size(); i++) {
+            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLengths.get(i).intValue());
+            periodFound = true;
+            for (int j = 1; j < coefficients.getBound() / cycleLengths.get(i).intValue(); j++) {
+                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLengths.get(i).intValue(), (j + 1) * cycleLengths.get(i).intValue());
+                if (j % 2 == 1) {
+                    for (int k = 0; k < periodForCompare.getBound(); k++) {
+                        try {
+                            sum = periodForCompare.get(k).add(currentPeriod.get(k)).simplify();
+                            if (!sum.equals(ZERO)) {
+                                periodFound = false;
+                                break;
+                            }
+                        } catch (EvaluationException e) {
+                            periodFound = false;
+                            break;
+                        }
+                    }
+                } else {
+                    if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
+                        periodFound = false;
+                        break;
+                    }
+                }
+                if (!periodFound){
+                    break;
                 }
             }
-            return l / 2;
-        } catch (EvaluationException e) {
-            return coefficients.getBound();
+            if (periodFound) {
+                return cycleLengths.get(i).intValue();
+            }
         }
+        return coefficients.getBound();
 
     }
 
