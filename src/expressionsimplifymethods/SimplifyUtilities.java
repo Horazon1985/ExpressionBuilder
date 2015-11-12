@@ -490,17 +490,15 @@ public abstract class SimplifyUtilities {
      * Liefert Faktoren im Zähler eines Ausdrucks. VORAUSSETZUNG: Der Ausdruck
      * muss in folgender Form sein, falls in diesem Quotienten auftauchen: (...)
      * / (...). Verboten sind also Ausdrücke wie a/(b/c) etc. Ist expr kein
-     * Quotient, so wird expr als Zähler angesehen. BEISPIEL:
-     * (a*b^2*exp(x))/(u*v) liefert die Faktoren {a, b^2, exp(x)} (als
+     * Quotient, so wird expr als Zähler angesehen.<br>
+     * BEISPIEL: (a*b^2*exp(x))/(u*v) liefert die Faktoren {a, b^2, exp(x)} (als
      * ExpressionCollection, nummeriert via 0, 1, 2).
      */
     public static ExpressionCollection getFactorsOfEnumeratorInExpression(Expression expr) {
-
         if (expr.isQuotient()) {
             return getFactors(((BinaryOperation) expr).getLeft());
         }
         return getFactors(expr);
-
     }
 
     /**

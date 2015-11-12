@@ -3,7 +3,10 @@ package simplifymethodstest.polynomialtests;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Expression;
+import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
+import expressionsimplifymethods.SimplifyUtilities;
+import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
@@ -43,6 +46,21 @@ public class PolynomialTests {
             fFactorized = Expression.build("(4*x^2+3*x+25)*(1+x)*((1+x^2)-x)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
+    @Test
+    public void decomposePolynomialTest3() {
+        // Zerlegung von x^3+5*x+7 in irreduzible Faktoren.
+        try {
+            f = Expression.build("x^3+5*x+7", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+            Assert.assertTrue(factors.getBound() == 2);
+            Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
+            Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(1), "x").compareTo(BigInteger.valueOf(2)) == 0);
         } catch (ExpressionException | EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }

@@ -229,6 +229,7 @@ public abstract class SimplifyPolynomialMethods {
      * faktorisiert.
      */
     public static Expression decomposePolynomialInIrreducibleFactors(Expression f, String var) throws EvaluationException {
+
         if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
             return f;
         }
@@ -249,11 +250,29 @@ public abstract class SimplifyPolynomialMethods {
         }
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
 
+        try {
+            return decomposePeriodicPolynomial(a, var);
+        } catch (PolynomialNotDecomposableException e) {
+        }
+
+        if (isPolynomialCyclic(a)) {
+            try {
+                Expression b = MINUS_ONE.mult(a.get(0)).div(a.get(a.getBound() - 1)).simplify();
+                return decomposeCyclicPolynomial(a.getBound() - 1, b, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
+        }
+
         if (isPolynomialRational(a)) {
             try {
                 return decomposeRationalPolynomial(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
+        }
+
+        try {
+            return decomposePolynomialInMonomial(a, var);
+        } catch (PolynomialNotDecomposableException e) {
         }
 
         if (a.getBound() == 3) {
@@ -267,24 +286,6 @@ public abstract class SimplifyPolynomialMethods {
                 return decomposeCubicPolynomial(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
-        }
-
-        if (isPolynomialCyclic(a)) {
-            try {
-                Expression b = MINUS_ONE.mult(a.get(0)).div(a.get(a.getBound() - 1)).simplify();
-                return decomposeCyclicPolynomial(a.getBound() - 1, b, var);
-            } catch (PolynomialNotDecomposableException e) {
-            }
-        }
-
-        try {
-            return decomposePeriodicPolynomial(a, var);
-        } catch (PolynomialNotDecomposableException e) {
-        }
-
-        try {
-            return decomposePolynomialInMonomial(a, var);
-        } catch (PolynomialNotDecomposableException e) {
         }
 
         // Dann konnte das Polynom nicht faktorisiert werden.
@@ -446,7 +447,7 @@ public abstract class SimplifyPolynomialMethods {
 
         int m = getPeriodOfCoefficients(a);
 
-        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == a.getBound()) {
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == 1 || m == a.getBound()) {
             throw new PolynomialNotDecomposableException();
         }
 
@@ -582,6 +583,27 @@ public abstract class SimplifyPolynomialMethods {
             quotient[1].put(i, coeffcicientsEnumeratorCopy.get(i));
         }
         return quotient;
+    }
+
+    public static Expression getGGTOfPolynomials(Expression f, Expression g, String var) {
+
+        try {
+
+            ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+            ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
+
+            if (!isPolynomialRational(coefficientsF) || !isPolynomialRational(coefficientsG)) {
+                return ONE;
+            }
+
+            
+            
+            return ONE;
+            
+        } catch (EvaluationException e) {
+            return ONE;
+        }
+
     }
 
     /**

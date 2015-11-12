@@ -14,6 +14,7 @@ import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
+import java.util.HashSet;
 import linearalgebraalgorithms.GaussAlgorithm;
 import matrixexpressionbuilder.Matrix;
 
@@ -37,6 +38,22 @@ public abstract class PartialFractionDecompositionMethods {
 
     }
 
+    private static final HashSet<TypeSimplify> simplifyTypesForPFD = getSimplifyTypesForPFD();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesForPFD() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_expand_powerful);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        return simplifyTypes;
+    }
+
     /**
      * Hauptmethode für die Zerlegung einer rationalen Funktion f in
      * Partialbrüche.
@@ -44,7 +61,7 @@ public abstract class PartialFractionDecompositionMethods {
     public static Expression getPartialFractionDecomposition(Expression f, String var) throws EvaluationException {
 
         try {
-            
+
             if (!isRationalFunctionInCanonicalForm(f, var)) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
@@ -68,6 +85,9 @@ public abstract class PartialFractionDecompositionMethods {
             Expression polynomialPart = polynomialAndFractionalPartOfF[0];
             Expression fractionalPart = polynomialAndFractionalPartOfF[1];
 
+            System.out.println("polPart = " + polynomialPart.toString());
+            System.out.println("fracPart = " + fractionalPart.toString());
+
             // Sicherheitsabfrage.
             if (fractionalPart.isNotQuotient()) {
                 throw new PartialFractionDecompositionNotComputableException();
@@ -76,7 +96,10 @@ public abstract class PartialFractionDecompositionMethods {
             ExpressionCollection coefficientsForCompare = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fractionalPart).getLeft(), var);
 
             // f schreiben als: Zähler ausmultipliziert und zusammengefasst, Nenner faktorisiert.
-            fractionalPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
+            fractionalPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
+                    SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
+
+            System.out.println("fracPart faktorisiert = " + fractionalPart.toString());
 
             if (!isDenominatorOfCorrectForm(((BinaryOperation) fractionalPart).getRight(), var)) {
                 // Dann kann keine Partialbruchzerlegung ermittelt werden.
@@ -95,6 +118,8 @@ public abstract class PartialFractionDecompositionMethods {
             Expression approachForPFD = getPartialFractionDecompositionApproach((BinaryOperation) fractionalPart, var);
             Expression[] coefficientsForPFD;
 
+            System.out.println("Ansatz für PBZ = " + approachForPFD.toString());
+
             if (!(approachForPFD instanceof BinaryOperation)) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
@@ -112,6 +137,8 @@ public abstract class PartialFractionDecompositionMethods {
                  */
                 Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
 
+                System.out.println("Ansatz für PBZ als ein Bruch = " + approachForPFDAsOneFraction.toString());
+
                 if (approachForPFDAsOneFraction.isNotQuotient()) {
                     throw new PartialFractionDecompositionNotComputableException();
                 }
@@ -120,14 +147,21 @@ public abstract class PartialFractionDecompositionMethods {
                 Expression enumeratorInPFDApproach = ((BinaryOperation) approachForPFDAsOneFraction).getLeft();
 
                 // Nun Koeffizientenvergleich durchführen.
-                enumeratorInPFDApproach = enumeratorInPFDApproach.simplify(TypeSimplify.order_difference_and_division,
-                        TypeSimplify.order_sums_and_products, TypeSimplify.simplify_trivial,
-                        TypeSimplify.simplify_expand_powerful, TypeSimplify.simplify_expand_rational_factors, 
-                        TypeSimplify.simplify_pull_apart_powers, TypeSimplify.simplify_collect_products, TypeSimplify.simplify_reduce_quotients,
-                        TypeSimplify.simplify_reduce_leadings_coefficients);
+                enumeratorInPFDApproach = enumeratorInPFDApproach.simplify(simplifyTypesForPFD);
+
+                System.out.println("Zähler des Ansatzes für PBZ = " + enumeratorInPFDApproach.toString());
+
                 ExpressionCollection coefficientsOfEnumeratorInPFDApproach = SimplifyPolynomialMethods.getPolynomialCoefficients(enumeratorInPFDApproach, var);
 
+                System.out.println("Polynomkoeffizienten des Zählers des Ansatzes = " + coefficientsOfEnumeratorInPFDApproach.toString());
+
                 coefficientsForPFD = getCoefficientsForPFD(coefficientsOfEnumeratorInPFDApproach, coefficientsForCompare, n);
+
+                System.out.println("Koeffizienten für die PBZ:");
+                for (int k = 0; k < coefficientsForPFD.length; k++) {
+                    System.out.println("A_" + k + " = " + coefficientsForPFD[k].toString());
+                }
+
             }
 
             for (int i = 0; i < n; i++) {

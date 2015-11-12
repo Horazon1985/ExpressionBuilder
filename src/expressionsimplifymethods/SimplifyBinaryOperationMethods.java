@@ -869,14 +869,18 @@ public abstract class SimplifyBinaryOperationMethods {
              Subtrahenden mit dem entsprechenden Vorzeichen verschoben.
              */
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                if (summandsLeft.get(i) != null) {
-                    for (int j = i + 1; j < summandsLeft.getBound(); j++) {
-                        summand = summandsLeft.get(j);
-                        summandsLeft.remove(j);
-                        summandsRight.add(negateExpression(summand));
-                    }
-                    break;
+                if (summandsLeft.get(i) == null) {
+                    continue;
                 }
+                for (int j = i + 1; j < summandsLeft.getBound(); j++) {
+                    if (summandsLeft.get(j) == null) {
+                        continue;
+                    }
+                    summand = summandsLeft.get(j);
+                    summandsLeft.remove(j);
+                    summandsRight.add(negateExpression(summand));
+                }
+                break;
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
                 if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
