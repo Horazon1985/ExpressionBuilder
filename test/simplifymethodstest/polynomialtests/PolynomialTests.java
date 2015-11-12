@@ -15,8 +15,8 @@ import org.junit.Test;
 
 public class PolynomialTests {
 
-    Expression f, fFactorized;
-    
+    Expression f, g, fFactorized, ggT;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -25,6 +25,58 @@ public class PolynomialTests {
     public static void tearDownClass() throws Exception {
     }
 
+    // Tests für Polynomdivision.
+    @Test
+    public void polynomialDivisionTest1() {
+        // f = ??? und g = ???.
+        // Quotient = ??? und Rest = ???.
+        try {
+            f = Expression.build("6+5*x+x^2", null);
+            g = Expression.build("3+13*x+7*x^2+x^3", null);
+            ggT = Expression.build("3+x", null);
+            Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
+            Assert.assertTrue(expectedResult.equivalent(ggT));
+        } catch (ExpressionException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+    
+    // Tests für die Berechnung des ggT von Polynomen.
+    @Test
+    public void getGGTOfPolynomialsTest1() {
+        // ggT von f = 6+5*x+x^2 ( = (3+x)*(2+x)) und g = 3+13*x+7*x^2+x^3 ( = (3+x)*(1+4*x+x^2)).
+        // ggT = 3+x.
+        try {
+            f = Expression.build("6+5*x+x^2", null);
+            g = Expression.build("3+13*x+7*x^2+x^3", null);
+            ggT = Expression.build("3+x", null);
+            Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
+            Assert.assertTrue(expectedResult.equivalent(ggT));
+        } catch (ExpressionException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    // Tests für die Berechnung des ggT von Polynomen.
+    @Test
+    public void getGGTOfPolynomialsTest2() {
+        /* 
+         ggT von f = 64+244*x^2+41*x^4+352*x+136*x^3+x^6+9*x^5 ( = (x^2+5*x+1)*(x^2+2*x+8)^2) 
+         und g = x^5+4*x^3-(256+48*x^2+64*x) ( = (x-4)*(x^2+2*x+8)^2).
+         */
+        // ggT = 64+20*x^2+x^4+32*x+4*x^3 ( = (x^2+2*x+8)^2).
+        try {
+            f = Expression.build("64+244*x^2+41*x^4+352*x+136*x^3+x^6+9*x^5", null);
+            g = Expression.build("x^5+4*x^3-(256+48*x^2+64*x)", null);
+            ggT = Expression.build("64+20*x^2+x^4+32*x+4*x^3", null);
+            Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
+            Assert.assertTrue(expectedResult.equivalent(ggT));
+        } catch (ExpressionException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    // Tests für Polynomfaktorisierung.
     @Test
     public void decomposePolynomialTest1() {
         // Zerlegung von x^5-7 in irreduzible Faktoren.
@@ -37,7 +89,7 @@ public class PolynomialTests {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void decomposePolynomialTest2() {
         // Zerlegung von 4*x^5-7*x^4+2*x^3+4*x^2-7*x+2 in irreduzible Faktoren.
@@ -50,9 +102,22 @@ public class PolynomialTests {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
     @Test
     public void decomposePolynomialTest3() {
+        // Zerlegung von 12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8 in irreduzible Faktoren.
+        try {
+            f = Expression.build("12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8", null);
+            fFactorized = Expression.build("(12+2*x+x^2)*(1-x^3+x^6)", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void decomposePolynomialTest4() {
         // Zerlegung von x^3+5*x+7 in irreduzible Faktoren.
         try {
             f = Expression.build("x^3+5*x+7", null);
@@ -65,5 +130,5 @@ public class PolynomialTests {
             fail("f konnte nicht vereinfacht werden.");
         }
     }
-    
+
 }

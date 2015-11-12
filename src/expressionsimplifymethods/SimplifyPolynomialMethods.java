@@ -425,7 +425,7 @@ public abstract class SimplifyPolynomialMethods {
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
-                decomposedPolynomial = Variable.create(var).add(a.pow(1, n)).simplify();
+                decomposedPolynomial = Variable.create(var).sub(a.pow(1, n)).simplify();
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
@@ -456,6 +456,35 @@ public abstract class SimplifyPolynomialMethods {
 
         for (int i = 1; i < a.getBound() / m; i++) {
             secondFactor = secondFactor.add(Variable.create(var).pow(i * m));
+        }
+
+        polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
+        secondFactor = decomposePolynomialInIrreducibleFactors(secondFactor, var);
+
+        return polynomialOfPrimitivePeriod.mult(secondFactor);
+
+    }
+
+    /**
+     * Faktorisiert Polynome mit antiperiodischen Koeffizienten.
+     */
+    private static Expression decomposeAntiperiodicPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        int m = getAntiperiodOfCoefficients(a);
+
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == 1 || m == a.getBound()) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        Expression polynomialOfPrimitivePeriod = SimplifyPolynomialMethods.getPolynomialFromCoefficients(ExpressionCollection.copy(a, 0, m), var);
+        Expression secondFactor = ONE;
+
+        for (int i = 1; i < a.getBound() / m; i++) {
+            if (i % 2 == 1) {
+                secondFactor = secondFactor.sub(Variable.create(var).pow(i * m));
+            } else {
+                secondFactor = secondFactor.add(Variable.create(var).pow(i * m));
+            }
         }
 
         polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
@@ -553,6 +582,7 @@ public abstract class SimplifyPolynomialMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection[] polynomialDivision(ExpressionCollection coefficientsEnumerator, ExpressionCollection coefficientsDenominator) throws EvaluationException {
+
         ExpressionCollection[] quotient = new ExpressionCollection[2];
         quotient[0] = new ExpressionCollection();
         quotient[1] = new ExpressionCollection();
@@ -583,11 +613,26 @@ public abstract class SimplifyPolynomialMethods {
             quotient[1].put(i, coeffcicientsEnumeratorCopy.get(i));
         }
         return quotient;
+
     }
 
+    /**
+     * Gibt den ggT zweier Polynome f und g zurück, falls deren Koeffizienten
+     * rational sind. Ist f oder g kein Polynom in var, oder hat f oder g einen
+     * zu hohen Grad, so wird 1 zurückgegeben.
+     */
     public static Expression getGGTOfPolynomials(Expression f, Expression g, String var) {
 
         try {
+
+            BigInteger degF = degreeOfPolynomial(f, var);
+            BigInteger degG = degreeOfPolynomial(g, var);
+
+            if (degF.compareTo(BigInteger.ZERO) < 0 || degG.compareTo(BigInteger.ZERO) < 0
+                    || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
+                    || degG.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                return ONE;
+            }
 
             ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
             ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
@@ -596,25 +641,52 @@ public abstract class SimplifyPolynomialMethods {
                 return ONE;
             }
 
-            
-            
-            return ONE;
-            
+            ExpressionCollection coefficientsGGT = getGGTOfPolynomials(coefficientsF, coefficientsG);
+            return getPolynomialFromCoefficients(coefficientsGGT, var);
+
         } catch (EvaluationException e) {
             return ONE;
         }
 
     }
 
+    private static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
+
+        if (a.getBound() < b.getBound()) {
+            return getGGTOfPolynomials(b, a);
+        }
+
+        ExpressionCollection r = polynomialDivision(a, b)[1];
+
+        while (!r.isEmpty()) {
+            a = ExpressionCollection.copy(b);
+            b = ExpressionCollection.copy(r);
+            r = polynomialDivision(a, b)[1];
+        }
+
+        // Anschließend normieren!
+        if (b.getBound() > 0 && !ZERO.equals(b.get(b.getBound() - 1))) {
+            b.divByExpression(b.get(b.getBound() - 1));
+            b = b.simplify();
+        }
+
+        return b;
+
+    }
+
     /**
      * Liefert die kleinste Periode, unter welcher die Koeffizienten
-     * coefficients periodisch sind.
+     * coefficients periodisch sind.<br>
+     * BEISPIEL: Sind [1,3,-17,2,3,9,1,3,-17,2,3,9] die Koeffizienten von einem
+     * Polynom f (in aufsteigender Reihenfolge), so wird 6 zurückgegeben.
      */
     public static int getPeriodOfCoefficients(ExpressionCollection coefficients) {
+
         int l = coefficients.getBound();
         HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
         ExpressionCollection currentPeriod;
+
         boolean periodFound;
         for (int i = 0; i < cycleLengths.size(); i++) {
             periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLengths.get(i).intValue());
@@ -631,6 +703,39 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
         return coefficients.getBound();
+
+    }
+
+    /**
+     * Liefert die kleinste Periode, unter welcher die Koeffizienten
+     * coefficients antiperiodisch sind.<br>
+     * BEISPIEL: Sind [1,3,-17,-1,-3,17,1,3,-17,-1,-3,17] die Koeffizienten von
+     * einem Polynom f (in aufsteigender Reihenfolge), so wird 3 zurückgegeben.
+     */
+    public static int getAntiperiodOfCoefficients(ExpressionCollection coefficients) {
+
+        int l = getPeriodOfCoefficients(coefficients);
+        if (l % 2 != 0) {
+            return coefficients.getBound();
+        }
+
+        ExpressionCollection firstHalfOfPeriod = ExpressionCollection.copy(coefficients, 0, l / 2);
+        ExpressionCollection secondHalfOfPeriod = ExpressionCollection.copy(coefficients, l / 2 + 1, l);
+
+        Expression sumOfTerms;
+
+        try {
+            for (int i = 0; i < l / 2; i++) {
+                sumOfTerms = firstHalfOfPeriod.get(i).add(secondHalfOfPeriod.get(i)).simplify();
+                if (!sumOfTerms.equals(ZERO)) {
+                    return coefficients.getBound();
+                }
+            }
+            return l / 2;
+        } catch (EvaluationException e) {
+            return coefficients.getBound();
+        }
+
     }
 
     /**
