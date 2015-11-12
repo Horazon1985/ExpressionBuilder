@@ -1449,7 +1449,7 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyCollectProducts());
             }
             return SimplifyUtilities.produceSum(summands);
-        } else if (this.isDifference() || this.isQuotient() || this.isPower()) {
+        } else if (this.isNotProduct()) {
             // Im linken und rechten Teil einzeln Faktoren sammeln.
             return new BinaryOperation(this.left.simplifyCollectProducts(), this.right.simplifyCollectProducts(), this.type);
         }

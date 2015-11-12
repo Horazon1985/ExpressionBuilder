@@ -21,22 +21,24 @@ public abstract class Translator {
                 langFile = ClassLoader.getSystemResource("languages/LangComputationalClasses.xml");
             } else if (exceptionId.substring(0, 2).equals("EB")) {
                 langFile = ClassLoader.getSystemResource("languages/LangExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 3).equals("LEB")) {
-                langFile = ClassLoader.getSystemResource("languages/LangLogicalExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 3).equals("MEB")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMatrixExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 3).equals("MTF")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMathToolForm.xml");
-            } else if (exceptionId.substring(0, 3).equals("MCC")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMathCommandCompiler.xml");
-            } else if (exceptionId.substring(0, 3).equals("PRM")) {
-                langFile = ClassLoader.getSystemResource("languages/LangPolynomialRootMethods.xml");
-            } else if (exceptionId.substring(0, 2).equals("GR")) {
-                langFile = ClassLoader.getSystemResource("languages/LangGraphic.xml");
-            } else if (exceptionId.substring(0, 2).equals("SM")) {
-                langFile = ClassLoader.getSystemResource("languages/LangSimplifyMethods.xml");
+            } else if (exceptionId.substring(0, 2).equals("FC")) {
+                langFile = ClassLoader.getSystemResource("languages/LangFlowController.xml");
             } else if (exceptionId.substring(0, 3).equals("GUI")) {
                 langFile = ClassLoader.getSystemResource("languages/LangGUI.xml");
+            } else if (exceptionId.substring(0, 2).equals("GR")) {
+                langFile = ClassLoader.getSystemResource("languages/LangGraphic.xml");
+            } else if (exceptionId.substring(0, 3).equals("LEB")) {
+                langFile = ClassLoader.getSystemResource("languages/LangLogicalExpressionBuilder.xml");
+            } else if (exceptionId.substring(0, 3).equals("MCC")) {
+                langFile = ClassLoader.getSystemResource("languages/LangMathCommandCompiler.xml");
+            } else if (exceptionId.substring(0, 3).equals("MTF")) {
+                langFile = ClassLoader.getSystemResource("languages/LangMathToolForm.xml");
+            } else if (exceptionId.substring(0, 3).equals("MEB")) {
+                langFile = ClassLoader.getSystemResource("languages/LangMatrixExpressionBuilder.xml");
+            } else if (exceptionId.substring(0, 3).equals("PRM")) {
+                langFile = ClassLoader.getSystemResource("languages/LangPolynomialRootMethods.xml");
+            } else if (exceptionId.substring(0, 2).equals("SM")) {
+                langFile = ClassLoader.getSystemResource("languages/LangSimplifyMethods.xml");
             } else {
                 // Datei für unbekannten Fehler öffnen.
                 langFile = ClassLoader.getSystemResource("languages/LangUndefinedError.xml");
