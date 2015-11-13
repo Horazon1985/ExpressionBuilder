@@ -255,6 +255,11 @@ public abstract class SimplifyPolynomialMethods {
         } catch (PolynomialNotDecomposableException e) {
         }
 
+        try {
+            return decomposeAntiperiodicPolynomial(a, var);
+        } catch (PolynomialNotDecomposableException e) {
+        }
+
         if (isPolynomialCyclic(a)) {
             try {
                 Expression b = MINUS_ONE.mult(a.get(0)).div(a.get(a.getBound() - 1)).simplify();
@@ -586,15 +591,23 @@ public abstract class SimplifyPolynomialMethods {
         ExpressionCollection[] quotient = new ExpressionCollection[2];
         quotient[0] = new ExpressionCollection();
         quotient[1] = new ExpressionCollection();
-        ExpressionCollection multipleOfDenominator = new ExpressionCollection();
+
+        // Falls deg(Zähler) < deg(Nenner) -> fertig.
         if (coefficientsEnumerator.getBound() < coefficientsDenominator.getBound()) {
-            quotient[0].put(0, Expression.ZERO);
-            for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
-                quotient[1].put(i, coefficientsDenominator.get(i));
-            }
+            quotient[1] = new ExpressionCollection(coefficientsEnumerator);
             return quotient;
         }
+
+        /* 
+         Division durch ein Nullpolynom. Sollte bei vernünftigen Anwendungen nicht passieren 
+         (und muss im Vorfeld geprüft werden).
+         */
+        if (coefficientsDenominator.isEmpty()) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
+        }
+        
         int degreeDenominator = coefficientsDenominator.getBound() - 1;
+        ExpressionCollection multipleOfDenominator = new ExpressionCollection();
         ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsEnumerator);
         for (int i = coeffcicientsEnumeratorCopy.getBound() - 1; i >= degreeDenominator; i--) {
             quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify());
@@ -682,6 +695,10 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static int getPeriodOfCoefficients(ExpressionCollection coefficients) {
 
+        if (coefficients.isEmpty()) {
+            return 0;
+        }
+
         int l = coefficients.getBound();
         HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
@@ -714,6 +731,10 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static int getAntiperiodOfCoefficients(ExpressionCollection coefficients) {
 
+        if (coefficients.isEmpty()) {
+            return 0;
+        }
+
         int l = coefficients.getBound();
         HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
@@ -745,7 +766,7 @@ public abstract class SimplifyPolynomialMethods {
                         break;
                     }
                 }
-                if (!periodFound){
+                if (!periodFound) {
                     break;
                 }
             }

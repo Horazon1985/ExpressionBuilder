@@ -103,8 +103,29 @@ public class ExpressionCollection {
     }
 
     /**
+     * Gibt zurück, ob die vorliegende ExpressionCollection gleich der
+     * ExpressionCollection exprCol ist. Die Elemente werden mit der Methode
+     * equals() der Klasse Expression verglichen.
+     */
+    public boolean equals(ExpressionCollection exprCol) {
+        if (this.bound != exprCol.bound) {
+            return false;
+        }
+        for (int i = 0; i < this.bound; i++) {
+            if (this.terms.get(i) == null && exprCol.terms.get(i) != null
+                    || this.terms.get(i) != null && exprCol.terms.get(i) == null) {
+                return false;
+            }
+            if (!this.terms.get(i).equals(exprCol.terms.get(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Gibt zurück, ob die vorliegende ExpressionCollection und exprCol Mengen
-     * mit äquivalente Termen bilden.
+     * mit äquivalente Termen bilden (also ungeachtet der Reihenfolge).
      */
     public boolean equivalent(ExpressionCollection exprCol) {
         return SimplifyUtilities.difference(this, exprCol).isEmpty() && SimplifyUtilities.difference(exprCol, this).isEmpty();
