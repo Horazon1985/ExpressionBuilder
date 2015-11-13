@@ -1,9 +1,10 @@
 package matrixsimplifymethods;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import matrixexpressionbuilder.MatrixExpression;
 
-public class MatrixExpressionCollection {
+public class MatrixExpressionCollection implements Iterable<MatrixExpression> {
 
     private final HashMap<Integer, MatrixExpression> matrixTerms;
     private int bound;
@@ -113,4 +114,30 @@ public class MatrixExpressionCollection {
 
     }
 
+    @Override
+    public Iterator<MatrixExpression> iterator() {
+        return new Iterator<MatrixExpression>() {
+            
+            private int currentIndex = -1;
+            
+            @Override
+            public boolean hasNext() {
+                return this.currentIndex < getBound() - 1;
+            }
+
+            @Override
+            public MatrixExpression next() {
+                for (int i = this.currentIndex + 1; i < getBound() - 1; i++){
+                    if (get(i) != null){
+                        this.currentIndex = i;
+                        return get(i);
+                    }
+                }
+                this.currentIndex = getBound() - 1;
+                return get(getBound() - 1);
+            }
+
+        };
+    }
+    
 }

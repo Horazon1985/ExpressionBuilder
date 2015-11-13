@@ -3,6 +3,9 @@ package simplifymethodstest.expressiontests;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.ONE;
+import static expressionbuilder.Expression.THREE;
+import static expressionbuilder.Expression.TWO;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.util.HashSet;
@@ -168,6 +171,51 @@ public class ExpressionCollectionTest {
         } catch (ExpressionException e) {
             fail("Testfehler!");
         }
+    }
+    
+    @Test
+    public void iteratorTest1() {
+        ExpressionCollection terms = new ExpressionCollection();
+        terms.put(0, ONE);
+        terms.put(2, TWO);
+        terms.put(3, Variable.create("x"));
+        terms.put(7, THREE);
+        terms.put(18, ONE.div(TWO));
+        
+        int i = 0;
+        for (Expression term : terms){
+            i++;
+        }
+        
+        assertTrue(i == 5);
+    }
+
+    @Test
+    public void iteratorTest2() {
+        ExpressionCollection terms = new ExpressionCollection();
+        terms.put(7, ONE);
+        terms.put(8, TWO);
+        terms.put(15, Variable.create("x"));
+        terms.put(27, THREE);
+
+        int i = 0;
+        for (Expression term : terms){
+            i++;
+        }
+        
+        assertTrue(i == 4);
+    }
+    
+    @Test
+    public void iteratorEmptyTest() {
+        ExpressionCollection terms = new ExpressionCollection();
+        
+        int i = 0;
+        for (Expression term : terms){
+            i++;
+        }
+        
+        assertTrue(i == 0);
     }
     
 }

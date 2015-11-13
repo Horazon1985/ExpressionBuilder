@@ -1,9 +1,10 @@
 package logicalsimplifymethods;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import logicalexpressionbuilder.LogicalExpression;
 
-public class LogicalExpressionCollection {
+public class LogicalExpressionCollection implements Iterable<LogicalExpression> {
 
     private final HashMap<Integer, LogicalExpression> logTerms;
     private int bound;
@@ -84,6 +85,32 @@ public class LogicalExpressionCollection {
         result.bound = terms.bound;
         return result;
 
+    }
+    
+    @Override
+    public Iterator<LogicalExpression> iterator() {
+        return new Iterator<LogicalExpression>() {
+            
+            private int currentIndex = -1;
+            
+            @Override
+            public boolean hasNext() {
+                return this.currentIndex < getBound() - 1;
+            }
+
+            @Override
+            public LogicalExpression next() {
+                for (int i = this.currentIndex + 1; i < getBound() - 1; i++){
+                    if (get(i) != null){
+                        this.currentIndex = i;
+                        return get(i);
+                    }
+                }
+                this.currentIndex = getBound() - 1;
+                return get(getBound() - 1);
+            }
+
+        };
     }
     
 }

@@ -8,8 +8,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
-public class ExpressionCollection {
+public class ExpressionCollection implements Iterable<Expression> {
 
     private final HashMap<Integer, Expression> terms;
     private int bound;
@@ -127,7 +128,7 @@ public class ExpressionCollection {
      * Gibt zurück, ob die vorliegende ExpressionCollection und exprCol Mengen
      * mit äquivalente Termen bilden (also ungeachtet der Reihenfolge).
      */
-    public boolean equivalent(ExpressionCollection exprCol) {
+    public boolean equivalentInTerms(ExpressionCollection exprCol) {
         return SimplifyUtilities.difference(this, exprCol).isEmpty() && SimplifyUtilities.difference(exprCol, this).isEmpty();
     }
 
@@ -306,6 +307,32 @@ public class ExpressionCollection {
             }
         }
         return result;
+    }
+
+    @Override
+    public Iterator<Expression> iterator() {
+        return new Iterator<Expression>() {
+            
+            private int currentIndex = -1;
+            
+            @Override
+            public boolean hasNext() {
+                return this.currentIndex < getBound() - 1;
+            }
+
+            @Override
+            public Expression next() {
+                for (int i = this.currentIndex + 1; i < getBound() - 1; i++){
+                    if (get(i) != null){
+                        this.currentIndex = i;
+                        return get(i);
+                    }
+                }
+                this.currentIndex = getBound() - 1;
+                return get(getBound() - 1);
+            }
+
+        };
     }
 
 }

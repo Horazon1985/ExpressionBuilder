@@ -1781,8 +1781,8 @@ public class BinaryOperation extends Expression {
                 }
 
                 // Falls die nichtrationalen Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
-                if (!nonRationalEnumeratorsLeft.equivalent(nonRationalEnumeratorsRight)
-                        || !nonRationalDenominatorsLeft.equivalent(nonRationalDenominatorsRight)) {
+                if (!nonRationalEnumeratorsLeft.equivalentInTerms(nonRationalEnumeratorsRight)
+                        || !nonRationalDenominatorsLeft.equivalentInTerms(nonRationalDenominatorsRight)) {
                     continue;
                 }
 
@@ -1917,8 +1917,8 @@ public class BinaryOperation extends Expression {
                 }
 
                 // Falls die nichtkonstanten Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
-                if (!nonRationalEnumeratorsLeft.equivalent(nonRationalEnumeratorsRight)
-                        || !nonRationalDenominatorsLeft.equivalent(nonRationalDenominatorsRight)) {
+                if (!nonRationalEnumeratorsLeft.equivalentInTerms(nonRationalEnumeratorsRight)
+                        || !nonRationalDenominatorsLeft.equivalentInTerms(nonRationalDenominatorsRight)) {
                     continue;
                 }
 
