@@ -227,6 +227,8 @@ public abstract class SimplifyPolynomialMethods {
      * Zerlegt ein Polynom in Linearteile, soweit es geht.<br>
      * BEISPIEL wird 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) zu (x-1)^2*(x-2)*(x^2+1)
      * faktorisiert.
+     *
+     * @throws EvaluationException
      */
     public static Expression decomposePolynomialInIrreducibleFactors(Expression f, String var) throws EvaluationException {
 
@@ -248,7 +250,19 @@ public abstract class SimplifyPolynomialMethods {
             }
             return SimplifyUtilities.produceProduct(factors);
         }
+        
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+        return decomposePolynomialInIrreducibleFactors(a, var);
+
+    }
+
+    /**
+     * Faktorisiert ein Polynom, welches durch seine Koeffizienten a gegeben
+     * ist.
+     *
+     * @throws EvaluationException
+     */
+    private static Expression decomposePolynomialInIrreducibleFactors(ExpressionCollection a, String var) throws EvaluationException {
 
         try {
             return decomposePeriodicPolynomial(a, var);
@@ -273,6 +287,10 @@ public abstract class SimplifyPolynomialMethods {
                 return decomposeRationalPolynomial(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
+            try {
+                return decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
         }
 
         try {
@@ -293,8 +311,7 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
 
-        // Dann konnte das Polynom nicht faktorisiert werden.
-        return f;
+        return getPolynomialFromCoefficients(a, var);
 
     }
 
@@ -456,17 +473,20 @@ public abstract class SimplifyPolynomialMethods {
             throw new PolynomialNotDecomposableException();
         }
 
-        Expression polynomialOfPrimitivePeriod = SimplifyPolynomialMethods.getPolynomialFromCoefficients(ExpressionCollection.copy(a, 0, m), var);
-        Expression secondFactor = ONE;
+        ExpressionCollection coefficientsSecondFactor = new ExpressionCollection();
 
-        for (int i = 1; i < a.getBound() / m; i++) {
-            secondFactor = secondFactor.add(Variable.create(var).pow(i * m));
+        for (int i = 0; i < a.getBound() - m + 1; i++) {
+            if (i % m == 0) {
+                coefficientsSecondFactor.put(i, ONE);
+            } else {
+                coefficientsSecondFactor.put(i, ZERO);
+            }
         }
 
-        polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
-        secondFactor = decomposePolynomialInIrreducibleFactors(secondFactor, var);
+        Expression polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(ExpressionCollection.copy(a, 0, m), var);
+        Expression secondFactor = decomposePolynomialInIrreducibleFactors(coefficientsSecondFactor, var);
 
-        return polynomialOfPrimitivePeriod.mult(secondFactor);
+        return polynomialOfPrimitivePeriod.mult(secondFactor).simplify(simplifyTypesDecomposePolynomial);
 
     }
 
@@ -495,7 +515,7 @@ public abstract class SimplifyPolynomialMethods {
         polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(polynomialOfPrimitivePeriod, var);
         secondFactor = decomposePolynomialInIrreducibleFactors(secondFactor, var);
 
-        return polynomialOfPrimitivePeriod.mult(secondFactor);
+        return polynomialOfPrimitivePeriod.mult(secondFactor).simplify(simplifyTypesDecomposePolynomial);
 
     }
 
@@ -540,7 +560,8 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Faktorisiert rationale Polynome.
+     * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
+     * VORAUSSETZUNG: alle Elemente von a sind rational.
      */
     private static Expression decomposeRationalPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
@@ -550,7 +571,12 @@ public abstract class SimplifyPolynomialMethods {
             throw new PolynomialNotDecomposableException();
         }
 
-        Expression result = SimplifyPolynomialMethods.getPolynomialFromCoefficients(restCoefficients, var).simplify();
+        /* 
+         Das Polynom, welches durch den Divisionsrest durch alle Linearfaktoren gegeben ist, 
+         muss ebenfalls noch faktorisiert werden.
+         */
+        
+        Expression result = decomposePolynomialInIrreducibleFactors(restCoefficients, var);
         int l = zeros.getBound();
         Expression currentZero = zeros.get(0);
         int currentMultiplicity = 1;
@@ -572,7 +598,31 @@ public abstract class SimplifyPolynomialMethods {
             result = result.mult((Variable.create(var).sub(currentZero).simplify()).pow(currentMultiplicity));
         }
 
-        return a.get(a.getBound() - 1).mult(result);
+        return a.get(a.getBound() - 1).mult(result).simplify(simplifyTypesDecomposePolynomial);
+
+    }
+
+    /**
+     * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
+     * VORAUSSETZUNG: alle Elemente von a sind rational.
+     */
+    private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
+
+        for (int i = 0; i < a.getBound() - 1; i++) {
+            coefficientsOfDerivative.put(i, new Constant(i + 1).mult(a.get(i + 1)).simplify());
+        }
+
+        ExpressionCollection ggT = getGGTOfPolynomials(a, coefficientsOfDerivative);
+
+        if (ggT.getBound() < 2) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        // Dann gibt es einen nichttrivialen ggT.
+        ExpressionCollection quotient = polynomialDivision(a, ggT)[0];
+        return decomposePolynomialInIrreducibleFactors(quotient, var).mult(decomposePolynomialInIrreducibleFactors(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
 
     }
 
@@ -605,7 +655,7 @@ public abstract class SimplifyPolynomialMethods {
         if (coefficientsDenominator.isEmpty()) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
         }
-        
+
         int degreeDenominator = coefficientsDenominator.getBound() - 1;
         ExpressionCollection multipleOfDenominator = new ExpressionCollection();
         ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsEnumerator);

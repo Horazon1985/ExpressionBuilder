@@ -233,14 +233,26 @@ public class PolynomialTests {
 
     @Test
     public void decomposePolynomialTest5() {
+        // Zerlegung von f = 144+33*x^2+x^4+72*x+6*x^3 = (x^2+3*x+12)^2 in irreduzible Faktoren.
+        try {
+            f = Expression.build("144+33*x^2+x^4+72*x+6*x^3", null);
+            fFactorized = Expression.build("(x^2+3*x+12)^2", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
+    @Test
+    public void decomposePolynomialTest6() {
         /* 
-         Zerlegung von f = x^9-(50+5*x^3+2*x^6) in irreduzible Faktoren.
-         f wird zunächst in (x^6+3*x^3+10)*(x^3-5) zerlegt, der zweite Faktor anschließend 
-         in (x-5^(1/3))*(5^(2/3)+5^(1/3)*x+x^2). 
+         Zerlegung von f = 248832+259200*x^2+61020*x^4+5085*x^6+150*x^8+x^10
+         +311040*x+142560*x^3+19683*x^5+990*x^7+15*x^9 = (x^2+3*x+12)^5 in irreduzible Faktoren.
          */
         try {
-            f = Expression.build("x^9-(50+5*x^3+2*x^6)", null);
-            fFactorized = Expression.build("(x^6+3*x^3+10)*(x-5^(1/3))*(5^(2/3)+5^(1/3)*x+x^2)", null);
+            f = Expression.build("248832+259200*x^2+61020*x^4+5085*x^6+150*x^8+x^10+311040*x+142560*x^3+19683*x^5+990*x^7+15*x^9", null);
+            fFactorized = Expression.build("(x^2+3*x+12)^5", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
