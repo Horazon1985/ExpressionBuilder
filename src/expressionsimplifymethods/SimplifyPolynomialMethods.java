@@ -250,7 +250,7 @@ public abstract class SimplifyPolynomialMethods {
             }
             return SimplifyUtilities.produceProduct(factors);
         }
-        
+
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
         return decomposePolynomialInIrreducibleFactors(a, var);
 
@@ -263,6 +263,10 @@ public abstract class SimplifyPolynomialMethods {
      * @throws EvaluationException
      */
     private static Expression decomposePolynomialInIrreducibleFactors(ExpressionCollection a, String var) throws EvaluationException {
+
+        if (a.getBound() < 2) {
+            return getPolynomialFromCoefficients(a, var);
+        }
 
         try {
             return decomposePeriodicPolynomial(a, var);
@@ -575,7 +579,6 @@ public abstract class SimplifyPolynomialMethods {
          Das Polynom, welches durch den Divisionsrest durch alle Linearfaktoren gegeben ist, 
          muss ebenfalls noch faktorisiert werden.
          */
-        
         Expression result = decomposePolynomialInIrreducibleFactors(restCoefficients, var);
         int l = zeros.getBound();
         Expression currentZero = zeros.get(0);
@@ -608,12 +611,7 @@ public abstract class SimplifyPolynomialMethods {
      */
     private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
-        ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
-
-        for (int i = 0; i < a.getBound() - 1; i++) {
-            coefficientsOfDerivative.put(i, new Constant(i + 1).mult(a.get(i + 1)).simplify());
-        }
-
+        ExpressionCollection coefficientsOfDerivative = getCoefficientsOfDerivativeOfPolynomial(a);
         ExpressionCollection ggT = getGGTOfPolynomials(a, coefficientsOfDerivative);
 
         if (ggT.getBound() < 2) {
@@ -622,8 +620,32 @@ public abstract class SimplifyPolynomialMethods {
 
         // Dann gibt es einen nichttrivialen ggT.
         ExpressionCollection quotient = polynomialDivision(a, ggT)[0];
+
+        // Versuch: quotient kann (in vielen Fällen) durch ggT(f, f')/ggT(f', f'') teilbar sein.
+        ExpressionCollection coefficientsOfSecondDerivative = getCoefficientsOfDerivativeOfPolynomial(coefficientsOfDerivative);
+        if (!coefficientsOfSecondDerivative.isEmpty()) {
+            ExpressionCollection[] quotientOfGGT = polynomialDivision(getGGTOfPolynomials(a, coefficientsOfDerivative),
+                    getGGTOfPolynomials(coefficientsOfDerivative, coefficientsOfSecondDerivative));
+            if (quotientOfGGT[1].isEmpty()) {
+                ExpressionCollection[] quotientOfQuotient = polynomialDivision(quotient, quotientOfGGT[0]);
+                if (quotientOfQuotient[1].isEmpty()) {
+                    return decomposePolynomialInIrreducibleFactors(quotientOfQuotient[0], var).mult(
+                            decomposePolynomialInIrreducibleFactors(quotientOfGGT[0], var)).mult(
+                                    decomposePolynomialInIrreducibleFactors(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
+                }
+            }
+        }
+
         return decomposePolynomialInIrreducibleFactors(quotient, var).mult(decomposePolynomialInIrreducibleFactors(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
 
+    }
+
+    private static ExpressionCollection getCoefficientsOfDerivativeOfPolynomial(ExpressionCollection a) throws EvaluationException {
+        ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
+        for (int i = 0; i < a.getBound() - 1; i++) {
+            coefficientsOfDerivative.put(i, new Constant(i + 1).mult(a.get(i + 1)).simplify());
+        }
+        return coefficientsOfDerivative;
     }
 
     /**

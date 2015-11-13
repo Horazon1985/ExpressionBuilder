@@ -260,4 +260,19 @@ public class PolynomialTests {
         }
     }
 
+    @Test
+    public void decomposePolynomialTest7() {
+        /* 
+         Zerlegung von f = 216+585*x^2+275*x^4+35*x^6+459*x+469*x^3+113*x^5+x^8+7*x^7 = (x^2+x+8)*(x^2+2*x+3)^3 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("216+585*x^2+275*x^4+35*x^6+459*x+469*x^3+113*x^5+x^8+7*x^7", null);
+            fFactorized = Expression.build("(x^2+x+8)*(x^2+2*x+3)^3", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("f konnte nicht vereinfacht werden.");
+        }
+    }
+
 }
