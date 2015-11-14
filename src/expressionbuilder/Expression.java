@@ -987,6 +987,9 @@ public abstract class Expression {
         if (expr.equals(ONE)) {
             return this;
         }
+        if (this.equals(ONE)){
+            return ONE;
+        }
         return new BinaryOperation(this, expr, TypeBinary.POW);
     }
 

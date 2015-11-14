@@ -17,6 +17,7 @@ import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import solveequationmethods.PolynomialRootsMethods;
@@ -443,18 +444,19 @@ public abstract class SimplifyPolynomialMethods {
 
         } else {
 
+            a = MINUS_ONE.mult(a).simplify();
             if (n % 2 == 0) {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
-                            TWO.mult(a.pow(1, n)).mult(TWO.mult(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                            TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
                                     a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
-                decomposedPolynomial = Variable.create(var).sub(a.pow(1, n)).simplify();
+                decomposedPolynomial = Variable.create(var).add(a.pow(1, n)).simplify();
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
-                            TWO.mult(a.pow(1, n)).mult(TWO.mult(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
+                            TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
                                     a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
@@ -640,6 +642,19 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
+     * VORAUSSETZUNG: alle Elemente von a sind rational.
+     */
+    private static ArrayList<ExpressionCollection> decomposeRationalPolynomialByComputingGGTWithDerivative2(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+        
+        
+        
+        
+        return null;
+        
+    }
+    
     private static ExpressionCollection getCoefficientsOfDerivativeOfPolynomial(ExpressionCollection a) throws EvaluationException {
         ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
         for (int i = 0; i < a.getBound() - 1; i++) {
