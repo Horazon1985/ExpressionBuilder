@@ -12,7 +12,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class SimplifyRationalFunctionMethods {
+public abstract class SimplifyRationalFunctionMethods {
 
     /**
      * Hilfsmethode. Gibt zurück, ob alle paarweisen Verhältnisse von Ausdrücken

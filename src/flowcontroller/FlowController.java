@@ -3,12 +3,15 @@ package flowcontroller;
 import exceptions.EvaluationException;
 import translator.Translator;
 
-public class FlowController {
+public final class FlowController {
+
+    private FlowController() {
+    }
 
     /**
      * Bricht den aktuellen Thread ab und wirft einen entsprechenden Fehler.
-     * 
-     * @throws EvaluationException 
+     *
+     * @throws EvaluationException
      */
     public static void interruptComputation() throws EvaluationException {
         if (Thread.interrupted()) {

@@ -7,7 +7,7 @@ import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.Variable;
 
-public class SimplifyExponentialRelations {
+public abstract class SimplifyExponentialRelations {
 
     /**
      * Gibt einen Ausdruck zurück, indem in Exponentialfunktionen bzgl. var der
