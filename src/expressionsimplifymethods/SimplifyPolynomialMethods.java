@@ -577,7 +577,7 @@ public abstract class SimplifyPolynomialMethods {
     private static Expression decomposeRationalPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfPolynomial(a, zeros);
+        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfRationalPolynomial(a, zeros);
         if (zeros.isEmpty()) {
             throw new PolynomialNotDecomposableException();
         }

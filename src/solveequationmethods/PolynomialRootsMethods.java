@@ -182,7 +182,7 @@ public abstract class PolynomialRootsMethods {
              Polynomdivision durch alle Linearfaktoren, welche zu den bisher
              gefundenen rationalen Nullstellen gehören.
              */
-            coefficients = findAllRationalZerosOfPolynomial(coefficients, rationalZeros);
+            coefficients = findAllRationalZerosOfRationalPolynomial(coefficients, rationalZeros);
             degree = degree - rationalZeros.getBound();
 
             // Mehrfache Lösungen beseitigen!
@@ -287,32 +287,23 @@ public abstract class PolynomialRootsMethods {
     }
 
     /**
-     * Falls die Koeffizienten coefficients[i] des Polynoms alle rational sind,
-     * so liefert diese Methode alle rationalen Nullstellen des Polynoms mit
-     * |Zähler|, |Nenner| <= 1000000. Diese werden dem ExpressionCollection
-     * rationalZeros hinten hinzugefügt. Der Rückgabewert ist das normierte
-     * Ergebnis der Polynomdivision durch alle ermittelten Linearfaktoren.
+     * Falls die Koeffizienten a[i] des Polynoms alle rational sind, so liefert
+     * diese Methode alle rationalen Nullstellen des Polynoms mit |Zähler|,
+     * |Nenner| <= eine gewisse Schranke. Diese werden der ExpressionCollection
+     * rationalZeros hinzugefügt. Der Rückgabewert ist das normierte .Ergebnis
+     * der Polynomdivision durch alle ermittelten Linearfaktoren. Sind die
+     * Koeffizienten a nicht allesamt rational, so wird die ExpressionCollection
+     * a zurückgegeben.
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection findAllRationalZerosOfPolynomial(ExpressionCollection coefficients, ExpressionCollection rationalZeros)
+    public static ExpressionCollection findAllRationalZerosOfRationalPolynomial(ExpressionCollection a, ExpressionCollection rationalZeros)
             throws EvaluationException {
 
-        boolean allCoefficientsAreRational = true;
-
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            if (!coefficients.get(i).isIntegerConstantOrRationalConstant()) {
-                allCoefficientsAreRational = false;
-                break;
+        for (int i = 0; i < a.getBound(); i++) {
+            if (!a.get(i).isIntegerConstantOrRationalConstant()) {
+                return a;
             }
-        }
-
-        if (!allCoefficientsAreRational) {
-            return coefficients;
-        }
-
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            coefficients.put(i, coefficients.get(i).simplify());
         }
 
         /*
@@ -320,29 +311,27 @@ public abstract class PolynomialRootsMethods {
          multipliziert, damit alle Koeffizienten ganzzahlig werden.
          */
         BigInteger commonDenominator = BigInteger.ONE;
-        BigInteger[] pairForLCM = new BigInteger[2];
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            if (coefficients.get(i) instanceof BinaryOperation) {
-                pairForLCM[0] = commonDenominator;
-                pairForLCM[1] = ((Constant) ((BinaryOperation) coefficients.get(i)).getRight()).getValue().toBigInteger();
-                commonDenominator = ArithmeticMethods.lcm(pairForLCM);
+        for (int i = 0; i < a.getBound(); i++) {
+            if (a.get(i).isQuotient()) {
+                commonDenominator = ArithmeticMethods.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) a.get(i)).getRight()).getValue().toBigInteger()});
             }
         }
 
-        ExpressionCollection coefficientsOfDivisionQuotient = new ExpressionCollection();
-        ExpressionCollection multipleOfCoefficients = new ExpressionCollection();
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            multipleOfCoefficients.put(i, coefficients.get(i).mult(commonDenominator).simplify());
-            coefficientsOfDivisionQuotient.put(i, multipleOfCoefficients.get(i));
-        }
+        ExpressionCollection coefficientsOfDivisionQuotient;
+        ExpressionCollection multipleOfCoefficients = ExpressionCollection.copy(a);
+
+        multipleOfCoefficients.multExpression(new Constant(commonDenominator));
+        multipleOfCoefficients = multipleOfCoefficients.simplify();
+        coefficientsOfDivisionQuotient = ExpressionCollection.copy(multipleOfCoefficients);
 
         // Eigentliche Polynomdivision.
         BigInteger[] zero;
         ExpressionCollection divisor = new ExpressionCollection();
-        for (int i = 0; i < multipleOfCoefficients.getBound() - 1; i++) {
+        // Es kann höchstens soviele (rationale) Nullstellen geben, wie der Grad des Polynoms (= a.getBound() - 1) beträgt.
+        for (int i = 0; i < a.getBound() - 1; i++) {
             zero = findRationalZeroOfPolynomial(coefficientsOfDivisionQuotient);
             if (zero.length > 0) {
-                rationalZeros.put(rationalZeros.getBound(), new Constant(zero[0]).div(zero[1]).simplify());
+                rationalZeros.add(new Constant(zero[0]).div(zero[1]).simplify());
                 divisor.put(0, new Constant(zero[0].negate()));
                 divisor.put(1, new Constant(zero[1]));
                 coefficientsOfDivisionQuotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsOfDivisionQuotient, divisor)[0];
@@ -351,16 +340,11 @@ public abstract class PolynomialRootsMethods {
             }
         }
 
-        multipleOfCoefficients = new ExpressionCollection();
-        for (int i = 0; i < coefficientsOfDivisionQuotient.getBound(); i++) {
-            multipleOfCoefficients.put(i, coefficientsOfDivisionQuotient.get(i));
-        }
-
         // Zum Schluss: Ergebnis der Polynomdivision normieren.
-        multipleOfCoefficients.divByExpression(multipleOfCoefficients.get(multipleOfCoefficients.getBound() - 1));
-        multipleOfCoefficients = multipleOfCoefficients.simplify();
-        
-        return multipleOfCoefficients;
+        coefficientsOfDivisionQuotient.divByExpression(coefficientsOfDivisionQuotient.get(coefficientsOfDivisionQuotient.getBound() - 1));
+        coefficientsOfDivisionQuotient = coefficientsOfDivisionQuotient.simplify();
+
+        return coefficientsOfDivisionQuotient;
 
     }
 

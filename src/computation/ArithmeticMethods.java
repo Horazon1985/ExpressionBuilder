@@ -108,14 +108,14 @@ public abstract class ArithmeticMethods {
         } else if (a.length == 2) {
             return a[0].multiply(a[1]).divide(gcd(a)).abs();
         } else {
-            BigInteger[] a_rest = new BigInteger[a.length - 1];
+            BigInteger[] aRest = new BigInteger[a.length - 1];
             for (int i = 1; i < a.length; i++) {
-                a_rest[i - 1] = a[i];
+                aRest[i - 1] = a[i];
             }
-            BigInteger[] a_reduced = new BigInteger[2];
-            a_reduced[0] = a[0];
-            a_reduced[1] = lcm(a_rest);
-            return lcm(a_reduced);
+            BigInteger[] aReduced = new BigInteger[2];
+            aReduced[0] = a[0];
+            aReduced[1] = lcm(aRest);
+            return lcm(aReduced);
         }
 
     }

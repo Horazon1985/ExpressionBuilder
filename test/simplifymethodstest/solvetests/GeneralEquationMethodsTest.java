@@ -91,6 +91,23 @@ public class GeneralEquationMethodsTest {
     }
 
     @Test
+    public void solvePolynomialEquationTest3() {
+        try {
+            // Test: f = 14+93*x+125*x^2+51*x^3+5*x^4 = 0. Die Lösungen sind -1, -2, -7, -1/5.
+            Expression f = Expression.build("14+93*x+125*x^2+51*x^3+5*x^4", null);
+            SolveMethods.setSolveTries(100);
+            ExpressionCollection zeros = SolveMethods.solveGeneralEquation(f, Expression.ZERO, "x");
+            assertTrue(zeros.getBound() == 4);
+            assertTrue(zeros.contains(new Constant(-1)));
+            assertTrue(zeros.contains(new Constant(-2)));
+            assertTrue(zeros.contains(new Constant(-7)));
+            assertTrue(zeros.contains(new Constant(-1).div(5)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail("Die Gleichung konnte werden.");
+        }
+    }
+    
+    @Test
     public void solveFunctionalEquationTest1() {
         try {
             // Test: f = exp(x) = 3. Keine Lösungen.
