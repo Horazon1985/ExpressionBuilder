@@ -252,8 +252,13 @@ public abstract class SimplifyPolynomialMethods {
             return SimplifyUtilities.produceProduct(factors);
         }
 
+        // Leitkoeffizienten faktorisieren, damit das Restpolynom normiert ist.
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
-        return decomposePolynomialInIrreducibleFactors(a, var);
+        Expression leadCoefficient = a.get(a.getBound() - 1);
+        a.divByExpression(leadCoefficient);
+        a = a.simplify();
+        
+        return leadCoefficient.mult(decomposePolynomialInIrreducibleFactors(a, var));
 
     }
 

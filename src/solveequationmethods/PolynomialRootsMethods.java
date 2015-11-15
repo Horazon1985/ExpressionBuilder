@@ -290,8 +290,8 @@ public abstract class PolynomialRootsMethods {
      * Falls die Koeffizienten coefficients[i] des Polynoms alle rational sind,
      * so liefert diese Methode alle rationalen Nullstellen des Polynoms mit
      * |Zähler|, |Nenner| <= 1000000. Diese werden dem ExpressionCollection
-     * rationalZeros hinten hinzugefügt. Der Rückgabewert ist das Ergebnis der
-     * Polynomdivision durch alle ermittelten Linearfaktoren.
+     * rationalZeros hinten hinzugefügt. Der Rückgabewert ist das normierte
+     * Ergebnis der Polynomdivision durch alle ermittelten Linearfaktoren.
      *
      * @throws EvaluationException
      */
@@ -330,21 +330,16 @@ public abstract class PolynomialRootsMethods {
         }
 
         ExpressionCollection coefficientsOfDivisionQuotient = new ExpressionCollection();
-        if (commonDenominator.compareTo(BigInteger.ONE) > 0) {
-            for (int i = 0; i < coefficients.getBound(); i++) {
-                coefficients.put(i, coefficients.get(i).mult(commonDenominator).simplify());
-                coefficientsOfDivisionQuotient.put(i, coefficients.get(i));
-            }
-        } else {
-            for (int i = 0; i < coefficients.getBound(); i++) {
-                coefficientsOfDivisionQuotient.put(i, coefficients.get(i));
-            }
+        ExpressionCollection multipleOfCoefficients = new ExpressionCollection();
+        for (int i = 0; i < coefficients.getBound(); i++) {
+            multipleOfCoefficients.put(i, coefficients.get(i).mult(commonDenominator).simplify());
+            coefficientsOfDivisionQuotient.put(i, multipleOfCoefficients.get(i));
         }
 
         // Eigentliche Polynomdivision.
         BigInteger[] zero;
         ExpressionCollection divisor = new ExpressionCollection();
-        for (int i = 0; i < coefficients.getBound() - 1; i++) {
+        for (int i = 0; i < multipleOfCoefficients.getBound() - 1; i++) {
             zero = findRationalZeroOfPolynomial(coefficientsOfDivisionQuotient);
             if (zero.length > 0) {
                 rationalZeros.put(rationalZeros.getBound(), new Constant(zero[0]).div(zero[1]).simplify());
@@ -356,12 +351,16 @@ public abstract class PolynomialRootsMethods {
             }
         }
 
-        coefficients = new ExpressionCollection();
+        multipleOfCoefficients = new ExpressionCollection();
         for (int i = 0; i < coefficientsOfDivisionQuotient.getBound(); i++) {
-            coefficients.put(i, coefficientsOfDivisionQuotient.get(i));
+            multipleOfCoefficients.put(i, coefficientsOfDivisionQuotient.get(i));
         }
 
-        return coefficients;
+        // Zum Schluss: Ergebnis der Polynomdivision normieren.
+        multipleOfCoefficients.divByExpression(multipleOfCoefficients.get(multipleOfCoefficients.getBound() - 1));
+        multipleOfCoefficients = multipleOfCoefficients.simplify();
+        
+        return multipleOfCoefficients;
 
     }
 
