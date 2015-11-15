@@ -609,7 +609,7 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
-     * VORAUSSETZUNG: alle Elemente von a sind rational.
+     * VORAUSSETZUNG: Alle Elemente von a sind rational.
      */
     private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
@@ -644,7 +644,7 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
-     * VORAUSSETZUNG: alle Elemente von a sind rational.
+     * VORAUSSETZUNG: Alle Elemente von a sind rational.
      */
     private static ArrayList<ExpressionCollection> decomposeRationalPolynomialByComputingGGTWithDerivative2(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
         
