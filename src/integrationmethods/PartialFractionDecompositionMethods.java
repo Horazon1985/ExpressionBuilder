@@ -194,20 +194,9 @@ public abstract class PartialFractionDecompositionMethods {
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
         if (coefficientsEnumerator.getBound() >= coefficientsDenominator.getBound()) {
-
             ExpressionCollection[] resultOfPolynomialDivision = SimplifyPolynomialMethods.polynomialDivision(coefficientsEnumerator, coefficientsDenominator);
-            Expression polynomialPart = Expression.ZERO;
-            for (int i = 0; i < resultOfPolynomialDivision[0].getBound(); i++) {
-                if (polynomialPart.equals(Expression.ZERO)) {
-                    polynomialPart = resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1);
-                } else {
-                    polynomialPart = polynomialPart.add(resultOfPolynomialDivision[0].get(i).mult(Variable.create(var).pow(i + 1)).div(i + 1));
-                }
-            }
-
-            return new Expression[]{polynomialPart, SimplifyPolynomialMethods.getPolynomialFromCoefficients(resultOfPolynomialDivision[1], var).div(
+            return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(resultOfPolynomialDivision[0], var), SimplifyPolynomialMethods.getPolynomialFromCoefficients(resultOfPolynomialDivision[1], var).div(
                 ((BinaryOperation) f).getRight())};
-
         }
 
         return new Expression[]{ZERO, f};
