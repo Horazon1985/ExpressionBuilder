@@ -323,9 +323,9 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("32+178*x^2+259*x^4+165*x^6+80*x+218*x^3+197*x^5+56*x^8+82*x^7+11*x^10+16*x^9+x^12+x^11", null);
-            fFactorized = Expression.build("(x^2+2)*(x^2-x+4)^2*(x^2+x+1)^3", null);
+            fFactorized = Expression.build("(x^2+2)*((4+x^2)-x)^2*(x^2+x+1)^3", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-//            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
             fail("f konnte nicht vereinfacht werden.");
         }

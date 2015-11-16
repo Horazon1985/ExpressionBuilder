@@ -257,7 +257,7 @@ public abstract class SimplifyPolynomialMethods {
         Expression leadCoefficient = a.get(a.getBound() - 1);
         a.divByExpression(leadCoefficient);
         a = a.simplify();
-        
+
         return leadCoefficient.mult(decomposePolynomialInIrreducibleFactors(a, var));
 
     }
@@ -298,7 +298,8 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
-                return decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
+//                return decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
+                return decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
         }
@@ -613,53 +614,94 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
+     * Faktorisiert ein rationales Polynom f mittels Berechnung der gemeinsamen
+     * Faktoren von f und f'.<br>
      * VORAUSSETZUNG: Alle Elemente von a sind rational.
      */
-    private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+    private static Expression decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+
+        Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
+
+        // Falls decomposition kein Produkt ist, dann konnte das Polynom nicht faktorisiert werden.
+        if (decomposition.isNotProduct() && !decomposition.isPositiveIntegerPower()) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        ArrayList<ExpressionCollection> coefficientsOfFactors = new ArrayList<>();
+        ExpressionCollection factors = SimplifyUtilities.getFactors(decomposition);
+        for (Expression factor : factors) {
+            if (factor.isPositiveIntegerPower()) {
+                if (((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger().compareTo(
+                        BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                    throw new PolynomialNotDecomposableException();
+                }
+                int exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
+                for (int i = 0; i < exponent; i++) {
+                    coefficientsOfFactors.add(getPolynomialCoefficients(((BinaryOperation) factor).getLeft(), var));
+                }
+            } else {
+                coefficientsOfFactors.add(getPolynomialCoefficients(factor, var));
+            }
+        }
+
+        ExpressionCollection[] quotient;
+
+        // Versuchen, den j-ten Faktor durch eine Potenz des i-ten Faktors zu dividieren.
+        for (int i = 0; i < coefficientsOfFactors.size(); i++) {
+
+            if (coefficientsOfFactors.get(i).getBound() < 2) {
+                continue;
+            }
+
+            for (int j = 0; j < coefficientsOfFactors.size(); j++) {
+
+                if (j == i || coefficientsOfFactors.get(j).getBound() < 3) {
+                    continue;
+                }
+
+                if (coefficientsOfFactors.get(j).getBound() > coefficientsOfFactors.get(i).getBound()) {
+                    quotient = polynomialDivision(coefficientsOfFactors.get(j), coefficientsOfFactors.get(i));
+                    while (quotient[1].isEmpty() && quotient[0].getBound() > 1) {
+                        coefficientsOfFactors.remove(j);
+                        coefficientsOfFactors.add(j, quotient[0]);
+                        coefficientsOfFactors.add(coefficientsOfFactors.get(i));
+                        quotient = polynomialDivision(quotient[0], coefficientsOfFactors.get(i));
+                    }
+                }
+
+            }
+        }
+
+        Expression result = ONE;
+        for (ExpressionCollection factor : coefficientsOfFactors) {
+            result = result.mult(getPolynomialFromCoefficients(factor, var));
+        }
+
+        return result.simplify(simplifyTypesDecomposePolynomial);
+
+    }
+
+    /**
+     * Hilfsmethode für die Faktorisierung von rationalen Polynomen f mittels
+     * Berechnung der gemeinsamen Faktoren von f und f'.<br>
+     * VORAUSSETZUNG: Alle Elemente von a sind rational.
+     */
+    private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException {
 
         ExpressionCollection coefficientsOfDerivative = getCoefficientsOfDerivativeOfPolynomial(a);
         ExpressionCollection ggT = getGGTOfPolynomials(a, coefficientsOfDerivative);
 
         if (ggT.getBound() < 2) {
-            throw new PolynomialNotDecomposableException();
+            return getPolynomialFromCoefficients(a, var);
         }
 
         // Dann gibt es einen nichttrivialen ggT.
         ExpressionCollection quotient = polynomialDivision(a, ggT)[0];
-
-        // Versuch: quotient kann (in vielen Fällen) durch ggT(f, f')/ggT(f', f'') teilbar sein.
-        ExpressionCollection coefficientsOfSecondDerivative = getCoefficientsOfDerivativeOfPolynomial(coefficientsOfDerivative);
-        if (!coefficientsOfSecondDerivative.isEmpty()) {
-            ExpressionCollection[] quotientOfGGT = polynomialDivision(getGGTOfPolynomials(a, coefficientsOfDerivative),
-                    getGGTOfPolynomials(coefficientsOfDerivative, coefficientsOfSecondDerivative));
-            if (quotientOfGGT[1].isEmpty()) {
-                ExpressionCollection[] quotientOfQuotient = polynomialDivision(quotient, quotientOfGGT[0]);
-                if (quotientOfQuotient[1].isEmpty()) {
-                    return decomposePolynomialInIrreducibleFactors(quotientOfQuotient[0], var).mult(
-                            decomposePolynomialInIrreducibleFactors(quotientOfGGT[0], var)).mult(
-                                    decomposePolynomialInIrreducibleFactors(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
-                }
-            }
-        }
-
-        return decomposePolynomialInIrreducibleFactors(quotient, var).mult(decomposePolynomialInIrreducibleFactors(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
+        return decomposeRationalPolynomialByComputingGGTWithDerivative(quotient, var).mult(
+                decomposeRationalPolynomialByComputingGGTWithDerivative(ggT, var)).simplify(simplifyTypesDecomposePolynomial);
 
     }
 
-    /**
-     * Faktorisiert rationale Polynome mittels Nullstellensuche.<br>
-     * VORAUSSETZUNG: Alle Elemente von a sind rational.
-     */
-    private static ArrayList<ExpressionCollection> decomposeRationalPolynomialByComputingGGTWithDerivative2(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
-        
-        
-        
-        
-        return null;
-        
-    }
-    
     private static ExpressionCollection getCoefficientsOfDerivativeOfPolynomial(ExpressionCollection a) throws EvaluationException {
         ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
         for (int i = 0; i < a.getBound() - 1; i++) {

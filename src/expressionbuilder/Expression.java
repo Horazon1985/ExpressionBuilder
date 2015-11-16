@@ -1191,6 +1191,11 @@ public abstract class Expression {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.POW);
     }
 
+    public boolean isPositiveIntegerPower() {
+        return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant() 
+                && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0 ;
+    }
+
     public boolean isFunction() {
         return this instanceof Function;
     }
