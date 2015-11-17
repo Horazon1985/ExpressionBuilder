@@ -454,7 +454,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression indefiniteIntegration(Operator expr, boolean prepareIntegrand) throws EvaluationException, NotPreciseIntegrableException {
+    protected static Expression indefiniteIntegration(Operator expr, boolean prepareIntegrand) throws EvaluationException, NotPreciseIntegrableException {
 
         if (!expr.getType().equals(TypeOperator.integral) || expr.getParams().length != 2) {
             // Dann war der Operator expr kein unbestimmtes Integral.
@@ -550,9 +550,10 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
 
-        // Integration von (a*x^2 + b*x + c)^((2*n + 1)/2).
+        // Integration von P(x)*(a*x^2 + b*x + c)^((2*n + 1)/2), P = Polynom.
         try {
-            return SpecialIntegrationMethods.integrateOddPowerOfSqrtOfQuadraticFunction(expr);
+//            return SpecialIntegrationMethods.integrateOddPowerOfSqrtOfQuadraticFunction(expr);
+            return SpecialIntegrationMethods.integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticFunction(expr);
         } catch (NotPreciseIntegrableException e) {
         }
         

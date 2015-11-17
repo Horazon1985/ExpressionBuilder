@@ -40,7 +40,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -54,7 +54,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -101,7 +101,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(expectedResult.equals(resultSimplified));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -115,7 +115,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -128,7 +128,7 @@ public class IntegrationTests {
             TestUtilities.printResult(f, integral);
             Assert.assertTrue(integral.equals(f));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -142,7 +142,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -186,7 +186,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -200,7 +200,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -217,7 +217,7 @@ public class IntegrationTests {
             integral = integral.simplify();
             Assert.assertTrue(integral.equals(expectedResultSimplified));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -231,7 +231,7 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -246,7 +246,37 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integralOfProductOfLinearPolynomialAndSqrtOfQuadraticFunctionTest1() {
+        // Integral von (6*x+7)*(1+x^2)^(1/2) = 2*(1+x^2)^(3/2)+(7*x*(1+x^2)^(1/2))/2+(7*arsinh(x))/2.
+        try {
+            f = Expression.build("int((6*x+7)*(1+x^2)^(1/2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = f.simplify();
+            Expression expectedResult = Expression.build("2*(1+x^2)^(3/2)+(7*x*(1+x^2)^(1/2))/2+(7*arsinh(x))/2", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integralOfProductOfLinearPolynomialAndSqrtOfQuadraticFunctionTest2() {
+        // Integral von x^3*(1+x^2)^(1/2) = (1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3.
+        try {
+            f = Expression.build("int(x^3*(1+x^2)^(1/2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = f.simplify();
+            Expression expectedResult = Expression.build("(1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
         }
     }
     
