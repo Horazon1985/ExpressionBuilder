@@ -17,12 +17,6 @@
     <Ukrainian>Функція недиференційована.</Ukrainian>
     <Russian>Функция не дифференцируема.</Russian>
   </object>
-  <object id = "EB_BinaryOperation_COMPUTATION_ABORTED">
-    <German>Berechnung abgebrochen.</German>
-    <English>Computation aborted.</English>
-    <Ukrainian>Обчислення припинено.</Ukrainian>
-    <Russian>Вычисление прекращено.</Russian>
-  </object>
   <object id = "EB_Constant_CONSTANT_CANNOT_BE_EVALUATED">
     <German>Eine der Konstanten kann nicht ausgewertet werden. Approximiert werden können nur Konstanten, deren Betrag höchstens 1.7E308 beträgt. Ist der Betrag der Konstante kleiner als 4.9E-324, so wird er durch 0 approximiert.</German>
     <English>One of the constants cannot be evaluated. Only constants with absolute value of at most 1.7E308 can be approximated. If the absolute value of a constant is less that 4.9E-324, it is approximated by 0.</English>

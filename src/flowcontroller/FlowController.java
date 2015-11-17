@@ -13,7 +13,7 @@ public final class FlowController {
      *
      * @throws EvaluationException
      */
-    public static void interruptComputation() throws EvaluationException {
+    public static void interruptComputationIfNeeded() throws EvaluationException {
         if (Thread.interrupted()) {
             throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
         }
