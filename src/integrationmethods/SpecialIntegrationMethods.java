@@ -164,11 +164,9 @@ public abstract class SpecialIntegrationMethods {
             denominator = denominator.add(coefficientsDenominator.get(i).mult(Variable.create(var)).pow(i));
         }
 
-        // Falls in den Nennerkoeffizienten Parameter auftreten -> Fehler werfen.
-        for (int i = 0; i < 3; i++) {
-            if (!coefficientsDenominator.get(i).isConstant()) {
-                throw new NotPreciseIntegrableException();
-            }
+        // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
+        if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
@@ -188,8 +186,9 @@ public abstract class SpecialIntegrationMethods {
          Falls der Nenner reduzibel ist -> Falsche Methode (es muss auf
          Partialbruchzerlegung zurückgegriffen werden).
          */
+        // discriminant = 4*a*c*-b^2.
         Expression discriminant = new Constant(4).mult(a).mult(c).sub(b.pow(2)).simplify();
-        if (discriminant.isNonPositive()) {
+        if (!discriminant.isAlwaysPositive()) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -249,11 +248,9 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
-        // Falls in den Nennerkoeffizienten Parameter auftreten -> Fehler werfen.
-        for (int i = 0; i < 3; i++) {
-            if (!coefficientsDenominator.get(i).isConstant()) {
-                throw new NotPreciseIntegrableException();
-            }
+        // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
+        if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
@@ -268,7 +265,7 @@ public abstract class SpecialIntegrationMethods {
          Partialbruchzerlegung zurückgegriffen werden).
          */
         Expression discriminant = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
-        if (!discriminant.isNonPositive() || discriminant.equals(Expression.ZERO)) {
+        if (!discriminant.isAlwaysNegative() || discriminant.equals(Expression.ZERO)) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -811,10 +808,10 @@ public abstract class SpecialIntegrationMethods {
         if (coefficientsPolynomial.getBound() > 2 || coefficientsQuadraticPolynomial.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
-        
+
         // coefficientsPolynomial bis zum Grad 1 mit Nullen auffüllen.
-        for (int i = 0; i < 2; i++){
-            if (coefficientsPolynomial.get(i) == null){
+        for (int i = 0; i < 2; i++) {
+            if (coefficientsPolynomial.get(i) == null) {
                 coefficientsPolynomial.put(i, ZERO);
             }
         }

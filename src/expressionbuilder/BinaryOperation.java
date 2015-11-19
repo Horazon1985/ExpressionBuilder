@@ -19,43 +19,43 @@ import java.util.HashSet;
 import translator.Translator;
 
 public class BinaryOperation extends Expression {
-    
+
     private final Expression left, right;
     private final TypeBinary type;
-    
+
     public BinaryOperation(Expression left, Expression right, TypeBinary type) {
         this.left = left;
         this.right = right;
         this.type = type;
     }
-    
+
     public TypeBinary getType() {
         return this.type;
     }
-    
+
     public Expression getLeft() {
         return this.left;
     }
-    
+
     public Expression getRight() {
         return this.right;
     }
-    
+
     @Override
     public Expression copy() {
         return new BinaryOperation(this.left, this.right, this.type);
     }
-    
+
     @Override
     public double evaluate() throws EvaluationException {
-        
+
         double valueLeft = this.left.evaluate();
         double valueRight = this.right.evaluate();
-        
+
         if (Double.isNaN(valueLeft) || Double.isInfinite(valueLeft) || Double.isNaN(valueRight) || Double.isInfinite(valueRight)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
         }
-        
+
         switch (type) {
             case PLUS:
                 if (Double.isNaN(valueLeft + valueRight) || Double.isInfinite(valueLeft + valueRight)) {
@@ -105,30 +105,30 @@ public class BinaryOperation extends Expression {
             default:
                 return 0;
         }
-        
+
     }
-    
+
     @Override
     public Expression evaluate(HashSet<String> vars) throws EvaluationException {
         return new BinaryOperation(this.left.evaluate(vars), this.right.evaluate(vars), this.type);
     }
-    
+
     @Override
     public void addContainedVars(HashSet<String> vars) {
         this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
     }
-    
+
     @Override
     public boolean contains(String var) {
         return this.left.contains(var) || this.right.contains(var);
     }
-    
+
     @Override
     public boolean containsApproximates() {
         return (this.left.containsApproximates() || this.right.containsApproximates());
     }
-    
+
     @Override
     public boolean containsFunction() {
         if (this.type.equals(TypeBinary.POW) && (!this.right.isConstant())) {
@@ -137,7 +137,7 @@ public class BinaryOperation extends Expression {
         }
         return this.left.containsFunction() || this.right.containsFunction();
     }
-    
+
     @Override
     public boolean containsExponentialFunction() {
         if (this.type.equals(TypeBinary.POW) && (!this.right.isConstant())) {
@@ -146,50 +146,50 @@ public class BinaryOperation extends Expression {
         }
         return this.left.containsExponentialFunction() || this.right.containsExponentialFunction();
     }
-    
+
     @Override
     public boolean containsTrigonometricalFunction() {
         return this.left.containsTrigonometricalFunction() || this.right.containsTrigonometricalFunction();
     }
-    
+
     @Override
     public boolean containsIndefiniteIntegral() {
         return this.left.containsIndefiniteIntegral() || this.right.containsIndefiniteIntegral();
     }
-    
+
     @Override
     public boolean containsOperator() {
         return this.left.containsOperator() || this.right.containsOperator();
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         return new BinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
     }
-    
+
     @Override
     public Expression turnToPrecise() {
         return new BinaryOperation(this.left.turnToPrecise(), this.right.turnToPrecise(), this.type);
     }
-    
+
     @Override
     public Expression replaceVariable(String var, Expression expr) {
         return new BinaryOperation(this.left.replaceVariable(var, expr), this.right.replaceVariable(var, expr), this.type);
     }
-    
+
     @Override
     public Expression replaceSelfDefinedFunctionsByPredefinedFunctions() {
         return new BinaryOperation(this.left.replaceSelfDefinedFunctionsByPredefinedFunctions(),
                 this.right.replaceSelfDefinedFunctionsByPredefinedFunctions(), this.type);
     }
-    
+
     @Override
     public Expression diff(String var) throws EvaluationException {
-        
+
         if (!this.contains(var)) {
             return Expression.ZERO;
         }
-        
+
         if (this.isSum()) {
             return this.left.diff(var).add(this.right.diff(var));
         } else if (this.isDifference()) {
@@ -217,16 +217,16 @@ public class BinaryOperation extends Expression {
                 return this.mult(rightBracket);
             }
         }
-        
+
     }
-    
+
     @Override
     public Expression diffDifferentialEquation(String var) throws EvaluationException {
-        
+
         if (this.isConstant()) {
             return Expression.ZERO;
         }
-        
+
         if (this.isSum()) {
             return this.left.diffDifferentialEquation(var).add(this.right.diffDifferentialEquation(var));
         } else if (this.isDifference()) {
@@ -255,78 +255,84 @@ public class BinaryOperation extends Expression {
                 return this.mult(rightBracket);
             }
         }
-        
+
     }
-    
+
     @Override
     public String writeExpression() {
-        
+
         String leftAsText, rightAsText;
-        ExpressionCollection factorsOfRight = SimplifyUtilities.getFactors(this.right);
-        
+
         if (this.isSum()) {
-            if (!factorsOfRight.get(0).hasPositiveSign()) {
+            if (this.right.doesExpressionStartWithAMinusSign()) {
                 return this.left.writeExpression() + "+(" + this.right.writeExpression() + ")";
             } else {
                 return this.left.writeExpression() + "+" + this.right.writeExpression();
             }
         } else if (this.isDifference()) {
-            
+
             leftAsText = this.left.writeExpression();
 
             //0 - a soll als -a ausgegeben werden.
             if (this.left.equals(Expression.ZERO)) {
                 leftAsText = "";
             }
-            
-            if (this.right.isSum() || this.right.isDifference() || !factorsOfRight.get(0).hasPositiveSign()) {
+
+            if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
                 return leftAsText + "-(" + this.right.writeExpression() + ")";
             }
             return leftAsText + "-" + this.right.writeExpression();
-            
+
         } else if (this.isProduct()) {
-            
-            if (this.left.equals(Expression.MINUS_ONE)) {
-                /*
-                 (-1)*x soll als -x ausgegeben werden, falls links davor eine
-                 Klammer steht oder die Formel dort anfängt.
-                 */
-                if (this.right.isSum() || this.right.isDifference()) {
-                    return "-(" + this.right.writeExpression() + ")";
+
+            if (this.left.isSum() || this.left.isDifference()) {
+
+                leftAsText = "(" + this.left.writeExpression() + ")";
+                if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
+                    rightAsText = "(" + this.right.writeExpression() + ")";
+                } else {
+                    rightAsText = this.right.writeExpression();
                 }
-                return "-" + this.right.writeExpression();
-            } else if (this.left.isSum() || this.left.isDifference()) {
-                leftAsText = "(" + this.left.writeExpression() + ")";
+
             } else {
+
                 leftAsText = this.left.writeExpression();
+                if (this.left instanceof Constant
+                        && ((Constant) this.left).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
+                    // Ausnahmefall: Der Ausdruck fängt mit einem - an.
+                    if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
+                        return "-(" + this.right.writeExpression() + ")";
+                    }
+                    return "-" + this.right.writeExpression();
+                } else {
+                    if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
+                        rightAsText = "(" + this.right.writeExpression() + ")";
+                    } else {
+                        rightAsText = this.right.writeExpression();
+                    }
+                }
+
             }
-            
-            if (this.right.doesExpressionStartsWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                rightAsText = "(" + this.right.writeExpression() + ")";
-            } else {
-                rightAsText = this.right.writeExpression();
-            }
-            
+
             return leftAsText + "*" + rightAsText;
-            
+
         } else if (this.isQuotient()) {
-            
-            if (this.left instanceof BinaryOperation
-                    && !this.left.isQuotient() && !this.left.isPower()) {
+
+            if (this.left.isSum() || this.left.isDifference() || this.left.isProduct()) {
                 leftAsText = "(" + this.left.writeExpression() + ")";
             } else {
                 leftAsText = this.left.writeExpression();
             }
-            
-            if (this.right.doesExpressionStartsWithAMinusSign()
+
+            if (this.right.doesExpressionStartWithAMinusSign()
                     || (this.right instanceof BinaryOperation && !this.right.isPower())) {
                 rightAsText = "(" + this.right.writeExpression() + ")";
             } else {
                 rightAsText = this.right.writeExpression();
             }
-            
+
             return leftAsText + "/" + rightAsText;
-            
+
         }
 
         // Hier handelt es sich um eine Potenz.
@@ -336,39 +342,39 @@ public class BinaryOperation extends Expression {
         } else {
             leftAsText = this.left.writeExpression();
         }
-        
+
         if (this.right instanceof BinaryOperation
                 || (this.right instanceof Constant && ((Constant) this.right).getValue().compareTo(BigDecimal.ZERO) < 0)) {
             rightAsText = "(" + this.right.writeExpression() + ")";
         } else {
             rightAsText = this.right.writeExpression();
         }
-        
+
         return leftAsText + "^" + rightAsText;
-        
+
     }
-    
+
     @Override
     public String expressionToLatex() {
-        
+
         String leftAsLatexCode, rightAsLatexCode;
-        
+
         if (this.isSum()) {
             return this.left.expressionToLatex() + "+" + this.right.expressionToLatex();
         } else if (this.isDifference()) {
-            
+
             leftAsLatexCode = this.left.writeExpression();
 
             //0 - a soll als -a ausgegeben werden.
             if (this.left.equals(Expression.ZERO)) {
                 leftAsLatexCode = "";
             }
-            
+
             if (this.right.isSum() || this.right.isDifference()) {
                 return leftAsLatexCode + "-\\left(" + this.right.expressionToLatex() + "\\right)";
             }
             return leftAsLatexCode + "-" + this.right.expressionToLatex();
-            
+
         } else if (this.isProduct()) {
 
             //(-1)*a soll als -a ausgegeben werden.
@@ -379,27 +385,27 @@ public class BinaryOperation extends Expression {
                 }
                 return "-" + this.right.expressionToLatex();
             }
-            
+
             if (this.left.isSum() || this.left.isDifference()) {
                 leftAsLatexCode = "\\left(" + this.left.expressionToLatex() + "\\right)";
             } else {
                 leftAsLatexCode = this.left.expressionToLatex();
             }
-            
+
             if (this.right.isSum() || this.right.isDifference()) {
                 rightAsLatexCode = "\\left(" + this.right.expressionToLatex() + "\\right)";
             } else {
                 rightAsLatexCode = this.right.expressionToLatex();
             }
-            
+
             return leftAsLatexCode + " \\cdot " + rightAsLatexCode;
-            
+
         } else if (this.isQuotient()) {
-            
+
             return "\\frac{" + this.left.expressionToLatex() + "}{" + this.right.expressionToLatex() + "}";
-            
+
         } else {
-            
+
             if (this.left instanceof BinaryOperation) {
                 if (this.left.isDifference() && ((BinaryOperation) this.left).getLeft().equals(Expression.ZERO)) {
                     leftAsLatexCode = this.left.expressionToLatex();
@@ -409,54 +415,54 @@ public class BinaryOperation extends Expression {
             } else {
                 leftAsLatexCode = this.left.expressionToLatex();
             }
-            
+
             if (this.left instanceof Variable) {
-                
+
                 if (this.right instanceof Variable && (this.right.writeExpression().length() == 1)) {
                     return leftAsLatexCode + "^" + this.right.expressionToLatex();
                 }
                 return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
-                
+
             } else if (this.left instanceof Constant) {
-                
+
                 if (this.left.isNonNegative()) {
                     if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
                         return leftAsLatexCode + "^" + this.right.expressionToLatex();
                     }
                     return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
                 }
-                
+
             } else {
-                
+
                 if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
                     return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex();
                 }
-                
+
             }
-            
+
             return "{" + leftAsLatexCode + "}^{" + this.right.expressionToLatex() + "}";
-            
+
         }
-        
+
     }
-    
+
     @Override
     public boolean isConstant() {
         return this.left.isConstant() && this.right.isConstant();
     }
-    
+
     @Override
     public boolean isNonNegative() {
-        
+
         if (!this.isConstant()) {
             return false;
         }
-        
+
         try {
             return this.evaluate() >= 0;
         } catch (EvaluationException e) {
         }
-        
+
         if (this.type.equals(TypeBinary.PLUS)) {
             return this.left.isNonNegative() && this.right.isNonNegative();
         } else if (this.type.equals(TypeBinary.MINUS)) {
@@ -480,14 +486,14 @@ public class BinaryOperation extends Expression {
                 return this.left.isNonNegative();
             }
             return false;
-            
+
         }
-        
+
     }
-    
+
     @Override
     public boolean isAlwaysNonNegative() {
-        
+
         if (this.isNonNegative()) {
             return true;
         }
@@ -498,12 +504,12 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysNonNegative() || this.right.isEvenConstant();
         }
         return false;
-        
+
     }
-    
+
     @Override
     public boolean isAlwaysPositive() {
-        
+
         if (this.isNonNegative() && !this.equals(ZERO)) {
             return true;
         }
@@ -521,9 +527,9 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysPositive();
         }
         return false;
-        
+
     }
-    
+
     @Override
     public boolean equals(Expression expr) {
         return expr instanceof BinaryOperation
@@ -531,32 +537,32 @@ public class BinaryOperation extends Expression {
                 && this.getLeft().equals(((BinaryOperation) expr).getLeft())
                 && this.getRight().equals(((BinaryOperation) expr).getRight());
     }
-    
+
     @Override
     public boolean equivalent(Expression expr) {
-        
+
         if (expr instanceof BinaryOperation) {
             if (this.getType().equals(((BinaryOperation) expr).getType())) {
                 if (this.isSum()) {
-                    
+
                     ExpressionCollection summandsOfThis = SimplifyUtilities.getSummands(this);
                     ExpressionCollection summandsOfExpr = SimplifyUtilities.getSummands(expr);
                     return summandsOfThis.getBound() == summandsOfExpr.getBound()
                             && SimplifyUtilities.difference(summandsOfThis, summandsOfExpr).isEmpty();
-                    
+
                 }
                 if (this.isDifference()) {
-                    
+
                     ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this);
                     ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this);
                     ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(expr);
                     ExpressionCollection summandsRightOfExpr = SimplifyUtilities.getSummandsRightInExpression(expr);
-                    
+
                     ExpressionCollection summandsLeftOfThisWithSign = new ExpressionCollection();
                     ExpressionCollection summandsRightOfThisWithSign = new ExpressionCollection();
                     ExpressionCollection summandsLeftOfExprWithSign = new ExpressionCollection();
                     ExpressionCollection summandsRightOfExprWithSign = new ExpressionCollection();
-                    
+
                     try {
                         for (int i = 0; i < summandsLeftOfThis.getBound(); i++) {
                             if (summandsLeftOfThis.get(i).hasPositiveSign()) {
@@ -592,15 +598,15 @@ public class BinaryOperation extends Expression {
                                 && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsRightOfExprWithSign).isEmpty();
                     } catch (EvaluationException e) {
                     }
-                    
+
                 }
                 if (this.isProduct()) {
-                    
+
                     ExpressionCollection factorsOfThis = SimplifyUtilities.getFactors(this);
                     ExpressionCollection factorsOfExpr = SimplifyUtilities.getFactors(expr);
                     return factorsOfThis.getBound() == factorsOfExpr.getBound()
                             && SimplifyUtilities.difference(factorsOfThis, factorsOfExpr).isEmpty();
-                    
+
                 }
                 return this.getLeft().equivalent(((BinaryOperation) expr).getLeft())
                         && this.getRight().equivalent(((BinaryOperation) expr).getRight());
@@ -608,17 +614,69 @@ public class BinaryOperation extends Expression {
             return false;
         }
         return false;
-        
+
     }
-    
+
     @Override
     public boolean hasPositiveSign() {
+
         if (this.type != TypeBinary.TIMES && this.type != TypeBinary.DIV) {
             return true;
         }
         return (this.left.hasPositiveSign() && this.right.hasPositiveSign()) || (!this.left.hasPositiveSign() && !this.right.hasPositiveSign());
+//        if (this.type.equals(TypeBinary.PLUS) || this.type.equals(TypeBinary.MINUS)) {
+//            
+//            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+//            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+//            
+//            for (Expression summand : summandsLeft){
+//                if (!summand.hasPositiveSign()){
+//                    return false;
+//                }
+//            }
+//            for (Expression summand : summandsRight){
+//                if (!summand.hasNegativeSign()){
+//                    return false;
+//                }
+//            }
+//            return true;
+//            
+//        }
+//        if (this.type.equals(TypeBinary.TIMES) || this.type.equals(TypeBinary.DIV)) {
+//            return (this.left.hasPositiveSign() && this.right.hasPositiveSign()) || (!this.left.hasNegativeSign() && !this.right.hasNegativeSign());
+//        }
+//        return true;
+
     }
-    
+
+    @Override
+    public boolean hasNegativeSign() {
+
+        if (this.type.equals(TypeBinary.PLUS) || this.type.equals(TypeBinary.MINUS)) {
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+
+            for (Expression summand : summandsLeft) {
+                if (!summand.hasNegativeSign()) {
+                    return false;
+                }
+            }
+            for (Expression summand : summandsRight) {
+                if (!summand.hasPositiveSign()) {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+        if (!this.type.equals(TypeBinary.TIMES) && !this.type.equals(TypeBinary.DIV)) {
+            return false;
+        }
+        return (this.left.hasPositiveSign() && this.right.hasNegativeSign()) || (!this.left.hasNegativeSign() && !this.right.hasPositiveSign());
+
+    }
+
     @Override
     public int length() {
         if (this.isProduct()) {
@@ -649,7 +707,7 @@ public class BinaryOperation extends Expression {
         }
         return this.left.length() + this.right.length();
     }
-    
+
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
 
@@ -659,14 +717,14 @@ public class BinaryOperation extends Expression {
         // Allgemeine Vereinfachungen, falls der zugrundeliegende Ausdruck konstant ist.
         Expression exprLeftAndRightSimplified;
         BinaryOperation expr;
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summandsLeft.getBound(); i++) {
                 summandsLeft.put(i, summandsLeft.get(i).simplifyTrivial());
             }
-            
+
             ExpressionCollection summandsRight = new ExpressionCollection();
 
             // Nullen in Summen beseitigen.
@@ -679,11 +737,11 @@ public class BinaryOperation extends Expression {
             if (this.isConstant() && this.containsApproximates()) {
                 SimplifyBinaryOperationMethods.computeSumIfApprox(summandsLeft, summandsRight);
             }
-            
+
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (this.isDifference()) {
-            
+
             exprLeftAndRightSimplified = this.left.simplifyTrivial().sub(this.right.simplifyTrivial());
             if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
                 return exprLeftAndRightSimplified;
@@ -695,7 +753,7 @@ public class BinaryOperation extends Expression {
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(exprSimplified);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(exprSimplified);
 
@@ -709,16 +767,16 @@ public class BinaryOperation extends Expression {
             if (this.isConstant() && this.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeDifferenceIfApprox(SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
             }
-            
+
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyTrivial());
             }
-            
+
             Expression exprSimplified = SimplifyUtilities.produceProduct(factors);
             if (!exprSimplified.isProduct()) {
                 return exprSimplified;
@@ -734,11 +792,11 @@ public class BinaryOperation extends Expression {
             if (this.isConstant() && this.containsApproximates()) {
                 SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
             }
-            
+
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (this.isQuotient()) {
-            
+
             exprLeftAndRightSimplified = this.left.simplifyTrivial().div(this.right.simplifyTrivial());
             if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
                 return exprLeftAndRightSimplified;
@@ -774,9 +832,9 @@ public class BinaryOperation extends Expression {
             if (expr.isConstant() && expr.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
             }
-            
+
             return expr;
-            
+
         }
 
         // Ab hier ist this eine Potenz.
@@ -791,7 +849,7 @@ public class BinaryOperation extends Expression {
         if (!exprSimplified.equals(this)) {
             return exprSimplified;
         }
-        
+
         exprLeftAndRightSimplified = this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
         if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
             return exprLeftAndRightSimplified;
@@ -893,14 +951,14 @@ public class BinaryOperation extends Expression {
         if (expr.isConstant() && expr.containsApproximates()) {
             return SimplifyBinaryOperationMethods.computePowerIfApprox(expr);
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyExpandRationalFactors() throws EvaluationException {
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln ausmultiplizieren.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -911,7 +969,7 @@ public class BinaryOperation extends Expression {
         } else if (this.isDifference() || this.isPower()) {
             return new BinaryOperation(this.left.simplifyExpandRationalFactors(), this.right.simplifyExpandRationalFactors(), this.type);
         }
-        
+
         BinaryOperation expr;
         if (this.isProduct()) {
             // In jedem Faktor einzeln ausmultiplizieren.
@@ -932,12 +990,12 @@ public class BinaryOperation extends Expression {
             }
             expr = (BinaryOperation) this.left.simplifyExpandRationalFactors().div(this.right.simplifyExpandRationalFactors());
         }
-        
+
         if (expr.isProduct() && expr.getLeft() instanceof Constant) {
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getRight());
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getRight());
-            
+
             for (int i = 0; i < summandsLeft.getBound(); i++) {
                 summandsLeft.put(i, expr.getLeft().mult(summandsLeft.get(i)));
             }
@@ -945,12 +1003,12 @@ public class BinaryOperation extends Expression {
                 summandsRight.put(i, expr.getLeft().mult(summandsRight.get(i)));
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (expr.isQuotient() && expr.getRight() instanceof Constant) {
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getLeft());
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getLeft());
-            
+
             for (int i = 0; i < summandsLeft.getBound(); i++) {
                 summandsLeft.put(i, summandsLeft.get(i).div(expr.getRight()));
             }
@@ -958,16 +1016,16 @@ public class BinaryOperation extends Expression {
                 summandsRight.put(i, summandsRight.get(i).div(expr.getRight()));
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
-        
+
         Expression expr = this, exprExpanded = SimplifyBinaryOperationMethods.simplifySingleExpand(this, type);
 
         // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
@@ -977,17 +1035,17 @@ public class BinaryOperation extends Expression {
             expr = exprExpanded.copy();
             exprExpanded = SimplifyBinaryOperationMethods.simplifySingleExpand(expr, type);
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -1027,13 +1085,13 @@ public class BinaryOperation extends Expression {
 
         // Nun das eigentliche Kürzen!
         if (this.isDifference()) {
-            
+
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifferenceInApprox(termsLeft, termsRight);
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifference(termsLeft, termsRight);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(termsLeft, termsRight);
-            
+
         } else {
 
             // Vereinfachungen, bei den im Quotienten die FAKTOREN im Zähler und Nenner eine Rolle spielen.
@@ -1061,30 +1119,30 @@ public class BinaryOperation extends Expression {
              einen gemeinsamen Nenner gebracht werden.
              */
             boolean sumsOrDifferencesWithFractionsOccur = false;
-            
+
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 if (termsLeft.get(i) == null) {
                     continue;
                 }
                 if (termsLeft.get(i).isSum() || termsLeft.get(i).isDifference()) {
-                    
+
                     Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) termsLeft.get(i));
                     if (!factorSimplified.equals(termsLeft.get(i))) {
                         termsLeft.put(i, factorSimplified);
                         sumsOrDifferencesWithFractionsOccur = true;
                     }
-                    
+
                 } else if (termsLeft.get(i).isPower()
                         && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) termsLeft.get(i)).getRight())
                         && (((BinaryOperation) termsLeft.get(i)).getLeft().isSum()
                         || ((BinaryOperation) termsLeft.get(i)).getLeft().isDifference())) {
-                    
+
                     Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) ((BinaryOperation) termsLeft.get(i)).getLeft());
                     if (!factorSimplified.equals(termsLeft.get(i))) {
                         termsLeft.put(i, factorSimplified.pow(((BinaryOperation) termsLeft.get(i)).getRight()));
                         sumsOrDifferencesWithFractionsOccur = true;
                     }
-                    
+
                 }
             }
             for (int i = 0; i < termsRight.getBound(); i++) {
@@ -1092,24 +1150,24 @@ public class BinaryOperation extends Expression {
                     continue;
                 }
                 if (termsRight.get(i).isSum() || termsRight.get(i).isDifference()) {
-                    
+
                     Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) termsRight.get(i));
                     if (!factorSimplified.equals(termsRight.get(i))) {
                         termsRight.put(i, factorSimplified);
                         sumsOrDifferencesWithFractionsOccur = true;
                     }
-                    
+
                 } else if (termsRight.get(i).isPower()
                         && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) termsRight.get(i)).getRight())
                         && (((BinaryOperation) termsRight.get(i)).getLeft().isSum()
                         || ((BinaryOperation) termsRight.get(i)).getLeft().isDifference())) {
-                    
+
                     Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) ((BinaryOperation) termsRight.get(i)).getLeft());
                     if (!factorSimplified.equals(termsRight.get(i))) {
                         termsRight.put(i, factorSimplified.pow(((BinaryOperation) termsRight.get(i)).getRight()));
                         sumsOrDifferencesWithFractionsOccur = true;
                     }
-                    
+
                 }
             }
 
@@ -1117,28 +1175,28 @@ public class BinaryOperation extends Expression {
             if (sumsOrDifferencesWithFractionsOccur) {
                 return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferencesAndQuotients().simplifyReduceQuotients();
             }
-            
+
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
-            
+
         }
-        
+
     }
-    
+
     @Override
     public Expression orderSumsAndProducts() throws EvaluationException {
-        
+
         if (this.isNotSum() && this.isNotProduct()) {
             return new BinaryOperation(this.left.orderSumsAndProducts(), this.right.orderSumsAndProducts(), this.type);
         }
 
         // Fall type = +.
         if (this.isSum()) {
-            
+
             Expression result = ZERO;
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2+x+3+y+sin(1) wird zu 5+sin(1)+x+y
             summands = SimplifyUtilities.collectConstantsAndConstantExpressionsInSum(summands);
-            
+
             for (int i = summands.getBound() - 1; i >= 0; i--) {
                 if (summands.get(i) == null) {
                     continue;
@@ -1150,9 +1208,9 @@ public class BinaryOperation extends Expression {
                     result = summands.get(i).orderSumsAndProducts().add(result);
                 }
             }
-            
+
             return result;
-            
+
         } else {
 
             // Fall type = *.
@@ -1160,7 +1218,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2*x*3*y*sin(1) wird zu 6*sin(1)*x*y
             factors = SimplifyUtilities.collectConstantsAndConstantExpressionsInProduct(factors);
-            
+
             for (int i = factors.getBound() - 1; i >= 0; i--) {
                 if (factors.get(i) == null) {
                     continue;
@@ -1172,26 +1230,26 @@ public class BinaryOperation extends Expression {
                     result = factors.get(i).orderSumsAndProducts().mult(result);
                 }
             }
-            
+
             return result;
-            
+
         }
-        
+
     }
-    
+
     @Override
     public Expression orderDifferencesAndQuotients() throws EvaluationException {
-        
+
         Expression result;
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         ExpressionCollection termsLeft = new ExpressionCollection();
         ExpressionCollection termsRight = new ExpressionCollection();
-        
+
         if (this.isSum() || this.isDifference()) {
-            
+
             SimplifyUtilities.orderDifference(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
@@ -1200,9 +1258,9 @@ public class BinaryOperation extends Expression {
                 termsRight.put(i, termsRight.get(i).orderDifferencesAndQuotients());
             }
             result = SimplifyUtilities.produceDifference(termsLeft, termsRight);
-            
+
         } else if (this.isProduct() || this.isQuotient()) {
-            
+
             SimplifyUtilities.orderQuotient(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
@@ -1211,19 +1269,19 @@ public class BinaryOperation extends Expression {
                 termsRight.put(i, termsRight.get(i).orderDifferencesAndQuotients());
             }
             result = SimplifyUtilities.produceQuotient(termsLeft, termsRight);
-            
+
         } else {
             // Hier ist expr.getType() == TypeBinary.POW.
             result = this.left.orderDifferencesAndQuotients().pow(this.right.orderDifferencesAndQuotients());
         }
-        
+
         return result;
-        
+
     }
-    
+
     @Override
     public Expression simplifyCollectProducts() throws EvaluationException {
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln Faktoren sammeln.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -1235,7 +1293,7 @@ public class BinaryOperation extends Expression {
             // Im linken und rechten Teil einzeln Faktoren sammeln.
             return new BinaryOperation(this.left.simplifyCollectProducts(), this.right.simplifyCollectProducts(), this.type);
         }
-        
+
         ExpressionCollection factors = SimplifyUtilities.getFactors(this);
 
         //Ab hier ist type == *.
@@ -1243,15 +1301,15 @@ public class BinaryOperation extends Expression {
         for (int i = 0; i < factors.getBound(); i++) {
             factors.put(i, factors.get(i).simplifyCollectProducts());
         }
-        
+
         SimplifyUtilities.collectFactorsInProduct(factors);
         return SimplifyUtilities.produceProduct(factors);
-        
+
     }
-    
+
     @Override
     public Expression simplifyFactorizeInSums() throws EvaluationException {
-        
+
         if (this.isProduct()) {
             // In jedem Faktor einzeln faktorisieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
@@ -1276,12 +1334,12 @@ public class BinaryOperation extends Expression {
 
         // Ergebnis bilden.
         return SimplifyUtilities.produceSum(summands);
-        
+
     }
-    
+
     @Override
     public Expression simplifyFactorizeInDifferences() throws EvaluationException {
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -1299,7 +1357,7 @@ public class BinaryOperation extends Expression {
         } else if (this.isQuotient() || this.isPower()) {
             return new BinaryOperation(this.left.simplifyFactorizeInDifferences(), this.right.simplifyFactorizeInDifferences(), this.type);
         }
-        
+
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // In jedem Summanden einzeln faktorisieren
@@ -1315,12 +1373,12 @@ public class BinaryOperation extends Expression {
 
         // Ergebnis bilden.
         return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-        
+
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
-        
+
         if (this.isProduct()) {
             // In jedem Faktor einzeln faktorisieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
@@ -1339,17 +1397,17 @@ public class BinaryOperation extends Expression {
         for (int i = 0; i < summands.getBound(); i++) {
             summands.put(i, summands.get(i).simplifyFactorizeAllButRationalsInSums());
         }
-        
+
         // Eigentliche Faktorisierung.
         SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);
         // Ergebnis bilden.
         return SimplifyUtilities.produceSum(summands);
-        
+
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException {
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -1367,7 +1425,7 @@ public class BinaryOperation extends Expression {
         } else if (this.isQuotient() || this.isPower()) {
             return new BinaryOperation(this.left.simplifyFactorizeAllButRationalsInDifferences(), this.right.simplifyFactorizeAllButRationalsInDifferences(), this.type);
         }
-        
+
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // In jedem Summanden einzeln faktorisieren
@@ -1382,12 +1440,12 @@ public class BinaryOperation extends Expression {
         SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
         // Ergebnis bilden.
         return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-        
+
     }
-    
+
     @Override
     public Expression simplifyReduceQuotients() throws EvaluationException {
-        
+
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -1405,7 +1463,7 @@ public class BinaryOperation extends Expression {
         } else if (this.isDifference() || this.isPower()) {
             return new BinaryOperation(this.left.simplifyReduceQuotients(), this.right.simplifyReduceQuotients(), this.type);
         }
-        
+
         ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
 
@@ -1416,69 +1474,19 @@ public class BinaryOperation extends Expression {
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
             factorsDenominator.put(i, factorsDenominator.get(i).simplifyReduceQuotients());
         }
-        
-        Expression base;
-        Expression exponent;
-        Expression compareBase;
-        Expression compareExponent;
-        
-        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
-            
-            if (factorsEnumerator.get(i) == null) {
-                continue;
-            }
-            
-            if (factorsEnumerator.get(i).isPower()) {
-                base = ((BinaryOperation) factorsEnumerator.get(i)).getLeft();
-                exponent = ((BinaryOperation) factorsEnumerator.get(i)).getRight();
-            } else {
-                base = factorsEnumerator.get(i);
-                exponent = ONE;
-            }
-            
-            for (int j = 0; j < factorsDenominator.getBound(); j++) {
-                
-                if (factorsDenominator.get(j) == null) {
-                    continue;
-                }
-                
-                if (factorsDenominator.get(j).isPower()) {
-                    compareBase = ((BinaryOperation) factorsDenominator.get(j)).getLeft();
-                    compareExponent = ((BinaryOperation) factorsDenominator.get(j)).getRight();
-                } else {
-                    compareBase = factorsDenominator.get(j);
-                    compareExponent = ONE;
-                }
-                
-                if (base.equivalent(compareBase)) {
-                    exponent = exponent.sub(compareExponent);
-                    factorsDenominator.remove(j);
-                    break;
-                }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-                
-            }
-            
-            if (exponent.equals(ONE)) {
-                factorsEnumerator.put(i, base);
-            } else {
-                factorsEnumerator.put(i, base.pow(exponent));
-            }
-            
-        }
-
+        // Eigentliches Kürzen.
+        SimplifyBinaryOperationMethods.simplifyReduceFactorsInQuotients(factorsEnumerator, factorsDenominator);
         // Ergebnis bilden.
         return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
-        
+
     }
-    
+
     @Override
     public Expression simplifyPullApartPowers() throws EvaluationException {
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -1487,11 +1495,11 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         }
-        
+
         if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -1500,9 +1508,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         }
-        
+
         if (this.isDifference() || this.isQuotient()) {
             return new BinaryOperation(this.left.simplifyPullApartPowers(), this.right.simplifyPullApartPowers(), this.type);
         }
@@ -1510,26 +1518,26 @@ public class BinaryOperation extends Expression {
         // Ab hier ist type == TypeBinary.POW
         Expression expr = this.left.simplifyPullApartPowers().pow(this.right.simplifyPullApartPowers());
         Expression exprSimplified;
-        
+
         exprSimplified = SimplifyExpLog.splitPowersInProduct(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-        
+
         exprSimplified = SimplifyExpLog.splitPowersInQuotient(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyMultiplyExponents() throws EvaluationException {
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -1538,9 +1546,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Summanden einzeln Potenzen vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -1549,11 +1557,11 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (this.isDifference() || this.isQuotient()) {
-            
+
             return new BinaryOperation(this.left.simplifyMultiplyExponents(), this.right.simplifyMultiplyExponents(), this.type);
-            
+
         }
 
         // Hier ist this.type == TypeBinary.POW
@@ -1562,20 +1570,20 @@ public class BinaryOperation extends Expression {
             return ((BinaryOperation) leftSimplified).getLeft().pow(((BinaryOperation) leftSimplified).getRight().mult(this.right));
         }
         return this;
-        
+
     }
-    
+
     @Override
     public Expression simplifyFunctionalRelations() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         BinaryOperation expr = this;
         Expression exprSimplified;
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionalgleichungen anwenden.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -1597,9 +1605,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         }
-        
+
         if (this.isDifference()) {
 
             // Im Minuenden und Subtrahenden einzeln Funktionalgleichungen anwenden.
@@ -1608,7 +1616,7 @@ public class BinaryOperation extends Expression {
                 return simplifiedDifference;
             }
             expr = (BinaryOperation) simplifiedDifference;
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
@@ -1635,11 +1643,11 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         }
-        
+
         if (expr.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionalgleichungen anwenden.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -1701,9 +1709,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         }
-        
+
         if (this.isQuotient()) {
 
             // Im Dividenden und Divisor einzeln Funktionalgleichungen anwenden.
@@ -1712,7 +1720,7 @@ public class BinaryOperation extends Expression {
                 return simplifiedQuotient;
             }
             expr = (BinaryOperation) simplifiedQuotient;
-            
+
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
 
@@ -1789,9 +1797,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
-            
+
         }
-        
+
         if (this.isPower()) {
 
             // In Basis und Exponenten einzeln Funktionalgleichungen anwenden.
@@ -1800,34 +1808,34 @@ public class BinaryOperation extends Expression {
                 return simplifiedPower;
             }
             expr = (BinaryOperation) simplifiedPower;
-            
+
             exprSimplified = SimplifyBinaryOperationMethods.reducePowerOfTenAndSumsOfLog10(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
-            
+
             exprSimplified = SimplifyBinaryOperationMethods.reducePowerOfTenAndDifferencesOfLog10(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
-            
+
             exprSimplified = SimplifyFunctionMethods.powerOfSgn(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
-            
+
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         Expression expr = this;
         Expression exprSimplified;
 
@@ -1848,7 +1856,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        
+
         try {
             // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden (Boolscher Parameter = false).
             exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
@@ -1859,17 +1867,17 @@ public class BinaryOperation extends Expression {
         } catch (EvaluationException e) {
             return expr;
         }
-        
+
         return this;
-        
+
     }
-    
+
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // Faktoren vor Logarithmusfunktionen zur Basis 10 in die Logarithmen hineinziehen.
@@ -1879,7 +1887,7 @@ public class BinaryOperation extends Expression {
         SimplifyExpLog.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.ln);
         SimplifyExpLog.pullFactorsIntoLogarithms(summandsRight, TypeFunction.ln);
         Expression expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-        
+
         if (expr.isSum()) {
 
             // In jedem Summanden einzeln Logarithmen sammeln.
@@ -1895,12 +1903,12 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (expr.isDifference()) {
 
             // Im Minuenden und Subtrahenden einzeln Logarithmen sammeln.
             expr = ((BinaryOperation) expr).getLeft().simplifyCollectLogarithms().sub(((BinaryOperation) expr).getRight().simplifyCollectLogarithms());
-            
+
             summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
@@ -1911,9 +1919,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (expr.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
             // In jedem Faktor einzeln Logarithmen sammeln.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -1922,25 +1930,25 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (expr instanceof BinaryOperation) {
             return new BinaryOperation(((BinaryOperation) expr).getLeft().simplifyCollectLogarithms(),
                     ((BinaryOperation) expr).getRight().simplifyCollectLogarithms(),
                     ((BinaryOperation) expr).getType());
         }
-        
+
         return expr;
-        
+
     }
-    
+
     @Override
     public Expression simplifyExpandLogarithms() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum() || this.isDifference()) {
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
             // In jedem Summanden einzeln Logarithmen auseinanderziehen.
@@ -1951,9 +1959,9 @@ public class BinaryOperation extends Expression {
                 summandsRight.put(i, summandsRight.get(i).simplifyExpandLogarithms());
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (this.isProduct() || this.isQuotient()) {
-            
+
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
             // In jedem Faktor einzeln Logarithmen auseinanderziehen.
@@ -1964,22 +1972,22 @@ public class BinaryOperation extends Expression {
                 factorsDenominator.put(i, factorsDenominator.get(i).simplifyExpandLogarithms());
             }
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
-            
+
         }
 
         // Dann ist this eine Potenz.
         return this.left.simplifyExpandLogarithms().pow(this.right.simplifyExpandLogarithms());
-        
+
     }
-    
+
     @Override
     public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -1988,9 +1996,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -1999,26 +2007,26 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (this.isPower() && this.left.isConstant()) {
             // Nur dann ersetzen, wenn die Basis konstant ist.
             return this.left.ln().mult(this.right).exp();
         }
-        
+
         return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsByDefinitions(),
                 this.right.simplifyReplaceExponentialFunctionsByDefinitions(),
                 this.type);
-        
+
     }
-    
+
     @Override
     public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -2027,9 +2035,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -2038,26 +2046,26 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (this.isPower() && !this.left.contains(var)) {
             // Nur dann ersetzen, wenn die Basis bzgl. var konstant ist.
             return this.left.ln().mult(this.right).exp();
         }
-        
+
         return new BinaryOperation(this.left.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var),
                 this.right.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var),
                 this.type);
-        
+
     }
-    
+
     @Override
     public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -2066,9 +2074,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -2077,23 +2085,23 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         }
-        
+
         return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
                 this.right.simplifyReplaceTrigonometricalFunctionsByDefinitions(),
                 this.type);
-        
+
     }
-    
+
     @Override
     public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
@@ -2102,9 +2110,9 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
@@ -2113,13 +2121,13 @@ public class BinaryOperation extends Expression {
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
-            
+
         }
-        
+
         return new BinaryOperation(this.left.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var),
                 this.right.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var),
                 this.type);
-        
+
     }
 
     /* 
@@ -2154,9 +2162,9 @@ public class BinaryOperation extends Expression {
         }
         return false;
     }
-    
+
     private static BigInteger getUpperBoundForSummands(Expression f, String var) {
-        
+
         if (f.isSum()) {
             BigInteger numberOfSummands = BigInteger.ZERO;
             ExpressionCollection summands = SimplifyUtilities.getSummands(f);
@@ -2184,7 +2192,7 @@ public class BinaryOperation extends Expression {
         } else if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()
                 && ((BinaryOperation) f).getRight().isPositive()
                 && ((Constant) ((BinaryOperation) f).getRight()).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0) {
-            
+
             Expression base = ((BinaryOperation) f).getLeft();
             int exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().intValue();
 
@@ -2216,13 +2224,13 @@ public class BinaryOperation extends Expression {
 
         // Dann ist das kein Polynom in komplexen Exponentialfunktionen.
         return BigInteger.valueOf(-1);
-        
+
     }
-    
+
     private static Expression expandPowerOfCos(Expression argument, int n) {
         // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
         Expression result = ZERO;
-        
+
         if (n % 2 == 0) {
             for (int i = 0; i < n / 2; i++) {
                 result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
@@ -2235,7 +2243,7 @@ public class BinaryOperation extends Expression {
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
         }
-        
+
         return result;
     }
 
@@ -2247,7 +2255,7 @@ public class BinaryOperation extends Expression {
 
         // Achtung: Im Folgenden findet keine Validierung für n statt. Dies muss im Vorfeld stattfinden.
         Expression result = ZERO;
-        
+
         int m;
         if (n % 2 == 0) {
             m = n / 2;
@@ -2264,50 +2272,50 @@ public class BinaryOperation extends Expression {
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
         }
-        
+
         return result;
-        
+
     }
-    
+
     private static Expression rewriteProductOfSinSin(Expression argumentLeft, Expression argumentRight) {
         return argumentLeft.sub(argumentRight).cos().sub(argumentLeft.add(argumentRight).cos()).div(2);
     }
-    
+
     private static Expression rewriteProductOfCosCos(Expression argumentLeft, Expression argumentRight) {
         return argumentLeft.sub(argumentRight).cos().add(argumentLeft.add(argumentRight).cos()).div(2);
     }
-    
+
     private static Expression rewriteProductOfSinCos(Expression argumentSin, Expression argumentCos) {
         return rewriteProductOfCosSin(argumentCos, argumentSin);
     }
-    
+
     private static Expression rewriteProductOfCosSin(Expression argumentCos, Expression argumentSin) {
         return argumentCos.add(argumentSin).sin().sub(argumentCos.sub(argumentSin).sin()).div(2);
     }
-    
+
     @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         if (this.isSum()) {
-            
+
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < summands.getBound(); i++) {
                 summands.put(i, summands.get(i).simplifyExpandProductsOfComplexExponentialFunctions(var));
             }
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
-            
+
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionen durch ihre Definitionen ersetzen.
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyExpandProductsOfComplexExponentialFunctions(var));
             }
-            
+
             Expression expr = SimplifyUtilities.produceProduct(factors);
             BigInteger numberOfSummands = getUpperBoundForSummands(expr, var);
 
@@ -2316,15 +2324,15 @@ public class BinaryOperation extends Expression {
                     || numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS)) > 0) {
                 return expr;
             }
-            
+
             Expression factorLeft, factorRight;
             for (int i = 0; i < factors.getBound() - 1; i++) {
-                
+
                 if (factors.get(i) == null || !factors.get(i).contains(var)) {
                     continue;
                 }
                 factorLeft = factors.get(i);
-                
+
                 for (int j = i + 1; j < factors.getBound(); j++) {
                     if (factors.get(j) == null || !factors.get(j).contains(var)) {
                         continue;
@@ -2349,25 +2357,25 @@ public class BinaryOperation extends Expression {
                             factors.remove(j);
                         }
                     }
-                    
+
                 }
             }
-            
+
             return SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (this.isPower()) {
-            
+
             Expression expr = this.left.simplifyExpandProductsOfComplexExponentialFunctions(var).pow(this.right.simplifyExpandProductsOfComplexExponentialFunctions(var));
-            
+
             if (expr.isPower() && ((BinaryOperation) expr).right.isIntegerConstant()
                     && ((BinaryOperation) expr).right.isPositive()
                     && ((Constant) ((BinaryOperation) expr).right).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) <= 0
                     && isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) expr).left, var)) {
-                
+
                 BigInteger numberOfSummands = getUpperBoundForSummands(this, var);
                 if (numberOfSummands.compareTo(BigInteger.ZERO) > 0
                         && numberOfSummands.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_INTEGRABLE_SUMMANDS)) <= 0) {
-                    
+
                     Expression base = ((BinaryOperation) expr).left;
                     int exponent = ((Constant) ((BinaryOperation) expr).right).getValue().intValue();
 
@@ -2384,28 +2392,28 @@ public class BinaryOperation extends Expression {
                     }
                     // "Langes" Ausmultiplizieren soll stattfinden (Boolscher Parameter = true).
                     return this.simplifyExpand(TypeExpansion.POWERFUL);
-                    
+
                 }
             }
-            
+
             return expr;
-            
+
         }
-        
+
         return new BinaryOperation(this.left.simplifyExpandProductsOfComplexExponentialFunctions(var),
                 this.right.simplifyExpandProductsOfComplexExponentialFunctions(var),
                 this.type);
-        
+
     }
-    
+
     @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         FlowController.interruptComputationIfNeeded();
-        
+
         BinaryOperation expr;
-        
+
         if (this.isSum()) {
 
             // In jedem Summanden einzeln algebraische Umformungen vornehmen.
@@ -2414,7 +2422,7 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyAlgebraicExpressions());
             }
             return SimplifyUtilities.produceSum(summands);
-            
+
         } else if (this.isProduct()) {
 
             // In jedem Faktor einzeln algebraische Umformungen vornehmen.
@@ -2422,9 +2430,9 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyAlgebraicExpressions());
             }
-            
+
             Expression productOfAlgebraicallySimplifiedFactors = SimplifyUtilities.produceProduct(factors);
-            
+
             if (!(productOfAlgebraicallySimplifiedFactors instanceof BinaryOperation)) {
                 /*
                  Dies kann z. B. passieren, wenn factors aus 1 und exp(x)
@@ -2439,16 +2447,16 @@ public class BinaryOperation extends Expression {
             if (!expr.equals(this)) {
                 return expr;
             }
-            
+
         } else {
-            
+
             expr = new BinaryOperation(this.left.simplifyAlgebraicExpressions(), this.right.simplifyAlgebraicExpressions(), this.type);
             if (!expr.equals(this)) {
                 return expr;
             }
-            
+
         }
-        
+
         Expression exprSimplified;
 
         /*
@@ -2494,9 +2502,9 @@ public class BinaryOperation extends Expression {
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-        
+
         return expr;
-        
+
     }
-    
+
 }

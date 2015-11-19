@@ -366,7 +366,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             matrixConverted = (Expression) this.left.convertOneTimesOneMatrixToExpression();
             if (matrixConverted.equals(Expression.MINUS_ONE)) {
                 leftAsText = "-";
-            } else if (matrixConverted.doesExpressionStartsWithAMinusSign()
+            } else if (matrixConverted.doesExpressionStartWithAMinusSign()
                     || (matrixConverted instanceof BinaryOperation
                     && (((BinaryOperation) matrixConverted).getType().equals(TypeBinary.PLUS)
                     || ((BinaryOperation) matrixConverted).getType().equals(TypeBinary.MINUS)))) {
@@ -383,7 +383,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
         if (this.right.convertOneTimesOneMatrixToExpression() instanceof Expression) {
             // Spezialfall: this.right ist eine (1x1)-Matrix. Dann wird sie als Expression ausgegeben.
             matrixConverted = (Expression) this.right.convertOneTimesOneMatrixToExpression();
-            if (matrixConverted.doesExpressionStartsWithAMinusSign()
+            if (matrixConverted.doesExpressionStartWithAMinusSign()
                     || (matrixConverted instanceof BinaryOperation
                     && (((BinaryOperation) matrixConverted).getType().equals(TypeBinary.PLUS)
                     || ((BinaryOperation) matrixConverted).getType().equals(TypeBinary.MINUS)))) {

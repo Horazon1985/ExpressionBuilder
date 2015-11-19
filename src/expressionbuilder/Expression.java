@@ -738,13 +738,13 @@ public abstract class Expression {
      * Beispiel: bei this = (-2)*3 wird true zurückgegeben, bei x*(-7)*5 wird
      * false zurückgegeben.
      */
-    public boolean doesExpressionStartsWithAMinusSign() {
+    public boolean doesExpressionStartWithAMinusSign() {
 
         if (this instanceof Constant) {
             return ((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0;
         }
-        if (this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.TIMES)) {
-            return ((BinaryOperation) this).getLeft().doesExpressionStartsWithAMinusSign();
+        if (this.isProduct()) {
+            return ((BinaryOperation) this).getLeft().doesExpressionStartWithAMinusSign();
         }
         return false;
 
@@ -768,12 +768,23 @@ public abstract class Expression {
 
     /**
      * Liefert true, wenn der Ausdruck this einen nicht-negativen Koeffizienten
-     * besitzt, falls man this als Produkt auffasst. Beispiele: (1) Für expr =
-     * 2*x*(-3)*y wird false zurückgegeben, da expr == (-6)*x*y einen negativen
-     * Koeffizienten besitzt. (2) Für expr = x + 3*y wird true zurückgegeben, da
-     * der Koeffizient 1 ist, wenn man expr als Produkt auffasst.
+     * besitzt, falls man this als Produkt auffasst.<br>
+     * BEISPIELE: (1) Für expr =2*x*(-3)*y wird false zurückgegeben, da expr,
+     * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
+     * (2) Für expr = x + 3*y wird true zurückgegeben, da der Koeffizient 1 ist,
+     * wenn man expr als Produkt auffasst.
      */
     public abstract boolean hasPositiveSign();
+
+    /**
+     * Liefert true, wenn der Ausdruck this einen negativen Koeffizienten
+     * besitzt, falls man this als Produkt auffasst.<br>
+     * BEISPIELE: (1) Für expr =2*x*(-3)*y wird true zurückgegeben, da expr,
+     * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
+     * (2) Für expr = x + 3*y wird false zurückgegeben, da der Koeffizient 1 ist,
+     * wenn man expr als Produkt auffasst.
+     */
+    public abstract boolean hasNegativeSign();
 
     /**
      * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
@@ -987,7 +998,7 @@ public abstract class Expression {
         if (expr.equals(ONE)) {
             return this;
         }
-        if (this.equals(ONE)){
+        if (this.equals(ONE)) {
             return ONE;
         }
         return new BinaryOperation(this, expr, TypeBinary.POW);
@@ -1192,8 +1203,8 @@ public abstract class Expression {
     }
 
     public boolean isPositiveIntegerPower() {
-        return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant() 
-                && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0 ;
+        return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant()
+                && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0;
     }
 
     public boolean isFunction() {

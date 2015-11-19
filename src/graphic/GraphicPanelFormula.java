@@ -1456,7 +1456,7 @@ public class GraphicPanelFormula extends JPanel {
                 }
             }
 
-            if (expr.getRight().doesExpressionStartsWithAMinusSign()
+            if (expr.getRight().doesExpressionStartWithAMinusSign()
                     || expr.getRight().isSum() || expr.getRight().isDifference()) {
                 // l_right = l("(") + l(right) + l(")").
                 lengthRight = getLengthOfExpression(g, expr.getRight(), fontSize)
@@ -2239,9 +2239,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightLeft = getHeightOfExpression(g, expr.getLeft(), fontSize);
         int heightRight = getHeightOfExpression(g, expr.getRight(), fontSize);
 
-        if (expr.getLeft() instanceof BinaryOperation
-                && (((BinaryOperation) expr.getLeft()).getType().equals(TypeBinary.PLUS)
-                || ((BinaryOperation) expr.getLeft()).getType().equals(TypeBinary.MINUS))) {
+        if (expr.getLeft().isSum() || expr.getLeft().isDifference()) {
 
             // Fall: left benötigt eine Klammer.
             // Zeichnen von (left) * .
@@ -2251,9 +2249,7 @@ public class GraphicPanelFormula extends JPanel {
             drawSignMult(g, x_0 + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, expr.getLeft(), fontSize),
                     y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
-            if (expr.getRight() instanceof BinaryOperation
-                    && (((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.PLUS)
-                    || ((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.MINUS))) {
+            if (expr.getRight().doesExpressionStartWithAMinusSign() ||  expr.getRight().isSum() || expr.getRight().isDifference()) {
 
                 // Zeichnen von (right).
                 drawOpeningBracket(g,
@@ -2282,16 +2278,13 @@ public class GraphicPanelFormula extends JPanel {
             // Fall: left benötigt keine Klammer.
             int lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
             int lengthMultSign = getWidthOfSignMult(g, fontSize);
+            
             if (expr.getLeft() instanceof Constant
                     && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
+
+                // Falls left = -1: Statt (-1)*right nur -right zeichnen.
                 lengthLeft = getWidthOfSignMinus(g, fontSize);
                 lengthMultSign = 0;
-            }
-
-            if (expr.getLeft() instanceof Constant
-                    && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
-
-                // Falls left = -1 -> statt (-1)*right nur -right zeichnen.
                 drawSignMinus(g, x_0, y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
             } else {
@@ -2302,10 +2295,8 @@ public class GraphicPanelFormula extends JPanel {
 
             }
 
-            if (expr.getRight().doesExpressionStartsWithAMinusSign()
-                    || expr.getRight() instanceof BinaryOperation
-                    && (((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.PLUS)
-                    || ((BinaryOperation) expr.getRight()).getType().equals(TypeBinary.MINUS))) {
+            if (expr.getRight().doesExpressionStartWithAMinusSign()
+                    || expr.getRight().isSum() || expr.getRight().isDifference()) {
 
                 // Zeichnen von (right).
                 drawOpeningBracket(g,

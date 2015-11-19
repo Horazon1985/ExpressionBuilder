@@ -374,6 +374,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public boolean hasNegativeSign() {
+        return false;
+    }
+
+    @Override
     public int length() {
         return 1;
     }

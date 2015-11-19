@@ -2821,5 +2821,61 @@ public abstract class SimplifyBinaryOperationMethods {
         
     }
     
+    /**
+     * Methode für das Kürzen von Faktoren im Quotienten.
+     */
+    public static void simplifyReduceFactorsInQuotients(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+
+        Expression base;
+        Expression exponent;
+        Expression compareBase;
+        Expression compareExponent;
+        
+        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+            
+            if (factorsEnumerator.get(i) == null) {
+                continue;
+            }
+            
+            if (factorsEnumerator.get(i).isPower()) {
+                base = ((BinaryOperation) factorsEnumerator.get(i)).getLeft();
+                exponent = ((BinaryOperation) factorsEnumerator.get(i)).getRight();
+            } else {
+                base = factorsEnumerator.get(i);
+                exponent = ONE;
+            }
+            
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+                
+                if (factorsDenominator.get(j) == null) {
+                    continue;
+                }
+                
+                if (factorsDenominator.get(j).isPower()) {
+                    compareBase = ((BinaryOperation) factorsDenominator.get(j)).getLeft();
+                    compareExponent = ((BinaryOperation) factorsDenominator.get(j)).getRight();
+                } else {
+                    compareBase = factorsDenominator.get(j);
+                    compareExponent = ONE;
+                }
+                
+                if (base.equivalent(compareBase)) {
+                    exponent = exponent.sub(compareExponent);
+                    factorsDenominator.remove(j);
+                    break;
+                }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+                
+            }
+            
+            factorsEnumerator.put(i, base.pow(exponent));
+            
+        }
+        
+    }
+    
+    
     
 }
