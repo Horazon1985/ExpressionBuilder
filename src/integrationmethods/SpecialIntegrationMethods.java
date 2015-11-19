@@ -159,10 +159,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
-        Expression denominator = coefficientsDenominator.get(0);
-        for (int i = 1; i < coefficientsDenominator.getBound(); i++) {
-            denominator = denominator.add(coefficientsDenominator.get(i).mult(Variable.create(var)).pow(i));
-        }
+        Expression denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var);
 
         // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
@@ -264,26 +261,33 @@ public abstract class SpecialIntegrationMethods {
          Falls der Nenner reduzibel ist -> Falsche Methode (es muss auf
          Partialbruchzerlegung zurückgegriffen werden).
          */
+        // discriminant = b^2 - 4*a*c =: D.
         Expression discriminant = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
         if (!discriminant.isAlwaysNegative() || discriminant.equals(Expression.ZERO)) {
             throw new NotPreciseIntegrableException();
         }
 
         /*
-         Hilfsgrößen: p = a[1]/(2*b[2]), q = a[0]/b[2] - a[1]*b[1]/(2*b[2]^2),
-         r = (-D/(4*b[0]^2))^(1/2). DANN: int(a[1]x + a[0])/(b[2]x^2 + b[1]x +
-         b[0]) = p*ln(b[2]x^2 + b[1]x + b[0]) + (q/r)*arctan((2*b[2]*x +
-         b[1])/(-D)^(1/2)) mit D = b[1]^2 - 4*b[2]*b[0].
+         Hilfsgrößen: a = b.get(2), b = b.get(1), c = b.get(0), d = a.get(1), e = a.get(0).
+         p = d/(2*a), q = e/a - d*b/(2*a^2), r = (-D/(4*c^2))^(1/2). 
+         DANN: int(dx + e)/(ax^2 + bx + c) 
+         = p*ln(ax^2 + bx + c) + (q/r)*arctan((2ax + b)/(-D)^(1/2)) mit D = b^2 - 4ac.
          */
-        Expression p = coefficientsEnumerator.get(1).div(Expression.TWO.mult(coefficientsDenominator.get(2))).simplify();
-        Expression q = coefficientsEnumerator.get(0).div(coefficientsDenominator.get(2)).sub(coefficientsEnumerator.get(1).mult(coefficientsDenominator.get(1)).div(Expression.TWO.mult(coefficientsDenominator.get(2).pow(2)))).simplify();
-        Expression r = new Constant(4).mult(coefficientsDenominator.get(2).pow(2)).div(Expression.MINUS_ONE.mult(discriminant)).pow(1, 2).simplify();
+        Expression a = coefficientsDenominator.get(2);
+        Expression b = coefficientsDenominator.get(1);
+        Expression c = coefficientsDenominator.get(0);
+        Expression d = coefficientsEnumerator.get(1);
+        Expression e = coefficientsEnumerator.get(0);
+
+        Expression p = d.div(Expression.TWO.mult(a)).simplify();
+        Expression q = e.div(a).sub(d.mult(b).div(Expression.TWO.mult(a.pow(2)))).simplify();
+        Expression r = new Constant(4).mult(a.pow(2)).div(Expression.MINUS_ONE.mult(discriminant)).pow(1, 2).simplify();
 
         // Log-Summanden bilden.
         Expression logSummand = p.mult(((BinaryOperation) f).getRight().ln());
         // Arctan-Summanden bilden.
-        Expression arctanArgument = Expression.TWO.mult(coefficientsDenominator.get(2)).mult(Variable.create(var)).add(coefficientsDenominator.get(1)).div((Expression.MINUS_ONE.mult(discriminant)).pow(1, 2)).simplify();
-        Expression arctanSummand = q.mult(r).mult(arctanArgument.arctan()).simplify();
+        Expression arctanArgument = Expression.TWO.mult(a).mult(Variable.create(var)).add(b).div((Expression.MINUS_ONE.mult(discriminant)).pow(1, 2)).simplify();
+        Expression arctanSummand = q.mult(arctanArgument.arctan()).simplify().div(r);
 
         return logSummand.add(arctanSummand);
 
@@ -350,8 +354,9 @@ public abstract class SpecialIntegrationMethods {
     }
 
     /**
-     * Integriert Funktionen vom Typ Polynom * f(a*x+b)^n, f = sin oder f = cos,
-     * wobei der Polynomgrad unterhalb einer geeigneten Schranke liegt.<br>
+     * Integriert Funktionen vom Typ P(x) * f(a*x+b)^n, P = Polynom, f = sin
+     * oder f = cos, wobei der Polynomgrad unterhalb einer geeigneten Schranke
+     * liegt.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws NotPreciseIntegrableException
@@ -1032,46 +1037,46 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> Fehler werfen.
-        for (int i = 0; i < 2; i++) {
-            if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
-                throw new NotPreciseIntegrableException();
-            }
-        }
-
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), diskr = D = b^2 - 4*a*c.
+        Expression a = coefficients.get(2);
+        Expression b = coefficients.get(1);
         Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(2)).mult(coefficients.get(0))).simplify();
 
-        if (discriminant.equals(Expression.ZERO) && coefficients.get(2).isAlwaysNonNegative() && !coefficients.get(2).equals(Expression.ZERO)) {
+        // Falls Uneindeutigkeiten im Vorzeichen der Diskriminante oder im Leitkoeffizienten bestehen, dann Fehler werfen.
+        if (!a.isAlwaysPositive() && !a.isAlwaysNegative()
+                || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
+        }
+        
+        if (discriminant.equals(Expression.ZERO) && a.isAlwaysNonNegative() && !a.equals(Expression.ZERO)) {
             // Dann ist f = 1/(a^(1/2)*|x - x_1|) mit x_1 = -b/(2*a).
-            Expression zero = Expression.MINUS_ONE.mult(coefficients.get(1)).div(Expression.TWO.mult(coefficients.get(2))).simplify();
+            Expression zero = Expression.MINUS_ONE.mult(b).div(Expression.TWO.mult(a)).simplify();
             // F = sgn(x - x_1)*ln(|x - x_1|)/a^(1/2).
             return Variable.create(var).sub(zero).sgn().mult(
-                    Variable.create(var).sub(zero).abs().ln()).div(coefficients.get(2).pow(1, 2));
+                    Variable.create(var).sub(zero).abs().ln()).div(a.pow(1, 2));
         }
-        if (!discriminant.equals(Expression.ZERO) && (discriminant.isNonNegative() || discriminant.isAlwaysNonNegative())) {
+        if (discriminant.isAlwaysPositive()) {
             // Hier ist D > 0.
-            if ((coefficients.get(2).isNonNegative() || coefficients.get(2).isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
+            if (a.isAlwaysPositive()) {
 
                 // Fall a > 0, D > 0. Reduktion auf den Typ int(1/(x^2 - 1)^(1/2), x).
                 // F = arcosh((2*a*x + b)/D^(1/2))/(a^(1/2)).
-                return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(discriminant.pow(1, 2)).arcosh().div(coefficients.get(2).pow(1, 2));
+                return Expression.TWO.mult(a).mult(Variable.create(var)).add(b).div(discriminant.pow(1, 2)).arcosh().div(a.pow(1, 2));
 
             }
-            if ((coefficients.get(2).isNonPositive() || Expression.MINUS_ONE.mult(coefficients.get(2)).simplify().isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
+            if (a.isAlwaysNegative()) {
 
                 // Fall a < 0, D > 0. Reduktion auf den Typ int(1/(1 - x^2)^(1/2), x).
                 // F = arcsin((-2*a*x - b)/D^(1/2))/((-a)^(1/2)).
-                return new Constant(-2).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(discriminant.pow(1, 2)).arcsin().div(Expression.MINUS_ONE.mult(coefficients.get(2)).pow(1, 2));
+                return new Constant(-2).mult(a).mult(Variable.create(var)).sub(b).div(discriminant.pow(1, 2)).arcsin().div(Expression.MINUS_ONE.mult(a).pow(1, 2));
 
             }
         }
-        if (!discriminant.equals(Expression.ZERO) && (discriminant.isNonPositive() || Expression.MINUS_ONE.mult(discriminant).simplify().isAlwaysNonNegative())
-                && (coefficients.get(2).isNonNegative() || coefficients.get(2).isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
+        if (a.isAlwaysPositive() && discriminant.isAlwaysNegative()) {
 
             // Fall a > 0, D < 0. Reduktion auf den Typ int(1/(x^2 + 1)^(1/2), x).
             // F = arsinh((2*a*x + b)/(-D)^(1/2))/(a^(1/2)).
-            return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(discriminant).pow(1, 2)).arsinh().div(coefficients.get(2).pow(1, 2));
+            return Expression.TWO.mult(a).mult(Variable.create(var)).add(b).div(Expression.MINUS_ONE.mult(discriminant).pow(1, 2)).arsinh().div(a.pow(1, 2));
 
         }
 
@@ -1125,20 +1130,18 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> fehler werfen.
-        for (int i = 0; i < 2; i++) {
-            if (!coefficients.get(i).isConstant()
-                    && !coefficients.get(i).isAlwaysNonNegative()
-                    && !coefficients.get(i).isAlwaysNonPositive()) {
-                throw new NotPreciseIntegrableException();
-            }
-        }
-
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), diskr = D = 4*a*c - b^2, x = var.
         Expression a = coefficients.get(2);
         Expression b = coefficients.get(1);
         Expression c = coefficients.get(0);
         Expression discriminant = new Constant(4).mult(a).mult(c).sub(b.pow(2)).simplify();
+
+        // Falls Uneindeutigkeiten im Vorzeichen der Diskriminante oder im Leitkoeffizienten bestehen, dann Fehler werfen.
+        if (!a.isAlwaysPositive() && !a.isAlwaysNegative()
+                || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
+        }
+
         Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
 
         // firstSummand = (4*a*x+b)/((2*n-1)*D*R^((2*n-1)/2)
@@ -1220,20 +1223,20 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> Fehler werfen.
-        for (int i = 0; i < 2; i++) {
-            if (!coefficientsDenominator.get(i).isConstant() && !coefficientsDenominator.get(i).isAlwaysNonNegative()
-                    && !coefficientsDenominator.get(i).isAlwaysNonPositive()) {
-                throw new NotPreciseIntegrableException();
-            }
-        }
-
         // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), d = b.get(1), e = b.get(0), x = var.
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
+        Expression c = coefficientsDenominator.get(0);
         Expression d = coefficientsEnumerator.get(1);
         Expression e = coefficientsEnumerator.get(0);
+
+        // discriminant = b^2 - 4ac.
+        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c));
+        if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
+                || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
+        }
 
         // radicand = a*x^2 + b*x + c
         Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
