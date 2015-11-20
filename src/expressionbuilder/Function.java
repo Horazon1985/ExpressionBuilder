@@ -726,8 +726,13 @@ public class Function extends Expression {
             return functionSimplified;
         }
 
-        // Falls das Argument immer nichtnegativ ist, dann einfach das Argument zurückgeben.
+        // Falls das Argument immer negativ oder immer nichtnegativ ist, dann einfach das Argument zurückgeben.
         functionSimplified = SimplifyFunctionMethods.computeAbsIfExpressionIsAlwaysNonNegative(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
+        functionSimplified = SimplifyFunctionMethods.computeAbsIfExpressionIsAlwaysNonPositive(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
@@ -741,49 +746,59 @@ public class Function extends Expression {
             return functionSimplified;
         }
 
-        //Gerade Potenzen aus Produkten in abs() herausziehen
+        functionSimplified = SimplifyFunctionMethods.computeSgnIfExpressionIsAlwaysPositive(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
+        functionSimplified = SimplifyFunctionMethods.computeSgnIfExpressionIsAlwaysNegative(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
+        // Gerade Potenzen aus Produkten in abs() herausziehen
         functionSimplified = SimplifyFunctionalRelations.takeEvenPowersOutOfProductsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Gerade Potenzen aus Quotienten in abs() herausziehen
+        // Gerade Potenzen aus Quotienten in abs() herausziehen
         functionSimplified = SimplifyFunctionalRelations.takeEvenPowersOutOfQuotientsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Konstanten aus Produkten in abs() herausziehen.
+        // Konstanten aus Produkten in abs() herausziehen.
         functionSimplified = SimplifyFunctionalRelations.takeConstantsOutOfProductsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Konstanten aus Quotienten in abs() herausziehen.
+        // Konstanten aus Quotienten in abs() herausziehen.
         functionSimplified = SimplifyFunctionalRelations.takeConstantsOutOfQuotientsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Gerade Potenzen in Produkten in sgn() beseitigen
+        // Gerade Potenzen in Produkten in sgn() beseitigen
         functionSimplified = SimplifyFunctionalRelations.removeSpecialPowersInProductsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Gerade Potenzen in Quotienten in sgn() beseitigen
+        // Gerade Potenzen in Quotienten in sgn() beseitigen
         functionSimplified = SimplifyFunctionalRelations.removeSpecialPowersInQuotientsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Konstanten aus Produkten in sgn() beseitigen.
+        // Konstanten aus Produkten in sgn() beseitigen.
         functionSimplified = SimplifyFunctionalRelations.removeConstantsInProductsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
-        //Konstanten aus Quotienten in sgn() beseitigen.
+        // Konstanten aus Quotienten in sgn() beseitigen.
         functionSimplified = SimplifyFunctionalRelations.removeConstantsInQuotientsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
@@ -800,7 +815,7 @@ public class Function extends Expression {
 
         /*
          Vereinfachung bestimmter Funktionswerte f(0). Beispielsweise wird
-         sin(0) = 0, cos(0) = 1 etc.
+         sin(0) = 0, cos(0) = 1, exp(0) = 1 etc.
          */
         functionSimplified = SimplifyFunctionMethods.simplifySpecialValuesOfFunctions(function);
         if (!functionSimplified.equals(function)) {

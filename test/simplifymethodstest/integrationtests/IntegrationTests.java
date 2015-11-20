@@ -223,7 +223,7 @@ public class IntegrationTests {
     
     @Test
     public void integralOfRationalFunctionInSinCosTest1() {
-        // Integral von 1/(2+cos(x)) = x/3-ln((3+exp(x))^(1/3)).
+        // Integral von 1/(2+cos(x)) = 2*arctan((2*arctan(x))/3^(1/2))/3^(1/2).
         try {
             f = Expression.build("int(1/(2+cos(x)),x)", null);
             Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);

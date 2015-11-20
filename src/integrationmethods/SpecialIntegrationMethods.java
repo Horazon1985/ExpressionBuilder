@@ -269,9 +269,9 @@ public abstract class SpecialIntegrationMethods {
 
         /*
          Hilfsgrößen: a = b.get(2), b = b.get(1), c = b.get(0), d = a.get(1), e = a.get(0).
-         p = d/(2*a), q = e/a - d*b/(2*a^2), r = (-D/(4*c^2))^(1/2). 
+         p = d/(2*a), q = e/a - d*b/(2*a^2), r = (-D/(4*a^2))^(1/2). 
          DANN: int(dx + e)/(ax^2 + bx + c) 
-         = p*ln(ax^2 + bx + c) + (q/r)*arctan((2ax + b)/(-D)^(1/2)) mit D = b^2 - 4ac.
+         = p*ln(ax^2 + bx + c) + (q/r)*arctan((2ax + b)/(sgn(a)*(-D)^(1/2))) mit D = b^2 - 4ac.
          */
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
@@ -279,15 +279,15 @@ public abstract class SpecialIntegrationMethods {
         Expression d = coefficientsEnumerator.get(1);
         Expression e = coefficientsEnumerator.get(0);
 
-        Expression p = d.div(Expression.TWO.mult(a)).simplify();
-        Expression q = e.div(a).sub(d.mult(b).div(Expression.TWO.mult(a.pow(2)))).simplify();
-        Expression r = new Constant(4).mult(a.pow(2)).div(Expression.MINUS_ONE.mult(discriminant)).pow(1, 2).simplify();
+        Expression p = d.div(TWO.mult(a)).simplify();
+        Expression q = e.div(a).sub(d.mult(b).div(TWO.mult(a.pow(2)))).simplify();
+        Expression r = MINUS_ONE.mult(discriminant).pow(1, 2).div(TWO.mult(a.abs())).simplify();
 
         // Log-Summanden bilden.
-        Expression logSummand = p.mult(((BinaryOperation) f).getRight().ln());
+        Expression logSummand = p.mult(((BinaryOperation) f).getRight().abs().ln());
         // Arctan-Summanden bilden.
-        Expression arctanArgument = Expression.TWO.mult(a).mult(Variable.create(var)).add(b).div((Expression.MINUS_ONE.mult(discriminant)).pow(1, 2)).simplify();
-        Expression arctanSummand = q.mult(arctanArgument.arctan()).simplify().div(r);
+        Expression arctanArgument = TWO.mult(a).mult(Variable.create(var)).add(b).div(a.sgn().mult(MINUS_ONE.mult(discriminant).pow(1, 2))).simplify();
+        Expression arctanSummand = q.mult(arctanArgument.arctan()).div(r).simplify();
 
         return logSummand.add(arctanSummand);
 

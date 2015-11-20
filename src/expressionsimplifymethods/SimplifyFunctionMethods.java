@@ -4,6 +4,8 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ONE;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
@@ -293,14 +295,23 @@ public abstract class SimplifyFunctionMethods {
      * (etwa x^2 oder exp(x) etc.), so wird der Betrag weggelassen.
      */
     public static Expression computeAbsIfExpressionIsAlwaysNonNegative(Function f) {
-
         if (f.getType().equals(TypeFunction.abs) && f.getLeft().isAlwaysNonNegative()) {
             return f.getLeft();
         }
         return f;
-
     }
 
+    /**
+     * Falls f der Betrag ist und das Argument von f stets nichtnegativ ist
+     * (etwa x^2 oder exp(x) etc.), so wird der Betrag weggelassen.
+     */
+    public static Expression computeAbsIfExpressionIsAlwaysNonPositive(Function f) {
+        if (f.getType().equals(TypeFunction.abs) && f.getLeft().isAlwaysNonPositive()) {
+            return MINUS_ONE.mult(f.getLeft());
+        }
+        return f;
+    }
+    
     /**
      * Versucht das Signum von Konstanten Ausdrücken zu bestimmen, falls
      * möglich.
@@ -323,6 +334,28 @@ public abstract class SimplifyFunctionMethods {
 
     }
 
+    /**
+     * Falls f das Signum ist und das Argument von f stets positiv ist
+     * (etwa 1+x^2 oder exp(x) etc.), so wird 1 zurückgegeben.
+     */
+    public static Expression computeSgnIfExpressionIsAlwaysPositive(Function f) {
+        if (f.getType().equals(TypeFunction.sgn) && f.getLeft().isAlwaysPositive()) {
+            return ONE;
+        }
+        return f;
+    }
+
+    /**
+     * Falls f das Signum ist und das Argument von f stets negativ ist
+     * (etwa -1-x^2 oder -exp(x) etc.), so wird -1 zurückgegeben.
+     */
+    public static Expression computeSgnIfExpressionIsAlwaysNegative(Function f) {
+        if (f.getType().equals(TypeFunction.abs) && f.getLeft().isAlwaysNegative()) {
+            return MINUS_ONE;
+        }
+        return f;
+    }
+    
     /**
      * Anwendung der Funktionalgleichung f(-x) = -f(x) bzw. f(-x) = f(x) für
      * bestimmte Funktionen f. Beispielsweise wird cos(-x) zu cos(x)
