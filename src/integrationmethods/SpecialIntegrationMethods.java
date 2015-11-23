@@ -1229,7 +1229,7 @@ public abstract class SpecialIntegrationMethods {
         Expression e = coefficientsEnumerator.get(0);
 
         // discriminant = b^2 - 4ac.
-        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c));
+        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
             throw new NotPreciseIntegrableException();
@@ -1319,17 +1319,17 @@ public abstract class SpecialIntegrationMethods {
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
         Expression c = coefficientsDenominator.get(0);
-        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c));
+        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
             throw new NotPreciseIntegrableException();
         }
-        
+
         /*
          Sei k = maxExponent. Zunächst: Koeffizienten von (a*x^2 + b*x + c)^k
          bilden.
          */
-        ExpressionCollection coefficientsOfPowerOfQuadraticPolynomial = getCoefficientsOfPowerOfPolynomial(coefficientsEnumerator, maxExponent);
+        ExpressionCollection coefficientsOfPowerOfQuadraticPolynomial = getCoefficientsOfPowerOfPolynomial(coefficientsDenominator, maxExponent);
         ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsEnumerator, coefficientsOfPowerOfQuadraticPolynomial);
 
         /* 
@@ -1343,14 +1343,12 @@ public abstract class SpecialIntegrationMethods {
         if (2 * n + 1 > 2 * maxExponent) {
             firstSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], var).div(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n - 2 * maxExponent + 1, 2));
-            secondSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[1], var).div(
-                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n + 1, 2));
         } else {
             firstSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], var).mult(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * maxExponent - 2 * n - 1, 2));
-            secondSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[1], var).mult(
-                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n + 1, 2));
         }
+        secondSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[1], var).div(
+                SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n + 1, 2));
         paramsFirstSummand[0] = firstSummand;
         paramsFirstSummand[1] = var;
         Expression integralOfFirstSummand = indefiniteIntegration(new Operator(TypeOperator.integral, paramsFirstSummand), true);

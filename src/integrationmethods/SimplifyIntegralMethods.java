@@ -556,9 +556,9 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotPreciseIntegrableException e) {
         }
         
-        // Integration von (d*x+e)/(a*x^2 + b*x + c)^((2*n + 1)/2).
+        // Integration von P(x)/(a*x^2 + b*x + c)^((2*n + 1)/2).
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
+            return SpecialIntegrationMethods.integrateQuotientOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         } catch (NotPreciseIntegrableException e) {
         }
         
