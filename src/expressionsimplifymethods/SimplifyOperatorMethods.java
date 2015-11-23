@@ -193,7 +193,7 @@ public abstract class SimplifyOperatorMethods {
             exponentFactorsEnumerator.remove(0);
         }
 
-        if (exponentFactorsDenominator.get(0) != null && !exponentFactorsDenominator.get(0).contains(var) && exponentFactorsDenominator.get(0).isOddConstant()) {
+        if (exponentFactorsDenominator.get(0) != null && !exponentFactorsDenominator.get(0).contains(var) && exponentFactorsDenominator.get(0).isOddIntegerConstant()) {
             exponentDenominatorOutsideOfProduct = exponentFactorsDenominator.get(0);
             exponentFactorsDenominator.remove(0);
         }

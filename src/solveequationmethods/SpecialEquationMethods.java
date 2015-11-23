@@ -304,7 +304,7 @@ public abstract class SpecialEquationMethods {
         } else if (f.isPower()) {
             if (((BinaryOperation) f).getLeft() instanceof Function
                     && ((Function) ((BinaryOperation) f).getLeft()).getType().equals(TypeFunction.sin)
-                    && ((BinaryOperation) f).getRight().isEvenConstant()) {
+                    && ((BinaryOperation) f).getRight().isEvenIntegerConstant()) {
                 BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().cos().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }
@@ -338,7 +338,7 @@ public abstract class SpecialEquationMethods {
                     ((BinaryOperation) f).getType());
         } else if (f.isPower()) {
             if (((BinaryOperation) f).getLeft().isFunction(TypeFunction.cos)
-                    && ((BinaryOperation) f).getRight().isEvenConstant()) {
+                    && ((BinaryOperation) f).getRight().isEvenIntegerConstant()) {
                 BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().sin().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }

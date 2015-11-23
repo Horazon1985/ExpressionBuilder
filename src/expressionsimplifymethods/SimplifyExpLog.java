@@ -303,7 +303,7 @@ public abstract class SimplifyExpLog {
                         summands.put(i, new Function(logArgument.pow(SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator)), logType));
                     } else {
                         Expression exponent = Expression.ONE;
-                        if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isOddConstant()) {
+                        if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isOddIntegerConstant()) {
                             exponent = factorsEnumerator.get(0);
                             factorsEnumerator.remove(0);
                         }

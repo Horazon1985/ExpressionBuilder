@@ -1222,12 +1222,12 @@ public abstract class SimplifyFunctionalRelations {
             if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                 if (((BinaryOperation) factor).getRight().isRationalConstant()) {
-                    if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddConstant()
-                            && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenConstant()) {
+                    if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddIntegerConstant()
+                            && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenIntegerConstant()) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
-                    } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenConstant()
-                            && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddConstant()) {
+                    } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenIntegerConstant()
+                            && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddIntegerConstant()) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
                     }
@@ -1287,10 +1287,10 @@ public abstract class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isRationalConstant()) {
-                        if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenConstant()) {
+                        if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddIntegerConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenIntegerConstant()) {
                             resultFactorsInEnumeratorOutsideOfAbs.add(factor);
                             factorsEnumerator.remove(i);
-                        } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddConstant()) {
+                        } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenIntegerConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddIntegerConstant()) {
                             resultFactorsInEnumeratorOutsideOfAbs.add(factor);
                             factorsEnumerator.remove(i);
                         }
@@ -1314,10 +1314,10 @@ public abstract class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isRationalConstant()) {
-                        if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenConstant()) {
+                        if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isOddIntegerConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isEvenIntegerConstant()) {
                             resultFactorsInDenominatorOutsideOfAbs.add(factor);
                             factorsDenominator.remove(i);
-                        } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddConstant()) {
+                        } else if (((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft().isEvenIntegerConstant() && ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight().isOddIntegerConstant()) {
                             resultFactorsInDenominatorOutsideOfAbs.add(factor);
                             factorsDenominator.remove(i);
                         }

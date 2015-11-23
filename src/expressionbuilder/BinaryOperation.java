@@ -83,9 +83,9 @@ public class BinaryOperation extends Expression {
                 }
             case POW:
                 // Abfangen von Wurzeln ungerader Ordnung aus negativen Zahlen.
-                if (valueLeft < 0 && this.right.isRationalConstant() && ((BinaryOperation) this.right).getRight().isOddConstant()) {
+                if (valueLeft < 0 && this.right.isRationalConstant() && ((BinaryOperation) this.right).getRight().isOddIntegerConstant()) {
                     double result;
-                    if (((BinaryOperation) this.right).getLeft().isOddConstant()) {
+                    if (((BinaryOperation) this.right).getLeft().isOddIntegerConstant()) {
                         result = -Math.pow(-valueLeft, valueRight);
                     } else {
                         result = Math.pow(-valueLeft, valueRight);
@@ -475,14 +475,14 @@ public class BinaryOperation extends Expression {
             if (this.left.isNonNegative()) {
                 return true;
             }
-            if (this.right.isEvenConstant()) {
+            if (this.right.isEvenIntegerConstant()) {
                 return true;
             }
-            if (this.right.isRationalConstant() && ((BinaryOperation) this.right).getLeft().isEvenConstant()) {
+            if (this.right.isRationalConstant() && ((BinaryOperation) this.right).getLeft().isEvenIntegerConstant()) {
                 return true;
             }
-            if (this.right.isRationalConstant() && ((BinaryOperation) this.right).getLeft().isOddConstant()
-                    && ((BinaryOperation) this.right).getRight().isOddConstant()) {
+            if (this.right.isRationalConstant() && ((BinaryOperation) this.right).getLeft().isOddIntegerConstant()
+                    && ((BinaryOperation) this.right).getRight().isOddIntegerConstant()) {
                 return this.left.isNonNegative();
             }
             return false;
@@ -501,7 +501,7 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonNegative();
         }
         if (this.isPower()) {
-            return this.left.isAlwaysNonNegative() || this.right.isEvenConstant();
+            return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant();
         }
         return false;
 

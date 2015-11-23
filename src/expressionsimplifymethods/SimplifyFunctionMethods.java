@@ -444,17 +444,17 @@ public abstract class SimplifyFunctionMethods {
 
         if (expr.getType().equals(TypeBinary.POW) && expr.getLeft() instanceof Function && ((Function) expr.getLeft()).getType().equals(TypeFunction.sgn)) {
             Expression exponent = expr.getRight();
-            if (exponent.isEvenConstant()) {
+            if (exponent.isEvenIntegerConstant()) {
                 return expr.getLeft().pow(2);
             }
-            if (exponent.isOddConstant()) {
+            if (exponent.isOddIntegerConstant()) {
                 return expr.getLeft();
             }
             if (exponent.isRationalConstant()) {
-                if (((BinaryOperation) exponent).getLeft().isEvenConstant() && ((BinaryOperation) exponent).getRight().isOddConstant()) {
+                if (((BinaryOperation) exponent).getLeft().isEvenIntegerConstant() && ((BinaryOperation) exponent).getRight().isOddIntegerConstant()) {
                     return expr.getLeft().pow(2);
                 }
-                if (((BinaryOperation) exponent).getLeft().isOddConstant() && ((BinaryOperation) exponent).getRight().isOddConstant()) {
+                if (((BinaryOperation) exponent).getLeft().isOddIntegerConstant() && ((BinaryOperation) exponent).getRight().isOddIntegerConstant()) {
                     return expr.getLeft();
                 }
             }

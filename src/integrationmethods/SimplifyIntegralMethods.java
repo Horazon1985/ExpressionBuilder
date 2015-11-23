@@ -523,13 +523,13 @@ public abstract class SimplifyIntegralMethods {
         // Integration elementarer Partialbrüche
         // Typ: (A*x + B) / (a*x^2 + b*x + c).
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearAndQuadraticPolynomial(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
         
         // Typ: (A*x + B) / (a*x^2 + b*x + c)^k, k > 1.
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
         
@@ -552,14 +552,13 @@ public abstract class SimplifyIntegralMethods {
 
         // Integration von P(x)*(a*x^2 + b*x + c)^((2*n + 1)/2), P = Polynom.
         try {
-//            return SpecialIntegrationMethods.integrateOddPowerOfSqrtOfQuadraticFunction(expr);
-            return SpecialIntegrationMethods.integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticFunction(expr);
+            return SpecialIntegrationMethods.integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         } catch (NotPreciseIntegrableException e) {
         }
         
         // Integration von (d*x+e)/(a*x^2 + b*x + c)^((2*n + 1)/2).
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearAndOddPowerOfSqrtOfQuadraticFunction(expr);
+            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         } catch (NotPreciseIntegrableException e) {
         }
         

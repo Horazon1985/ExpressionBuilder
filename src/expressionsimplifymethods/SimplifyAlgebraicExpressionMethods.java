@@ -20,7 +20,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
     public static boolean isAdmissibleExponent(Expression expr) {
 
         return expr.isIntegerConstant() || (expr.isRationalConstant()
-                && ((BinaryOperation) expr).getLeft().isIntegerConstant() && ((BinaryOperation) expr).getRight().isOddConstant());
+                && ((BinaryOperation) expr).getLeft().isIntegerConstant() && ((BinaryOperation) expr).getRight().isOddIntegerConstant());
 
     }
 

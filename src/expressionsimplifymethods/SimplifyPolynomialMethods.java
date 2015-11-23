@@ -179,10 +179,13 @@ public abstract class SimplifyPolynomialMethods {
      * zurückgegeben.
      */
     public static ExpressionCollection getPolynomialCoefficients(Expression f, String var) throws EvaluationException {
+        
         ExpressionCollection coefficients = new ExpressionCollection();
+        
         if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
             return coefficients;
         }
+
         BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
         BigInteger ord = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
         if (deg.compareTo(BigInteger.ZERO) < 0) {
@@ -191,6 +194,7 @@ public abstract class SimplifyPolynomialMethods {
         if (deg.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
             throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
+        
         Expression derivative = f;
         BigDecimal factorial = BigDecimal.ONE;
         for (int i = 0; i < ord.intValue(); i++) {
@@ -210,10 +214,14 @@ public abstract class SimplifyPolynomialMethods {
             coefficients.put(i, coefficient);
             derivative = derivative.diff(var).simplify();
         }
+        
+        // Koeffizienten, die = 0 sind, entfernen.
         while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
             coefficients.remove(coefficients.getBound() - 1);
         }
+        
         return coefficients;
+        
     }
 
     public static Expression getPolynomialFromCoefficients(ExpressionCollection coefficients, String var) {

@@ -228,10 +228,10 @@ public abstract class SolveMethods {
                     return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.mult(fAsBinaryOperation.getRight()), var);
                 } else if (fAsBinaryOperation.isPower()) {
 
-                    if (fAsBinaryOperation.getRight().isOddConstant()) {
+                    if (fAsBinaryOperation.getRight().isOddIntegerConstant()) {
                         return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), var);
                     }
-                    if (fAsBinaryOperation.getRight().isEvenConstant()) {
+                    if (fAsBinaryOperation.getRight().isEvenIntegerConstant()) {
                         if (!g.isConstant() || g.isNonNegative()) {
                             ExpressionCollection resultPositive = solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), var);
                             ExpressionCollection resultNegative = solveGeneralEquation(fAsBinaryOperation.getLeft(), Expression.MINUS_ONE.mult(g.pow(ONE, fAsBinaryOperation.getRight())), var);
@@ -241,7 +241,7 @@ public abstract class SolveMethods {
                     }
                     if (fAsBinaryOperation.getRight().isRationalConstant()) {
                         BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getValue().toBigInteger();
-                        if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenConstant()) {
+                        if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenIntegerConstant()) {
                             zeros = solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), var);
                             if (g.isConstant() && g.isNonPositive()) {
                                 /*
@@ -485,7 +485,7 @@ public abstract class SolveMethods {
 
                     if (exponentAtZero.isRationalConstant() && ((BinaryOperation) exponentAtZero).getLeft().isIntegerConstant()
                             && ((BinaryOperation) exponentAtZero).getRight().isIntegerConstant()) {
-                        validZero = validZero || (!baseOfFAtSpecialZero.isNonNegative() && ((BinaryOperation) exponentAtZero).getRight().isOddConstant());
+                        validZero = validZero || (!baseOfFAtSpecialZero.isNonNegative() && ((BinaryOperation) exponentAtZero).getRight().isOddIntegerConstant());
                     }
 
                     if (validZero) {

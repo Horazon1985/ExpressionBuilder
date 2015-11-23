@@ -122,15 +122,14 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws NotPreciseIntegrableException
      */
-    public static Expression integrateQuotientOfLinearAndPowerOfQuadraticPolynomial(Operator expr)
+    public static Expression integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(Operator expr)
             throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (f.isNotQuotient() || ((BinaryOperation) f).getRight().isNotPower()
-                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isIntegerConstant()
-                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositive()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositiveIntegerConstant()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
             throw new NotPreciseIntegrableException();
@@ -218,7 +217,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws NotPreciseIntegrableException
      */
-    public static Expression integrateQuotientOfLinearAndQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -711,14 +710,14 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (f.isNotPower()
                 || !((BinaryOperation) f).getRight().isRationalConstant()
-                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isOddConstant()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isOddIntegerConstant()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isPositive()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(TWO)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)) {
@@ -780,7 +779,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -834,7 +833,7 @@ public abstract class SpecialIntegrationMethods {
         Object[] params = new Object[2];
         params[0] = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsQuadraticPolynomial, var).pow(2 * n + 1, 2);
         params[1] = var;
-        Expression integralOfLowerPower = integrateOddPowerOfSqrtOfQuadraticFunction(new Operator(TypeOperator.integral, params));
+        Expression integralOfLowerPower = integrateOddPowerOfSqrtOfQuadraticPolynomial(new Operator(TypeOperator.integral, params));
         return firstSummand.add(factor.mult(integralOfLowerPower));
 
     }
@@ -847,7 +846,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -885,19 +884,19 @@ public abstract class SpecialIntegrationMethods {
 
         if (maxExponent == 0) {
             // f ist von der Form (A*x+B)*(a*x^2+b*x+c)^((2*n+1)/2).
-            return integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticFunction(expr);
+            return integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         }
 
         /*
          Sei k = maxExponent. Zunächst: Koeffizienten von (a*x^2 + b*x + c)^k
          bilden.
          */
-        ExpressionCollection coefficientsOfPowerOfQuadraticFunction = getCoefficientsOfPowerOfPolynomial(coefficientsQuadraticPolynomial, maxExponent);
-        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsPolynomial, coefficientsOfPowerOfQuadraticFunction);
+        ExpressionCollection coefficientsOfPowerOfQuadraticPolynomial = getCoefficientsOfPowerOfPolynomial(coefficientsQuadraticPolynomial, maxExponent);
+        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsPolynomial, coefficientsOfPowerOfQuadraticPolynomial);
 
         /* 
          Man hat nun eine Darstellung der Form P(x) = (A*x+B)*(a*x^2+b*x+c)^k + Q(x)
-         mit deg(Q) < 2*k. Daher: P(x)*(a*x^2+b*x+c)^((2*n+1)/2) = (A*x+B)*(a*x^2+b*x+c)^((2*n + 2*k+1)/2)
+         mit deg(Q) < 2*k. Daher: P(x)*(a*x^2+b*x+c)^((2*n+1)/2) = (A*x+B)*(a*x^2+b*x+c)^((2*n+2*k+1)/2)
          + Q(x)*(a*x^2+b*x+c)^n.
          */
         Expression firstSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], var).mult(
@@ -921,7 +920,7 @@ public abstract class SpecialIntegrationMethods {
         // Sonderfall: f = (a*x^2+b*x+c)^((2*n+1)/2).
         if (f.isPower()
                 && ((BinaryOperation) f).getRight().isRationalConstant()
-                && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isOddConstant()
+                && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isOddIntegerConstant()
                 && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
@@ -943,7 +942,7 @@ public abstract class SpecialIntegrationMethods {
         if (SimplifyPolynomialMethods.isPolynomial(leftFactor, var)
                 && rightFactor.isPower()
                 && ((BinaryOperation) rightFactor).getRight().isRationalConstant()
-                && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft().isOddConstant()
+                && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft().isOddIntegerConstant()
                 && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) rightFactor).getLeft(), var)
@@ -957,7 +956,7 @@ public abstract class SpecialIntegrationMethods {
         if (SimplifyPolynomialMethods.isPolynomial(rightFactor, var)
                 && leftFactor.isPower()
                 && ((BinaryOperation) leftFactor).getRight().isRationalConstant()
-                && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft().isOddConstant()
+                && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft().isOddIntegerConstant()
                 && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) leftFactor).getLeft(), var)
@@ -1047,7 +1046,7 @@ public abstract class SpecialIntegrationMethods {
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
             throw new NotPreciseIntegrableException();
         }
-        
+
         if (discriminant.equals(Expression.ZERO) && a.isAlwaysNonNegative() && !a.equals(Expression.ZERO)) {
             // Dann ist f = 1/(a^(1/2)*|x - x_1|) mit x_1 = -b/(2*a).
             Expression zero = Expression.MINUS_ONE.mult(b).div(Expression.TWO.mult(a)).simplify();
@@ -1092,7 +1091,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws NotPreciseIntegrableException
      */
-    private static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1107,8 +1106,7 @@ public abstract class SpecialIntegrationMethods {
         int n;
 
         if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
-                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isOddConstant()
-                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositive()) {
+                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -1168,7 +1166,7 @@ public abstract class SpecialIntegrationMethods {
      * @throws EvaluationException
      * @throws NotPreciseIntegrableException
      */
-    public static Expression integrateQuotientOfLinearAndOddPowerOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1206,8 +1204,7 @@ public abstract class SpecialIntegrationMethods {
         int n;
 
         if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
-                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isOddConstant()
-                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositive()) {
+                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -1251,9 +1248,117 @@ public abstract class SpecialIntegrationMethods {
         Object[] params = new Object[2];
         params[0] = ONE.div(((BinaryOperation) f).getRight());
         params[1] = var;
-        Expression integralOfLowerPower = integrateReciprocalOfOddPowerOfSqrtOfQuadraticFunction(new Operator(TypeOperator.integral, params));
+        Expression integralOfLowerPower = integrateReciprocalOfOddPowerOfSqrtOfQuadraticPolynomial(new Operator(TypeOperator.integral, params));
 
         return firstSummand.add(factor.mult(integralOfLowerPower));
+
+    }
+
+    /**
+     * Integration von P(x)/(a*x^2 + b*x + c)^((2*n + 1)/2), P(x) = Polynom.<br>
+     * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
+     *
+     * @throws EvaluationException
+     * @throws NotPreciseIntegrableException
+     */
+    public static Expression integrateQuotientOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        if (f.isNotQuotient()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
+                || ((BinaryOperation) f).getRight().isNotPower()
+                || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isRationalConstant()
+                || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+
+        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+
+        if (coefficientsDenominator.getBound() != 3) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        int n;
+
+        if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
+                || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+
+        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        n = (exponentEnumerator.intValue() - 1) / 2;
+
+        if (coefficientsDenominator.getBound() != 3) {
+            throw new NotPreciseIntegrableException();
+        }
+
+        int maxExponent = (coefficientsEnumerator.getBound() - 1) / 2;
+
+        if (maxExponent == 0) {
+            // f ist von der Form (A*x+B)/(a*x^2+b*x+c)^((2*n+1)/2).
+            return integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
+        }
+
+        // discriminant = b^2 - 4ac.
+        Expression a = coefficientsDenominator.get(2);
+        Expression b = coefficientsDenominator.get(1);
+        Expression c = coefficientsDenominator.get(0);
+        Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c));
+        if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
+                || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
+            throw new NotPreciseIntegrableException();
+        }
+        
+        /*
+         Sei k = maxExponent. Zunächst: Koeffizienten von (a*x^2 + b*x + c)^k
+         bilden.
+         */
+        ExpressionCollection coefficientsOfPowerOfQuadraticPolynomial = getCoefficientsOfPowerOfPolynomial(coefficientsEnumerator, maxExponent);
+        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsEnumerator, coefficientsOfPowerOfQuadraticPolynomial);
+
+        /* 
+         Man hat nun eine Darstellung der Form P(x) = (A*x+B)*(a*x^2+b*x+c)^k + Q(x)
+         mit deg(Q) < 2*k. Daher: P(x)/(a*x^2+b*x+c)^((2*n+1)/2) = (A*x+B)/(a*x^2+b*x+c)^((2*n-2*k+1)/2)
+         + Q(x)/(a*x^2+b*x+c)^((2*n+1)/2). Der erste Summand muss abhängig davon,
+         ob 2*n-2*k+1 > 0 oder 2*n-2*k+1 < 0 ist, behandelt werden.
+         */
+        Expression firstSummand, secondSummand;
+        Object[] paramsFirstSummand = new Object[2];
+        if (2 * n + 1 > 2 * maxExponent) {
+            firstSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], var).div(
+                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n - 2 * maxExponent + 1, 2));
+            secondSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[1], var).div(
+                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n + 1, 2));
+        } else {
+            firstSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], var).mult(
+                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * maxExponent - 2 * n - 1, 2));
+            secondSummand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[1], var).mult(
+                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var).pow(2 * n + 1, 2));
+        }
+        paramsFirstSummand[0] = firstSummand;
+        paramsFirstSummand[1] = var;
+        Expression integralOfFirstSummand = indefiniteIntegration(new Operator(TypeOperator.integral, paramsFirstSummand), true);
+        Object[] paramsSecondSummand = new Object[2];
+        paramsSecondSummand[0] = secondSummand;
+        paramsSecondSummand[1] = var;
+        Expression integralOfSecondSummand = indefiniteIntegration(new Operator(TypeOperator.integral, paramsSecondSummand), true);
+        return integralOfFirstSummand.add(integralOfSecondSummand);
 
     }
 

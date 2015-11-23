@@ -629,11 +629,17 @@
     <Ukrainian>. параметр.</Ukrainian>
     <Russian>. параметр.</Russian>
   </object>
-  <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_SOLVE">
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
     <German>Zu wenig Parameter im Befehl 'solve'.</German>
     <English>Not enough parameters in command 'solve'.</English>
     <Ukrainian>Недостатньо параметрів у команди 'solve'.</Ukrainian>
     <Russian>Недостаточно параметров у команды 'solve'.</Russian>
+  </object>
+  <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVE">
+    <German>Zu viele Parameter im Befehl 'solve'.</German>
+    <English>Too many parameters in command 'solve'.</English>
+    <Ukrainian>Забагато параметрів у команди 'solve'.</Ukrainian>
+    <Russian>Слишком много параметров у команды 'solve'.</Russian>
   </object>
   <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVE">
     <German>Der 1. Parameter im Befehl 'solve' muss von der Form 'f(x) = g(x)' sein, wobei f und g Funktionen und x eine gültige Veränderliche ist.</German>

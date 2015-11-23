@@ -295,7 +295,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (exponent.isRationalConstant() && expr.getRight().isRationalConstant()
                         && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(exponent)) {
 
-                    if (((BinaryOperation) expr.getRight()).getRight().isOddConstant()) {
+                    if (((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
                         return new Constant(-Math.pow(-leftValue, expr.getRight().evaluate()));
                     }
                     return new Constant(Math.pow(-leftValue, expr.getRight().evaluate()));
@@ -431,7 +431,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (expr.getLeft().isNonNegative()) {
                     return expr;
                 } else if (expr.getLeft().isNonPositive() && ((BinaryOperation) expr.getRight()).getLeft().isIntegerConstant()
-                        && ((BinaryOperation) expr.getRight()).getRight().isEvenConstant()) {
+                        && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
                     throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED"));
                 }
             }
@@ -444,8 +444,8 @@ public abstract class SimplifyBinaryOperationMethods {
             } catch (EvaluationException e) {
             }
 
-            if (valueLeftIsDefined && valueLeft < 0 && ((BinaryOperation) expr.getRight()).getLeft().isOddConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isEvenConstant()) {
+            if (valueLeftIsDefined && valueLeft < 0 && ((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()
+                    && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
                 throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED"));
             }
 
@@ -475,12 +475,12 @@ public abstract class SimplifyBinaryOperationMethods {
              auseinandergezogen werden können (beispielsweise mit
              simplifyPowers() o. Ä.).
              */
-            if (((BinaryOperation) expr.getRight()).getLeft().isEvenConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isOddConstant()) {
+            if (((BinaryOperation) expr.getRight()).getLeft().isEvenIntegerConstant()
+                    && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
                 return negateExpression(expr.getLeft()).pow(expr.getRight());
             }
-            if (((BinaryOperation) expr.getRight()).getLeft().isOddConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isOddConstant()) {
+            if (((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()
+                    && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
                 return MINUS_ONE.mult(negateExpression(expr.getLeft()).pow(expr.getRight()));
             }
 
@@ -923,8 +923,8 @@ public abstract class SimplifyBinaryOperationMethods {
             if (((BinaryOperation) expr.getLeft()).getLeft().isAlwaysNonNegative()) {
                 return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
             }
-            if (((BinaryOperation) expr.getLeft()).getRight().isEvenConstant() && expr.getRight().isRationalConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isEvenConstant()) {
+            if (((BinaryOperation) expr.getLeft()).getRight().isEvenIntegerConstant() && expr.getRight().isRationalConstant()
+                    && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
                 // In diesem Fall: x^(2*k)^(n/(2*m)) = abs(x)^(k*n/m)
                 return ((BinaryOperation) expr.getLeft()).getLeft().abs().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()));
             }
@@ -2191,7 +2191,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 resultFactorsOutsideOfPowerOfTen.add(((Function) summands.get(i)).getLeft().pow(exponent));
                 summands.remove(i);
             } else if (summands.get(i).isProduct()
-                    && !((BinaryOperation) summands.get(i)).getLeft().isEvenConstant()
+                    && !((BinaryOperation) summands.get(i)).getLeft().isEvenIntegerConstant()
                     && ((BinaryOperation) summands.get(i)).getRight() instanceof Function
                     && ((Function) ((BinaryOperation) summands.get(i)).getRight()).getType().equals(TypeFunction.lg)) {
                 resultFactorsOutsideOfPowerOfTen.add(((Function) ((BinaryOperation) summands.get(i)).getRight()).getLeft().pow(new Constant(exponent).mult(((BinaryOperation) summands.get(i)).getLeft())));
@@ -2249,7 +2249,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 resultFactorsInEnumeratorOutsideOfPowerOfTen.add(((Function) summandsLeft.get(i)).getLeft().pow(exponent));
                 summandsLeft.remove(i);
             } else if (summandsLeft.get(i).isProduct()
-                    && !((BinaryOperation) summandsLeft.get(i)).getLeft().isEvenConstant()
+                    && !((BinaryOperation) summandsLeft.get(i)).getLeft().isEvenIntegerConstant()
                     && ((BinaryOperation) summandsLeft.get(i)).getRight() instanceof Function
                     && ((Function) ((BinaryOperation) summandsLeft.get(i)).getRight()).getType().equals(TypeFunction.lg)) {
                 resultFactorsInEnumeratorOutsideOfPowerOfTen.add(((Function) ((BinaryOperation) summandsLeft.get(i)).getRight()).getLeft().pow(new Constant(exponent).mult(((BinaryOperation) summandsLeft.get(i)).getLeft())));
@@ -2261,7 +2261,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 resultFactorsInDenominatorOutsideOfPowerOfTen.add(((Function) summandsRight.get(i)).getLeft().pow(exponent));
                 summandsRight.remove(i);
             } else if (summandsRight.get(i).isProduct()
-                    && !((BinaryOperation) summandsRight.get(i)).getLeft().isEvenConstant()
+                    && !((BinaryOperation) summandsRight.get(i)).getLeft().isEvenIntegerConstant()
                     && ((BinaryOperation) summandsRight.get(i)).getRight() instanceof Function
                     && ((Function) ((BinaryOperation) summandsRight.get(i)).getRight()).getType().equals(TypeFunction.lg)) {
                 resultFactorsInDenominatorOutsideOfPowerOfTen.add(((Function) ((BinaryOperation) summandsRight.get(i)).getRight()).getLeft().pow(new Constant(exponent).mult(((BinaryOperation) summandsRight.get(i)).getLeft())));

@@ -705,10 +705,26 @@ public abstract class Expression {
     }
 
     /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem
+     * nichtnegativen ganzzahligen Wert ist.
+     */
+    public boolean isNonNegativeIntegerConstant() {
+        return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) >= 0;
+    }
+
+    /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
+     * ganzzahligen Wert ist.
+     */
+    public boolean isPositiveIntegerConstant() {
+        return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    /**
      * Liefert true genau dann, wenn this eine Konstante mit ganzzahligem
      * ungeraden Wert ist.
      */
-    public boolean isOddConstant() {
+    public boolean isOddIntegerConstant() {
         if (this.isIntegerConstant()) {
             BigInteger value = ((Constant) this).getValue().toBigInteger();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
@@ -719,13 +735,55 @@ public abstract class Expression {
     }
 
     /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
+     * ganzzahligen ungeraden Wert ist.
+     */
+    public boolean isPositiveOddIntegerConstant() {
+        if (this.isIntegerConstant()) {
+            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            if (value.compareTo(BigInteger.ZERO) > 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Liefert true genau dann, wenn this eine Konstante mit ganzzahligem
      * geraden Wert ist.
      */
-    public boolean isEvenConstant() {
+    public boolean isEvenIntegerConstant() {
         if (this.isIntegerConstant()) {
             BigInteger value = ((Constant) this).getValue().toBigInteger();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem
+     * nichtnegativen ganzzahligen geraden Wert ist.
+     */
+    public boolean isNonNegativeEvenIntegerConstant() {
+        if (this.isIntegerConstant()) {
+            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            if (value.compareTo(BigInteger.ZERO) >= 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
+     * ganzzahligen geraden Wert ist.
+     */
+    public boolean isPositiveEvenIntegerConstant() {
+        if (this.isIntegerConstant()) {
+            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            if (value.compareTo(BigInteger.ZERO) > 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return true;
             }
         }
@@ -781,8 +839,8 @@ public abstract class Expression {
      * besitzt, falls man this als Produkt auffasst.<br>
      * BEISPIELE: (1) Für expr =2*x*(-3)*y wird true zurückgegeben, da expr,
      * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
-     * (2) Für expr = x + 3*y wird false zurückgegeben, da der Koeffizient 1 ist,
-     * wenn man expr als Produkt auffasst.
+     * (2) Für expr = x + 3*y wird false zurückgegeben, da der Koeffizient 1
+     * ist, wenn man expr als Produkt auffasst.
      */
     public abstract boolean hasNegativeSign();
 
