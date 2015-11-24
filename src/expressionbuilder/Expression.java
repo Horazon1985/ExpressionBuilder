@@ -4,6 +4,8 @@ import enumerations.TypeExpansion;
 import enumerations.TypeLanguage;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionsimplifymethods.ExpressionCollection;
+import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -801,13 +803,29 @@ public abstract class Expression {
         if (this instanceof Constant) {
             return ((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0;
         }
-        if (this.isProduct()) {
+        if (this.isProduct() || this.isQuotient()) {
             return ((BinaryOperation) this).getLeft().doesExpressionStartWithAMinusSign();
         }
         return false;
 
     }
 
+    /**
+     * Negiert den Ausdruck expr.
+     */
+    public Expression negate() {
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
+        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+            if (factorsEnumerator.get(i) instanceof Constant) {
+                factorsEnumerator.put(i, new Constant(BigDecimal.valueOf(-1).multiply(((Constant) factorsEnumerator.get(i)).getValue()),
+                        ((Constant) factorsEnumerator.get(i)).getPrecise()));
+                return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+            }
+        }
+        return MINUS_ONE.mult(this);
+    }
+    
     /**
      * Generierung eines Latex-Codes aus einem Ausdruck.
      */
@@ -833,16 +851,6 @@ public abstract class Expression {
      * wenn man expr als Produkt auffasst.
      */
     public abstract boolean hasPositiveSign();
-
-    /**
-     * Liefert true, wenn der Ausdruck this einen negativen Koeffizienten
-     * besitzt, falls man this als Produkt auffasst.<br>
-     * BEISPIELE: (1) Für expr =2*x*(-3)*y wird true zurückgegeben, da expr,
-     * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
-     * (2) Für expr = x + 3*y wird false zurückgegeben, da der Koeffizient 1
-     * ist, wenn man expr als Produkt auffasst.
-     */
-    public abstract boolean hasNegativeSign();
 
     /**
      * Ermittelt ein Maß für die "Länge" eines Ausdrucks.

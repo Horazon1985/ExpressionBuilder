@@ -162,22 +162,6 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Negiert den Ausdruck expr.
-     */
-    private static Expression negateExpression(Expression expr) {
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
-        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
-            if (factorsEnumerator.get(i) instanceof Constant) {
-                factorsEnumerator.put(i, new Constant(BigDecimal.valueOf(-1).multiply(((Constant) factorsEnumerator.get(i)).getValue()),
-                        ((Constant) factorsEnumerator.get(i)).getPrecise()));
-                return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
-            }
-        }
-        return MINUS_ONE.mult(expr);
-    }
-
-    /**
      * Beseitigt Nullen in summands.
      */
     public static void removeZerosInSums(ExpressionCollection summands) {
@@ -477,11 +461,11 @@ public abstract class SimplifyBinaryOperationMethods {
              */
             if (((BinaryOperation) expr.getRight()).getLeft().isEvenIntegerConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
-                return negateExpression(expr.getLeft()).pow(expr.getRight());
+                return expr.getLeft().negate().pow(expr.getRight());
             }
             if (((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
-                return MINUS_ONE.mult(negateExpression(expr.getLeft()).pow(expr.getRight()));
+                return MINUS_ONE.mult(expr.getLeft().negate().pow(expr.getRight()));
             }
 
         }
@@ -806,11 +790,11 @@ public abstract class SimplifyBinaryOperationMethods {
 
             if (expr.getLeft().isQuotient()) {
                 return ((BinaryOperation) expr.getLeft()).getRight().div(((BinaryOperation) expr.getLeft()).getLeft()).pow(
-                        negateExpression(expr.getRight()));
+                        expr.getRight().negate());
             }
             Expression argumentOfAbs = ((Function) expr.getLeft()).getLeft();
             return ((BinaryOperation) argumentOfAbs).getRight().div(((BinaryOperation) argumentOfAbs).getLeft()).abs().pow(
-                    negateExpression(expr.getRight()));
+                    expr.getRight().negate());
         }
         return expr;
 
@@ -880,7 +864,7 @@ public abstract class SimplifyBinaryOperationMethods {
                     }
                     summand = summandsLeft.get(j);
                     summandsLeft.remove(j);
-                    summandsRight.add(negateExpression(summand));
+                    summandsRight.add(summand.negate());
                 }
                 break;
             }
@@ -888,7 +872,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
                     summand = summandsRight.get(i);
                     summandsRight.remove(i);
-                    summandsLeft.add(negateExpression(summand));
+                    summandsLeft.add(summand.negate());
                 }
             }
         } else {
@@ -896,14 +880,14 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (summandsLeft.get(i) != null && !summandsLeft.get(i).hasPositiveSign()) {
                     summand = summandsLeft.get(i);
                     summandsLeft.remove(i);
-                    summandsRight.add(negateExpression(summand));
+                    summandsRight.add(summand.negate());
                 }
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
                 if (summandsRight.get(i) != null && !summandsRight.get(i).hasPositiveSign()) {
                     summand = summandsRight.get(i);
                     summandsRight.remove(i);
-                    summandsLeft.add(negateExpression(summand));
+                    summandsLeft.add(summand.negate());
                 }
             }
         }

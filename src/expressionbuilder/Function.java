@@ -640,11 +640,6 @@ public class Function extends Expression {
     }
 
     @Override
-    public boolean hasNegativeSign() {
-        return false;
-    }
-
-    @Override
     public int length() {
         if (((Function) this).getLeft().length() == 1) {
             return 1;

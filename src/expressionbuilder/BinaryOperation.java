@@ -619,62 +619,10 @@ public class BinaryOperation extends Expression {
 
     @Override
     public boolean hasPositiveSign() {
-
         if (this.type != TypeBinary.TIMES && this.type != TypeBinary.DIV) {
             return true;
         }
         return (this.left.hasPositiveSign() && this.right.hasPositiveSign()) || (!this.left.hasPositiveSign() && !this.right.hasPositiveSign());
-//        if (this.type.equals(TypeBinary.PLUS) || this.type.equals(TypeBinary.MINUS)) {
-//            
-//            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
-//            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
-//            
-//            for (Expression summand : summandsLeft){
-//                if (!summand.hasPositiveSign()){
-//                    return false;
-//                }
-//            }
-//            for (Expression summand : summandsRight){
-//                if (!summand.hasNegativeSign()){
-//                    return false;
-//                }
-//            }
-//            return true;
-//            
-//        }
-//        if (this.type.equals(TypeBinary.TIMES) || this.type.equals(TypeBinary.DIV)) {
-//            return (this.left.hasPositiveSign() && this.right.hasPositiveSign()) || (!this.left.hasNegativeSign() && !this.right.hasNegativeSign());
-//        }
-//        return true;
-
-    }
-
-    @Override
-    public boolean hasNegativeSign() {
-
-        if (this.type.equals(TypeBinary.PLUS) || this.type.equals(TypeBinary.MINUS)) {
-
-            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
-            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
-
-            for (Expression summand : summandsLeft) {
-                if (!summand.hasNegativeSign()) {
-                    return false;
-                }
-            }
-            for (Expression summand : summandsRight) {
-                if (!summand.hasPositiveSign()) {
-                    return false;
-                }
-            }
-            return true;
-
-        }
-        if (!this.type.equals(TypeBinary.TIMES) && !this.type.equals(TypeBinary.DIV)) {
-            return false;
-        }
-        return (this.left.hasPositiveSign() && this.right.hasNegativeSign()) || (!this.left.hasNegativeSign() && !this.right.hasPositiveSign());
-
     }
 
     @Override

@@ -1456,11 +1456,6 @@ public class Operator extends Expression {
     }
 
     @Override
-    public boolean hasNegativeSign() {
-        return false;
-    }
-
-    @Override
     public int length() {
         Object[] arguments = ((Operator) this).getParams();
         int length = 0;

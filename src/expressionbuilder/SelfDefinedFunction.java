@@ -364,11 +364,6 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public boolean hasNegativeSign() {
-        return this.abstractExpression.hasNegativeSign();
-    }
-    
-    @Override
     public int length() {
         Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
         int length = 0;

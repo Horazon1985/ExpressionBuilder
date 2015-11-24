@@ -374,11 +374,6 @@ public class Constant extends Expression {
     }
 
     @Override
-    public boolean hasNegativeSign() {
-        return this.getValue().compareTo(BigDecimal.ZERO) < 0;
-    }
-
-    @Override
     public int length() {
         return 1;
     }

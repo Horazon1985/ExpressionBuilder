@@ -1136,7 +1136,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 int h = getHeightOfExpression(g, (Expression) params[0], fontSize);
                 int h_center = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
-                
+
                 if (params.length == 2) {
 
                     return Math.max((3 * fontSize) / 2, h_center) + Math.max((3 * fontSize) / 2, h - h_center);
@@ -1477,6 +1477,18 @@ public class GraphicPanelFormula extends JPanel {
             }
 
         } else if (expr.isQuotient()) {
+
+            if (expr.doesExpressionStartWithAMinusSign()) {
+                /* 
+                 Fall: im Zähler beginnt der Ausdruck mit einer negativen Konstante.
+                 Ignoriert wird dagegen der Fall, dass der Nenner mit einer negativen Konstante
+                 beginnt. Das Minuszeichen wird in diesem Fall im Nenner gelassen und wird
+                 nicht herausgezogen.
+                 */
+                return getWidthOfSignMinus(g, fontSize) + Math.max(getLengthOfExpression(g, expr.getLeft().negate(), fontSize),
+                        getLengthOfExpression(g, expr.getRight(), fontSize));
+
+            }
 
             return Math.max(getLengthOfExpression(g, expr.getLeft(), fontSize),
                     getLengthOfExpression(g, expr.getRight(), fontSize));
@@ -2249,7 +2261,7 @@ public class GraphicPanelFormula extends JPanel {
             drawSignMult(g, x_0 + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, expr.getLeft(), fontSize),
                     y_0 - (Math.max(heightCenterLeft, heightCenterRight) - fontSize / 2), fontSize);
 
-            if (expr.getRight().doesExpressionStartWithAMinusSign() ||  expr.getRight().isSum() || expr.getRight().isDifference()) {
+            if (expr.getRight().doesExpressionStartWithAMinusSign() || expr.getRight().isSum() || expr.getRight().isDifference()) {
 
                 // Zeichnen von (right).
                 drawOpeningBracket(g,
@@ -2278,7 +2290,7 @@ public class GraphicPanelFormula extends JPanel {
             // Fall: left benötigt keine Klammer.
             int lengthLeft = getLengthOfExpression(g, expr.getLeft(), fontSize);
             int lengthMultSign = getWidthOfSignMult(g, fontSize);
-            
+
             if (expr.getLeft() instanceof Constant
                     && ((Constant) expr.getLeft()).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
 
@@ -2329,16 +2341,47 @@ public class GraphicPanelFormula extends JPanel {
 
         setFont(g, fontSize);
 
-        drawExpression(g, expr.getLeft(),
-                x_0 + (getLengthOfExpression(g, expr, fontSize) - getLengthOfExpression(g, expr.getLeft(), fontSize)) / 2,
-                y_0 - getHeightOfExpression(g, expr.getRight(), fontSize) - fontSize,
-                fontSize);
-        drawFractionLine(g, x_0,
-                y_0 - getHeightOfExpression(g, expr.getRight(), fontSize) - fontSize / 2, fontSize,
-                getLengthOfExpression(g, expr, fontSize));
-        drawExpression(g, expr.getRight(),
-                x_0 + (getLengthOfExpression(g, expr, fontSize) - getLengthOfExpression(g, expr.getRight(), fontSize)) / 2,
-                y_0, fontSize);
+        if (expr.doesExpressionStartWithAMinusSign()) {
+
+            /* 
+             Hier muss explizit der Konstruktor von BinaryOperation benutzt werden,
+             damit beispielsweise a/1 explizit als a/1 ausgeschrieben wird und nicht als a!
+             Letzteres wird nämlich bei a.div(1) passieren.
+             */
+            BinaryOperation exprNegated = new BinaryOperation(expr.getLeft().negate(), expr.getRight(), TypeBinary.DIV);
+
+            // In diesem Fall: Minuszeichen aus dem Zähler vor den Bruchstrich schreiben.
+            drawSignMinus(g, x_0,
+                    y_0 - getHeightOfExpression(g, exprNegated.getRight(), fontSize), fontSize);
+            drawExpression(g, exprNegated.getLeft(),
+                    x_0 + getWidthOfSignMinus(g, fontSize) + (getLengthOfExpression(g, exprNegated, fontSize) - getLengthOfExpression(g, exprNegated.getLeft(), fontSize)) / 2,
+                    y_0 - getHeightOfExpression(g, exprNegated.getRight(), fontSize) - fontSize,
+                    fontSize);
+            drawFractionLine(g, x_0 + getWidthOfSignMinus(g, fontSize),
+                    y_0 - getHeightOfExpression(g, exprNegated.getRight(), fontSize) - fontSize / 2, fontSize,
+                    Math.max(getLengthOfExpression(g, exprNegated.getLeft(), fontSize), getLengthOfExpression(g, exprNegated.getRight(), fontSize)));
+            drawExpression(g, exprNegated.getRight(),
+                    x_0 + getWidthOfSignMinus(g, fontSize) + (getLengthOfExpression(g, exprNegated, fontSize) - getLengthOfExpression(g, exprNegated.getRight(), fontSize)) / 2,
+                    y_0, fontSize);
+
+        } else {
+
+            /* 
+             Selbst wenn der Ausdruck im Nenner mit einem Minuszeichen beginnt,
+             so wird dieser im Nenner gelassen. Nur derjenige im Zähler wird herausgezogen.
+             */
+            drawExpression(g, expr.getLeft(),
+                    x_0 + (getLengthOfExpression(g, expr, fontSize) - getLengthOfExpression(g, expr.getLeft(), fontSize)) / 2,
+                    y_0 - getHeightOfExpression(g, expr.getRight(), fontSize) - fontSize,
+                    fontSize);
+            drawFractionLine(g, x_0,
+                    y_0 - getHeightOfExpression(g, expr.getRight(), fontSize) - fontSize / 2, fontSize,
+                    getLengthOfExpression(g, expr, fontSize));
+            drawExpression(g, expr.getRight(),
+                    x_0 + (getLengthOfExpression(g, expr, fontSize) - getLengthOfExpression(g, expr.getRight(), fontSize)) / 2,
+                    y_0, fontSize);
+
+        }
 
     }
 
