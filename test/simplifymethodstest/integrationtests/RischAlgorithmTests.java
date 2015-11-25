@@ -68,10 +68,10 @@ public class RischAlgorithmTests {
 
     @Test
     public void isAlgebraicOverFieldExtensionTest4() {
-        // f = exp(5+x+a^2)-7/11, var = "x", fieldExtensions = {exp(x)}.
+        // f = exp(5+3*x/8+a^2)-7/11, var = "x", fieldExtensions = {exp(x)}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection(Expression.build("exp(x)", null), Expression.build("ln(x)", null));
-            f = Expression.build("exp(5+x+a^2)-7/11", null);
+            f = Expression.build("exp(5+3*x/8+a^2)-7/11", null);
             boolean result = RischAlgorithmMethods.isFunctionAlgebraicOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
         } catch (ExpressionException e) {

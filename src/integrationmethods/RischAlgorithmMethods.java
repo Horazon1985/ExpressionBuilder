@@ -5,7 +5,6 @@ import exceptions.MathToolException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
-import expressionbuilder.SelfDefinedFunction;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
@@ -150,7 +149,24 @@ public abstract class RischAlgorithmMethods {
                 return true;
             }
             if (f.isFunction(TypeFunction.exp)) {
-                // TO DO!
+                ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((Function) f).getLeft(), var);
+                ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(((Function) f).getLeft(), var);
+                Expression nonConstantSummand = SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantSummandsRight);
+                Expression currentQuotient;
+                for (Expression fieldGenerator : fieldGenerators) {
+                    if (!fieldGenerator.isFunction(TypeFunction.exp)) {
+                        continue;
+                    }
+                    try {
+                        currentQuotient = nonConstantSummand.div(((Function) fieldGenerator).getLeft()).simplify();
+                        if (!currentQuotient.contains(var)){
+                            return true;
+                        }
+                    } catch (EvaluationException e) {
+                        throw new NotDecidableException();
+                    }
+                }
+                return false;
             }
             if (f.isFunction(TypeFunction.ln)) {
                 // TO DO!
@@ -166,22 +182,17 @@ public abstract class RischAlgorithmMethods {
             }
             throw new NotDecidableException();
         }
-        if (f instanceof SelfDefinedFunction) {
-            // Sollte bei vereinfachten Ausdrücken nie vorkommen, aber trotzdem.
-            boolean isAlgebraic;
-        }
 
         return false;
 
     }
-    
-    public static ExpressionCollection getTranscendentalGeneratorsForDifferentialField(Expression f, String var) {
+
+    public static ExpressionCollection getOrderedTranscendentalGeneratorsForDifferentialField(Expression f, String var) {
 
         ExpressionCollection fieldGenerators = new ExpressionCollection();
-        
+
         return fieldGenerators;
-        
+
     }
-    
 
 }
