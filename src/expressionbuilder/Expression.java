@@ -1268,11 +1268,19 @@ public abstract class Expression {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.POW);
     }
 
+    public boolean isIntegerPower() {
+        return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant();
+    }
+    
     public boolean isPositiveIntegerPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant()
                 && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0;
     }
 
+    public boolean isRationalPower() {
+        return this.isPower() && ((BinaryOperation) this).getRight().isRationalConstant();
+    }
+    
     public boolean isFunction() {
         return this instanceof Function;
     }
@@ -1708,6 +1716,102 @@ public abstract class Expression {
 
     }
 
+    /**
+     * Spezielle Vereinfachung allgemeiner Terme.
+     *
+     * @throws EvaluationException
+     */
+    public Expression simplify(String var, HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+
+        try {
+            Expression expr, exprSimplified = this;
+            do {
+                expr = exprSimplified.copy();
+                if (simplifyTypes.contains(TypeSimplify.order_difference_and_division)) {
+                    exprSimplified = exprSimplified.orderDifferencesAndQuotients();
+                }
+                if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
+                    exprSimplified = exprSimplified.orderSumsAndProducts();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
+                    exprSimplified = exprSimplified.simplifyTrivial();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_short)) {
+                    exprSimplified = exprSimplified.simplifyExpandShort();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_moderate)) {
+                    exprSimplified = exprSimplified.simplifyExpandModerate();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_powerful)) {
+                    exprSimplified = exprSimplified.simplifyExpandPowerful();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_rational_factors)) {
+                    exprSimplified = exprSimplified.simplifyExpandRationalFactors();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_pull_apart_powers)) {
+                    exprSimplified = exprSimplified.simplifyPullApartPowers();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_multiply_exponents)) {
+                    exprSimplified = exprSimplified.simplifyMultiplyExponents();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_collect_products)) {
+                    exprSimplified = exprSimplified.simplifyCollectProducts();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_sums)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_sums)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
+                    exprSimplified = exprSimplified.simplifyReduceQuotients();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_differences)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_differences)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_leadings_coefficients)) {
+                    exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
+                    exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
+                    exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
+                }
+                if (exprSimplified.containsFunction()) {
+                    if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
+                        exprSimplified = exprSimplified.simplifyFunctionalRelations();
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
+                        exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsByDefinitions();
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions)) {
+                        exprSimplified = exprSimplified.simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(var);
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions)) {
+                        exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsByDefinitions();
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_replace_trigonometrical_functions_with_respect_to_variable_by_definitions)) {
+                        exprSimplified = exprSimplified.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var);
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_collect_logarithms)) {
+                        exprSimplified = exprSimplified.simplifyCollectLogarithms();
+                    }
+                    if (simplifyTypes.contains(TypeSimplify.simplify_expand_logarithms)) {
+                        exprSimplified = exprSimplified.simplifyExpandLogarithms();
+                    }
+                }
+            } while (!expr.equals(exprSimplified));
+            return exprSimplified;
+        } catch (java.lang.StackOverflowError e) {
+            throw new EvaluationException(Translator.translateExceptionMessage("EB_Expression_STACK_OVERFLOW"));
+        }
+
+    }
+    
     /**
      * Spezielle Vereinfachung allgemeiner Terme.
      *

@@ -145,8 +145,8 @@ public class ExpressionCollection implements Iterable<Expression> {
             }
             return false;
         }
-        for (int i = 0; i < this.bound; i++) {
-            if (expr.equals(this.terms.get(i))) {
+        for (Expression term : this) {
+            if (expr.equals(term)) {
                 return true;
             }
         }
@@ -167,8 +167,8 @@ public class ExpressionCollection implements Iterable<Expression> {
             }
             return false;
         }
-        for (int i = 0; i < this.bound; i++) {
-            if (expr.equivalent(this.terms.get(i))) {
+        for (Expression term : this) {
+            if (expr.equivalent(term)) {
                 return true;
             }
         }
