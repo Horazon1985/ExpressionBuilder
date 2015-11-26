@@ -33,6 +33,7 @@ import substitutionmethods.SubstitutionUtilities;
 public abstract class SpecialIntegrationMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunctions = getSimplifyTypesRationalTrigonometricalFunctions();
+    private static final HashSet<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunctions = getSimplifyTypesExpandProductOfComplexExponentialFunctions();
 
     private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunctions() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -54,6 +55,20 @@ public abstract class SpecialIntegrationMethods {
         return simplifyTypes;
     }
 
+    private static HashSet<TypeSimplify> getSimplifyTypesExpandProductOfComplexExponentialFunctions() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
+        return simplifyTypes;
+    }
+    
     /**
      * Integration rationaler Funktionen.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
@@ -345,11 +360,7 @@ public abstract class SpecialIntegrationMethods {
     }
 
     private static Expression expandProductsOfComplexExponentialFunctions(Expression f, String var) throws EvaluationException {
-        return f.simplify(var, TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
-                TypeSimplify.simplify_trivial, TypeSimplify.simplify_pull_apart_powers, TypeSimplify.simplify_collect_products,
-                TypeSimplify.simplify_reduce_quotients, TypeSimplify.simplify_reduce_leadings_coefficients,
-                TypeSimplify.simplify_expand_products_of_complex_exponential_functions,
-                TypeSimplify.simplify_expand_moderate);
+        return f.simplify(simplifyTypesExpandProductOfComplexExponentialFunctions, var);
     }
 
     /**
