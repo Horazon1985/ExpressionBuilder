@@ -1,8 +1,10 @@
 package integrationmethods;
 
+import computation.ArithmeticMethods;
 import exceptions.EvaluationException;
 import exceptions.MathToolException;
 import expressionbuilder.BinaryOperation;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
@@ -10,6 +12,7 @@ import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyUtilities;
+import java.math.BigInteger;
 import java.util.HashSet;
 
 public abstract class RischAlgorithmMethods {
@@ -91,7 +94,7 @@ public abstract class RischAlgorithmMethods {
      * false zurückgegeben (aufgrund des Summanden x!, welcher transzendent über
      * der angegebenen Körpererweiterung ist).<br>
      */
-    public static boolean isFunctionAlgebraicOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
+    public static boolean isFunctionRationalOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
 
         if (!areFieldExtensionsInCorrectForm(fieldGenerators, var)) {
             // Schlechter Fall, da fieldExtensions nicht in die korrekte Form besitzt.
@@ -105,7 +108,7 @@ public abstract class RischAlgorithmMethods {
         }
 
         try {
-            return isAlgebraicOverDifferentialField(f, var, fieldGenerators);
+            return isRationalOverDifferentialField(f, var, fieldGenerators);
         } catch (NotDecidableException e) {
             return false;
         }
@@ -132,7 +135,7 @@ public abstract class RischAlgorithmMethods {
      * false zurückgegeben (aufgrund des Summanden x!, welcher transzendent über
      * der angegebenen Körpererweiterung ist).<br>
      */
-    private static boolean isAlgebraicOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) throws NotDecidableException {
+    private static boolean isRationalOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) throws NotDecidableException {
 
         if (fieldGenerators.containsExquivalent(f)) {
             return true;
@@ -143,11 +146,11 @@ public abstract class RischAlgorithmMethods {
         }
         if (f instanceof BinaryOperation) {
             if (f.isNotPower()) {
-                return isAlgebraicOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators)
-                        && isAlgebraicOverDifferentialField(((BinaryOperation) f).getRight(), var, fieldGenerators);
+                return isRationalOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators)
+                        && isRationalOverDifferentialField(((BinaryOperation) f).getRight(), var, fieldGenerators);
             }
             if (f.isIntegerPowerOrRationalPower()) {
-                return isAlgebraicOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators);
+                return isRationalOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators);
             }
         }
         if (f.isFunction()) {
@@ -167,7 +170,7 @@ public abstract class RischAlgorithmMethods {
                     }
                     try {
                         currentQuotient = nonConstantSummand.div(((Function) fieldGenerator).getLeft()).simplify();
-                        if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+                        if (currentQuotient.isIntegerConstant()) {
                             return true;
                         }
                     } catch (EvaluationException e) {
@@ -235,7 +238,7 @@ public abstract class RischAlgorithmMethods {
 
     private static boolean addTranscendentalGeneratorForDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
 
-        if (isFunctionAlgebraicOverDifferentialField(f, var, fieldGenerators)) {
+        if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)) {
             return false;
         }
         if (f instanceof BinaryOperation) {
@@ -249,7 +252,7 @@ public abstract class RischAlgorithmMethods {
         }
         if (f.isFunction()) {
 
-            if (!isFunctionAlgebraicOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)){
+            if (!isFunctionRationalOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)){
                 // Dann zuerst Erzeuger hinzufügen, die im Funktionsargument enthalten sind.
                 return addTranscendentalGeneratorForDifferentialField(((Function) f).getLeft(), var, fieldGenerators);
             }
@@ -270,7 +273,38 @@ public abstract class RischAlgorithmMethods {
                             /* Wenn currentQuotient = p/q ist und fieldGenerators.get(i) = exp(f(x)),
                              so wird fieldGenerators.get(i) zu exp(f(x)/q).
                              */
-                            fieldGenerators.put(i, ((Function) fieldGenerators.get(i)).getLeft().div(((BinaryOperation) currentQuotient).getLeft()).simplify().exp());
+                            BigInteger a = BigInteger.ONE;
+                            BigInteger b = BigInteger.ONE;
+                            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(nonConstantSummand);
+                            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
+                            
+                            if (factorsEnumerator.get(0).isIntegerConstant()){
+                                a = ((Constant) factorsEnumerator.get(0)).getValue().toBigInteger().abs();
+                                factorsEnumerator.remove(0);
+                            }
+                            if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()){
+                                b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
+                                factorsDenominator.remove(0);
+                            }
+
+                            Expression quotient = new Constant(a).div(b).div(currentQuotient).simplify();
+                            
+                            BigInteger c, d;
+                            if (quotient.isIntegerConstant()){
+                                c = ((Constant) quotient).getValue().toBigInteger();
+                                d = BigInteger.ONE;
+                            } else {
+                                c = ((Constant) ((BinaryOperation) quotient).getLeft()).getValue().toBigInteger();
+                                d = ((Constant) ((BinaryOperation) quotient).getRight()).getValue().toBigInteger();
+                            }
+                            
+                            a = a.gcd(c);
+                            b = ArithmeticMethods.lcm(b, d);
+                            factorsEnumerator.add(new Constant(a));
+                            factorsDenominator.add(new Constant(b));
+                            Expression expArgument = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+                            
+                            fieldGenerators.put(i, expArgument.exp().simplify());
                             return true;
                         }
                     } catch (EvaluationException e) {
