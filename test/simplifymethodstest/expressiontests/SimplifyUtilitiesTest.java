@@ -2,8 +2,7 @@ package simplifymethodstest.expressiontests;
 
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
-import expressionbuilder.Function;
-import expressionbuilder.TypeFunction;
+import static expressionbuilder.Expression.ONE;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyUtilities;
@@ -29,15 +28,15 @@ public class SimplifyUtilitiesTest {
     @Before
     public void defineExpressions() throws Exception {
         // f = 1*x*sin(x)
-        f = new Constant(1).mult(Variable.create("x")).mult(new Function(Variable.create("x"), TypeFunction.sin));
+        f = new Constant(1).mult(Variable.create("x")).mult(Variable.create("x").sin());
         // g = x*1*sin(x)
-        g = Variable.create("x").mult(new Constant(1)).mult(new Function(Variable.create("x"), TypeFunction.sin));
+        g = Variable.create("x").mult(ONE).mult(Variable.create("x").sin());
         // h = 1*1*1
-        h = new Constant(1).mult(new Constant(1)).mult(new Constant(1));
+        h = ONE.mult(ONE).mult(ONE);
         Variable x = Variable.create("x");
         Variable y = Variable.create("y");
         // expr = (1*x*sin(x)*1*y^2)/(5*y^3)
-        exprWithMultipleVariables = new Constant(1).mult(x).mult(new Function(x, TypeFunction.sin)).mult(1).mult(y.pow(2)).div(new Constant(5).mult(y.pow(3)));
+        exprWithMultipleVariables = ONE.mult(x).mult(x.sin()).mult(1).mult(y.pow(2)).div(new Constant(5).mult(y.pow(3)));
     }
 
     @Test

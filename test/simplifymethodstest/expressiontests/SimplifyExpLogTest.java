@@ -1,8 +1,8 @@
 package simplifymethodstest.expressiontests;
 
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
 import exceptions.ExpressionException;
+import expressionbuilder.Expression;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyExpLog;
 import expressionsimplifymethods.SimplifyUtilities;
@@ -38,7 +38,7 @@ public class SimplifyExpLogTest {
             Expression fNew = SimplifyUtilities.produceProduct(factors);
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException e){
-            fail("Ein Ausdruck konnte nicht kompiliert werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -54,7 +54,7 @@ public class SimplifyExpLogTest {
             g = g.orderDifferencesAndQuotients();
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException | EvaluationException e){
-            fail("Ein Ausdruck konnte nicht kompiliert werden.");
+            fail(e.getMessage());
         }
     }
     

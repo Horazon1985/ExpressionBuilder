@@ -1,13 +1,13 @@
 package simplifymethodstest.solvetests;
 
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
 import exceptions.ExpressionException;
+import expressionbuilder.Constant;
+import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import expressionsimplifymethods.SimplifyExponentialRelations;
+import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -58,7 +58,7 @@ public class SpecialEquationMethodsTest {
             System.out.println(h);
             System.out.println(argumentsOfExp);
         } catch (exceptions.ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class SpecialEquationMethodsTest {
             System.out.println(f);
             System.out.println(factorsOfVar);
         } catch (exceptions.ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -88,11 +88,9 @@ public class SpecialEquationMethodsTest {
             assertTrue(zeros.contains(new Constant(2).ln()));
             assertTrue(zeros.contains(new Constant(5).ln()));
             assertTrue(zeros.contains(new Constant(13).ln()));
-        } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
-        } catch (EvaluationException e) {
-            fail("Die Gleichung f = 0 konnte nicht gelöst werden.");
-        }
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        } 
     }
     
     @Test
@@ -103,10 +101,8 @@ public class SpecialEquationMethodsTest {
             SolveMethods.setSolveTries(100);
             ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
             assertTrue(zeros.getBound() == 0);
-        } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
-        } catch (EvaluationException e) {
-            fail("Die Gleichung f = 0 konnte nicht gelöst werden.");
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
         }
     }
     
@@ -119,10 +115,8 @@ public class SpecialEquationMethodsTest {
             ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(Expression.MINUS_ONE));
-        } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
-        } catch (EvaluationException e) {
-            fail("Die Gleichung f = 0 konnte nicht gelöst werden.");
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
         }
     }
 
@@ -135,10 +129,8 @@ public class SpecialEquationMethodsTest {
             ExpressionCollection zeros = SpecialEquationMethods.solveExponentialEquation(f, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(new Constant(5).ln().div(Variable.create("a").ln())));
-        } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
-        } catch (EvaluationException e) {
-            fail("Die Gleichung f = 0 konnte nicht gelöst werden.");
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
         }
     }
     

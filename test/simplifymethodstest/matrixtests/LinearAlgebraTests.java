@@ -32,7 +32,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -44,7 +44,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertFalse(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -66,7 +66,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -77,7 +77,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -88,7 +88,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertFalse(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     

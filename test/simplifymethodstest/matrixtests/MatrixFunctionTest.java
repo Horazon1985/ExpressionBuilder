@@ -36,7 +36,7 @@ public class MatrixFunctionTest {
             MatrixExpression result = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]", null);
             Assert.assertTrue(expOfM.equals(result));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 
@@ -53,7 +53,7 @@ public class MatrixFunctionTest {
             MatrixExpression result = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
             Assert.assertTrue(expOfM.equals(result));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
 

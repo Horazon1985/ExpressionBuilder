@@ -6,7 +6,6 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
-import expressionbuilder.TypeOperator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
@@ -15,6 +14,26 @@ import java.util.HashSet;
 
 public abstract class RischAlgorithmMethods {
 
+    private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = getSimplifyTypesForDifferentialFieldExtensions();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesForDifferentialFieldExtensions() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+            simplifyTypes.add(TypeSimplify.order_difference_and_division);
+            simplifyTypes.add(TypeSimplify.order_sums_and_products);
+            simplifyTypes.add(TypeSimplify.simplify_trivial);
+            simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+            simplifyTypes.add(TypeSimplify.simplify_collect_products);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
+        return simplifyTypes;
+    }
+    
+    
     /**
      * Private Fehlerklasse für den Fall, dass im Risch-Algorithmus etwas nicht
      * entscheidbar ist.
@@ -80,20 +99,7 @@ public abstract class RischAlgorithmMethods {
         }
         // Weitestgehend vereinfachen, wenn möglich.
         try {
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
-            f = f.simplify(simplifyTypes, var);
+            f = f.simplify(simplifyTypesForDifferentialFieldExtension, var);
         } catch (EvaluationException e) {
             return false;
         }
@@ -176,19 +182,19 @@ public abstract class RischAlgorithmMethods {
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(((Function) f).getLeft());
                 ExpressionCollection summandsLeftForCompare, summandsRightForCompare;
                 Expression currentQuotient;
+                boolean unclearCaseFound = false;
                 for (Expression fieldGenerator : fieldGenerators) {
                     if (!fieldGenerator.isFunction(TypeFunction.ln)) {
                         continue;
                     }
                     summandsLeftForCompare = SimplifyUtilities.getSummandsLeftInExpression(((Function) fieldGenerator).getLeft());
                     summandsRightForCompare = SimplifyUtilities.getSummandsRightInExpression(((Function) fieldGenerator).getLeft());
-                    if (summandsLeft.getBound() + summandsRight.getBound() == 1 && summandsLeftForCompare.getBound() + summandsRightForCompare.getBound() > 1
-                            || summandsLeft.getBound() + summandsRight.getBound() > 1 && summandsLeftForCompare.getBound() + summandsRightForCompare.getBound() == 1) {
-                        return false;
+                    if ((summandsLeft.getBound() + summandsRight.getBound()) * (summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
+                        unclearCaseFound = true;
                     }
                     try {
                         currentQuotient = ((Function) f).getLeft().div(((Function) fieldGenerator).getLeft()).simplify();
-                        if (!currentQuotient.contains(var)) {
+                        if (currentQuotient.isIntegerConstantOrRationalConstant()) {
                             return true;
                         }
                     } catch (EvaluationException e) {
@@ -196,18 +202,16 @@ public abstract class RischAlgorithmMethods {
                     }
 
                 }
-                // Schlecht entscheidbare Fälle!
-                throw new NotDecidableException();
+                if (unclearCaseFound) {
+                    // Schlecht entscheidbare Fälle!
+                    throw new NotDecidableException();
+                }
             }
 
             return false;
 
         }
         if (f.isOperator()) {
-            if (f.isOperator(TypeOperator.fac) || f.isOperator(TypeOperator.gcd)
-                    || f.isOperator(TypeOperator.lcm) || f.isOperator(TypeOperator.mod)) {
-                return !f.contains(var);
-            }
             throw new NotDecidableException();
         }
 
@@ -217,22 +221,9 @@ public abstract class RischAlgorithmMethods {
 
     public static ExpressionCollection getOrderedTranscendentalGeneratorsForDifferentialField(Expression f, String var) {
         ExpressionCollection fieldGenerators = new ExpressionCollection();
-        try{
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
-            f = f.simplify(simplifyTypes, var);
-        } catch (EvaluationException e){
+        try {
+            f = f.simplify(simplifyTypesForDifferentialFieldExtension, var);
+        } catch (EvaluationException e) {
             return fieldGenerators;
         }
         boolean newGeneratorFound;
@@ -258,6 +249,11 @@ public abstract class RischAlgorithmMethods {
         }
         if (f.isFunction()) {
 
+            if (!isFunctionAlgebraicOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)){
+                // Dann zuerst Erzeuger hinzufügen, die im Funktionsargument enthalten sind.
+                return addTranscendentalGeneratorForDifferentialField(((Function) f).getLeft(), var, fieldGenerators);
+            }
+            
             if (f.isFunction(TypeFunction.exp)) {
                 ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((Function) f).getLeft(), var);
                 ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(((Function) f).getLeft(), var);
@@ -288,21 +284,30 @@ public abstract class RischAlgorithmMethods {
                 ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(((Function) f).getLeft());
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(((Function) f).getLeft());
                 ExpressionCollection summandsLeftForCompare, summandsRightForCompare;
+                Expression currentQuotient;
+                boolean unclearCaseFound = false;
                 for (Expression fieldGenerator : fieldGenerators) {
                     if (!fieldGenerator.isFunction(TypeFunction.ln)) {
                         continue;
                     }
+                    try {
+                        currentQuotient = ((Function) f).getLeft().div(((Function) fieldGenerator).getLeft()).simplify();
+                        if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+                            return false;
+                        }
+                    } catch (EvaluationException e) {
+                    }
                     summandsLeftForCompare = SimplifyUtilities.getSummandsLeftInExpression(((Function) fieldGenerator).getLeft());
                     summandsRightForCompare = SimplifyUtilities.getSummandsRightInExpression(((Function) fieldGenerator).getLeft());
-                    if (summandsLeft.getBound() + summandsRight.getBound() == 1 && summandsLeftForCompare.getBound() + summandsRightForCompare.getBound() > 1
-                            || summandsLeft.getBound() + summandsRight.getBound() > 1 && summandsLeftForCompare.getBound() + summandsRightForCompare.getBound() == 1) {
-                        fieldGenerators.add(f);
-                        return true;
+                    if ((summandsLeft.getBound() + summandsRight.getBound())*(summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
+                        unclearCaseFound = true;
                     }
                 }
-                if (fieldGenerators.isEmpty()){
-                    fieldGenerators.add(f);
+                if (unclearCaseFound) {
+                    return false;
                 }
+                fieldGenerators.add(f);
+                return true;
             }
 
             return false;

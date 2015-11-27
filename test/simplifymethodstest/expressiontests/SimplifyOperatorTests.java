@@ -49,7 +49,7 @@ public class SimplifyOperatorTests {
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(f));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -72,7 +72,7 @@ public class SimplifyOperatorTests {
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(f));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 

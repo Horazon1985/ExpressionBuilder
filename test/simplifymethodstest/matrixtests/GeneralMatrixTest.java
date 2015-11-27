@@ -37,7 +37,7 @@ public class GeneralMatrixTest {
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -50,7 +50,7 @@ public class GeneralMatrixTest {
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -63,7 +63,7 @@ public class GeneralMatrixTest {
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -76,7 +76,7 @@ public class GeneralMatrixTest {
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     
@@ -89,7 +89,7 @@ public class GeneralMatrixTest {
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Build fehlgeschlagen.");
+            fail(e.getMessage());
         }
     }
     

@@ -42,7 +42,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -57,7 +57,7 @@ public class GeneralEquationMethodsTest {
             Expression zeroOne = new Constant(-7);
             assertTrue(zeros.contains(zeroOne));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -73,7 +73,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(new Constant(-2).sub(new Constant(5).pow(1, 2))));
             assertTrue(zeros.contains(new Constant(5).pow(1, 2).sub(2)));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -86,7 +86,7 @@ public class GeneralEquationMethodsTest {
             ExpressionCollection zeros = SolveMethods.solveGeneralEquation(f, Expression.ZERO, "x");
             assertTrue(zeros.isEmpty());
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(new Constant(-7)));
             assertTrue(zeros.contains(new Constant(-1).div(5)));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -117,7 +117,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(Expression.THREE.ln()));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -134,7 +134,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -153,7 +153,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -170,7 +170,7 @@ public class GeneralEquationMethodsTest {
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
-            fail("Die Gleichung konnte werden.");
+            fail(e.getMessage());
         }
     }
     

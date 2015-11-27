@@ -148,7 +148,7 @@ public class ExpressionCollectionTest {
             assertTrue(terms.contains(expr3));
             assertTrue(terms.contains(null));
         } catch (ExpressionException e) {
-            fail("Testfehler!");
+            fail(e.getMessage());
         }
     }
 
@@ -169,7 +169,7 @@ public class ExpressionCollectionTest {
             assertFalse(terms.containsExquivalent(expr2));
             assertTrue(terms.containsExquivalent(null));
         } catch (ExpressionException e) {
-            fail("Testfehler!");
+            fail(e.getMessage());
         }
     }
     

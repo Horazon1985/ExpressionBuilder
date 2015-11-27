@@ -51,7 +51,7 @@ public class GeneralSimplifyExpressionTest {
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -67,7 +67,7 @@ public class GeneralSimplifyExpressionTest {
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -80,7 +80,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.orderSumsAndProducts();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -93,7 +93,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.orderDifferencesAndQuotients();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -106,7 +106,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyCollectProducts();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -119,7 +119,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyReduceQuotients().orderDifferencesAndQuotients();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -145,7 +145,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -171,7 +171,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplify();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -184,7 +184,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInSums();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -197,7 +197,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -210,7 +210,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -223,7 +223,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -236,7 +236,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplify();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -249,7 +249,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -262,7 +262,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInSums();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -275,7 +275,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInSums();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -288,7 +288,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInSums();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -301,7 +301,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -314,7 +314,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -327,7 +327,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -340,7 +340,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyFactorizeAllButRationalsInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     
@@ -354,7 +354,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyExpand(TypeExpansion.POWERFUL).orderSumsAndProducts();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -369,7 +369,7 @@ public class GeneralSimplifyExpressionTest {
             f = f.simplifyExpand(TypeExpansion.POWERFUL).orderSumsAndProducts();
             Assert.assertTrue(f.equivalent(g));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 

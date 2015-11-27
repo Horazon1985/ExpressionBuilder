@@ -105,7 +105,7 @@ public class PolynomialTests {
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class PolynomialTests {
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -140,7 +140,7 @@ public class PolynomialTests {
             Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ public class PolynomialTests {
             Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class PolynomialTests {
             Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "x");
             Assert.assertTrue(expectedResult.equals(ggT));
         } catch (ExpressionException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -186,7 +186,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -199,7 +199,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -212,7 +212,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -225,7 +225,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -238,7 +238,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x").orderDifferencesAndQuotients();
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -253,7 +253,7 @@ public class PolynomialTests {
             Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
             Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(1), "x").compareTo(BigInteger.valueOf(2)) == 0);
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -266,7 +266,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -282,7 +282,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -297,7 +297,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -312,7 +312,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -327,7 +327,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -342,7 +342,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
     

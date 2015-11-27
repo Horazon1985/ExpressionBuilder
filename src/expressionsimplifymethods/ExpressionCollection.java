@@ -1,6 +1,7 @@
 package expressionsimplifymethods;
 
 import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
@@ -33,7 +34,13 @@ public class ExpressionCollection implements Iterable<Expression> {
         this.bound = 0;
         for (Object term : terms) {
             if (term != null) {
-                if (term instanceof Expression) {
+                if (term instanceof String) {
+                    try {
+                        this.add(Expression.build((String) term, null));
+                    } catch (ExpressionException e) {
+                        // Dann einfach nichts hinzufügen.
+                    }
+                } else if (term instanceof Expression) {
                     this.add((Expression) term);
                 } else if (term instanceof BigInteger) {
                     this.add(new Constant((BigInteger) term));
@@ -312,9 +319,9 @@ public class ExpressionCollection implements Iterable<Expression> {
     @Override
     public Iterator<Expression> iterator() {
         return new Iterator<Expression>() {
-            
+
             private int currentIndex = -1;
-            
+
             @Override
             public boolean hasNext() {
                 return this.currentIndex < getBound() - 1;
@@ -322,8 +329,8 @@ public class ExpressionCollection implements Iterable<Expression> {
 
             @Override
             public Expression next() {
-                for (int i = this.currentIndex + 1; i < getBound() - 1; i++){
-                    if (get(i) != null){
+                for (int i = this.currentIndex + 1; i < getBound() - 1; i++) {
+                    if (get(i) != null) {
                         this.currentIndex = i;
                         return get(i);
                     }
