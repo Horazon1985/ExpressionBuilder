@@ -1909,10 +1909,10 @@ public abstract class SimplifyBinaryOperationMethods {
                 if ((factorEnumerator.isSum() || factorEnumerator.isDifference())
                         && (factorDenominator.isSum() || factorDenominator.isDifference())) {
 
-                    reducedFactor = reduceEnumeratorAndDenominatorToConstant(factorEnumerator, factorDenominator);
+                    reducedFactor = reduceEnumeratorAndDenominatorToConstant2(factorEnumerator, factorDenominator);
                     if (!reducedFactor[0].equivalent(factorEnumerator)) {
                         // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
-                        if (!reducedFactor[1].equals(Expression.ONE)) {
+                        if (!reducedFactor[1].equals(ONE)) {
                             factorsEnumerator.put(i, reducedFactor[0]);
                             factorsDenominator.put(j, reducedFactor[1]);
                         } else {
@@ -1931,10 +1931,10 @@ public abstract class SimplifyBinaryOperationMethods {
                     if ((((BinaryOperation) factorEnumerator).getLeft().isSum() || ((BinaryOperation) factorEnumerator).getLeft().isDifference())
                             && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
 
-                        reducedFactor = reduceEnumeratorAndDenominatorToConstant(((BinaryOperation) factorEnumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
+                        reducedFactor = reduceEnumeratorAndDenominatorToConstant2(((BinaryOperation) factorEnumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
                         if (!reducedFactor[0].equivalent(((BinaryOperation) factorEnumerator).getLeft())) {
                             // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
-                            if (!reducedFactor[1].equals(Expression.ONE)) {
+                            if (!reducedFactor[1].equals(ONE)) {
                                 factorsEnumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorEnumerator).getRight()));
                                 factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorEnumerator).getRight()));
                             } else {
