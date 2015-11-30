@@ -197,11 +197,7 @@ public abstract class SimplifyUtilities {
 
                 }
 
-                if (resultExponent.compareTo(BigInteger.ONE) == 0) {
-                    result.add(resultBase);
-                } else {
-                    result.add(resultBase.pow(resultExponent));
-                }
+                result.add(resultBase.pow(resultExponent));
 
             }
 

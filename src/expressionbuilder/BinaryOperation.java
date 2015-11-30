@@ -736,6 +736,12 @@ public class BinaryOperation extends Expression {
             // Einsen in Produkten beseitigen.
             SimplifyBinaryOperationMethods.removeOnesInProducts(factors);
 
+            /* 
+             Falls in den Faktoren Summen / Differenzen auftauchen, in denen die 
+             Summanden alle negatives Vorzeichen besitzen: -1 ausklammern!
+             */
+            SimplifyBinaryOperationMethods.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factors, new ExpressionCollection());
+
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (this.isConstant() && this.containsApproximates()) {
                 SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
@@ -776,12 +782,20 @@ public class BinaryOperation extends Expression {
                 return exprSimplified;
             }
 
-            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            // Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (expr.isConstant() && expr.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
             }
-
-            return expr;
+            
+            /* 
+             Schließlich: Falls in den Faktoren im Zähler oder im Nenner Summen / Differenzen 
+             auftauchen, in denen die Summanden alle negatives Vorzeichen besitzen: 
+             -1 ausklammern!
+             */
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
+            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
+            SimplifyBinaryOperationMethods.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factorsEnumerator, factorsDenominator);
+            return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
 
         }
 
