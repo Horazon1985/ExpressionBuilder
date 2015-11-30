@@ -499,11 +499,11 @@ public abstract class SimplifyPolynomialMethods {
             if (a.getBound() == 2) {
                 throw new PolynomialNotDecomposableException();
             }
-            int n = a.getBound() - 1;
+            int n = a.getBound();
             Expression decomposedPolynomial = ONE, quadraticFactor;
 
-            if (n % 2 == 0) {
-                for (int i = 1; i < n / 2; i++) {
+            if (n % 2 == 1) {
+                for (int i = 1; i <= n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(ONE).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);

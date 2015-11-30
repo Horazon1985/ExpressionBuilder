@@ -221,9 +221,9 @@ public class PolynomialTests {
         // Zerlegung von 1+x+x^2+x^3+x^4 in irreduzible Faktoren.
         try {
             f = Expression.build("1+x+x^2+x^3+x^4", null);
-            fFactorized = Expression.build("(x^2+2^(1/2)*x+1)*((x^2+1)-2^(1/2)*x)", null);
+            fFactorized = Expression.build("((1+x^2)-2*(5^(1/2)/4-1/4)*x)*(1+x^2+2*(5^(1/2)/4+1/4)*x)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-//            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
