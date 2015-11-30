@@ -179,9 +179,9 @@ public abstract class SimplifyPolynomialMethods {
      * zurückgegeben.
      */
     public static ExpressionCollection getPolynomialCoefficients(Expression f, String var) throws EvaluationException {
-        
+
         ExpressionCollection coefficients = new ExpressionCollection();
-        
+
         if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
             return coefficients;
         }
@@ -194,7 +194,7 @@ public abstract class SimplifyPolynomialMethods {
         if (deg.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
             throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
-        
+
         Expression derivative = f;
         BigDecimal factorial = BigDecimal.ONE;
         for (int i = 0; i < ord.intValue(); i++) {
@@ -214,14 +214,14 @@ public abstract class SimplifyPolynomialMethods {
             coefficients.put(i, coefficient);
             derivative = derivative.diff(var).simplify();
         }
-        
+
         // Koeffizienten, die = 0 sind, entfernen.
         while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
             coefficients.remove(coefficients.getBound() - 1);
         }
-        
+
         return coefficients;
-        
+
     }
 
     public static Expression getPolynomialFromCoefficients(ExpressionCollection coefficients, String var) {
@@ -489,8 +489,36 @@ public abstract class SimplifyPolynomialMethods {
 
         int m = getPeriodOfCoefficients(a);
 
-        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == 1 || m == a.getBound()) {
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == a.getBound()) {
             throw new PolynomialNotDecomposableException();
+        }
+
+        if (m == 1) {
+
+            //Sonderfall: Das Polynom hat die Form 1 + x + x^2 + ... + x^n.
+            if (a.getBound() == 2) {
+                throw new PolynomialNotDecomposableException();
+            }
+            int n = a.getBound() - 1;
+            Expression decomposedPolynomial = ONE, quadraticFactor;
+
+            if (n % 2 == 0) {
+                for (int i = 1; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(ONE).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            } else {
+                decomposedPolynomial = Variable.create(var).sub(ONE).simplify();
+                for (int i = 0; i < n / 2; i++) {
+                    quadraticFactor = Variable.create(var).pow(2).sub(
+                            TWO.mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(ONE).simplify();
+                    decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
+                }
+            }
+
+            return decomposedPolynomial;
+            
         }
 
         ExpressionCollection coefficientsSecondFactor = new ExpressionCollection();
