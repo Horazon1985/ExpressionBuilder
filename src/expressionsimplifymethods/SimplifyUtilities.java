@@ -514,13 +514,37 @@ public abstract class SimplifyUtilities {
     }
 
     /**
+     * Liefert Faktoren im Zähler eines Ausdrucks, welche keine Variablen
+     * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
+     * in diesem Quotienten auftauchen: (...) / (...). Ist expr kein Quotient,
+     * so wird expr als Zähler angesehen. Verboten sind also Ausdrücke wie
+     * a/(b/c) etc. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (sin(1)*a*x^3*b^2*exp(x))/(5*u*v) liefert die Faktoren
+     * {sin(1)} (als ExpressionCollection, nummeriert via 0).
+     */
+    public static ExpressionCollection getConstantFactorsOfEnumeratorInExpression(Expression expr) {
+
+        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection constantFactors = new ExpressionCollection();
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i).isConstant()) {
+                constantFactors.add(factors.get(i));
+            }
+        }
+
+        return constantFactors;
+
+    }
+
+    /**
      * Liefert Faktoren im Zähler eines Ausdrucks, welche die Variable var nicht
      * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
      * in diesem Quotienten auftauchen: (...) / (...). Ist expr kein Quotient,
      * so wird expr als Zähler angesehen. Verboten sind also Ausdrücke wie
-     * a/(b/c) etc. WICHTIG: Das Ergebnis kann auch leer sein! BEISPIEL: expr =
-     * (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die Faktoren {x^3, exp(x)}
-     * (als ExpressionCollection, nummeriert via 0, 1).
+     * a/(b/c) etc. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die
+     * Faktoren {x^3, exp(x)} (als ExpressionCollection, nummeriert via 0, 1).
      */
     public static ExpressionCollection getConstantFactorsOfEnumeratorInExpression(Expression expr, String var) {
 
@@ -538,13 +562,37 @@ public abstract class SimplifyUtilities {
     }
 
     /**
+     * Liefert Faktoren im Zähler eines Ausdrucks, welche Variablen enthalten.
+     * VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls in diesem
+     * Quotienten auftauchen: (...) / (...). Ist expr kein Quotient, so wird
+     * expr als Zähler angesehen. Verboten sind also Ausdrücke wie a/(b/c) etc.
+     * WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (7*a*x^3*b^2*sin(1))/(6*u*v) liefert die Faktoren {a,
+     * x^3, b^2} (als ExpressionCollection, nummeriert via 0, 1, 2).
+     */
+    public static ExpressionCollection getNonConstantFactorsOfEnumeratorInExpression(Expression expr) {
+
+        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection nonConstantFactors = new ExpressionCollection();
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (!factors.get(i).isConstant()) {
+                nonConstantFactors.add(factors.get(i));
+            }
+        }
+
+        return nonConstantFactors;
+
+    }
+
+    /**
      * Liefert Faktoren im Zähler eines Ausdrucks, welche die Variable var
      * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
      * in diesem Quotienten auftauchen: (...) / (...). Ist expr kein Quotient,
      * so wird expr als Zähler angesehen. Verboten sind also Ausdrücke wie
-     * a/(b/c) etc. WICHTIG: Das Ergebnis kann auch leer sein! BEISPIEL: expr =
-     * (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die Faktoren {x^3, exp(x)}
-     * (als ExpressionCollection, nummeriert via 0, 1).
+     * a/(b/c) etc. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die
+     * Faktoren {x^3, exp(x)} (als ExpressionCollection, nummeriert via 0, 1).
      */
     public static ExpressionCollection getNonConstantFactorsOfEnumeratorInExpression(Expression expr, String var) {
 
@@ -562,13 +610,37 @@ public abstract class SimplifyUtilities {
     }
 
     /**
+     * Liefert Faktoren im Nenner eines Ausdrucks, welche keine Variablen
+     * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
+     * in diesem Quotienten auftauchen: (...) / (...). Verboten sind also
+     * Ausdrücke wie a/(b/c) etc. Ist expr kein Quotient, so wird expr als
+     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(7*u*v*x*exp(3)) liefert die Faktoren
+     * {7, exp(3)} (als ExpressionCollection, nummeriert via 0, 1).
+     */
+    public static ExpressionCollection getConstantFactorsOfDenominatorInExpression(Expression expr) {
+
+        ExpressionCollection factors = getFactorsOfDenominatorInExpression(expr);
+        ExpressionCollection constantFactors = new ExpressionCollection();
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i).isConstant()) {
+                constantFactors.add(factors.get(i));
+            }
+        }
+
+        return constantFactors;
+
+    }
+
+    /**
      * Liefert Faktoren im Nenner eines Ausdrucks, welche die Variable var nicht
      * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
      * in diesem Quotienten auftauchen: (...) / (...). Verboten sind also
      * Ausdrücke wie a/(b/c) etc. Ist expr kein Quotient, so wird expr als
-     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein! BEISPIEL:
-     * expr = (a*x^3*b^2*exp(x))/(sin(x)*u*v*x) und var = "x" liefert die
-     * Faktoren {sin(x), x} (als ExpressionCollection, nummeriert via 0, 1).
+     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(sin(x)*u*v*x) und var = "x" liefert
+     * die Faktoren {sin(x), x} (als ExpressionCollection, nummeriert via 0, 1).
      */
     public static ExpressionCollection getConstantFactorsOfDenominatorInExpression(Expression expr, String var) {
 
@@ -590,9 +662,33 @@ public abstract class SimplifyUtilities {
      * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
      * in diesem Quotienten auftauchen: (...) / (...). Verboten sind also
      * Ausdrücke wie a/(b/c) etc. Ist expr kein Quotient, so wird expr als
-     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein! BEISPIEL:
-     * expr = (a*x^3*b^2*exp(x))/(sin(x)*u*v*x) und var = "x" liefert die
-     * Faktoren {sin(x), x} (als ExpressionCollection, nummeriert via 0, 1).
+     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(7*u*v*cos(4)) liefert die Faktoren
+     * {7, cos(4)} (als ExpressionCollection, nummeriert via 0, 1).
+     */
+    public static ExpressionCollection getNonConstantFactorsOfDenominatorInExpression(Expression expr) {
+
+        ExpressionCollection factors = getFactorsOfDenominatorInExpression(expr);
+        ExpressionCollection nonConstantFactors = new ExpressionCollection();
+
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (!factors.get(i).isConstant()) {
+                nonConstantFactors.add(factors.get(i));
+            }
+        }
+
+        return nonConstantFactors;
+
+    }
+
+    /**
+     * Liefert Faktoren im Nenner eines Ausdrucks, welche die Variable var
+     * enthalten. VORAUSSETZUNG: Der Ausdruck muss in folgender Form sein, falls
+     * in diesem Quotienten auftauchen: (...) / (...). Verboten sind also
+     * Ausdrücke wie a/(b/c) etc. Ist expr kein Quotient, so wird expr als
+     * Zähler angesehen. WICHTIG: Das Ergebnis kann auch leer sein.<br>
+     * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(sin(x)*u*v*x) und var = "x" liefert
+     * die Faktoren {sin(x), x} (als ExpressionCollection, nummeriert via 0, 1).
      */
     public static ExpressionCollection getNonConstantFactorsOfDenominatorInExpression(Expression expr, String var) {
 

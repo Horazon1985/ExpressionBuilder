@@ -495,7 +495,7 @@ public abstract class SimplifyPolynomialMethods {
 
         if (m == 1) {
 
-            //Sonderfall: Das Polynom hat die Form 1 + x + x^2 + ... + x^n.
+            //Sonderfall: Das Polynom hat die Form 1 + x + x^2 + ... + x^n. Zerlegung mittels Einheitswurzeln.
             if (a.getBound() == 2) {
                 throw new PolynomialNotDecomposableException();
             }
@@ -509,18 +509,19 @@ public abstract class SimplifyPolynomialMethods {
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
-                decomposedPolynomial = Variable.create(var).sub(ONE).simplify();
-                for (int i = 0; i < n / 2; i++) {
+                decomposedPolynomial = Variable.create(var).add(ONE).simplify();
+                for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
-                            TWO.mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(ONE).simplify();
+                            TWO.mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(ONE).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
 
             return decomposedPolynomial;
-            
+
         }
 
+        // Ab hier ist m >= 2.
         ExpressionCollection coefficientsSecondFactor = new ExpressionCollection();
 
         for (int i = 0; i < a.getBound() - m + 1; i++) {

@@ -924,10 +924,10 @@ public abstract class SimplifyBinaryOperationMethods {
                 allSignsAreNegative = true;
 
                 // Nur bei echten Summen / Differenzen fortfahren.
-                if (summandsLeft.getBound() + summandsRight.getBound() < 2){
+                if (summandsLeft.getBound() + summandsRight.getBound() < 2) {
                     continue;
                 }
-                
+
                 for (Expression summandLeft : summandsLeft) {
                     if (summandLeft.hasPositiveSign()) {
                         allSignsAreNegative = false;
@@ -971,10 +971,10 @@ public abstract class SimplifyBinaryOperationMethods {
                 allSignsAreNegative = true;
 
                 // Nur bei echten Summen / Differenzen fortfahren.
-                if (summandsLeft.getBound() + summandsRight.getBound() < 2){
+                if (summandsLeft.getBound() + summandsRight.getBound() < 2) {
                     continue;
                 }
-                
+
                 for (Expression summandLeft : summandsLeft) {
                     if (summandLeft.hasPositiveSign()) {
                         allSignsAreNegative = false;
@@ -1004,10 +1004,10 @@ public abstract class SimplifyBinaryOperationMethods {
             }
         }
 
-        if (!signAtTheEnd){
+        if (!signAtTheEnd) {
             factorsEnumerator.add(MINUS_ONE);
         }
-        
+
     }
 
     /**
@@ -2039,13 +2039,8 @@ public abstract class SimplifyBinaryOperationMethods {
                         reducedFactor = reduceEnumeratorAndDenominatorToConstant(((BinaryOperation) factorEnumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
                         if (!reducedFactor[0].equivalent(((BinaryOperation) factorEnumerator).getLeft())) {
                             // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
-                            if (!reducedFactor[1].equals(ONE)) {
-                                factorsEnumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorEnumerator).getRight()));
-                                factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorEnumerator).getRight()));
-                            } else {
-                                factorsEnumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorEnumerator).getRight()));
-                                factorsDenominator.remove(j);
-                            }
+                            factorsEnumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorEnumerator).getRight()));
+                            factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorEnumerator).getRight()));
                         }
 
                     }
@@ -2077,8 +2072,10 @@ public abstract class SimplifyBinaryOperationMethods {
         ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(denominator);
         ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(denominator);
 
-        if (summandsLeftInEnumerator.getBound() + summandsRightInEnumerator.getBound()
-                != summandsLeftInDenominator.getBound() + summandsRightInDenominator.getBound()) {
+        if ((summandsLeftInEnumerator.getBound() != summandsLeftInDenominator.getBound()
+                || summandsRightInEnumerator.getBound() != summandsRightInDenominator.getBound())
+                && (summandsLeftInEnumerator.getBound() != summandsRightInDenominator.getBound()
+                || summandsRightInEnumerator.getBound() != summandsLeftInDenominator.getBound())) {
             // Dann gibt es keine Chance, dass Zähler und Nenner zu einer Konstante gekürzt werden können.
             Expression[] result = new Expression[2];
             result[0] = enumerator;
@@ -2086,128 +2083,227 @@ public abstract class SimplifyBinaryOperationMethods {
             return result;
         }
 
-        Expression coefficientInEnumeratorForTesting, coefficientInDenominatorForTesting = ZERO;
+        Expression coefficientInEnumeratorForTesting, coefficientInDenominatorForTesting;
         Expression summandInEnumeratorForTesting, summandInDenominatorForTesting;
-        /*
-         Testsummanden im Zähler finden. Der Minuend im Zähler ist nichtleer
-         und nicht 0, also kann man den Testsummanden aus dem Minuenden wählen
-         (und zwar den ersten, als den mit Key == 0).
-         */
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeftInEnumerator.get(0));
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeftInEnumerator.get(0));
-        ExpressionCollection factorsInEnumeratorWithoutCoefficient = new ExpressionCollection();
-        if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isConstant()) {
-            coefficientInEnumeratorForTesting = factorsEnumerator.get(0);
-            for (int i = 1; i < factorsEnumerator.getBound(); i++) {
-                factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(i));
+        ExpressionCollection summandsLeftInEnumeratorMultiples;
+        ExpressionCollection summandsRightInEnumeratorMultiples;
+        ExpressionCollection summandsLeftInDenominatorMultiples;
+        ExpressionCollection summandsRightInDenominatorMultiples;
+
+        // In summandsLeftInEnumerator nach passendem Testsummanden suchen.
+        for (Expression summandEnumerator : summandsLeftInEnumerator) {
+
+            if (summandEnumerator.isConstant()) {
+                continue;
             }
 
-            summandInEnumeratorForTesting = SimplifyUtilities.produceQuotient(factorsInEnumeratorWithoutCoefficient, factorsDenominator);
+            summandInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                    SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                    SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandEnumerator));
 
-        } else {
-            coefficientInEnumeratorForTesting = ONE;
-            summandInEnumeratorForTesting = summandsLeftInEnumerator.get(0);
-        }
-
-        // Dazu passenden Testsummanden im Nenner finden. Zunächst im Minuenden des Nenners sein.
-        boolean appropriateSummandInDenominatorFound = false;
-        for (int i = 0; i < summandsLeftInDenominator.getBound(); i++) {
-
-            factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeftInDenominator.get(i));
-            factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeftInDenominator.get(i));
-            if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isConstant()) {
-                coefficientInDenominatorForTesting = factorsEnumerator.get(0);
-                factorsInEnumeratorWithoutCoefficient.clear();
-                for (int j = 1; j < factorsEnumerator.getBound(); j++) {
-                    factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(j));
+            for (Expression summandDenominator : summandsLeftInDenominator) {
+                if (summandDenominator.isConstant()) {
+                    continue;
                 }
 
-                summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(factorsInEnumeratorWithoutCoefficient, factorsDenominator);
+                summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                        SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                        SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-            } else {
-                coefficientInDenominatorForTesting = ONE;
-                summandInDenominatorForTesting = summandsLeftInDenominator.get(i);
-            }
-            if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
-                appropriateSummandInDenominatorFound = true;
-                break;
-            }
+                // Passende Testsummanden im Zähler und im Nenner gefunden.
+                if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
 
-        }
+                    coefficientInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandEnumerator));
+                    coefficientInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-        /*
-         Falls im Minuenden kein passender korrespondierender Summand gefunden
-         wurde, suche weiter im Subtrahenden.
-         */
-        if (!appropriateSummandInDenominatorFound) {
-            for (int i = 0; i < summandsRightInDenominator.getBound(); i++) {
+                    summandsLeftInEnumeratorMultiples = ExpressionCollection.copy(summandsLeftInEnumerator);
+                    summandsLeftInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInEnumeratorMultiples = summandsLeftInEnumeratorMultiples.simplify();
 
-                factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRightInDenominator.get(i));
-                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRightInDenominator.get(i));
-                if (factorsEnumerator.get(0) != null && factorsEnumerator.get(0).isConstant()) {
-                    // .negate() in b, weil man im Subtrahenden ist.
-                    coefficientInDenominatorForTesting = factorsEnumerator.get(0).negate().simplify();
-                    factorsInEnumeratorWithoutCoefficient.clear();
-                    for (int j = 1; j < factorsEnumerator.getBound(); j++) {
-                        factorsInEnumeratorWithoutCoefficient.add(factorsEnumerator.get(j));
+                    summandsRightInEnumeratorMultiples = ExpressionCollection.copy(summandsRightInEnumerator);
+                    summandsRightInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInEnumeratorMultiples = summandsRightInEnumeratorMultiples.simplify();
+
+                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
+
+                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
+
+                    if (summandsLeftInEnumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
+                            && summandsRightInEnumeratorMultiples.equivalentInTerms(summandsRightInDenominatorMultiples)) {
+                        // Dann ist der gekürzte Bruch = coefficientInEnumeratorForTesting/coefficientInDenominatorForTesting.
+                        Expression[] result = new Expression[2];
+                        result[0] = coefficientInEnumeratorForTesting;
+                        result[1] = coefficientInDenominatorForTesting;
+                        return result;
                     }
 
-                    summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(factorsInEnumeratorWithoutCoefficient, factorsDenominator);
-
-                } else {
-                    /*
-                     Der Koeffizient wird negiert, weil der Koeffizient im
-                     Zähler im Minuenden stand und der Koeffizient im Nenner
-                     im Subtrahenden. Beispiel: im Ausdruck (2*a - 5*b)/(15*b
-                     - 6*a) ist coefficientInEnumeratorForTesting = 2,
-                     coefficientInDenominatorForTesting = 6. Der gekürzte
-                     Bruch ist aber = 2/(-6) = -1/3.
-                     */
-                    coefficientInDenominatorForTesting = MINUS_ONE;
-                    summandInDenominatorForTesting = summandsLeftInDenominator.get(i);
-                }
-                if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
-                    appropriateSummandInDenominatorFound = true;
-                    break;
                 }
 
             }
+
+            for (Expression summandDenominator : summandsRightInDenominator) {
+                if (summandDenominator.isConstant()) {
+                    continue;
+                }
+
+                summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                        SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                        SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                // Passende Testsummanden im Zähler und im Nenner gefunden.
+                if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
+
+                    coefficientInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandEnumerator));
+                    coefficientInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                    summandsLeftInEnumeratorMultiples = ExpressionCollection.copy(summandsLeftInEnumerator);
+                    summandsLeftInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInEnumeratorMultiples = summandsLeftInEnumeratorMultiples.simplify();
+
+                    summandsRightInEnumeratorMultiples = ExpressionCollection.copy(summandsRightInEnumerator);
+                    summandsRightInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInEnumeratorMultiples = summandsRightInEnumeratorMultiples.simplify();
+
+                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
+
+                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
+
+                    if (summandsLeftInEnumeratorMultiples.equivalentInTerms(summandsRightInDenominatorMultiples)
+                            && summandsRightInEnumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)) {
+                        // Dann ist der gekürzte Bruch = coefficientInEnumeratorForTesting/coefficientInDenominatorForTesting.
+                        Expression[] result = new Expression[2];
+                        result[0] = MINUS_ONE.mult(coefficientInEnumeratorForTesting);
+                        result[1] = coefficientInDenominatorForTesting;
+                        return result;
+                    }
+
+                }
+
+            }
+
         }
 
-        if (!coefficientInEnumeratorForTesting.equals(ZERO) && !coefficientInDenominatorForTesting.equals(ZERO) && appropriateSummandInDenominatorFound) {
+        // In summandsRightInEnumerator nach passendem Testsummanden suchen.
+        for (Expression summandEnumerator : summandsRightInEnumerator) {
 
-            /*
-             In summandsInEnumeratorWithSigns werden sowohl die Summanden im
-             Minuenden, als auch die Summanden im Subtrahenden von enumerator
-             eingetragen. Analoges für summandsInDenominatorWithSigns.
-             */
-            ExpressionCollection summandsInEnumeratorWithSigns = new ExpressionCollection();
-            ExpressionCollection summandsInDenominatorWithSigns = new ExpressionCollection();
-
-            /*
-             Im Folgenden wird im Anschluss orderSumsAndProducts() ausgeführt,
-             da diese Funktion Konstanten in Produkten (und Summen)
-             zusammenfasst. Aus 2*5*x wird dann beispielsweise 10*x.
-             */
-            for (int i = 0; i < summandsLeftInEnumerator.getBound(); i++) {
-                summandsInEnumeratorWithSigns.add(coefficientInDenominatorForTesting.mult(summandsLeftInEnumerator.get(i)).simplify());
-            }
-            for (int i = 0; i < summandsRightInEnumerator.getBound(); i++) {
-                summandsInEnumeratorWithSigns.add(coefficientInDenominatorForTesting.negate().mult(summandsRightInEnumerator.get(i)).simplify());
-            }
-            for (int i = 0; i < summandsLeftInDenominator.getBound(); i++) {
-                summandsInDenominatorWithSigns.add(coefficientInEnumeratorForTesting.mult(summandsLeftInDenominator.get(i)).simplify());
-            }
-            for (int i = 0; i < summandsRightInDenominator.getBound(); i++) {
-                summandsInDenominatorWithSigns.add(coefficientInEnumeratorForTesting.negate().mult(summandsRightInDenominator.get(i)).simplify());
+            if (summandEnumerator.isConstant()) {
+                continue;
             }
 
-            if (SimplifyUtilities.difference(summandsInEnumeratorWithSigns, summandsInDenominatorWithSigns).isEmpty()
-                    && summandsInEnumeratorWithSigns.getBound() == summandsInDenominatorWithSigns.getBound()) {
-                Expression[] result = new Expression[2];
-                result[0] = coefficientInEnumeratorForTesting;
-                result[1] = coefficientInDenominatorForTesting;
-                return result;
+            summandInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                    SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                    SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandEnumerator));
+
+            for (Expression summandDenominator : summandsLeftInDenominator) {
+                if (summandDenominator.isConstant()) {
+                    continue;
+                }
+
+                summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                        SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                        SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                // Passende Testsummanden im Zähler und im Nenner gefunden.
+                if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
+
+                    coefficientInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandEnumerator));
+                    coefficientInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                    summandsLeftInEnumeratorMultiples = ExpressionCollection.copy(summandsLeftInEnumerator);
+                    summandsLeftInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInEnumeratorMultiples = summandsLeftInEnumeratorMultiples.simplify();
+
+                    summandsRightInEnumeratorMultiples = ExpressionCollection.copy(summandsRightInEnumerator);
+                    summandsRightInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInEnumeratorMultiples = summandsRightInEnumeratorMultiples.simplify();
+
+                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
+
+                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
+
+                    if (summandsRightInEnumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
+                            && summandsLeftInEnumeratorMultiples.equivalentInTerms(summandsRightInDenominatorMultiples)) {
+                        // Dann ist der gekürzte Bruch = coefficientInEnumeratorForTesting/coefficientInDenominatorForTesting.
+                        Expression[] result = new Expression[2];
+                        result[0] = MINUS_ONE.mult(coefficientInEnumeratorForTesting);
+                        result[1] = coefficientInDenominatorForTesting;
+                        return result;
+                    }
+
+                }
+
+            }
+
+            for (Expression summandDenominator : summandsRightInDenominator) {
+                if (summandDenominator.isConstant()) {
+                    continue;
+                }
+
+                summandInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                        SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                        SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                // Passende Testsummanden im Zähler und im Nenner gefunden.
+                if (summandInEnumeratorForTesting.equivalent(summandInDenominatorForTesting)) {
+
+                    coefficientInEnumeratorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandEnumerator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandEnumerator));
+                    coefficientInDenominatorForTesting = SimplifyUtilities.produceQuotient(
+                            SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(summandDenominator),
+                            SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
+
+                    summandsLeftInEnumeratorMultiples = ExpressionCollection.copy(summandsLeftInEnumerator);
+                    summandsLeftInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInEnumeratorMultiples = summandsLeftInEnumeratorMultiples.simplify();
+
+                    summandsRightInEnumeratorMultiples = ExpressionCollection.copy(summandsRightInEnumerator);
+                    summandsRightInEnumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInEnumeratorMultiples = summandsRightInEnumeratorMultiples.simplify();
+
+                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
+
+                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples.multExpression(coefficientInEnumeratorForTesting);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
+
+                    if (summandsLeftInEnumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
+                            && summandsRightInEnumeratorMultiples.equivalentInTerms(summandsRightInDenominatorMultiples)) {
+                        // Dann ist der gekürzte Bruch = coefficientInEnumeratorForTesting/coefficientInDenominatorForTesting.
+                        Expression[] result = new Expression[2];
+                        result[0] = coefficientInEnumeratorForTesting;
+                        result[1] = coefficientInDenominatorForTesting;
+                        return result;
+                    }
+
+                }
+
             }
 
         }
