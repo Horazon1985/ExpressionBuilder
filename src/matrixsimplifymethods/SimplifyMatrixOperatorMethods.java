@@ -13,17 +13,17 @@ public abstract class SimplifyMatrixOperatorMethods {
      * auftaucht, so wird dieser in eine entsprechende Summe oder Differenz von
      * Summenoperatoren aufgeteilt.
      */
-    public static MatrixExpression splitSumOfSumsOrDifferences(MatrixBinaryOperation expr, String var, Expression lowerLimit, Expression upperLimit) {
+    public static MatrixExpression splitSumOfSumsOrDifferences(MatrixBinaryOperation summand, String var, Expression lowerLimit, Expression upperLimit) {
 
-        if (expr.isDifference()) {
+        if (summand.isDifference()) {
 
             Object[] paramsLeft = new Object[4];
-            paramsLeft[0] = expr.getLeft();
+            paramsLeft[0] = summand.getLeft();
             paramsLeft[1] = var;
             paramsLeft[2] = lowerLimit;
             paramsLeft[3] = upperLimit;
             Object[] paramsRight = new Object[4];
-            paramsRight[0] = expr.getRight();
+            paramsRight[0] = summand.getRight();
             paramsRight[1] = var;
             paramsRight[2] = lowerLimit;
             paramsRight[3] = upperLimit;
@@ -31,7 +31,7 @@ public abstract class SimplifyMatrixOperatorMethods {
 
         } else {
 
-            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(expr);
+            MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(summand);
             Object[][] params = new Object[summands.getBound()][4];
             for (int i = 0; i < summands.getBound(); i++) {
                 for (int j = 0; j < 4; j++) {

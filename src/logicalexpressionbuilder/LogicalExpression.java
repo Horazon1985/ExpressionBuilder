@@ -186,6 +186,12 @@ public abstract class LogicalExpression {
      * Gibt die Negation des vorliegenden logischen Ausdrucks zurück.
      */
     public LogicalExpression neg() {
+        if (this.equals(TRUE)){
+            return FALSE;
+        }
+        if (this.equals(FALSE)){
+            return TRUE;
+        }
         return new LogicalUnaryOperation(this, TypeLogicalUnary.NEGATION);
     }
 
@@ -194,6 +200,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck logExpr zurück.
      */
     public LogicalExpression and(LogicalExpression logExpr) {
+        if (this.equals(FALSE) || logExpr.equals(FALSE)){
+            return FALSE;
+        }
+        if (this.equals(TRUE)){
+            return logExpr;
+        }
+        if (logExpr.equals(TRUE)){
+            return this;
+        }
         return new LogicalBinaryOperation(this, logExpr, TypeLogicalBinary.AND);
     }
 
@@ -202,6 +217,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck logExpr zurück.
      */
     public LogicalExpression or(LogicalExpression logExpr) {
+        if (this.equals(TRUE) || logExpr.equals(TRUE)){
+            return TRUE;
+        }
+        if (this.equals(FALSE)){
+            return logExpr;
+        }
+        if (logExpr.equals(FALSE)){
+            return this;
+        }
         return new LogicalBinaryOperation(this, logExpr, TypeLogicalBinary.OR);
     }
 
@@ -210,6 +234,12 @@ public abstract class LogicalExpression {
      * logischen Ausdruck logExpr zurück.
      */
     public LogicalExpression impl(LogicalExpression logExpr) {
+        if (this.equals(FALSE)){
+            return TRUE;
+        }
+        if (this.equals(TRUE)){
+            return logExpr;
+        }
         return new LogicalBinaryOperation(this, logExpr, TypeLogicalBinary.IMPLICATION);
     }
 
@@ -218,6 +248,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck logExpr zurück.
      */
     public LogicalExpression equiv(LogicalExpression logExpr) {
+        if (this.equals(TRUE)){
+            return logExpr;
+        }
+        if (logExpr.equals(TRUE)){
+            return this;
+        }
+        if (this.equals(FALSE) && logExpr.equals(FALSE)){
+            return TRUE;
+        }
         return new LogicalBinaryOperation(this, logExpr, TypeLogicalBinary.EQUIVALENCE);
     }
 
@@ -226,6 +265,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck (value != 0) zurück.
      */
     public LogicalExpression and(int value) {
+        if (this.equals(FALSE) || value != 0){
+            return FALSE;
+        }
+        if (this.equals(TRUE)){
+            return new LogicalConstant(value);
+        }
+        if (value == 0){
+            return this;
+        }
         return new LogicalBinaryOperation(this, new LogicalConstant(value), TypeLogicalBinary.AND);
     }
 
@@ -234,6 +282,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck (value != 0) zurück.
      */
     public LogicalExpression or(int value) {
+        if (this.equals(TRUE) || value == 0){
+            return TRUE;
+        }
+        if (this.equals(FALSE)){
+            return new LogicalConstant(value);
+        }
+        if (value != 0){
+            return this;
+        }
         return new LogicalBinaryOperation(this, new LogicalConstant(value), TypeLogicalBinary.OR);
     }
 
@@ -242,6 +299,12 @@ public abstract class LogicalExpression {
      * logischen Ausdruck (value != 0) zurück.
      */
     public LogicalExpression impl(int value) {
+        if (this.equals(FALSE)){
+            return TRUE;
+        }
+        if (this.equals(TRUE)){
+            return new LogicalConstant(value);
+        }
         return new LogicalBinaryOperation(this, new LogicalConstant(value), TypeLogicalBinary.IMPLICATION);
     }
 
@@ -250,6 +313,15 @@ public abstract class LogicalExpression {
      * logischen Ausdruck (value != 0) zurück.
      */
     public LogicalExpression equiv(int value) {
+        if (this.equals(TRUE)){
+            return new LogicalConstant(value);
+        }
+        if (value == 0){
+            return this;
+        }
+        if (this.equals(FALSE) && value != 0){
+            return TRUE;
+        }
         return new LogicalBinaryOperation(this, new LogicalConstant(value), TypeLogicalBinary.EQUIVALENCE);
     }
 

@@ -2,11 +2,11 @@ package matrixsimplifymethods;
 
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import flowcontroller.FlowController;
 import java.awt.Dimension;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixBinaryOperation;
 import matrixexpressionbuilder.MatrixExpression;
-import translator.Translator;
 
 public abstract class SimplifyMatrixBinaryOperationMethods {
 
@@ -18,9 +18,8 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             if (summands.get(i).isZeroMatrix() && !summands.isEmpty()) {
                 summands.remove(i);
             }
-            if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
-            }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
     }
 
@@ -77,9 +76,8 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             if (factors.get(i).isId() && !factors.isEmpty()) {
                 factors.remove(i);
             }
-            if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
-            }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
     }
 
@@ -93,13 +91,12 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                 factors.clear();
                 factors.add(MatrixExpression.getZeroMatrix(dim.height, dim.width));
             }
-            if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
-            }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
     }
 
-    public static void factorizeScalarsInSum(MatrixExpressionCollection summands) {
+    public static void factorizeScalarsInSum(MatrixExpressionCollection summands) throws EvaluationException {
 
         MatrixExpressionCollection factorsOfLeftSummand, factorsOfRightSummand, commonScalarFactors;
         MatrixExpression commonFactor, restSummandLeft, restSummandRight;
@@ -139,13 +136,16 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     break;
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
 
     }
 
-    public static void factorizeScalarsInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+    public static void factorizeScalarsInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) throws EvaluationException {
 
         MatrixExpressionCollection factorsOfLeftSummand, factorsOfRightSummand, commonScalarFactors;
         MatrixExpression commonFactor, restSummandLeft, restSummandRight;
@@ -185,13 +185,16 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     break;
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
 
     }
 
-    public static void factorizeInSum(MatrixExpressionCollection summands) {
+    public static void factorizeInSum(MatrixExpressionCollection summands) throws EvaluationException {
 
         MatrixExpressionCollection factorsOfLeftSummand, factorsOfRightSummand;
         MatrixExpression commonFactor, factorizedSummand;
@@ -231,20 +234,24 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                         break;
                     }
                 }
+
                 // Faktorisierten Summanden ablegen, falls solch einer existiert.
-                if (factorizedSummand != null){
+                if (factorizedSummand != null) {
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     break;
                 }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
 
             }
 
         }
 
     }
-    
-    public static void factorizeInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+
+    public static void factorizeInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) throws EvaluationException {
 
         MatrixExpressionCollection factorsOfLeftSummand, factorsOfRightSummand;
         MatrixExpression commonFactor, factorizedSummand;
@@ -284,12 +291,16 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                         break;
                     }
                 }
+
                 // Faktorisierten Summanden ablegen, falls solch einer existiert.
-                if (factorizedSummand != null){
+                if (factorizedSummand != null) {
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     break;
                 }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
 
             }
 

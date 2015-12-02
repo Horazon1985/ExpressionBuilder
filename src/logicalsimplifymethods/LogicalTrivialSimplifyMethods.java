@@ -1,5 +1,7 @@
 package logicalsimplifymethods;
 
+import exceptions.EvaluationException;
+import flowcontroller.FlowController;
 import logicalexpressionbuilder.LogicalExpression;
 import logicalexpressionbuilder.LogicalUnaryOperation;
 
@@ -8,7 +10,7 @@ public abstract class LogicalTrivialSimplifyMethods {
     /**
      * Kürzt in einer Summe (|) gleiche Summanden.
      */
-    public static void cancelMultipleSummands(LogicalExpressionCollection summands) {
+    public static void cancelMultipleSummands(LogicalExpressionCollection summands) throws EvaluationException {
 
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) == null) {
@@ -22,6 +24,8 @@ public abstract class LogicalTrivialSimplifyMethods {
                     summands.remove(j);
                 }
             }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -47,24 +51,19 @@ public abstract class LogicalTrivialSimplifyMethods {
      * in den ersten Summanden TRUE eintragen.
      */
     public static void findTrueInSum(LogicalExpressionCollection summands) {
-
-        for (int i = 0; i < summands.getBound(); i++) {
-            if (summands.get(i) == null) {
-                continue;
-            }
-            if (summands.get(i).equals(LogicalExpression.TRUE)) {
+        for (LogicalExpression summand : summands) {
+            if (summand.equals(LogicalExpression.TRUE)) {
                 summands.clear();
-                summands.put(0, LogicalExpression.TRUE);
+                summands.add(LogicalExpression.TRUE);
                 return;
             }
         }
-
     }
 
     /**
      * Kürzt in einem Produkt (&) gleiche Faktoren.
      */
-    public static void cancelMultipleFactors(LogicalExpressionCollection factors) {
+    public static void cancelMultipleFactors(LogicalExpressionCollection factors) throws EvaluationException {
 
         for (int i = 0; i < factors.getBound(); i++) {
             if (factors.get(i) == null) {
@@ -78,6 +77,8 @@ public abstract class LogicalTrivialSimplifyMethods {
                     factors.remove(j);
                 }
             }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -103,25 +104,20 @@ public abstract class LogicalTrivialSimplifyMethods {
      * nur in den ersten Faktor FALSE eintragen.
      */
     public static void findFalseInProduct(LogicalExpressionCollection factors) {
-
-        for (int i = 0; i < factors.getBound(); i++) {
-            if (factors.get(i) == null) {
-                continue;
-            }
-            if (factors.get(i).equals(LogicalExpression.FALSE)) {
+        for (LogicalExpression factor : factors) {
+            if (factor.equals(LogicalExpression.FALSE)) {
                 factors.clear();
-                factors.put(0, LogicalExpression.FALSE);
+                factors.add(LogicalExpression.FALSE);
                 return;
             }
         }
-
     }
 
     /**
      * Kürzt in einer Äquivalenzkette (=) jeweils zwei äquivalente Terme zu
      * TRUE.
      */
-    public static void cancelDoubleTermsInEquivalenceChain(LogicalExpressionCollection equivTerms) {
+    public static void cancelDoubleTermsInEquivalenceChain(LogicalExpressionCollection equivTerms) throws EvaluationException {
 
         for (int i = 0; i < equivTerms.getBound(); i++) {
             if (equivTerms.get(i) == null) {
@@ -137,6 +133,8 @@ public abstract class LogicalTrivialSimplifyMethods {
                     break;
                 }
             }
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -145,7 +143,7 @@ public abstract class LogicalTrivialSimplifyMethods {
      * Falls in einer Summe a und !a vorkommen -> summands löschen und nur in
      * den ersten Summanden TRUE reinschreiben.
      */
-    public static void collectExpressionsAndNegatedExpressionsInSum(LogicalExpressionCollection summands) {
+    public static void collectExpressionsAndNegatedExpressionsInSum(LogicalExpressionCollection summands) throws EvaluationException {
 
         for (int i = 0; i < summands.getBound(); i++) {
 
@@ -166,6 +164,9 @@ public abstract class LogicalTrivialSimplifyMethods {
                     return;
                 }
             }
+            
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -175,7 +176,7 @@ public abstract class LogicalTrivialSimplifyMethods {
      * Falls in einem Produkt a und !a vorkommen -> factors löschen und nur in
      * den ersten Faktor FALSE reinschreiben.
      */
-    public static void collectExpressionsAndNegatedExpressionsInProduct(LogicalExpressionCollection factors) {
+    public static void collectExpressionsAndNegatedExpressionsInProduct(LogicalExpressionCollection factors) throws EvaluationException {
 
         for (int i = 0; i < factors.getBound(); i++) {
 
@@ -197,6 +198,9 @@ public abstract class LogicalTrivialSimplifyMethods {
                 }
             }
 
+            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }

@@ -10,6 +10,9 @@ public class LogicalConstant extends LogicalExpression {
         this.value = value;
     }
 
+    /**
+     * Die logische Konstante wird genau dann auf TRUE gesetzt, wenn value == 0.
+     */
     public LogicalConstant(int value) {
         this.value = value == 0;
     }

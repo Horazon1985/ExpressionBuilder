@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
+import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -97,7 +98,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
      * vereinfachen.<br>
      * Beispiel: A+3*sin(B)^2+C+z+3*cos(B)^2 wird vereinfacht zu A + 3*E + C.
      */
-    public static void reduceSumOfSquaresOfSineAndCosine(MatrixExpressionCollection summands) {
+    public static void reduceSumOfSquaresOfSineAndCosine(MatrixExpressionCollection summands) throws EvaluationException {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
         Dimension dim;
@@ -133,6 +134,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     } catch (EvaluationException e) {
                     }
                 }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -170,6 +174,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
                     break;
                 }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -221,6 +228,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
@@ -258,6 +268,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
@@ -267,7 +280,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
     /**
      * Fasst in einer Summe sinh(A) und cosh(A) zu exp(A) zusammen.
      */
-    public static void reduceSinhPlusCoshToExp(MatrixExpressionCollection summands) {
+    public static void reduceSinhPlusCoshToExp(MatrixExpressionCollection summands) throws EvaluationException {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
 
@@ -302,6 +315,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
@@ -312,7 +328,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
      * Fasst in einer Differenz Folgendes zusammen: cosh(A) - sinh(A) zu exp(-A)
      * und sinh(A) - cosh(A) zu -exp(-A) zusammen.
      */
-    public static void reduceCoshMinusSinhToExp(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) {
+    public static void reduceCoshMinusSinhToExp(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) throws EvaluationException {
 
         Object[] isFirstSummandSuitable, isSecondSummandSuitable;
 
@@ -347,6 +363,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
 
                 }
+
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -384,6 +403,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
+                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
+                FlowController.interruptComputationIfNeeded();
+
             }
 
         }
@@ -418,18 +440,16 @@ public abstract class SimplifyMatrixFunctionalRelations {
                 && ((Matrix) ((MatrixFunction) matExpr).getLeft()).isSquareMatrix()
                 && (((Matrix) ((MatrixFunction) matExpr).getLeft()).isLowerTriangularMatrix()
                 || ((Matrix) ((MatrixFunction) matExpr).getLeft()).isUpperTriangularMatrix())) {
+
             // Dann explizit ausrechnen.
             Expression det = Expression.ONE;
             for (int i = 0; i < ((Matrix) ((MatrixFunction) matExpr).getLeft()).getRowNumber(); i++) {
-                if (det.equals(Expression.ONE)) {
-                    det = ((Matrix) ((MatrixFunction) matExpr).getLeft()).getEntry(i, i);
-                } else {
-                    det = det.mult(((Matrix) ((MatrixFunction) matExpr).getLeft()).getEntry(i, i));
-                }
+                det = det.mult(((Matrix) ((MatrixFunction) matExpr).getLeft()).getEntry(i, i));
             }
 
             return new Matrix(det);
         }
+
         return matExpr;
 
     }
@@ -608,6 +628,10 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
     }
 
+    /**
+     * Konvertiert den Typ einer Matrixfunktion zu einem entsprechenden
+     * Funktionstyp.
+     */
     private static TypeFunction convertMatrixFunctionTypeToFunctionType(TypeMatrixFunction type) {
         switch (type) {
             case cos:
@@ -621,6 +645,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
             case sin:
                 return TypeFunction.sin;
             default:
+                // Hier ist type == TypeMatrixFunction.sinh
                 return TypeFunction.sinh;
         }
     }

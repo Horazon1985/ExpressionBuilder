@@ -160,14 +160,10 @@ public abstract class LogicalSimplifyUtilities {
         LogicalExpression result = LogicalExpression.FALSE;
         for (int i = summands.getBound() - 1; i >= 0; i--) {
             if (summands.get(i) != null && !summands.get(i).equals(LogicalExpression.FALSE)) {
-                if (result.equals(LogicalExpression.FALSE)) {
-                    result = summands.get(i);
-                } else {
-                    result = summands.get(i).or(result);
-                }
+                result = summands.get(i).or(result);
             }
         }
-        
+
         return result;
 
     }
@@ -184,14 +180,10 @@ public abstract class LogicalSimplifyUtilities {
         LogicalExpression result = LogicalExpression.TRUE;
         for (int i = factors.getBound() - 1; i >= 0; i--) {
             if (factors.get(i) != null && !factors.get(i).equals(LogicalExpression.TRUE)) {
-                if (result.equals(LogicalExpression.TRUE)) {
-                    result = factors.get(i);
-                } else {
-                    result = factors.get(i).and(result);
-                }
+                result = factors.get(i).and(result);
             }
         }
-        
+
         return result;
 
     }
@@ -208,16 +200,12 @@ public abstract class LogicalSimplifyUtilities {
         LogicalExpression result = LogicalExpression.TRUE;
         for (int i = equivTerms.getBound() - 1; i >= 0; i--) {
             if (equivTerms.get(i) != null) {
-                if (result.equals(LogicalExpression.TRUE)) {
-                    result = equivTerms.get(i);
-                } else {
-                    result = equivTerms.get(i).equiv(result);
-                }
+                result = equivTerms.get(i).equiv(result);
             }
         }
-        
+
         return result;
 
     }
-    
+
 }
