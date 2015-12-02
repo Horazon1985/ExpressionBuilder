@@ -2,10 +2,12 @@ package expressionsimplifymethods;
 
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeBinary;
+import flowcontroller.FlowController;
 import java.math.BigInteger;
 import java.util.HashMap;
 
@@ -568,7 +570,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * Quadratwurzelfaktor enthalten sein.
      */
     public static boolean isSuitableCandidateForThirdBinomial(BinaryOperation expr) {
-        return (expr.getType().equals(TypeBinary.PLUS) || expr.getType().equals(TypeBinary.MINUS))
+        return (expr.isSum() || expr.isDifference())
                 && (containsSqrtFactor(expr.getLeft()) || containsSqrtFactor(expr.getRight()));
     }
 
@@ -607,7 +609,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * werden containsSqrtFactor() und isSuitableCandidateForThirdBinomial()
      * benutzt).
      */
-    public static Expression collectFactorsByThirdBinomialFormula(BinaryOperation expr) {
+    public static Expression collectFactorsByThirdBinomialFormula(BinaryOperation expr) throws EvaluationException {
 
         if (expr.isNotProduct()) {
             return expr;
@@ -619,6 +621,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         Expression candidateLeft, candidateRight;
 
         for (int i = 0; i < factors.getBound(); i++) {
+            
             if (factors.get(i) != null && factors.get(i) instanceof BinaryOperation && isSuitableCandidateForThirdBinomial((BinaryOperation) factors.get(i))) {
                 candidate = (BinaryOperation) factors.get(i);
                 candidateLeft = ((BinaryOperation) factors.get(i)).getLeft();
@@ -626,6 +629,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             } else {
                 continue;
             }
+            
             for (int j = i + 1; j < factors.getBound(); j++) {
                 if (factors.get(j) != null) {
                     if (candidate.isSum() && factors.get(j).isDifference()) {
@@ -652,6 +656,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     }
                 }
             }
+            
+            // Zwischendurch kontrollieren, ob die Berechnung abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         // Ergebnis bilden.
@@ -710,7 +718,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      */
     public static Expression collectVariousRootsToOneCommonRoot(BinaryOperation expr) {
 
-        if (!expr.getType().equals(TypeBinary.TIMES)) {
+        if (expr.isNotProduct()) {
             return expr;
         }
 

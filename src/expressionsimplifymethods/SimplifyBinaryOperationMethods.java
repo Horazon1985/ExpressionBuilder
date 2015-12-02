@@ -1373,7 +1373,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * Kürzt ganzzahlige Faktoren aus Brüchen, z. B. wird a*(25*x +
      * 10*y)*b/(80*u - 35*v) zu a*(5*x + 2*y)*b/(16*u - 7*v) vereinfacht.
      */
-    public static void reduceGCDInQuotient(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) {
+    public static void reduceGCDInQuotient(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
 
         Expression enumerator, denominator;
         Expression[] reducedEnumeratorAndDenominator;
@@ -1446,10 +1446,24 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
 
+    /**
+     * 
+     * @throws EvaluationException
+     */
+    public static void reduceGCDInDifferentFactors(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+    
+        // TO DO.
+        
+        
+    }
+    
     /**
      * Hilfsmethode für reduceGCDInQuotient(). Kürzt ganzzahlige Faktoren aus
      * Brüchen, z. B. wird (25*x + 10*y)/(80*u - 35*v) zu (5*x + 2*y)/(16*u -
@@ -1457,7 +1471,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * (dies wird aber in reduceGCDInFactorsInEnumeratorAndDenominator()
      * ausgeschlossen).
      */
-    private static Expression[] reduceGCDInEnumeratorAndDenominator(Expression enumerator, Expression denominator) {
+    private static Expression[] reduceGCDInEnumeratorAndDenominator(Expression enumerator, Expression denominator) throws EvaluationException {
 
         ExpressionCollection summandsLeftInEnumerator = SimplifyUtilities.getSummandsLeftInExpression(enumerator);
         ExpressionCollection summandsRightInEnumerator = SimplifyUtilities.getSummandsRightInExpression(enumerator);
@@ -1502,7 +1516,11 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
+        
         // Zähler absuchen (Subtrahend)
         for (int i = 0; i < summandsRightInEnumerator.getBound(); i++) {
 
@@ -1537,6 +1555,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         // Nenner absuchen (Minuend)
@@ -1573,7 +1594,11 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
+        
         // Nenner absuchen (Subtrahend)
         for (int i = 0; i < summandsRightInDenominator.getBound(); i++) {
 
@@ -1608,6 +1633,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         if (gcdOfAllCoefficients.equals(BigInteger.ONE)) {
@@ -1644,6 +1672,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
         for (int i = 0; i < summandsRightInEnumerator.getBound(); i++) {
 
@@ -1666,6 +1697,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
         for (int i = 0; i < summandsLeftInDenominator.getBound(); i++) {
 
@@ -1688,6 +1722,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
         for (int i = 0; i < summandsRightInDenominator.getBound(); i++) {
 
@@ -1710,6 +1747,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         Expression[] reducedEnumeratorAndDenominator = new Expression[2];
@@ -1792,6 +1832,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
@@ -1844,6 +1887,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         if (commonDenominators.isEmpty()) {
@@ -1920,6 +1966,9 @@ public abstract class SimplifyBinaryOperationMethods {
                         SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeft.get(i)))).simplify());
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
@@ -1980,6 +2029,9 @@ public abstract class SimplifyBinaryOperationMethods {
                         SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(i)))).simplify());
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         return SimplifyUtilities.produceDifference(summandsLeft, summandsRight).div(SimplifyUtilities.produceProduct(commonDenominators));
@@ -2048,6 +2100,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
@@ -2197,6 +2252,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         // In summandsRightInEnumerator nach passendem Testsummanden suchen.
@@ -2306,6 +2364,9 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
         Expression[] result = new Expression[2];
@@ -2530,11 +2591,11 @@ public abstract class SimplifyBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
@@ -2622,11 +2683,11 @@ public abstract class SimplifyBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
@@ -2871,11 +2932,11 @@ public abstract class SimplifyBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
@@ -2978,11 +3039,11 @@ public abstract class SimplifyBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }
@@ -3031,13 +3092,13 @@ public abstract class SimplifyBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
             factorsEnumerator.put(i, base.pow(exponent));
 
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+            
         }
 
     }

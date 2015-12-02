@@ -786,7 +786,7 @@ public class BinaryOperation extends Expression {
             if (expr.isConstant() && expr.containsApproximates()) {
                 return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
             }
-            
+
             /* 
              Schließlich: Falls in den Faktoren im Zähler oder im Nenner Summen / Differenzen 
              auftauchen, in denen die Summanden alle negatives Vorzeichen besitzen: 
@@ -1051,6 +1051,12 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifferenceInApprox(termsLeft, termsRight);
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifference(termsLeft, termsRight);
 
+            /*
+             Prüft, ob man beispielsweise flgendermaßen kürzen kann: 10*x*(1/6 + y/14)
+             = 5*x*(1/3 + y/7).
+             */
+//            SimplifyBinaryOperationMethods.reduceGCDInDifferentFactors(termsLeft, termsRight);
+            
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(termsLeft, termsRight);
 

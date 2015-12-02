@@ -7,6 +7,7 @@ import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;
+import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -134,14 +135,20 @@ public class MatrixPower extends MatrixExpression {
                 MatrixExpression[] squaresOfBaseMatrix = new MatrixExpression[binaryRepresentationOfExponent.length];
                 // Noch ist result = Id(exponent).
                 squaresOfBaseMatrix[0] = leftComputed;
+                
                 for (int i = 1; i < binaryRepresentationOfExponent.length; i++) {
                     squaresOfBaseMatrix[i] = squaresOfBaseMatrix[i - 1].mult(squaresOfBaseMatrix[i - 1]).computeMatrixOperations().simplifyMatrixEntries();
+                    // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
+                    FlowController.interruptComputationIfNeeded();
                 }
+                
                 // Nun kommt die eigentliche Berechnung der Potenz.
                 for (int i = 0; i < binaryRepresentationOfExponent.length; i++) {
                     if (binaryRepresentationOfExponent[i]) {
                         result = result.mult(squaresOfBaseMatrix[i]).computeMatrixOperations().simplifyMatrixEntries();
                     }
+                    // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
+                    FlowController.interruptComputationIfNeeded();
                 }
 
                 return result;
