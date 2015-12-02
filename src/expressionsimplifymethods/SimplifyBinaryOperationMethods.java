@@ -1457,13 +1457,15 @@ public abstract class SimplifyBinaryOperationMethods {
      *
      * @throws EvaluationException
      */
-    public static void reduceGCDInDifferentFactors(ExpressionCollection factors) throws EvaluationException {
+    public static void pullGCDOfCoefficientsInProducts(ExpressionCollection factors) throws EvaluationException {
 
-        ExpressionCollection summandsLeftOfFirstFactor, summandsRightOfFirstFactor,
-                summandsLeftOfSecondFactor, summandsRightOfSecondFactor;
+        if (factors.getSize() < 2) {
+            return;
+        }
 
-        BigInteger gcdOfEnumeratorsInFirstFactor, gcdOfDenominatorsInFirstFactor,
-                gcdOfEnumeratorsInSecondFactor, gcdOfDenominatorsInSecondFactor;
+        ExpressionCollection summandsLeft, summandsRight;
+
+        BigInteger gcdOfEnumerators, gcdOfDenominators;
 
         for (int i = 0; i < factors.getBound(); i++) {
 
@@ -1471,41 +1473,69 @@ public abstract class SimplifyBinaryOperationMethods {
                 continue;
             }
 
-            summandsLeftOfFirstFactor = SimplifyUtilities.getSummandsLeftInExpression(factors.get(i));
-            summandsRightOfFirstFactor = SimplifyUtilities.getSummandsRightInExpression(factors.get(i));
+            summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(factors.get(i));
+            summandsRight = SimplifyUtilities.getSummandsRightInExpression(factors.get(i));
 
-            gcdOfEnumeratorsInFirstFactor = BigInteger.ZERO;
-            gcdOfDenominatorsInFirstFactor = BigInteger.ZERO;
+            gcdOfEnumerators = BigInteger.ZERO;
+            gcdOfDenominators = BigInteger.ZERO;
 
             // Prüfen, ob die Zähler einen gemeinsamen ggT > 1 besitzen.
-            for (Expression summand : summandsLeftOfFirstFactor) {
-                gcdOfEnumeratorsInFirstFactor = gcdOfEnumeratorsInFirstFactor.gcd(getCoefficientInEnumerator(summand));
+            for (Expression summand : summandsLeft) {
+                gcdOfEnumerators = gcdOfEnumerators.gcd(getCoefficientInEnumerator(summand));
             }
-            for (Expression summand : summandsRightOfFirstFactor) {
-                gcdOfEnumeratorsInFirstFactor = gcdOfEnumeratorsInFirstFactor.gcd(getCoefficientInEnumerator(summand));
+            for (Expression summand : summandsRight) {
+                gcdOfEnumerators = gcdOfEnumerators.gcd(getCoefficientInEnumerator(summand));
             }
             // Prüfen, ob die Nenner einen gemeinsamen ggT > 1 besitzen.
-            for (Expression summand : summandsLeftOfFirstFactor) {
-                gcdOfDenominatorsInFirstFactor = gcdOfDenominatorsInFirstFactor.gcd(getCoefficientInDenominator(summand));
+            for (Expression summand : summandsLeft) {
+                gcdOfDenominators = gcdOfDenominators.gcd(getCoefficientInDenominator(summand));
             }
-            for (Expression summand : summandsRightOfFirstFactor) {
-                gcdOfDenominatorsInFirstFactor = gcdOfDenominatorsInFirstFactor.gcd(getCoefficientInDenominator(summand));
-            }
-
-            // Im folgenden Fall wurde kein nichttrivialer ggT (sowohl im Zähler, als auch im Nenner) gefunden.
-            if (gcdOfEnumeratorsInFirstFactor.equals(BigInteger.ZERO) && gcdOfDenominatorsInFirstFactor.equals(BigInteger.ZERO)) {
-                continue;
+            for (Expression summand : summandsRight) {
+                gcdOfDenominators = gcdOfDenominators.gcd(getCoefficientInDenominator(summand));
             }
 
-            for (int j = i + 1; j < factors.getBound(); j++) {
-
-                if (factors.get(j) == null || factors.get(j).isNotSum() && factors.get(j).isNotDifference()) {
-                    continue;
+            if (gcdOfEnumerators.compareTo(BigInteger.ONE) > 0) {
+                ExpressionCollection factorsEnumerator, factorsDenominator;
+                for (int j = 0; j < summandsLeft.getBound(); j++) {
+                    factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeft.get(i));
+                    factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
+                    if (factorsEnumerator.get(0).isIntegerConstant()) {
+                        factorsEnumerator.put(0, new Constant(((Constant) factorsEnumerator.get(0)).getValue().toBigInteger().divide(gcdOfEnumerators)));
+                        summandsLeft.put(j, SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator));
+                    }
                 }
+                for (int j = 0; j < summandsRight.getBound(); j++) {
+                    factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(i));
+                    factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i));
+                    if (factorsEnumerator.get(0).isIntegerConstant()) {
+                        factorsEnumerator.put(0, new Constant(((Constant) factorsEnumerator.get(0)).getValue().toBigInteger().divide(gcdOfEnumerators)));
+                        summandsRight.put(j, SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator));
+                    }
+                }
+                factors.put(i, SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
+                factors.add(new Constant(gcdOfEnumerators));
+            }
 
-                summandsLeftOfSecondFactor = SimplifyUtilities.getSummandsLeftInExpression(factors.get(j));
-                summandsRightOfSecondFactor = SimplifyUtilities.getSummandsRightInExpression(factors.get(j));
-
+            if (gcdOfDenominators.compareTo(BigInteger.ONE) > 0) {
+                ExpressionCollection factorsEnumerator, factorsDenominator;
+                for (int j = 0; j < summandsLeft.getBound(); j++) {
+                    factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsLeft.get(j));
+                    factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(j));
+                    if (factorsDenominator.get(0).isIntegerConstant()) {
+                        factorsDenominator.put(0, new Constant(((Constant) factorsDenominator.get(0)).getValue().toBigInteger().divide(gcdOfDenominators)));
+                        summandsLeft.put(j, SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator));
+                    }
+                }
+                for (int j = 0; j < summandsRight.getBound(); j++) {
+                    factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
+                    factorsDenominator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
+                    if (factorsDenominator.get(0).isIntegerConstant()) {
+                        factorsDenominator.put(0, new Constant(((Constant) factorsDenominator.get(0)).getValue().toBigInteger().divide(gcdOfDenominators)));
+                        summandsRight.put(j, SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator));
+                    }
+                }
+                factors.put(i, SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
+                factors.add(ONE.div(gcdOfDenominators));
             }
 
             // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
@@ -1513,7 +1543,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
         }
 
-        // TO DO.
     }
 
     private static BigInteger getCoefficientInEnumerator(Expression expr) {

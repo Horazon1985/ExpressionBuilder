@@ -1021,6 +1021,13 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyReduceLeadingsCoefficients());
             }
+            
+            /*
+             Prüft, ob man beispielsweise flgendermaßen kürzen kann: 10*x*(1/6 + y/14)
+             = 5*x*(1/3 + y/7).
+             */
+            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(factors);
+            
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
             return this.left.simplifyReduceLeadingsCoefficients().pow(this.right.simplifyReduceLeadingsCoefficients());
@@ -1051,12 +1058,6 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifferenceInApprox(termsLeft, termsRight);
             SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifference(termsLeft, termsRight);
 
-            /*
-             Prüft, ob man beispielsweise flgendermaßen kürzen kann: 10*x*(1/6 + y/14)
-             = 5*x*(1/3 + y/7).
-             */
-//            SimplifyBinaryOperationMethods.reduceGCDInDifferentFactors(termsLeft, termsRight);
-            
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(termsLeft, termsRight);
 
