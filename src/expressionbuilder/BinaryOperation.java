@@ -1021,13 +1021,13 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyReduceLeadingsCoefficients());
             }
-            
+
             /*
              Prüft, ob man beispielsweise flgendermaßen kürzen kann: 10*x*(1/6 + y/14)
              = 5*x*(1/3 + y/7).
              */
             SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(factors);
-            
+
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
             return this.left.simplifyReduceLeadingsCoefficients().pow(this.right.simplifyReduceLeadingsCoefficients());
@@ -1072,6 +1072,13 @@ public class BinaryOperation extends Expression {
              25*b)*y/(35*c - 20*d) = x*(2*a + 5*b)*y/(7*c - 4*d).
              */
             SimplifyBinaryOperationMethods.reduceGCDInQuotient(termsLeft, termsRight);
+
+            /*
+             Prüft im Zähler und im Nenner, ob man beispielsweise flgendermaßen 
+             kürzen kann: 10*x*(1/6 + y/14) = 5*x*(1/3 + y/7).
+             */
+            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(termsLeft);
+            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(termsRight);
 
             /*
              Prüft, ob sich ganze Ausdrücke zu einer Konstanten kürzen lassen,
