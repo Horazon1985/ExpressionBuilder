@@ -1562,7 +1562,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
                 for (int j = 0; j < summandsRight.getBound(); j++) {
                     factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
-                    factorsDenominator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summandsRight.get(j));
+                    factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(j));
                     if (factorsDenominator.get(0).isIntegerConstant()) {
                         factorsDenominator.put(0, new Constant(((Constant) factorsDenominator.get(0)).getValue().toBigInteger().divide(gcdOfDenominators)));
                         summandsRight.put(j, SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator));

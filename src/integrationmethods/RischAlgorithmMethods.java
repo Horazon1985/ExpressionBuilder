@@ -21,22 +21,21 @@ public abstract class RischAlgorithmMethods {
 
     private static HashSet<TypeSimplify> getSimplifyTypesForDifferentialFieldExtensions() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-            simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
         return simplifyTypes;
     }
-    
-    
+
     /**
      * Private Fehlerklasse für den Fall, dass im Risch-Algorithmus etwas nicht
      * entscheidbar ist.
@@ -252,11 +251,11 @@ public abstract class RischAlgorithmMethods {
         }
         if (f.isFunction()) {
 
-            if (!isFunctionRationalOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)){
+            if (!isFunctionRationalOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)) {
                 // Dann zuerst Erzeuger hinzufügen, die im Funktionsargument enthalten sind.
                 return addTranscendentalGeneratorForDifferentialField(((Function) f).getLeft(), var, fieldGenerators);
             }
-            
+
             if (f.isFunction(TypeFunction.exp)) {
                 ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((Function) f).getLeft(), var);
                 ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(((Function) f).getLeft(), var);
@@ -277,33 +276,33 @@ public abstract class RischAlgorithmMethods {
                             BigInteger b = BigInteger.ONE;
                             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(nonConstantSummand);
                             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
-                            
-                            if (factorsEnumerator.get(0).isIntegerConstant()){
+
+                            if (factorsEnumerator.get(0).isIntegerConstant()) {
                                 a = ((Constant) factorsEnumerator.get(0)).getValue().toBigInteger().abs();
                                 factorsEnumerator.remove(0);
                             }
-                            if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()){
+                            if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()) {
                                 b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
                                 factorsDenominator.remove(0);
                             }
 
                             Expression quotient = new Constant(a).div(b).div(currentQuotient).simplify();
-                            
+
                             BigInteger c, d;
-                            if (quotient.isIntegerConstant()){
+                            if (quotient.isIntegerConstant()) {
                                 c = ((Constant) quotient).getValue().toBigInteger();
                                 d = BigInteger.ONE;
                             } else {
                                 c = ((Constant) ((BinaryOperation) quotient).getLeft()).getValue().toBigInteger();
                                 d = ((Constant) ((BinaryOperation) quotient).getRight()).getValue().toBigInteger();
                             }
-                            
+
                             a = a.gcd(c);
                             b = ArithmeticMethods.lcm(b, d);
                             factorsEnumerator.add(new Constant(a));
                             factorsDenominator.add(new Constant(b));
                             Expression expArgument = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
-                            
+
                             fieldGenerators.put(i, expArgument.exp().simplify());
                             return true;
                         }
@@ -333,7 +332,7 @@ public abstract class RischAlgorithmMethods {
                     }
                     summandsLeftForCompare = SimplifyUtilities.getSummandsLeftInExpression(((Function) fieldGenerator).getLeft());
                     summandsRightForCompare = SimplifyUtilities.getSummandsRightInExpression(((Function) fieldGenerator).getLeft());
-                    if ((summandsLeft.getBound() + summandsRight.getBound())*(summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
+                    if ((summandsLeft.getBound() + summandsRight.getBound()) * (summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
                         unclearCaseFound = true;
                     }
                 }
@@ -352,4 +351,20 @@ public abstract class RischAlgorithmMethods {
 
     }
 
+    /*
+     Ab hier folgt der eigentliche Risch-Algorithmus!
+     */
+    private static boolean isExtensionOfDegreeOne(){
+    
+        
+        
+        
+    
+        return true;
+        
+    }
+    
+    
+    
+    
 }
