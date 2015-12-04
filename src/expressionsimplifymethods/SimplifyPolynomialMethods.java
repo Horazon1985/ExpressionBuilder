@@ -26,6 +26,7 @@ import translator.Translator;
 public abstract class SimplifyPolynomialMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
+    private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
 
     private static HashSet<TypeSimplify> getSimplifyTypesDecomposePolynomial() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -39,6 +40,23 @@ public abstract class SimplifyPolynomialMethods {
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getsimplifyTypesExpandPolynomial() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_powerful);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         return simplifyTypes;
     }
 
@@ -214,6 +232,99 @@ public abstract class SimplifyPolynomialMethods {
             coefficients.put(i, coefficient);
             derivative = derivative.diff(var).simplify();
         }
+
+        // Koeffizienten, die = 0 sind, entfernen.
+        while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
+            coefficients.remove(coefficients.getBound() - 1);
+        }
+
+        return coefficients;
+
+    }
+
+    /**
+     * Ermittelt die Koeffizienten, falls f ein Polynom in derivative Variablen
+     * var ist. Ist f kein Polynom, so wird eine leere ExpressionCollection
+     * zurückgegeben.
+     */
+    public static ExpressionCollection getPolynomialCoefficients2(Expression f, String var) throws EvaluationException {
+
+        ExpressionCollection coefficients = new ExpressionCollection();
+
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
+            return coefficients;
+        }
+
+        BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
+        if (deg.compareTo(BigInteger.ZERO) < 0) {
+            return coefficients;
+        }
+        if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION)) >= 0) {
+            throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
+        }
+
+        f = f.simplify(simplifyTypesExpandPolynomial);
+
+        /* 
+         Jetzt ist f ausmultipliziert. Einige Monome können allerdings doppelt vorkommen!
+         Jetzt muss man die Koeffizienten passend sammeln.
+         */
+        for (int i = 0; i <= deg.intValue(); i++) {
+            coefficients.put(i, ZERO);
+        }
+
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
+        ExpressionCollection factorsNumerator, factorsDenominator;
+        Expression currentCoefficient;
+        int exponent;
+
+        // Eigentliche Koeffizientenberechnung.
+        for (Expression summand : summandsLeft) {
+            // Zunächst konstante Koeffizienten separat sammeln:
+            if (!summand.contains(var)) {
+                coefficients.put(0, coefficients.get(0).add(summand));
+            }
+            factorsNumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+            factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
+            for (int j = 0; j < factorsNumerator.getBound(); j++) {
+                // Zunächst lineare Koeffizienten separat sammeln:
+                if (factorsNumerator.get(j).equals(Variable.create(var))) {
+                    factorsNumerator.remove(j);
+                    currentCoefficient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+                    coefficients.put(1, coefficients.get(1).add(currentCoefficient));
+                } else if (factorsNumerator.get(j).isPositiveIntegerPower() && ((BinaryOperation) factorsNumerator.get(j)).getLeft().equals(Variable.create(var))) {
+                    exponent = ((Constant) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getValue().intValue();
+                    factorsNumerator.remove(j);
+                    currentCoefficient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+                    coefficients.put(exponent, coefficients.get(exponent).add(currentCoefficient));
+                }
+            }
+        }
+        for (Expression summand : summandsRight) {
+            // Zunächst konstante Koeffizienten separat sammeln:
+            if (!summand.contains(var)) {
+                coefficients.put(0, coefficients.get(0).sub(summand));
+            }
+            factorsNumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+            factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
+            for (int j = 0; j < factorsNumerator.getBound(); j++) {
+                // Zunächst lineare Koeffizienten separat sammeln:
+                if (factorsNumerator.get(j).equals(Variable.create(var))) {
+                    factorsNumerator.remove(j);
+                    currentCoefficient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+                    coefficients.put(1, coefficients.get(1).sub(currentCoefficient));
+                } else if (factorsNumerator.get(j).isPositiveIntegerPower() && ((BinaryOperation) factorsNumerator.get(j)).getLeft().equals(Variable.create(var))) {
+                    exponent = ((Constant) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getValue().intValue();
+                    factorsNumerator.remove(j);
+                    currentCoefficient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+                    coefficients.put(exponent, coefficients.get(exponent).sub(currentCoefficient));
+                }
+            }
+        }
+
+        // Koeffizienten vereinfachen!
+        coefficients = coefficients.simplify(simplifyTypesExpandPolynomial);
 
         // Koeffizienten, die = 0 sind, entfernen.
         while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {

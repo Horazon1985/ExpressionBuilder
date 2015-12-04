@@ -31,6 +31,30 @@ public class PolynomialTests {
     }
 
     @Test
+    public void getPolynomialCoefficientsTest1() {
+        try {
+            f = Expression.build("(1+x)^2-(x-1)^2", null);
+            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients2(f, "x");
+            ExpressionCollection coefficientsExpected = new ExpressionCollection(0, 4);
+            Assert.assertTrue(coefficients.equals(coefficientsExpected));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getPolynomialCoefficientsTest2() {
+        try {
+            f = Expression.build("(1/2+x)^3-x^2", null);
+            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients2(f, "x");
+            ExpressionCollection coefficientsExpected = new ExpressionCollection(ONE.div(8), THREE.div(4), ONE.div(TWO), ONE);
+            Assert.assertTrue(coefficients.equals(coefficientsExpected));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void periodicCoefficientsTest1() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 1, -4);
         Assert.assertTrue(SimplifyPolynomialMethods.getPeriodOfCoefficients(c) == 3);
@@ -87,7 +111,7 @@ public class PolynomialTests {
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
         } catch (EvaluationException e) {
-            fail("f konnte nicht vereinfacht werden.");
+            fail(e.getMessage());
         }
     }
 
@@ -182,7 +206,7 @@ public class PolynomialTests {
         // Zerlegung von x^5-7 in irreduzible Faktoren.
         try {
             f = Expression.build("x^5-7", null);
-            fFactorized = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+2*7^(1/5)*(1/4+5^(1/2)/4)*x)*((x^2+7^(2/5))-2*7^(1/5)*(5^(1/2)/4-1/4)*x)", null);
+            fFactorized = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+(7^(1/5)*(1+5^(1/2))*x)/2)*((x^2+7^(2/5))-(7^(1/5)*(5^(1/2)-1)*x)/2)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
@@ -221,7 +245,7 @@ public class PolynomialTests {
         // Zerlegung von 1+x+x^2+x^3+x^4 in irreduzible Faktoren.
         try {
             f = Expression.build("1+x+x^2+x^3+x^4", null);
-            fFactorized = Expression.build("((1+x^2)-2*(5^(1/2)/4-1/4)*x)*(1+x^2+2*(5^(1/2)/4+1/4)*x)", null);
+            fFactorized = Expression.build("((1+x^2)+((1-5^(1/2))*x)/2)*(1+x^2+((5^(1/2)+1)*x)/2)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             Assert.assertTrue(f.equivalent(fFactorized));
         } catch (ExpressionException | EvaluationException e) {
