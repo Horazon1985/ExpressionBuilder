@@ -15,7 +15,6 @@ import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -205,61 +204,10 @@ public abstract class SimplifyPolynomialMethods {
         }
 
         BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
-        BigInteger ord = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
         if (deg.compareTo(BigInteger.ZERO) < 0) {
             return coefficients;
         }
-        if (deg.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) >= 0) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
-        }
-
-        Expression derivative = f;
-        BigDecimal factorial = BigDecimal.ONE;
-        for (int i = 0; i < ord.intValue(); i++) {
-            if (i > 0) {
-                factorial = factorial.multiply(BigDecimal.valueOf(i));
-            }
-            derivative = derivative.diff(var).simplify();
-            coefficients.put(i, Expression.ZERO);
-        }
-        Expression coefficient;
-        for (int i = ord.intValue(); i <= deg.intValue(); i++) {
-            if (i > 0) {
-                factorial = factorial.multiply(BigDecimal.valueOf(i));
-            }
-            coefficient = derivative.copy();
-            coefficient = coefficient.replaceVariable(var, Expression.ZERO).div(factorial).simplify();
-            coefficients.put(i, coefficient);
-            derivative = derivative.diff(var).simplify();
-        }
-
-        // Koeffizienten, die = 0 sind, entfernen.
-        while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
-            coefficients.remove(coefficients.getBound() - 1);
-        }
-
-        return coefficients;
-
-    }
-
-    /**
-     * Ermittelt die Koeffizienten, falls f ein Polynom in derivative Variablen
-     * var ist. Ist f kein Polynom, so wird eine leere ExpressionCollection
-     * zurückgegeben.
-     */
-    public static ExpressionCollection getPolynomialCoefficients2(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection coefficients = new ExpressionCollection();
-
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
-            return coefficients;
-        }
-
-        BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
-        if (deg.compareTo(BigInteger.ZERO) < 0) {
-            return coefficients;
-        }
-        if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION)) >= 0) {
+        if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) >= 0) {
             throw new EvaluationException(Translator.translateExceptionMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
 

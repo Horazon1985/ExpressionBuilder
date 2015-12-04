@@ -34,7 +34,7 @@ public class PolynomialTests {
     public void getPolynomialCoefficientsTest1() {
         try {
             f = Expression.build("(1+x)^2-(x-1)^2", null);
-            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients2(f, "x");
+            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(0, 4);
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
@@ -46,8 +46,20 @@ public class PolynomialTests {
     public void getPolynomialCoefficientsTest2() {
         try {
             f = Expression.build("(1/2+x)^3-x^2", null);
-            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients2(f, "x");
+            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(ONE.div(8), THREE.div(4), ONE.div(TWO), ONE);
+            Assert.assertTrue(coefficients.equals(coefficientsExpected));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getPolynomialCoefficientsTest3() {
+        try {
+            f = Expression.build("(2+x/3)^3+(1+x)^5-3*x^5", null);
+            ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x");
+            ExpressionCollection coefficientsExpected = new ExpressionCollection(9, 9, "32/3", "271/27", 5, -2);
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
