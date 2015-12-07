@@ -55,7 +55,7 @@ public class GraphicPanelFormula extends JPanel {
     private static final Color backgroundColorUnmarked = Color.white;
     private static final Color backgroundColorMarked = new Color(51, 204, 255);
 
-    private static ArrayList<GraphicPanelFormula> formulas = new ArrayList<>();
+    private static final ArrayList<GraphicPanelFormula> formulas = new ArrayList<>();
 
     public GraphicPanelFormula() {
         formulas.add(this);
@@ -235,7 +235,7 @@ public class GraphicPanelFormula extends JPanel {
         return (int) (0.7 * fontsize);
     }
 
-    public int getHeightOfCommand(Graphics g, Command c, int fontSize) {
+    private int getHeightOfCommand(Graphics g, Command c, int fontSize) {
 
         Object[] params = c.getParams();
 
@@ -297,7 +297,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfCenterOfCommand(Graphics g, Command c, int fontSize) {
+    private int getHeightOfCenterOfCommand(Graphics g, Command c, int fontSize) {
 
         Object[] params = c.getParams();
 
@@ -356,7 +356,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getLengthOfCommand(Graphics g, Command c, int fontSize) {
+    private int getLengthOfCommand(Graphics g, Command c, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -514,15 +514,15 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getHeightOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
         return fontSize;
     }
 
-    public int getHeightOfCenterOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getHeightOfCenterOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
         return (2 * fontSize) / 5;
     }
 
-    public int getLengthOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getLengthOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
 
         if (logExpr instanceof LogicalConstant) {
             return getLengthOfLogicalConstant(g, (LogicalConstant) logExpr, fontSize);
@@ -622,7 +622,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getHeightOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -736,7 +736,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
+    private int getHeightOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -751,7 +751,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfCenterOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getHeightOfCenterOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -842,7 +842,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfCenterOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
+    private int getHeightOfCenterOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -854,7 +854,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getLengthOfMatrixColumn(Graphics g, Expression[] column, int fontSize) {
+    private int getLengthOfMatrixColumn(Graphics g, Expression[] column, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -866,7 +866,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getLengthOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getLengthOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
 
         // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
         Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
@@ -965,7 +965,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getLengthOfMatrixOperator(Graphics g, MatrixOperator matOperator, int fontSize) {
+    private int getLengthOfMatrixOperator(Graphics g, MatrixOperator matOperator, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1090,7 +1090,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getHeightOfExpression(Graphics g, Expression expr, int fontSize) {
 
         if (expr instanceof Constant) {
             return fontSize;
@@ -1229,7 +1229,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getHeightOfCenterOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getHeightOfCenterOfExpression(Graphics g, Expression expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1337,7 +1337,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    public int getLengthOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getLengthOfExpression(Graphics g, Expression expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1393,6 +1393,37 @@ public class GraphicPanelFormula extends JPanel {
 
         // Es wird zwischen der Variablen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
         return lengthVar + Math.max(getSizeForSub(fontSize) / 3 + lengthIndex, lengthApostrophs);
+    }
+
+    /**
+     * Zeichnen einer Multiindexvariablen.
+     */
+    private int getLengthOfMultiIndexVariable(Graphics g, MultiIndexVariable v, int fontSize) {
+
+        setFont(g, fontSize);
+
+        String name = v.getName();
+        String nameWithoutPrimes = name.replaceAll("'", "");
+        int lengthOfVarWithoutIndices = g.getFontMetrics().stringWidth(name);
+
+        // Länge Variablennamens zusammen mit den Apostrophs berechnen.
+        if (name.contains("'")) {
+            lengthOfVarWithoutIndices += g.getFontMetrics().stringWidth(name.substring(name.indexOf("'")));
+        }
+
+        // Länge Variablennamens zusammen mit den Indizes berechnen.
+        // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
+        int lengthOfVarWithoutPrimes = g.getFontMetrics().stringWidth(nameWithoutPrimes) + fontSize / 3;
+        setFont(g, getSizeForSub(fontSize));
+        for (int i = 0; i < v.getIndices().length; i++) {
+            lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices()[i].toString());
+            if (i < v.getIndices().length - 1) {
+                lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
+            }
+        }
+
+        return Math.max(lengthOfVarWithoutPrimes, lengthOfVarWithoutIndices);
+
     }
 
     /**
@@ -1797,6 +1828,8 @@ public class GraphicPanelFormula extends JPanel {
             } else if (out instanceof String) {
                 setFont(g, fontSize);
                 length = length + g.getFontMetrics().stringWidth((String) out);
+            } else if (out instanceof MultiIndexVariable) {
+                length = length + getLengthOfMultiIndexVariable(g, (MultiIndexVariable) out, fontSize);
             } else if (out instanceof TypeBracket) {
                 length = length + 2 * getWidthOfBracket(fontSize);
             }
@@ -2109,6 +2142,9 @@ public class GraphicPanelFormula extends JPanel {
         g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
     }
 
+    /**
+     * Zeichnen einer Konstanten.
+     */
     private void drawConstant(Graphics g, Constant expr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
@@ -2121,14 +2157,19 @@ public class GraphicPanelFormula extends JPanel {
         g.drawString(expr.writeExpression(), x_0, y_0);
     }
 
+    /**
+     * Zeichnen einer Variablen.
+     */
     private void drawVariable(Graphics g, Variable expr, int x_0, int y_0, int fontSize) {
+
         setFont(g, fontSize);
+
         if (expr.getName().equals("pi")) {
             // Unicode: pi = \u03C0
             g.drawString("\u03C0", x_0, y_0);
         } else {
 
-            if (expr.getName().length() == 1 || !expr.getName().contains("_")) {
+            if (!expr.getName().contains("_")) {
                 g.drawString(expr.writeExpression(), x_0, y_0);
             } else {
                 // Die Variable ist von der Form x_index mit eventuellen Apostrophs.
@@ -2154,6 +2195,36 @@ public class GraphicPanelFormula extends JPanel {
             }
 
         }
+
+    }
+
+    /**
+     * Zeichnen einer Multiindexvariablen.
+     */
+    private void drawMultiIndexVariable(Graphics g, MultiIndexVariable v, int x_0, int y_0, int fontSize) {
+
+        setFont(g, fontSize);
+
+        String name = v.getName();
+        String nameWithoutPrimes = name.replaceAll("'", "");
+        int varWithoutPrimesWidth = g.getFontMetrics().stringWidth(nameWithoutPrimes);
+
+        // Variablennamen (mit Spostrophs) ohne Indizes zeichnen.
+        g.drawString(name, x_0, y_0);
+
+        // Indizes zeichnen.
+        // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
+        int distanceFromVarWithoutPrimes = getSizeForSub(fontSize) / 3;
+        setFont(g, getSizeForSub(fontSize));
+        for (int i = 0; i < v.getIndices().length; i++) {
+            g.drawString(v.getIndices()[i].toString(), x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+            distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices()[i].toString());
+            if (i < v.getIndices().length - 1) {
+                g.drawString(",", x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+                distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
+            }
+        }
+
     }
 
     private void drawBinaryOperationPlus(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
@@ -4401,6 +4472,10 @@ public class GraphicPanelFormula extends JPanel {
                 setFont(g, fontSize);
                 g.drawString((String) out, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
                 distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + g.getFontMetrics().stringWidth((String) out);
+            } else if (out instanceof MultiIndexVariable) {
+                setFont(g, fontSize);
+                drawMultiIndexVariable(g, (MultiIndexVariable) out, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5), fontSize);
+                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfMultiIndexVariable(g, (MultiIndexVariable) out, fontSize);
             } else if (out instanceof TypeBracket) {
                 nextExpressionIsSurroundedByBrackets = true;
             }

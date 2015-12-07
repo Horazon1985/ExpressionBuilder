@@ -195,13 +195,10 @@ public abstract class Expression {
      * zurückgegeben, bei t'_3' dagegen wird false zurückgegeben.
      */
     public static boolean isValidDerivateOfVariable(String var) {
-
         while ((var.length() > 0) && var.substring(var.length() - 1).equals("'")) {
             var = var.substring(0, var.length() - 1);
         }
-
         return isValidVariable(var);
-
     }
 
     public static boolean isPI(String formula) {
@@ -361,10 +358,8 @@ public abstract class Expression {
                     return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.TIMES);
                 case 3:
                     return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.DIV);
-                case 4:
+                default:
                     return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.POW);
-                default:    //Passiert zwar nicht, aber trotzdem!
-                    return null;
             }
         }
 
@@ -825,7 +820,7 @@ public abstract class Expression {
         }
         return MINUS_ONE.mult(this);
     }
-    
+
     /**
      * Generierung eines Latex-Codes aus einem Ausdruck.
      */
@@ -1271,7 +1266,7 @@ public abstract class Expression {
     public boolean isIntegerPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant();
     }
-    
+
     public boolean isPositiveIntegerPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant()
                 && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0;
@@ -1280,11 +1275,11 @@ public abstract class Expression {
     public boolean isRationalPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isRationalConstant();
     }
-    
+
     public boolean isIntegerPowerOrRationalPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstantOrRationalConstant();
     }
-    
+
     public boolean isFunction() {
         return this instanceof Function;
     }
@@ -1740,7 +1735,7 @@ public abstract class Expression {
         }
 
     }
-    
+
     /**
      * Spezielle Vereinfachung allgemeiner Terme.
      *
