@@ -1415,9 +1415,9 @@ public class GraphicPanelFormula extends JPanel {
         // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
         int lengthOfVarWithoutPrimes = g.getFontMetrics().stringWidth(nameWithoutPrimes) + fontSize / 3;
         setFont(g, getSizeForSub(fontSize));
-        for (int i = 0; i < v.getIndices().length; i++) {
-            lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices()[i].toString());
-            if (i < v.getIndices().length - 1) {
+        for (int i = 0; i < v.getIndices().size(); i++) {
+            lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices().get(i).toString());
+            if (i < v.getIndices().size() - 1) {
                 lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
             }
         }
@@ -2216,10 +2216,10 @@ public class GraphicPanelFormula extends JPanel {
         // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
         int distanceFromVarWithoutPrimes = getSizeForSub(fontSize) / 3;
         setFont(g, getSizeForSub(fontSize));
-        for (int i = 0; i < v.getIndices().length; i++) {
-            g.drawString(v.getIndices()[i].toString(), x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
-            distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices()[i].toString());
-            if (i < v.getIndices().length - 1) {
+        for (int i = 0; i < v.getIndices().size(); i++) {
+            g.drawString(v.getIndices().get(i).toString(), x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+            distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices().get(i).toString());
+            if (i < v.getIndices().size() - 1) {
                 g.drawString(",", x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
                 distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
             }
