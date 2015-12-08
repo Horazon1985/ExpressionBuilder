@@ -60,6 +60,12 @@
     <Ukrainian>Легенда</Ukrainian>
     <Russian>Легенда</Russian>
   </object>
+  <object id = "GUI_MathToolForm_SAVE">
+    <German>Grafik speichern</German>
+    <English>Save graphic</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
 <!-- MathToolmenü -->
   <object id = "GUI_MathToolForm_MENU_FILE">
     <German>Datei</German>

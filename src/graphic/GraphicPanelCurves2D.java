@@ -11,12 +11,16 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import translator.Translator;
 
-public class GraphicPanelCurves2D extends JPanel {
+public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     //Parameter für 2D-Graphen
     private String var;
@@ -520,4 +524,17 @@ public class GraphicPanelCurves2D extends JPanel {
 
     }
 
+    // Grafikexport.
+    @Override
+    public void export(String filePath) {
+        BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        paintComponent(g);
+        try {
+//            ImageIO.write(bi, "PNG", new File("C:\\yourImageName.PNG"));
+            ImageIO.write(bi, "PNG", new File(filePath));
+        } catch (IOException e) {
+        }
+    }
+    
 }

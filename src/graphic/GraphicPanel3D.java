@@ -13,12 +13,16 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import translator.Translator;
 
-public class GraphicPanel3D extends JPanel implements Runnable {
+public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     //Parameter für 3D-Graphen
     //Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
@@ -280,14 +284,14 @@ public class GraphicPanel3D extends JPanel implements Runnable {
         double x_1 = exprX_1.evaluate();
         double y_0 = exprY_0.evaluate();
         double y_1 = exprY_1.evaluate();
-        
+
         if (x_0 >= x_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
         }
         if (y_0 >= y_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
         }
-        
+
         this.graph3D = new double[101][101][3];
         this.graph3DIsDefined = new boolean[101][101][1];
 
@@ -472,7 +476,7 @@ public class GraphicPanel3D extends JPanel implements Runnable {
 
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
-     */ 
+     */
     private void DrawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
 
@@ -492,7 +496,7 @@ public class GraphicPanel3D extends JPanel implements Runnable {
 
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
-     */ 
+     */
     private void DrawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, Graphics g, Color c) {
 
@@ -510,8 +514,9 @@ public class GraphicPanel3D extends JPanel implements Runnable {
     }
 
     /**
-     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen Nachkommastellenfehler.
-     */ 
+     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
+     * Nachkommastellenfehler.
+     */
     private BigDecimal roundAxisEntries(int m, int k) {
         if (k >= 0) {
             return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
@@ -1019,8 +1024,9 @@ public class GraphicPanel3D extends JPanel implements Runnable {
     }
 
     /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit Achsen)
-     */ 
+     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
+     * Achsen)
+     */
     private void DrawGraphFromGraph3DForGraphic(Graphics g, double minExpr, double maxExpr,
             double bigRadius, double smallRadius, double height, double angle) {
 
@@ -1149,7 +1155,7 @@ public class GraphicPanel3D extends JPanel implements Runnable {
 
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen.
-     */ 
+     */
     private void drawGraph3D(Graphics g, double angle) {
 
         //Zunächst weißen Hintergrund zeichnen.
@@ -1243,6 +1249,19 @@ public class GraphicPanel3D extends JPanel implements Runnable {
             }
             repaint();
 
+        }
+    }
+
+    // Grafikexport.
+    @Override
+    public void export(String filePath) {
+        BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bi.createGraphics();
+        paintComponent(g);
+        try {
+//            ImageIO.write(bi, "PNG", new File("C:\\yourImageName.PNG"));
+            ImageIO.write(bi, "PNG", new File(filePath));
+        } catch (IOException e) {
         }
     }
 
