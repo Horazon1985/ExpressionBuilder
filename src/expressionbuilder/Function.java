@@ -817,6 +817,17 @@ public class Function extends Expression {
             return functionSimplified;
         }
 
+        // Subtraktion ganzer Vielfacher von Pi in Argumenten von trigonometrischen Funtionen.
+        functionSimplified = SimplifyTrigonometry.reduceSineCosineSecansCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
+        functionSimplified = SimplifyTrigonometry.reduceTangentCotangentIfArgumentContainsSummandOfMultipleOfPi(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
         // Vereinfachung von speziellen konstanten trigonometrischen Ausdrücken.
         if (function.getType().equals(TypeFunction.sin)) {
             functionSimplified = SimplifyTrigonometry.reduceSine(function);
@@ -1118,9 +1129,9 @@ public class Function extends Expression {
     public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
         Function function = new Function(this.left.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var), this.type);
-        
+
         // Nur ersetzen, wenn das Argument der Funktion function von var abhängt.
-        if (!function.contains(var)){
+        if (!function.contains(var)) {
             return function;
         }
 
