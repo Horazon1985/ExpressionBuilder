@@ -63,8 +63,8 @@
   <object id = "GUI_MathToolForm_SAVE">
     <German>Grafik speichern</German>
     <English>Save graphic</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Зберегти графік</Ukrainian>
+    <Russian>Сохранить график</Russian>
   </object>
 <!-- MathToolmenü -->
   <object id = "GUI_MathToolForm_MENU_FILE">
