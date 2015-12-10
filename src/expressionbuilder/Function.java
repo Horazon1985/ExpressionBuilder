@@ -823,6 +823,14 @@ public class Function extends Expression {
             return functionSimplified;
         }
 
+        /* Identitäten von der Bauart sin(x+pi/2) = cos(x), sin(x+3*pi/2) = -cos(x) etc.
+         Funktionstypen hierfür: sin, cos, sec, cosec.
+         */
+        functionSimplified = SimplifyTrigonometry.interchangeSineWithCosineAndSecansWithCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
         functionSimplified = SimplifyTrigonometry.reduceTangentCotangentIfArgumentContainsSummandOfMultipleOfPi(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
