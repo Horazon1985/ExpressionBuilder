@@ -1088,6 +1088,11 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceFactorsInEnumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
 
             /*
+             Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad)
+             */
+            SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
+
+            /*
              Hier wird Folgendes vereinfacht: Falls der zugrundeliegende
              Ausdruck ein Bruch ist, etwa (A_1 * ... * A_m)/(B_1 * ... * B_n)
              und mindestens eines der A_i oder der B_j eine Summe oder
@@ -1835,8 +1840,18 @@ public class BinaryOperation extends Expression {
 
         try {
             // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden (Boolscher Parameter = false).
-            exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
-            exprSimplified = exprSimplified.simplify(simplifyTypes);
+            if (this.isQuotient()) {
+                /* 
+                 Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
+                 ob sich diese Vereinfachungsart lohnt. 
+                 */
+                exprSimplified = ((BinaryOperation) expr).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
+                        ((BinaryOperation) expr).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
+                exprSimplified = exprSimplified.simplify(simplifyTypes);
+            } else {
+                exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
+                exprSimplified = exprSimplified.simplify(simplifyTypes);
+            }
             if (exprSimplified.length() < expr.length()) {
                 return exprSimplified;
             }

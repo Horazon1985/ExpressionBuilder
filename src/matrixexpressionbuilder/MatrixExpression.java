@@ -440,6 +440,18 @@ public abstract class MatrixExpression {
         return this instanceof MatrixPower;
     }
 
+    public boolean isIntegerPower() {
+        return this instanceof MatrixPower && ((MatrixPower) this).getRight().isIntegerConstant();
+    }
+
+    public boolean isOddIntegerPower() {
+        return this instanceof MatrixPower && ((MatrixPower) this).getRight().isOddIntegerConstant();
+    }
+
+    public boolean isEvenIntegerPower() {
+        return this instanceof MatrixPower && ((MatrixPower) this).getRight().isEvenIntegerConstant();
+    }
+
     public boolean isNotMatrix() {
         return !(this instanceof Matrix);
     }

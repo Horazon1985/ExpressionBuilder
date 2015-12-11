@@ -17,6 +17,8 @@ import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import translator.Translator;
 
 /**
@@ -2519,6 +2521,125 @@ public abstract class SimplifyBinaryOperationMethods {
         result[0] = enumerator;
         result[1] = denominator;
         return result;
+
+    }
+
+    /**
+     * Falls factorsNumerator und factorsDenominator Faktoren (oder Potenzen von
+     * Faktoren, bei denen die Exponenten gleich sind) besitzen, welche
+     * rationale Polynome (von nicht allzu hohem Grad) sind, dann werden beide
+     * Faktoren durch ihren ggT dividiert.
+     *
+     * @throws EvaluationException
+     */
+    public static void reducePolynomialFactorsInNumeratorAndDenominatorByGCD(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+
+        Expression factorNumerator, factorDenominator;
+        Expression[] reducedFactor;
+
+        HashSet<String> varsNumerator = new HashSet<>();
+        HashSet<String> varsDenominator = new HashSet<>();
+        String var;
+        
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+
+            varsNumerator.clear();
+            factorsNumerator.get(i).addContainedVars(varsNumerator);
+            if (varsNumerator.size() != 1) {
+                continue;
+            }
+            var = getUniqueVar(varsNumerator);
+
+            factorNumerator = factorsNumerator.get(i);
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+
+                if (factorsDenominator.get(j) == null) {
+                    continue;
+                }
+
+                varsDenominator.clear();
+                factorsDenominator.get(j).addContainedVars(varsDenominator);
+                if (varsDenominator.size() != 1 || !varsDenominator.contains(var)) {
+                    continue;
+                }
+
+                factorDenominator = factorsDenominator.get(j);
+                if ((factorNumerator.isSum() || factorNumerator.isDifference())
+                        && (factorDenominator.isSum() || factorDenominator.isDifference())) {
+
+                    reducedFactor = reducePolynomialsInNumeratorAndDenominatorByGCD(factorNumerator, factorDenominator, var);
+                    if (!reducedFactor[0].equivalent(factorNumerator)) {
+                        // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
+                        if (!reducedFactor[1].equals(ONE)) {
+                            factorsNumerator.put(i, reducedFactor[0]);
+                            factorsDenominator.put(j, reducedFactor[1]);
+                        } else {
+                            factorsNumerator.put(i, reducedFactor[0]);
+                            factorsDenominator.remove(j);
+                        }
+                    }
+
+                }
+                /*
+                 Sonderfall: Zähler und Nenner sind von der Form (a*expr)^k,
+                 (b*expr)^k, mit rationalen a, b. Dann zu (a/b)^k kürzen.
+                 */
+                if (factorNumerator.isPower() && factorDenominator.isPower()
+                        && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
+                    if ((((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference())
+                            && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
+
+                        reducedFactor = reducePolynomialsInNumeratorAndDenominatorByGCD(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft(), var);
+                        if (!reducedFactor[0].equivalent(((BinaryOperation) factorNumerator).getLeft())) {
+                            // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
+                            factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                            factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                        }
+
+                    }
+                }
+
+            }
+
+            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
+            FlowController.interruptComputationIfNeeded();
+
+        }
+
+    }
+
+    private static String getUniqueVar(HashSet<String> vars){
+        Iterator<String> iter = vars.iterator();
+        return iter.next();
+    }
+    
+    /**
+     * Hilfsmethode für reducePolynomialFactorsInNumeratorAndDenominatorByGCD().
+     * Falls der Zähler und der Nenner RATIONALE Polynome (von nicht allzu hohem
+     * Grad) sind, dann werden beide durch ihren ggT dividiert.
+     *
+     * @throws EvaluationException
+     */
+    private static Expression[] reducePolynomialsInNumeratorAndDenominatorByGCD(Expression f, Expression g, String var) throws EvaluationException {
+
+        Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, var);
+
+        if (gcd.equals(ONE)) {
+            return new Expression[]{f, g};
+        }
+
+        ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+        ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
+        ExpressionCollection coefficientsGCD = SimplifyPolynomialMethods.getPolynomialCoefficients(gcd, var);
+
+        Expression fReduced = SimplifyPolynomialMethods.getPolynomialFromCoefficients(SimplifyPolynomialMethods.polynomialDivision(coefficientsF, coefficientsGCD)[0], var);
+        Expression gReduced = SimplifyPolynomialMethods.getPolynomialFromCoefficients(SimplifyPolynomialMethods.polynomialDivision(coefficientsG, coefficientsGCD)[0], var);
+
+        return new Expression[]{fReduced, gReduced};
 
     }
 

@@ -87,6 +87,38 @@ public abstract class SimplifyMatrixUtilities {
     }
     
     /**
+     * Vereinigt zwei MatrixExpressionCollection, welche via 0, 1, 2, ... indiziert
+     * sind und MatrixExpressions enthalten. Elemente in termsRight, welche in
+     * termsLeft bereits vorkommen, werden NICHT mitaufgenommen.
+     */
+    public static MatrixExpressionCollection union(MatrixExpressionCollection termsLeft, MatrixExpressionCollection termsRight) {
+
+        /*
+         termsLeft und termsRight werden in manchen Prozeduren noch
+         nachträglich gebraucht und sollten nicht verändert werden ->
+         termsLeft und termsRight kopieren.
+         */
+        MatrixExpressionCollection termsLeftCopy = MatrixExpressionCollection.copy(termsLeft);
+        boolean termIsContainedInTermsLeft;
+
+        for (int i = 0; i < termsRight.getBound(); i++) {
+            termIsContainedInTermsLeft = false;
+            for (int j = 0; j < termsLeft.getBound(); j++) {
+                if (termsLeftCopy.get(j).equivalent(termsRight.get(i))) {
+                    termIsContainedInTermsLeft = true;
+                    break;
+                }
+            }
+            if (!termIsContainedInTermsLeft) {
+                termsLeftCopy.add(termsRight.get(i));
+            }
+        }
+
+        return termsLeftCopy;
+
+    }
+    
+    /**
      * Fügt der MatrixExpressionCollection summands alle Summanden von matExpr
      * hinzu, falls man matExpr als Summe auffasst. Die Keys sind 0, 1, 2, ...,
      * size - 1.

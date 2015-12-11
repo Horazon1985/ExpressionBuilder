@@ -2,6 +2,8 @@ package linearalgebraalgorithms;
 
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ONE;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.awt.Dimension;
@@ -9,6 +11,7 @@ import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;
 import matrixexpressionbuilder.MatrixPower;
 import matrixsimplifymethods.MatrixExpressionCollection;
+import matrixsimplifymethods.SimplifyMatrixUtilities;
 import solveequationmethods.SolveMethods;
 
 public abstract class EigenvaluesEigenvectorsAlgorithms {
@@ -81,6 +84,21 @@ public abstract class EigenvaluesEigenvectorsAlgorithms {
 
         try {
             Dimension dim = matExpr.getDimension();
+            /* 
+             Sonderfall: matExpr ist eine Potenz A^k. Dann werden stattdessen die 
+             Eigenvektoren von A zum Eigenwert eigenvalue^(1/k) (+/-eigenvalue^(1/k)
+             für ganzes gerades k) gesucht und dann ausgegeben.
+             */
+            if (matExpr.isPower()) {
+                MatrixExpression base = ((MatrixPower) matExpr).getLeft();
+                Expression exponent = ((MatrixPower) matExpr).getRight();
+                if (exponent.isEvenIntegerConstant()) {
+                    return SimplifyMatrixUtilities.union(getEigenvectorsForEigenvalue(base, eigenvalue.pow(ONE.div(exponent))),
+                            getEigenvectorsForEigenvalue(base, MINUS_ONE.mult(eigenvalue.pow(ONE.div(exponent)))));
+                }
+                return getEigenvectorsForEigenvalue(base, eigenvalue.pow(ONE.div(exponent)));
+            }
+
             // A - k*E bilden, A = Matrix, k = Eigenwert von A.
             MatrixExpression matrixMinusMultipleOfE = matExpr.sub(new Matrix(eigenvalue).mult(MatrixExpression.getId(dim.height))).simplify();
             if (!(matrixMinusMultipleOfE instanceof Matrix)) {
@@ -99,10 +117,10 @@ public abstract class EigenvaluesEigenvectorsAlgorithms {
      */
     public static boolean isMatrixDiagonalizable(Matrix m) {
 
-        if (!m.isConstant()){
+        if (!m.isConstant()) {
             return false;
         }
-        
+
         Dimension dim = m.getDimension();
 
         if (dim.height != dim.width) {
