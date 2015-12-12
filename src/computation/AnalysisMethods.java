@@ -605,7 +605,7 @@ public abstract class AnalysisMethods {
      */
     public static BigDecimal getDigitsOfE(int n) throws ExpressionException {
 
-        if (n > computationbounds.ComputationBounds.getBound("Bound_MAX_DIGITS_OF_E")) {
+        if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_E")) {
             throw new ExpressionException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
@@ -640,7 +640,7 @@ public abstract class AnalysisMethods {
      */
     public static BigDecimal getDigitsOfPi(int n) throws ExpressionException {
 
-        if (n > computationbounds.ComputationBounds.getBound("Bound_MAX_DIGITS_OF_PI")) {
+        if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI")) {
             throw new ExpressionException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
