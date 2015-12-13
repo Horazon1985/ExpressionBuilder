@@ -22,6 +22,7 @@ import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1552,6 +1553,19 @@ public class GraphicPanelFormula extends JPanel {
         }
 
     }
+    
+    private int getLengthOfBinaryOperationSqrt(Graphics g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
+        int h = getHeightOfExpression(g, base, fontSize);
+        int length = getWidthOfSignSqrt(g, fontSize, h) + getLengthOfExpression(g, base, fontSize);
+        
+        if (q.compareTo(BigInteger.valueOf(2)) > 0){
+            length += getLengthOfExpression(g, new Constant(q), getSizeForSup(fontSize));
+        }
+        if (q.compareTo(BigInteger.ONE) > 0){
+            length += getLengthOfExpression(g, new Constant(p), getSizeForSup(fontSize));
+        }
+        return length;
+    }
 
     private int getLengthOfFunction(Graphics g, Function expr, int fontSize) {
 
@@ -1864,6 +1878,10 @@ public class GraphicPanelFormula extends JPanel {
         return fontSize;
     }
 
+    private int getWidthOfSignSqrt(Graphics g, int fontSize, int height) {
+        return Math.max(height / 3, 1);
+    }
+
     private int getWidthOfSignEquals(Graphics g, int fontSize) {
         return fontSize;
     }
@@ -2013,6 +2031,11 @@ public class GraphicPanelFormula extends JPanel {
     private void drawSignMult(Graphics g, int x_0, int y_0, int fontSize) {
         //Ausgefüllter Kreis
         g.fillOval(x_0 + (2 * fontSize) / 5, y_0 - (3 * fontSize) / 5, fontSize / 5, fontSize / 5);
+    }
+
+    private void drawSignSqrt(Graphics g, int x_0, int y_0, int fontSize, int height) {
+        g.fillOval(x_0, y_0 - height / 2, x_0 + getWidthOfSignSqrt(g, fontSize, height) / 2, y_0);
+        g.fillOval(x_0 + getWidthOfSignSqrt(g, fontSize, height) / 2, y_0, x_0 + getWidthOfSignSqrt(g, fontSize, height), y_0 - height);
     }
 
     private void drawSignEquals(Graphics g, int x_0, int y_0, int fontSize) {
@@ -2489,6 +2512,28 @@ public class GraphicPanelFormula extends JPanel {
                     x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize),
                     y_0 - heightLeft, getSizeForSup(fontSize));
 
+        }
+
+    }
+
+    /**
+     * Zeichnet den Ausdruck base^(p/q) mit Hilfe des Wurzelzeichens.
+     */
+    private void drawBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
+
+        setFont(g, fontSize);
+
+        int heightLeft = getHeightOfExpression(g, base, fontSize);
+
+        // TO DO.
+        if (q.compareTo(BigInteger.valueOf(2)) <= 0){
+            // Bei der Quadratwurzel muss q nicht ausgeschrieben werden.
+        
+        
+        } else {
+            
+        
+        
         }
 
     }

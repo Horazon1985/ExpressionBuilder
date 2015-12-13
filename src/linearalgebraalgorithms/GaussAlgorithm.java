@@ -2,6 +2,7 @@ package linearalgebraalgorithms;
 
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.ZERO;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
@@ -199,6 +200,48 @@ public abstract class GaussAlgorithm {
         }
 
         return basis;
+
+    }
+
+    public static Expression[] solveLinearSystemOfEquations(Matrix m, Matrix b) throws EvaluationException {
+
+        Dimension dimM = m.getDimension();
+        Dimension dimB = b.getDimension();
+
+        if (dimM.height == 0 || dimM.width == 0 || dimB.width != 1 || dimM.height != dimB.height) {
+            throw new EvaluationException("");
+        }
+
+        Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width];
+
+        // Erweiterte Matrix A = (m, b) bilden.
+        for (int i = 0; i < dimM.height; i++) {
+            for (int j = 0; j < dimM.width; j++) {
+                mExtendedEntries[i][j] = m.getEntry(i, j);
+            }
+            mExtendedEntries[i][dimM.width] = b.getEntry(i, 0);
+        }
+        Matrix mExtended = new Matrix(mExtendedEntries);
+
+        // A auf Zeilenstufenform bringen.
+        mExtended = computeRowEcholonForm(mExtended);
+
+        int lastIndexOfNonZeroLine = dimM.height - 1;
+        boolean isLineZero = true;
+
+        for (int i = dimM.height - 1; i >= 0; i--) {
+            for (int j = 0; j < dimM.width + 1; j++) {
+                if (!mExtended.getEntry(i, j) .equals(ZERO)){
+                    isLineZero = false;
+                    break;
+                }
+                if (!isLineZero){
+                    break;
+                }
+            }
+        }
+
+        return null;
 
     }
 
