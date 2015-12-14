@@ -132,9 +132,9 @@ public class LinearAlgebraTests {
         try {
             MatrixExpression m = MatrixExpression.build("[0,1,3,-2,4;0,0,0,2,5]", null);
             MatrixExpression b = MatrixExpression.build("[11;17]", null);
-            Expression[] expectedSolution = new Expression[]{Variable.create("T_2"), 
-                new Constant(28).sub(new Constant(9).mult(Variable.create("T_0")).add(new Constant(3).mult(Variable.create("T_1")))), 
-                Variable.create("T_1"), new Constant(17).div(2).sub(new Constant(5).mult(Variable.create("T_0")).div(2)), 
+            Expression[] expectedSolution = new Expression[]{Variable.create("T_2"),
+                new Constant(28).sub(new Constant(9).mult(Variable.create("T_0")).add(new Constant(3).mult(Variable.create("T_1")))),
+                Variable.create("T_1"), new Constant(17).div(2).sub(new Constant(5).mult(Variable.create("T_0")).div(2)),
                 Variable.create("T_0")};
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
@@ -153,24 +153,20 @@ public class LinearAlgebraTests {
     @Test
     public void solveLGSWithNoSolutionTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[0,1,3,-2,4;0,0,0,2,5]", null);
-            MatrixExpression b = MatrixExpression.build("[11;17]", null);
-            Expression[] expectedSolution = new Expression[]{Variable.create("T_2"), 
-                new Constant(28).sub(new Constant(9).mult(Variable.create("T_0")).add(new Constant(3).mult(Variable.create("T_1")))), 
-                Variable.create("T_1"), new Constant(17).div(2).sub(new Constant(5).mult(Variable.create("T_0")).div(2)), 
-                Variable.create("T_0")};
+            MatrixExpression m = MatrixExpression.build("[2,3;6,10;8,5]", null);
+            MatrixExpression b = MatrixExpression.build("[-1;-4;4]", null);
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
-            Expression[] solution = GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
-            Assert.assertTrue(solution.length == 5);
-            Assert.assertTrue(solution[0].equals(expectedSolution[0]));
-            Assert.assertTrue(solution[1].equals(expectedSolution[1]));
-            Assert.assertTrue(solution[2].equals(expectedSolution[2]));
-            Assert.assertTrue(solution[3].equals(expectedSolution[3]));
-            Assert.assertTrue(solution[4].equals(expectedSolution[4]));
-        } catch (ExpressionException | EvaluationException e) {
+            try {
+                GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+                // Wenn es eine Lösung gäbe, würde der Test durchfallen.
+                fail();
+            } catch (EvaluationException e) {
+                // Keine Lösung!
+            }
+        } catch (ExpressionException e) {
             fail(e.getMessage());
         }
     }
-    
+
 }
