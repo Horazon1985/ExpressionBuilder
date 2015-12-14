@@ -3,6 +3,7 @@ package linearalgebraalgorithms;
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
+import expressionbuilder.Variable;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
@@ -224,25 +225,75 @@ public abstract class GaussAlgorithm {
         Matrix mExtended = new Matrix(mExtendedEntries);
 
         // A auf Zeilenstufenform bringen.
-        mExtended = computeRowEcholonForm(mExtended);
+        try {
+            mExtended = computeRowEcholonForm(mExtended);
+        } catch (EvaluationException e) {
+            throw new EvaluationException("");
+        }
 
-        int lastIndexOfNonZeroLine = dimM.height - 1;
-        boolean isLineZero = true;
+        int maxIndexOfNonZeroRow = dimM.height - 1;
 
         for (int i = dimM.height - 1; i >= 0; i--) {
-            for (int j = 0; j < dimM.width + 1; j++) {
-                if (!mExtended.getEntry(i, j) .equals(ZERO)){
-                    isLineZero = false;
-                    break;
-                }
-                if (!isLineZero){
-                    break;
-                }
+            if (isRowZero(m, i)) {
+                maxIndexOfNonZeroRow--;
             }
         }
 
-        return null;
+        Expression[] solution = new Expression[dimM.width];
+        // Sonderfall: mExtended ist die Nullmatrix. Dann ist maxIndexOfNonZeroRow == -1.
+        if (maxIndexOfNonZeroRow == -1) {
+            int indexOfParameterVar = 0;
+            for (int i = 0; i < solution.length; i++) {
+                solution[i] = Variable.create("T_" + indexOfParameterVar);
+            }
+            return solution;
+        }
 
+        // Fall: keine Lösungen.
+        if (mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width - 1).equals(ZERO)
+                && !mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width).equals(ZERO)) {
+            throw new EvaluationException("");
+        }
+
+        // Ab hier existieren Lösungen.
+        int currentRow = maxIndexOfNonZeroRow;
+        int indexOfParameterVar = 0;
+
+        for (int i = dimM.width - 1; i >= 0; i--) {
+            
+            if (currentRow >= 0) {
+                if (i == dimM.width - 1) {
+                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && !mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
+
+                    } else {
+                    
+                    }
+                } else {
+                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && !mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
+
+                    }
+                }
+            } else {
+                solution[i] = Variable.create("T_" + indexOfParameterVar);
+                indexOfParameterVar++;
+            }
+            
+        }
+
+        return solution;
+
+    }
+
+    private static boolean isRowZero(Matrix m, int i) {
+        if (i < 0 || i > m.getRowNumber() - 1) {
+            return true;
+        }
+        for (int j = 0; j < m.getColumnNumber(); j++) {
+            if (!m.getEntry(i, j).equals(ZERO)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

@@ -1456,7 +1456,8 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     *
+     * Vereinfacht beispielsweise 6*(1/8+a/4)*b zu 3*(1/4+a/2)*b
+     * 
      * @throws EvaluationException
      */
     public static void pullGCDOfCoefficientsInProducts(ExpressionCollection factors) throws EvaluationException {

@@ -1905,7 +1905,12 @@ public class GraphicPanelFormula extends JPanel {
     }
 
     private int getWidthOfSignRoot(Graphics g, int fontSize, int height) {
-        return Math.max(height / 3, 1);
+        /*
+        Der Balance halber: Die Breite soll 1/3 das geometrischen Mittels von
+        fontSize und height sein. Grund: Wenn die Höhe sehr groß ist, soll das
+        Wurzelzeichen nicht zu sehr in die Breite gezogen werden.
+        */
+        return Math.max((int) (Math.sqrt(fontSize * height) / 3), 1);
     }
 
     private int getWidthOfSignEquals(Graphics g, int fontSize) {
@@ -2582,7 +2587,7 @@ public class GraphicPanelFormula extends JPanel {
 
         if (q.compareTo(BigInteger.valueOf(2)) != 0) {
             // Bei der Quadratwurzel muss q nicht ausgeschrieben werden.
-            drawExpression(g, new Constant(q), x_0, y_0 - fontSize / 3, getSizeForSup(fontSize));
+            drawExpression(g, new Constant(q), x_0, y_0 - heightBase / 3, getSizeForSup(fontSize));
             distanceFromBeginning += getLengthOfExpression(g, new Constant(q), getSizeForSup(fontSize));
         }
         drawSignRoot(g, x_0 + distanceFromBeginning, y_0, fontSize, heightBase);
