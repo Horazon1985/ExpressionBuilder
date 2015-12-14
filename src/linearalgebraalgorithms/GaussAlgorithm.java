@@ -213,7 +213,7 @@ public abstract class GaussAlgorithm {
             throw new EvaluationException("");
         }
 
-        Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width];
+        Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width + 1];
 
         // Erweiterte Matrix A = (m, b) bilden.
         for (int i = 0; i < dimM.height; i++) {
@@ -236,6 +236,8 @@ public abstract class GaussAlgorithm {
         for (int i = dimM.height - 1; i >= 0; i--) {
             if (isRowZero(m, i)) {
                 maxIndexOfNonZeroRow--;
+            } else {
+                break;
             }
         }
 
@@ -260,24 +262,45 @@ public abstract class GaussAlgorithm {
         int indexOfParameterVar = 0;
 
         for (int i = dimM.width - 1; i >= 0; i--) {
-            
+
             if (currentRow >= 0) {
+
                 if (i == dimM.width - 1) {
-                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && !mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
-
+                    if (!mExtended.getEntry(currentRow, dimM.width - 1).equals(ZERO) && mExtended.getEntry(currentRow, dimM.width - 2).equals(ZERO)) {
+                        solution[dimM.width - 1] = mExtended.getEntry(currentRow, dimM.width).div(mExtended.getEntry(currentRow, dimM.width - 1)).simplify();
+                        currentRow--;
                     } else {
-                    
+                        solution[dimM.width - 1] = Variable.create("T_" + indexOfParameterVar);
+                        indexOfParameterVar++;
                     }
+                } else if (i == 0) {
+                    // Hier muss currentRow == 0 sein.
+                    solution[0] = mExtended.getEntry(currentRow, dimM.width);
+                    for (int k = dimM.width - 1; k >= 1; k--) {
+                        solution[0] = solution[0].sub(mExtended.getEntry(currentRow, k).mult(solution[k]));
+                    }
+                    solution[0] = solution[0].div(mExtended.getEntry(currentRow, 0)).simplify();
                 } else {
-                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && !mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
-
+                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
+                        solution[i] = mExtended.getEntry(currentRow, dimM.width);
+                        for (int k = dimM.width - 1; k >= i + 1; k--) {
+                            solution[i] = solution[i].sub(mExtended.getEntry(currentRow, k).mult(solution[k]));
+                        }
+                        solution[i] = solution[i].div(mExtended.getEntry(currentRow, i)).simplify();
+                        currentRow--;
+                    } else {
+                        solution[i] = Variable.create("T_" + indexOfParameterVar);
+                        indexOfParameterVar++;
                     }
                 }
+
             } else {
+
                 solution[i] = Variable.create("T_" + indexOfParameterVar);
                 indexOfParameterVar++;
+
             }
-            
+
         }
 
         return solution;

@@ -1,7 +1,11 @@
 package simplifymethodstest.matrixtests;
 
+import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionbuilder.Constant;
+import expressionbuilder.Expression;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
+import linearalgebraalgorithms.GaussAlgorithm;
 import matrixexpressionbuilder.Matrix;
 import matrixexpressionbuilder.MatrixExpression;
 import org.junit.AfterClass;
@@ -102,5 +106,21 @@ public class LinearAlgebraTests {
             fail(e.getMessage());
         }
     }
-    
+
+    // Tests für das Lösen von linearen Gleichungssystemen
+    @Test
+    public void solveLGSTest1() {
+        try {
+            MatrixExpression m = MatrixExpression.build("[2,-1,0;3,2,6;0,-1,4]", null);
+            MatrixExpression b = MatrixExpression.build("[0;49;26]", null);
+            Expression[] expectedSolution = new Expression[]{new Constant(1), new Constant(2), new Constant(7)};
+            Assert.assertTrue(m instanceof Matrix);
+            Assert.assertTrue(b instanceof Matrix);
+            Expression[] solution = GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+            Assert.assertFalse(expectedSolution.equals(solution));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

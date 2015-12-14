@@ -25,6 +25,19 @@ public class Matrix extends MatrixExpression {
     }
 
     /**
+     * Konstruktor: erzeugt eine MatrixExpression aus dem Array entry.
+     * Voraussetzung: die Spalten- und die Zeilenzahl ist mindestens 1
+     */
+    public Matrix(int[][] entry) {
+        this.entry = new Expression[entry.length][entry[0].length];
+        for (int i = 0; i < entry.length; i++) {
+            for (int j = 0; j < entry[0].length; j++) {
+                this.entry[i][j] = new Constant(entry[i][j]);
+            }
+        }
+    }
+
+    /**
      * Konstruktor: erzeugt eine MatrixExpression aus dem Array entry, welcher
      * als Vektor interpretiert wird. Voraussetzung: die Spalten- und die
      * Zeilenzahl ist mindestens 1
@@ -680,8 +693,7 @@ public class Matrix extends MatrixExpression {
     public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
         return this;
     }
-    
-    
+
     @Override
     public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
@@ -692,7 +704,7 @@ public class Matrix extends MatrixExpression {
         }
         return new Matrix(entrySimplified);
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
@@ -703,7 +715,7 @@ public class Matrix extends MatrixExpression {
         }
         return new Matrix(entrySimplified);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() {
         return this;
