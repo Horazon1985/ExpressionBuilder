@@ -1119,6 +1119,13 @@ public class GraphicPanelFormula extends JPanel {
 
             } else {
 
+                // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
+                if (((BinaryOperation) expr).getRight().isRationalConstant()) {
+                    BigInteger p = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getValue().toBigInteger();
+                    BigInteger q = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
+                    return getHeightOfBinaryOperationRoot(g, ((BinaryOperation) expr).getLeft(), p, q, fontSize);
+                }
+
                 // Der Exponent soll etwas höher stehen als die Basis.
                 return getHeightOfExpression(g, ((BinaryOperation) expr).getLeft(), fontSize)
                         + getHeightOfExpression(g, ((BinaryOperation) expr).getRight(), getSizeForSup(fontSize));
@@ -1228,6 +1235,17 @@ public class GraphicPanelFormula extends JPanel {
 
         }
 
+    }
+
+    private int getHeightOfBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int fontSize) {
+        /* 
+         q spielt bei der Höhe KEINE Rolle, denn der obere Rand von p befindet
+         sich maximal auf derselben Höhe, wie der waagerechte Wurzelstrich.
+         */
+        if (p.compareTo(BigInteger.valueOf(1)) != 0) {
+            return getHeightOfExpression(g, base, fontSize) + getHeightOfExpression(g, new Constant(p), getSizeForSup(fontSize));
+        }
+        return getHeightOfExpression(g, base, fontSize);
     }
 
     private int getHeightOfCenterOfExpression(Graphics g, Expression expr, int fontSize) {
@@ -1527,6 +1545,13 @@ public class GraphicPanelFormula extends JPanel {
 
         } else {
 
+            // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
+            if (expr.getRight().isRationalConstant()) {
+                BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
+                BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+                return getLengthOfBinaryOperationRoot(g, expr.getLeft(), p, q, fontSize);
+            }
+
             int lengthLeft;
 
             if (expr.getLeft() instanceof BinaryOperation
@@ -1553,16 +1578,17 @@ public class GraphicPanelFormula extends JPanel {
         }
 
     }
-    
-    private int getLengthOfBinaryOperationSqrt(Graphics g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
+
+    private int getLengthOfBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int fontSize) {
         int h = getHeightOfExpression(g, base, fontSize);
-        int length = getWidthOfSignSqrt(g, fontSize, h) + getLengthOfExpression(g, base, fontSize);
-        
-        if (q.compareTo(BigInteger.valueOf(2)) > 0){
+        int length = getWidthOfSignRoot(g, fontSize, h) + getLengthOfExpression(g, base, fontSize);
+
+        if (q.compareTo(BigInteger.valueOf(2)) != 0) {
             length += getLengthOfExpression(g, new Constant(q), getSizeForSup(fontSize));
         }
-        if (q.compareTo(BigInteger.ONE) > 0){
-            length += getLengthOfExpression(g, new Constant(p), getSizeForSup(fontSize));
+        if (p.compareTo(BigInteger.ONE) != 0) {
+            // 1/3 der Schriftgröße für p Platz lassen!
+            length += getLengthOfExpression(g, new Constant(p), getSizeForSup(fontSize)) + getSizeForSup(fontSize) / 3;
         }
         return length;
     }
@@ -1878,7 +1904,7 @@ public class GraphicPanelFormula extends JPanel {
         return fontSize;
     }
 
-    private int getWidthOfSignSqrt(Graphics g, int fontSize, int height) {
+    private int getWidthOfSignRoot(Graphics g, int fontSize, int height) {
         return Math.max(height / 3, 1);
     }
 
@@ -2033,9 +2059,24 @@ public class GraphicPanelFormula extends JPanel {
         g.fillOval(x_0 + (2 * fontSize) / 5, y_0 - (3 * fontSize) / 5, fontSize / 5, fontSize / 5);
     }
 
-    private void drawSignSqrt(Graphics g, int x_0, int y_0, int fontSize, int height) {
-        g.fillOval(x_0, y_0 - height / 2, x_0 + getWidthOfSignSqrt(g, fontSize, height) / 2, y_0);
-        g.fillOval(x_0 + getWidthOfSignSqrt(g, fontSize, height) / 2, y_0, x_0 + getWidthOfSignSqrt(g, fontSize, height), y_0 - height);
+    private void drawSignRoot(Graphics g, int x_0, int y_0, int fontSize, int height) {
+        Graphics2D g2 = (Graphics2D) g;
+        // Strichdicke abhängig von fontSize berechnen.
+        int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
+        g2.setStroke(new BasicStroke(thick));
+        int widthOfSqrt = getWidthOfSignRoot(g, fontSize, height);
+        //Waagerechter Strich
+        g2.drawLine(x_0, y_0 - height / 4, x_0 + widthOfSqrt / 5, y_0);
+        g2.drawLine(x_0 + widthOfSqrt / 5, y_0, x_0 + getWidthOfSignRoot(g, fontSize, height), y_0 - height);
+    }
+
+    private void drawRoofOfSignRoot(Graphics g, int x_0, int y_0, int fontSize, int length) {
+        Graphics2D g2 = (Graphics2D) g;
+        // Strichdicke abhängig von fontSize berechnen.
+        int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
+        g2.setStroke(new BasicStroke(thick));
+        //Waagerechter Strich
+        g2.drawLine(x_0, y_0, x_0 + length, y_0);
     }
 
     private void drawSignEquals(Graphics g, int x_0, int y_0, int fontSize) {
@@ -2485,55 +2526,77 @@ public class GraphicPanelFormula extends JPanel {
 
         int heightLeft = getHeightOfExpression(g, expr.getLeft(), fontSize);
 
-        if (expr.getLeft() instanceof BinaryOperation
-                || (expr.getLeft() instanceof Constant
-                && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)
-                || expr.getLeft().isOperator(TypeOperator.diff) || expr.getLeft().isOperator(TypeOperator.fac)
-                || expr.getLeft().isOperator(TypeOperator.integral) || expr.getLeft().isOperator(TypeOperator.laplace)
-                || expr.getLeft().isOperator(TypeOperator.prod) || expr.getLeft().isOperator(TypeOperator.sum)) {
+        // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
+        if (expr.getRight().isRationalConstant()) {
 
-            // Zeichnen von (left)^right
-            drawOpeningBracket(g, x_0, y_0, fontSize, heightLeft);
-            drawExpression(g, expr.getLeft(),
-                    x_0 + getWidthOfBracket(fontSize), y_0, fontSize);
-            drawClosingBracket(g, x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize)
-                    + getWidthOfBracket(fontSize), y_0, fontSize, heightLeft);
-            drawExpression(g, expr.getRight(),
-                    x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize)
-                    + 2 * getWidthOfBracket(fontSize),
-                    y_0 - heightLeft, getSizeForSup(fontSize));
+            BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
+            BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+            drawBinaryOperationRoot(g, expr.getLeft(), p, q, x_0, y_0, fontSize);
 
         } else {
 
-            // Zeichnen von left^right
-            drawExpression(g, expr.getLeft(),
-                    x_0, y_0, fontSize);
-            drawExpression(g, expr.getRight(),
-                    x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize),
-                    y_0 - heightLeft, getSizeForSup(fontSize));
+            if (expr.getLeft() instanceof BinaryOperation
+                    || (expr.getLeft() instanceof Constant
+                    && ((Constant) (expr.getLeft())).getValue().compareTo(BigDecimal.ZERO) < 0)
+                    || expr.getLeft().isOperator(TypeOperator.diff) || expr.getLeft().isOperator(TypeOperator.fac)
+                    || expr.getLeft().isOperator(TypeOperator.integral) || expr.getLeft().isOperator(TypeOperator.laplace)
+                    || expr.getLeft().isOperator(TypeOperator.prod) || expr.getLeft().isOperator(TypeOperator.sum)) {
+
+                // Zeichnen von (left)^right
+                drawOpeningBracket(g, x_0, y_0, fontSize, heightLeft);
+                drawExpression(g, expr.getLeft(),
+                        x_0 + getWidthOfBracket(fontSize), y_0, fontSize);
+                drawClosingBracket(g, x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize)
+                        + getWidthOfBracket(fontSize), y_0, fontSize, heightLeft);
+                drawExpression(g, expr.getRight(),
+                        x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize)
+                        + 2 * getWidthOfBracket(fontSize),
+                        y_0 - heightLeft, getSizeForSup(fontSize));
+
+            } else {
+
+                // Zeichnen von left^right
+                drawExpression(g, expr.getLeft(),
+                        x_0, y_0, fontSize);
+                drawExpression(g, expr.getRight(),
+                        x_0 + getLengthOfExpression(g, expr.getLeft(), fontSize),
+                        y_0 - heightLeft, getSizeForSup(fontSize));
+
+            }
 
         }
 
     }
 
     /**
-     * Zeichnet den Ausdruck base^(p/q) mit Hilfe des Wurzelzeichens.
+     * Zeichnet den Ausdruck base^(p/q) mit Hilfe des Wurzelzeichens.<br>
+     * ACHTUNG: Bitte nur benutzen, wenn q >= 1 ist.
      */
     private void drawBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
-        int heightLeft = getHeightOfExpression(g, base, fontSize);
+        int heightBase = getHeightOfExpression(g, base, fontSize);
+        int lengthBase = getLengthOfExpression(g, base, fontSize);
+        int distanceFromBeginning = 0;
 
-        // TO DO.
-        if (q.compareTo(BigInteger.valueOf(2)) <= 0){
+        if (q.compareTo(BigInteger.valueOf(2)) != 0) {
             // Bei der Quadratwurzel muss q nicht ausgeschrieben werden.
-        
-        
-        } else {
-            
-        
-        
+            drawExpression(g, new Constant(q), x_0, y_0 - fontSize / 3, getSizeForSup(fontSize));
+            distanceFromBeginning += getLengthOfExpression(g, new Constant(q), getSizeForSup(fontSize));
+        }
+        drawSignRoot(g, x_0 + distanceFromBeginning, y_0, fontSize, heightBase);
+        drawRoofOfSignRoot(g, x_0 + distanceFromBeginning + getWidthOfSignRoot(g, fontSize, heightBase), y_0 - heightBase, fontSize, lengthBase);
+        distanceFromBeginning += getWidthOfSignRoot(g, fontSize, heightBase);
+
+        drawExpression(g, base, x_0 + distanceFromBeginning, y_0, fontSize);
+        distanceFromBeginning += lengthBase;
+
+        // p zeichnen, falls p != 1.
+        if (p.compareTo(BigInteger.ONE) != 0) {
+            // Noch 1/3 von der Schriftgröße für p Platz lassen.
+            distanceFromBeginning += getSizeForSup(fontSize) / 3;
+            drawExpression(g, new Constant(p), x_0 + distanceFromBeginning, y_0 - heightBase, getSizeForSup(fontSize));
         }
 
     }
