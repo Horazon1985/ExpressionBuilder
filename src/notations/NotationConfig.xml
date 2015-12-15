@@ -1,0 +1,14 @@
+<objects>
+  <object id = "SUBSTITUTION_VAR">
+    <value>X</value>
+  </object>
+  <object id = "PFD_VAR">
+    <value>A</value>
+  </object>
+  <object id = "FREE_INTEGER_PARAMETER_VAR">
+    <value>K</value>
+  </object>
+  <object id = "FREE_REAL_PARAMETER_VAR">
+    <value>T</value>
+  </object>
+</objects>

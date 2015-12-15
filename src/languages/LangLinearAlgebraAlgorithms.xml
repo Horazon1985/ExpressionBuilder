@@ -2,7 +2,7 @@
   <object id = "LAA_SYSTEM_NOT_SOLVABLE">
     <German>Das Gleichungssystem konnte nicht gelöst werden.</German>
     <English>The system of equations could not be solved.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Система рівнянь не може бути розв'язана.</Ukrainian>
+    <Russian>Система уравнений не может быть решена.</Russian>
   </object>
 </objects>
