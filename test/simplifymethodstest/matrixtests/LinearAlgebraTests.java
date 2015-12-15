@@ -132,6 +132,7 @@ public class LinearAlgebraTests {
         try {
             MatrixExpression m = MatrixExpression.build("[0,1,3,-2,4;0,0,0,2,5]", null);
             MatrixExpression b = MatrixExpression.build("[11;17]", null);
+            // Lösungen sind x_0 = T_2, x_1 = 28 - (9*T_0 + 3*T_1), x_2 = T_1, x_3 = 17/2 - 5*T_0/2, x_4 = T_0.
             Expression[] expectedSolution = new Expression[]{Variable.create("T_2"),
                 new Constant(28).sub(new Constant(9).mult(Variable.create("T_0")).add(new Constant(3).mult(Variable.create("T_1")))),
                 Variable.create("T_1"), new Constant(17).div(2).sub(new Constant(5).mult(Variable.create("T_0")).div(2)),

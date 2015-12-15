@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
 import matrixsimplifymethods.MatrixExpressionCollection;
+import translator.Translator;
 
 public abstract class GaussAlgorithm {
 
@@ -210,7 +211,8 @@ public abstract class GaussAlgorithm {
         Dimension dimB = b.getDimension();
 
         if (dimM.height == 0 || dimM.width == 0 || dimB.width != 1 || dimM.height != dimB.height) {
-            throw new EvaluationException("");
+            // Sollte eigentlich nie vorkommen.
+            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width + 1];
@@ -228,7 +230,7 @@ public abstract class GaussAlgorithm {
         try {
             mExtended = computeRowEcholonForm(mExtended);
         } catch (EvaluationException e) {
-            throw new EvaluationException("");
+            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         int maxIndexOfNonZeroRow = dimM.height - 1;
@@ -247,60 +249,45 @@ public abstract class GaussAlgorithm {
             int indexOfParameterVar = 0;
             for (int i = 0; i < solution.length; i++) {
                 solution[i] = Variable.create("T_" + indexOfParameterVar);
+                indexOfParameterVar++;
             }
             return solution;
         }
 
         // Fall: keine Lösungen.
-        if (mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width - 1).equals(ZERO)
-                && !mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width).equals(ZERO)) {
-            throw new EvaluationException("");
+        boolean allCoefficientsAreZero = true;
+        for (int i = 0; i < dimM.width; i++) {
+            allCoefficientsAreZero = allCoefficientsAreZero && mExtended.getEntry(maxIndexOfNonZeroRow, i).equals(ZERO);
+        }
+        if (allCoefficientsAreZero && !mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width).equals(ZERO)) {
+            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         // Ab hier existieren Lösungen.
         int currentRow = maxIndexOfNonZeroRow;
         int indexOfParameterVar = 0;
 
+        // Zunächst: Variablen, die freie Parameter sind, bestimmen.
+        ArrayList<Integer> jumpings = getIndicesOfJumpings(mExtended);
         for (int i = dimM.width - 1; i >= 0; i--) {
-
-            if (currentRow >= 0) {
-
-                if (i == dimM.width - 1) {
-                    if (!mExtended.getEntry(currentRow, dimM.width - 1).equals(ZERO) && mExtended.getEntry(currentRow, dimM.width - 2).equals(ZERO)) {
-                        solution[dimM.width - 1] = mExtended.getEntry(currentRow, dimM.width).div(mExtended.getEntry(currentRow, dimM.width - 1)).simplify();
-                        currentRow--;
-                    } else {
-                        solution[dimM.width - 1] = Variable.create("T_" + indexOfParameterVar);
-                        indexOfParameterVar++;
-                    }
-                } else if (i == 0) {
-                    // Hier muss currentRow == 0 sein.
-                    solution[0] = mExtended.getEntry(currentRow, dimM.width);
-                    for (int k = dimM.width - 1; k >= 1; k--) {
-                        solution[0] = solution[0].sub(mExtended.getEntry(currentRow, k).mult(solution[k]));
-                    }
-                    solution[0] = solution[0].div(mExtended.getEntry(currentRow, 0)).simplify();
-                } else {
-                    if (!mExtended.getEntry(currentRow, i).equals(ZERO) && mExtended.getEntry(currentRow, i - 1).equals(ZERO)) {
-                        solution[i] = mExtended.getEntry(currentRow, dimM.width);
-                        for (int k = dimM.width - 1; k >= i + 1; k--) {
-                            solution[i] = solution[i].sub(mExtended.getEntry(currentRow, k).mult(solution[k]));
-                        }
-                        solution[i] = solution[i].div(mExtended.getEntry(currentRow, i)).simplify();
-                        currentRow--;
-                    } else {
-                        solution[i] = Variable.create("T_" + indexOfParameterVar);
-                        indexOfParameterVar++;
-                    }
-                }
-
-            } else {
-
+            if (!jumpings.contains(i)) {
                 solution[i] = Variable.create("T_" + indexOfParameterVar);
                 indexOfParameterVar++;
-
             }
+        }
 
+        // Jetzt die nicht frei wählbaren Variablen rekursiv berechnen.
+        for (int i = dimM.width - 1; i >= 0; i--) {
+            if (currentRow >= 0) {
+                if (jumpings.contains(i)) {
+                    solution[i] = mExtended.getEntry(currentRow, dimM.width);
+                    for (int k = dimM.width - 1; k >= i + 1; k--) {
+                        solution[i] = solution[i].sub(mExtended.getEntry(currentRow, k).mult(solution[k]));
+                    }
+                    solution[i] = solution[i].div(mExtended.getEntry(currentRow, i)).simplify();
+                    currentRow--;
+                }
+            }
         }
 
         return solution;
@@ -317,6 +304,23 @@ public abstract class GaussAlgorithm {
             }
         }
         return true;
+    }
+
+    /**
+     * Hilfsmethode for solveLinearSystemOfEquations(). VORAUSSETZUNG: m ist in
+     * Zeilestufenform.
+     */
+    private static ArrayList<Integer> getIndicesOfJumpings(Matrix m) {
+        ArrayList<Integer> jumpings = new ArrayList<>();
+        Dimension dim = m.getDimension();
+        int row = 0;
+        for (int i = 0; i < dim.width; i++) {
+            if (row < dim.height && !m.getEntry(row, i).equals(ZERO)) {
+                jumpings.add(i);
+                row++;
+            }
+        }
+        return jumpings;
     }
 
 }

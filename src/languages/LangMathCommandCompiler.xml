@@ -809,6 +809,12 @@
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>
+  <object id = "MCC_EQUAL_VARIABLES_IN_SOLVESYSTEM">
+    <German>Die Veränderlichen im Befehl 'solvesystem' müssen paarweise verschieden sein.</German>
+    <English>The variables in command 'solvesystem' musst be pairwise different.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
   <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_1">
     <German>Die </German>
     <English>The </English>
