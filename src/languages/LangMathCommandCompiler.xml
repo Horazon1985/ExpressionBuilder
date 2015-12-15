@@ -767,6 +767,66 @@
     <Ukrainian>. параметр команди 'solvedeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
     <Russian>. параметр команды 'solvedeq' должен быть вещественным числом, модуль которого не превышает 1.7E308.</Russian>
   </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVESYSTEM">
+    <German>Zu wenig Parameter im Befehl 'solvesystem'.</German>
+    <English>Not enough parameters in command 'solvesystem'.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_NO_EQUATIONS_IN_SOLVESYSTEM">
+    <German>Die ersten Parameter im Befehl 'solvesystem' müssen Gleichungen darstellt.</German>
+    <English>The first parameters in command 'solvesystem' must represent equations.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_NO_VARIABLES_IN_SOLVESYSTEM">
+    <German>Die letzten Parameter im Befehl 'solvesystem' müssen gültige Veränderliche darstellen.</German>
+    <English>The last parameters in command 'solvesystem' must represent valid variables.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_EQUATION_PARAMETER_IN_SOLVESYSTEM_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_EQUATION_PARAMETER_IN_SOLVESYSTEM_2">
+    <German>. Parameter im Befehl 'solvesystem' muss von der Form 'f = g' sein, wobei f und g lineare Funktionen in den angegebenen Veränderlichen sind.</German>   
+    <English>. parameter in command 'solvesystem' musst be of the form 'f = g', where f und g are functions, which are linear in the given variables.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_VARIABLE_PARAMETER_IN_SOLVESYSTEM_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_VARIABLE_PARAMETER_IN_SOLVESYSTEM_2">
+    <German>. Parameter im Befehl 'solvesystem' muss eine gültige Veränderliche sein.</German>
+    <English>. parameter in command 'solvesystem' musst be a valid variable.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_1">
+    <German>Die </German>
+    <English>The </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_2">
+    <German>. Gleichung ist nicht linear in der Veränderlichen </German>
+    <English>. equation is not linear in the variable </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_3">
+    <German>.</German>
+    <English>.</English>
+    <Ukrainian>.</Ukrainian>
+    <Russian>.</Russian>
+  </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_TABLE">
     <German>Im Befehl 'table' muss genau ein Parameter stehen.</German>
     <English>The command 'table' must contain exactly one parameter.</English>
@@ -1127,6 +1187,24 @@
     <English>Solution of the differential equation </English>
     <Ukrainian>Розв'язок диференціального рівняння </Ukrainian>
     <Russian>Решение дифференциального уравнения </Russian>
+  </object>
+  <object id = "MCC_IS_FREE_VARIABLE_IN_SOLVESYSTEM">
+    <German> ist eine freie Veränderliche.</German>
+    <English> is a free variable.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_ARE_FREE_VARIABLES_IN_SOLVESYSTEM">
+    <German> sind freie Veränderliche.</German>
+    <English> are free variables.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MCC_SYSTEM_NOT_SOLVABLE">
+    <German>Das Gleichungssystem konnte nicht gelöst werden.</German>
+    <English>The system of equations could not be solved.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
   </object>
   <object id = "MCC_LOGICAL_EXPRESSION_IS_CONSTANT_1">
     <German>Der logische Ausdruck </German>
