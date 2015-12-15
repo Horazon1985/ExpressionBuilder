@@ -1906,10 +1906,10 @@ public class GraphicPanelFormula extends JPanel {
 
     private int getWidthOfSignRoot(Graphics g, int fontSize, int height) {
         /*
-        Der Balance halber: Die Breite soll 1/3 das geometrischen Mittels von
-        fontSize und height sein. Grund: Wenn die Höhe sehr groß ist, soll das
-        Wurzelzeichen nicht zu sehr in die Breite gezogen werden.
-        */
+         Der Balance halber: Die Breite soll 1/3 das geometrischen Mittels von
+         fontSize und height sein. Grund: Wenn die Höhe sehr groß ist, soll das
+         Wurzelzeichen nicht zu sehr in die Breite gezogen werden.
+         */
         return Math.max((int) (Math.sqrt(fontSize * height) / 3), 1);
     }
 
@@ -4003,6 +4003,8 @@ public class GraphicPanelFormula extends JPanel {
             drawCommandPlotCurve(g, c, x_0, y_0, fontSize);
         } else if (c.getTypeCommand().equals(TypeCommand.solve)) {
             drawCommandSolve(g, c, x_0, y_0, fontSize);
+        } else if (c.getTypeCommand().equals(TypeCommand.solvesystem)) {
+            drawCommandSolveSystem(g, c, x_0, y_0, fontSize);
         } else if (c.getTypeCommand().equals(TypeCommand.tangent)) {
             drawCommandTangent(g, c, x_0, y_0, fontSize);
         } else {
@@ -4368,6 +4370,86 @@ public class GraphicPanelFormula extends JPanel {
 
             }
 
+        }
+
+        drawClosingBracket(g,
+                x_0 + lengthName
+                + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                y_0, fontSize, heightCommand);
+
+    }
+
+    private void drawCommandSolveSystem(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+
+        setFont(g, fontSize);
+
+        Object[] params = c.getParams();
+
+        int numberOfEquations = 0;
+
+        for (Object param : params) {
+            if (param instanceof Expression) {
+                numberOfEquations++;
+            } else {
+                break;
+            }
+        }
+        numberOfEquations = numberOfEquations / 2;
+
+        int[] heightCenterLeftSideOfEquation = new int[numberOfEquations];
+        int[] heightCenterRightSideOfEquation = new int[numberOfEquations];
+
+        for (int i = 0; i < numberOfEquations; i++) {
+            heightCenterLeftSideOfEquation[i] = getHeightOfCenterOfExpression(g, (Expression) params[2 * i], fontSize);
+            heightCenterRightSideOfEquation[i] = getHeightOfCenterOfExpression(g, (Expression) params[2 * i + 1], fontSize);
+        }
+
+        int heightCommand = getHeightOfCommand(g, c, fontSize);
+        int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
+        setFont(g, fontSize);
+        int lengthName = g.getFontMetrics().stringWidth(c.getName());
+
+        int distanceFromOpeningBracket = 0;
+        setFont(g, fontSize);
+        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+        drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
+
+        // 1. Gleichungen zeichnen.
+        for (int i = 0; i < numberOfEquations; i++) {
+            // Ausdruck auf der linken Seite zeichnen.
+            drawExpression(g, (Expression) params[2 * i],
+                    x_0 + lengthName
+                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                    y_0 - (heightCenterCommand - heightCenterLeftSideOfEquation[i]), fontSize);
+            distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[2 * i], fontSize);
+            // "=" zeichnen.
+            setFont(g, fontSize);
+            drawSignEquals(g, x_0 + lengthName
+                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                    y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
+            distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfSignEquals(g, fontSize);
+            // Ausdruck auf der rechten Seite zeichnen.
+            drawExpression(g, (Expression) params[2 * i + 1],
+                    x_0 + lengthName
+                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                    y_0 - (heightCenterCommand - heightCenterRightSideOfEquation[i]), fontSize);
+            distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[2 * i + 1], fontSize);
+            // ", " zeichnen.
+            g.drawString(", ", x_0 + lengthName
+                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+            distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+        }
+
+        // 2. Variablen zeichnen.
+        for (int i = 2 * numberOfEquations; i < params.length; i++) {
+            g.drawString((String) params[i], x_0 + lengthName
+                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+            distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth((String) params[i]);
+            if (i < params.length - 1) {
+                g.drawString(", ", x_0 + lengthName
+                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+            }
         }
 
         drawClosingBracket(g,
