@@ -5,6 +5,7 @@ import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
+import static expressionbuilder.Expression.TEN;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import org.junit.AfterClass;
@@ -160,13 +161,13 @@ public class GeneralEquationMethodsTest {
     @Test
     public void solveEquationBySubstitutionTest() {
         try {
-            // Test: f = exp(x^2+5*x-1) = 10. Lösungen sind -5/2-(29/4-ln(1/10)^(1/2)) und (29/4-ln(1/10)^(1/2))-5/2.
+            // Test: f = exp(x^2+5*x-1) = 10. Lösungen sind -5/2-(29/4+ln(10))^(1/2) und (29/4+ln(10))^(1/2)-5/2.
             Expression f = Expression.build("exp(x^2+5*x-1)", null);
             SolveMethods.setSolveTries(100);
             ExpressionCollection zeros = SolveMethods.solveGeneralEquation(f, new Constant(10), "x");
             assertTrue(zeros.getBound() == 2);
-            Expression zeroOne = new Constant(-5).div(2).sub((new Constant(29).div(4).sub(Expression.ONE.div(10).ln())).pow(1, 2));
-            Expression zeroTwo = new Constant(29).div(4).sub(Expression.ONE.div(10).ln()).pow(1, 2).sub(new Constant(5).div(2));
+            Expression zeroOne = new Constant(-5).div(2).sub((new Constant(29).div(4).add(TEN.ln())).pow(1, 2));
+            Expression zeroTwo = new Constant(29).div(4).add(TEN.ln()).pow(1, 2).sub(new Constant(5).div(2));
             assertTrue(zeros.contains(zeroOne));
             assertTrue(zeros.contains(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {

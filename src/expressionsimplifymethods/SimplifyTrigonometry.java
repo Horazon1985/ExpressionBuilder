@@ -1,14 +1,13 @@
 package expressionsimplifymethods;
 
-import expressionbuilder.BinaryOperation;
-import expressionbuilder.Constant;
 import exceptions.EvaluationException;
 import exceptions.MathToolException;
+import expressionbuilder.BinaryOperation;
+import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.Variable;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import translator.Translator;
 
@@ -143,25 +142,25 @@ public abstract class SimplifyTrigonometry {
                 factorOfPi = getRationalFactorOfPi(summandsLeft.get(i));
                 if (factorOfPi[1].equals(TWO)) {
                     numerator = ((Constant) factorOfPi[0]).getValue().toBigInteger();
-                    
+
                     if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
-                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)){
+                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)) {
                             interchange = !interchange;
                         } else {
                             interchange = !interchange;
                             sign = !sign;
                         }
                     } else if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.valueOf(3))) {
-                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)){
+                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)) {
                             interchange = !interchange;
                             sign = !sign;
                         } else {
                             interchange = !interchange;
                         }
                     }
+                    summandsLeft.remove(i);
 
                 }
-                summandsLeft.remove(i);
             } catch (NotRationalMultipleOfPiException e) {
             }
 
@@ -173,25 +172,25 @@ public abstract class SimplifyTrigonometry {
                 factorOfPi = getRationalFactorOfPi(summandsRight.get(i));
                 if (factorOfPi[1].equals(TWO)) {
                     numerator = ((Constant) factorOfPi[0]).getValue().toBigInteger();
-                    
+
                     if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
-                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)){
+                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)) {
                             interchange = !interchange;
                             sign = !sign;
                         } else {
                             interchange = !interchange;
                         }
                     } else if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.valueOf(3))) {
-                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)){
+                        if (f.getType().equals(TypeFunction.sin) || f.getType().equals(TypeFunction.cosec)) {
                             interchange = !interchange;
                         } else {
                             interchange = !interchange;
                             sign = !sign;
                         }
                     }
+                    summandsRight.remove(i);
 
                 }
-                summandsRight.remove(i);
             } catch (NotRationalMultipleOfPiException e) {
             }
 

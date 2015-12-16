@@ -2,6 +2,7 @@ package solveequationmethods;
 
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
+import exceptions.NotSubstitutableException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
@@ -13,13 +14,14 @@ import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import expressionsimplifymethods.SimplifyPolynomialMethods;
+import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 import substitutionmethods.SubstitutionUtilities;
+import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SolveMethods {
 
@@ -1545,19 +1547,18 @@ public abstract class SolveMethods {
          */
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
         getSuitableSubstitutionForEquation(f, var, setOfSubstitutions, true);
-        Object fSubstituted;
+        Expression fSubstituted;
 
         for (int i = 0; i < setOfSubstitutions.getBound(); i++) {
 
-            fSubstituted = SubstitutionUtilities.substitute(f, var, setOfSubstitutions.get(i), true);
-            if (fSubstituted instanceof Expression) {
-
+            try {
+                fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, setOfSubstitutions.get(i));
                 ExpressionCollection zerosOfSubstitutedEquation = solveGeneralEquation(((Expression) fSubstituted).simplify(), ZERO,
                         SubstitutionUtilities.getSubstitutionVariable(f));
                 for (int j = 0; j < zerosOfSubstitutedEquation.getBound(); j++) {
                     zeros = SimplifyUtilities.union(zeros, solveGeneralEquation(setOfSubstitutions.get(i), zerosOfSubstitutedEquation.get(j), var));
                 }
-
+            } catch (NotSubstitutableException e) {
             }
 
             /*
