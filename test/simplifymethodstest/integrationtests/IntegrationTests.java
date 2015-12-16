@@ -45,12 +45,26 @@ public class IntegrationTests {
     }
 
     @Test
-    public void computeIntegralBySubstitutionTest() {
+    public void computeIntegralBySubstitutionTest1() {
         // Integral von x^2*exp(x^3) ist = exp(x^3)/3.
         try {
             f = Expression.build("int(x^2*exp(x^3),x)", null);
             Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("exp(x^3)/3", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void computeIntegralBySubstitutionTest2() {
+        // Integral von (6*x^2+2*cos(x))*cos(x^3+sin(x)) ist = sin(x^3+sin(x)).
+        try {
+            f = Expression.build("int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x)", null);
+            Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
+            Expression expectedResult = Expression.build("2*sin(x^3+sin(x))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {

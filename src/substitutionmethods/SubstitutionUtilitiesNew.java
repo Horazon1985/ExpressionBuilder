@@ -18,6 +18,24 @@ import notations.NotationLoader;
 
 public abstract class SubstitutionUtilitiesNew {
 
+    private static final HashSet<TypeSimplify> simplifyTypesSubstitution = getSimplifyTypesSubstitution();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesSubstitution() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        return simplifyTypes;
+    }
+
     /**
      * In f sind Variablen enthalten, unter anderem möglicherweise auch
      * "Parametervariablen" X_1, X_2, .... Diese Funktion liefert dasjenige X_i
@@ -40,7 +58,7 @@ public abstract class SubstitutionUtilitiesNew {
      *
      * @throws EvaluationException
      */
-    private static Expression isPositiveIntegerPower(Expression f, Expression g) throws EvaluationException, NotSubstitutableException {
+    private static Expression getExponentIfIsPositiveIntegerPower(Expression f, Expression g) throws EvaluationException, NotSubstitutableException {
 
         if (f.equivalent(g)) {
             return ONE;
@@ -78,8 +96,24 @@ public abstract class SubstitutionUtilitiesNew {
      * zurückgegeben.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
-    public static Expression substitute(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
+    public static Expression substitute(Expression f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
+        return substituteExpression(f, var, substitution, true);
+    }
+
+    /**
+     * Private Hauptmethode zum Substituieren. Es wird versucht, im Ausdruck f
+     * den Ausdruck substitution. Im Erfolgsfall wird der substituierte Ausdruck
+     * zurückgegeben, wobei die Variable, durch die substitution ersetzt wird,
+     * durch X_i, 1 = 1, 2, 3, ... bezeichnet wird (und i der kleinste Index
+     * ist, so dass X_i in f nicht vorkommt). Ansonsten wird false
+     * zurückgegeben.
+     *
+     * @throws EvaluationException
+     * @throws NotSubstitutableException
+     */
+    private static Expression substituteExpression(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
         if (!f.contains(var)) {
             return f;
         }
@@ -113,6 +147,9 @@ public abstract class SubstitutionUtilitiesNew {
     /**
      * Hier wird versucht, x = var durch substitution = x/a + b mit ganzem a zu
      * substituieren (also x = a*substitution - a*b).
+     *
+     * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteVariable(String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
         if (!beginning) {
@@ -136,6 +173,7 @@ public abstract class SubstitutionUtilitiesNew {
      * zu ersetzen.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInSum(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
@@ -159,7 +197,7 @@ public abstract class SubstitutionUtilitiesNew {
             ExpressionCollection substitutedSummands = new ExpressionCollection();
             Expression substitutedSummand;
             for (int i = 0; i < summandsF.getBound(); i++) {
-                substitutedSummand = substitute(summandsF.get(i), var, substitution, false);
+                substitutedSummand = substituteExpression(summandsF.get(i), var, substitution, false);
                 substitutedSummands.put(i, substitutedSummand);
             }
             return SimplifyUtilities.produceSum(substitutedSummands);
@@ -172,23 +210,9 @@ public abstract class SubstitutionUtilitiesNew {
         }
 
         if (beginning) {
-
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-
-            Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypes);
-            Expression restSubstituted = substitute(rest, var, substitution, beginning);
+            Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypesSubstitution);
+            Expression restSubstituted = substituteExpression(rest, var, substitution, beginning);
             return k.mult(Variable.create(getSubstitutionVariable(f))).add(restSubstituted);
-
         }
 
         ExpressionCollection fMinusMultipleOfSubstitution = SimplifyUtilities.difference(summandsF, nonConstantSummandsSubstitution);
@@ -196,7 +220,7 @@ public abstract class SubstitutionUtilitiesNew {
             throw new NotSubstitutableException();
         }
 
-        Expression restSubstituted = substitute(SimplifyUtilities.produceSum(fMinusMultipleOfSubstitution), var, substitution, false);
+        Expression restSubstituted = substituteExpression(SimplifyUtilities.produceSum(fMinusMultipleOfSubstitution), var, substitution, false);
         Expression constantSummandOfSubstitution = SimplifyUtilities.produceProduct(SimplifyUtilities.getConstantSummands(substitution, var));
         return k.mult(Variable.create(getSubstitutionVariable(f))).add(restSubstituted).sub(k.mult(constantSummandOfSubstitution));
 
@@ -207,6 +231,7 @@ public abstract class SubstitutionUtilitiesNew {
      * substitution zu ersetzen.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInDifference(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
@@ -274,11 +299,11 @@ public abstract class SubstitutionUtilitiesNew {
             ExpressionCollection substitutedSummandsRight = new ExpressionCollection();
             Expression substitutedSummand;
             for (int i = 0; i < summandsLeftF.getBound(); i++) {
-                substitutedSummand = substitute(summandsLeftF.get(i), var, substitution, false);
+                substitutedSummand = substituteExpression(summandsLeftF.get(i), var, substitution, false);
                 substitutedSummandsLeft.put(i, substitutedSummand);
             }
             for (int i = 0; i < summandsRightF.getBound(); i++) {
-                substitutedSummand = substitute(summandsRightF.get(i), var, substitution, false);
+                substitutedSummand = substituteExpression(summandsRightF.get(i), var, substitution, false);
                 substitutedSummandsRight.put(i, substitutedSummand);
             }
             return SimplifyUtilities.produceDifference(substitutedSummandsLeft, substitutedSummandsRight);
@@ -294,26 +319,12 @@ public abstract class SubstitutionUtilitiesNew {
         }
 
         if (beginning) {
-
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-
             if (potentialMultipleFoundInSummandsLeft != firstNonConstantFactorInSubstitutionIsInLeft) {
-                k = k.mult(-1).simplify(simplifyTypes);
+                k = k.mult(-1).simplify();
             }
-            Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypes);
-            Expression restSubstituted = substitute(rest, var, substitution, beginning);
+            Expression rest = f.sub(k.mult(substitution)).simplify(simplifyTypesSubstitution);
+            Expression restSubstituted = substituteExpression(rest, var, substitution, beginning);
             return k.mult(Variable.create(getSubstitutionVariable(f))).add(restSubstituted);
-
         }
 
         ExpressionCollection summandsLeftFMinusMultipleOfSubstitutionLeft;
@@ -332,7 +343,7 @@ public abstract class SubstitutionUtilitiesNew {
             }
         }
 
-        Expression restSubstituted = substitute(SimplifyUtilities.produceDifference(summandsLeftFMinusMultipleOfSubstitutionLeft, summandsRightFMinusMultipleOfSubstitutionRight), var, substitution, false);
+        Expression restSubstituted = substituteExpression(SimplifyUtilities.produceDifference(summandsLeftFMinusMultipleOfSubstitutionLeft, summandsRightFMinusMultipleOfSubstitutionRight), var, substitution, false);
         if (potentialMultipleFoundInSummandsLeft != firstNonConstantFactorInSubstitutionIsInLeft) {
             k = k.mult(-1).simplify();
         }
@@ -346,6 +357,7 @@ public abstract class SubstitutionUtilitiesNew {
      * substitution zu ersetzen.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInProduct(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
@@ -381,7 +393,7 @@ public abstract class SubstitutionUtilitiesNew {
             ExpressionCollection substitutedFactors = new ExpressionCollection();
             Expression substitutedSummand;
             for (int i = 0; i < factorsF.getBound(); i++) {
-                substitutedSummand = substitute(factorsF.get(i), var, substitution, false);
+                substitutedSummand = substituteExpression(factorsF.get(i), var, substitution, false);
                 substitutedFactors.put(i, substitutedSummand);
             }
             return SimplifyUtilities.produceProduct(substitutedFactors);
@@ -394,23 +406,9 @@ public abstract class SubstitutionUtilitiesNew {
         }
 
         if (beginning) {
-
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-
-            Expression rest = f.div(substitution.pow(k)).simplify(simplifyTypes);
-            Expression restSubstituted = substitute(rest, var, substitution, beginning);
+            Expression rest = f.div(substitution.pow(k)).simplify(simplifyTypesSubstitution);
+            Expression restSubstituted = substituteExpression(rest, var, substitution, beginning);
             return Variable.create(getSubstitutionVariable(f)).pow(k).mult(restSubstituted);
-
         }
 
         ExpressionCollection factorsOfFDividedByPowerOfSubstitution = SimplifyUtilities.difference(factorsF, nonConstantFactorsSubstitution);
@@ -418,7 +416,7 @@ public abstract class SubstitutionUtilitiesNew {
             throw new NotSubstitutableException();
         }
 
-        Expression restSubstituted = substitute(SimplifyUtilities.produceProduct(factorsOfFDividedByPowerOfSubstitution), var, substitution, false);
+        Expression restSubstituted = substituteExpression(SimplifyUtilities.produceProduct(factorsOfFDividedByPowerOfSubstitution), var, substitution, false);
         Expression constantFactorOfSubstitution = SimplifyUtilities.produceProduct(SimplifyUtilities.getConstantFactors(substitution, var));
         return Variable.create(getSubstitutionVariable(f)).pow(k).mult(restSubstituted).div(constantFactorOfSubstitution.pow(k));
 
@@ -427,6 +425,9 @@ public abstract class SubstitutionUtilitiesNew {
     /**
      * Versucht, falls f ein Quotient ist, f durch einen Ausdruck von
      * substitution zu ersetzen.
+     *
+     * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInQuotient(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
@@ -474,17 +475,23 @@ public abstract class SubstitutionUtilitiesNew {
         boolean potentialPowerFoundInFactorsDenominator = false;
         Expression k = ZERO;
         for (int i = 0; i < factorsEnumeratorF.getBound(); i++) {
-            k = isPositiveIntegerPower(firstNonConstantFactorInSubstitution, factorsEnumeratorF.get(i)).simplify();
-            if (k.isIntegerConstantOrRationalConstant()) {
-                break;
+            try {
+                k = getExponentIfIsPositiveIntegerPower(firstNonConstantFactorInSubstitution, factorsEnumeratorF.get(i)).simplify();
+                if (k.isIntegerConstantOrRationalConstant()) {
+                    break;
+                }
+            } catch (NotSubstitutableException e) {
             }
         }
         if (!k.isIntegerConstantOrRationalConstant() || !SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(k) || k.equals(ZERO)) {
             for (int i = 0; i < factorsDenominatorF.getBound(); i++) {
-                k = isPositiveIntegerPower(firstNonConstantFactorInSubstitution, factorsDenominatorF.get(i)).simplify();
-                if (k.isIntegerConstantOrRationalConstant()) {
-                    potentialPowerFoundInFactorsDenominator = true;
-                    break;
+                try {
+                    k = getExponentIfIsPositiveIntegerPower(firstNonConstantFactorInSubstitution, factorsDenominatorF.get(i)).simplify();
+                    if (k.isIntegerConstantOrRationalConstant()) {
+                        potentialPowerFoundInFactorsDenominator = true;
+                        break;
+                    }
+                } catch (NotSubstitutableException e) {
                 }
             }
         }
@@ -493,11 +500,11 @@ public abstract class SubstitutionUtilitiesNew {
             ExpressionCollection substitutedFactorsRight = new ExpressionCollection();
             Expression substitutedFactor;
             for (int i = 0; i < factorsEnumeratorF.getBound(); i++) {
-                substitutedFactor = substitute(factorsEnumeratorF.get(i), var, substitution, false);
+                substitutedFactor = substituteExpression(factorsEnumeratorF.get(i), var, substitution, false);
                 substitutedFactorsLeft.put(i, substitutedFactor);
             }
             for (int i = 0; i < factorsDenominatorF.getBound(); i++) {
-                substitutedFactor = substitute(factorsDenominatorF.get(i), var, substitution, false);
+                substitutedFactor = substituteExpression(factorsDenominatorF.get(i), var, substitution, false);
                 substitutedFactorsRight.put(i, substitutedFactor);
             }
             return SimplifyUtilities.produceQuotient(substitutedFactorsLeft, substitutedFactorsRight);
@@ -518,23 +525,9 @@ public abstract class SubstitutionUtilitiesNew {
         }
 
         if (beginning) {
-
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_trivial);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-            simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-
-            Expression rest = f.div(substitution.pow(exponent)).simplify(simplifyTypes);
-            Expression restSubstituted = substitute(rest, var, substitution, beginning);
+            Expression rest = f.div(substitution.pow(exponent)).simplify(simplifyTypesSubstitution);
+            Expression restSubstituted = substituteExpression(rest, var, substitution, beginning);
             return Variable.create(getSubstitutionVariable(f)).pow(exponent).mult(restSubstituted);
-
         }
 
         ExpressionCollection factorsEnumeratorFDividedByPowerOfSubstitutionEnumerator = SimplifyUtilities.difference(factorsEnumeratorF, nonConstantFactorsEnumeratorSubstitution);
@@ -543,7 +536,7 @@ public abstract class SubstitutionUtilitiesNew {
             throw new NotSubstitutableException();
         }
 
-        Expression restSubstituted = substitute(SimplifyUtilities.produceQuotient(factorsEnumeratorFDividedByPowerOfSubstitutionEnumerator, factorsDenominatorFDividedByPowerOfSubstitutionDenominator), var, substitution, false);
+        Expression restSubstituted = substituteExpression(SimplifyUtilities.produceQuotient(factorsEnumeratorFDividedByPowerOfSubstitutionEnumerator, factorsDenominatorFDividedByPowerOfSubstitutionDenominator), var, substitution, false);
         Expression constantFactorOfSubstitution = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(substitution, var), SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(substitution, var));
         return Variable.create(getSubstitutionVariable(f)).pow(exponent).mult(restSubstituted).div(constantFactorOfSubstitution.pow(exponent));
 
@@ -554,6 +547,7 @@ public abstract class SubstitutionUtilitiesNew {
      * substitution zu ersetzen.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInPower(Expression f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
 
@@ -561,23 +555,39 @@ public abstract class SubstitutionUtilitiesNew {
             throw new NotSubstitutableException();
         }
 
+        // Fall f = subst^n, n >= 1 ganz.
         try {
-            Expression fIsIntegerPowerOfSubstitution = isPositiveIntegerPower(substitution, f);
-            return Variable.create(getSubstitutionVariable(f)).pow(fIsIntegerPowerOfSubstitution);
+            Expression constantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(substitution, var),
+                    SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(substitution, var));
+            Expression nonConstantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(substitution, var),
+                    SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(substitution, var));
+            Expression integerExponent = getExponentIfIsPositiveIntegerPower(nonConstantFactorOfSubst, f);
+            return Variable.create(getSubstitutionVariable(f)).pow(integerExponent).div(constantFactorOfSubst.pow(integerExponent));
         } catch (NotSubstitutableException e) {
         }
 
+        // Fall: x = var, f = g(x)^a, g(x) != x, g(x) = h(subst). Dann f = h(subst)^a.
         if (!((BinaryOperation) f).getRight().contains(var) && ((BinaryOperation) f).getLeft().contains(var) && !(((BinaryOperation) f).getLeft() instanceof Variable)) {
-            Expression baseSubstituted = substitute(((BinaryOperation) f).getLeft(), var, substitution, false);
-            return baseSubstituted.pow(((BinaryOperation) f).getRight());
+            try {
+                Expression baseSubstituted = substituteExpression(((BinaryOperation) f).getLeft(), var, substitution, false);
+                return baseSubstituted.pow(((BinaryOperation) f).getRight());
+            } catch (NotSubstitutableException e) {
+            }
         }
-        
+
+        // Fall: x = var, f = a^g(x), g(x) != x, g(x) = h(subst). Dann f = a^h(subst).
         if (!((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var) && !(((BinaryOperation) f).getRight() instanceof Variable)) {
-            Expression exponentSubstituted = substitute(((BinaryOperation) f).getRight(), var, substitution, false);
-            return ((BinaryOperation) f).getLeft().pow((Expression) exponentSubstituted);
+            try {
+                Expression exponentSubstituted = substituteExpression(((BinaryOperation) f).getRight(), var, substitution, false);
+                return ((BinaryOperation) f).getLeft().pow(exponentSubstituted);
+            } catch (NotSubstitutableException e) {
+            }
         }
-        
-        if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var) && substitution.isPower() && !((BinaryOperation) substitution).getLeft().contains(var) && ((BinaryOperation) substitution).getRight().contains(var)) {
+
+        // Fall: x = var, f = a^(p*x+q), subst = b^(s*x+t). Dann lässt sich f darstellen als f = A*subst^B für geeignete A, B.
+        if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var)
+                && substitution.isPower() && !((BinaryOperation) substitution).getLeft().contains(var) && ((BinaryOperation) substitution).getRight().contains(var)) {
+
             Expression c = ((BinaryOperation) f).getRight().diff(var).simplify();
             if (c.contains(var)) {
                 throw new NotSubstitutableException();
@@ -599,10 +609,11 @@ public abstract class SubstitutionUtilitiesNew {
             Expression factor = a.pow(d.sub(c.mult(q).div(p))).simplify();
             Expression exponent = a.ln().mult(c).div(b.ln().mult(p)).simplify();
             return factor.mult(Variable.create(getSubstitutionVariable(f)).pow(exponent));
+
         }
-        
+
         throw new NotSubstitutableException();
-        
+
     }
 
     /**
@@ -610,6 +621,7 @@ public abstract class SubstitutionUtilitiesNew {
      * zu ersetzen.
      *
      * @throws EvaluationException
+     * @throws NotSubstitutableException
      */
     private static Expression substituteInFunction(Expression f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
 
@@ -620,7 +632,7 @@ public abstract class SubstitutionUtilitiesNew {
         if (f.isFunction(TypeFunction.exp) && substitution.isFunction(TypeFunction.exp)) {
 
             String substVar = getSubstitutionVariable(f);
-            Expression expArgumentSubstituted = substitute(((Function) f).getLeft(), var, ((Function) substitution).getLeft(), false);
+            Expression expArgumentSubstituted = substituteExpression(((Function) f).getLeft(), var, ((Function) substitution).getLeft(), false);
             Expression derivativeOfExpArgumentBySubstVar = expArgumentSubstituted.diff(substVar).simplify();
 
             if (derivativeOfExpArgumentBySubstVar.isIntegerConstant() && !derivativeOfExpArgumentBySubstVar.equals(Expression.ZERO)) {
@@ -670,7 +682,7 @@ public abstract class SubstitutionUtilitiesNew {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
 
-        Expression fArgumentSubstituted = substitute(((Function) f).getLeft(), var, substitution, false);
+        Expression fArgumentSubstituted = substituteExpression(((Function) f).getLeft(), var, substitution, false);
         return new Function(fArgumentSubstituted, ((Function) f).getType());
 
     }
