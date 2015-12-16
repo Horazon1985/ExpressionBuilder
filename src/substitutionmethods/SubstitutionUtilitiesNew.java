@@ -124,22 +124,22 @@ public abstract class SubstitutionUtilitiesNew {
             return substituteVariable(var, substitution, beginning);
         }
         if (f.isSum()) {
-            return substituteInSum(f, var, substitution, beginning);
+            return substituteInSum((BinaryOperation) f, var, substitution, beginning);
         }
         if (f.isDifference()) {
-            return substituteInDifference(f, var, substitution, beginning);
+            return substituteInDifference((BinaryOperation) f, var, substitution, beginning);
         }
         if (f.isProduct()) {
-            return substituteInProduct(f, var, substitution, beginning);
+            return substituteInProduct((BinaryOperation) f, var, substitution, beginning);
         }
         if (f.isQuotient()) {
-            return substituteInQuotient(f, var, substitution, beginning);
+            return substituteInQuotient((BinaryOperation) f, var, substitution, beginning);
         }
         if (f.isPower()) {
-            return substituteInPower(f, var, substitution);
+            return substituteInPower((BinaryOperation) f, var, substitution);
         }
         if (f.isFunction()) {
-            return substituteInFunction(f, var, substitution);
+            return substituteInFunction((Function) f, var, substitution);
         }
         throw new NotSubstitutableException();
     }
@@ -175,7 +175,7 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInSum(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
+    private static Expression substituteInSum(BinaryOperation f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
         ExpressionCollection summandsF = SimplifyUtilities.getSummands(f);
         ExpressionCollection nonConstantSummandsSubstitution = SimplifyUtilities.getNonConstantSummands(substitution, var);
@@ -233,7 +233,7 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInDifference(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
+    private static Expression substituteInDifference(BinaryOperation f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
         if (f.isNotDifference()) {
             throw new NotSubstitutableException();
@@ -359,7 +359,7 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInProduct(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
+    private static Expression substituteInProduct(BinaryOperation f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
         ExpressionCollection factorsF = SimplifyUtilities.getFactors(f);
         ExpressionCollection nonConstantFactorsSubstitution = SimplifyUtilities.getNonConstantFactors(substitution, var);
@@ -429,7 +429,7 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInQuotient(Expression f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
+    private static Expression substituteInQuotient(BinaryOperation f, String var, Expression substitution, boolean beginning) throws EvaluationException, NotSubstitutableException {
 
         if (f.isNotQuotient()) {
             throw new NotSubstitutableException();
@@ -549,7 +549,7 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInPower(Expression f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
+    private static Expression substituteInPower(BinaryOperation f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
 
         if (f.isNotPower()) {
             throw new NotSubstitutableException();
@@ -567,44 +567,44 @@ public abstract class SubstitutionUtilitiesNew {
         }
 
         // Fall: x = var, f = g(x)^a, g(x) != x, g(x) = h(subst). Dann f = h(subst)^a.
-        if (!((BinaryOperation) f).getRight().contains(var) && ((BinaryOperation) f).getLeft().contains(var) && !(((BinaryOperation) f).getLeft() instanceof Variable)) {
+        if (!f.getRight().contains(var) && f.getLeft().contains(var) && !(f.getLeft() instanceof Variable)) {
             try {
-                Expression baseSubstituted = substituteExpression(((BinaryOperation) f).getLeft(), var, substitution, false);
-                return baseSubstituted.pow(((BinaryOperation) f).getRight());
+                Expression baseSubstituted = substituteExpression(f.getLeft(), var, substitution, false);
+                return baseSubstituted.pow(f.getRight());
             } catch (NotSubstitutableException e) {
             }
         }
 
         // Fall: x = var, f = a^g(x), g(x) != x, g(x) = h(subst). Dann f = a^h(subst).
-        if (!((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var) && !(((BinaryOperation) f).getRight() instanceof Variable)) {
+        if (!f.getLeft().contains(var) && f.getRight().contains(var) && !(f.getRight() instanceof Variable)) {
             try {
-                Expression exponentSubstituted = substituteExpression(((BinaryOperation) f).getRight(), var, substitution, false);
-                return ((BinaryOperation) f).getLeft().pow(exponentSubstituted);
+                Expression exponentSubstituted = substituteExpression(f.getRight(), var, substitution, false);
+                return f.getLeft().pow(exponentSubstituted);
             } catch (NotSubstitutableException e) {
             }
         }
 
         // Fall: x = var, f = a^(p*x+q), subst = b^(s*x+t). Dann lässt sich f darstellen als f = A*subst^B für geeignete A, B.
-        if (f.isPower() && !((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var)
+        if (f.isPower() && !f.getLeft().contains(var) && f.getRight().contains(var)
                 && substitution.isPower() && !((BinaryOperation) substitution).getLeft().contains(var) && ((BinaryOperation) substitution).getRight().contains(var)) {
 
-            Expression c = ((BinaryOperation) f).getRight().diff(var).simplify();
+            Expression c = f.getRight().diff(var).simplify();
             if (c.contains(var)) {
                 throw new NotSubstitutableException();
             }
-            Expression d = ((BinaryOperation) f).getRight().sub(c.mult(Variable.create(var))).simplify();
+            Expression d = f.getRight().sub(c.mult(Variable.create(var))).simplify();
             if (d.contains(var)) {
                 throw new NotSubstitutableException();
             }
-            Expression p = ((BinaryOperation) f).getRight().diff(var).simplify();
+            Expression p = f.getRight().diff(var).simplify();
             if (p.contains(var)) {
                 throw new NotSubstitutableException();
             }
-            Expression q = ((BinaryOperation) f).getRight().sub(p.mult(Variable.create(var))).simplify();
+            Expression q = f.getRight().sub(p.mult(Variable.create(var))).simplify();
             if (q.contains(var)) {
                 throw new NotSubstitutableException();
             }
-            Expression a = ((BinaryOperation) f).getLeft();
+            Expression a = f.getLeft();
             Expression b = ((BinaryOperation) substitution).getLeft();
             Expression factor = a.pow(d.sub(c.mult(q).div(p))).simplify();
             Expression exponent = a.ln().mult(c).div(b.ln().mult(p)).simplify();
@@ -623,16 +623,12 @@ public abstract class SubstitutionUtilitiesNew {
      * @throws EvaluationException
      * @throws NotSubstitutableException
      */
-    private static Expression substituteInFunction(Expression f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
-
-        if (!(f instanceof Function)) {
-            throw new NotSubstitutableException();
-        }
+    private static Expression substituteInFunction(Function f, String var, Expression substitution) throws EvaluationException, NotSubstitutableException {
 
         if (f.isFunction(TypeFunction.exp) && substitution.isFunction(TypeFunction.exp)) {
 
             String substVar = getSubstitutionVariable(f);
-            Expression expArgumentSubstituted = substituteExpression(((Function) f).getLeft(), var, ((Function) substitution).getLeft(), false);
+            Expression expArgumentSubstituted = substituteExpression(f.getLeft(), var, ((Function) substitution).getLeft(), false);
             Expression derivativeOfExpArgumentBySubstVar = expArgumentSubstituted.diff(substVar).simplify();
 
             if (derivativeOfExpArgumentBySubstVar.isIntegerConstant() && !derivativeOfExpArgumentBySubstVar.equals(Expression.ZERO)) {
@@ -645,45 +641,45 @@ public abstract class SubstitutionUtilitiesNew {
 
         }
 
-        if (f.isFunction(TypeFunction.sin) && substitution.isFunction(TypeFunction.cosec) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.sin) && substitution.isFunction(TypeFunction.cosec) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.cosec) && substitution.isFunction(TypeFunction.sin) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.cosec) && substitution.isFunction(TypeFunction.sin) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.cos) && substitution.isFunction(TypeFunction.sec) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.cos) && substitution.isFunction(TypeFunction.sec) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.sec) && substitution.isFunction(TypeFunction.cos) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.sec) && substitution.isFunction(TypeFunction.cos) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.tan) && substitution.isFunction(TypeFunction.cot) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.tan) && substitution.isFunction(TypeFunction.cot) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.cot) && substitution.isFunction(TypeFunction.tan) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.cot) && substitution.isFunction(TypeFunction.tan) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.sinh) && substitution.isFunction(TypeFunction.cosech) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.sinh) && substitution.isFunction(TypeFunction.cosech) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.cosech) && substitution.isFunction(TypeFunction.sinh) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.cosech) && substitution.isFunction(TypeFunction.sinh) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.cosh) && substitution.isFunction(TypeFunction.sech) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.cosh) && substitution.isFunction(TypeFunction.sech) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.sech) && substitution.isFunction(TypeFunction.cosh) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.sech) && substitution.isFunction(TypeFunction.cosh) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.tanh) && substitution.isFunction(TypeFunction.coth) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.tanh) && substitution.isFunction(TypeFunction.coth) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
-        if (f.isFunction(TypeFunction.coth) && substitution.isFunction(TypeFunction.tanh) && ((Function) f).getLeft().equivalent(((Function) substitution).getLeft())) {
+        if (f.isFunction(TypeFunction.coth) && substitution.isFunction(TypeFunction.tanh) && f.getLeft().equivalent(((Function) substitution).getLeft())) {
             return Expression.ONE.div(Variable.create(getSubstitutionVariable(f)));
         }
 
-        Expression fArgumentSubstituted = substituteExpression(((Function) f).getLeft(), var, substitution, false);
-        return new Function(fArgumentSubstituted, ((Function) f).getType());
+        Expression fArgumentSubstituted = substituteExpression(f.getLeft(), var, substitution, false);
+        return new Function(fArgumentSubstituted, f.getType());
 
     }
 
