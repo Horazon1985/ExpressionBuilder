@@ -1245,7 +1245,11 @@ public class GraphicPanelFormula extends JPanel {
         if (p.compareTo(BigInteger.valueOf(1)) != 0) {
             return getHeightOfExpression(g, base, fontSize) + getHeightOfExpression(g, new Constant(p), getSizeForSup(fontSize));
         }
-        return getHeightOfExpression(g, base, fontSize);
+        /* 
+         Der Abstand getSizeForSup(fontSize) / 2 sorgt für etwas Abstand zwischen
+         zwei Wurzeln bei sukzessiven Wurzeln!
+         */
+        return getHeightOfExpression(g, base, fontSize) + getSizeForSup(fontSize) / 2;
     }
 
     private int getHeightOfCenterOfExpression(Graphics g, Expression expr, int fontSize) {

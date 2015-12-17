@@ -213,7 +213,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     }
     
     public void addExpression(Expression expr) {
-        this.exprs.add(this.exprs.size(), expr);
+        this.exprs.add(expr);
         setColors();
     }
 
