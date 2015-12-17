@@ -2,6 +2,7 @@ package solveequationmethods;
 
 import computation.ArithmeticMethods;
 import exceptions.EvaluationException;
+import exceptions.NotSubstitutableException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
@@ -16,6 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import substitutionmethods.SubstitutionUtilities;
+import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SpecialEquationMethods {
 
@@ -110,11 +112,11 @@ public abstract class SpecialEquationMethods {
         // Das ist die eigentliche Substitution.
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).exp().simplify();
 
-        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
-        if (fSubstituted instanceof Expression) {
+        try {
 
+            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-            ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) fSubstituted, substVar);
+            ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(fSubstituted, substVar);
             zeros = new ExpressionCollection();
             ExpressionCollection currentZeros;
             // Rücksubstitution.
@@ -139,6 +141,7 @@ public abstract class SpecialEquationMethods {
                 }
             }
 
+        } catch (NotSubstitutableException e) {
         }
 
         return zeros;
@@ -196,10 +199,9 @@ public abstract class SpecialEquationMethods {
          */
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify();
 
-        Object fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution, true);
-        if (fSubstitutedAsObject instanceof Expression) {
+        try {
 
-            Expression fSubstituted = (Expression) fSubstitutedAsObject;
+            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             fSubstituted = fSubstituted.simplify(simplifyTypesRationalTrigonometricalEquation);
             /*
@@ -229,15 +231,10 @@ public abstract class SpecialEquationMethods {
 
             String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
             if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
+
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
-                Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
-
-                // Sicherheitsabfrage. Sollte immer true sein.
-                if (!(polynomial instanceof Expression)) {
-                    return new ExpressionCollection();
-                }
-
-                ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) polynomial, polynomVar);
+                Expression polynomial = SubstitutionUtilitiesNew.substitute(fNew, substVar, trigonometricalSubst);
+                ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
                 zeros = new ExpressionCollection();
 
                 // Rücksubstitution.
@@ -254,17 +251,13 @@ public abstract class SpecialEquationMethods {
                 }
 
             } else {
+
                 fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
                 if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
+                    
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
-                    Object polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst, true);
-
-                    // Sicherheitsabfrage. Sollte immer true sein.
-                    if (!(polynomial instanceof Expression)) {
-                        return new ExpressionCollection();
-                    }
-
-                    ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation((Expression) polynomial, polynomVar);
+                    Expression polynomial = SubstitutionUtilitiesNew.substitute(fNew, substVar, trigonometricalSubst);
+                    ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
                     zeros = new ExpressionCollection();
                     // Rücksubstitution.
                     for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
@@ -280,8 +273,10 @@ public abstract class SpecialEquationMethods {
                     }
 
                 }
+
             }
 
+        } catch (NotSubstitutableException e) {
         }
 
         return zeros;
