@@ -29,6 +29,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import substitutionmethods.SubstitutionUtilities;
+import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SpecialIntegrationMethods {
 
@@ -68,7 +69,7 @@ public abstract class SpecialIntegrationMethods {
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
         return simplifyTypes;
     }
-    
+
     /**
      * Integration rationaler Funktionen.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
@@ -1430,9 +1431,8 @@ public abstract class SpecialIntegrationMethods {
         Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
 
-        Object fSubstituted = SubstitutionUtilities.substitute(f, var, substitution, true);
-        if (fSubstituted instanceof Expression) {
-
+        try {
+            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             /*
              Das Folgende ist eine Sicherheitsabfrage: Die substituierte Gleichung sollte vom 
@@ -1448,9 +1448,9 @@ public abstract class SpecialIntegrationMethods {
             Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{substitutedIntegrand, substVar});
             Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
             return resultFunction.replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
+        } catch (NotSubstitutableException e) {
+            throw new NotPreciseIntegrableException();
         }
-
-        throw new NotPreciseIntegrableException();
 
     }
 
@@ -1514,8 +1514,9 @@ public abstract class SpecialIntegrationMethods {
         Expression factorOfTrigonometricalArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).simplify();
 
-        Object fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution, true);
-        if (fSubstitutedAsObject instanceof Expression) {
+        try {
+
+            Expression fSubstitutedAsObject = SubstitutionUtilitiesNew.substitute(f, var, substitution);
             Expression fSubstituted = (Expression) fSubstitutedAsObject;
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
 
@@ -1561,12 +1562,15 @@ public abstract class SpecialIntegrationMethods {
             if (resultFunction.containsIndefiniteIntegral()) {
                 throw new NotPreciseIntegrableException();
             }
+            // Rücksubstitution!
             return resultFunction.replaceVariable(substVarForIntegral,
-                    TWO.mult(factorOfTrigonometricalArgument.mult(Variable.create(var)).arctan()));
+                    factorOfTrigonometricalArgument.mult(Variable.create(var)).div(2).tan());
+//            return resultFunction.replaceVariable(substVarForIntegral,
+//                    TWO.mult(factorOfTrigonometricalArgument.mult(Variable.create(var)).arctan()));
 
+        } catch (NotSubstitutableException e) {
+            throw new NotPreciseIntegrableException();
         }
-
-        throw new NotPreciseIntegrableException();
 
     }
 

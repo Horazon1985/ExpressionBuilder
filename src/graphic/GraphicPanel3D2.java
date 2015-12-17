@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import translator.Translator;
@@ -38,6 +39,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
      werden).
      */
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
+    private ArrayList<double[][]> centersOfInfinitesimalTangentSpacesOfGraphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
 
@@ -1113,23 +1115,49 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
     private void DrawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
             double bigRadius, double smallRadius, double height, double angle) {
 
-//        int numberOfIntervalsAlongAbsc = graphs3DForGraphic.get(0).length - 1;
-//        int numberOfIntervalsAlongOrd = graphs3DForGraphic.get(0)[0].length - 1;
-//
-//        //Koordinaten des Graphen in graphische Koordinaten umwandeln
-//        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-//        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
-//            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-//                graphicalGraph[i][j] = convertToPixel(graphs3DForGraphic[i][j][0], graphs3DForGraphic[i][j][1], graphs3DForGraphic[i][j][2], bigRadius, smallRadius, height, angle);
-//            }
-//        }
-//
-//        /*
-//         Jetzt wird der Graph, abhängig vom Winkel angle, gezeichnet. Es muss
-//         deshalb nach dem Winkel unterschieden werden, da der Graph stets "von
-//         hinten nach vorne" gezeichnet werden soll. Voraussetzung: 0 <= angle
-//         < 360
-//         */
+        int numberOfIntervalsAlongAbsc = 0;
+        int numberOfIntervalsAlongOrd = 0;
+
+        // Anzahl der Intervalle für das Zeichnen ermitteln.
+        for (double[][][] graph3DForGraphic : this.graphs3DForGraphic) {
+            if (graph3DForGraphic.length > 0) {
+                numberOfIntervalsAlongAbsc = graph3DForGraphic.length - 1;
+                numberOfIntervalsAlongOrd = graph3DForGraphic[0].length - 1;
+                break;
+            }
+        }
+
+        // Dann können keine Graphen gezeichnet werden.
+        if (numberOfIntervalsAlongAbsc == 0 || numberOfIntervalsAlongOrd == 0) {
+            return;
+        }
+
+        //Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
+        ArrayList<int[][][]> graphicalGraphs = new ArrayList<>();
+        int[][][] graphicalGraph;
+        double[][] centersOfInfinitesimalTangentSpacesOfGraphicalGraph;
+
+        for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+            graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
+            centersOfInfinitesimalTangentSpacesOfGraphicalGraph = new double[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1];
+            for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
+                    graphicalGraph[i][j] = convertToPixel(this.graphs3DForGraphic.get(k)[i][j][0], this.graphs3DForGraphic.get(k)[i][j][1],
+                            this.graphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
+                    // Schwerpunkthöhen der einzelnen Plättchen berechnen.
+                    centersOfInfinitesimalTangentSpacesOfGraphicalGraph[i][j] = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
+                }
+            }
+            graphicalGraphs.add(graphicalGraph);
+            this.centersOfInfinitesimalTangentSpacesOfGraphs3DForGraphic.add(centersOfInfinitesimalTangentSpacesOfGraphicalGraph);
+        }
+
+        /*
+         Jetzt wird der Graph, abhängig vom Winkel angle, gezeichnet. Es muss
+         deshalb nach dem Winkel unterschieden werden, da der Graph stets "von
+         hinten nach vorne" gezeichnet werden soll. Voraussetzung: 0 <= angle
+         < 360
+         */
 //        if (angle <= 90) {
 //
 //            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
@@ -1233,6 +1261,44 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 //            }
 //
 //        }
+    }
+
+    private ArrayList<Integer> getIndicesForAscendingSorting(HashMap<Integer, Double> centersOfInfinitesimalTangentSpaces) {
+
+        HashMap<Integer, Double> copyOfCenters = new HashMap<>();
+        ArrayList<Integer> sortedCenters = new ArrayList<>();
+
+        // Manuell kopieren. clone() traue ich nicht!
+        for (int i = 0; i < centersOfInfinitesimalTangentSpaces.size(); i++) {
+            copyOfCenters.put(i, centersOfInfinitesimalTangentSpaces.get(i));
+        }
+
+        int indexWithLeastElement;
+        double minimalValue;
+        while (!copyOfCenters.isEmpty()) {
+
+            indexWithLeastElement = -1;
+            minimalValue = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < centersOfInfinitesimalTangentSpaces.size(); i++) {
+                if (centersOfInfinitesimalTangentSpaces.get(i) != null) {
+                    if (indexWithLeastElement == -1) {
+                        indexWithLeastElement = i;
+                        minimalValue = centersOfInfinitesimalTangentSpaces.get(i);
+                    } else {
+                        if (centersOfInfinitesimalTangentSpaces.get(i) < minimalValue) {
+                            indexWithLeastElement = i;
+                            minimalValue = centersOfInfinitesimalTangentSpaces.get(i);
+                        }
+                    }
+                }
+            }
+            sortedCenters.add(indexWithLeastElement);
+            copyOfCenters.remove(indexWithLeastElement);
+
+        }
+
+        return sortedCenters;
+
     }
 
     /**
