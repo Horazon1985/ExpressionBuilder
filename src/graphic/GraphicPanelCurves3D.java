@@ -1042,7 +1042,6 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
         Graphics g = bi.createGraphics();
         paintComponent(g);
         try {
-//            ImageIO.write(bi, "PNG", new File("C:\\yourImageName.PNG"));
             ImageIO.write(bi, "PNG", new File(filePath));
         } catch (IOException e) {
         }
