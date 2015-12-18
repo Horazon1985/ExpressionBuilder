@@ -30,7 +30,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
     private boolean isRotating;
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
-    private ArrayList<Expression> exprs;
+    private final ArrayList<Expression> exprs = new ArrayList<>();
     //Array, indem die Punkte am Graphen gespeichert sind
     private ArrayList<double[][][]> graphs3D = new ArrayList<>();
     /*
@@ -39,9 +39,9 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
      werden).
      */
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
-    private final ArrayList<double[][]> centersOfInfinitesimalTangentSpacesOfGraphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private final ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
+    private final ArrayList<boolean[][]> coarserGraphs3DAreDefined = new ArrayList<>();
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -241,37 +241,6 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
             this.maxZ = 1;
         }
 
-//        if (this.graphs3D.length == 0) {
-//            this.maxX = 1;
-//            this.maxY = 1;
-//            this.maxZ = 1;
-//        } else {
-//            double globalMaxX = Math.max(Math.abs(this.graphs3D[0][0][0]), Math.abs(this.graphs3D[this.graphs3D.length - 1][0][0]));
-//            double globalMaxY = Math.max(Math.abs(this.graphs3D[0][0][1]), Math.abs(this.graphs3D[0][this.graphs3D[0].length - 1][1]));
-//            double globalMaxZ = 0;
-//            for (int i = 0; i <= this.graphs3D.length - 1; i++) {
-//                for (int j = 0; j <= this.graphs3D[0].length - 1; j++) {
-//                    if (graphs3DAreDefined[i][j][0]) {
-//                        globalMaxZ = Math.max(globalMaxZ, Math.abs(this.graphs3D[i][j][2]));
-//                    }
-//                }
-//            }
-//            this.maxX = globalMaxX;
-//            this.maxY = globalMaxY;
-//            this.maxZ = globalMaxZ;
-//            // 30 % Rand auf der z-Achse lassen!
-//            this.maxZ = this.maxZ * 1.3;
-//        }
-//
-//        if (this.maxX == 0) {
-//            this.maxX = 1;
-//        }
-//        if (this.maxY == 0) {
-//            this.maxY = 1;
-//        }
-//        if (this.maxZ == 0) {
-//            this.maxZ = 1;
-//        }
     }
 
     /**
@@ -414,11 +383,11 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
-        boolean[][] grapheDIsDefined;
+        boolean[][] coarserGraph3DIsDefined;
         for (double[][][] graphs3D1 : this.graphs3D) {
 
             graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
-            grapheDIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
 
             int currentIndexI, currentIndexJ;
 
@@ -439,13 +408,14 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     graph3DForGraphic[i][j][0] = graphs3D1[currentIndexI][currentIndexJ][0];
                     graph3DForGraphic[i][j][1] = graphs3D1[currentIndexI][currentIndexJ][1];
                     graph3DForGraphic[i][j][2] = graphs3D1[currentIndexI][currentIndexJ][2];
-                    //Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
-                    grapheDIsDefined[i][j] = !(Double.isNaN(graphs3D1[currentIndexI][currentIndexJ][2]) || Double.isInfinite(graphs3D1[currentIndexI][currentIndexJ][2]));
+                    // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
+                    coarserGraph3DIsDefined[i][j] = !(Double.isNaN(graphs3D1[currentIndexI][currentIndexJ][2]) || Double.isInfinite(graphs3D1[currentIndexI][currentIndexJ][2]));
                 }
 
             }
 
             graphsForGraphic.add(graph3DForGraphic);
+            this.coarserGraphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
 
@@ -1084,19 +1054,19 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         double averageHeightOfTangentSpace = 0;
         int numberOfDefinedBorderPoints = 0;
 
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
+        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
+        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
+        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
+        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
@@ -1135,21 +1105,16 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         //Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
         ArrayList<int[][][]> graphicalGraphs = new ArrayList<>();
         int[][][] graphicalGraph;
-        double[][] centersOfInfinitesimalTangentSpacesOfGraphicalGraph;
 
         for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
             graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-            centersOfInfinitesimalTangentSpacesOfGraphicalGraph = new double[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1];
             for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
                 for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
                     graphicalGraph[i][j] = convertToPixel(this.graphs3DForGraphic.get(k)[i][j][0], this.graphs3DForGraphic.get(k)[i][j][1],
                             this.graphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
-                    // Schwerpunkthöhen der einzelnen Plättchen berechnen.
-                    centersOfInfinitesimalTangentSpacesOfGraphicalGraph[i][j] = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
                 }
             }
             graphicalGraphs.add(graphicalGraph);
-            this.centersOfInfinitesimalTangentSpacesOfGraphs3DForGraphic.add(centersOfInfinitesimalTangentSpacesOfGraphicalGraph);
         }
 
         /*
@@ -1170,7 +1135,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; i < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1179,7 +1144,10 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    for (int k = 0; i < indices.size(); k++) {
+                    System.out.println("i = " + i + ", j = " + j + ": " + this.coarserGraphs3DAreDefined.get(0)[i][j]);
+                    System.out.println("indices = " + indices);
+                    
+                    for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
@@ -1189,25 +1157,6 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                                 graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
                                 g, c);
 
-//                        else if (this.graphs3DAreDefined.get(k)[i + 1][numberOfIntervalsAlongOrd - j]
-//                                && this.graphs3DAreDefined.get(k)[i][numberOfIntervalsAlongOrd - j] && this.graphs3DAreDefined.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1]) {
-//                            DrawInfinitesimalTriangleTangentSpace(graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-//                                    graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j][1],
-//                                    graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][1],
-//                                    g, c);
-//                        } else if (this.graphs3DAreDefined.get(k)[i][numberOfIntervalsAlongOrd - j - 1]
-//                                && this.graphs3DAreDefined.get(k)[i][numberOfIntervalsAlongOrd - j] && this.graphs3DAreDefined.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1]) {
-//                            DrawInfinitesimalTriangleTangentSpace(graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j - 1][1],
-//                                    graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-//                                    graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][1],
-//                                    g, c);
-//                        } else if (this.graphs3DAreDefined.get(k)[i][numberOfIntervalsAlongOrd - j - 1]
-//                                && this.graphs3DAreDefined.get(k)[i][numberOfIntervalsAlongOrd - j] && this.graphs3DAreDefined.get(k)[i + 1][numberOfIntervalsAlongOrd - j]) {
-//                            DrawInfinitesimalTriangleTangentSpace(graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j - 1][1],
-//                                    graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(k)[i + 1][numberOfIntervalsAlongOrd - j][1],
-//                                    graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(k)[i][numberOfIntervalsAlongOrd - j][1],
-//                                    g, c);
-//                        }
                     }
 
                 }
@@ -1222,7 +1171,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; i < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1231,7 +1180,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    for (int k = 0; i < indices.size(); k++) {
+                    for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
@@ -1255,7 +1204,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; i < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1264,7 +1213,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    for (int k = 0; i < indices.size(); k++) {
+                    for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
@@ -1288,7 +1237,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; i < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1297,7 +1246,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    for (int k = 0; i < indices.size(); k++) {
+                    for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
