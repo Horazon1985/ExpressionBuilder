@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import substitutionmethods.SubstitutionUtilities;
-import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SpecialEquationMethods {
 
@@ -114,7 +113,7 @@ public abstract class SpecialEquationMethods {
 
         try {
 
-            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
+            Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(fSubstituted, substVar);
             zeros = new ExpressionCollection();
@@ -201,7 +200,7 @@ public abstract class SpecialEquationMethods {
 
         try {
 
-            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
+            Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             fSubstituted = fSubstituted.simplify(simplifyTypesRationalTrigonometricalEquation);
             /*
@@ -233,7 +232,7 @@ public abstract class SpecialEquationMethods {
             if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
 
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
-                Expression polynomial = SubstitutionUtilitiesNew.substitute(fNew, substVar, trigonometricalSubst);
+                Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
                 ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
                 zeros = new ExpressionCollection();
 
@@ -256,7 +255,7 @@ public abstract class SpecialEquationMethods {
                 if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
                     
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
-                    Expression polynomial = SubstitutionUtilitiesNew.substitute(fNew, substVar, trigonometricalSubst);
+                    Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
                     ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
                     zeros = new ExpressionCollection();
                     // Rücksubstitution.

@@ -3,6 +3,7 @@ package integrationmethods;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import exceptions.NotPreciseIntegrableException;
+import exceptions.NotSubstitutableException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
@@ -28,8 +29,8 @@ public abstract class SimplifyIntegralMethods {
     private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = getSimplifyTypesPrepareIntegrand();
     private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = getSimplifyTypesPrepareDominatorOfIntegrand();
     private static final HashSet<TypeSimplify> simplifyTypesMultiplyOutIntegrand = getSimplifyTypesMultiplyOutIntegrand();
-    
-    private static HashSet<TypeSimplify> getSimplifyTypesPrepareIntegrand(){
+
+    private static HashSet<TypeSimplify> getSimplifyTypesPrepareIntegrand() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -44,8 +45,8 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
     }
-    
-    private static HashSet<TypeSimplify> getSimplifyTypesPrepareDominatorOfIntegrand(){
+
+    private static HashSet<TypeSimplify> getSimplifyTypesPrepareDominatorOfIntegrand() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -61,8 +62,8 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
     }
-    
-    private static HashSet<TypeSimplify> getSimplifyTypesMultiplyOutIntegrand(){
+
+    private static HashSet<TypeSimplify> getSimplifyTypesMultiplyOutIntegrand() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -77,7 +78,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         return simplifyTypes;
     }
-    
+
     /**
      * Vereinfacht den Integranden (sinnvoll) für eine bequemere Integration.
      * Beispiel: f = (x^2+x)*exp(x)*(x-2) wäre zu kompliziert mittels partieller
@@ -384,7 +385,7 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Hauptmethode für bestimmte Integration. 
+     * Hauptmethode für bestimmte Integration.
      *
      * @throws EvaluationException
      */
@@ -395,11 +396,12 @@ public abstract class SimplifyIntegralMethods {
             return expr;
         }
     }
-    
+
     /**
-     * Interne Hauptmethode für bestimmte Integration. Ist expr ein bestimmtes Integral
-     * expr == int(f, x, a, b), so wird das bestimmte Integral zurückgegeben
-     * (soweit es geht, explizit). Ansonsten wird expr zurückgegeben.
+     * Interne Hauptmethode für bestimmte Integration. Ist expr ein bestimmtes
+     * Integral expr == int(f, x, a, b), so wird das bestimmte Integral
+     * zurückgegeben (soweit es geht, explizit). Ansonsten wird expr
+     * zurückgegeben.
      *
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
@@ -447,9 +449,9 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Interne Hauptmethode für die unbestimmte Integration. Hier wird entweder ein
-     * Ausdruck (im Erfolgsfall oder falls expr kein unbestimmtes Integral ist)
-     * oder false (falls der Ausdruck nicht exakt integriert werden kann)
+     * Interne Hauptmethode für die unbestimmte Integration. Hier wird entweder
+     * ein Ausdruck (im Erfolgsfall oder falls expr kein unbestimmtes Integral
+     * ist) oder false (falls der Ausdruck nicht exakt integriert werden kann)
      * zurückgegeben.
      *
      * @throws EvaluationException
@@ -526,13 +528,13 @@ public abstract class SimplifyIntegralMethods {
             return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         // Typ: (A*x + B) / (a*x^2 + b*x + c)^k, k > 1.
         try {
             return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         // Partialbruchzerlegung
         try {
             return SpecialIntegrationMethods.integrateRationalFunction(expr).simplifyTrivial();
@@ -544,7 +546,7 @@ public abstract class SimplifyIntegralMethods {
             return SpecialIntegrationMethods.integrateProductOfPolynomialAndPowerOfTrigonometricFunction(expr);
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         try {
             return SpecialIntegrationMethods.integratePolynomialInComplexExponentialFunctions(expr);
         } catch (NotPreciseIntegrableException e) {
@@ -555,19 +557,19 @@ public abstract class SimplifyIntegralMethods {
             return SpecialIntegrationMethods.integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         // Integration von P(x)/(a*x^2 + b*x + c)^((2*n + 1)/2).
         try {
             return SpecialIntegrationMethods.integrateQuotientOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(expr);
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();
         } catch (NotPreciseIntegrableException e) {
         }
-        
+
         // Integragtion von R(cos(a*x), sin(a*x)), R(t) = rationale Funktion in t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr).simplifyTrivial();
@@ -1552,36 +1554,28 @@ public abstract class SimplifyIntegralMethods {
                      Substitutionsregel).
                      */
                     String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
-                    if (substitutedRestIntegrand instanceof Boolean) {
-                        continue;
+
+                    try {
+                        Expression substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution);
+                        Expression substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution);
+                        // Kommt man hier an, war die Substitution erfolgreich.
+                        Expression fSubstituted = substitutedRestIntegrand.mult(substitutedFactor).simplify();
+                        Object[] paramsSubstitutedIntegral;
+                        paramsSubstitutedIntegral = new Object[2];
+                        paramsSubstitutedIntegral[0] = fSubstituted;
+                        paramsSubstitutedIntegral[1] = substVar;
+                        Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
+
+                        // Nun wird versucht, das substituierte Integral zu berechnen.
+                        Expression F = indefiniteIntegration(substitutedIntegral, true);
+                        /*
+                         Kommt man hier an, war die Integration des substituierten
+                         Integrals erfolgreich. Dann zurücksubstitutieren und
+                         Stammfunktion ausgeben.
+                         */
+                        return F.replaceVariable(substVar, substitution);
+                    } catch (NotSubstitutableException | NotPreciseIntegrableException e) {
                     }
-                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
-                    if (substitutedFactor instanceof Boolean) {
-                        continue;
-                    }
-
-                    // Kommt man hier an, war die Substitution erfolgreich.
-                    Expression fSubstituted = ((Expression) substitutedRestIntegrand).mult((Expression) substitutedFactor).simplify();
-                    Object[] paramsSubstitutedIntegral;
-                    paramsSubstitutedIntegral = new Object[2];
-                    paramsSubstitutedIntegral[0] = fSubstituted;
-                    paramsSubstitutedIntegral[1] = substVar;
-                    Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
-
-                    // Nun wird versucht, das substituierte Integral zu berechnen.
-                    Object F = indefiniteIntegration(substitutedIntegral, true);
-
-                    if (F instanceof Boolean) {
-                        continue;
-                    }
-
-                    /*
-                     Kommt man hier an, war die Integration des substituierten
-                     Integrals erfolgreich. Dann zurücksubstitutieren und
-                     Stammfunktion ausgeben.
-                     */
-                    return ((Expression) F).replaceVariable(substVar, substitution);
 
                 }
 
@@ -1625,37 +1619,30 @@ public abstract class SimplifyIntegralMethods {
                      Substitutionsregel).
                      */
                     String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
-                    if (substitutedRestIntegrand instanceof Boolean) {
-                        continue;
+
+                    try {
+                        Expression substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution);
+                        Expression substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution);
+
+                        // Kommt man hier an, war die Substitution erfolgreich.
+                        Expression fSubstituted = substitutedRestIntegrand.mult(substitutedFactor).simplify();
+
+                        Object[] paramsSubstitutedIntegral;
+                        paramsSubstitutedIntegral = new Object[2];
+                        paramsSubstitutedIntegral[0] = fSubstituted;
+                        paramsSubstitutedIntegral[1] = substVar;
+                        Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
+
+                        // Nun wird versucht, das substituierte Integral zu berechnen.
+                        Expression F = indefiniteIntegration(substitutedIntegral, true);
+                        /*
+                         Kommt man hier an, war die Integration des substituierten
+                         Integrals erfolgreich. Dann zurücksubstitutieren und
+                         Stammfunktion ausgeben.
+                         */
+                        return F.replaceVariable(substVar, substitution);
+                    } catch (NotSubstitutableException | NotPreciseIntegrableException e) {
                     }
-                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
-                    if (substitutedFactor instanceof Boolean) {
-                        continue;
-                    }
-
-                    // Kommt man hier an, war die Substitution erfolgreich.
-                    Expression fSubstituted = ((Expression) substitutedRestIntegrand).mult((Expression) substitutedFactor).simplify();
-
-                    Object[] paramsSubstitutedIntegral;
-                    paramsSubstitutedIntegral = new Object[2];
-                    paramsSubstitutedIntegral[0] = fSubstituted;
-                    paramsSubstitutedIntegral[1] = substVar;
-                    Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
-
-                    // Nun wird versucht, das substituierte Integral zu berechnen.
-                    Object F = indefiniteIntegration(substitutedIntegral, true);
-
-                    if (F instanceof Boolean) {
-                        continue;
-                    }
-
-                    /*
-                     Kommt man hier an, war die Integration des substituierten
-                     Integrals erfolgreich. Dann zurücksubstitutieren und
-                     Stammfunktion ausgeben.
-                     */
-                    return ((Expression) F).replaceVariable(substVar, substitution);
 
                 }
 
@@ -1690,37 +1677,30 @@ public abstract class SimplifyIntegralMethods {
                      Substitutionsregel).
                      */
                     String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-                    Object substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution, true);
-                    if (substitutedRestIntegrand instanceof Boolean) {
-                        continue;
+
+                    try {
+                        Expression substitutedRestIntegrand = SubstitutionUtilities.substitute(quotient, var, substitution);
+                        Expression substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution);
+
+                        // Kommt man hier an, war die Substitution erfolgreich.
+                        Expression fSubstituted = substitutedRestIntegrand.div(substitutedFactor).simplify();
+
+                        Object[] paramsSubstitutedIntegral;
+                        paramsSubstitutedIntegral = new Object[2];
+                        paramsSubstitutedIntegral[0] = fSubstituted;
+                        paramsSubstitutedIntegral[1] = substVar;
+                        Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
+
+                        // Nun wird versucht, das substituierte Integral zu berechnen.
+                        Expression F = indefiniteIntegration(substitutedIntegral, true);
+                        /*
+                         Kommt man hier an, war die Integration des substituierten
+                         Integrals erfolgreich. Dann zurücksubstitutieren und
+                         Stammfunktion ausgeben.
+                         */
+                        return F.replaceVariable(substVar, substitution);
+                    } catch (NotSubstitutableException | NotPreciseIntegrableException e) {
                     }
-                    Object substitutedFactor = SubstitutionUtilities.substitute(factor, var, substitution, true);
-                    if (substitutedFactor instanceof Boolean) {
-                        continue;
-                    }
-
-                    // Kommt man hier an, war die Substitution erfolgreich.
-                    Expression fSubstituted = ((Expression) substitutedRestIntegrand).div((Expression) substitutedFactor).simplify();
-
-                    Object[] paramsSubstitutedIntegral;
-                    paramsSubstitutedIntegral = new Object[2];
-                    paramsSubstitutedIntegral[0] = fSubstituted;
-                    paramsSubstitutedIntegral[1] = substVar;
-                    Operator substitutedIntegral = new Operator(TypeOperator.integral, paramsSubstitutedIntegral, expr.getPrecise());
-
-                    // Nun wird versucht, das substituierte Integral zu berechnen.
-                    Object F = indefiniteIntegration(substitutedIntegral, true);
-
-                    if (F instanceof Boolean) {
-                        continue;
-                    }
-
-                    /*
-                     Kommt man hier an, war die Integration des substituierten
-                     Integrals erfolgreich. Dann zurücksubstitutieren und
-                     Stammfunktion ausgeben.
-                     */
-                    return ((Expression) F).replaceVariable(substVar, substitution);
 
                 }
 

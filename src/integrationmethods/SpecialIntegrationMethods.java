@@ -29,7 +29,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import substitutionmethods.SubstitutionUtilities;
-import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SpecialIntegrationMethods {
 
@@ -1432,7 +1431,7 @@ public abstract class SpecialIntegrationMethods {
         Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
 
         try {
-            Expression fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, substitution);
+            Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
             /*
              Das Folgende ist eine Sicherheitsabfrage: Die substituierte Gleichung sollte vom 
@@ -1516,7 +1515,7 @@ public abstract class SpecialIntegrationMethods {
 
         try {
 
-            Expression fSubstitutedAsObject = SubstitutionUtilitiesNew.substitute(f, var, substitution);
+            Expression fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution);
             Expression fSubstituted = (Expression) fSubstitutedAsObject;
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
 

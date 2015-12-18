@@ -237,11 +237,12 @@ public class IntegrationTests {
     
     @Test
     public void integralOfRationalFunctionInSinCosTest1() {
-        // Integral von 1/(2+cos(x)) = 2*arctan((2*arctan(x))/3^(1/2))/3^(1/2).
+        // Integral von 1/(2+cos(x)) = (2*arctan(tan(x/2)/3^(1/2)))/3^(1/2).
         try {
             f = Expression.build("int(1/(2+cos(x)),x)", null);
-            Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("2*arctan((2*arctan(x))/3^(1/2))/3^(1/2)", null);
+            // Faktoren sortieren, damit die Überprüfung einfacher wird.
+            Expression integral = SimplifyIntegralMethods.integrateIndefinite((Operator) f).orderDifferencesAndQuotients().orderSumsAndProducts();
+            Expression expectedResult = Expression.build("(2*arctan(tan(x/2)/3^(1/2)))/3^(1/2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -251,12 +252,12 @@ public class IntegrationTests {
     
     @Test
     public void integralOfRationalFunctionInSinCosTest2() {
-        // Integral von 1/(sin(x)+cos(x)) = ln(|(2^(1/2)+2*arctan(x))-1|^(1/2^(1/2))/|2*arctan(x)-(1+2^(1/2))|^(1/2^(1/2))).
+        // Integral von 1/(sin(x)+cos(x)) = ln(|2^(1/2)+tan(x/2)-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2))).
         try {
             f = Expression.build("int(1/(sin(x)+cos(x)),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("ln(|(2^(1/2)+2*arctan(x))-1|^(1/2^(1/2))/|2*arctan(x)-(1+2^(1/2))|^(1/2^(1/2)))", null);
+            Expression expectedResult = Expression.build("ln(|(2^(1/2)+tan(x/2))-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2)))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {

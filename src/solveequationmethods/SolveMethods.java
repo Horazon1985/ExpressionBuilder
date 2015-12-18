@@ -21,7 +21,6 @@ import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 import substitutionmethods.SubstitutionUtilities;
-import substitutionmethods.SubstitutionUtilitiesNew;
 
 public abstract class SolveMethods {
 
@@ -1552,7 +1551,7 @@ public abstract class SolveMethods {
         for (int i = 0; i < setOfSubstitutions.getBound(); i++) {
 
             try {
-                fSubstituted = SubstitutionUtilitiesNew.substitute(f, var, setOfSubstitutions.get(i));
+                fSubstituted = SubstitutionUtilities.substitute(f, var, setOfSubstitutions.get(i));
                 ExpressionCollection zerosOfSubstitutedEquation = solveGeneralEquation(((Expression) fSubstituted).simplify(), ZERO,
                         SubstitutionUtilities.getSubstitutionVariable(f));
                 for (int j = 0; j < zerosOfSubstitutedEquation.getBound(); j++) {
