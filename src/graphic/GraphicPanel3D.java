@@ -1184,31 +1184,32 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         double maxExpr = Double.NaN;
 
         // Zunächst wird geprüft, ob der Graph IRGENDWO definiert ist
-        boolean graph_is_somewhere_defined = false;
-        for (int i = 0; i < graph3DForGraphic.length; i++) {
-            for (int j = 0; j < graph3DForGraphic[0].length; j++) {
-                if (graph3DIsDefined[i][j]) {
-                    graph_is_somewhere_defined = true;
-                    minExpr = graph3DForGraphic[i][j][2];
-                    maxExpr = graph3DForGraphic[i][j][2];
+        boolean graphIsSomewhereDefined = false;
+        for (int i = 0; i < this.graph3DForGraphic.length; i++) {
+            for (int j = 0; j < this.graph3DForGraphic[0].length; j++) {
+                if (this.graph3DIsDefined[i][j]) {
+                    graphIsSomewhereDefined = true;
+                    minExpr = this.graph3DForGraphic[i][j][2];
+                    maxExpr = this.graph3DForGraphic[i][j][2];
                     break;
                 }
             }
-            if (graph_is_somewhere_defined) {
+            if (graphIsSomewhereDefined) {
                 break;
             }
         }
 
-        if (!graph_is_somewhere_defined) {
+        // Falls der Graph nirgends definiert ist, Defaultwerte für Maße setzen.
+        if (!graphIsSomewhereDefined) {
             minExpr = 0;
             maxExpr = 1;
         }
 
-        for (int i = 0; i < graph3DForGraphic.length; i++) {
-            for (int j = 0; j < graph3DForGraphic[0].length; j++) {
-                if (graph3DIsDefined[i][j]) {
-                    minExpr = Math.min(minExpr, graph3DForGraphic[i][j][2]);
-                    maxExpr = Math.max(maxExpr, graph3DForGraphic[i][j][2]);
+        for (int i = 0; i < this.graph3DForGraphic.length; i++) {
+            for (int j = 0; j < this.graph3DForGraphic[0].length; j++) {
+                if (this.graph3DIsDefined[i][j]) {
+                    minExpr = Math.min(minExpr, this.graph3DForGraphic[i][j][2]);
+                    maxExpr = Math.max(maxExpr, this.graph3DForGraphic[i][j][2]);
                 }
             }
         }
@@ -1259,7 +1260,6 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         Graphics g = bi.createGraphics();
         paintComponent(g);
         try {
-//            ImageIO.write(bi, "PNG", new File("C:\\yourImageName.PNG"));
             ImageIO.write(bi, "PNG", new File(filePath));
         } catch (IOException e) {
         }
