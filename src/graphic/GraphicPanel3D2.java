@@ -499,7 +499,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void DrawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
+    private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
@@ -519,7 +519,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void DrawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
+    private void drawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, Graphics g, Color c) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 3);
@@ -1082,7 +1082,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
      * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
      * Achsen)
      */
-    private void DrawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
+    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
             double bigRadius, double smallRadius, double height, double angle) {
 
         int numberOfIntervalsAlongAbsc = 0;
@@ -1143,15 +1143,12 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
-
-                    System.out.println("i = " + i + ", j = " + j + ": " + this.coarserGraphs3DAreDefined.get(0)[i][j]);
-                    System.out.println("indices = " + indices);
                     
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        DrawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
@@ -1184,7 +1181,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        DrawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1],
@@ -1217,7 +1214,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        DrawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
@@ -1250,7 +1247,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        DrawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
@@ -1367,7 +1364,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
             for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
                 for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.graphs3DAreDefined.get(k)[i][j]) {
+                    if (this.coarserGraphs3DAreDefined.get(k)[i][j]) {
                         minExpr = Math.min(minExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
                         maxExpr = Math.max(maxExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
                     }
@@ -1380,7 +1377,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         drawLevelsOnWest(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsOnNorth(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsBottom(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        DrawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
+        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
 
     }
 
