@@ -41,7 +41,6 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private final ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
-    private final ArrayList<boolean[][]> coarserGraphs3DAreDefined = new ArrayList<>();
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -167,6 +166,13 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         instructions.add(Translator.translateExceptionMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateExceptionMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
         return instructions;
+    }
+
+    public void setExpression(Expression... exprs) {
+        this.exprs.clear();
+        for (Expression expr : exprs){
+            this.exprs.add(expr);
+        }
     }
 
     public void addExpression(Expression expr) {
@@ -384,7 +390,8 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
-        for (double[][][] graphs3D1 : this.graphs3D) {
+        this.graphs3DAreDefined.clear();
+        for (double[][][] graph3D : this.graphs3D) {
 
             graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
             coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
@@ -393,29 +400,29 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
             for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
-                if (graphs3D1.length <= numberOfIntervalsAlongAbsc) {
+                if (graph3D.length <= numberOfIntervalsAlongAbsc) {
                     currentIndexI = i;
                 } else {
-                    currentIndexI = (int) (i * ((double) graphs3D1.length - 1) / (numberOfIntervalsAlongAbsc - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
                 }
 
                 for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-                    if (graphs3D1[0].length <= numberOfIntervalsAlongOrd) {
+                    if (graph3D[0].length <= numberOfIntervalsAlongOrd) {
                         currentIndexJ = j;
                     } else {
-                        currentIndexJ = (int) (j * ((double) graphs3D1[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
                     }
-                    graph3DForGraphic[i][j][0] = graphs3D1[currentIndexI][currentIndexJ][0];
-                    graph3DForGraphic[i][j][1] = graphs3D1[currentIndexI][currentIndexJ][1];
-                    graph3DForGraphic[i][j][2] = graphs3D1[currentIndexI][currentIndexJ][2];
+                    graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
+                    graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
+                    graph3DForGraphic[i][j][2] = graph3D[currentIndexI][currentIndexJ][2];
                     // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
-                    coarserGraph3DIsDefined[i][j] = !(Double.isNaN(graphs3D1[currentIndexI][currentIndexJ][2]) || Double.isInfinite(graphs3D1[currentIndexI][currentIndexJ][2]));
+                    coarserGraph3DIsDefined[i][j] = !(Double.isNaN(graph3D[currentIndexI][currentIndexJ][2]) || Double.isInfinite(graph3D[currentIndexI][currentIndexJ][2]));
                 }
 
             }
 
             graphsForGraphic.add(graph3DForGraphic);
-            this.coarserGraphs3DAreDefined.add(coarserGraph3DIsDefined);
+            this.graphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
 
@@ -1054,19 +1061,19 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         double averageHeightOfTangentSpace = 0;
         int numberOfDefinedBorderPoints = 0;
 
-        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.coarserGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
             averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
@@ -1143,7 +1150,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
-                    
+
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
@@ -1364,7 +1371,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
             for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
                 for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.coarserGraphs3DAreDefined.get(k)[i][j]) {
+                    if (this.graphs3DAreDefined.get(k)[i][j]) {
                         minExpr = Math.min(minExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
                         maxExpr = Math.max(maxExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
                     }
