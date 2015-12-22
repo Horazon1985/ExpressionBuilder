@@ -41,7 +41,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
      */
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
-    private final ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
+    private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -313,6 +313,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
         }
 
         this.graphs3D = new ArrayList<>();
+        this.graphs3DAreDefined = new ArrayList<>();
 
         double[][][] singleGraph;
         boolean[][] singleGraphIsDefined;
