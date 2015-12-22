@@ -3410,13 +3410,13 @@ public abstract class SimplifyBinaryOperationMethods {
                     baseToCompare = factors.get(j);
                     exponentToCompare = Expression.ONE;
                 }
-//                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
-                if (base.equivalent(baseToCompare)) {
-                    exponent = exponent.add(exponentToCompare);
-                    factors.put(i, base.pow(exponent));
-                    factors.remove(j);
+                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
+                    if (base.equivalent(baseToCompare)) {
+                        exponent = exponent.add(exponentToCompare);
+                        factors.put(i, base.pow(exponent));
+                        factors.remove(j);
+                    }
                 }
-//                }
                 if (Thread.interrupted()) {
                     throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
                 }
