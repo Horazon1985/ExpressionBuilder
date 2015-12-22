@@ -46,7 +46,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     private boolean isInitialized;
     private boolean isExplicit;
     private boolean isFixed;
-    private boolean specialPointsOccur;
     private boolean movable = false;
 
     private double[][] specialPoints;
@@ -199,10 +198,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.isFixed = isFixed;
     }
 
-    public void setSpecialPointsOccur(boolean specialPointsOccur) {
-        this.specialPointsOccur = specialPointsOccur;
-    }
-
     public void setSpecialPoints(double[][] specialPoints) {
         this.specialPoints = specialPoints;
     }
@@ -237,6 +232,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.exprs.clear();
         this.graph2D.clear();
         this.colors.clear();
+        this.specialPoints = null;
     }
 
     /**
@@ -762,6 +758,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      */
     public void drawSpecialPoints(Graphics g, double[][] specialPoints) {
         g.setColor(Color.red);
+        if (specialPoints == null){
+            return;
+        }
         int[][] specialPointsCoordinates = new int[specialPoints.length][2];
         for (int i = 0; i < specialPoints.length; i++) {
             specialPointsCoordinates[i] = convertToPixel(specialPoints[i][0], specialPoints[i][1]);
@@ -838,9 +837,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
         g.setColor(Color.blue);
         int[] pixelsOfImplicitGraph;
-        double[] point;
-        for (int i = 0; i < this.implicitGraph2D.size(); i++) {
-            point = this.implicitGraph2D.get(i);
+        for (double[] point : this.implicitGraph2D) {
             pixelsOfImplicitGraph = convertToPixel(point[0], point[1]);
             g.drawLine(pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1], pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1]);
         }
@@ -884,9 +881,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
             convertGraphToGraphicalGraph();
         }
 
-        if (this.specialPointsOccur) {
+//        if (this.specialPointsOccur) {
             drawSpecialPoints(g, this.specialPoints);
-        }
+//        }
 
     }
 
