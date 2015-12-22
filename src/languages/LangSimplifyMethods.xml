@@ -1,10 +1,4 @@
-﻿<objects>
-  <object id = "SM_SimplifyMethods_COMPUTATION_ABORTED">
-    <German>Berechnung abgebrochen.</German>
-    <English>Computation aborted.</English>
-    <Ukrainian>Обчислення припинено.</Ukrainian>
-    <Russian>Вычисление прекращено.</Russian>
-  </object>
+<objects>
   <object id = "SM_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED">
     <German>tan(pi/2) ist nicht definiert.</German>
     <English>tan(pi/2) is not defined.</English>

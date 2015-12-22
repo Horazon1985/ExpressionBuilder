@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -170,9 +171,7 @@ public class GraphicPanel3D2 extends JPanel implements Runnable, Exportable {
 
     public void setExpression(Expression... exprs) {
         this.exprs.clear();
-        for (Expression expr : exprs){
-            this.exprs.add(expr);
-        }
+        this.exprs.addAll(Arrays.asList(exprs));
     }
 
     public void addExpression(Expression expr) {

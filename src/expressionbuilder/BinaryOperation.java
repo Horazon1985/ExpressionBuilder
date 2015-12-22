@@ -1176,7 +1176,7 @@ public class BinaryOperation extends Expression {
             Expression result = ZERO;
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2+x+3+y+sin(1) wird zu 5+sin(1)+x+y
-            summands = SimplifyUtilities.collectConstantsAndConstantExpressionsInSum(summands);
+            summands = SimplifyBinaryOperationMethods.collectConstantsAndConstantExpressionsInSum(summands);
 
             for (int i = summands.getBound() - 1; i >= 0; i--) {
                 if (summands.get(i) == null) {
@@ -1198,7 +1198,7 @@ public class BinaryOperation extends Expression {
             Expression result = ONE;
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2*x*3*y*sin(1) wird zu 6*sin(1)*x*y
-            factors = SimplifyUtilities.collectConstantsAndConstantExpressionsInProduct(factors);
+            factors = SimplifyBinaryOperationMethods.collectConstantsAndConstantExpressionsInProduct(factors);
 
             for (int i = factors.getBound() - 1; i >= 0; i--) {
                 if (factors.get(i) == null) {
@@ -1231,7 +1231,7 @@ public class BinaryOperation extends Expression {
 
         if (this.isSum() || this.isDifference()) {
 
-            SimplifyUtilities.orderDifference(this, termsLeft, termsRight);
+            SimplifyBinaryOperationMethods.orderDifference(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
@@ -1242,7 +1242,7 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isProduct() || this.isQuotient()) {
 
-            SimplifyUtilities.orderQuotient(this, termsLeft, termsRight);
+            SimplifyBinaryOperationMethods.orderQuotient(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
@@ -1283,7 +1283,7 @@ public class BinaryOperation extends Expression {
             factors.put(i, factors.get(i).simplifyCollectProducts());
         }
 
-        SimplifyUtilities.collectFactorsInProduct(factors);
+        SimplifyBinaryOperationMethods.collectFactorsInProduct(factors);
         return SimplifyUtilities.produceProduct(factors);
 
     }

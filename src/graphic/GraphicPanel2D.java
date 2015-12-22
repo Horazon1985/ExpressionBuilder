@@ -233,7 +233,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         }
     }
 
-    public void clearExpressionAndGraph() {
+    public void clearExpressionsAndGraphs() {
         this.exprs.clear();
         this.graph2D.clear();
         this.colors.clear();

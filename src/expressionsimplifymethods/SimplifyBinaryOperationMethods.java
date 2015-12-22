@@ -3371,4 +3371,308 @@ public abstract class SimplifyBinaryOperationMethods {
 
     }
 
+    /**
+     * Sammelt bei Multiplikation gemeinsame nichtkonstante Faktoren in factors
+     * zu einem einzigen Faktor. Die Einträge in factors sind via 0, 1, 2, ...,
+     * size - 1 indiziert.
+     *
+     * @throws EvaluationException
+     */
+    public static void collectFactorsInProduct(ExpressionCollection factors) throws EvaluationException {
+        
+        Expression base;
+        Expression exponent;
+        Expression baseToCompare;
+        Expression exponentToCompare;
+        
+        for (int i = 0; i < factors.getBound(); i++) {
+            
+            if (factors.get(i) == null) {
+                continue;
+            }
+            if (factors.get(i).isPower()) {
+                base = ((BinaryOperation) factors.get(i)).getLeft();
+                exponent = ((BinaryOperation) factors.get(i)).getRight();
+            } else {
+                base = factors.get(i);
+                exponent = Expression.ONE;
+            }
+            
+            for (int j = i + 1; j < factors.getBound(); j++) {
+                
+                if (factors.get(j) == null) {
+                    continue;
+                }
+                if (factors.get(j).isPower()) {
+                    baseToCompare = ((BinaryOperation) factors.get(j)).getLeft();
+                    exponentToCompare = ((BinaryOperation) factors.get(j)).getRight();
+                } else {
+                    baseToCompare = factors.get(j);
+                    exponentToCompare = Expression.ONE;
+                }
+                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
+                    if (base.equivalent(baseToCompare)) {
+                        exponent = exponent.add(exponentToCompare);
+                        factors.put(i, base.pow(exponent));
+                        factors.remove(j);
+                    }
+                }
+                if (Thread.interrupted()) {
+                    throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
+                }
+            }
+            
+        }
+        
+    }
+
+    /**
+     * Hilfsmethode. Sammelt bei Addition Konstanten in summands zu einer
+     * einzigen Konstante im 0-ten Eintrag. Die Einträge in h sind via 0, 1, 2,
+     * ..., size - 1 indiziert. Wird NUR für
+     * collectConstantsAndConstantExpressionsInSum() benötigt.
+     *
+     * @throws EvaluationException
+     */
+    private static ExpressionCollection collectConstantsInSum(ExpressionCollection summands) throws EvaluationException {
+        
+        ExpressionCollection result = new ExpressionCollection();
+        
+        // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
+        boolean summandsContainApproximates = false;
+        for (int i = 0; i < summands.getBound(); i++) {
+            summandsContainApproximates = summandsContainApproximates || summands.get(i).containsApproximates();
+        }
+        
+        if (!summandsContainApproximates) {
+            
+            Expression constantSummand = Expression.ZERO;
+            for (int i = 0; i < summands.getBound(); i++) {
+                if (summands.get(i) == null) {
+                    continue;
+                }
+                if (summands.get(i).isIntegerConstantOrRationalConstant()) {
+                    constantSummand = Constant.addTwoRationals(constantSummand, summands.get(i));
+                    summands.remove(i);
+                }
+            }
+            if (!constantSummand.equals(Expression.ZERO)) {
+                result.put(0, constantSummand);
+            }
+            for (int i = 0; i < summands.getBound(); i++) {
+                if (summands.get(i) != null) {
+                    result.add(summands.get(i));
+                }
+            }
+            if (result.isEmpty()) {
+                result.put(0, Expression.ZERO);
+            }
+            return result;
+            
+        } else {
+            
+            Constant constantSummand = Expression.ZERO;
+            for (int i = 0; i < summands.getBound(); i++) {
+                if (summands.get(i).isConstant()) {
+                    constantSummand = new Constant(constantSummand.getApproxValue() + summands.get(i).evaluate());
+                    summands.remove(i);
+                }
+            }
+            if (constantSummand.getApproxValue() != 0) {
+                result.put(0, constantSummand);
+            }
+            for (int i = 0; i < summands.getBound(); i++) {
+                if (summands.get(i) != null) {
+                    result.add(summands.get(i));
+                }
+            }
+            if (result.isEmpty()) {
+                result.put(0, new Constant((double) 0));
+            }
+            return result;
+            
+        }
+        
+    }
+
+    /**
+     * Sammelt bei Multiplikation Konstanten in factors zu einer einzigen
+     * Konstante im 0-ten Eintrag. Die Einträge in factors sind via 0, 1, 2,
+     * ..., size - 1 indiziert. Wird NUR für
+     * collectConstantsAndConstantExpressionsInProduct() benötigt.
+     *
+     * @throws EvaluationException
+     */
+    private static ExpressionCollection collectConstantsInProduct(ExpressionCollection factors) throws EvaluationException {
+        
+        ExpressionCollection result = new ExpressionCollection();
+        
+        // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
+        boolean factorsContainApproximatives = false;
+        for (int i = 0; i < factors.getBound(); i++) {
+            factorsContainApproximatives = factorsContainApproximatives || factors.get(i).containsApproximates();
+        }
+        
+        if (!factorsContainApproximatives) {
+            
+            Expression constantFactor = Expression.ONE;
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (factors.get(i).isIntegerConstantOrRationalConstant()) {
+                    constantFactor = Constant.multiplyTwoRationals(constantFactor, factors.get(i));
+                    factors.remove(i);
+                }
+            }
+            if (constantFactor.equals(Expression.ZERO)) {
+                result.put(0, constantFactor);
+                return result;
+            }
+            if (!constantFactor.equals(Expression.ONE)) {
+                result.put(0, constantFactor);
+            }
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (factors.get(i) != null) {
+                    result.add(factors.get(i));
+                }
+            }
+            if (result.isEmpty()) {
+                result.put(0, Expression.ONE);
+            }
+            return result;
+            
+        } else {
+            
+            Constant constantFactor = Expression.ONE;
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (factors.get(i).isConstant()) {
+                    constantFactor = new Constant(constantFactor.getApproxValue() * factors.get(i).evaluate());
+                    factors.remove(i);
+                }
+            }
+            if (constantFactor.getApproxValue() == 0) {
+                result.put(0, constantFactor);
+                return result;
+            }
+            if (constantFactor.getApproxValue() != 1) {
+                result.put(0, constantFactor);
+            }
+            for (int i = 0; i < factors.getBound(); i++) {
+                if (factors.get(i) != null) {
+                    result.add(factors.get(i));
+                }
+            }
+            if (result.isEmpty()) {
+                result.put(0, new Constant((double) 1));
+            }
+            return result;
+            
+        }
+        
+    }
+
+    /**
+     * Hilfsprozeduren für das Zusammenfassen von Konstanten.
+     */
+    /**
+     * Sammelt bei Addition konstante Ausdrücke in summands so weit wie möglich
+     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
+     * indiziert.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection collectConstantsAndConstantExpressionsInSum(ExpressionCollection summands) throws EvaluationException {
+        
+        ExpressionCollection result = new ExpressionCollection();
+        summands = collectConstantsInSum(summands);
+        int l = summands.getBound();
+        if (summands.get(0).isIntegerConstantOrRationalConstant()) {
+            result.add(summands.get(0));
+            summands.remove(0);
+        }
+        for (int i = 0; i < l; i++) {
+            if (summands.get(i) == null) {
+                continue;
+            }
+            if (summands.get(i).isConstant() && !(summands.get(i) instanceof Constant)) {
+                result.add(summands.get(i));
+                summands.remove(i);
+            }
+        }
+        for (int i = 0; i < l; i++) {
+            if (summands.get(i) == null) {
+                continue;
+            }
+            result.add(summands.get(i));
+        }
+        return result;
+        
+    }
+
+    /**
+     * Sammelt bei Multiplikation konstante Ausdrücke in h zu einem einzigen
+     * konstanten Ausdruck. Die Einträge in h sind via 0, 1, 2, ..., size - 1
+     * indiziert.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection collectConstantsAndConstantExpressionsInProduct(ExpressionCollection factors) throws EvaluationException {
+        
+        ExpressionCollection result = new ExpressionCollection();
+        factors = collectConstantsInProduct(factors);
+        if (factors.get(0).isIntegerConstantOrRationalConstant()) {
+            result.add(factors.get(0));
+            factors.remove(0);
+        }
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null) {
+                if (factors.get(i).isConstant() && !(factors.get(i) instanceof Constant)) {
+                    result.add(factors.get(i));
+                    factors.remove(i);
+                }
+            }
+        }
+        for (int i = 0; i < factors.getBound(); i++) {
+            if (factors.get(i) != null) {
+                result.add(factors.get(i));
+            }
+        }
+        return result;
+        
+    }
+
+    /**
+     * Hilfsprozeduren für das Sortieren von Summen/Differenzen und
+     * Produkten/Quotienten
+     */
+    public static void orderDifference(Expression expr, ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
+        if (expr.isNotSum() && expr.isNotDifference()) {
+            summandsLeft.add(expr);
+            return;
+        }
+        if (expr.isSum()) {
+            orderDifference(((BinaryOperation) expr).getLeft(), summandsLeft, summandsRight);
+            orderDifference(((BinaryOperation) expr).getRight(), summandsLeft, summandsRight);
+        } else {
+            orderDifference(((BinaryOperation) expr).getLeft(), summandsLeft, summandsRight);
+            orderDifference(((BinaryOperation) expr).getRight(), summandsRight, summandsLeft);
+        }
+    }
+
+    /**
+     * Hilfsprozeduren für das Sortieren von Summen/Differenzen und
+     * Produkten/Quotienten
+     */
+    public static void orderQuotient(Expression expr, ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator) {
+        if (expr.isNotProduct() && expr.isNotQuotient()) {
+            factorsEnumerator.add(expr);
+            return;
+        }
+        if (expr.isProduct()) {
+            orderQuotient(((BinaryOperation) expr).getLeft(), factorsEnumerator, factorsDenominator);
+            orderQuotient(((BinaryOperation) expr).getRight(), factorsEnumerator, factorsDenominator);
+        } else {
+            orderQuotient(((BinaryOperation) expr).getLeft(), factorsEnumerator, factorsDenominator);
+            orderQuotient(((BinaryOperation) expr).getRight(), factorsDenominator, factorsEnumerator);
+        }
+    }
+
 }
