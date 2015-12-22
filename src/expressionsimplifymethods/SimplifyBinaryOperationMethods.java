@@ -1457,7 +1457,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
     /**
      * Vereinfacht beispielsweise 6*(1/8+a/4)*b zu 3*(1/4+a/2)*b
-     * 
+     *
      * @throws EvaluationException
      */
     public static void pullGCDOfCoefficientsInProducts(ExpressionCollection factors) throws EvaluationException {
@@ -2541,7 +2541,7 @@ public abstract class SimplifyBinaryOperationMethods {
         HashSet<String> varsNumerator = new HashSet<>();
         HashSet<String> varsDenominator = new HashSet<>();
         String var;
-        
+
         for (int i = 0; i < factorsNumerator.getBound(); i++) {
 
             if (factorsNumerator.get(i) == null) {
@@ -2613,11 +2613,11 @@ public abstract class SimplifyBinaryOperationMethods {
 
     }
 
-    private static String getUniqueVar(HashSet<String> vars){
+    private static String getUniqueVar(HashSet<String> vars) {
         Iterator<String> iter = vars.iterator();
         return iter.next();
     }
-    
+
     /**
      * Hilfsmethode für reducePolynomialFactorsInNumeratorAndDenominatorByGCD().
      * Falls der Zähler und der Nenner RATIONALE Polynome (von nicht allzu hohem
@@ -3379,14 +3379,14 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     public static void collectFactorsInProduct(ExpressionCollection factors) throws EvaluationException {
-        
+
         Expression base;
         Expression exponent;
         Expression baseToCompare;
         Expression exponentToCompare;
-        
+
         for (int i = 0; i < factors.getBound(); i++) {
-            
+
             if (factors.get(i) == null) {
                 continue;
             }
@@ -3397,9 +3397,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 base = factors.get(i);
                 exponent = Expression.ONE;
             }
-            
+
             for (int j = i + 1; j < factors.getBound(); j++) {
-                
+
                 if (factors.get(j) == null) {
                     continue;
                 }
@@ -3410,20 +3410,20 @@ public abstract class SimplifyBinaryOperationMethods {
                     baseToCompare = factors.get(j);
                     exponentToCompare = Expression.ONE;
                 }
-                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
-                    if (base.equivalent(baseToCompare)) {
-                        exponent = exponent.add(exponentToCompare);
-                        factors.put(i, base.pow(exponent));
-                        factors.remove(j);
-                    }
+//                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
+                if (base.equivalent(baseToCompare)) {
+                    exponent = exponent.add(exponentToCompare);
+                    factors.put(i, base.pow(exponent));
+                    factors.remove(j);
                 }
+//                }
                 if (Thread.interrupted()) {
                     throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
                 }
             }
-            
+
         }
-        
+
     }
 
     /**
@@ -3435,17 +3435,17 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     private static ExpressionCollection collectConstantsInSum(ExpressionCollection summands) throws EvaluationException {
-        
+
         ExpressionCollection result = new ExpressionCollection();
-        
+
         // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
         boolean summandsContainApproximates = false;
         for (int i = 0; i < summands.getBound(); i++) {
             summandsContainApproximates = summandsContainApproximates || summands.get(i).containsApproximates();
         }
-        
+
         if (!summandsContainApproximates) {
-            
+
             Expression constantSummand = Expression.ZERO;
             for (int i = 0; i < summands.getBound(); i++) {
                 if (summands.get(i) == null) {
@@ -3468,9 +3468,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 result.put(0, Expression.ZERO);
             }
             return result;
-            
+
         } else {
-            
+
             Constant constantSummand = Expression.ZERO;
             for (int i = 0; i < summands.getBound(); i++) {
                 if (summands.get(i).isConstant()) {
@@ -3490,9 +3490,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 result.put(0, new Constant((double) 0));
             }
             return result;
-            
+
         }
-        
+
     }
 
     /**
@@ -3504,17 +3504,17 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     private static ExpressionCollection collectConstantsInProduct(ExpressionCollection factors) throws EvaluationException {
-        
+
         ExpressionCollection result = new ExpressionCollection();
-        
+
         // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
         boolean factorsContainApproximatives = false;
         for (int i = 0; i < factors.getBound(); i++) {
             factorsContainApproximatives = factorsContainApproximatives || factors.get(i).containsApproximates();
         }
-        
+
         if (!factorsContainApproximatives) {
-            
+
             Expression constantFactor = Expression.ONE;
             for (int i = 0; i < factors.getBound(); i++) {
                 if (factors.get(i).isIntegerConstantOrRationalConstant()) {
@@ -3538,9 +3538,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 result.put(0, Expression.ONE);
             }
             return result;
-            
+
         } else {
-            
+
             Constant constantFactor = Expression.ONE;
             for (int i = 0; i < factors.getBound(); i++) {
                 if (factors.get(i).isConstant()) {
@@ -3564,9 +3564,9 @@ public abstract class SimplifyBinaryOperationMethods {
                 result.put(0, new Constant((double) 1));
             }
             return result;
-            
+
         }
-        
+
     }
 
     /**
@@ -3580,7 +3580,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection collectConstantsAndConstantExpressionsInSum(ExpressionCollection summands) throws EvaluationException {
-        
+
         ExpressionCollection result = new ExpressionCollection();
         summands = collectConstantsInSum(summands);
         int l = summands.getBound();
@@ -3604,7 +3604,7 @@ public abstract class SimplifyBinaryOperationMethods {
             result.add(summands.get(i));
         }
         return result;
-        
+
     }
 
     /**
@@ -3615,7 +3615,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection collectConstantsAndConstantExpressionsInProduct(ExpressionCollection factors) throws EvaluationException {
-        
+
         ExpressionCollection result = new ExpressionCollection();
         factors = collectConstantsInProduct(factors);
         if (factors.get(0).isIntegerConstantOrRationalConstant()) {
@@ -3636,7 +3636,7 @@ public abstract class SimplifyBinaryOperationMethods {
             }
         }
         return result;
-        
+
     }
 
     /**
