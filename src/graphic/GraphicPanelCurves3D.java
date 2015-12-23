@@ -198,7 +198,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
-        
+
         double globalMaxX = Double.NaN;
         double globalMaxY = Double.NaN;
         double globalMaxZ = Double.NaN;
@@ -314,7 +314,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
-        
+
         double t = t_0;
         double h;
 
@@ -957,7 +957,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
 
     /**
      * Hauptmethode zum Zeichnen von 3D-Kurven.
-     */ 
+     */
     private void drawCurve3D(Graphics g, double angle) {
 
         //Zunächst weißen Hintergrund zeichnen.
@@ -1037,14 +1037,11 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
 
     // Grafikexport.
     @Override
-    public void export(String filePath) {
+    public void export(String filePath) throws IOException {
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();
         paintComponent(g);
-        try {
-            ImageIO.write(bi, "PNG", new File(filePath));
-        } catch (IOException e) {
-        }
+        ImageIO.write(bi, "PNG", new File(filePath));
     }
-    
+
 }

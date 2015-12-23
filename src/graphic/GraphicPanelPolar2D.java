@@ -194,7 +194,7 @@ public class GraphicPanelPolar2D extends JPanel implements Exportable {
 
         double phi_0 = exprPhi_0.evaluate();
         double phi_1 = exprPhi_1.evaluate();
-        
+
         if (phi_0 >= phi_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_1")
                     + (exprs.size() + 2)
@@ -202,7 +202,7 @@ public class GraphicPanelPolar2D extends JPanel implements Exportable {
                     + (exprs.size() + 1)
                     + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_3"));
         }
-        
+
         double globalMinX = Double.NaN;
         double globalMaxX = Double.NaN;
         double globalMinY = Double.NaN;
@@ -558,14 +558,11 @@ public class GraphicPanelPolar2D extends JPanel implements Exportable {
 
     // Grafikexport.
     @Override
-    public void export(String filePath) {
+    public void export(String filePath) throws IOException {
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();
         paintComponent(g);
-        try {
-            ImageIO.write(bi, "PNG", new File(filePath));
-        } catch (IOException e) {
-        }
+        ImageIO.write(bi, "PNG", new File(filePath));
     }
-    
+
 }

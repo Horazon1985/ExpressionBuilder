@@ -262,7 +262,7 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
-        
+
         double t = t_0;
         double h;
 
@@ -526,14 +526,11 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     // Grafikexport.
     @Override
-    public void export(String filePath) {
+    public void export(String filePath) throws IOException {
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();
         paintComponent(g);
-        try {
-            ImageIO.write(bi, "PNG", new File(filePath));
-        } catch (IOException e) {
-        }
+        ImageIO.write(bi, "PNG", new File(filePath));
     }
-    
+
 }

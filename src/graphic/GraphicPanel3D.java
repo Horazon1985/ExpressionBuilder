@@ -173,7 +173,13 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         return instructions;
     }
 
-    public void setExpression(Expression... exprs) {
+    public void setExpressions(ArrayList<Expression> exprs) {
+        this.exprs.clear();
+        this.exprs.addAll(exprs);
+        setColors();
+    }
+
+    public void setExpressions(Expression... exprs) {
         this.exprs.clear();
         this.exprs.addAll(Arrays.asList(exprs));
         setColors();
@@ -197,7 +203,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     private Color generateColor() {
-        return new Color((int) (70 + 100 * Math.random()), (int) (70 + 100 * Math.random()), (int) (70 + 100 * Math.random()));
+        return new Color((int) (70 + 100 * Math.random()), (int) (100 * Math.random()), (int) (70 + 100 * Math.random()));
     }
 
     public void setIsRotating(boolean isRotating) {
@@ -1069,7 +1075,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             blue = b;
         } else {
             red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) (60 * (height - minExpr) / (maxExpr - minExpr));
+            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
             blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
         }
 
@@ -1446,14 +1452,11 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     // Grafikexport.
     @Override
-    public void export(String filePath) {
+    public void export(String filePath) throws IOException {
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();
         paintComponent(g);
-        try {
-            ImageIO.write(bi, "PNG", new File(filePath));
-        } catch (IOException e) {
-        }
+        ImageIO.write(bi, "PNG", new File(filePath));
     }
 
 }

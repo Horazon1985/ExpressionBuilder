@@ -888,22 +888,17 @@ public class GraphicPanel2D extends JPanel implements Exportable {
             convertGraphToGraphicalGraph();
         }
 
-//        if (this.specialPointsOccur) {
         drawSpecialPoints(g, this.specialPoints);
-//        }
 
     }
 
     // Grafikexport.
     @Override
-    public void export(String filePath) {
+    public void export(String filePath) throws IOException {
         BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
         Graphics g = bi.createGraphics();
         paintComponent(g);
-        try {
-            ImageIO.write(bi, "PNG", new File(filePath));
-        } catch (IOException e) {
-        }
+        ImageIO.write(bi, "PNG", new File(filePath));
     }
 
 }
