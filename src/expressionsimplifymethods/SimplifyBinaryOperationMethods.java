@@ -3385,6 +3385,7 @@ public abstract class SimplifyBinaryOperationMethods {
         Expression baseToCompare;
         Expression exponentToCompare;
 
+        BigInteger baseAsBigInteger;
         for (int i = 0; i < factors.getBound(); i++) {
 
             if (factors.get(i) == null) {
@@ -3410,8 +3411,9 @@ public abstract class SimplifyBinaryOperationMethods {
                     baseToCompare = factors.get(j);
                     exponentToCompare = Expression.ONE;
                 }
-                if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
-                    if (base.equivalent(baseToCompare)) {
+                if (base.equivalent(baseToCompare)) {
+                    // TO DO.
+                    if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
                         exponent = exponent.add(exponentToCompare);
                         factors.put(i, base.pow(exponent));
                         factors.remove(j);

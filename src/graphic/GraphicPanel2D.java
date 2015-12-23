@@ -33,7 +33,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      1 zugegriffen werden.
      */
     private ArrayList<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> graph2D = new ArrayList<>();
+    private final ArrayList<double[][]> graphs2D = new ArrayList<>();
     private ArrayList<double[]> implicitGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
@@ -139,8 +139,8 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return this.isExplicit;
     }
 
-    public ArrayList<double[][]> getGraph() {
-        return this.graph2D;
+    public ArrayList<double[][]> getGraphs() {
+        return this.graphs2D;
     }
 
     public ArrayList<double[]> getImplicitGraph() {
@@ -202,35 +202,42 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.specialPoints = specialPoints;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs){
+    public void setExpressions(ArrayList<Expression> exprs) {
         this.exprs = exprs;
         setColors();
     }
-    
+
     public void addExpression(Expression expr) {
         this.exprs.add(expr);
         setColors();
     }
 
     public void addGraph(double[][] graph) {
-        this.graph2D.add(this.graph2D.size(), graph);
+        this.graphs2D.add(this.graphs2D.size(), graph);
         setColors();
     }
 
-    public void setColors() {
-        int numberOfColors = Math.max(this.exprs.size(), this.graph2D.size());
+    private void setColors() {
+        int numberOfColors = Math.max(this.exprs.size(), this.graphs2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
             if (i < GraphicPanel2D.fixedColors.length) {
                 this.colors.add(GraphicPanel2D.fixedColors[i]);
             } else {
-                this.colors.add(new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random())));
+                this.colors.add(generateColor());
             }
         }
     }
 
+    /**
+     * Erzeugt eine neue Zufallsfarbe.
+     */
+    private Color generateColor() {
+        return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+    }
+
     public void clearExpressionsAndGraphs() {
         this.exprs.clear();
-        this.graph2D.clear();
+        this.graphs2D.clear();
         this.colors.clear();
         this.specialPoints = null;
     }
@@ -250,15 +257,15 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         double globalMinY = Double.NaN;
         double globalMaxY = Double.NaN;
 
-        if (!this.graph2D.isEmpty()) {
-            this.axeCenterX = (this.graph2D.get(0)[this.graph2D.get(0).length - 1][0] + this.graph2D.get(0)[0][0]) / 2;
-            this.maxX = (this.graph2D.get(0)[this.graph2D.get(0).length - 1][0] - this.graph2D.get(0)[0][0]) / 2;
+        if (!this.graphs2D.isEmpty()) {
+            this.axeCenterX = (this.graphs2D.get(0)[this.graphs2D.get(0).length - 1][0] + this.graphs2D.get(0)[0][0]) / 2;
+            this.maxX = (this.graphs2D.get(0)[this.graphs2D.get(0).length - 1][0] - this.graphs2D.get(0)[0][0]) / 2;
         }
 
-        for (int i = 0; i < this.graph2D.size(); i++) {
+        for (int i = 0; i < this.graphs2D.size(); i++) {
 
-            if (this.graph2D.get(i).length > 0) {
-                for (double[] graph : this.graph2D.get(i)) {
+            if (this.graphs2D.get(i).length > 0) {
+                for (double[] graph : this.graphs2D.get(i)) {
                     if (!(Double.isNaN(graph[1])) && !(Double.isInfinite(graph[1]))) {
                         if (Double.isNaN(globalMinY)) {
                             globalMinY = graph[1];
@@ -316,7 +323,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
                 Variable.setValue(this.varAbsc, varAbscStart + j * (varAbscEnd - varAbscStart) / 100);
                 try {
                     y = expr.evaluate();
-                }catch (EvaluationException e) {
+                } catch (EvaluationException e) {
                     y = Double.NaN;
                 }
                 if (!Double.isNaN(y) && !Double.isInfinite(y)) {
@@ -428,7 +435,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
 
-        this.graph2D.clear();
+        this.graphs2D.clear();
         double[][] pointsOnGraphs;
 
         for (int i = 0; i < this.exprs.size(); i++) {
@@ -464,7 +471,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
                 }
             }
 
-            this.graph2D.add(i, pointsOnGraphs);
+            this.graphs2D.add(i, pointsOnGraphs);
 
         }
 
@@ -478,12 +485,12 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
         HashMap<Integer, int[][]> result = new HashMap<>();
 
-        for (int i = 0; i < this.graph2D.size(); i++) {
+        for (int i = 0; i < this.graphs2D.size(); i++) {
 
-            int[][] graphicalGraph = new int[this.graph2D.get(i).length][2];
-            for (int j = 0; j < this.graph2D.get(i).length; j++) {
-                graphicalGraph[j][0] = (int) Math.round(250 + 250 * (this.graph2D.get(i)[j][0] - this.axeCenterX) / this.maxX);
-                graphicalGraph[j][1] = (int) Math.round(250 - 250 * (this.graph2D.get(i)[j][1] - this.axeCenterY) / this.maxY);
+            int[][] graphicalGraph = new int[this.graphs2D.get(i).length][2];
+            for (int j = 0; j < this.graphs2D.get(i).length; j++) {
+                graphicalGraph[j][0] = (int) Math.round(250 + 250 * (this.graphs2D.get(i)[j][0] - this.axeCenterX) / this.maxX);
+                graphicalGraph[j][1] = (int) Math.round(250 - 250 * (this.graphs2D.get(i)[j][1] - this.axeCenterY) / this.maxY);
             }
             result.put(i, graphicalGraph);
 
@@ -758,7 +765,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      */
     public void drawSpecialPoints(Graphics g, double[][] specialPoints) {
         g.setColor(Color.red);
-        if (specialPoints == null){
+        if (specialPoints == null) {
             return;
         }
         int[][] specialPointsCoordinates = new int[specialPoints.length][2];
@@ -785,27 +792,27 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         drawAxesAndLines(g, varAbsc);
 
         //Graphen zeichnen
-        if (this.graph2D.isEmpty()) {
+        if (this.graphs2D.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < this.graph2D.size(); i++) {
+        for (int i = 0; i < this.graphs2D.size(); i++) {
 
             g.setColor(this.colors.get(i));
 
-            if (graph2D.get(i).length > 1) {
+            if (graphs2D.get(i).length > 1) {
 
                 HashMap<Integer, int[][]> graphicalGraph = convertGraphToGraphicalGraph();
                 for (int j = 0; j < graphicalGraph.get(i).length - 1; j++) {
-                    if (!Double.isNaN(graph2D.get(i)[j][1]) && !Double.isInfinite(graph2D.get(i)[j][1])
-                            && !Double.isNaN(graph2D.get(i)[j + 1][1]) && !Double.isInfinite(graph2D.get(i)[j + 1][1])) {
+                    if (!Double.isNaN(graphs2D.get(i)[j][1]) && !Double.isInfinite(graphs2D.get(i)[j][1])
+                            && !Double.isNaN(graphs2D.get(i)[j + 1][1]) && !Double.isInfinite(graphs2D.get(i)[j + 1][1])) {
 
-                        if ((axeCenterY + maxY < graph2D.get(i)[j][1]) && (axeCenterY - maxY > graph2D.get(i)[j + 1][1])) {
+                        if ((axeCenterY + maxY < graphs2D.get(i)[j][1]) && (axeCenterY - maxY > graphs2D.get(i)[j + 1][1])) {
                             g.drawLine(graphicalGraph.get(i)[j][0], 0, graphicalGraph.get(i)[j + 1][0], 500);
-                        } else if ((axeCenterY - maxY > graph2D.get(i)[j][1]) && (axeCenterY + maxY < graph2D.get(i)[j + 1][1])) {
+                        } else if ((axeCenterY - maxY > graphs2D.get(i)[j][1]) && (axeCenterY + maxY < graphs2D.get(i)[j + 1][1])) {
                             g.drawLine(graphicalGraph.get(i)[j][0], 500, graphicalGraph.get(i)[j + 1][0], 0);
-                        } else if ((axeCenterY + 2 * maxY >= graph2D.get(i)[j][1]) && (axeCenterY - 2 * maxY <= graph2D.get(i)[j][1])
-                                && (axeCenterY + 2 * maxY >= graph2D.get(i)[j + 1][1]) && (axeCenterY - 2 * maxY <= graph2D.get(i)[j + 1][1])) {
+                        } else if ((axeCenterY + 2 * maxY >= graphs2D.get(i)[j][1]) && (axeCenterY - 2 * maxY <= graphs2D.get(i)[j][1])
+                                && (axeCenterY + 2 * maxY >= graphs2D.get(i)[j + 1][1]) && (axeCenterY - 2 * maxY <= graphs2D.get(i)[j + 1][1])) {
                             g.drawLine(graphicalGraph.get(i)[j][0], graphicalGraph.get(i)[j][1], graphicalGraph.get(i)[j + 1][0], graphicalGraph.get(i)[j + 1][1]);
                         }
 
@@ -871,7 +878,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
          * gezeichnet, falls der aktuelle Zoomfaktor derart berechnet wurde,
          * dass der Graph zu grob oder zu klein ist.
          */
-        if (this.isExplicit && !this.isFixed && (this.graph2D.size() > 0)) {
+        if (this.isExplicit && !this.isFixed && (this.graphs2D.size() > 0)) {
             try {
                 Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
                 Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
@@ -882,7 +889,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         }
 
 //        if (this.specialPointsOccur) {
-            drawSpecialPoints(g, this.specialPoints);
+        drawSpecialPoints(g, this.specialPoints);
 //        }
 
     }
@@ -898,5 +905,5 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         } catch (IOException e) {
         }
     }
-    
+
 }

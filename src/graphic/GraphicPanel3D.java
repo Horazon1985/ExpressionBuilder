@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import translator.Translator;
@@ -29,17 +31,21 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     private boolean isRotating;
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
-    private Expression expr;
+    private final ArrayList<Expression> exprs = new ArrayList<>();
     //Array, indem die Punkte am Graphen gespeichert sind
-    private double[][][] graph3D = new double[1][1][3];
+    private ArrayList<double[][][]> graphs3D = new ArrayList<>();
     /*
      "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
      Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
      werden).
      */
-    private double[][][] graph3DForGraphic = new double[1][1][3];
+    private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
-    private boolean[][] graph3DIsDefined = new boolean[1][1];
+    private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
+    // Grundfarben für die einzelnen Graphen.
+    private ArrayList<Color> colors = new ArrayList<>();
+    // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
+    final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -151,8 +157,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    public Expression getExpression() {
-        return this.expr;
+    public ArrayList<Expression> getExpression() {
+        return this.exprs;
     }
 
     public boolean getIsRotating() {
@@ -167,8 +173,31 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         return instructions;
     }
 
-    public void setExpression(Expression expr) {
-        this.expr = expr;
+    public void setExpression(Expression... exprs) {
+        this.exprs.clear();
+        this.exprs.addAll(Arrays.asList(exprs));
+        setColors();
+    }
+
+    public void addExpression(Expression expr) {
+        this.exprs.add(expr);
+        setColors();
+    }
+
+    private void setColors() {
+        int numberOfColors = Math.max(this.exprs.size(), this.graphs3D.size());
+        this.colors.clear();
+        for (int i = this.colors.size(); i < numberOfColors; i++) {
+            if (i < GraphicPanel2D.fixedColors.length) {
+                this.colors.add(GraphicPanel3D.fixedColors[i]);
+            } else {
+                this.colors.add(generateColor());
+            }
+        }
+    }
+
+    private Color generateColor() {
+        return new Color((int) (70 + 100 * Math.random()), (int) (70 + 100 * Math.random()), (int) (70 + 100 * Math.random()));
     }
 
     public void setIsRotating(boolean isRotating) {
@@ -189,31 +218,44 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     /**
-     * Voraussetzung: graph ist bereits initialisiert (bzw. mit Funktionswerten
-     * gefüllt).
+     * Voraussetzung: graphs sind bereits alle initialisiert (bzw. mit
+     * Funktionswerten gefüllt).
      */
     private void computeMaxXMaxYMaxZ() {
 
-        if (this.graph3D.length == 0) {
+        if (this.graphs3D.isEmpty()) {
+
             this.maxX = 1;
             this.maxY = 1;
             this.maxZ = 1;
+
         } else {
-            double globalMaxX = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-            double globalMaxY = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
-            double globalMaxZ = 0;
-            for (int i = 0; i <= this.graph3D.length - 1; i++) {
-                for (int j = 0; j <= this.graph3D[0].length - 1; j++) {
-                    if (graph3DIsDefined[i][j]) {
-                        globalMaxZ = Math.max(globalMaxZ, Math.abs(this.graph3D[i][j][2]));
+
+            double globalMaxX = 0, globalMaxY = 0, globalMaxZ = 0;
+
+            for (int k = 0; k < this.graphs3D.size(); k++) {
+
+                if (this.graphs3D.get(0).length == 0) {
+                    continue;
+                }
+                globalMaxX = Math.max(globalMaxX, Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0])));
+                globalMaxY = Math.max(globalMaxY, Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1])));
+
+                for (int i = 0; i <= this.graphs3D.get(k).length - 1; i++) {
+                    for (int j = 0; j <= this.graphs3D.get(k)[0].length - 1; j++) {
+                        if (graphs3DAreDefined.get(k)[i][j]) {
+                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.graphs3D.get(k)[i][j][2]));
+                        }
                     }
                 }
+                this.maxX = globalMaxX;
+                this.maxY = globalMaxY;
+                this.maxZ = globalMaxZ;
+                // 30 % Rand auf der z-Achse lassen!
+                this.maxZ = this.maxZ * 1.3;
+
             }
-            this.maxX = globalMaxX;
-            this.maxY = globalMaxY;
-            this.maxZ = globalMaxZ;
-            // 30 % Rand auf der z-Achse lassen!
-            this.maxZ = this.maxZ * 1.3;
+
         }
 
         if (this.maxX == 0) {
@@ -292,25 +334,35 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
         }
 
-        this.graph3D = new double[101][101][3];
-        this.graph3DIsDefined = new boolean[101][101];
+        this.graphs3D = new ArrayList<>();
+        this.graphs3DAreDefined = new ArrayList<>();
 
-        Variable.setValue(this.varAbsc, x_0);
-        Variable.setValue(this.varOrd, y_0);
-        for (int i = 0; i <= 100; i++) {
-            for (int j = 0; j <= 100; j++) {
-                this.graph3D[i][j][0] = x_0 + (x_1 - x_0) * i / 100;
-                this.graph3D[i][j][1] = y_0 + (y_1 - y_0) * j / 100;
-                Variable.setValue(this.varAbsc, x_0 + (x_1 - x_0) * i / 100);
-                Variable.setValue(this.varOrd, y_0 + (y_1 - y_0) * j / 100);
-                try {
-                    this.graph3D[i][j][2] = expr.evaluate();
-                    graph3DIsDefined[i][j] = true;
-                } catch (EvaluationException e) {
-                    this.graph3D[i][j][2] = Double.NaN;
-                    graph3DIsDefined[i][j] = false;
+        double[][][] singleGraph;
+        boolean[][] singleGraphIsDefined;
+        for (Expression expr : exprs) {
+
+            singleGraph = new double[101][101][3];
+            singleGraphIsDefined = new boolean[101][101];
+            Variable.setValue(this.varAbsc, x_0);
+            Variable.setValue(this.varOrd, y_0);
+            for (int i = 0; i <= 100; i++) {
+                for (int j = 0; j <= 100; j++) {
+                    singleGraph[i][j][0] = x_0 + (x_1 - x_0) * i / 100;
+                    singleGraph[i][j][1] = y_0 + (y_1 - y_0) * j / 100;
+                    Variable.setValue(this.varAbsc, x_0 + (x_1 - x_0) * i / 100);
+                    Variable.setValue(this.varOrd, y_0 + (y_1 - y_0) * j / 100);
+                    try {
+                        singleGraph[i][j][2] = expr.evaluate();
+                        singleGraphIsDefined[i][j] = true;
+                    } catch (EvaluationException e) {
+                        singleGraph[i][j][2] = Double.NaN;
+                        singleGraphIsDefined[i][j] = false;
+                    }
                 }
             }
+            this.graphs3D.add(singleGraph);
+            this.graphs3DAreDefined.add(singleGraphIsDefined);
+
         }
 
         //Zeichenbereich berechnen.
@@ -338,67 +390,66 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
      * kann Voraussetzung: maxX, maxY sind bekannt!
      */
-    private double[][][] convertGraphToCoarserGraph() {
+    private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongAbsc = graph3D.length;
-        int numberOfIntervalsAlongOrd = graph3D[0].length;
+        int numberOfIntervalsAlongAbsc = graphs3D.get(0).length;
+        int numberOfIntervalsAlongOrd = graphs3D.get(0)[0].length;
 
-        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (graph3D[numberOfIntervalsAlongAbsc - 1][0][0] - graph3D[0][0][0]) / maxX) {
-            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (graph3D[numberOfIntervalsAlongAbsc - 1][0][0] - graph3D[0][0][0]) / maxX);
+        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX) {
+            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX);
             if (numberOfIntervalsAlongAbsc < 1) {
                 numberOfIntervalsAlongAbsc = 1;
             }
         }
-        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (graph3D[0][numberOfIntervalsAlongOrd - 1][1] - graph3D[0][0][1]) / maxY) {
-            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (graph3D[0][numberOfIntervalsAlongOrd - 1][1] - graph3D[0][0][1]) / maxY);
+        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY) {
+            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY);
             if (numberOfIntervalsAlongOrd < 1) {
                 numberOfIntervalsAlongOrd = 1;
             }
         }
 
-        double[][][] graphForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
-        this.graph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
+        ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 
-        /*
-         Gibt den Index an, bei dem aus dem Array graph3D gelesen werden muss.
-         Beispiel: Sei graph3D[length_x - 1][0][0] - graph3D[0][0][0] == 1,
-         max_x == 1, aber graph3D.length == 101 (wie bei der Initialisierung).
-         Dann wird oben zunächst lenght_x = 27 berechnet. In der ersten
-         for-Schleife wird dann nacheinander: act_index_i = 0, 3, 7, 11, 14,
-         18, etc. Der Graph wird also etwas vergröbert, wenn man nur auf den
-         0-, 3-, 7-, 11-, 14-, 18-ten etc. x-Wert zurückgreift. GRUND: Beim
-         herauszoomen sollen die Plättchen am Graphen nicht ganz so klein sein
-         -> Graph muss vergröbert werden.
-         */
-        int currentIndexI, currentIndexJ;
+        double[][][] graph3DForGraphic;
+        boolean[][] coarserGraph3DIsDefined;
+        this.graphs3DAreDefined.clear();
+        for (double[][][] graph3D : this.graphs3D) {
 
-        for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+            graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
 
-            if (graph3D.length <= numberOfIntervalsAlongAbsc) {
-                currentIndexI = i;
-            } else {
-                currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
-            }
+            int currentIndexI, currentIndexJ;
 
-            for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
-                if (graph3D[0].length <= numberOfIntervalsAlongOrd) {
-                    currentIndexJ = j;
+                if (graph3D.length <= numberOfIntervalsAlongAbsc) {
+                    currentIndexI = i;
                 } else {
-                    currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
                 }
 
-                graphForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
-                graphForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
-                graphForGraphic[i][j][2] = graph3D[currentIndexI][currentIndexJ][2];
-
-                //Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
-                this.graph3DIsDefined[i][j] = !(Double.isNaN(this.graph3D[currentIndexI][currentIndexJ][2]) || Double.isInfinite(this.graph3D[currentIndexI][currentIndexJ][2]));
+                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+                    if (graph3D[0].length <= numberOfIntervalsAlongOrd) {
+                        currentIndexJ = j;
+                    } else {
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
+                    }
+                    graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
+                    graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
+                    graph3DForGraphic[i][j][2] = graph3D[currentIndexI][currentIndexJ][2];
+                    // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
+                    coarserGraph3DIsDefined[i][j] = !(Double.isNaN(graph3D[currentIndexI][currentIndexJ][2]) || Double.isInfinite(graph3D[currentIndexI][currentIndexJ][2]));
+                }
 
             }
+
+            graphsForGraphic.add(graph3DForGraphic);
+            this.graphs3DAreDefined.add(coarserGraph3DIsDefined);
+
         }
 
-        return graphForGraphic;
+        return graphsForGraphic;
+
     }
 
     //Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die graphische Darstellung
@@ -477,7 +528,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void DrawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
+    private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
@@ -497,7 +548,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void DrawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
+    private void drawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, Graphics g, Color c) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 3);
@@ -536,8 +587,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
 
         g.setColor(Color.GRAY);
@@ -635,8 +686,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
 
         g.setColor(Color.GRAY);
@@ -733,8 +784,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         g.setColor(Color.GRAY);
@@ -832,8 +883,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         g.setColor(Color.GRAY);
@@ -926,8 +977,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     private void drawLevelsBottom(Graphics g, double f_min, double f_max, double R, double r, double h, double angle) {
 
-        double maxValueAbsc = Math.max(Math.abs(this.graph3D[0][0][0]), Math.abs(this.graph3D[this.graph3D.length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graph3D[0][0][1]), Math.abs(this.graph3D[0][this.graph3D[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         //Zunächst den Rahmen auf dem Boden zeichnen
@@ -1003,19 +1054,23 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    private Color computeColor(double minExpr, double maxExpr, double height) {
+    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
 
         Color c;
         int red, green, blue;
 
+        int r = groundColor.getRed();
+        int g = groundColor.getGreen();
+        int b = groundColor.getBlue();
+
         if (minExpr == maxExpr) {
-            red = 255;
-            green = 255;
-            blue = 0;
+            red = r;
+            green = g;
+            blue = b;
         } else {
-            red = 127 - (int) (127 * Math.sin(this.angle / 180 * Math.PI));
-            green = (int) (255 * (height - minExpr) / (maxExpr - minExpr));
-            blue = 127 + (int) (127 * Math.sin(this.angle / 180 * Math.PI));
+            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
+            green = g + (int) (60 * (height - minExpr) / (maxExpr - minExpr));
+            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
         }
 
         c = new Color(red, green, blue);
@@ -1024,21 +1079,75 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     /**
+     * Berechnet die Höhe des Schwerpunktes eines Tangentialplättchens, falls es
+     * definiert ist.
+     */
+    private double computeAverageHeightOfInfinitesimalTangentSpace(int indexOfGraph3D, int i, int j) {
+
+        double averageHeightOfTangentSpace = 0;
+        int numberOfDefinedBorderPoints = 0;
+
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
+            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
+            numberOfDefinedBorderPoints++;
+        }
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
+            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
+            numberOfDefinedBorderPoints++;
+        }
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
+            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
+            numberOfDefinedBorderPoints++;
+        }
+        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
+            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
+            numberOfDefinedBorderPoints++;
+        }
+
+        if (numberOfDefinedBorderPoints == 4) {
+            return averageHeightOfTangentSpace / numberOfDefinedBorderPoints;
+        }
+        return Double.NaN;
+
+    }
+
+    /**
      * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
      * Achsen)
      */
-    private void DrawGraphFromGraph3DForGraphic(Graphics g, double minExpr, double maxExpr,
+    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
             double bigRadius, double smallRadius, double height, double angle) {
 
-        int numberOfIntervalsAlongAbsc = graph3DForGraphic.length - 1;
-        int numberOfIntervalsAlongOrd = graph3DForGraphic[0].length - 1;
+        int numberOfIntervalsAlongAbsc = 0;
+        int numberOfIntervalsAlongOrd = 0;
 
-        //Koordinaten des Graphen in graphische Koordinaten umwandeln
-        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
-            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-                graphicalGraph[i][j] = convertToPixel(graph3DForGraphic[i][j][0], graph3DForGraphic[i][j][1], graph3DForGraphic[i][j][2], bigRadius, smallRadius, height, angle);
+        // Anzahl der Intervalle für das Zeichnen ermitteln.
+        for (double[][][] graph3DForGraphic : this.graphs3DForGraphic) {
+            if (graph3DForGraphic.length > 0) {
+                numberOfIntervalsAlongAbsc = graph3DForGraphic.length - 1;
+                numberOfIntervalsAlongOrd = graph3DForGraphic[0].length - 1;
+                break;
             }
+        }
+
+        // Dann können keine Graphen gezeichnet werden.
+        if (numberOfIntervalsAlongAbsc == 0 || numberOfIntervalsAlongOrd == 0) {
+            return;
+        }
+
+        //Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
+        ArrayList<int[][][]> graphicalGraphs = new ArrayList<>();
+        int[][][] graphicalGraph;
+
+        for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+            graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
+            for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
+                    graphicalGraph[i][j] = convertToPixel(this.graphs3DForGraphic.get(k)[i][j][0], this.graphs3DForGraphic.get(k)[i][j][1],
+                            this.graphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
+                }
+            }
+            graphicalGraphs.add(graphicalGraph);
         }
 
         /*
@@ -1047,39 +1156,37 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
          hinten nach vorne" gezeichnet werden soll. Voraussetzung: 0 <= angle
          < 360
          */
+        HashMap<Integer, Double> heightsOfCentersOfInfinitesimalTangentSpaces = new HashMap<>();
+        Double heightOfCentersOfInfinitesimalTangentSpace;
+        ArrayList<Integer> indices;
+
         if (angle <= 90) {
 
             for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
                 for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
 
-                    Color c = computeColor(minExpr, maxExpr, graph3DForGraphic[i][numberOfIntervalsAlongOrd - j - 1][2]);
+                    // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
+                    heightsOfCentersOfInfinitesimalTangentSpaces.clear();
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                        heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, numberOfIntervalsAlongOrd - j - 1);
+                        if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
+                            heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
+                        }
+                    }
+                    // Indizes für eine aufsteigende Ordnung berechnen.
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    if ((graph3DIsDefined[i][numberOfIntervalsAlongOrd - j - 1]) && (graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j - 1])
-                            && (graph3DIsDefined[i][numberOfIntervalsAlongOrd - j]) && (graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j])) {
-                        DrawInfinitesimalTangentSpace(graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraph[i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j][1],
+                    for (int k = 0; k < indices.size(); k++) {
+
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
+                        // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
+                                graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
+                                graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1],
+                                graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
                                 g, c);
-                    } else if ((graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j])
-                            && (graph3DIsDefined[i][numberOfIntervalsAlongOrd - j]) && (graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j - 1])) {
-                        DrawInfinitesimalTriangleTangentSpace(graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraph[i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
-                    } else if ((graph3DIsDefined[i][numberOfIntervalsAlongOrd - j - 1])
-                            && (graph3DIsDefined[i][numberOfIntervalsAlongOrd - j]) && (graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j - 1])) {
-                        DrawInfinitesimalTriangleTangentSpace(graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
-                    } else if ((graph3DIsDefined[i][numberOfIntervalsAlongOrd - j - 1])
-                            && (graph3DIsDefined[i][numberOfIntervalsAlongOrd - j]) && (graph3DIsDefined[i + 1][numberOfIntervalsAlongOrd - j])) {
-                        DrawInfinitesimalTriangleTangentSpace(graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraph[i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+
                     }
 
                 }
@@ -1092,15 +1199,27 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                 for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
 
-                    Color c = computeColor(minExpr, maxExpr, graph3DForGraphic[i][j][2]);
+                    // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
+                    heightsOfCentersOfInfinitesimalTangentSpaces.clear();
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                        heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
+                        if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
+                            heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
+                        }
+                    }
+                    // Indizes für eine aufsteigende Ordnung berechnen.
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    if ((graph3DIsDefined[i][j]) && (graph3DIsDefined[i][j + 1])
-                            && (graph3DIsDefined[i + 1][j]) && (graph3DIsDefined[i + 1][j + 1])) {
-                        DrawInfinitesimalTangentSpace(graphicalGraph[i][j][0], graphicalGraph[i][j][1],
-                                graphicalGraph[i + 1][j][0], graphicalGraph[i + 1][j][1],
-                                graphicalGraph[i + 1][j + 1][0], graphicalGraph[i + 1][j + 1][1],
-                                graphicalGraph[i][j + 1][0], graphicalGraph[i][j + 1][1],
+                    for (int k = 0; k < indices.size(); k++) {
+
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][j][2]);
+                        // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
+                                graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
+                                graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1],
+                                graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1],
                                 g, c);
+
                     }
 
                 }
@@ -1113,15 +1232,27 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                 for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
 
-                    Color c = computeColor(minExpr, maxExpr, graph3DForGraphic[numberOfIntervalsAlongAbsc - i - 1][j][2]);
+                    // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
+                    heightsOfCentersOfInfinitesimalTangentSpaces.clear();
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                        heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, j);
+                        if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
+                            heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
+                        }
+                    }
+                    // Indizes für eine aufsteigende Ordnung berechnen.
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    if ((graph3DIsDefined[numberOfIntervalsAlongAbsc - i - 1][j]) && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i][j])
-                            && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i - 1][j + 1]) && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i][j + 1])) {
-                        DrawInfinitesimalTangentSpace(graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][j][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][j + 1][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
+                    for (int k = 0; k < indices.size(); k++) {
+
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
+                        // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
                                 g, c);
+
                     }
 
                 }
@@ -1134,15 +1265,27 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                 for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
 
-                    Color c = computeColor(minExpr, maxExpr, graph3DForGraphic[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
+                    // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
+                    heightsOfCentersOfInfinitesimalTangentSpaces.clear();
+                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                        heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, numberOfIntervalsAlongOrd - j - 1);
+                        if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
+                            heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
+                        }
+                    }
+                    // Indizes für eine aufsteigende Ordnung berechnen.
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
-                    if ((graph3DIsDefined[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1]) && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1])
-                            && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j]) && (graph3DIsDefined[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j])) {
-                        DrawInfinitesimalTangentSpace(graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
+                    for (int k = 0; k < indices.size(); k++) {
+
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
+                        // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
+                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
+                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
                                 g, c);
+
                     }
 
                 }
@@ -1150,6 +1293,48 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             }
 
         }
+
+    }
+
+    /**
+     * Hilfsmethode. Gibt eine Liste von Indizes zurück, gemäß welcher die
+     * Double-Werte im HashMap im Parameter aufsteigend sortiert sind.
+     */
+    private static ArrayList<Integer> getIndicesForAscendingSorting(HashMap<Integer, Double> centersOfInfinitesimalTangentSpaces) {
+
+        HashMap<Integer, Double> copyOfCenters = new HashMap<>();
+        ArrayList<Integer> sortedCenters = new ArrayList<>();
+
+        // Manuell kopieren. clone() traue ich nicht!
+        for (int i = 0; i < centersOfInfinitesimalTangentSpaces.size(); i++) {
+            copyOfCenters.put(i, centersOfInfinitesimalTangentSpaces.get(i));
+        }
+
+        int indexWithLeastElement;
+        double minimalValue;
+        while (!copyOfCenters.isEmpty()) {
+
+            indexWithLeastElement = -1;
+            minimalValue = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < centersOfInfinitesimalTangentSpaces.size(); i++) {
+                if (copyOfCenters.get(i) != null) {
+                    if (indexWithLeastElement == -1) {
+                        indexWithLeastElement = i;
+                        minimalValue = copyOfCenters.get(i);
+                    } else {
+                        if (copyOfCenters.get(i) < minimalValue) {
+                            indexWithLeastElement = i;
+                            minimalValue = copyOfCenters.get(i);
+                        }
+                    }
+                }
+            }
+            sortedCenters.add(indexWithLeastElement);
+            copyOfCenters.remove(indexWithLeastElement);
+
+        }
+
+        return sortedCenters;
 
     }
 
@@ -1169,12 +1354,11 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
          aber varAbsc und varOrd nicht initialisiert und es gibt eine
          Exception. Dies wird hiermit verhindert.
          */
-        if (graph3D.length == 1) {
+        if (this.graphs3D.isEmpty()) {
             return;
         }
-
         computeExpXExpYExpZ();
-        this.graph3DForGraphic = convertGraphToCoarserGraph();
+        this.graphs3DForGraphic = convertGraphsToCoarserGraphs();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um
@@ -1183,14 +1367,19 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         double minExpr = Double.NaN;
         double maxExpr = Double.NaN;
 
-        // Zunächst wird geprüft, ob der Graph IRGENDWO definiert ist
+        // Zunächst wird geprüft, ob mindestens ein Graph IRGENDWO definiert ist
         boolean graphIsSomewhereDefined = false;
-        for (int i = 0; i < this.graph3DForGraphic.length; i++) {
-            for (int j = 0; j < this.graph3DForGraphic[0].length; j++) {
-                if (this.graph3DIsDefined[i][j]) {
-                    graphIsSomewhereDefined = true;
-                    minExpr = this.graph3DForGraphic[i][j][2];
-                    maxExpr = this.graph3DForGraphic[i][j][2];
+        for (int k = 0; k < this.graphs3DAreDefined.size(); k++) {
+            for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.graphs3DAreDefined.get(k)[i][j]) {
+                        graphIsSomewhereDefined = true;
+                        minExpr = this.graphs3DForGraphic.get(k)[i][j][2];
+                        maxExpr = this.graphs3DForGraphic.get(k)[i][j][2];
+                        break;
+                    }
+                }
+                if (graphIsSomewhereDefined) {
                     break;
                 }
             }
@@ -1199,17 +1388,19 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             }
         }
 
-        // Falls der Graph nirgends definiert ist, Defaultwerte für Maße setzen.
+        // Falls kein Graph definiert (irgendwo) ist, Defaultwerte für Maße setzen.
         if (!graphIsSomewhereDefined) {
             minExpr = 0;
             maxExpr = 1;
         }
 
-        for (int i = 0; i < this.graph3DForGraphic.length; i++) {
-            for (int j = 0; j < this.graph3DForGraphic[0].length; j++) {
-                if (this.graph3DIsDefined[i][j]) {
-                    minExpr = Math.min(minExpr, this.graph3DForGraphic[i][j][2]);
-                    maxExpr = Math.max(maxExpr, this.graph3DForGraphic[i][j][2]);
+        for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+            for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.graphs3DAreDefined.get(k)[i][j]) {
+                        minExpr = Math.min(minExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
+                        maxExpr = Math.max(maxExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
+                    }
                 }
             }
         }
@@ -1219,7 +1410,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         drawLevelsOnWest(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsOnNorth(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsBottom(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        DrawGraphFromGraph3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
+        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
 
     }
 
