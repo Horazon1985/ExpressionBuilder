@@ -467,11 +467,29 @@
     <Ukrainian>У команди 'plot3d' має бути рівно п'ять параметрів.</Ukrainian>
     <Russian>У команды 'plot3d' должно быть ровно пять параметров.</Russian>
   </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOT3D">
+    <German>Im Befehl 'plot3d' müssen mindestens fünf Parameter stehen.</German>
+    <English>The command 'plot3d' must contain at least five parameters.</English>
+    <Ukrainian>У команди 'plot3d' має бути ??? п'ять параметрів.</Ukrainian>
+    <Russian>У команды 'plot3d' должно быть минимум пять параметров.</Russian>
+  </object>
   <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_PLOT3D">
     <German>Der 1. Parameter im Befehl 'plot3d' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
     <English>The 1. parameter in command 'plot3d' must be a valid expression. Reported eror: </English>
     <Ukrainian>1. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
     <Russian>1. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT3D_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT3D_2">
+    <German>. Parameter im Befehl 'plot3d' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+    <English>. parameter in command 'plot3d' must be a valid expression. Reported eror: </English>
+    <Ukrainian>. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D_1">
     <German>Der Ausdruck im Befehl 'plot3d' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch </German>
