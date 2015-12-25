@@ -1181,7 +1181,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                         }
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
-                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces, this.graphs3DForGraphic.size());
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
                     for (int k = 0; k < indices.size(); k++) {
 
@@ -1214,7 +1214,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                         }
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
-                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces, this.graphs3DForGraphic.size());
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
                     for (int k = 0; k < indices.size(); k++) {
 
@@ -1247,7 +1247,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                         }
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
-                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces, this.graphs3DForGraphic.size());
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
                     for (int k = 0; k < indices.size(); k++) {
 
@@ -1280,7 +1280,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                         }
                     }
                     // Indizes für eine aufsteigende Ordnung berechnen.
-                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces, this.graphs3DForGraphic.size());
+                    indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
                     for (int k = 0; k < indices.size(); k++) {
 
@@ -1306,52 +1306,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      * Hilfsmethode. Gibt eine Liste von Indizes zurück, gemäß welcher die
      * Double-Werte im HashMap im Parameter aufsteigend sortiert sind.
      */
-    private static ArrayList<Integer> getIndicesForAscendingSorting(HashMap<Integer, Double> centersOfInfinitesimalTangentSpaces, int maxIndex) {
-
-        HashMap<Integer, Double> copyOfCenters = new HashMap<>();
-        ArrayList<Integer> sortedCenters = new ArrayList<>();
-
-        // Manuell kopieren. clone() traue ich nicht!
-        for (int i = 0; i < maxIndex; i++) {
-            if (centersOfInfinitesimalTangentSpaces.get(i) != null) {
-                copyOfCenters.put(i, centersOfInfinitesimalTangentSpaces.get(i));
-            }
-        }
-
-        int indexWithLeastElement;
-        double minimalValue;
-        while (!copyOfCenters.isEmpty()) {
-
-            indexWithLeastElement = -1;
-            minimalValue = Double.POSITIVE_INFINITY;
-            for (int i = 0; i < maxIndex; i++) {
-                if (copyOfCenters.get(i) != null) {
-                    if (indexWithLeastElement == -1) {
-                        indexWithLeastElement = i;
-                        minimalValue = copyOfCenters.get(i);
-                    } else {
-                        if (copyOfCenters.get(i) < minimalValue) {
-                            indexWithLeastElement = i;
-                            minimalValue = copyOfCenters.get(i);
-                        }
-                    }
-                }
-            }
-
-            sortedCenters.add(indexWithLeastElement);
-            copyOfCenters.remove(indexWithLeastElement);
-
-        }
-
-        return sortedCenters;
-
-    }
-
-    /**
-     * Hilfsmethode. Gibt eine Liste von Indizes zurück, gemäß welcher die
-     * Double-Werte im HashMap im Parameter aufsteigend sortiert sind.
-     */
-    private static ArrayList<Integer> getIndicesForAscendingSorting2(HashMap<Integer, Double> centersOfInfinitesimalTangentSpaces) {
+    private static ArrayList<Integer> getIndicesForAscendingSorting(HashMap<Integer, Double> centersOfInfinitesimalTangentSpaces) {
 
         HashMap<Integer, Double> copyOfCenters = new HashMap<>();
         ArrayList<Integer> sortedCenters = new ArrayList<>();
