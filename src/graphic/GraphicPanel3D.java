@@ -43,7 +43,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
     // Grundfarben für die einzelnen Graphen.
-    private ArrayList<Color> colors = new ArrayList<>();
+    private final ArrayList<Color> colors = new ArrayList<>();
     // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
     final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
@@ -1419,7 +1419,14 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1) throws EvaluationException {
+    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
+        setExpressions(exprs);
+        expressionToGraph(x_0, x_1, x_0, x_1);
+        drawGraphs3D();
+    }
+    
+    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+        setExpressions(exprs);
         expressionToGraph(x_0, x_1, x_0, x_1);
         drawGraphs3D();
     }

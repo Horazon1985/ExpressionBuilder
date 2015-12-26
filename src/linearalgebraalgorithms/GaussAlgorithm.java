@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import matrixexpressionbuilder.Matrix;
 import matrixsimplifymethods.MatrixExpressionCollection;
+import notations.NotationLoader;
 import translator.Translator;
 
 public abstract class GaussAlgorithm {
@@ -248,7 +249,7 @@ public abstract class GaussAlgorithm {
         if (maxIndexOfNonZeroRow == -1) {
             int indexOfParameterVar = 0;
             for (int i = 0; i < solution.length; i++) {
-                solution[i] = Variable.create("T_" + indexOfParameterVar);
+                solution[i] = Variable.create(NotationLoader.FREE_REAL_PARAMETER_VAR + "_" + indexOfParameterVar);
                 indexOfParameterVar++;
             }
             return solution;

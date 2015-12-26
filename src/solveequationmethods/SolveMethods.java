@@ -20,6 +20,7 @@ import expressionsimplifymethods.SimplifyRationalFunctionMethods;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
+import notations.NotationLoader;
 import substitutionmethods.SubstitutionUtilities;
 
 public abstract class SolveMethods {
@@ -1304,7 +1305,7 @@ public abstract class SolveMethods {
      * vorkommt.
      */
     private static String getParameterVariable(Expression f) {
-        String var = "K_";
+        String var = NotationLoader.FREE_INTEGER_PARAMETER_VAR + "_";
         int j = 1;
         while (f.contains(var + j)) {
             j++;

@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import linearalgebraalgorithms.GaussAlgorithm;
 import matrixexpressionbuilder.Matrix;
+import notations.NotationLoader;
 
 public abstract class PartialFractionDecompositionMethods {
 
@@ -272,7 +273,7 @@ public abstract class PartialFractionDecompositionMethods {
     }
 
     private static String getPFDVariable(int i) {
-        return "A_" + i;
+        return NotationLoader.PFD_VAR + "_" + i;
     }
 
     private static Expression[] getCoefficientsForPFD(ExpressionCollection coefficientsOfEnumeratorInPFDApproach,

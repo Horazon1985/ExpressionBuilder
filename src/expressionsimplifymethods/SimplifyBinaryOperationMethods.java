@@ -3385,7 +3385,7 @@ public abstract class SimplifyBinaryOperationMethods {
         Expression baseToCompare;
         Expression exponentToCompare;
 
-        BigInteger baseAsBigInteger;
+        BigInteger exponentAsBigInteger, exponentToCompareAsBigInteger;
         for (int i = 0; i < factors.getBound(); i++) {
 
             if (factors.get(i) == null) {
@@ -3412,16 +3412,32 @@ public abstract class SimplifyBinaryOperationMethods {
                     exponentToCompare = Expression.ONE;
                 }
                 if (base.equivalent(baseToCompare)) {
-                    // TO DO.
-                    if (!(base instanceof Constant && exponent instanceof Constant) && !(baseToCompare instanceof Constant && exponentToCompare instanceof Constant)) {
+                    if (exponent.isIntegerConstant()) {
+                        exponentAsBigInteger = ((Constant) exponent).getValue().toBigInteger();
+                        if (exponentAsBigInteger.abs().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) > 0) {
+                            exponent = exponent.add(exponentToCompare);
+                            factors.put(i, base.pow(exponent));
+                            factors.remove(j);
+                        }
+                    } else if (exponentToCompare.isIntegerConstant()) {
+                        exponentToCompareAsBigInteger = ((Constant) exponentToCompare).getValue().toBigInteger();
+                        if (exponentToCompareAsBigInteger.abs().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) > 0) {
+                            exponent = exponent.add(exponentToCompare);
+                            factors.put(i, base.pow(exponent));
+                            factors.remove(j);
+                        }
+                    }
+                    if (!base.isIntegerConstantOrRationalConstant()) {
                         exponent = exponent.add(exponentToCompare);
                         factors.put(i, base.pow(exponent));
                         factors.remove(j);
                     }
                 }
-                if (Thread.interrupted()) {
-                    throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
-                }
+
+            }
+
+            if (Thread.interrupted()) {
+                throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
             }
 
         }
