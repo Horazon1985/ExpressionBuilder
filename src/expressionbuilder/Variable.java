@@ -26,14 +26,14 @@ public class Variable extends Expression {
      */
     private boolean precise;
 
-    public Variable(String name, double value) {
+    private Variable(String name, double value) {
         this.name = name;
         this.value = value;
         this.preciseExpression = new Constant(new BigDecimal(value));
         this.precise = true;
     }
 
-    public Variable(String name, Expression preciseExpression) {
+    private Variable(String name, Expression preciseExpression) {
         this.name = name;
         try {
             this.value = preciseExpression.evaluate();

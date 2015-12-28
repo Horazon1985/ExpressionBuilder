@@ -1421,7 +1421,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
-        expressionToGraph(x_0, x_1, x_0, x_1);
+        expressionToGraph(x_0, x_1, y_0, y_1);
         drawGraphs3D();
     }
     
