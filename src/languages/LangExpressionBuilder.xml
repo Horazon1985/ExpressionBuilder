@@ -311,6 +311,24 @@
     <Ukrainian>. Параметр оператора 'mod' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
     <Russian>. Параметр оператора 'mod' не является действительным оператором. Сообщение об ошибке: </Russian>
   </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_MU">
+    <German>Im Operator 'mu' muss mindestens ein Parameter stehen.</German>
+    <English>Operator 'mu' must contain at least one parameter.</English>
+    <Ukrainian>У оператора 'mu' має бути мінімум один параметр.</Ukrainian>
+    <Russian>У оператора 'mu' должен быть минимум один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MU_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_MU_IS_INVALID_2">
+    <German>. Parameter im Operator 'mu' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'mu' is not a valid expression. Reported error: </English>
+    <Ukrainian>. Параметр оператора 'mu' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'mu' не является действительным оператором. Сообщение об ошибке: </Russian>
+  </object>
   <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD">
     <German>Im Operator 'prod' müssen genau vier parameter stehen.</German>
     <English>Operator 'prod' must contain exactly four parameters.</English>
@@ -346,6 +364,24 @@
     <English>The limits in operator 'prod' are not allowed to contain the index variable.</English>
     <Ukrainian>Границі оператора 'prod' не мають містити індексної змінної.</Ukrainian>
     <Russian>Пределы оператора 'prod' не должны содержать индексной переменной.</Russian>
+  </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_SIGMA">
+    <German>Im Operator 'sigma' muss mindestens ein Parameter stehen.</German>
+    <English>Operator 'sigma' must contain at least one parameter.</English>
+    <Ukrainian>У оператора 'sigma' має бути мінімум один параметр.</Ukrainian>
+    <Russian>У оператора 'sigma' должен быть минимум один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_SIGMA_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_SIGMA_IS_INVALID_2">
+    <German>. Parameter im Operator 'sigma' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'sigma' is not a valid expression. Reported error: </English>
+    <Ukrainian>. Параметр оператора 'sigma' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'sigma' не является действительным оператором. Сообщение об ошибке: </Russian>
   </object>
   <object id = "EB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
     <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
@@ -412,6 +448,24 @@
     <English>The 4. parameter in operator 'taylor' must be a natural number smallert than 2147483648. This is the degree of the taylor polynomial.</English>
     <Ukrainian>4. параметр оператора 'taylor' має бути натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
     <Russian>4. параметр оператора 'taylor' должен быть натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
+  </object>
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_VAR">
+    <German>Im Operator 'var' muss mindestens ein Parameter stehen.</German>
+    <English>Operator 'var' must contain at least one parameter.</English>
+    <Ukrainian>У оператора 'var' має бути мінімум один параметр.</Ukrainian>
+    <Russian>У оператора 'var' должен быть минимум один параметр.</Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_VAR_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_GENERAL_PARAMETER_IN_VAR_IS_INVALID_2">
+    <German>. Parameter im Operator 'var' ist kein gültiger Ausdruck. Gemeldeter Fehler: </German>
+    <English>. parameter in operator 'var' is not a valid expression. Reported error: </English>
+    <Ukrainian>. Параметр оператора 'var' не є діючим виразом. Повідомлення про помилку: </Ukrainian>
+    <Russian>. Параметр оператора 'var' не является действительным оператором. Сообщение об ошибке: </Russian>
   </object>
   <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_1">
     <German>Der Ausdruck </German>

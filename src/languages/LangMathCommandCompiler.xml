@@ -1269,8 +1269,8 @@
   <object id = "MCC_GRAPH_NOT_POSSIBLE_TO_DRAW">
     <German>Der Graph und die Tangente können nicht gezeichnet werden, da die Abszissen- oder Ordinatenwerte zu groß sind.</German>
     <English>The graph and the tangent can not be drawn, because the values for abscissa or for the ordinate are too big.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Графік та дотичну не можна зобразити, оскільки значення абсциси або ординати завеликі.</Ukrainian>
+    <Russian>График и касательную нельзя изобраыить, поскольку значения абсциссы или ординаты слишком большие.</Russian>
   </object>
   <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_1">
     <German>Die Veränderliche </German>

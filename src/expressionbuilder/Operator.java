@@ -109,12 +109,18 @@ public class Operator extends Expression {
                 return getOperatorLCM(params, vars);
             case mod:
                 return getOperatorMod(params, vars);
+            case mu:
+                return getOperatorMu(params, vars);
             case prod:
                 return getOperatorProd(params, vars);
+            case sigma:
+                return getOperatorSigma(params, vars);
             case sum:
                 return getOperatorSum(params, vars);
             case taylor:
                 return getOperatorTaylor(params, vars);
+            case var:
+                return getOperatorVar(params, vars);
             // Sollte theoretisch nie vorkommen.
             default:
                 return new Operator();
@@ -403,6 +409,29 @@ public class Operator extends Expression {
 
     }
 
+    private static Operator getOperatorMu(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length == 0) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_MU"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MU_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MU_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.mu, resultOperatorParams);
+
+    }
+
     private static Operator getOperatorProd(String[] params, HashSet<String> vars) throws ExpressionException {
 
         Object[] resultOperatorParams;
@@ -457,6 +486,29 @@ public class Operator extends Expression {
         resultOperatorParams[2] = lowerLimit;
         resultOperatorParams[3] = upperLimit;
         return new Operator(TypeOperator.prod, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorSigma(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length == 0) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_SIGMA"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_SIGMA_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_SIGMA_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.sigma, resultOperatorParams);
 
     }
 
@@ -559,6 +611,29 @@ public class Operator extends Expression {
         resultOperatorParams[2] = Expression.build(params[2], vars);
         resultOperatorParams[3] = Integer.parseInt(params[3]);
         return new Operator(TypeOperator.taylor, resultOperatorParams);
+
+    }
+
+    private static Operator getOperatorVar(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        Object[] resultOperatorParams;
+        if (params.length == 0) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_VAR"));
+        }
+
+        resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = Expression.build(params[i], vars);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_VAR_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_VAR_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new Operator(TypeOperator.var, resultOperatorParams);
 
     }
 
@@ -717,7 +792,7 @@ public class Operator extends Expression {
             return;
         }
 
-        // Alle anderen möglichen Matrizenoperatoren
+        // Alle anderen möglichen Operatoren
         for (Object param : this.params) {
             if (param instanceof Expression) {
                 ((Expression) param).addContainedVars(vars);
@@ -1627,42 +1702,39 @@ public class Operator extends Expression {
         Operator operator = new Operator(this.type, resultParams, this.precise);
 
         // Nun wird noch operatorspezifisch vereinfacht.
-        if (this.type.equals(TypeOperator.diff)) {
-            return operator.simplifyTrivialDiff();
+        switch (type) {
+            case diff:
+                return operator.simplifyTrivialDiff();
+            case div:
+                return operator.simplifyTrivialDiv();
+            case fac:
+                return operator.simplifyTrivialFac();
+            case gcd:
+                return operator.simplifyTrivialGCD();
+            case integral:
+                return operator.simplifyTrivialInt();
+            case laplace:
+                return operator.simplifyTrivialLaplace();
+            case lcm:
+                return operator.simplifyTrivialLCM();
+            case mod:
+                return operator.simplifyTrivialMod();
+            case mu:
+                return operator.simplifyTrivialMu();
+            case prod:
+                return operator.simplifyTrivialProd();
+            case sigma:
+                return operator.simplifyTrivialSigma();
+            case sum:
+                return operator.simplifyTrivialSum();
+            case taylor:
+                return operator.simplifyTrivialTaylor();
+            case var:
+                return operator.simplifyTrivialVar();
+            default:
+                // Kommt nicht vor, aber trotzdem;
+                return operator;
         }
-        if (this.type.equals(TypeOperator.div)) {
-            return operator.simplifyTrivialDiv();
-        }
-        if (this.type.equals(TypeOperator.fac)) {
-            return operator.simplifyTrivialFac();
-        }
-        if (this.type.equals(TypeOperator.gcd)) {
-            return operator.simplifyTrivialGCD();
-        }
-        if (this.type.equals(TypeOperator.integral)) {
-            return operator.simplifyTrivialInt();
-        }
-        if (this.type.equals(TypeOperator.laplace)) {
-            return operator.simplifyTrivialLaplace();
-        }
-        if (this.type.equals(TypeOperator.lcm)) {
-            return operator.simplifyTrivialLCM();
-        }
-        if (this.type.equals(TypeOperator.mod)) {
-            return operator.simplifyTrivialMod();
-        }
-        if (this.type.equals(TypeOperator.prod)) {
-            return operator.simplifyTrivialProd();
-        }
-        if (this.type.equals(TypeOperator.sum)) {
-            return operator.simplifyTrivialSum();
-        }
-        if (this.type.equals(TypeOperator.taylor)) {
-            return operator.simplifyTrivialTaylor();
-        }
-
-        // Kommt nicht vor, aber trotzdem;
-        return operator;
 
     }
 
@@ -1943,6 +2015,27 @@ public class Operator extends Expression {
     }
 
     /**
+     * Vereinfacht den mu-Operator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private Expression simplifyTrivialMu() throws EvaluationException {
+
+        Expression[] arguments = new Expression[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+        }
+
+        Expression result = ZERO;
+        for (Expression argument : arguments) {
+            result = result.add(argument);
+        }
+
+        return result.div(arguments.length);
+
+    }
+
+    /**
      * Vereinfacht den Produktoperator, soweit es möglich ist.
      *
      * @throws EvaluationException
@@ -1999,6 +2092,28 @@ public class Operator extends Expression {
         resultParams[2] = this.params[2];
         resultParams[3] = this.params[3];
         return new Operator(TypeOperator.prod, resultParams, this.precise);
+
+    }
+
+    /**
+     * Vereinfacht den var-Operator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private Expression simplifyTrivialSigma() throws EvaluationException {
+
+        Expression[] arguments = new Expression[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+        }
+
+        Expression mu = new Operator(TypeOperator.mu, arguments);
+        Expression result = ZERO;
+        for (Expression argument : arguments) {
+            result = result.add(argument.sub(mu).pow(2));
+        }
+
+        return result.div(arguments.length).pow(1, 2);
 
     }
 
@@ -2078,6 +2193,28 @@ public class Operator extends Expression {
         Expression centerPoint = (Expression) this.params[2];
         int degree = (int) this.params[3];
         return AnalysisMethods.getTaylorPolynomial(f, (String) this.params[1], centerPoint, degree);
+
+    }
+
+    /**
+     * Vereinfacht den var-Operator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private Expression simplifyTrivialVar() throws EvaluationException {
+
+        Expression[] arguments = new Expression[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+        }
+
+        Expression mu = new Operator(TypeOperator.mu, arguments);
+        Expression result = ZERO;
+        for (Expression argument : arguments) {
+            result = result.add(argument.sub(mu).pow(2));
+        }
+
+        return result.div(arguments.length);
 
     }
 
@@ -2210,7 +2347,7 @@ public class Operator extends Expression {
         }
         return new Operator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
