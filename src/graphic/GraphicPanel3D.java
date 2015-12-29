@@ -157,8 +157,12 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    public ArrayList<Expression> getExpression() {
+    public ArrayList<Expression> getExpressions() {
         return this.exprs;
+    }
+
+    public ArrayList<Color> getColors() {
+        return this.colors;
     }
 
     public boolean getIsRotating() {
