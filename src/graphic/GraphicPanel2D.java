@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import matrixexpressionbuilder.Matrix;
 import translator.Translator;
 
 public class GraphicPanel2D extends JPanel implements Exportable {
@@ -201,6 +202,17 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void setSpecialPoints(double[][] specialPoints) {
         this.specialPoints = specialPoints;
     }
+    
+    /**
+     * VORAUSSETZUNG: specialPoints sind allesamt (2x1)-Matrizen.
+     */
+    public void setSpecialPoints(Matrix[] specialPoints) throws EvaluationException {
+        this.specialPoints = new double[specialPoints.length][2];
+        for (int i = 0; i < specialPoints.length; i++){
+            this.specialPoints[i][0] = specialPoints[i].getEntry(0, 0).evaluate();
+            this.specialPoints[i][1] = specialPoints[i].getEntry(1, 0).evaluate();
+        }
+    }
 
     public void setExpressions(ArrayList<Expression> exprs) {
         this.exprs = exprs;
@@ -262,10 +274,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
             this.maxX = (this.graphs2D.get(0)[this.graphs2D.get(0).length - 1][0] - this.graphs2D.get(0)[0][0]) / 2;
         }
 
-        for (int i = 0; i < this.graphs2D.size(); i++) {
-
-            if (this.graphs2D.get(i).length > 0) {
-                for (double[] graph : this.graphs2D.get(i)) {
+        for (double[][] graph2D : this.graphs2D) {
+            if (graph2D.length > 0) {
+                for (double[] graph : graph2D) {
                     if (!(Double.isNaN(graph[1])) && !(Double.isInfinite(graph[1]))) {
                         if (Double.isNaN(globalMinY)) {
                             globalMinY = graph[1];
@@ -277,7 +288,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
                     }
                 }
             }
-
         }
 
         if (Double.isNaN(globalMinY) || Double.isNaN(globalMaxY) || Double.isInfinite(globalMinY) || Double.isInfinite(globalMaxY)) {
