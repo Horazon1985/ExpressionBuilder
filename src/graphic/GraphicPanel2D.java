@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -44,7 +45,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     private double maxX, maxY;
     private int expX, expY;
 
-    private boolean isInitialized;
+//    private boolean isInitialized;
     private boolean isExplicit;
     private boolean isFixed;
     private boolean movable = false;
@@ -55,7 +56,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     public GraphicPanel2D() {
 
-        this.isInitialized = false;
+//        this.isInitialized = false;
 
         addMouseListener(new MouseListener() {
             @Override
@@ -178,9 +179,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return instructions;
     }
 
-    public void setIsInitialized(boolean isInitialized) {
-        this.isInitialized = isInitialized;
-    }
+//    public void setIsInitialized(boolean isInitialized) {
+//        this.isInitialized = isInitialized;
+//    }
 
     public void setVarAbsc(String varAbsc) {
         this.varAbsc = varAbsc;
@@ -216,6 +217,18 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     public void setExpressions(ArrayList<Expression> exprs) {
         this.exprs = exprs;
+        this.graphs2D.clear();
+        this.colors.clear();
+        this.specialPoints = null;
+        setColors();
+    }
+
+    public void setExpressions(Expression... exprs) {
+        this.exprs = new ArrayList<>();
+        this.exprs.addAll(Arrays.asList(exprs));
+        this.graphs2D.clear();
+        this.colors.clear();
+        this.specialPoints = null;
         setColors();
     }
 
@@ -224,8 +237,11 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         setColors();
     }
 
-    public void addGraph(double[][] graph) {
-        this.graphs2D.add(this.graphs2D.size(), graph);
+    public void setGraph(double[][] graph) {
+        this.exprs.clear();
+        this.graphs2D.clear();
+        this.graphs2D.add(graph);
+        this.specialPoints = null;
         setColors();
     }
 
@@ -440,7 +456,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(String varAbsc, Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+    public void expressionToGraph(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
 
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
@@ -457,7 +473,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
              einmal berechnen!
              */
             if (this.exprs.get(i).isConstant()) {
-                Variable.setValue(varAbsc, varAbscStart);
+                Variable.setValue(this.varAbsc, varAbscStart);
                 double constOrdValue;
                 try {
                     constOrdValue = this.exprs.get(i).evaluate();
@@ -469,10 +485,10 @@ public class GraphicPanel2D extends JPanel implements Exportable {
                     pointsOnGraphs[j][1] = constOrdValue;
                 }
             } else {
-                Variable.setValue(varAbsc, varAbscStart);
+                Variable.setValue(this.varAbsc, varAbscStart);
                 for (int j = 0; j <= 1000; j++) {
                     pointsOnGraphs[j][0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 1000;
-                    Variable.setValue(varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * j / 1000);
+                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * j / 1000);
                     try {
                         pointsOnGraphs[j][1] = this.exprs.get(i).evaluate();
                     } catch (EvaluationException e) {
@@ -861,6 +877,12 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     }
 
+    public void drawGraph2D(Expression x_0, Expression x_1, Expression... exprs) throws EvaluationException {
+        computeScreenSizes(x_0, x_1);
+        expressionToGraph(x_0, x_1);
+        repaint();
+    }
+    
     public void drawGraph2D() {
         repaint();
     }
@@ -872,9 +894,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
          * Falls repaint() aufgerufen wird, bevor irgendwelche Attribute gesetzt
          * wurden -> Abbruch!
          */
-        if (!this.isInitialized) {
-            return;
-        }
+//        if (!this.isInitialized) {
+//            return;
+//        }
 
         super.paintComponent(g);
         if (this.isExplicit) {
@@ -892,7 +914,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
             try {
                 Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
                 Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
-                expressionToGraph(varAbsc, varAbscStart, varAbscEnd);
+                expressionToGraph(varAbscStart, varAbscEnd);
             } catch (EvaluationException e) {
             }
             convertGraphToGraphicalGraph();
