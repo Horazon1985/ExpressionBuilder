@@ -57,7 +57,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public GraphicPanel2D() {
 
 //        this.isInitialized = false;
-
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -182,7 +181,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 //    public void setIsInitialized(boolean isInitialized) {
 //        this.isInitialized = isInitialized;
 //    }
-
     public void setVarAbsc(String varAbsc) {
         this.varAbsc = varAbsc;
     }
@@ -203,15 +201,25 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void setSpecialPoints(double[][] specialPoints) {
         this.specialPoints = specialPoints;
     }
-    
+
     /**
      * VORAUSSETZUNG: specialPoints sind allesamt (2x1)-Matrizen.
      */
     public void setSpecialPoints(Matrix[] specialPoints) throws EvaluationException {
         this.specialPoints = new double[specialPoints.length][2];
-        for (int i = 0; i < specialPoints.length; i++){
+        for (int i = 0; i < specialPoints.length; i++) {
             this.specialPoints[i][0] = specialPoints[i].getEntry(0, 0).evaluate();
             this.specialPoints[i][1] = specialPoints[i].getEntry(1, 0).evaluate();
+        }
+    }
+
+    /**
+     * Ist specialPointsExist == true, so werden die speziellen Punkte gleich
+     * belassen, andernfalls auf null gesetzt.
+     */
+    public void setSpecialPoints(boolean specialPointsExist) {
+        if (!specialPointsExist) {
+            this.specialPoints = null;
         }
     }
 
@@ -219,7 +227,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.exprs = exprs;
         this.graphs2D.clear();
         this.colors.clear();
-        this.specialPoints = null;
         setColors();
     }
 
@@ -801,17 +808,13 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         }
     }
 
-    private void drawGraph2D(Graphics g, String varAbsc) {
+    private void drawGraphs2D(Graphics g, String varAbsc) {
 
-        /**
-         * Weißen Hintergrund zeichnen.
-         */
+        // Weißen Hintergrund zeichnen.
         g.setColor(Color.white);
         g.fillRect(0, 0, 500, 500);
 
-        /**
-         * Markierungen an den Achsen berechnen.
-         */
+        // Markierungen an den Achsen berechnen.
         computeExpXExpY();
 
         //Niveaulinien und Achsen zeichnen
@@ -877,13 +880,27 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     }
 
-    public void drawGraph2D(Expression x_0, Expression x_1, Expression... exprs) throws EvaluationException {
+    public void drawGraphs2D(Expression x_0, Expression x_1, ArrayList<Expression> exprs) throws EvaluationException {
+        setExpressions(exprs);
         computeScreenSizes(x_0, x_1);
         expressionToGraph(x_0, x_1);
-        repaint();
+        drawGraphs2D();
     }
-    
-    public void drawGraph2D() {
+
+    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+        setExpressions(exprs);
+        computeScreenSizes(x_0, x_1, y_0, y_1);
+        expressionToGraph(x_0, x_1);
+        drawGraphs2D();
+    }
+
+    public void drawGraphs2D(double[][] graph) throws EvaluationException {
+        setGraph(graph);
+        computeScreenSizes();
+        drawGraphs2D();
+    }
+
+    public void drawGraphs2D() {
         repaint();
     }
 
@@ -897,10 +914,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 //        if (!this.isInitialized) {
 //            return;
 //        }
-
         super.paintComponent(g);
         if (this.isExplicit) {
-            drawGraph2D(g, this.varAbsc);
+            drawGraphs2D(g, this.varAbsc);
         } else {
             drawImplicitGraph2D(g, this.varAbsc, this.varOrd);
         }

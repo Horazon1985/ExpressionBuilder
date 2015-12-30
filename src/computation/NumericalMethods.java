@@ -254,13 +254,11 @@ public abstract class NumericalMethods {
 
     /**
      * Hauptmethode zum (numerischen) Lösen der Gleichung f = 0 mittels
-     * Newton-Verfahren. VORAUSSETZUNG: f hängt nur von einer Variablen ab.
-     *
-     * @throws EvaluationException
+     * Newton-Verfahren. VORAUSSETZUNG: f hängt nur von der Variablen var ab.
      */
-    public static HashMap<Integer, Double> solveEquation(Expression f, String var, double x_1, double x_2, int n) {
+    public static ArrayList<Double> solveEquation(Expression f, String var, double x_1, double x_2, int n) {
 
-        HashMap<Integer, Double> zerosOfEquation = new HashMap<>();
+        ArrayList<Double> zerosOfEquation = new ArrayList<>();
 
         double x;
         double valueAtCurrentArgument, valueAtNextArgument;
@@ -274,7 +272,7 @@ public abstract class NumericalMethods {
                 Variable.setValue(var, x);
                 valueAtNextArgument = f.evaluate();
                 if (valueAtCurrentArgument == 0) {
-                    zerosOfEquation.put(zerosOfEquation.size(), x_1 + i * (x_2 - x_1) / n);
+                    zerosOfEquation.add(x_1 + i * (x_2 - x_1) / n);
                 } else if (valueAtCurrentArgument * valueAtNextArgument < 0) {
                     /**
                      * Es liegt eine Nullstelle zwischen den beiden x-Werten
@@ -283,11 +281,11 @@ public abstract class NumericalMethods {
                     double x_0 = x_1 + (x_2 - x_1) * (((double) i) / n + 1 / (n * (1 + Math.abs(valueAtNextArgument) / Math.abs(valueAtCurrentArgument))));
                     double zero = solveEquationByNewtonIteration(f, var, x_0, 100);
                     if ((x_1 + i * (x_2 - x_1) / n < zero) && (x_1 + (i + 1) * (x_2 - x_1) / n > zero)) {
-                        zerosOfEquation.put(zerosOfEquation.size(), zero);
+                        zerosOfEquation.add(zero);
                     }
                 }
-                if ((i == n - 1) && (valueAtNextArgument == 0)) {
-                    zerosOfEquation.put(zerosOfEquation.size(), x_2);
+                if (i == n - 1 && valueAtNextArgument == 0) {
+                    zerosOfEquation.add(x_2);
                 }
             } catch (EvaluationException e) {
             }
