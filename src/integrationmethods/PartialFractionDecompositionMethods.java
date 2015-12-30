@@ -307,6 +307,7 @@ public abstract class PartialFractionDecompositionMethods {
         // Matrix für das entsprechende LGS bilden.
         Matrix matrix = new Matrix(matrixEntries);
         // Matrix matrix auf Zeilenstufenform bringen.
+        System.out.println("Erweiterte Matrix matrix = " + matrix.writeMatrixExpression());
         matrix = GaussAlgorithm.computeRowEcholonForm(matrix);
 
         // Nun sukzessive nach den gesuchten Koeffizienten auflösen.

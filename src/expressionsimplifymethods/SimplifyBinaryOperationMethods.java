@@ -3412,7 +3412,11 @@ public abstract class SimplifyBinaryOperationMethods {
                     exponentToCompare = Expression.ONE;
                 }
                 if (base.equivalent(baseToCompare)) {
-                    if (exponent.isIntegerConstant()) {
+                    if (!(base instanceof Constant)) {
+                        exponent = exponent.add(exponentToCompare);
+                        factors.put(i, base.pow(exponent));
+                        factors.remove(j);
+                    } else if (exponent.isIntegerConstant()) {
                         exponentAsBigInteger = ((Constant) exponent).getValue().toBigInteger();
                         if (exponentAsBigInteger.abs().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) > 0) {
                             exponent = exponent.add(exponentToCompare);
@@ -3426,8 +3430,11 @@ public abstract class SimplifyBinaryOperationMethods {
                             factors.put(i, base.pow(exponent));
                             factors.remove(j);
                         }
-                    }
-                    if (!base.isIntegerConstantOrRationalConstant()) {
+                    } else if (!exponent.isIntegerConstant() || !exponentToCompare.isIntegerConstant()) {
+                        exponent = exponent.add(exponentToCompare);
+                        factors.put(i, base.pow(exponent));
+                        factors.remove(j);
+                    } else if (!base.isIntegerConstantOrRationalConstant()) {
                         exponent = exponent.add(exponentToCompare);
                         factors.put(i, base.pow(exponent));
                         factors.remove(j);
