@@ -2690,8 +2690,6 @@ public class GraphicPanelFormula extends JPanel {
             drawOperatorFac(g, operator, x_0, y_0, fontSize);
         } else if (operator.getType().equals(TypeOperator.integral)) {
             drawOperatorInt(g, operator, x_0, y_0, fontSize);
-        } else if (operator.getType().equals(TypeOperator.laplace)) {
-            drawOperatorLaplace(g, operator, x_0, y_0, fontSize);
         } else if (operator.getType().equals(TypeOperator.prod)) {
             drawOperatorProd(g, operator, x_0, y_0, fontSize);
         } else if (operator.getType().equals(TypeOperator.sum)) {
@@ -2901,24 +2899,6 @@ public class GraphicPanelFormula extends JPanel {
                     y_0 - heightLowerLimit - (heightCenterIntegrand - (2 * fontSize) / 5), fontSize);
 
         }
-
-    }
-
-    private void drawOperatorLaplace(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
-
-        setFont(g, fontSize);
-
-        int heightOperand = getHeightOfExpression(g, (Expression) operator.getParams()[0], fontSize);
-        int heightCenterOperand = getHeightOfCenterOfExpression(g, (Expression) operator.getParams()[0], fontSize);
-        int lengthOperand = getLengthOfExpression(g, (Expression) operator.getParams()[0], fontSize);
-        //Delta
-        drawSignDelta(g, x_0, y_0 - (heightCenterOperand - (2 * fontSize) / 5), fontSize);
-        //(
-        drawOpeningBracket(g, x_0 + getWidthOfSignDelta(g, fontSize), y_0, fontSize, heightOperand);
-        //Argument
-        drawExpression(g, (Expression) operator.getParams()[0], x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize), y_0, fontSize);
-        //)
-        drawClosingBracket(g, x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize) + lengthOperand, y_0, fontSize, heightOperand);
 
     }
 
