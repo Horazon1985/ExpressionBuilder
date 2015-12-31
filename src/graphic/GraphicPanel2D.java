@@ -270,13 +270,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
     }
 
-    public void clearExpressionsAndGraphs() {
-        this.exprs.clear();
-        this.graphs2D.clear();
-        this.colors.clear();
-        this.specialPoints = null;
-    }
-
     /**
      * Voraussetzung: graph2D ist bereits initialisiert (bzw. mit
      * Funktionswerten gefüllt). Voraussetzung: alle Graphen werden über
@@ -284,7 +277,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void computeScreenSizes() throws EvaluationException {
+    private void computeScreenSizes() throws EvaluationException {
 
         this.axeCenterX = 0;
         this.axeCenterY = 0;
@@ -332,7 +325,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+    private void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
 
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
@@ -463,7 +456,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+    private void expressionToGraph(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
 
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
@@ -796,7 +789,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      * Zeichnet rote Punkte an wichtigen Stellen (etwa Markierung von
      * Nullstellen etc.)
      */
-    public void drawSpecialPoints(Graphics g, double[][] specialPoints) {
+    private void drawSpecialPoints(Graphics g, double[][] specialPoints) {
         g.setColor(Color.red);
         if (specialPoints == null) {
             return;
