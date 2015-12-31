@@ -470,7 +470,7 @@
   <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOT3D">
     <German>Im Befehl 'plot3d' müssen mindestens fünf Parameter stehen.</German>
     <English>The command 'plot3d' must contain at least five parameters.</English>
-    <Ukrainian>У команди 'plot3d' має бути ??? п'ять параметрів.</Ukrainian>
+    <Ukrainian>У команди 'plot3d' має бути мінімум п'ять параметрів.</Ukrainian>
     <Russian>У команды 'plot3d' должно быть минимум пять параметров.</Russian>
   </object>
   <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_PLOT3D">
@@ -646,6 +646,24 @@
     <English>. parameter.</English>
     <Ukrainian>. параметр.</Ukrainian>
     <Russian>. параметр.</Russian>
+  </object>
+  <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_REGRESSIONLINE">
+    <German>Zu wenig Parameter im Befehl 'regressionline'.</German>
+    <English>Not enough parameters in command 'regressionline'.</English>
+    <Ukrainian>Недостатньо параметрів у команди 'regressionline'.</Ukrainian>
+    <Russian>Недостаточно параметров у команды 'regressionline'.</Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_REGRESSIONLINE_WITH_REPORTED_ERROR_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_REGRESSIONLINE_WITH_REPORTED_ERROR_2">
+    <German>. Parameter muss von der Form '[a;b]' sein, wobei a und b reelle Zahlen sind.</German>
+    <English>. parameter must be of the form '[a;b]', where a and b are reals.</English>
+    <Ukrainian>. параметр має бути у формі '[a;b]', де a та b дійсні числа.</Ukrainian>
+    <Russian>. параметр должен быть в форме '[a;b]', где a и b вещественные числа.</Russian>
   </object>
   <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
     <German>Zu wenig Parameter im Befehl 'solve'.</German>
@@ -1157,6 +1175,18 @@
     <English> digits: </English>
     <Ukrainian> знаків: </Ukrainian>
     <Russian> знаков: </Russian>
+  </object>
+  <object id = "MCC_REGRESSIONLINE_MESSAGE">
+    <German>Gleichung der Regressionsgeraden: </German>
+    <English>Equation of the regression line: </English>
+    <Ukrainian>Рівняння регресійної прямої: </Ukrainian>
+    <Russian>Уравнение регрессионной прямой: </Russian>
+  </object>
+  <object id = "MCC_REGRESSIONLINE_NOT_POSSIBLE_TO_COMPUTE">
+    <German>Die Regressionsgerade kann nicht gezeichnet werden, da zu den angegebenen Punkten keine oder keine eindeutige Regressionsgerade existiert.</German>
+    <English>The regression line cannot be drawn, because there is no or no unique regression line for the given points.</English>
+    <Ukrainian>Регресійну пряму не можливо зобразити, оскільки вона не існує або є неоднозначнною.</Ukrainian>
+    <Russian>Регрессионную прямую невозможно изобразить, поскольку она не существует или является неоднозначной.</Russian>
   </object>
   <object id = "MCC_IS_ARBITRARY_INTEGER">
     <German> ist eine beliebige ganze Zahl.</German>

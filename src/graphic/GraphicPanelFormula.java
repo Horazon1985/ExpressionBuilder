@@ -2121,6 +2121,16 @@ public class GraphicPanelFormula extends JPanel {
         g.drawString("\u222B", x_0, y_0 - fontSize / 15);
     }
 
+    private void drawSignMu(Graphics g, int x_0, int y_0, int fontSize) {
+        setFont(g, fontSize);
+        g.drawString("\u2206", x_0, y_0);
+    }
+
+    private void drawSignSmallSigma(Graphics g, int x_0, int y_0, int fontSize) {
+        setFont(g, fontSize);
+        g.drawString("\u2206", x_0, y_0);
+    }
+
     private void drawSignDelta(Graphics g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         g.drawString("\u2206", x_0, y_0);
