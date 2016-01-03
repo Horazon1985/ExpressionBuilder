@@ -508,6 +508,13 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     }
 
+    public void drawCurve2D(Expression t_0, Expression t_1, Expression[] expr) throws EvaluationException {
+        setExpression(expr);
+        computeScreenSizes(t_0, t_1);
+        expressionToGraph(t_0, t_1);
+        drawCurve2D();
+    }
+    
     public void drawCurve2D() {
         repaint();
     }
