@@ -5,6 +5,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.ZERO;
 import static expressionbuilder.Expression.isValidVariable;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
@@ -98,6 +99,8 @@ public class MatrixOperator extends MatrixExpression {
         TypeMatrixOperator type = getTypeFromName(operator);
 
         switch (type) {
+            case cov:
+                return getMatrixOperatorCov(params, vars);
             case diff:
                 return getMatrixOperatorDiff(params, vars);
             case div:
@@ -118,6 +121,28 @@ public class MatrixOperator extends MatrixExpression {
             default:
                 return new MatrixOperator();
         }
+
+    }
+
+    private static MatrixOperator getMatrixOperatorCov(String[] params, HashSet<String> vars) throws ExpressionException {
+
+        if (params.length < 1) {
+            throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_COV"));
+        }
+
+        Object[] resultOperatorParams = new Object[params.length];
+        for (int i = 0; i < params.length; i++) {
+            try {
+                resultOperatorParams[i] = MatrixExpression.build(params[i], null);
+            } catch (ExpressionException e) {
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_2")
+                        + e.getMessage());
+            }
+        }
+
+        return new MatrixOperator(TypeMatrixOperator.cov, resultOperatorParams);
 
     }
 
@@ -851,7 +876,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 
@@ -867,33 +892,77 @@ public class MatrixOperator extends MatrixExpression {
         MatrixOperator matrixOperator = new MatrixOperator(this.type, resultParams, this.precise);
 
         // Nun wird noch operatorspezifisch vereinfacht.
-        if (this.type.equals(TypeMatrixOperator.diff)) {
-            return matrixOperator.simplifyTrivialDiff();
-        }
-        if (this.type.equals(TypeMatrixOperator.div)) {
-            return matrixOperator.simplifyTrivialDiv();
-        }
-        if (this.type.equals(TypeMatrixOperator.grad)) {
-            return matrixOperator.simplifyTrivialGrad();
-        }
-        if (this.type.equals(TypeMatrixOperator.integral)) {
-            return matrixOperator.simplifyTrivialInt();
-        }
-        if (this.type.equals(TypeMatrixOperator.laplace)) {
-            return matrixOperator.simplifyTrivialLaplace();
-        }
-        if (this.type.equals(TypeMatrixOperator.prod)) {
-            return matrixOperator.simplifyTrivialProd();
-        }
-        if (this.type.equals(TypeMatrixOperator.rot)) {
-            return matrixOperator.simplifyTrivialRot();
-        }
-        if (this.type.equals(TypeMatrixOperator.sum)) {
-            return matrixOperator.simplifyTrivialSum();
+        switch (type) {
+            case cov:
+                return matrixOperator.simplifyTrivialCov();
+            case diff:
+                return matrixOperator.simplifyTrivialDiff();
+            case div:
+                return matrixOperator.simplifyTrivialDiv();
+            case grad:
+                return matrixOperator.simplifyTrivialGrad();
+            case integral:
+                return matrixOperator.simplifyTrivialInt();
+            case laplace:
+                return matrixOperator.simplifyTrivialLaplace();
+            case prod:
+                return matrixOperator.simplifyTrivialProd();
+            case rot:
+                return matrixOperator.simplifyTrivialRot();
+            case sum:
+                return matrixOperator.simplifyTrivialSum();
         }
 
         // Kommt nicht vor, aber trotzdem;
         return matrixOperator;
+
+    }
+
+    /**
+     * Vereinfacht den cov-Operator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private MatrixExpression simplifyTrivialCov() throws EvaluationException {
+
+        MatrixExpression[] points = new MatrixExpression[params.length];
+        Dimension dim;
+
+        for (int i = 0; i < points.length; i++) {
+            try {
+                points[i] = ((MatrixExpression) params[i]).simplify();
+                dim = points[i].getDimension();
+            } catch (EvaluationException e) {
+                throw new EvaluationException("TO DO");
+            }
+            if (!points[i].isMatrix() || dim.width != 1 || dim.height != 2) {
+                throw new EvaluationException("TO DO");
+            }
+        }
+
+        // Koeffizienten für die Regressionsgerade berechnen.
+        Matrix[] pts = new Matrix[points.length];
+        for (int i = 0; i < points.length; i++) {
+            pts[i] = (Matrix) points[i];
+        }
+
+        Expression[] valuesX = new Expression[params.length];
+        Expression[] valuesY = new Expression[params.length];
+
+        for (int i = 0; i < params.length; i++) {
+            valuesX[i] = pts[i].getEntry(0, 0);
+            valuesY[i] = pts[i].getEntry(1, 0);
+        }
+
+        Expression muX = new Operator(TypeOperator.mu, valuesX);
+        Expression muY = new Operator(TypeOperator.mu, valuesX);
+
+        Expression result = ZERO;
+        for (int i = 0; i < params.length; i++) {
+            result = result.add(valuesX[i].sub(muX).mult(valuesY[i].sub(muY)));
+        }
+
+        return new Matrix(result.div(params.length));
 
     }
 
@@ -1230,7 +1299,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -1245,7 +1314,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -1260,7 +1329,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -1275,7 +1344,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
