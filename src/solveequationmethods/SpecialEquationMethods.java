@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import substitutionmethods.SubstitutionUtilities;
 
-public abstract class SpecialEquationMethods {
+public abstract class SpecialEquationMethods extends SolveMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();

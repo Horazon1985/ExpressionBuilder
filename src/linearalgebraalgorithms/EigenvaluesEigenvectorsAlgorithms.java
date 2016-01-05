@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
 import static expressionbuilder.Expression.ONE;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import java.awt.Dimension;
@@ -48,13 +49,11 @@ public abstract class EigenvaluesEigenvectorsAlgorithms {
             }
 
             String var = getCharacteristicPolynomialVariable(matExpr);
-            Object abstractCharPolynomial = getCharacteristicPolynomial(matExpr, var).simplify().convertOneTimesOneMatrixToExpression();
-            if (!(abstractCharPolynomial instanceof Expression)) {
+            Object charPolynomial = getCharacteristicPolynomial(matExpr, var).simplify().convertOneTimesOneMatrixToExpression();
+            if (!(charPolynomial instanceof Expression)) {
                 return new ExpressionCollection();
             }
-            Expression charPolynomial = (Expression) abstractCharPolynomial;
-            SolveMethods.setSolveTries(100);
-            return SolveMethods.solveZeroEquation(charPolynomial, var);
+            return SolveMethods.solveEquation((Expression) charPolynomial, ZERO, var);
 
         } catch (EvaluationException e) {
             return new ExpressionCollection();

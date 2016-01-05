@@ -40,25 +40,9 @@ public abstract class SolveMethods {
     public static final ExpressionCollection ALL_REALS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
-    public static void setSolveTries(int n) {
-        solveTries = n;
-    }
+    private static final HashSet<TypeSimplify> simplifyTypesEquation = getSimplifyTypesEquation();
 
-    /**
-     * Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) = g(x).
-     *
-     * @throws EvaluationException
-     */
-    public static ExpressionCollection solveGeneralEquation(Expression f, Expression g, String var) throws EvaluationException {
-
-        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
-
-        if (solveTries <= 0) {
-            return new ExpressionCollection();
-        }
-        solveTries--;
-
-        // Zunächst beide Seiten entsprechend vereinfachen.
+    private static HashSet<TypeSimplify> getSimplifyTypesEquation() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
@@ -75,10 +59,40 @@ public abstract class SolveMethods {
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        return simplifyTypes;
+    }
+    
+    /**
+     * Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) = g(x).
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection solveEquation(Expression f, Expression g, String var) throws EvaluationException {
+        solveTries = 100;
+        if (g.equals(ZERO)){
+            return solveZeroEquation(f, var);
+        }
+        return solveGeneralEquation(f, g, var);
+    }
+    
+    /**
+     * Interne Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) = g(x).
+     *
+     * @throws EvaluationException
+     */
+    protected static ExpressionCollection solveGeneralEquation(Expression f, Expression g, String var) throws EvaluationException {
 
+        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
+
+        if (solveTries <= 0) {
+            return new ExpressionCollection();
+        }
+        solveTries--;
+
+        // Zunächst beide Seiten entsprechend vereinfachen.
         try {
-            f = f.simplify(simplifyTypes);
-            g = g.simplify(simplifyTypes);
+            f = f.simplify(simplifyTypesEquation);
+            g = g.simplify(simplifyTypesEquation);
         } catch (EvaluationException e) {
             return new ExpressionCollection();
         }
@@ -194,7 +208,7 @@ public abstract class SolveMethods {
     /**
      * Liefert die Lösung der Gleichung x = const.
      */
-    public static ExpressionCollection solveVariableEquation(Expression f, Expression g, String var) {
+    private static ExpressionCollection solveVariableEquation(Expression f, Expression g, String var) {
 
         ExpressionCollection zero = new ExpressionCollection();
         if (f instanceof Variable && ((Variable) f).getName().equals(var) && !g.contains(var)) {
@@ -211,7 +225,7 @@ public abstract class SolveMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection elementaryEquivalentTransformation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection elementaryEquivalentTransformation(Expression f, Expression g, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
@@ -385,7 +399,7 @@ public abstract class SolveMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solvePowerEquation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection solvePowerEquation(Expression f, Expression g, String var) throws EvaluationException {
 
         if (f.isPower() && g.isPower()) {
 
@@ -508,7 +522,7 @@ public abstract class SolveMethods {
      * Prozedur zum Lösen von Gleichungen der Form F(f(x)) = F(g(x)) oder
      * F(f(x)) = const, var == x.
      */
-    public static ExpressionCollection solveFunctionEquation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection solveFunctionEquation(Expression f, Expression g, String var) throws EvaluationException {
 
         if (!f.contains(var) || !(f instanceof Function)) {
             return new ExpressionCollection();
@@ -1438,7 +1452,7 @@ public abstract class SolveMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveZeroEquation(Expression f, String var) throws EvaluationException {
+    protected static ExpressionCollection solveZeroEquation(Expression f, String var) throws EvaluationException {
 
         System.out.println(solveTries + ": Löse Nullgl. " + f.writeExpression() + " = 0");
 
@@ -1447,25 +1461,8 @@ public abstract class SolveMethods {
         }
         solveTries--;
 
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_sums);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals_in_differences);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-
         try {
-            f = f.simplify(simplifyTypes);
+            f = f.simplify(simplifyTypesEquation);
         } catch (EvaluationException e) {
             /*
              Wenn beim Vereinfachen etwas schief gelaufen ist, dann war das
@@ -1600,7 +1597,7 @@ public abstract class SolveMethods {
      * Ab hier kommen eine Reihe von Einzelfunktionen, die bestimmte Typen von
      * Gleichungen der Form f(x) = 0 lösen.
      */
-    public static ExpressionCollection solveZeroProduct(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroProduct(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
         /**
@@ -1616,7 +1613,7 @@ public abstract class SolveMethods {
 
     }
 
-    public static ExpressionCollection solveZeroQuotient(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroQuotient(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
         /*
@@ -1643,7 +1640,7 @@ public abstract class SolveMethods {
 
     }
 
-    public static ExpressionCollection solveZeroPower(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroPower(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
         /*
@@ -1670,16 +1667,14 @@ public abstract class SolveMethods {
 
     }
 
-    public static ExpressionCollection solveZeroFunction(Expression f, String var) throws EvaluationException {
-
+    private static ExpressionCollection solveZeroFunction(Expression f, String var) throws EvaluationException {
         return solveFunctionEquation(f, ZERO, var);
-
     }
 
     /**
      * Löst Gleichungen der Form f = 0, wobei f stets >= 0 ist.
      */
-    public static ExpressionCollection solveAlwaysNonNegativeExpressionEqualsZero(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveAlwaysNonNegativeExpressionEqualsZero(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
@@ -1713,7 +1708,7 @@ public abstract class SolveMethods {
     /**
      * Löst Gleichungen der Form f = 0, wobei f stets >= 0 ist.
      */
-    public static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
@@ -1754,7 +1749,7 @@ public abstract class SolveMethods {
      * nur einen Teil eines größeren Ausdrucks bildet. Dies ist wichtig, damit
      * es keine Endlosschleifen gibt!
      */
-    public static void getSuitableSubstitutionForEquation(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
+    private static void getSuitableSubstitutionForEquation(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
 
         /*
          Es wird Folgendes als potentielle Substitution angesehen: (1)
