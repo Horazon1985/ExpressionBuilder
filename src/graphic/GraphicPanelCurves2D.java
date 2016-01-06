@@ -33,14 +33,15 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
     private double maxX, maxY;
     private int expX, expY;
 
-    private boolean isInitialized;
     private boolean movable = false;
 
     private Point lastMousePosition;
 
     public GraphicPanelCurves2D() {
 
-        this.isInitialized = false;
+        this.zoomfactor = 1;
+        this.zoomfactorX = 1;
+        this.zoomfactorY = 1;
 
         addMouseListener(new MouseListener() {
             @Override
@@ -129,13 +130,6 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
         instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
         return instructions;
-    }
-
-    public void setIsInitialized(boolean is_initialized) {
-        this.isInitialized = is_initialized;
-        this.zoomfactor = 1;
-        this.zoomfactorX = 1;
-        this.zoomfactorY = 1;
     }
 
     public void setVar(String var) {
@@ -521,14 +515,8 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     @Override
     public void paintComponent(Graphics g) {
-
-        // Falls repaint() aufgerufen wird, bevor irgendwelche Attribute gesetzt wurden -> Abbruch!
-        if (!this.isInitialized) {
-            return;
-        }
         super.paintComponent(g);
         drawCurve2D(g, this.var);
-
     }
 
     // Grafikexport.

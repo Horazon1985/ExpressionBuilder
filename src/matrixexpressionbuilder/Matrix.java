@@ -195,6 +195,14 @@ public class Matrix extends MatrixExpression {
     }
 
     /**
+     * Gibt zurück, ob eine Matrix A = (a_{i, j}) eine Dreiecksgestalt
+     * besitzt.
+     */ 
+    public boolean isTriangularMatrix() {
+        return isLowerTriangularMatrix() || isUpperTriangularMatrix();
+    }
+    
+    /**
      * Gibt zurück, ob eine Matrix A = (a_{i, j}) untere Dreiecksgestalt
      * besitzt. Dies trifft genau dann zu, wenn sie quadratisch ist und für i <
      * j gilt a_{i, j} = 0.

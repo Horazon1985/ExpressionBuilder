@@ -2,6 +2,8 @@ package matrixsimplifymethods;
 
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.MINUS_ONE;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
 import flowcontroller.FlowController;
@@ -824,6 +826,67 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     return factors.get(0).mult(new MatrixFunction(factors.get(1), type).mult(factors.get(2)));
                 }
 
+            }
+
+        }
+
+        return matExpr;
+
+    }
+
+    /**
+     * Vereinfacht f(A), wenn A eine (2x2)-Dreiecksmatrix ist.
+     *
+     * @throws EvaluationException
+     */
+    public static MatrixExpression simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(MatrixExpression matExpr, TypeMatrixFunction type) throws EvaluationException {
+
+        if (matExpr.isMatrixFunction(type) && ((MatrixFunction) matExpr).getLeft().isMatrix()
+                && ((Matrix) ((MatrixFunction) matExpr).getLeft()).isTriangularMatrix()) {
+
+            Matrix m = (Matrix) ((MatrixFunction) matExpr).getLeft();
+            Dimension dim = m.getDimension();
+            if (dim.width != 2 || dim.height != 2) {
+                return matExpr;
+            }
+
+            if (m.isUpperTriangularMatrix() && m.getEntry(0, 0).equivalent(m.getEntry(1, 1))) {
+                // m ist von der Form [a,b;0,a]. Dann ist f(A) = [f(a),b*f'(a);0,f(a)]
+                Expression a = m.getEntry(0, 0);
+                Expression b = m.getEntry(0, 1);
+                switch (type) {
+                    case cos:
+                        return new Matrix(new Expression[][]{{a.cos(), MINUS_ONE.mult(b.mult(a.sin()))}, {ZERO, a.cos()}});
+                    case cosh:
+                        return new Matrix(new Expression[][]{{a.cosh(), b.mult(a.sinh())}, {ZERO, a.cosh()}});
+                    case exp:
+                        return new Matrix(new Expression[][]{{a.exp(), b.mult(a.exp())}, {ZERO, a.exp()}});
+                    case ln:
+                        return new Matrix(new Expression[][]{{a.ln(), b.div(a)}, {ZERO, a.ln()}});
+                    case sin:
+                        return new Matrix(new Expression[][]{{a.sin(), b.mult(a.cos())}, {ZERO, a.sin()}});
+                    case sinh:
+                        return new Matrix(new Expression[][]{{a.sinh(), b.mult(a.cosh())}, {ZERO, a.sinh()}});
+                }
+            }
+            if (m.isLowerTriangularMatrix() && m.getEntry(0, 0).equivalent(m.getEntry(1, 1))) {
+                // m ist von der Form [a,0;b,a]. Dann ist f(A) = [f(a),0;b*f'(a),f(a)]
+                Expression a = m.getEntry(0, 0);
+                Expression b = m.getEntry(1, 0);
+                switch (type) {
+                    case cos:
+                        return new Matrix(new Expression[][]{{a.cos(), ZERO}, {MINUS_ONE.mult(b.mult(a.sin())), a.cos()}});
+                    case cosh:
+                        return new Matrix(new Expression[][]{{a.cosh(), ZERO}, {b.mult(a.sinh()), a.cosh()}});
+                    case exp:
+                        return new Matrix(new Expression[][]{{a.exp(), ZERO}, {b.mult(a.exp()), a.exp()}});
+                    case ln:
+                        return new Matrix(new Expression[][]{{a.ln(), ZERO}, {b.div(a), a.ln()}});
+                    case sin:
+                        return new Matrix(new Expression[][]{{a.sin(), ZERO}, {b.mult(a.cos()), a.sin()}});
+                    case sinh:
+                        return new Matrix(new Expression[][]{{a.sinh(), ZERO}, {b.mult(a.cosh()), a.sinh()}});
+                }
             }
 
         }

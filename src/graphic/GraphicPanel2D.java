@@ -900,13 +900,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     @Override
     public void paintComponent(Graphics g) {
 
-        /**
-         * Falls repaint() aufgerufen wird, bevor irgendwelche Attribute gesetzt
-         * wurden -> Abbruch!
-         */
-//        if (!this.isInitialized) {
-//            return;
-//        }
         super.paintComponent(g);
         if (this.isExplicit) {
             drawGraphs2D(g, this.varAbsc);

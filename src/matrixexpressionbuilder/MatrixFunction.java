@@ -847,6 +847,36 @@ public class MatrixFunction extends MatrixExpression {
             return matExprSimplified;
         }
 
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.cos);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.cosh);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.exp);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.ln);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.sin);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
+        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfTwoDimensionalTriangularMatrix(matExpr, TypeMatrixFunction.sinh);
+        if (!matExprSimplified.equals(matExpr)) {
+            return matExprSimplified;
+        }
+
         return matExpr;
 
     }
