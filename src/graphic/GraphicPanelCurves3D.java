@@ -55,12 +55,14 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
      (welcher durch das Auslösen eines MouseEvent verändert wird) ist angle.
      Ansonsten vertical_angle.
      */
-    private boolean isInitialized;
     private boolean isAngleMeant = true;
     private Point lastMousePosition;
 
     public GraphicPanelCurves3D() {
+        
         isRotating = false;
+        this.zoomfactor = 1;
+        
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -151,10 +153,6 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
         return this.expr;
     }
 
-    public boolean getStartRotate() {
-        return this.isRotating;
-    }
-
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateExceptionMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
@@ -167,21 +165,13 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
         this.isRotating = isRotating;
     }
 
-    public void setIsInitialized(boolean isInitialized) {
-        this.isInitialized = isInitialized;
-        this.zoomfactor = 1;
-    }
-
-    public void setVar(String var) {
-        this.var = var;
-    }
-
-    public void setExpression(Expression[] expr) {
+    private void setExpression(Expression[] expr) {
         this.expr = expr;
         this.curve3D.clear();
     }
 
-    public void setParameters(double bigRadius, double heightProjection, double angle, double verticalAngle) {
+    public void setParameters(String var, double bigRadius, double heightProjection, double angle, double verticalAngle) {
+        this.var = var;
         this.heightProjection = heightProjection;
         this.bigRadius = bigRadius;
         this.smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
@@ -194,7 +184,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
     /**
      * Voraussetzung: expr, var_1 und var_2 sind bereits gesetzt.
      */
-    public void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
+    private void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
@@ -310,7 +300,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
+    private void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
@@ -1001,17 +991,19 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
 
     }
 
-    public void drawCurve3D() {
+    public void drawCurve3D(Expression t_0, Expression t_1, Expression[] expr) throws EvaluationException {
+        setExpression(expr);
+        computeScreenSizes(t_0, t_1);
+        expressionToGraph(t_0, t_1);
+        drawCurve3D();
+    }
+    
+    private void drawCurve3D() {
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
-
-        // Falls repaint() aufgerufen wird, bevor irgendwelche Attribute gesetzt wurden -> Abbruch!
-        if (!this.isInitialized) {
-            return;
-        }
         super.paintComponent(g);
         drawCurve3D(g, angle);
     }

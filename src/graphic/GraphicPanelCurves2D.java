@@ -136,7 +136,7 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
         this.var = var;
     }
 
-    public void setExpression(Expression[] expr) {
+    private void setExpression(Expression[] expr) {
         this.expr = expr;
         this.curve2D.clear();
     }
@@ -144,7 +144,7 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
     /**
      * Voraussetzung: expr und var sind bereits gesetzt.
      */
-    public void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
+    private void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
@@ -252,7 +252,7 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
+    private void expressionToGraph(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
@@ -509,7 +509,7 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
         drawCurve2D();
     }
     
-    public void drawCurve2D() {
+    private void drawCurve2D() {
         repaint();
     }
 
