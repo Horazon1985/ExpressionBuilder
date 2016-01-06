@@ -45,7 +45,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     private double maxX, maxY;
     private int expX, expY;
 
-//    private boolean isInitialized;
     private boolean isExplicit;
     private boolean isFixed;
     private boolean movable = false;
@@ -56,7 +55,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     public GraphicPanel2D() {
 
-//        this.isInitialized = false;
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -178,9 +176,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return instructions;
     }
 
-//    public void setIsInitialized(boolean isInitialized) {
-//        this.isInitialized = isInitialized;
-//    }
     public void setVarAbsc(String varAbsc) {
         this.varAbsc = varAbsc;
     }
