@@ -131,6 +131,36 @@
     <Ukrainian>Слід однієї з матриць невизначений.</Ukrainian>
     <Russian>След одной из матриц не определён.</Russian>
   </object>
+  <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_COV">
+    <German>Zu wenig Parameter im Operator 'cov'.</German>
+    <English>Not enought parameters in operator 'cov'.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_1">
+    <German>Der </German>
+    <English>The </English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_2">
+    <German>. Parameter im Operator 'cov' muss ein zweidimensionaler Punkt sein.</German>
+    <English>. parameter in operator 'cov' must be a two dimensional point.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MEB_Operator_COV_CANNOT_BE_COMPUTED">
+    <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
+    <English>The covariance cannot be computetd, since the occurring parameters cannot be simplified or contain errors.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
+    <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
+    <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
   <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
     <English>Not enought parameters in operator 'diff'.</English>

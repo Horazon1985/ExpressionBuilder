@@ -933,10 +933,10 @@ public class MatrixOperator extends MatrixExpression {
                 points[i] = ((MatrixExpression) params[i]).simplify();
                 dim = points[i].getDimension();
             } catch (EvaluationException e) {
-                throw new EvaluationException("TO DO");
+                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_COV_CANNOT_BE_COMPUTED"));
             }
             if (!points[i].isMatrix() || dim.width != 1 || dim.height != 2) {
-                throw new EvaluationException("TO DO");
+                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS"));
             }
         }
 
