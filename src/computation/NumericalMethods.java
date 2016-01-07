@@ -4,7 +4,6 @@ import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import expressionbuilder.Variable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import translator.Translator;
 
 public abstract class NumericalMethods {
@@ -297,12 +296,12 @@ public abstract class NumericalMethods {
 
     /**
      * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
-     * var2) = 0 im Bereich x_0 <= var1 <= x_1, y_0 <= var2 <= y_1.
+     * var2) = 0 im Bereich x_0 <= varAbsc <= x_1, y_0 <= varOrd <= y_1.
      * VORAUSSETZUNG: f hängt nur von var1 und var2 ab.
      *
      * @throws EvaluationException
      */
-    public static ArrayList<double[]> solveImplicitEquation(Expression f, String var1, String var2,
+    public static ArrayList<double[]> solveImplicitEquation2D(Expression f, String varAbsc, String varOrd,
             double x_0, double x_1, double y_0, double y_1) throws EvaluationException {
 
         ArrayList<double[]> solutionsOfImplicitEquation = new ArrayList<>();
@@ -311,13 +310,13 @@ public abstract class NumericalMethods {
         double valueAtCurrentPoint, valueAtNextPoint;
         double[] solution;
         for (int i = 0; i < 500; i++) {
-            Variable.setValue(var1, x_0 + i * (x_1 - x_0) / 500);
-            Variable.setValue(var2, y_0);
+            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 500);
+            Variable.setValue(varOrd, y_0);
             try {
                 valueAtNextPoint = f.evaluate();
                 for (int j = 0; j < 500; j++) {
                     valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(var2, y_0 + (j + 1) * (y_1 - y_0) / 500);
+                    Variable.setValue(varOrd, y_0 + (j + 1) * (y_1 - y_0) / 500);
                     valueAtNextPoint = f.evaluate();
                     if (valueAtCurrentPoint == 0) {
                         solution = new double[2];
@@ -338,13 +337,13 @@ public abstract class NumericalMethods {
 
         // Entlangtasten an horizontalen Niveaulinien.
         for (int i = 0; i < 500; i++) {
-            Variable.setValue(var1, x_0);
-            Variable.setValue(var2, y_0 + i * (y_1 - y_0) / 500);
+            Variable.setValue(varAbsc, x_0);
+            Variable.setValue(varOrd, y_0 + i * (y_1 - y_0) / 500);
             try {
                 valueAtNextPoint = f.evaluate();
                 for (int j = 0; j < 500; j++) {
                     valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(var1, x_0 + (j + 1) * (x_1 - x_0) / 500);
+                    Variable.setValue(varAbsc, x_0 + (j + 1) * (x_1 - x_0) / 500);
                     valueAtNextPoint = f.evaluate();
                     if (valueAtCurrentPoint == 0) {
                         solution = new double[2];
@@ -367,4 +366,76 @@ public abstract class NumericalMethods {
 
     }
 
+    /**
+     * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
+     * var2) = 0 im Bereich x_0 <= varAbsc <= x_1, y_0 <= varOrd <= y_1.
+     * VORAUSSETZUNG: f hängt nur von var1 und var2 ab.
+     *
+     * @throws EvaluationException
+     */
+    public static ArrayList<double[]> solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
+            double x_0, double x_1, double y_0, double y_1, double z_0, double z_1) throws EvaluationException {
+
+        ArrayList<double[]> solutionsOfImplicitEquation = new ArrayList<>();
+
+        // Entlangtasten an vertikalen Niveaulinien.
+        double valueAtCurrentPoint, valueAtNextPoint;
+        double[] solution;
+        for (int i = 0; i < 200; i++) {
+            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 200);
+            Variable.setValue(varOrd, y_0);
+            try {
+                valueAtNextPoint = f.evaluate();
+                for (int j = 0; j < 200; j++) {
+                    valueAtCurrentPoint = valueAtNextPoint;
+                    Variable.setValue(varOrd, y_0 + (j + 1) * (y_1 - y_0) / 200);
+                    valueAtNextPoint = f.evaluate();
+                    if (valueAtCurrentPoint == 0) {
+                        solution = new double[3];
+                        solution[0] = x_0 + i * (x_1 - x_0) / 200;
+                        solution[1] = y_0 + j * (y_1 - y_0) / 200;
+                        solutionsOfImplicitEquation.add(solution);
+                    } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
+                        solution = new double[3];
+                        solution[0] = x_0 + i * (x_1 - x_0) / 200;
+                        solution[1] = y_0 + (j * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
+                                + (j + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
+                        solutionsOfImplicitEquation.add(solution);
+                    }
+                }
+            } catch (EvaluationException e) {
+            }
+        }
+
+        // Entlangtasten an horizontalen Niveaulinien.
+        for (int i = 0; i < 500; i++) {
+            Variable.setValue(varAbsc, x_0);
+            Variable.setValue(varOrd, y_0 + i * (y_1 - y_0) / 500);
+            try {
+                valueAtNextPoint = f.evaluate();
+                for (int j = 0; j < 500; j++) {
+                    valueAtCurrentPoint = valueAtNextPoint;
+                    Variable.setValue(varAbsc, x_0 + (j + 1) * (x_1 - x_0) / 500);
+                    valueAtNextPoint = f.evaluate();
+                    if (valueAtCurrentPoint == 0) {
+                        solution = new double[2];
+                        solution[0] = x_0 + j * (x_1 - x_0) / 500;
+                        solution[1] = y_0 + i * (y_1 - y_0) / 500;
+                        solutionsOfImplicitEquation.add(solution);
+                    } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
+                        solution = new double[2];
+                        solution[0] = x_0 + j * (x_1 - x_0) / 500;
+                        solution[1] = y_0 + (i * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
+                                + (i + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
+                        solutionsOfImplicitEquation.add(solution);
+                    }
+                }
+            } catch (EvaluationException e) {
+            }
+        }
+
+        return solutionsOfImplicitEquation;
+
+    }
+    
 }

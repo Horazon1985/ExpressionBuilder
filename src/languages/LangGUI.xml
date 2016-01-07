@@ -239,10 +239,10 @@
     <Russian>График </Russian>
   </object>
   <object id = "GUI_LegendGUI_EQUATION_OF_IMPLICIT_FUNCTION">
-    <German>(Vereinfachte) Gleichung der implizit gegebenen Funktion: </German>
-    <English>(Simplified) equation of the implicitly given function: </English>
-    <Ukrainian>(Спрощене) рівняння неявно заданої функції: </Ukrainian>
-    <Russian>(Упрощенное) уравнение неявно заданной функции: </Russian>
+    <German>Gleichung der implizit gegebenen Funktion: </German>
+    <English>Equation of the implicitly given function: </English>
+    <Ukrainian>Рівняння неявно заданої функції: </Ukrainian>
+    <Russian>Уравнение неявно заданной функции: </Russian>
   </object>
   <object id = "GUI_LegendGUI_PARAMETERIZED_CURVE">
     <German>Parametrisierte Kurve: </German>
