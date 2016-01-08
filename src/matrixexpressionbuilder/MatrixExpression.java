@@ -358,7 +358,7 @@ public abstract class MatrixExpression {
 
         for (int i = 0; i < ((Matrix) this).getRowNumber(); i++) {
             for (int j = 0; j < ((Matrix) this).getColumnNumber(); j++) {
-                if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)){
+                if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)) {
                     return false;
                 }
             }
@@ -398,7 +398,8 @@ public abstract class MatrixExpression {
     }
 
     /**
-     * Gibt zurück, ob der vorliegende Matrizenausdruck ein Vielfaches einer Einheitsmatrix ist.
+     * Gibt zurück, ob der vorliegende Matrizenausdruck ein Vielfaches einer
+     * Einheitsmatrix ist.
      */
     public boolean isMultipleOfId() {
 
@@ -407,14 +408,14 @@ public abstract class MatrixExpression {
         }
 
         for (int i = 0; i < ((Matrix) this).getRowNumber(); i++) {
-            if (!((Matrix) this).getEntry(0, 0).equivalent(((Matrix) this).getEntry(i, i))){
+            if (!((Matrix) this).getEntry(0, 0).equivalent(((Matrix) this).getEntry(i, i))) {
                 return false;
             }
         }
         return true;
 
     }
-    
+
     /**
      * Es folgen Methoden zur Ermittlung, ob der zugrundeliegende Ausdruck eine
      * Instanz einer speziellen Unterklasse von Expression mit speziellem Typ
@@ -635,7 +636,7 @@ public abstract class MatrixExpression {
      * Triviale Vereinfachungen für Matrizenausdrücke.
      */
     public abstract MatrixExpression simplifyTrivial() throws EvaluationException;
-    
+
     /**
      * Hier wird die Methode simplify() aus der Klasse
      * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
@@ -667,27 +668,35 @@ public abstract class MatrixExpression {
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException;
-    
+
     /**
      * Sammelt in einer Differenz Skalarfaktoren.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException;
-    
+
+    public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
+        return this.simplifyFactorizeScalarsInSums().simplifyFactorizeScalarsInDifferences();
+    }
+
     /**
      * Faktorisiert in einer Summe.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorizeInSums() throws EvaluationException;
-    
+
     /**
      * Faktorisiert in einer Differenz.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException;
+
+    public MatrixExpression simplifyFactorize() throws EvaluationException {
+        return this.simplifyFactorizeInSums().simplifyFactorizeInDifferences();
+    }
     
     /**
      * Hier wird die Methode simplify() aus der Klasse

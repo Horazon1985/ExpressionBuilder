@@ -1412,6 +1412,10 @@ public abstract class Expression {
      */
     public abstract Expression simplifyFactorizeInDifferences() throws EvaluationException;
 
+    public Expression simplifyFactorize() throws EvaluationException {
+        return this.simplifyFactorizeInSums().simplifyFactorizeInDifferences();
+    }
+    
     /**
      * Versucht in einer Summe gleiche nichtkonstante Summanden mit
      * verschiedenen rationalen Koeffizienten zu sammeln.<br>
@@ -1430,6 +1434,10 @@ public abstract class Expression {
      */
     public abstract Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException;
 
+    public Expression simplifyFactorizeAllButRationals() throws EvaluationException {
+        return this.simplifyFactorizeAllButRationalsInSums().simplifyFactorizeAllButRationalsInDifferences();
+    }
+    
     /**
      * Kürzt Ausdrücke in einem Quotienten (...)-(...).
      *
@@ -1547,8 +1555,7 @@ public abstract class Expression {
                 exprSimplified = exprSimplified.simplifyPullApartPowers();
                 exprSimplified = exprSimplified.simplifyCollectProducts();
                 exprSimplified = exprSimplified.simplifyExpandRationalFactors();
-                exprSimplified = exprSimplified.simplifyFactorizeInSums();
-                exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
+                exprSimplified = exprSimplified.simplifyFactorize();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
@@ -1598,16 +1605,12 @@ public abstract class Expression {
                         exprSimplified = exprSimplified.simplifyMultiplyExponents();
                     } else if (simplifyType.equals(TypeSimplify.simplify_collect_products)) {
                         exprSimplified = exprSimplified.simplifyCollectProducts();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize_all_but_rationals_in_sums)) {
-                        exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize_in_sums)) {
-                        exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize_all_but_rationals)) {
+                        exprSimplified = exprSimplified.simplifyFactorize();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize)) {
+                        exprSimplified = exprSimplified.simplifyFactorizeAllButRationals();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize_all_but_rationals_in_differences)) {
-                        exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize_in_differences)) {
-                        exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                         exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                     } else if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
@@ -1678,20 +1681,14 @@ public abstract class Expression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_collect_products)) {
                     exprSimplified = exprSimplified.simplifyCollectProducts();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_sums)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationals();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_sums)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize)) {
+                    exprSimplified = exprSimplified.simplifyFactorize();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_differences)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_differences)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                     exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
@@ -1777,20 +1774,14 @@ public abstract class Expression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_collect_products)) {
                     exprSimplified = exprSimplified.simplifyCollectProducts();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_sums)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInSums();
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals)) {
+                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationals();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_sums)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeInSums();
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize)) {
+                    exprSimplified = exprSimplified.simplifyFactorize();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_all_but_rationals_in_differences)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeAllButRationalsInDifferences();
-                }
-                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_in_differences)) {
-                    exprSimplified = exprSimplified.simplifyFactorizeInDifferences();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                     exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();

@@ -28,8 +28,7 @@ public abstract class SubstitutionUtilities {
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_in_sums);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_in_differences);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
