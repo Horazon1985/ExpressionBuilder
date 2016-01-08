@@ -381,23 +381,23 @@ public abstract class NumericalMethods {
         // Entlangtasten an vertikalen Niveaulinien.
         double valueAtCurrentPoint, valueAtNextPoint;
         double[] solution;
-        for (int i = 0; i < 200; i++) {
-            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 200);
+        for (int i = 0; i < 50; i++) {
+            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 50);
             Variable.setValue(varOrd, y_0);
             try {
                 valueAtNextPoint = f.evaluate();
                 for (int j = 0; j < 200; j++) {
                     valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(varOrd, y_0 + (j + 1) * (y_1 - y_0) / 200);
+                    Variable.setValue(varOrd, y_0 + (j + 1) * (y_1 - y_0) / 50);
                     valueAtNextPoint = f.evaluate();
                     if (valueAtCurrentPoint == 0) {
                         solution = new double[3];
-                        solution[0] = x_0 + i * (x_1 - x_0) / 200;
-                        solution[1] = y_0 + j * (y_1 - y_0) / 200;
+                        solution[0] = x_0 + i * (x_1 - x_0) / 50;
+                        solution[1] = y_0 + j * (y_1 - y_0) / 50;
                         solutionsOfImplicitEquation.add(solution);
                     } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
                         solution = new double[3];
-                        solution[0] = x_0 + i * (x_1 - x_0) / 200;
+                        solution[0] = x_0 + i * (x_1 - x_0) / 50;
                         solution[1] = y_0 + (j * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
                                 + (j + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
                         solutionsOfImplicitEquation.add(solution);

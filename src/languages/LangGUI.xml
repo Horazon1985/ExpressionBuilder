@@ -286,23 +286,11 @@
     <Ukrainian>Опції спрощення виразу:</Ukrainian>
     <Russian>Опции упрощения віражения:</Russian>
   </object>
-  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND">
-    <German>Klammern ausmultiplizieren</German>
-    <English>Expand brackets</English>
-    <Ukrainian>Розкривати дужки</Ukrainian>
-    <Russian>Раскрывать скобки</Russian>
-  </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND_AND_COLLECT_IF_SHORTER">
     <German>Länge verkürzen</German>
     <English>Shorten length</English>
     <Ukrainian>Скоротити довжину</Ukrainian>
     <Russian>Сократить длину</Russian>
-  </object>
-  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_FACTORIZE">
-    <German>Faktorisieren</German>
-    <English>Factorize</English>
-    <Ukrainian>Факторизувати</Ukrainian>
-    <Russian>Факторизировать</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_SIMPLIFY_ALGEBRAIC_EXPRESSIONS">
     <German>Algebraische Relationen verwenden</German>
@@ -316,6 +304,24 @@
     <Ukrainian>Використовувати функціональні співвідношення</Ukrainian>
     <Russian>Использовать функциональные соотношения</Russian>
   </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_FACTORIZE">
+    <German>Faktorisieren</German>
+    <English>Factorize</English>
+    <Ukrainian>Факторизувати</Ukrainian>
+    <Russian>Факторизировать</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_EXPAND">
+    <German>Klammern ausmultiplizieren</German>
+    <English>Expand brackets</English>
+    <Ukrainian>Розкривати дужки</Ukrainian>
+    <Russian>Раскрывать скобки</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_NO_FACTPRIZATION_OPTION">
+    <German>(Keine Faktorisierungsoptionen)</German>
+    <English>(No factorization options)</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_COLLECT_LOGARITHMS">
     <German>Logarithmen zusammenfassen</German>
     <English>Collect logarithms</English>
@@ -327,5 +333,11 @@
     <English>Expand logarithms</English>
     <Ukrainian>Розкрити логарифми</Ukrainian>
     <Russian>Раскрыть логарифмы</Russian>
+  </object>
+  <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_NO_LOGARITHM_OPTION">
+    <German>(Keine Logarithmenoptionen)</German>
+    <English>(No logarithm options)</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
   </object>
 </objects>
