@@ -955,6 +955,11 @@ public class Function extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorize() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorize(), this.getType());
+    }
+    
+    @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         return new Function(this.getLeft().simplifyFactorizeAllButRationalsInSums(), this.getType());
     }

@@ -427,6 +427,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorize() {
+        return this;
+    }
+    
+    @Override
     public Expression simplifyFactorizeAllButRationalsInSums() {
         return this;
     }

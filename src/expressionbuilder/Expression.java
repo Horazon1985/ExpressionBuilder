@@ -1412,9 +1412,7 @@ public abstract class Expression {
      */
     public abstract Expression simplifyFactorizeInDifferences() throws EvaluationException;
 
-    public Expression simplifyFactorize() throws EvaluationException {
-        return this.simplifyFactorizeInSums().simplifyFactorizeInDifferences();
-    }
+    public abstract Expression simplifyFactorize() throws EvaluationException;
     
     /**
      * Versucht in einer Summe gleiche nichtkonstante Summanden mit
@@ -1606,9 +1604,9 @@ public abstract class Expression {
                     } else if (simplifyType.equals(TypeSimplify.simplify_collect_products)) {
                         exprSimplified = exprSimplified.simplifyCollectProducts();
                     } else if (simplifyType.equals(TypeSimplify.simplify_factorize_all_but_rationals)) {
-                        exprSimplified = exprSimplified.simplifyFactorize();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize)) {
                         exprSimplified = exprSimplified.simplifyFactorizeAllButRationals();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_factorize)) {
+                        exprSimplified = exprSimplified.simplifyFactorize();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_leadings_coefficients)) {

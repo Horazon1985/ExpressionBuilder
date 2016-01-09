@@ -1358,6 +1358,58 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorize() throws EvaluationException {
+
+        if (this.isSum()) {
+
+            // In jedem Summanden einzeln kürzen.
+            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyFactorize());
+            }
+            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
+            return SimplifyUtilities.produceSum(summands);
+
+        } else if (this.isDifference()) {
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+
+            // Zunächst im Minuenden und im Subtrahenden faktorisieren.
+            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summandsLeft);
+            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summandsRight);
+            
+            // In jedem Summanden einzeln faktorisieren
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                summandsLeft.put(i, summandsLeft.get(i).simplifyFactorize());
+            }
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                summandsRight.put(i, summandsRight.get(i).simplifyFactorize());
+            }
+
+            // Eigentliche Faktorisierung.
+            SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
+
+            // Ergebnis bilden.
+            return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+
+        } else if (this.isProduct()) {
+
+            // In jedem Faktor einzeln kürzen.
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyFactorize());
+            }
+            return SimplifyUtilities.produceProduct(factors);
+
+        }
+
+        // Hier ist type == DIV oder type == POW.
+        return new BinaryOperation(this.left.simplifyFactorize(), this.right.simplifyFactorize(), this.type);
+
+    }
+
+    @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
 
         if (this.isProduct()) {
