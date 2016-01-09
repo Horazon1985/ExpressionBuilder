@@ -1367,30 +1367,17 @@ public class BinaryOperation extends Expression {
             for (int i = 0; i < summands.getBound(); i++) {
                 summands.put(i, summands.get(i).simplifyFactorize());
             }
+            // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
             return SimplifyUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
 
-            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
-            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
-
-            // Zunächst im Minuenden und im Subtrahenden faktorisieren.
-            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summandsLeft);
-            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summandsRight);
-            
-            // In jedem Summanden einzeln faktorisieren
-            for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyFactorize());
-            }
-            for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, summandsRight.get(i).simplifyFactorize());
-            }
-
+            Expression expr = this.left.simplifyFactorize().sub(this.right.simplifyFactorize());
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
-
-            // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {

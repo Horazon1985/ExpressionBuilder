@@ -1412,6 +1412,11 @@ public abstract class Expression {
      */
     public abstract Expression simplifyFactorizeInDifferences() throws EvaluationException;
 
+    /**
+     * Versucht möglichst viel zu faktorisieren.
+     *
+     * @throws EvaluationException
+     */
     public abstract Expression simplifyFactorize() throws EvaluationException;
     
     /**
