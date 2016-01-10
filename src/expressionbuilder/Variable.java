@@ -442,6 +442,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorizeAllButRationals() {
+        return this;
+    }
+
+    @Override
     public Expression simplifyReduceQuotients() {
         return this;
     }

@@ -1464,6 +1464,44 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorizeAllButRationals() throws EvaluationException {
+
+        if (this.isSum()) {
+
+            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
+            // In jedem Summanden einzeln faktorisieren
+            for (int i = 0; i < summands.getBound(); i++) {
+                summands.put(i, summands.get(i).simplifyFactorizeAllButRationalsInSums());
+            }
+            // Eigentliche Faktorisierung.
+            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);
+            return SimplifyUtilities.produceSum(summands);
+
+        } else if (this.isDifference()) {
+
+            Expression expr = this.left.simplifyFactorizeAllButRationals().sub(this.right.simplifyFactorizeAllButRationals());
+            
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
+            // Eigentliche Faktorisierung.
+            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
+            return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+            
+        } else if (this.isProduct()) {
+            // In jedem Faktor einzeln faktorisieren.
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).simplifyFactorizeAllButRationals());
+            }
+            return SimplifyUtilities.produceProduct(factors);
+        }
+        
+        // Hier ist type == DIV oder type == POW.
+        return new BinaryOperation(this.left.simplifyFactorizeAllButRationals(), this.right.simplifyFactorizeAllButRationals(), this.type);
+        
+    }
+
+    @Override
     public Expression simplifyReduceQuotients() throws EvaluationException {
 
         if (this.isSum()) {

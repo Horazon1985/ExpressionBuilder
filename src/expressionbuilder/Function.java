@@ -970,6 +970,11 @@ public class Function extends Expression {
     }
 
     @Override
+    public Expression simplifyFactorizeAllButRationals() throws EvaluationException {
+        return new Function(this.getLeft().simplifyFactorizeAllButRationals(), this.getType());
+    }
+
+    @Override
     public Expression simplifyReduceQuotients() throws EvaluationException {
         return new Function(this.getLeft().simplifyReduceQuotients(), this.getType());
     }

@@ -1418,7 +1418,7 @@ public abstract class Expression {
      * @throws EvaluationException
      */
     public abstract Expression simplifyFactorize() throws EvaluationException;
-    
+
     /**
      * Versucht in einer Summe gleiche nichtkonstante Summanden mit
      * verschiedenen rationalen Koeffizienten zu sammeln.<br>
@@ -1437,10 +1437,18 @@ public abstract class Expression {
      */
     public abstract Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException;
 
-    public Expression simplifyFactorizeAllButRationals() throws EvaluationException {
-        return this.simplifyFactorizeAllButRationalsInSums().simplifyFactorizeAllButRationalsInDifferences();
-    }
-    
+    /**
+     * Versucht in einer Summe oder Differenz gleiche nichtkonstante Summanden
+     * mit verschiedenen rationalen Koeffizienten zu sammeln.<br>
+     * BEISPIEL: (1) Für 3*x*y/7 + 3.8*x*y wird (3/7 + 3.8)*x*y
+     * zurückgegeben.<br>
+     * (2) Für 2*x*y + 5*x*z wird 2*x*y + 5*x*z zurückgegeben (es wird also
+     * nichts vereinfacht).
+     *
+     * @throws EvaluationException
+     */
+    public abstract Expression simplifyFactorizeAllButRationals() throws EvaluationException;
+
     /**
      * Kürzt Ausdrücke in einem Quotienten (...)-(...).
      *

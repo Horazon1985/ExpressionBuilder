@@ -333,10 +333,10 @@ public class GeneralSimplifyExpressionTest {
 
     @Test
     public void factorizeAllButRationalsInDifferencesTest3() {
-        // (11*a*b)/3-(b*a*15)/7 = (11/3-15/7)*(a*b)
+        // (11*a*b)/3+x-(b*a*15)/7 = (11/3-15/7)*(a*b)+x
         try {
-            Expression f = Expression.build("(11*a*b)/3-(b*a*15)/7", null);
-            Expression g = Expression.build("(11/3-15/7)*(a*b)", null);
+            Expression f = Expression.build("((11*a*b)/3+x)-(b*a*15)/7", null);
+            Expression g = Expression.build("(11/3-15/7)*(a*b)+x", null);
             f = f.simplifyFactorizeAllButRationalsInDifferences();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
