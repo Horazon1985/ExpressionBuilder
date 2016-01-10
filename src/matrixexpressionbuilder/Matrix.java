@@ -707,7 +707,7 @@ public class Matrix extends MatrixExpression {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                entrySimplified[i][j] = this.entry[i][j].simplifyFactorizeInSums();
+                entrySimplified[i][j] = this.entry[i][j].simplifyFactorize();
             }
         }
         return new Matrix(entrySimplified);
@@ -718,7 +718,7 @@ public class Matrix extends MatrixExpression {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                entrySimplified[i][j] = this.entry[i][j].simplifyFactorizeInDifferences();
+                entrySimplified[i][j] = this.entry[i][j].simplifyFactorize();
             }
         }
         return new Matrix(entrySimplified);

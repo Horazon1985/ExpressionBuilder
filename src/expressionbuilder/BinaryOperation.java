@@ -1289,75 +1289,6 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyFactorizeInSums() throws EvaluationException {
-
-        if (this.isProduct()) {
-            // In jedem Faktor einzeln faktorisieren.
-            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyFactorizeInSums());
-            }
-            return SimplifyUtilities.produceProduct(factors);
-        }
-        if (this.isNotSum()) {
-            return new BinaryOperation(this.left.simplifyFactorizeInSums(), this.right.simplifyFactorizeInSums(), this.type);
-        }
-
-        // Ab hier muss this als type + besitzen.
-        ExpressionCollection summands = SimplifyUtilities.getSummands(this);
-        // In jedem Summanden einzeln faktorisieren
-        for (int i = 0; i < summands.getBound(); i++) {
-            summands.put(i, summands.get(i).simplifyFactorizeInSums());
-        }
-
-        // Eigentliche Faktorisierung.
-        SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
-
-        // Ergebnis bilden.
-        return SimplifyUtilities.produceSum(summands);
-
-    }
-
-    @Override
-    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
-
-        if (this.isSum()) {
-            // In jedem Summanden einzeln kürzen.
-            ExpressionCollection summands = SimplifyUtilities.getSummands(this);
-            for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyFactorizeInDifferences());
-            }
-            return SimplifyUtilities.produceSum(summands);
-        } else if (this.isProduct()) {
-            // In jedem Faktor einzeln kürzen.
-            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
-            for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyFactorizeInDifferences());
-            }
-            return SimplifyUtilities.produceProduct(factors);
-        } else if (this.isQuotient() || this.isPower()) {
-            return new BinaryOperation(this.left.simplifyFactorizeInDifferences(), this.right.simplifyFactorizeInDifferences(), this.type);
-        }
-
-        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
-        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
-        // In jedem Summanden einzeln faktorisieren
-        for (int i = 0; i < summandsLeft.getBound(); i++) {
-            summandsLeft.put(i, summandsLeft.get(i).simplifyFactorizeInDifferences());
-        }
-        for (int i = 0; i < summandsRight.getBound(); i++) {
-            summandsRight.put(i, summandsRight.get(i).simplifyFactorizeInDifferences());
-        }
-
-        // Eigentliche Faktorisierung.
-        SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
-
-        // Ergebnis bilden.
-        return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-
-    }
-
-    @Override
     public Expression simplifyFactorize() throws EvaluationException {
 
         if (this.isSum()) {
@@ -1471,7 +1402,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // In jedem Summanden einzeln faktorisieren
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyFactorizeAllButRationalsInSums());
+                summands.put(i, summands.get(i).simplifyFactorizeAllButRationals());
             }
             // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);

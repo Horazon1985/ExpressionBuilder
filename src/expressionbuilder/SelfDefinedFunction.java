@@ -433,24 +433,6 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyFactorizeInSums() throws EvaluationException {
-        Expression[] resultLeft = new Expression[this.left.length];
-        for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeInSums();
-        }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeInSums(), resultLeft);
-    }
-
-    @Override
-    public Expression simplifyFactorizeInDifferences() throws EvaluationException {
-        Expression[] resultLeft = new Expression[this.left.length];
-        for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyFactorizeInDifferences();
-        }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeInDifferences(), resultLeft);
-    }
-
-    @Override
     public Expression simplifyFactorize() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {

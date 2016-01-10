@@ -1292,7 +1292,7 @@ public class MatrixOperator extends MatrixExpression {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeScalarsInSums();
             } else if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorize();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1307,7 +1307,7 @@ public class MatrixOperator extends MatrixExpression {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeScalarsInDifferences();
             } else if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInDifferences();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorize();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1322,7 +1322,7 @@ public class MatrixOperator extends MatrixExpression {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeInSums();
             } else if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInSums();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorize();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1337,7 +1337,7 @@ public class MatrixOperator extends MatrixExpression {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyFactorizeInDifferences();
             } else if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyFactorizeInDifferences();
+                resultParams[i] = ((Expression) this.params[i]).simplifyFactorize();
             } else {
                 resultParams[i] = this.params[i];
             }

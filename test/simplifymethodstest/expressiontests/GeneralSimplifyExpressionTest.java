@@ -129,7 +129,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = a.mult(b).add(a.mult(c));
         Expression g = a.mult(b.add(c));
         try {
-            f = f.simplifyFactorizeInSums();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -142,7 +142,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = b.div(a).add(c.div(a));
         Expression g = b.add(c).div(a);
         try {
-            f = f.simplifyFactorizeInSums();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -155,7 +155,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = x.mult(b).div(a).add(c.mult(x).div(a));
         Expression g = x.mult(b.add(c)).div(a);
         try {
-            f = f.simplifyFactorizeInSums();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -181,7 +181,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = x.mult(1).add(x.mult(x));
         Expression g = x.mult(ONE.add(x));
         try {
-            f = f.simplifyFactorizeInSums();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -194,7 +194,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = a.mult(b).sub(a.mult(c));
         Expression g = a.mult(b.sub(c));
         try {
-            f = f.simplifyFactorizeInDifferences();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -207,7 +207,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = b.div(a).sub(c.div(a));
         Expression g = b.sub(c).div(a);
         try {
-            f = f.simplifyFactorizeInDifferences();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -220,7 +220,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = x.mult(b).div(a).sub(c.mult(x).div(a));
         Expression g = x.mult(b.sub(c)).div(a);
         try {
-            f = f.simplifyFactorizeInDifferences();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -246,7 +246,7 @@ public class GeneralSimplifyExpressionTest {
         Expression f = x.mult(1).sub(x.mult(x));
         Expression g = x.mult(ONE.sub(x));
         try {
-            f = f.simplifyFactorizeInDifferences();
+            f = f.simplifyFactorize();
             Assert.assertTrue(f.equals(g));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -259,7 +259,7 @@ public class GeneralSimplifyExpressionTest {
         try {
             Expression f = Expression.build("3*a*b+a*5*b+x", null);
             Expression g = Expression.build("(3+5)*(a*b)+x", null);
-            f = f.simplifyFactorizeAllButRationalsInSums();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -272,7 +272,7 @@ public class GeneralSimplifyExpressionTest {
         try {
             Expression f = Expression.build("(a*b)/3+(b*a)/7", null);
             Expression g = Expression.build("(1/3+1/7)*(a*b)", null);
-            f = f.simplifyFactorizeAllButRationalsInSums();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -285,20 +285,7 @@ public class GeneralSimplifyExpressionTest {
         try {
             Expression f = Expression.build("(11*a*b)/3+(b*a*15)/7", null);
             Expression g = Expression.build("(11/3+15/7)*(a*b)", null);
-            f = f.simplifyFactorizeAllButRationalsInSums();
-            Assert.assertTrue(f.equals(g));
-        } catch (ExpressionException | EvaluationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void factorizeAllButRationalsInDifferencesTest4() {
-        // 5^(1/2)*a+5^(1/2)*b wird nicht faktorisiert.
-        try {
-            Expression f = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
-            Expression g = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
-            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -309,9 +296,9 @@ public class GeneralSimplifyExpressionTest {
     public void factorizeAllButRationalsInDifferencesTest1() {
         // 3*a*b-a*5*b+x = (3-5)*a*b+x
         try {
-            Expression f = Expression.build("3*a*b-a*5*b+x", null);
+            Expression f = Expression.build("(3*a*b-a*5*b)+x", null);
             Expression g = Expression.build("(3-5)*(a*b)+x", null);
-            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -324,7 +311,7 @@ public class GeneralSimplifyExpressionTest {
         try {
             Expression f = Expression.build("(a*b)/3-(b*a)/7", null);
             Expression g = Expression.build("(1/3-1/7)*(a*b)", null);
-            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -337,13 +324,26 @@ public class GeneralSimplifyExpressionTest {
         try {
             Expression f = Expression.build("((11*a*b)/3+x)-(b*a*15)/7", null);
             Expression g = Expression.build("(11/3-15/7)*(a*b)+x", null);
-            f = f.simplifyFactorizeAllButRationalsInDifferences();
+            f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
     
+    @Test
+    public void factorizeAllButRationalsInDifferencesTest4() {
+        // 5^(1/2)*a+5^(1/2)*b wird nicht faktorisiert.
+        try {
+            Expression f = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
+            Expression g = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
+            f = f.simplifyFactorizeAllButRationals();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     public void expandTest() {
         // (a+b)*(c+d) = a*c + a*d + b*c + b*d

@@ -417,16 +417,6 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyFactorizeInSums() {
-        return this;
-    }
-
-    @Override
-    public Expression simplifyFactorizeInDifferences() {
-        return this;
-    }
-
-    @Override
     public Expression simplifyFactorize() {
         return this;
     }

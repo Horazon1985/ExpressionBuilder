@@ -1399,20 +1399,6 @@ public abstract class Expression {
     public abstract Expression simplifyCollectProducts() throws EvaluationException;
 
     /**
-     * Versucht in einer Summe möglichst viel zu faktorisieren.
-     *
-     * @throws EvaluationException
-     */
-    public abstract Expression simplifyFactorizeInSums() throws EvaluationException;
-
-    /**
-     * Dasselbe wie factorizeInSums(), nur für Differenzen.
-     *
-     * @throws EvaluationException
-     */
-    public abstract Expression simplifyFactorizeInDifferences() throws EvaluationException;
-
-    /**
      * Versucht möglichst viel zu faktorisieren.
      *
      * @throws EvaluationException
