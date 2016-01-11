@@ -444,10 +444,10 @@
     <Russian>3. параметр оператора 'taylor' должен быть действительным виражением, которое не содержит переменую функции.</Russian>
   </object>
   <object id = "EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID">
-    <German>Der 4. Parameter im Operator 'taylor' muss eine natürliche Zahl kleiner als 2147483648 sein. Dies ist die Ordnung des Taylorpolynoms.</German>
-    <English>The 4. parameter in operator 'taylor' must be a natural number smallert than 2147483648. This is the degree of the taylor polynomial.</English>
-    <Ukrainian>4. параметр оператора 'taylor' має бути натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
-    <Russian>4. параметр оператора 'taylor' должен быть натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
+    <German>Der 4. Parameter im Operator 'taylor' muss eine nichtnegative natürliche Zahl kleiner als 2147483648 sein. Dies ist die Ordnung des Taylorpolynoms.</German>
+    <English>The 4. parameter in operator 'taylor' must be a non-negative integer smaller than 2147483648. This is the degree of the taylor polynomial.</English>
+    <Ukrainian>4. параметр оператора 'taylor' має бути ??? натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
+    <Russian>4. параметр оператора 'taylor' должен быть ??? натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
   </object>
   <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_VAR">
     <German>Im Operator 'var' muss mindestens ein Parameter stehen.</German>
