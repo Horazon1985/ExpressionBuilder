@@ -46,7 +46,7 @@ public class GeneralMatrixTest {
         try {
             matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7]+[2,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])+sin([a,b;c,d])^2)+[6,3;2,-7]", null);
-            matExpr = matExpr.simplifyFactorizeInSums();
+            matExpr = matExpr.simplifyFactorize();
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -59,7 +59,7 @@ public class GeneralMatrixTest {
         try {
             matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
-            matExpr = matExpr.simplifyFactorizeInSums();
+            matExpr = matExpr.simplifyFactorize();
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -72,7 +72,7 @@ public class GeneralMatrixTest {
         try {
             matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[2,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])-sin([a,b;c,d])^2)+[6,3;2,-7]", null);
-            matExpr = matExpr.simplifyFactorizeInDifferences();
+            matExpr = matExpr.simplifyFactorize();
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -85,7 +85,7 @@ public class GeneralMatrixTest {
         try {
             matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
-            matExpr = matExpr.simplifyFactorizeInDifferences();
+            matExpr = matExpr.simplifyFactorize();
             TestUtilities.printResult(expectedResult, matExpr);
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {

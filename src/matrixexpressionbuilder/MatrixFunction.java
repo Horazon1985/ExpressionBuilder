@@ -767,23 +767,13 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
-        return new MatrixFunction(this.left.simplifyFactorizeScalarsInSums(), this.type);
+    public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyFactorizeScalars(), this.type);
     }
     
     @Override
-    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
-        return new MatrixFunction(this.left.simplifyFactorizeScalarsInDifferences(), this.type);
-    }
-    
-    @Override
-    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
-        return new MatrixFunction(this.left.simplifyFactorizeInSums(), this.type);
-    }
-    
-    @Override
-    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
-        return new MatrixFunction(this.left.simplifyFactorizeInDifferences(), this.type);
+    public MatrixExpression simplifyFactorize() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyFactorize(), this.type);
     }
     
     @Override

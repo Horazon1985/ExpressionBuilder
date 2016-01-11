@@ -339,23 +339,13 @@ public class MatrixPower extends MatrixExpression {
     }
     
     @Override
-    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
-        return new MatrixPower(this.left.simplifyFactorizeScalarsInSums(), this.right.simplifyFactorize());
-    }
-
-    @Override
-    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
-        return new MatrixPower(this.left.simplifyFactorizeScalarsInDifferences(), this.right.simplifyFactorize());
+    public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyFactorizeScalars(), this.right.simplifyFactorize());
     }
     
     @Override
-    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
-        return new MatrixPower(this.left.simplifyFactorizeInSums(), this.right.simplifyFactorize());
-    }
-    
-    @Override
-    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
-        return new MatrixPower(this.left.simplifyFactorizeInDifferences(), this.right.simplifyFactorize());
+    public MatrixExpression simplifyFactorize() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyFactorize(), this.right.simplifyFactorize());
     }
     
     @Override

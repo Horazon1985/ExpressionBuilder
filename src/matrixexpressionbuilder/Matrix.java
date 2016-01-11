@@ -693,17 +693,12 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException {
+    public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
         return this;
     }
-
+    
     @Override
-    public MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException {
-        return this;
-    }
-
-    @Override
-    public MatrixExpression simplifyFactorizeInSums() throws EvaluationException {
+    public MatrixExpression simplifyFactorize() throws EvaluationException {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
@@ -712,18 +707,7 @@ public class Matrix extends MatrixExpression {
         }
         return new Matrix(entrySimplified);
     }
-
-    @Override
-    public MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException {
-        Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
-        for (int i = 0; i < this.getRowNumber(); i++) {
-            for (int j = 0; j < this.getColumnNumber(); j++) {
-                entrySimplified[i][j] = this.entry[i][j].simplifyFactorize();
-            }
-        }
-        return new Matrix(entrySimplified);
-    }
-
+    
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() {
         return this;

@@ -663,40 +663,18 @@ public abstract class MatrixExpression {
     public abstract MatrixExpression simplifyCollectProducts() throws EvaluationException;
 
     /**
-     * Sammelt in einer Summe Skalarfaktoren.
+     * Sammelt in einer Summe oder Differenz Skalarfaktoren.
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression simplifyFactorizeScalarsInSums() throws EvaluationException;
+    public abstract MatrixExpression simplifyFactorizeScalars() throws EvaluationException;
 
     /**
-     * Sammelt in einer Differenz Skalarfaktoren.
+     * Faktorisiert in einer Summe oder DIfferenz.
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression simplifyFactorizeScalarsInDifferences() throws EvaluationException;
-
-    public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
-        return this.simplifyFactorizeScalarsInSums().simplifyFactorizeScalarsInDifferences();
-    }
-
-    /**
-     * Faktorisiert in einer Summe.
-     *
-     * @throws EvaluationException
-     */
-    public abstract MatrixExpression simplifyFactorizeInSums() throws EvaluationException;
-
-    /**
-     * Faktorisiert in einer Differenz.
-     *
-     * @throws EvaluationException
-     */
-    public abstract MatrixExpression simplifyFactorizeInDifferences() throws EvaluationException;
-
-    public MatrixExpression simplifyFactorize() throws EvaluationException {
-        return this.simplifyFactorizeInSums().simplifyFactorizeInDifferences();
-    }
+    public abstract MatrixExpression simplifyFactorize() throws EvaluationException;
     
     /**
      * Hier wird die Methode simplify() aus der Klasse
@@ -726,10 +704,8 @@ public abstract class MatrixExpression {
                 matExprSimplified = matExprSimplified.simplifyTrivial();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.simplifyCollectProducts();
-                matExprSimplified = matExprSimplified.simplifyFactorizeScalarsInSums();
-                matExprSimplified = matExprSimplified.simplifyFactorizeScalarsInDifferences();
-                matExprSimplified = matExprSimplified.simplifyFactorizeInSums();
-                matExprSimplified = matExprSimplified.simplifyFactorizeInDifferences();
+                matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
+                matExprSimplified = matExprSimplified.simplifyFactorize();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
                 matExprSimplified = matExprSimplified.computeMatrixOperations();
             } while (!matExpr.equals(matExprSimplified));

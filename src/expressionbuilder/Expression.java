@@ -35,10 +35,11 @@ public abstract class Expression {
     }
 
     /**
-     * Der Befehl für die jeweilige math. Operation UND die Parameter in der
-     * Befehlsklammer werden ausgelesen und zurückgegeben. BEISPIEL: commandLine
-     * = f(x, y, z). Zurückgegeben wird ein array der Länge zwei: im 0. Eintrag
-     * steht der String "f", im 1. der String "x, y, z".
+     * Der Befehl für die jeweilige math. Operation und die Parameter in der
+     * Befehlsklammer werden ausgelesen und zurückgegeben.<br>
+     * BEISPIEL: commandLine = f(x, y, z). Zurückgegeben wird ein array der
+     * Länge zwei: im 0. Eintrag steht der String "f", im 1. der String "x, y,
+     * z".
      *
      * @throws ExpressionException
      */
@@ -79,10 +80,10 @@ public abstract class Expression {
     }
 
     /**
-     * Input: String commandline, in der NUR die Parameter (getrennt durch ein
-     * Komma) stehen. Beispiel commandLine == "x,y,f(w,z),u,v" -> Paremeter sind
-     * dann {x, y, f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT
-     * von runden Klammern umgeben ist, werden die Parameter getrennt.
+     * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
+     * stehen. Beispiel input == "x,y,f(w,z),u,v" -> Paremeter sind dann {x, y,
+     * f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von runden
+     * Klammern umgeben ist, werden die Parameter getrennt.
      *
      * @throws ExpressionException
      */
@@ -165,16 +166,16 @@ public abstract class Expression {
         }
 
         //Falls der Ausdruck eine (einfache) Variable ist
-        if ((var.length() == 1) && ((int) var.charAt(0) >= 97) && ((int) var.charAt(0) <= 122)) {
+        if (var.length() == 1 && (int) var.charAt(0) >= 97 && (int) var.charAt(0) <= 122) {
             return true;
         }
 
         //Falls der Ausdruck eine Variable mit Index ist (Form: Buchstabe_Index)
-        if ((var.length() >= 3) && ((int) var.charAt(0) >= 97) && ((int) var.charAt(0) <= 122)
-                && ((int) var.charAt(1) == 95)) {
+        if (var.length() >= 3 && (int) var.charAt(0) >= 97 && (int) var.charAt(0) <= 122
+                && (int) var.charAt(1) == 95) {
 
             for (int i = 2; i < var.length(); i++) {
-                if (((int) var.charAt(i) < 48) || ((int) var.charAt(i) > 57)) {
+                if ((int) var.charAt(i) < 48 || (int) var.charAt(i) > 57) {
                     return false;
                 }
             }
@@ -195,7 +196,7 @@ public abstract class Expression {
      * zurückgegeben, bei t'_3' dagegen wird false zurückgegeben.
      */
     public static boolean isValidDerivateOfVariable(String var) {
-        while ((var.length() > 0) && var.substring(var.length() - 1).equals("'")) {
+        while (var.length() > 0 && var.substring(var.length() - 1).equals("'")) {
             var = var.substring(0, var.length() - 1);
         }
         return isValidVariable(var);
