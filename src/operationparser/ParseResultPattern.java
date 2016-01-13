@@ -6,11 +6,11 @@ public class ParseResultPattern {
 
     private final String operationName;
     
-    private final ArrayList<ParameterPattern> paramPatterns;
+    private final ArrayList<ParameterPattern> parameterPatterns;
     
     public ParseResultPattern(String operationName, ArrayList<ParameterPattern> paramPatterns){
         this.operationName = operationName;
-        this.paramPatterns = paramPatterns;
+        this.parameterPatterns = paramPatterns;
     }
     
     public String getOperationName(){
@@ -18,11 +18,11 @@ public class ParseResultPattern {
     }
     
     public ParameterPattern getParameterPattern(int i){
-        return this.paramPatterns.get(i);
+        return this.parameterPatterns.get(i);
     }
     
     public int size(){
-        return this.paramPatterns.size();
+        return this.parameterPatterns.size();
     }
     
 }
