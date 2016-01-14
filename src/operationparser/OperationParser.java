@@ -411,6 +411,15 @@ public abstract class OperationParser {
         // Muster für das Parsen des Operators.
         ParseResultPattern resultPattern = getResultPattern(pattern);
 
+        /* 
+         Falls Namen nicht übereinstimmen -> ParseException (!) werfen.
+         In der Klasse Operator sollte man immer zuerst den Namen auslesen und 
+         DANN erst das Parsen anwenden.
+         */
+        if (!operatorName.equals(resultPattern.getOperationName())) {
+            throw new ParseException();
+        }
+
         Object[] params = new Object[arguments.length];
 
         int indexInOperatorArguments = 0;
@@ -460,7 +469,55 @@ public abstract class OperationParser {
             throw new ExpressionException(Translator.translateExceptionMessage(""));
         }
 
-        // Jetzt müssen noch einmal die Einschränkungen für die Variablen kontrolliert werden.
+        /* 
+         Jetzt müssen noch einmal die Einschränkungen für die Variablen kontrolliert werden.
+         Diese Kontrolle muss stattfinden, NACHDEM alle Ausdrücke bereits (erfolgreich) geparst wurden.
+         */
+        int maxIndexForControl, indexOfExpressionToControlInPattern, maxIndexOfExpressionToControl;
+        boolean occurrence;
+        Expression expr;
+        String var;
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().equals(ParamType.var)) {
+                continue;
+            }
+            restrictions = p.getRestrictions();
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+
+                // Jeweilige Variable für die Kontrolle.
+                var = (String) params[j];
+
+                for (String restriction : restrictions) {
+
+                    occurrence = !(restriction.indexOf(ParameterPattern.notin) == 0);
+                    indexOfExpressionToControlInPattern = occurrence ? Integer.valueOf(restriction) : Integer.valueOf(restriction.substring(1));
+
+                    if (indexOfExpressionToControlInPattern < resultPattern.size() - 1) {
+                        maxIndexOfExpressionToControl = indices.get(indexOfExpressionToControlInPattern + 1) - 1;
+                    } else {
+                        maxIndexOfExpressionToControl = params.length - 1;
+                    }
+
+                    // Eigentliche Kontrolle.
+                    for (int q = indices.get(indexOfExpressionToControlInPattern); q <= maxIndexOfExpressionToControl; q++) {
+                        expr = (Expression) params[q];
+                        if (occurrence && !expr.contains(var)) {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                        } else if (!occurrence && expr.contains(var)) {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
         return new Operator(type, params);
 
     }

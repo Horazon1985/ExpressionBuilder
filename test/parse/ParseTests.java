@@ -276,9 +276,9 @@ public class ParseTests {
             operator = OperationParser.parseDefaultOperator("diff(x^2+y,x,y,x)", null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
-            expectedOperator = new Operator(TypeOperator.diff, new Object[]{ Expression.build("x^2+y", null), "x", "y", "x" });
+            expectedOperator = new Operator(TypeOperator.diff, new Object[]{Expression.build("x^2+y", null), "x", "y", "x"});
             TestUtilities.printResult(expectedOperator, operator);
-            
+
             Assert.assertTrue(operator.getType().equals(TypeOperator.diff));
             Assert.assertTrue(operator.getParams().length == 4);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2+y", null)));
@@ -299,9 +299,9 @@ public class ParseTests {
             operator = OperationParser.parseDefaultOperator("diff(x^2+y,x,3)", null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
-            expectedOperator = new Operator(TypeOperator.diff, new Object[]{ Expression.build("x^2+y", null), "x", 3 });
+            expectedOperator = new Operator(TypeOperator.diff, new Object[]{Expression.build("x^2+y", null), "x", 3});
             TestUtilities.printResult(expectedOperator, operator);
-            
+
             Assert.assertTrue(operator.getType().equals(TypeOperator.diff));
             Assert.assertTrue(operator.getParams().length == 3);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2+y", null)));
@@ -321,11 +321,11 @@ public class ParseTests {
             operator = OperationParser.parseDefaultOperator("var(x^2,3,t,sin(u),a+b)", null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
-            expectedOperator = new Operator(TypeOperator.var, new Object[]{ Expression.build("x^2", null), 
-                Expression.build("3", null), Expression.build("t", null), Expression.build("sin(u)", null), 
-                Expression.build("a+b", null) });
+            expectedOperator = new Operator(TypeOperator.var, new Object[]{Expression.build("x^2", null),
+                Expression.build("3", null), Expression.build("t", null), Expression.build("sin(u)", null),
+                Expression.build("a+b", null)});
             TestUtilities.printResult(expectedOperator, operator);
-            
+
             Assert.assertTrue(operator.getType().equals(TypeOperator.var));
             Assert.assertTrue(operator.getParams().length == 5);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2", null)));
@@ -337,6 +337,79 @@ public class ParseTests {
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void parseIntegralOperatorSuccesfullyParsedTest() {
+        // Parsen von "int(x^2,x,2,sin(1))" gegen das Pattern "int(expr,var(!2,!3),expr,expr)".
+        try {
+            patternForOperator = "int(expr,var(!2,!3),expr,expr)";
+            operator = OperationParser.parseDefaultOperator("int(x^2,x,2,sin(1))", null, patternForOperator);
+
+            // Ausgabe der Ergebnisse.
+            expectedOperator = new Operator(TypeOperator.integral, new Object[]{Expression.build("x^2", null),
+                "x", Expression.build("2", null), Expression.build("sin(1)", null)});
+            TestUtilities.printResult(expectedOperator, operator);
+
+            Assert.assertTrue(operator.getType().equals(TypeOperator.integral));
+            Assert.assertTrue(operator.getParams().length == 4);
+            Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2", null)));
+            Assert.assertTrue(((String) operator.getParams()[1]).equals("x"));
+            Assert.assertTrue(((Expression) operator.getParams()[2]).equals(Expression.build("2", null)));
+            Assert.assertTrue(((Expression) operator.getParams()[3]).equals(Expression.build("sin(1)", null)));
+
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void parseOperatorNotSuccesfullyParsedTest1() {
+        // Parsen von "gcd(5,7,3)" gegen das Pattern "gcd(expr,expr,expr)".
+        try {
+            patternForOperator = "var(expr+)";
+            operator = OperationParser.parseDefaultOperator("gcd(5,7,3)", null, patternForOperator);
+            fail();
+        } catch (ExpressionException e) {
+            /* 
+             Für den Erfolg des Tests muss eine ParseException geworfen werden, 
+             da die Syntax des Operators an sich korrekt ist.
+             */
+            fail(e.getMessage());
+        } catch (ParseException e) {
+        }
+    }
+
+    @Test
+    public void parseOperatorNotSuccesfullyParsedTest2() {
+        // Parsen von "int(x^2,x,2,x)" gegen das Pattern "int(expr,var(!2,!3),expr,expr)".
+        try {
+            patternForOperator = "int(expr,var(!2,!3),expr,expr)";
+            operator = OperationParser.parseDefaultOperator("int(x^2,x,2,x)", null, patternForOperator);
+            fail();
+        } catch (ParseException e) {
+            /* 
+             Für den Erfolg des Tests muss eine ExpressionException geworfen werden, 
+             da die Syntax des Operators an sich korrekt ist.
+             */
+            fail(e.getMessage());
+        } catch (ExpressionException e) {
+        }
+    }
+
+    @Test
+    public void parseOperatorNotSuccesfullyParsedTest3() {
+
+    }
+
+    @Test
+    public void parseOperatorNotSuccesfullyParsedTest4() {
+
+    }
+
+    @Test
+    public void parseOperatorNotSuccesfullyParsedTest5() {
+
     }
 
 }
