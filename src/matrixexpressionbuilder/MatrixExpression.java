@@ -606,7 +606,15 @@ public abstract class MatrixExpression implements AbstractExpression {
     /**
      * Fügt einem HashSet alle im Matrizenausdruck vorkommenden Variablen hinzu.
      */
+    @Override
     public abstract void addContainedVars(HashSet<String> vars);
+
+    @Override
+    public HashSet<String> getContainedVars(){
+        HashSet<String> vars = new HashSet<>();
+        addContainedVars(vars);
+        return vars;
+    }
 
     /**
      * Legt eine neue Kopie von this an.

@@ -497,7 +497,15 @@ public abstract class Expression implements AbstractExpression {
      * vars hinzu. Ziel: Start mit vars = {} liefert alle vorkommenden
      * Variablen.
      */
+    @Override
     public abstract void addContainedVars(HashSet<String> vars);
+    
+    @Override
+    public HashSet<String> getContainedVars(){
+        HashSet<String> vars = new HashSet<>();
+        addContainedVars(vars);
+        return vars;
+    }
 
     /**
      * Gibt zurück, ob this die Variable var enthält.

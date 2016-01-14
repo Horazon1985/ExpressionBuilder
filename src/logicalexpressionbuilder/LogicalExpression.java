@@ -385,8 +385,16 @@ public abstract class LogicalExpression implements AbstractExpression {
      * zum HashSet vars hinzu. ZIEL: Start mit vars = {} liefert alle
      * vorkommenden logischen Variablen.
      */
+    @Override
     public abstract void addContainedVars(HashSet vars);
 
+    @Override
+    public HashSet<String> getContainedVars(){
+        HashSet<String> vars = new HashSet<>();
+        addContainedVars(vars);
+        return vars;
+    }
+    
     /**
      * Gibt zurück, ob der vorliegende logische Ausdruck die logische Variable
      * var enthält.

@@ -479,6 +479,7 @@ public abstract class OperationParser {
         int maxIndexForControl, indexOfExpressionToControlInPattern, maxIndexOfExpressionToControl;
         boolean occurrence;
         AbstractExpression expr;
+        AbstractExpression[] exprs;
         String var;
         for (int i = 0; i < resultPattern.size(); i++) {
 
@@ -507,24 +508,51 @@ public abstract class OperationParser {
 
                     // Eigentliche Kontrolle.
                     for (int q = indices.get(indexOfExpressionToControlInPattern); q <= maxIndexOfExpressionToControl; q++) {
-                        expr = (AbstractExpression) params[q];
-                        if (occurrence && !expr.contains(var)) {
-                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
-                                    + var
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
-                                    + (q + 1)
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
-                                    + operatorName
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
-                        } else if (!occurrence && expr.contains(var)) {
-                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
-                                    + var
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
-                                    + (q + 1)
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
-                                    + operatorName
-                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+
+                        if (params[q] instanceof AbstractExpression) {
+                            expr = (AbstractExpression) params[q];
+                            if (occurrence && !expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
+                        } else if (params[q] instanceof AbstractExpression[]) {
+                            exprs = (AbstractExpression[]) params[q];
+                            boolean varOccurrs = false;
+                            for (AbstractExpression abstrExpr : exprs){
+                                varOccurrs = varOccurrs || abstrExpr.contains(var);
+                            }
+                            if (occurrence && !varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
                         }
+
                     }
 
                 }

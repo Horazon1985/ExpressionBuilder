@@ -1,4 +1,4 @@
-package parse;
+package parsetests;
 
 import exceptions.ExpressionException;
 import expressionbuilder.Expression;
