@@ -148,7 +148,7 @@ public abstract class OperationParser {
 
             // Argument im Pattern darf nicht leer sein.
             if (args[i].length() == 0) {
-                throw new ParseException();
+                throw new ParseException(i);
             }
 
             restrictionsAsList.clear();
@@ -174,10 +174,10 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.var)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     if (restrictions.length == 0) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
 
                     // Optionale Parameter einlesen (es muss mindestens einer sein).
@@ -185,23 +185,23 @@ public abstract class OperationParser {
                         int index = -1;
                         try {
                         } catch (NumberFormatException e) {
-                            throw new ParseException();
+                            throw new ParseException(i);
                         }
                         if (restriction.indexOf(ParameterPattern.notin) == 0) {
                             try {
                                 index = Integer.parseInt(restriction.substring(1));
                             } catch (NumberFormatException e) {
-                                throw new ParseException();
+                                throw new ParseException(i);
                             }
                         } else {
                             try {
                                 index = Integer.parseInt(restriction);
                             } catch (NumberFormatException e) {
-                                throw new ParseException();
+                                throw new ParseException(i);
                             }
                         }
                         if (index < 0 || index > args.length) {
-                            throw new ParseException();
+                            throw new ParseException(i);
                         }
                         /* 
                          Restriktionen auf enthalten / nicht enthalten in sollen nur 
@@ -211,7 +211,7 @@ public abstract class OperationParser {
                                 && !args[index].contains(ParameterPattern.expr)
                                 && !args[index].contains(ParameterPattern.logexpr)
                                 && !args[index].contains(ParameterPattern.matexpr)) {
-                            throw new ParseException();
+                            throw new ParseException(i);
                         }
                         restrictionsAsList.add(restriction);
                     }
@@ -239,10 +239,10 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.equation)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions);
+                    restrictionsAsList = getRestrictionList(restrictions, i);
                     paramPattern[i] = new ParameterPattern(ParamType.equation, m, restrictionsAsList);
                 }
 
@@ -267,10 +267,10 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.expr)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions);
+                    restrictionsAsList = getRestrictionList(restrictions, i);
                     paramPattern[i] = new ParameterPattern(ParamType.expr, m, restrictionsAsList);
                 }
 
@@ -295,10 +295,10 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.integer)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions);
+                    restrictionsAsList = getRestrictionList(restrictions, i);
                     paramPattern[i] = new ParameterPattern(ParamType.integer, m, restrictionsAsList);
                 }
 
@@ -323,10 +323,10 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.logexpr)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions);
+                    restrictionsAsList = getRestrictionList(restrictions, i);
                     paramPattern[i] = new ParameterPattern(ParamType.logexpr, m, restrictionsAsList);
                 }
 
@@ -351,15 +351,15 @@ public abstract class OperationParser {
                     }
 
                     if (!paramType.equals(ParameterPattern.matexpr)) {
-                        throw new ParseException();
+                        throw new ParseException(i);
                     }
                     // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions);
+                    restrictionsAsList = getRestrictionList(restrictions, i);
                     paramPattern[i] = new ParameterPattern(ParamType.matexpr, m, restrictionsAsList);
                 }
 
             } else {
-                throw new ParseException();
+                throw new ParseException(i);
             }
             paramPatterns.add(paramPattern[i]);
 
@@ -369,7 +369,7 @@ public abstract class OperationParser {
 
     }
 
-    private static ArrayList<String> getRestrictionList(String[] restrictions) {
+    private static ArrayList<String> getRestrictionList(String[] restrictions, int index) {
 
         ArrayList<String> restrictionsAsList = new ArrayList<>();
 
@@ -386,7 +386,7 @@ public abstract class OperationParser {
                     Integer.parseInt(restriction);
                     restrictionsAsList.add(restriction);
                 } catch (NumberFormatException e) {
-                    throw new ParseException();
+                    throw new ParseException(index);
                 }
             }
         }
@@ -400,11 +400,11 @@ public abstract class OperationParser {
      */
     public static Operator parseDefaultOperator(String operator, HashSet<String> vars, String pattern) throws ExpressionException {
 
-        String[] operatorAndArgumentss = getOperationAndArguments(operator);
+        String[] operatorAndArguments = getOperationAndArguments(operator);
         // Operationsname.
-        String operatorName = operatorAndArgumentss[0];
+        String operatorName = operatorAndArguments[0];
         // Operationsparameter.
-        String[] arguments = getArguments(operatorAndArgumentss[1]);
+        String[] arguments = getArguments(operatorAndArguments[1]);
         // Operatortyp.
         TypeOperator type = getTypeFromName(operatorName);
 
@@ -433,12 +433,12 @@ public abstract class OperationParser {
             restrictions = p.getRestrictions();
 
             if (p.getMultiplicity().equals(Multiplicity.one)) {
-                params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[i], vars, p.getParamType(), restrictions, indexInOperatorArguments);
+                params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments);
                 indexInOperatorArguments++;
             } else {
                 while (indexInOperatorArguments < arguments.length) {
                     try {
-                        params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[i], vars, p.getParamType(), restrictions, indexInOperatorArguments);
+                        params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments);
                         indexInOperatorArguments++;
                     } catch (ExpressionException e) {
                         if (indexInOperatorArguments == i) {
@@ -492,17 +492,25 @@ public abstract class OperationParser {
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                             return exprLeft;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                             return exprLeft;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                             return exprLeft;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     }
+                } else {
+                    return new Expression[]{exprLeft, exprRight};
                 }
             } catch (ExpressionException e) {
             }
@@ -518,17 +526,25 @@ public abstract class OperationParser {
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                             return expr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                             return expr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                             return expr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     }
+                } else {
+                    return expr;
                 }
             } catch (ExpressionException e) {
             }
@@ -543,16 +559,24 @@ public abstract class OperationParser {
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (n <= Integer.parseInt(restrictions.get(1))) {
                             return n;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (n >= Integer.parseInt(restrictions.get(0))) {
                             return n;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else {
                         if (n >= Integer.parseInt(restrictions.get(0)) && n <= Integer.parseInt(restrictions.get(1))) {
                             return n;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     }
+                } else {
+                    return n;
                 }
             } catch (NumberFormatException e) {
             }
@@ -560,25 +584,33 @@ public abstract class OperationParser {
         } else if (type.equals(ParamType.logexpr)) {
 
             try {
-                LogicalExpression expr = LogicalExpression.build(parameter, vars);
+                LogicalExpression logExpr = LogicalExpression.build(parameter, vars);
                 if (!restrictions.isEmpty()) {
-                    expr.addContainedVars(containedVars);
+                    logExpr.addContainedVars(containedVars);
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return expr;
+                        return logExpr;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return logExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return expr;
+                            return logExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return logExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     }
+                } else {
+                    return logExpr;
                 }
             } catch (ExpressionException e) {
             }
@@ -586,25 +618,33 @@ public abstract class OperationParser {
         } else if (type.equals(ParamType.matexpr)) {
 
             try {
-                MatrixExpression expr = MatrixExpression.build(parameter, vars);
+                MatrixExpression matExpr = MatrixExpression.build(parameter, vars);
                 if (!restrictions.isEmpty()) {
-                    expr.addContainedVars(containedVars);
+                    matExpr.addContainedVars(containedVars);
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return expr;
+                        return matExpr;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return matExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return expr;
+                            return matExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return matExpr;
+                        } else {
+                            throw new ExpressionException(Translator.translateExceptionMessage(""));
                         }
                     }
+                } else {
+                    return matExpr;
                 }
             } catch (ExpressionException e) {
             }

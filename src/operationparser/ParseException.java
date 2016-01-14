@@ -10,7 +10,7 @@ public class ParseException extends RuntimeException {
     }
 
     public ParseException(int i) {
-        super(parseExceptionMessage + (i + 1));
+        super(parseExceptionMessageWithParameterIndex + (i + 1));
     }
 
 }
