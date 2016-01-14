@@ -1,6 +1,7 @@
 package operationparser;
 
 import exceptions.ExpressionException;
+import expressionInterfaces.AbstractExpression;
 import expressionbuilder.Expression;
 import expressionbuilder.Operator;
 import static expressionbuilder.Operator.getTypeFromName;
@@ -432,7 +433,8 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateExceptionMessage(""));
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
+                        + operatorName);
             }
 
             // Indizes loggen!
@@ -455,7 +457,7 @@ public abstract class OperationParser {
                              Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
                              In diesem Fall konnte kein einziger Parameter geparst werden.
                              */
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1");
                         }
                         break;
                     }
@@ -466,7 +468,8 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1) {
-            throw new ExpressionException(Translator.translateExceptionMessage(""));
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
+                    + operatorName);
         }
 
         /* 
@@ -475,7 +478,7 @@ public abstract class OperationParser {
          */
         int maxIndexForControl, indexOfExpressionToControlInPattern, maxIndexOfExpressionToControl;
         boolean occurrence;
-        Expression expr;
+        AbstractExpression expr;
         String var;
         for (int i = 0; i < resultPattern.size(); i++) {
 
@@ -504,11 +507,23 @@ public abstract class OperationParser {
 
                     // Eigentliche Kontrolle.
                     for (int q = indices.get(indexOfExpressionToControlInPattern); q <= maxIndexOfExpressionToControl; q++) {
-                        expr = (Expression) params[q];
+                        expr = (AbstractExpression) params[q];
                         if (occurrence && !expr.contains(var)) {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                    + var
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                    + (q + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                    + operatorName
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                         } else if (!occurrence && expr.contains(var)) {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                    + var
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                    + (q + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                    + operatorName
+                                    + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                         }
                     }
 

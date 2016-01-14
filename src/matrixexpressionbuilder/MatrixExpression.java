@@ -2,6 +2,7 @@ package matrixexpressionbuilder;
 
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionInterfaces.AbstractExpression;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.TypeSimplify;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import translator.Translator;
 
-public abstract class MatrixExpression {
+public abstract class MatrixExpression implements AbstractExpression {
 
     public final static Matrix MINUS_ONE = new Matrix(Expression.MINUS_ONE);
 
@@ -599,6 +600,7 @@ public abstract class MatrixExpression {
     /**
      * Gibt zurück, ob der Matrizenausdruck die Variable var enthält.
      */
+    @Override
     public abstract boolean contains(String var);
 
     /**

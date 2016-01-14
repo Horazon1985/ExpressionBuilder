@@ -2,13 +2,14 @@ package logicalexpressionbuilder;
 
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionInterfaces.AbstractExpression;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import translator.Translator;
 
-public abstract class LogicalExpression {
+public abstract class LogicalExpression implements AbstractExpression {
 
     public final static LogicalConstant FALSE = new LogicalConstant(false);
     public final static LogicalConstant TRUE = new LogicalConstant(true);
@@ -390,6 +391,7 @@ public abstract class LogicalExpression {
      * Gibt zurück, ob der vorliegende logische Ausdruck die logische Variable
      * var enthält.
      */
+    @Override
     public abstract boolean contains(String var);
 
     /**

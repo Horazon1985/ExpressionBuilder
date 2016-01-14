@@ -4,6 +4,7 @@ import enumerations.TypeExpansion;
 import enumerations.TypeLanguage;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import expressionInterfaces.AbstractExpression;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyUtilities;
 import java.math.BigDecimal;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import translator.Translator;
 
-public abstract class Expression {
+public abstract class Expression implements AbstractExpression {
 
     // Sprache für Fehlermeldungen.
     private static TypeLanguage language;
@@ -501,6 +502,7 @@ public abstract class Expression {
     /**
      * Gibt zurück, ob this die Variable var enthält.
      */
+    @Override
     public abstract boolean contains(String var);
 
     /**
