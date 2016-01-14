@@ -319,8 +319,8 @@
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_NO_FACTPRIZATION_OPTION">
     <German>(Keine Faktorisierungsoptionen)</German>
     <English>(No factorization options)</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>(Без факторизации)</Ukrainian>
+    <Russian>(Без факторизації))</Russian>
   </object>
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_COLLECT_LOGARITHMS">
     <German>Logarithmen zusammenfassen</German>
@@ -337,7 +337,7 @@
   <object id = "GUI_OutputOptionsDialogGUI_SIMPLIFY_OPTION_NO_LOGARITHM_OPTION">
     <German>(Keine Logarithmenoptionen)</German>
     <English>(No logarithm options)</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>(Без логарифмізації)</Ukrainian>
+    <Russian>(Без логарифмизации)</Russian>
   </object>
 </objects>

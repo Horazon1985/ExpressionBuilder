@@ -122,20 +122,20 @@
   <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED">
     <German>Ein auftretender Operator kann nicht ausgewertet werden.</German>
     <English>An occurring operator cannot be evaluated.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Один з операторів, що зустрічаються у виразі, неможливо оцінити.</Ukrainian>
+    <Russian>Один из встречающихся операторов невозможно оценить.</Russian>
   </object>
   <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_1">
     <German>Der Ausdruck </German>
     <English>The expression </English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Вираз </Ukrainian>
+    <Russian>Выражение </Russian>
   </object>
   <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_2">
     <German> kann nicht ausgewertet werden, da er einen Operator enthält, welcher nicht weiter vereinfacht werden kann.</German>
     <English> cannot be evaluated, because it contains an operator, which cannot be further simplified.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian> не можна оцінити, оскількт він містить оператор, який неможливо спростити.</Ukrainian>
+    <Russian> нельзя оценить, поскольку оно содержит оператор, который невозможно упростить.</Russian>
   </object>
   <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
@@ -446,8 +446,8 @@
   <object id = "EB_Operator_4_PARAMETER_IN_TAYLOR_IS_INVALID">
     <German>Der 4. Parameter im Operator 'taylor' muss eine nichtnegative natürliche Zahl kleiner als 2147483648 sein. Dies ist die Ordnung des Taylorpolynoms.</German>
     <English>The 4. parameter in operator 'taylor' must be a non-negative integer smaller than 2147483648. This is the degree of the taylor polynomial.</English>
-    <Ukrainian>4. параметр оператора 'taylor' має бути ??? натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
-    <Russian>4. параметр оператора 'taylor' должен быть ??? натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
+    <Ukrainian>4. параметр оператора 'taylor' має бути невід'ємним натуральним числом меншим ніж 2147483648. Це порядок полінома Тейлора.</Ukrainian>
+    <Russian>4. параметр оператора 'taylor' должен быть неотрицательным натуральным числом меньшим чем 2147483648. Это порядок полинома Тейлора.</Russian>
   </object>
   <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_VAR">
     <German>Im Operator 'var' muss mindestens ein Parameter stehen.</German>

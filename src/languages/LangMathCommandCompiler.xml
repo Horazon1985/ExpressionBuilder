@@ -1179,14 +1179,14 @@
   <object id = "MCC_REGRESSIONLINE_CANNOT_BE_COMPUTED">
     <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
     <English>The equation of the regression line cannot be computetd, since the occurring parameters cannot be simplified or contain errors.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо знайти рівняння регресійної прямої, оскільки параметри неможливо спростити, або вони містять помилки.</Ukrainian>
+    <Russian>Невозможно найти уравнение регрессионной прямой, поскольку параметры невозможно упростить, или они содержат ошибки.</Russian>
   </object>
   <object id = "MCC_REGRESSIONLINE_PARAMETERS_ARE_NOT_POINTS">
     <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
     <English>The equation of the regression line cannot be computetd, since the occurring parameters are not two dimensional points.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо знайти рівняння регресійної прямої, оскільки параметри не є двовимірними точками.</Ukrainian>
+    <Russian>Невозможно найти уравнение регрессионной прямой, поскольку параметры не являются двумерніми точками.</Russian>
   </object>
   <object id = "MCC_REGRESSIONLINE_MESSAGE">
     <German>Gleichung der Regressionsgeraden: </German>

@@ -134,32 +134,32 @@
   <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_COV">
     <German>Zu wenig Parameter im Operator 'cov'.</German>
     <English>Not enought parameters in operator 'cov'.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Недостатньо параметрів у оператора 'cov'.</Ukrainian>
+    <Russian>Недостаточно параметров у оператора 'cov'.</Russian>
   </object>
   <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_1">
     <German>Der </German>
     <English>The </English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian> </Ukrainian>
+    <Russian> </Russian>
   </object>
   <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_2">
     <German>. Parameter im Operator 'cov' muss ein zweidimensionaler Punkt sein.</German>
     <English>. parameter in operator 'cov' must be a two dimensional point.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>. параметр оператора 'cov' має бути двовимірною точкою.</Ukrainian>
+    <Russian>. параметр оператора 'cov' должен быть двумерной точкой.</Russian>
   </object>
   <object id = "MEB_Operator_COV_CANNOT_BE_COMPUTED">
     <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
     <English>The covariance cannot be computetd, since the occurring parameters cannot be simplified or contain errors.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо обчислити коваріацію, оскільки параметри неможливо спростити, або вони містять помилки.</Ukrainian>
+    <Russian>Невозможно вычислить ковариацию, поскольку параметры нельзя упростить, или они содержат ошибки.</Russian>
   </object>
   <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
     <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
     <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Неможливо знайти ковариацію, оскільки параметри не є двовимірними точками.</Ukrainian>
+    <Russian>Невозможно найти коваріацію, поскольку параметры не являются двумерніми точками.</Russian>
   </object>
   <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
