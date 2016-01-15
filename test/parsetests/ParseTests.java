@@ -47,7 +47,7 @@ public class ParseTests {
     // Teil 1: Tests für das Parsen eines Pattern.
     @Test
     public void parseTest1() {
-
+        
         // Parsen von "op(expr, var, int, expr)".
         resultPattern = OperationParser.getResultPattern("op(expr, var, int, expr)");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));

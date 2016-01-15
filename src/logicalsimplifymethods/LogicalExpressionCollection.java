@@ -110,6 +110,18 @@ public class LogicalExpressionCollection implements Iterable<LogicalExpression> 
                 return get(getBound() - 1);
             }
 
+            @Override
+            public void remove() {
+                logTerms.remove(currentIndex);
+                for (int j = bound - 1; j >= 0; j--) {
+                    if (logTerms.get(j) != null) {
+                        bound = j + 1;
+                        return;
+                    }
+                }
+                bound = 0;
+            }
+
         };
     }
     

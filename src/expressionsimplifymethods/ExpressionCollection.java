@@ -339,6 +339,18 @@ public class ExpressionCollection implements Iterable<Expression> {
                 return get(getBound() - 1);
             }
 
+            @Override
+            public void remove() {
+                terms.remove(currentIndex);
+                for (int j = bound - 1; j >= 0; j--) {
+                    if (terms.get(j) != null) {
+                        bound = j + 1;
+                        return;
+                    }
+                }
+                bound = 0;
+            }
+
         };
     }
 

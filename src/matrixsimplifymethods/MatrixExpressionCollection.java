@@ -136,6 +136,18 @@ public class MatrixExpressionCollection implements Iterable<MatrixExpression> {
                 this.currentIndex = getBound() - 1;
                 return get(getBound() - 1);
             }
+            
+            @Override
+            public void remove() {
+                matrixTerms.remove(currentIndex);
+                for (int j = bound - 1; j >= 0; j--) {
+                    if (matrixTerms.get(j) != null) {
+                        bound = j + 1;
+                        return;
+                    }
+                }
+                bound = 0;
+            }
 
         };
     }

@@ -433,7 +433,7 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR")
                         + operatorName);
             }
 
@@ -457,7 +457,7 @@ public abstract class OperationParser {
                              Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
                              In diesem Fall konnte kein einziger Parameter geparst werden.
                              */
-                            throw new ExpressionException("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1");
+                            throw new ExpressionException(e.getMessage());
                         }
                         break;
                     }
@@ -468,7 +468,7 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1) {
-            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR")
                     + operatorName);
         }
 
@@ -531,7 +531,7 @@ public abstract class OperationParser {
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
                             boolean varOccurrs = false;
-                            for (AbstractExpression abstrExpr : exprs){
+                            for (AbstractExpression abstrExpr : exprs) {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
@@ -579,7 +579,9 @@ public abstract class OperationParser {
 
             try {
                 if (!parameter.contains("=")) {
-                    throw new ExpressionException(Translator.translateExceptionMessage(""));
+                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1")
+                            + (index + 1)
+                            + Translator.translateExceptionMessage("EB_Operator_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2"));
                 }
                 Expression exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
                 Expression exprRight = Expression.build(parameter.substring(parameter.indexOf("=")), vars);
@@ -591,22 +593,40 @@ public abstract class OperationParser {
                         return exprLeft;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return exprLeft;
+                            return new Expression[]{exprLeft, exprRight};
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return exprLeft;
+                            return new Expression[]{exprLeft, exprRight};
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return exprLeft;
+                            return new Expression[]{exprLeft, exprRight};
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_AND")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     }
                 } else {
@@ -615,36 +635,63 @@ public abstract class OperationParser {
             } catch (ExpressionException e) {
             }
 
-        } else if (type.equals(ParamType.expr)) {
+        } else if (type.equals(ParamType.expr) || type.equals(ParamType.logexpr) || type.equals(ParamType.matexpr)) {
+
+            AbstractExpression abstrExpr;
 
             try {
-                Expression expr = Expression.build(parameter, vars);
+                if (type.equals(ParamType.expr)) {
+                    abstrExpr = Expression.build(parameter, vars);
+                } else if (type.equals(ParamType.logexpr)) {
+                    abstrExpr = LogicalExpression.build(parameter, vars);
+                } else {
+                    abstrExpr = MatrixExpression.build(parameter, vars);
+                }
+
                 if (!restrictions.isEmpty()) {
-                    expr.addContainedVars(containedVars);
+                    abstrExpr.addContainedVars(containedVars);
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return expr;
+                        return abstrExpr;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return abstrExpr;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return expr;
+                            return abstrExpr;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     } else {
                         if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                                 && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return expr;
+                            return abstrExpr;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_AND")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            );
                         }
                     }
                 } else {
-                    return expr;
+                    return abstrExpr;
                 }
             } catch (ExpressionException e) {
             }
@@ -660,93 +707,43 @@ public abstract class OperationParser {
                         if (n <= Integer.parseInt(restrictions.get(1))) {
                             return n;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                            );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (n >= Integer.parseInt(restrictions.get(0))) {
                             return n;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                            );
                         }
                     } else {
                         if (n >= Integer.parseInt(restrictions.get(0)) && n <= Integer.parseInt(restrictions.get(1))) {
                             return n;
                         } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
+                            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
+                                    + (index + 1)
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_2")
+                                    + Integer.parseInt(restrictions.get(0))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_AND")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_3")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                            );
                         }
                     }
                 } else {
                     return n;
                 }
             } catch (NumberFormatException e) {
-            }
-
-        } else if (type.equals(ParamType.logexpr)) {
-
-            try {
-                LogicalExpression logExpr = LogicalExpression.build(parameter, vars);
-                if (!restrictions.isEmpty()) {
-                    logExpr.addContainedVars(containedVars);
-                    if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return logExpr;
-                    } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return logExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return logExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    } else {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
-                                && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return logExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    }
-                } else {
-                    return logExpr;
-                }
-            } catch (ExpressionException e) {
-            }
-
-        } else if (type.equals(ParamType.matexpr)) {
-
-            try {
-                MatrixExpression matExpr = MatrixExpression.build(parameter, vars);
-                if (!restrictions.isEmpty()) {
-                    matExpr.addContainedVars(containedVars);
-                    if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return matExpr;
-                    } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return matExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return matExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    } else {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
-                                && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return matExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(""));
-                        }
-                    }
-                } else {
-                    return matExpr;
-                }
-            } catch (ExpressionException e) {
             }
 
         }

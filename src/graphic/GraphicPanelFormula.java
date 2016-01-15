@@ -2998,16 +2998,16 @@ public class GraphicPanelFormula extends JPanel {
         int distanceFromOpeningBracket = 0;
 
         if (operator.getType().equals(TypeOperator.laplace)) {
-            drawSignDelta(g, x_0, y_0, fontSize);
+            drawSignDelta(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
             distanceFromOpeningBracket += getWidthOfSignDelta(g, fontSize);
         } else if (operator.getType().equals(TypeOperator.mu)) {
-            drawSignSmallMu(g, x_0, y_0, fontSize);
+            drawSignSmallMu(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
             distanceFromOpeningBracket += getWidthOfSignSmallMu(g, fontSize);
         } else if (operator.getType().equals(TypeOperator.sigma)) {
-            drawSignSmallSigma(g, x_0, y_0, fontSize);
+            drawSignSmallSigma(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
             distanceFromOpeningBracket += getWidthOfSignSmallSigma(g, fontSize);
         } else if (operator.getType().equals(TypeOperator.taylor)) {
-            drawSignTaylor(g, x_0, y_0, fontSize);
+            drawSignTaylor(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
             distanceFromOpeningBracket += getWidthOfSignTaylor(g, fontSize);
         } else {
             g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
