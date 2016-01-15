@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
+import operationparser.OperationParser;
 import translator.Translator;
 
 public class Operator extends Expression {
@@ -80,6 +81,56 @@ public class Operator extends Expression {
             return "int";
         }
         return type.toString();
+    }
+
+    /**
+     * Ermittelt den zugehörigen Operator und liefert eine Instanz der Klasse
+     * Operator.
+     *
+     * @throws ExpressionException
+     */
+    public static Operator getOperator2(String operator, String[] params, HashSet<String> vars) throws ExpressionException {
+
+        TypeOperator type = getTypeFromName(operator);
+
+        switch (type) {
+            case diff:
+                try {
+                    return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var+)");
+                } catch (ExpressionException e) {
+                    return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var,int(0,2147483647))");
+                }
+            case div:
+                return OperationParser.parseDefaultOperator(operator, vars, "div(expr,uniquevar+)");
+            case fac:
+                return OperationParser.parseDefaultOperator(operator, vars, "fac(expr)");
+            case gcd:
+                return OperationParser.parseDefaultOperator(operator, vars, "gcd(expr+)");
+            case integral:
+                return OperationParser.parseDefaultOperator(operator, vars, "int(expr,var(!2,!3),expr,expr)");
+            case laplace:
+                return OperationParser.parseDefaultOperator(operator, vars, "laplace(expr,uniquevar+)");
+            case lcm:
+                return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var+)");
+            case mod:
+                return OperationParser.parseDefaultOperator(operator, vars, "mod(expr,expr)");
+            case mu:
+                return OperationParser.parseDefaultOperator(operator, vars, "mu(expr+)");
+            case prod:
+                return OperationParser.parseDefaultOperator(operator, vars, "prod(expr,var(!2,!3),expr,expr)");
+            case sigma:
+                return OperationParser.parseDefaultOperator(operator, vars, "sigma(expr+)");
+            case sum:
+                return OperationParser.parseDefaultOperator(operator, vars, "sum(expr,var(!2,!3),expr,expr)");
+            case taylor:
+                return OperationParser.parseDefaultOperator(operator, vars, "taylor(expr,var,expr(0,0),int(0,2147483647))");
+            case var:
+                return OperationParser.parseDefaultOperator(operator, vars, "var(expr+)");
+            // Sollte theoretisch nie vorkommen.
+            default:
+                return new Operator();
+        }
+
     }
 
     /**
@@ -1595,7 +1646,7 @@ public class Operator extends Expression {
         }
         return new Operator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
@@ -1634,7 +1685,7 @@ public class Operator extends Expression {
         }
         return new Operator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
     public Expression simplifyReduceQuotients() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];

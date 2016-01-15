@@ -137,6 +137,145 @@
     <Ukrainian> не можна оцінити, оскількт він містить оператор, який неможливо спростити.</Ukrainian>
     <Russian> нельзя оценить, поскольку оно содержит оператор, который невозможно упростить.</Russian>
   </object>
+  
+  
+  
+  <object id = "EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR">
+    <German>Zu wenig Parameter im Operator </German>
+    <English>Not enough parameters in operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR">
+    <German>Zu viele Parameter im Operator </German>
+    <English>Too many parameters in operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+    <German>Die Variable </German>
+    <English>The variable </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+    <German> muss im Ausdruck im </German>
+    <English> must occur in the </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+    <German> Parameter des Operators </German>
+    <English> parameter of the operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+    <German> vorkommen.</German>
+    <English>.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+    <German>Die Variable </German>
+    <English>The variable </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+    <German> darf im Ausdruck im </German>
+    <English> must not occur in the </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+    <German> Parameter des Operators </German>
+    <English> parameter of operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+    <German> nicht vorkommen.</German>
+    <English>.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+    <German>Der Ausdruck im </German>
+    <English>The expression in the </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+    <German>. Parameter des Operators </German>
+    <English>. parameter of the operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+    <German> muss mindestens </German>
+    <English> must contain least </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+    <German> und höchstens </German>
+    <English> and at most </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+    <German> muss höchstens </German>
+    <English> must contain at most </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+    <German> Variablen enthalten.</German>
+    <English> variables.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_1">
+    <German>Die ganze Zahl im </German>
+    <English>The integer value in the </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_2">
+    <German>. Parameter des Operators </German>
+    <English>. parameter of the operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_3">
+    <German> muss mindestens </German>
+    <English> must be at least </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_4">
+    <German> und höchstens </German>
+    <English> and at most </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_5">
+    <German> muss höchstens </German>
+    <English> must be at most </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_6">
+    <German> betragen.</German>
+    <English>.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  
+  
+  
+  
   <object id = "EB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
     <English>Not enought parameters in operator 'diff'.</English>

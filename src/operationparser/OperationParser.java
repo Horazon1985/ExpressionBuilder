@@ -154,8 +154,10 @@ public abstract class OperationParser {
 
             restrictionsAsList.clear();
 
-            if (args[i].contains(ParameterPattern.var)) {
+            if (args[i].contains(ParameterPattern.var) || args[i].contains(ParameterPattern.uniquevar)) {
 
+                // TO DO.
+                
                 if (args[i].equals(ParameterPattern.var)) {
                     paramPattern[i] = new ParameterPattern(ParamType.var, Multiplicity.one, restrictionsAsList);
                 } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.var) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
@@ -590,16 +592,18 @@ public abstract class OperationParser {
                 if (!restrictions.isEmpty()) {
                     exprLeft.addContainedVars(containedVars);
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        return exprLeft;
+                        return new Expression[]{exprLeft, exprRight};
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
                         if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                             return new Expression[]{exprLeft, exprRight};
                         } else {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
                                     + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
@@ -609,8 +613,10 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                     + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     } else {
@@ -621,11 +627,12 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_AND")
+                                    + opName
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
-                                    + Integer.parseInt(restrictions.get(1))
+                                    + Integer.parseInt(restrictions.get(0))
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     }
@@ -649,7 +656,7 @@ public abstract class OperationParser {
                 }
 
                 if (!restrictions.isEmpty()) {
-                    abstrExpr.addContainedVars(containedVars);
+                    containedVars = abstrExpr.getContainedVars();
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         return abstrExpr;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
@@ -658,9 +665,11 @@ public abstract class OperationParser {
                         } else {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
                                     + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
@@ -670,8 +679,10 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                     + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     } else {
@@ -682,11 +693,12 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_AND")
+                                    + opName
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
-                                    + Integer.parseInt(restrictions.get(1))
+                                    + Integer.parseInt(restrictions.get(0))
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                             );
                         }
                     }
