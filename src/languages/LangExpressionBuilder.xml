@@ -200,6 +200,24 @@
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
+  <object id = "EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1">
+    <German>Die Variable </German>
+    <English>The variable </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2">
+    <German> darf in den Parametern des Operators </German>
+    <English> is not allowed to occur twice in the parameters of the operator </English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3">
+    <German> nicht mehrmals vorkommen.</German>
+    <English>.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
   <object id = "EB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
     <German>Der Ausdruck im </German>
     <English>The expression in the </English>
@@ -269,6 +287,60 @@
   <object id = "EB_Operator_BOUNDS_FOR_PARAMETER_6">
     <German> betragen.</German>
     <English>.</English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_3">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+    <German></German>
+    <English></English>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
+  </object>
+  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+    <German></German>
+    <English></English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>

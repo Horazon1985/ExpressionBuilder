@@ -232,7 +232,7 @@ public abstract class OperationParser {
                         break;
                     }
 
-                } else if (role.equals(ParamRole.EXPRESSION)){
+                } else if (role.equals(ParamRole.EXPRESSION)) {
 
                     if (args[i].equals(type.name())) {
                         paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
@@ -264,7 +264,7 @@ public abstract class OperationParser {
                     }
 
                 } else {
-                
+
                     if (args[i].equals(type.name())) {
                         paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
                         break;
@@ -293,12 +293,12 @@ public abstract class OperationParser {
                         paramPattern[i] = new ParameterPattern(type, m, restrictionsAsList);
                         break;
                     }
-                
+
                 }
 
             }
-            
-            if (paramPattern[i] == null){
+
+            if (paramPattern[i] == null) {
                 throw new ParseException(i);
             }
 
@@ -424,7 +424,7 @@ public abstract class OperationParser {
         for (int i = 0; i < resultPattern.size(); i++) {
 
             p = resultPattern.getParameterPattern(i);
-            if (!p.getParamType().equals(ParamType.uniquevar) && !p.getParamType().equals(ParamType.var)) {
+            if (!p.getParamType().getRole().equals(ParamRole.VARIABLE)) {
                 continue;
             }
             restrictions = p.getRestrictions();
@@ -505,6 +505,30 @@ public abstract class OperationParser {
          Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
          vorkommen.
          */
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().equals(ParamType.uniquevar)) {
+                continue;
+            }
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+                // Jeweilige Unique-Variable für die Kontrolle.
+                var = (String) params[j];
+                for (int k = 0; k < params.length; k++) {
+                    if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
+                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                                + var
+                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + operatorName
+                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                    }
+                }
+            }
+
+        }
+
         return new Operator(type, params);
 
     }
@@ -513,7 +537,7 @@ public abstract class OperationParser {
 
         HashSet<String> containedVars = new HashSet<>();
 
-        if (type.equals(ParamType.var)) {
+        if (type.getRole().equals(ParamRole.VARIABLE)) {
 
             if (Expression.isValidVariable(parameter)) {
                 return parameter;
@@ -584,7 +608,7 @@ public abstract class OperationParser {
             } catch (ExpressionException e) {
             }
 
-        } else if (type.equals(ParamType.expr) || type.equals(ParamType.logexpr) || type.equals(ParamType.matexpr)) {
+        } else if (type.getRole().equals(ParamRole.EXPRESSION)) {
 
             AbstractExpression abstrExpr;
 
@@ -650,7 +674,7 @@ public abstract class OperationParser {
             } catch (ExpressionException e) {
             }
 
-        } else if (type.equals(ParamType.integer)) {
+        } else if (type.getRole().equals(ParamRole.INTEGER)) {
 
             try {
                 int n = Integer.parseInt(parameter);
@@ -663,9 +687,11 @@ public abstract class OperationParser {
                         } else {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
                                     + (index + 1)
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_3")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_5")
                                     + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_6")
                             );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
@@ -675,8 +701,10 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_2")
+                                    + opName
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_3")
                                     + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_6")
                             );
                         }
                     } else {
@@ -686,11 +714,12 @@ public abstract class OperationParser {
                             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_1")
                                     + (index + 1)
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_2")
-                                    + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_AND")
+                                    + opName
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_3")
-                                    + Integer.parseInt(restrictions.get(1))
+                                    + Integer.parseInt(restrictions.get(0))
                                     + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_4")
+                                    + Integer.parseInt(restrictions.get(1))
+                                    + Translator.translateExceptionMessage("EB_Operator_BOUNDS_FOR_PARAMETER_6")
                             );
                         }
                     }
@@ -706,6 +735,7 @@ public abstract class OperationParser {
                 + (index + 1) + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                 + opName + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_3");
         switch (type) {
+            case uniquevar:
             case var:
                 failureMessage += Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR");
                 break;

@@ -267,6 +267,17 @@ public class ParseTests {
         }
     }
 
+    @Test
+    public void parseTest12() {
+        // Parsen von "op(expres(1,2),var)".
+        try {
+            resultPattern = OperationParser.getResultPattern("op(expres(1,2),var)");
+            // Es darf nicht erfolgreich geparst werden!
+            fail();
+        } catch (ParseException e) {
+        }
+    }
+
     // Teil 2: Tests für das Parsen eines Operators.
     @Test
     public void parseOperatorSuccesfullyParsedTest1() {
@@ -399,7 +410,19 @@ public class ParseTests {
 
     @Test
     public void parseOperatorNotSuccesfullyParsedTest3() {
-
+        // Parsen von "div(x^2+y-z,x,y,x)" gegen das Pattern "div(expr,uniquevar,uniquevar,uniquevar)".
+        try {
+            patternForOperator = "div(expr,uniquevar,uniquevar,uniquevar)";
+            operator = OperationParser.parseDefaultOperator("div(x^2+y-z,x,y,x)", null, patternForOperator);
+            fail();
+        } catch (ParseException e) {
+            /* 
+             Für den Erfolg des Tests muss eine ExpressionException geworfen werden, 
+             da die Syntax des Operators an sich korrekt ist.
+             */
+            fail(e.getMessage());
+        } catch (ExpressionException e) {
+        }
     }
 
     @Test

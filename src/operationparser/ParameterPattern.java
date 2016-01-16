@@ -33,14 +33,6 @@ public class ParameterPattern {
         one, plus;
     }
 
-//    public static final String equation = getNameOfParamType(ParamType.equation);
-//    public static final String expr = getNameOfParamType(ParamType.expr);
-//    public static final String integer = getNameOfParamType(ParamType.integer);
-//    public static final String logexpr = getNameOfParamType(ParamType.logexpr);
-//    public static final String matexpr = getNameOfParamType(ParamType.matexpr);
-//    public static final String uniquevar = getNameOfParamType(ParamType.uniquevar);
-//    public static final String var = getNameOfParamType(ParamType.var);
-
     public static final String none = "none";
     public static final String notin = "!";
 
@@ -49,10 +41,6 @@ public class ParameterPattern {
     private final ParamType paramType;
     private final Multiplicity mulitplicity;
     private final ArrayList<String> restrictions = new ArrayList<>();
-
-//    private static String getNameOfParamType(ParamType type) {
-//        return type.name();
-//    }
 
     public ParameterPattern(ParamType paramType, Multiplicity multiplicity, ArrayList<String> restrictions) {
         this.paramType = paramType;
