@@ -11,6 +11,7 @@ import java.util.HashSet;
 import logicalexpressionbuilder.LogicalExpression;
 import matrixexpressionbuilder.MatrixExpression;
 import operationparser.ParameterPattern.Multiplicity;
+import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
 import translator.Translator;
 
@@ -153,217 +154,154 @@ public abstract class OperationParser {
             }
 
             restrictionsAsList.clear();
+            ParamRole role;
 
-            if (args[i].contains(ParameterPattern.var) || args[i].contains(ParameterPattern.uniquevar)) {
+            for (ParamType type : ParamType.values()) {
 
-                // TO DO.
-                
-                if (args[i].equals(ParameterPattern.var)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.var, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.var) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.var, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
+                role = type.getRole();
 
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
+                if (role.equals(ParamRole.VARIABLE)) {
 
-                    if (!paramType.equals(ParameterPattern.var)) {
-                        throw new ParseException(i);
-                    }
-                    if (restrictions.length == 0) {
-                        throw new ParseException(i);
-                    }
+                    if (args[i].equals(type.name())) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
+                        break;
+                    } else if (args[i].substring(0, args[i].length() - 1).equals(type.name()) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
+                        break;
+                    } else if (args[i].indexOf(type.name()) == 0) {
+                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
+                        paramType = paramTypeAndRestrictions[0];
+                        restrictions = getArguments(paramTypeAndRestrictions[1]);
 
-                    // Optionale Parameter einlesen (es muss mindestens einer sein).
-                    for (String restriction : restrictions) {
-                        int index = -1;
-                        try {
-                        } catch (NumberFormatException e) {
-                            throw new ParseException(i);
-                        }
-                        if (restriction.indexOf(ParameterPattern.notin) == 0) {
-                            try {
-                                index = Integer.parseInt(restriction.substring(1));
-                            } catch (NumberFormatException e) {
-                                throw new ParseException(i);
-                            }
+                        // Multiplizität bestimmen.
+                        if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
+                            // "+" herausschneiden.
+                            paramType = paramType.substring(0, paramType.length() - 1);
+                            m = Multiplicity.plus;
                         } else {
+                            m = Multiplicity.one;
+                        }
+
+                        if (!paramType.equals(type.name())) {
+                            throw new ParseException(i);
+                        }
+                        if (restrictions.length == 0) {
+                            throw new ParseException(i);
+                        }
+
+                        // Optionale Parameter einlesen (es muss mindestens einer sein).
+                        for (String restriction : restrictions) {
+                            int index = -1;
                             try {
-                                index = Integer.parseInt(restriction);
                             } catch (NumberFormatException e) {
                                 throw new ParseException(i);
                             }
+                            if (restriction.indexOf(ParameterPattern.notin) == 0) {
+                                try {
+                                    index = Integer.parseInt(restriction.substring(1));
+                                } catch (NumberFormatException e) {
+                                    throw new ParseException(i);
+                                }
+                            } else {
+                                try {
+                                    index = Integer.parseInt(restriction);
+                                } catch (NumberFormatException e) {
+                                    throw new ParseException(i);
+                                }
+                            }
+                            if (index < 0 || index > args.length) {
+                                throw new ParseException(i);
+                            }
+                            /* 
+                             Restriktionen auf enthalten / nicht enthalten in sollen nur 
+                             Parameter betreffen, die auch Variablen enthalten können.
+                             */
+                            boolean referenceOfIndexIsNotExpression = true;
+                            for (ParamType typeReferred : ParamType.values()) {
+                                if (typeReferred.getRole().equals(ParamRole.EXPRESSION)) {
+                                    referenceOfIndexIsNotExpression = referenceOfIndexIsNotExpression && !args[index].contains(typeReferred.name());
+                                }
+                            }
+                            if (referenceOfIndexIsNotExpression) {
+                                throw new ParseException(i);
+                            }
+                            restrictionsAsList.add(restriction);
                         }
-                        if (index < 0 || index > args.length) {
+
+                        paramPattern[i] = new ParameterPattern(type, m, restrictionsAsList);
+                        break;
+                    }
+
+                } else if (role.equals(ParamRole.EXPRESSION)){
+
+                    if (args[i].equals(type.name())) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
+                        break;
+                    } else if (args[i].substring(0, args[i].length() - 1).equals(type.name()) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
+                        break;
+                    } else if (args[i].indexOf(type.name()) == 0) {
+                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
+                        paramType = paramTypeAndRestrictions[0];
+                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+
+                        // Multiplizität bestimmen.
+                        if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
+                            // "+" herausschneiden.
+                            paramType = paramType.substring(0, paramType.length() - 1);
+                            m = Multiplicity.plus;
+                        } else {
+                            m = Multiplicity.one;
+                        }
+
+                        if (!paramType.equals(type.name())) {
                             throw new ParseException(i);
                         }
-                        /* 
-                         Restriktionen auf enthalten / nicht enthalten in sollen nur 
-                         Parameter betreffen, die auch Variablen enthalten können.
-                         */
-                        if (!args[index].contains(ParameterPattern.equation)
-                                && !args[index].contains(ParameterPattern.expr)
-                                && !args[index].contains(ParameterPattern.logexpr)
-                                && !args[index].contains(ParameterPattern.matexpr)) {
+                        // Optionale Parameter einlesen (es müssen genau zwei sein).
+                        restrictionsAsList = getRestrictionList(restrictions, i);
+                        paramPattern[i] = new ParameterPattern(type, m, restrictionsAsList);
+                        break;
+                    }
+
+                } else {
+                
+                    if (args[i].equals(type.name())) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
+                        break;
+                    } else if (args[i].substring(0, args[i].length() - 1).equals(type.name()) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
+                        paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
+                        break;
+                    } else if (args[i].indexOf(type.name()) == 0) {
+                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
+                        paramType = paramTypeAndRestrictions[0];
+                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+
+                        // Multiplizität bestimmen.
+                        if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
+                            // "+" herausschneiden.
+                            paramType = paramType.substring(0, paramType.length() - 1);
+                            m = Multiplicity.plus;
+                        } else {
+                            m = Multiplicity.one;
+                        }
+
+                        if (!paramType.equals(type.name())) {
                             throw new ParseException(i);
                         }
-                        restrictionsAsList.add(restriction);
+                        // Optionale Parameter einlesen (es müssen genau zwei sein).
+                        restrictionsAsList = getRestrictionList(restrictions, i);
+                        paramPattern[i] = new ParameterPattern(type, m, restrictionsAsList);
+                        break;
                     }
-                    paramPattern[i] = new ParameterPattern(ParamType.var, m, restrictionsAsList);
+                
                 }
 
-            } else if (args[i].contains(ParameterPattern.equation)) {
-
-                if (args[i].equals(ParameterPattern.equation)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.equation, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.equation) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.equation, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
-
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
-
-                    if (!paramType.equals(ParameterPattern.equation)) {
-                        throw new ParseException(i);
-                    }
-                    // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions, i);
-                    paramPattern[i] = new ParameterPattern(ParamType.equation, m, restrictionsAsList);
-                }
-
-            } else if (args[i].contains(ParameterPattern.expr)) {
-
-                if (args[i].equals(ParameterPattern.expr)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.expr, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.expr) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.expr, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
-
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
-
-                    if (!paramType.equals(ParameterPattern.expr)) {
-                        throw new ParseException(i);
-                    }
-                    // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions, i);
-                    paramPattern[i] = new ParameterPattern(ParamType.expr, m, restrictionsAsList);
-                }
-
-            } else if (args[i].contains(ParameterPattern.integer)) {
-
-                if (args[i].equals(ParameterPattern.integer)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.integer, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.integer) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.integer, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
-
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
-
-                    if (!paramType.equals(ParameterPattern.integer)) {
-                        throw new ParseException(i);
-                    }
-                    // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions, i);
-                    paramPattern[i] = new ParameterPattern(ParamType.integer, m, restrictionsAsList);
-                }
-
-            } else if (args[i].contains(ParameterPattern.logexpr)) {
-
-                if (args[i].equals(ParameterPattern.logexpr)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.logexpr, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.logexpr) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.logexpr, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
-
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
-
-                    if (!paramType.equals(ParameterPattern.logexpr)) {
-                        throw new ParseException(i);
-                    }
-                    // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions, i);
-                    paramPattern[i] = new ParameterPattern(ParamType.logexpr, m, restrictionsAsList);
-                }
-
-            } else if (args[i].contains(ParameterPattern.matexpr)) {
-
-                if (args[i].equals(ParameterPattern.matexpr)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.matexpr, Multiplicity.one, restrictionsAsList);
-                } else if (args[i].substring(0, args[i].length() - 1).equals(ParameterPattern.matexpr) && args[i].substring(args[i].length() - 1).equals(ParameterPattern.multPlus)) {
-                    paramPattern[i] = new ParameterPattern(ParamType.matexpr, Multiplicity.plus, restrictionsAsList);
-                } else {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
-
-                    // Multiplizität bestimmen.
-                    if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
-                        // "+" herausschneiden.
-                        paramType = paramType.substring(0, paramType.length() - 1);
-                        m = Multiplicity.plus;
-                    } else {
-                        m = Multiplicity.one;
-                    }
-
-                    if (!paramType.equals(ParameterPattern.matexpr)) {
-                        throw new ParseException(i);
-                    }
-                    // Optionale Parameter einlesen (es müssen genau zwei sein).
-                    restrictionsAsList = getRestrictionList(restrictions, i);
-                    paramPattern[i] = new ParameterPattern(ParamType.matexpr, m, restrictionsAsList);
-                }
-
-            } else {
+            }
+            
+            if (paramPattern[i] == null){
                 throw new ParseException(i);
             }
+
             paramPatterns.add(paramPattern[i]);
 
         }
@@ -486,7 +424,7 @@ public abstract class OperationParser {
         for (int i = 0; i < resultPattern.size(); i++) {
 
             p = resultPattern.getParameterPattern(i);
-            if (!p.getParamType().equals(ParamType.var)) {
+            if (!p.getParamType().equals(ParamType.uniquevar) && !p.getParamType().equals(ParamType.var)) {
                 continue;
             }
             restrictions = p.getRestrictions();
@@ -563,6 +501,10 @@ public abstract class OperationParser {
 
         }
 
+        /* 
+         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         vorkommen.
+         */
         return new Operator(type, params);
 
     }

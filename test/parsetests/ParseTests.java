@@ -48,8 +48,8 @@ public class ParseTests {
     @Test
     public void parseTest1() {
         
-        // Parsen von "op(expr, var, int, expr)".
-        resultPattern = OperationParser.getResultPattern("op(expr, var, int, expr)");
+        // Parsen von "op(expr, var, integer, expr)".
+        resultPattern = OperationParser.getResultPattern("op(expr, var, integer, expr)");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 4);
@@ -91,8 +91,8 @@ public class ParseTests {
     @Test
     public void parseTest3() {
 
-        // Parsen von "op(expr(none, 2), var(0), int(3,5), expr(3,none))".
-        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(0), int(3,5), expr(3,none))");
+        // Parsen von "op(expr(none, 2), var(0), integer(3,5), expr(3,none))".
+        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(0), integer(3,5), expr(3,none))");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 4);
@@ -214,9 +214,9 @@ public class ParseTests {
 
     @Test
     public void parseTest7() {
-        // Parsen von "(expr, int)".
+        // Parsen von "(expr, integer)".
         try {
-            resultPattern = OperationParser.getResultPattern("(expr, int)");
+            resultPattern = OperationParser.getResultPattern("(expr, integer)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -225,9 +225,9 @@ public class ParseTests {
 
     @Test
     public void parseTest8() {
-        // Parsen von "op(expr(none, 2), var(!2), int)".
+        // Parsen von "op(expr(none, 2), var(!2), integer)".
         try {
-            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(!2), int)");
+            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(!2), integer)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -236,9 +236,9 @@ public class ParseTests {
 
     @Test
     public void parseTest9() {
-        // Parsen von "op(expr(none, 2), var(1), int)".
+        // Parsen von "op(expr(none, 2), var(1), integer)".
         try {
-            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(1), int)");
+            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(1), integer)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -293,9 +293,9 @@ public class ParseTests {
 
     @Test
     public void parseOperatorSuccesfullyParsedTest2() {
-        // Parsen von "diff(x^2+y,x,3)" gegen das Pattern "diff(expr,var,int)".
+        // Parsen von "diff(x^2+y,x,3)" gegen das Pattern "diff(expr,var,integer)".
         try {
-            patternForOperator = "diff(expr,var,int)";
+            patternForOperator = "diff(expr,var,integer)";
             operator = OperationParser.parseDefaultOperator("diff(x^2+y,x,3)", null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
