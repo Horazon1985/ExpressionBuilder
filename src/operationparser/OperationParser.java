@@ -26,28 +26,34 @@ public abstract class OperationParser {
      *
      * @throws ExpressionException
      */
-    private static String[] getOperationAndArguments(String input) {
+    public static String[] getOperationAndArguments(String input) throws ExpressionException {
 
         // Leerzeichen beseitigen
         input = input.replaceAll(" ", "");
 
         String[] result = new String[2];
-        // Das Math.max() dient dazu, um zu verhindern, dass eine IndexOutOfBoundsException geworfen wird.
-        result[0] = input.substring(0, Math.max(0, input.indexOf("(")));
+        int i = input.indexOf("(");
+        if (i == -1) {
+            // Um zu verhindern, dass es eine IndexOutOfBoundsException gibt.
+            i = 0;
+        }
+        result[0] = input.substring(0, i);
 
         //Wenn der Befehl leer ist -> Fehler.
         if (result[0].length() == 0) {
-            throw new ParseException();
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
         }
 
         //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
         if (result[0].length() > input.length() - 2) {
-            throw new ParseException();
+            throw new ExpressionException(input + Translator.translateExceptionMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
         }
 
         //Wenn am Ende nicht ")" steht.
         if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ParseException();
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_MISSING_CLOSING_BRACKET_1")
+                    + input
+                    + Translator.translateExceptionMessage("EB_Expression_MISSING_CLOSING_BRACKET_2"));
         }
 
         result[1] = input.substring(result[0].length() + 1, input.length() - 1);
@@ -64,7 +70,7 @@ public abstract class OperationParser {
      *
      * @throws ExpressionException
      */
-    private static String[] getArguments(String input) {
+    public static String[] getArguments(String input) throws ExpressionException {
 
         //Leerzeichen beseitigen
         input = input.replaceAll(" ", "");
@@ -102,14 +108,14 @@ public abstract class OperationParser {
             }
             if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
                 if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ParseException();
+                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == input.length() - 1) {
                 if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ParseException();
+                    throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
             }
@@ -117,7 +123,7 @@ public abstract class OperationParser {
         }
 
         if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ParseException();
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_WRONG_BRACKETS"));
         }
 
         String[] resultParametersAsArray = new String[resultParameters.size()];
@@ -129,7 +135,7 @@ public abstract class OperationParser {
 
     }
 
-    public static ParseResultPattern getResultPattern(String pattern) {
+    public static ParseResultPattern getResultPattern(String pattern) throws ExpressionException {
 
         String[] opAndArgs = getOperationAndArguments(pattern);
         // Operationsname.
@@ -339,13 +345,8 @@ public abstract class OperationParser {
     /**
      * Parsen mathematischer Standardoperatoren.
      */
-    public static Operator parseDefaultOperator(String operator, HashSet<String> vars, String pattern) throws ExpressionException {
+    public static Operator parseDefaultOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
 
-        String[] operatorAndArguments = getOperationAndArguments(operator);
-        // Operationsname.
-        String operatorName = operatorAndArguments[0];
-        // Operationsparameter.
-        String[] arguments = getArguments(operatorAndArguments[1]);
         // Operatortyp.
         TypeOperator type = getTypeFromName(operatorName);
 
@@ -373,8 +374,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR")
-                        + operatorName);
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
+                        + operatorName
+                        + Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -408,8 +410,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1) {
-            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR")
-                    + operatorName);
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
+                    + operatorName
+                    + Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2"));
         }
 
         /* 

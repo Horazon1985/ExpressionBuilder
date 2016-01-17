@@ -95,37 +95,47 @@ public class Operator extends Expression {
 
         switch (type) {
             case diff:
+                if (params.length != 3) {
+                    return OperationParser.parseDefaultOperator(operator, params, vars, "diff(expr,var+)");
+                }
                 try {
-                    return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var+)");
+                    return OperationParser.parseDefaultOperator(operator, params, vars, "diff(expr,var+)");
                 } catch (ExpressionException e) {
-                    return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var,int(0,2147483647))");
+                    try {
+                        return OperationParser.parseDefaultOperator(operator, params, vars, "diff(expr,var,int(0,2147483647))");
+                    } catch (ExpressionException ex) {
+                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                    }
                 }
             case div:
-                return OperationParser.parseDefaultOperator(operator, vars, "div(expr,uniquevar+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "div(expr,uniquevar+)");
             case fac:
-                return OperationParser.parseDefaultOperator(operator, vars, "fac(expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "fac(expr)");
             case gcd:
-                return OperationParser.parseDefaultOperator(operator, vars, "gcd(expr+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "gcd(expr+)");
             case integral:
-                return OperationParser.parseDefaultOperator(operator, vars, "int(expr,var(!2,!3),expr,expr)");
+                if (params.length <= 2) {
+                    return OperationParser.parseDefaultOperator(operator, params, vars, "int(expr,var)");
+                }
+                return OperationParser.parseDefaultOperator(operator, params, vars, "int(expr,var(!2,!3),expr,expr)");
             case laplace:
-                return OperationParser.parseDefaultOperator(operator, vars, "laplace(expr,uniquevar+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "laplace(expr,uniquevar+)");
             case lcm:
-                return OperationParser.parseDefaultOperator(operator, vars, "diff(expr,var+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "lcm(expr+)");
             case mod:
-                return OperationParser.parseDefaultOperator(operator, vars, "mod(expr,expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "mod(expr,expr)");
             case mu:
-                return OperationParser.parseDefaultOperator(operator, vars, "mu(expr+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "mu(expr+)");
             case prod:
-                return OperationParser.parseDefaultOperator(operator, vars, "prod(expr,var(!2,!3),expr,expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "prod(expr,var(!2,!3),expr,expr)");
             case sigma:
-                return OperationParser.parseDefaultOperator(operator, vars, "sigma(expr+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "sigma(expr+)");
             case sum:
-                return OperationParser.parseDefaultOperator(operator, vars, "sum(expr,var(!2,!3),expr,expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "sum(expr,var(!2,!3),expr,expr)");
             case taylor:
-                return OperationParser.parseDefaultOperator(operator, vars, "taylor(expr,var,expr(0,0),int(0,2147483647))");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "taylor(expr,var(!2),expr,int(0,2147483647))");
             case var:
-                return OperationParser.parseDefaultOperator(operator, vars, "var(expr+)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "var(expr+)");
             // Sollte theoretisch nie vorkommen.
             default:
                 return new Operator();
