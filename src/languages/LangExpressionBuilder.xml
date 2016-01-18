@@ -303,56 +303,50 @@
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
-    <German></German>
-    <English></English>
+    <German>Der </German>
+    <English>The </English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
-    <German></German>
-    <English></English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_3">
-    <German></German>
-    <English></English>
+    <German>. Parameter im Operator </German>
+    <English>. parameter of the operator </English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
-    <German></German>
-    <English></English>
+    <German> muss eine gültige Veränderliche sein.</German>
+    <English> must be a valid variable.</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
-    <German></German>
-    <English></English>
+    <German> muss eine gültige Gleichung der Form "f = g" sein.</German>
+    <English> must be a valid equation of the form "f = g".</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
-    <German></German>
-    <English></English>
+    <German> muss ein gültiger Ausdruck sein.</German>
+    <English> must be a valid expression.</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
-    <German></German>
-    <English></English>
+    <German> muss eine ganze Zahl sein.</German>
+    <English> must be an integer.</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
-    <German></German>
-    <English></English>
+    <German> muss ein gültiger logischer Ausdruck sein.</German>
+    <English> must be a valid logical expression.</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>
   <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
-    <German></German>
-    <English></English>
+    <German> muss ein gültiger Matrizenausdruck sein.</German>
+    <English> must be a valid matrix expression.</English>
     <Ukrainian></Ukrainian>
     <Russian></Russian>
   </object>

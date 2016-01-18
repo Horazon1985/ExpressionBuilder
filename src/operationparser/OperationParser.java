@@ -589,10 +589,11 @@ public abstract class OperationParser {
                         params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments);
                         indexInOperatorArguments++;
                     } catch (ExpressionException e) {
-                        if (indexInOperatorArguments == i) {
+                        if (indexInOperatorArguments == i || i == resultPattern.size() - 1) {
                             /* 
                              Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
                              In diesem Fall konnte kein einziger Parameter geparst werden.
+                             ODER: Es wurde ein Argument nicht geparst und das Pattern ist zuende.
                              */
                             throw new ExpressionException(e.getMessage());
                         }
@@ -730,7 +731,7 @@ public abstract class OperationParser {
         return new MatrixOperator(type, params);
 
     }
-    
+
     private static Object getOperatorParameter(String opName, String parameter, HashSet<String> vars, ParamType type, ArrayList<String> restrictions, int index) throws ExpressionException {
 
         HashSet<String> containedVars = new HashSet<>();
@@ -931,7 +932,7 @@ public abstract class OperationParser {
 
         String failureMessage = Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
                 + (index + 1) + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
-                + opName + Translator.translateExceptionMessage("EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_3");
+                + opName;
         switch (type) {
             case uniquevar:
             case var:
