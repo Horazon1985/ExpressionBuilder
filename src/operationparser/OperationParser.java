@@ -4,12 +4,13 @@ import exceptions.ExpressionException;
 import expressionInterfaces.AbstractExpression;
 import expressionbuilder.Expression;
 import expressionbuilder.Operator;
-import static expressionbuilder.Operator.getTypeFromName;
 import expressionbuilder.TypeOperator;
 import java.util.ArrayList;
 import java.util.HashSet;
 import logicalexpressionbuilder.LogicalExpression;
 import matrixexpressionbuilder.MatrixExpression;
+import matrixexpressionbuilder.MatrixOperator;
+import matrixexpressionbuilder.TypeMatrixOperator;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
@@ -348,7 +349,7 @@ public abstract class OperationParser {
     public static Operator parseDefaultOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
 
         // Operatortyp.
-        TypeOperator type = getTypeFromName(operatorName);
+        TypeOperator type = Operator.getTypeFromName(operatorName);
 
         // Muster für das Parsen des Operators.
         ParseResultPattern resultPattern = getResultPattern(pattern);
@@ -536,6 +537,200 @@ public abstract class OperationParser {
 
     }
 
+    /**
+     * Parsen mathematischer Standardoperatoren.
+     */
+    public static MatrixOperator parseDefaultMatrixOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
+
+        // Operatortyp.
+        TypeMatrixOperator type = MatrixOperator.getTypeFromName(operatorName);
+
+        // Muster für das Parsen des Operators.
+        ParseResultPattern resultPattern = getResultPattern(pattern);
+
+        /* 
+         Falls Namen nicht übereinstimmen -> ParseException (!) werfen.
+         In der Klasse Operator sollte man immer zuerst den Namen auslesen und 
+         DANN erst das Parsen anwenden.
+         */
+        if (!operatorName.equals(resultPattern.getOperationName())) {
+            throw new ParseException();
+        }
+
+        Object[] params = new Object[arguments.length];
+
+        int indexInOperatorArguments = 0;
+        ParameterPattern p;
+        ArrayList<String> restrictions;
+        ArrayList<Integer> indices = new ArrayList<>();
+
+        // Zunächst nur reines Parsen, OHNE die Einschränkungen für die Variablen zu beachten.
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
+            if (indexInOperatorArguments >= arguments.length) {
+                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
+                        + operatorName
+                        + Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2"));
+            }
+
+            // Indizes loggen!
+            indices.add(indexInOperatorArguments);
+
+            p = resultPattern.getParameterPattern(i);
+            restrictions = p.getRestrictions();
+
+            if (p.getMultiplicity().equals(Multiplicity.one)) {
+                params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments);
+                indexInOperatorArguments++;
+            } else {
+                while (indexInOperatorArguments < arguments.length) {
+                    try {
+                        params[indexInOperatorArguments] = getOperatorParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments);
+                        indexInOperatorArguments++;
+                    } catch (ExpressionException e) {
+                        if (indexInOperatorArguments == i) {
+                            /* 
+                             Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
+                             In diesem Fall konnte kein einziger Parameter geparst werden.
+                             */
+                            throw new ExpressionException(e.getMessage());
+                        }
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
+        if (indexInOperatorArguments < arguments.length - 1) {
+            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
+                    + operatorName
+                    + Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2"));
+        }
+
+        /* 
+         Jetzt müssen noch einmal die Einschränkungen für die Variablen kontrolliert werden.
+         Diese Kontrolle muss stattfinden, NACHDEM alle Ausdrücke bereits (erfolgreich) geparst wurden.
+         */
+        int maxIndexForControl, indexOfExpressionToControlInPattern, maxIndexOfExpressionToControl;
+        boolean occurrence;
+        AbstractExpression expr;
+        AbstractExpression[] exprs;
+        String var;
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().getRole().equals(ParamRole.VARIABLE)) {
+                continue;
+            }
+            restrictions = p.getRestrictions();
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+
+                // Jeweilige Variable für die Kontrolle.
+                var = (String) params[j];
+
+                for (String restriction : restrictions) {
+
+                    occurrence = !(restriction.indexOf(ParameterPattern.notin) == 0);
+                    indexOfExpressionToControlInPattern = occurrence ? Integer.valueOf(restriction) : Integer.valueOf(restriction.substring(1));
+
+                    if (indexOfExpressionToControlInPattern < resultPattern.size() - 1) {
+                        maxIndexOfExpressionToControl = indices.get(indexOfExpressionToControlInPattern + 1) - 1;
+                    } else {
+                        maxIndexOfExpressionToControl = params.length - 1;
+                    }
+
+                    // Eigentliche Kontrolle.
+                    for (int q = indices.get(indexOfExpressionToControlInPattern); q <= maxIndexOfExpressionToControl; q++) {
+
+                        if (params[q] instanceof AbstractExpression) {
+                            expr = (AbstractExpression) params[q];
+                            if (occurrence && !expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
+                        } else if (params[q] instanceof AbstractExpression[]) {
+                            exprs = (AbstractExpression[]) params[q];
+                            boolean varOccurrs = false;
+                            for (AbstractExpression abstrExpr : exprs) {
+                                varOccurrs = varOccurrs || abstrExpr.contains(var);
+                            }
+                            if (occurrence && !varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + operatorName
+                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        /* 
+         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         vorkommen.
+         */
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().equals(ParamType.uniquevar)) {
+                continue;
+            }
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+                // Jeweilige Unique-Variable für die Kontrolle.
+                var = (String) params[j];
+                for (int k = 0; k < params.length; k++) {
+                    if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
+                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                                + var
+                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + operatorName
+                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                    }
+                }
+            }
+
+        }
+
+        return new MatrixOperator(type, params);
+
+    }
+    
     private static Object getOperatorParameter(String opName, String parameter, HashSet<String> vars, ParamType type, ArrayList<String> restrictions, int index) throws ExpressionException {
 
         HashSet<String> containedVars = new HashSet<>();

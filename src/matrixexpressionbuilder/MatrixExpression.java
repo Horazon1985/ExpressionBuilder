@@ -5,6 +5,8 @@ import exceptions.ExpressionException;
 import expressionInterfaces.AbstractExpression;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
+import static expressionbuilder.Expression.ONE;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigInteger;
@@ -301,7 +303,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             for (TypeMatrixOperator type : TypeMatrixOperator.values()) {
                 operatorName = MatrixOperator.getNameFromType(type);
                 if (operatorNameAndParams[0].equals(operatorName)) {
-                    return MatrixOperator.getOperator(operatorName, params, vars);
+                    return MatrixOperator.getOperator2(operatorName, params, vars);
                 }
             }
         }
@@ -351,6 +353,31 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     }
 
+    /**
+     * Generiert den i-ten Einheitsvektor im R^n.
+     */
+    public static Matrix getUnitVector(int i, int n){
+    
+        if (i < 0){
+            i = 0;
+        } else if (i >= n){
+            i = n - 1;
+        }
+
+        Expression[] entry = new Expression[n];
+        
+        for (int j = 0; j < n; j++){
+            if (j == i){
+                entry[j] = ONE;
+            } else {
+                entry[j] = ZERO;
+            }
+        }
+        
+        return new Matrix(entry);
+        
+    }
+    
     public boolean isZeroMatrix() {
 
         if (!(this instanceof Matrix)) {

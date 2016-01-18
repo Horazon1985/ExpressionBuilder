@@ -438,7 +438,6 @@ public abstract class Expression implements AbstractExpression {
                 operatorName = Operator.getNameFromType(type);
                 if (operatorNameAndParams[0].equals(operatorName)) {
                     return Operator.getOperator2(operatorName, params, vars);
-//                    return Operator.getOperator(operatorName, params, vars);
                 }
             }
         }
