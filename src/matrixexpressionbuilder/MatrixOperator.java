@@ -114,7 +114,7 @@ public class MatrixOperator extends MatrixExpression {
                     try {
                         return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "diff(matexpr,var,integer(0,2147483647))");
                     } catch (ExpressionException ex) {
-                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                        throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
                     }
                 }
             case div:
@@ -1031,14 +1031,14 @@ public class MatrixOperator extends MatrixExpression {
         Dimension dim;
 
         for (int i = 0; i < vectors.length; i++) {
-            try {
-                vectors[i] = ((MatrixExpression) params[i]).simplify();
-                dim = vectors[i].getDimension();
-            } catch (EvaluationException e) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_CROSS_CANNOT_BE_COMPUTED"));
-            }
+            vectors[i] = ((MatrixExpression) params[i]).simplify();
+            dim = vectors[i].getDimension();
             if (!vectors[i].isMatrix() || dim.width != 1 || dim.height != params.length + 1) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS"));
+                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1")
+                        + (i + 1)
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2")
+                        + (params.length + 1)
+                        + Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3"));
             }
         }
 
@@ -1300,7 +1300,7 @@ public class MatrixOperator extends MatrixExpression {
         Dimension dim = ((Matrix) matExpr).getDimension();
 
         if (dim.height != 3 || dim.width != 1) {
-            throw new EvaluationException(Translator.translateExceptionMessage("TO DO"));
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT"));
         }
 
         Expression matExprX = ((Matrix) this.params[0]).getEntry(0, 0);
