@@ -983,12 +983,8 @@ public class MatrixOperator extends MatrixExpression {
         Dimension dim;
 
         for (int i = 0; i < points.length; i++) {
-            try {
-                points[i] = ((MatrixExpression) params[i]).simplify();
-                dim = points[i].getDimension();
-            } catch (EvaluationException e) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_COV_CANNOT_BE_COMPUTED"));
-            }
+            points[i] = ((MatrixExpression) params[i]).simplify();
+            dim = points[i].getDimension();
             if (!points[i].isMatrix() || dim.width != 1 || dim.height != 2) {
                 throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS"));
             }
@@ -1093,7 +1089,6 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
         if (this.params.length == 2) {
             matExpr = matExpr.diff((String) this.params[1]);
-            matExpr = matExpr.simplify();
             return matExpr;
         }
         /*
@@ -1103,13 +1098,11 @@ public class MatrixOperator extends MatrixExpression {
         if (this.params[2] instanceof String) {
             for (int i = 1; i < this.params.length; i++) {
                 matExpr = matExpr.diff((String) this.params[i]);
-                matExpr = matExpr.simplify();
             }
         } else {
             int k = (int) this.params[2];
             for (int i = 0; i < k; i++) {
                 matExpr = matExpr.diff((String) this.params[1]);
-                matExpr = matExpr.simplify();
             }
         }
         return matExpr;

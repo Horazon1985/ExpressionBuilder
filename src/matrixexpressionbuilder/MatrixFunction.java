@@ -54,12 +54,14 @@ public class MatrixFunction extends MatrixExpression {
         MatrixExpression leftComputed = this.left.computeMatrixOperations();
         MatrixFunction matExpr = new MatrixFunction(leftComputed, this.type);
 
-        if (matExpr.type.equals(TypeMatrixFunction.det)) {
-            return matExpr.computeDet();
+        if (matExpr.type.equals(TypeMatrixFunction.abs)) {
+            return matExpr.computeAbs();
         } else if (matExpr.type.equals(TypeMatrixFunction.cos)) {
             return matExpr.computeCos();
         } else if (matExpr.type.equals(TypeMatrixFunction.cosh)) {
             return matExpr.computeCosh();
+        } else if (matExpr.type.equals(TypeMatrixFunction.det)) {
+            return matExpr.computeDet();
         } else if (matExpr.type.equals(TypeMatrixFunction.exp)) {
             return matExpr.computeExp();
         } else if (matExpr.type.equals(TypeMatrixFunction.ln)) {
@@ -230,6 +232,31 @@ public class MatrixFunction extends MatrixExpression {
 
     }
 
+    /**
+     * Berechnet den Kosinus einer MatrixExpression, falls möglich.
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression computeAbs() throws EvaluationException {
+
+        Dimension dim = this.left.getDimension();
+        if (dim.width != 1) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_ABS_NOT_DEFINED"));
+        }
+
+        if (this.left instanceof Matrix){
+            Matrix m = (Matrix) this.left;
+            Expression resultAbs = Expression.ZERO;
+            for (int i = 0; i < m.getRowNumber(); i++){
+                resultAbs = resultAbs.add(m.getEntry(i, 0).pow(2));
+            }
+            return new Matrix(resultAbs.pow(1, 2));
+        }
+
+        return this;
+
+    }
+    
     /**
      * Berechnet den Kosinus einer MatrixExpression, falls möglich.
      *

@@ -149,12 +149,6 @@
     <Ukrainian>. параметр оператора 'cov' має бути двовимірною точкою.</Ukrainian>
     <Russian>. параметр оператора 'cov' должен быть двумерной точкой.</Russian>
   </object>
-  <object id = "MEB_Operator_COV_CANNOT_BE_COMPUTED">
-    <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
-    <English>The covariance cannot be computetd, since the occurring parameters cannot be simplified or contain errors.</English>
-    <Ukrainian>Неможливо обчислити коваріацію, оскільки параметри неможливо спростити, або вони містять помилки.</Ukrainian>
-    <Russian>Невозможно вычислить ковариацию, поскольку параметры нельзя упростить, или они содержат ошибки.</Russian>
-  </object>
   <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
     <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
     <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
