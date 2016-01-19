@@ -279,6 +279,16 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression turnToApproximate() {
+        return new MatrixPower(this.left.turnToApproximate(), this.right.turnToApproximate());
+    }
+
+    @Override
+    public MatrixExpression turnToPrecise() {
+        return new MatrixPower(this.left.turnToPrecise(), this.right.turnToPrecise());
+    }
+    
+    @Override
     public MatrixExpression copy() {
         return new MatrixPower(this.left.copy(), this.right.copy());
     }

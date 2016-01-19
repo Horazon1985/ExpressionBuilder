@@ -195,13 +195,12 @@ public class Matrix extends MatrixExpression {
     }
 
     /**
-     * Gibt zurück, ob eine Matrix A = (a_{i, j}) eine Dreiecksgestalt
-     * besitzt.
-     */ 
+     * Gibt zurück, ob eine Matrix A = (a_{i, j}) eine Dreiecksgestalt besitzt.
+     */
     public boolean isTriangularMatrix() {
         return isLowerTriangularMatrix() || isUpperTriangularMatrix();
     }
-    
+
     /**
      * Gibt zurück, ob eine Matrix A = (a_{i, j}) untere Dreiecksgestalt
      * besitzt. Dies trifft genau dann zu, wenn sie quadratisch ist und für i <
@@ -586,6 +585,28 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression turnToApproximate() {
+        Expression[][] entryApprox = new Expression[this.entry.length][this.entry[0].length];
+        for (int i = 0; i < this.entry.length; i++) {
+            for (int j = 0; j < this.entry[0].length; j++) {
+                entryApprox[i][j] = this.entry[i][j].turnToApproximate();
+            }
+        }
+        return new Matrix(entryApprox);
+    }
+
+    @Override
+    public MatrixExpression turnToPrecise() {
+        Expression[][] entryApprox = new Expression[this.entry.length][this.entry[0].length];
+        for (int i = 0; i < this.entry.length; i++) {
+            for (int j = 0; j < this.entry[0].length; j++) {
+                entryApprox[i][j] = this.entry[i][j].turnToPrecise();
+            }
+        }
+        return new Matrix(entryApprox);
+    }
+
+    @Override
     public MatrixExpression copy() {
 
         Expression[][] copyOfEntry = new Expression[this.getRowNumber()][this.getColumnNumber()];
@@ -696,7 +717,7 @@ public class Matrix extends MatrixExpression {
     public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
         return this;
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorize() throws EvaluationException {
         Expression[][] entrySimplified = new Expression[this.getRowNumber()][this.getColumnNumber()];
@@ -707,7 +728,7 @@ public class Matrix extends MatrixExpression {
         }
         return new Matrix(entrySimplified);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() {
         return this;

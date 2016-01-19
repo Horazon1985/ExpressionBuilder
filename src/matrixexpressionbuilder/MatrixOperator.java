@@ -810,6 +810,32 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression turnToApproximate() {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).turnToApproximate();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public MatrixExpression turnToPrecise() {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).turnToPrecise();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, this.precise);
+    }
+    
+    @Override
     public String writeMatrixExpression() {
 
         String result = (String) getNameFromType(this.type) + "(";

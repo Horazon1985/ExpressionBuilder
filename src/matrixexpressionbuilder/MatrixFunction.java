@@ -120,6 +120,16 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression turnToApproximate() {
+        return new MatrixFunction(this.left.turnToApproximate(), this.type);
+    }
+
+    @Override
+    public MatrixExpression turnToPrecise() {
+        return new MatrixFunction(this.left.turnToPrecise(), this.type);
+    }
+    
+    @Override
     public MatrixExpression copy() {
         return new MatrixFunction(this.left, this.type);
     }

@@ -317,6 +317,16 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression turnToApproximate() {
+        return new MatrixBinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
+    }
+
+    @Override
+    public MatrixExpression turnToPrecise() {
+        return new MatrixBinaryOperation(this.left.turnToPrecise(), this.right.turnToPrecise(), this.type);
+    }
+    
+    @Override
     public MatrixExpression copy() {
         return new MatrixBinaryOperation(this.left.copy(), this.right.copy(), this.type);
     }

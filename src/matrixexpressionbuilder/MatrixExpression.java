@@ -644,6 +644,18 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
+     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
+     * (precise = false).
+     */
+    public abstract MatrixExpression turnToApproximate();
+
+    /**
+     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'exakt' (precise =
+     * true).
+     */
+    public abstract MatrixExpression turnToPrecise();
+    
+    /**
      * Legt eine neue Kopie von this an.
      */
     public abstract MatrixExpression copy();
