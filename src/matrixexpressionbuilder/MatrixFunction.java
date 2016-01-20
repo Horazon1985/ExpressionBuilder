@@ -1,9 +1,9 @@
 package matrixexpressionbuilder;
 
 import computationbounds.ComputationBounds;
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
@@ -134,6 +134,16 @@ public class MatrixFunction extends MatrixExpression {
         return new MatrixFunction(this.left, this.type);
     }
 
+    @Override
+    public MatrixExpression evaluate() throws EvaluationException {
+        return new MatrixFunction(this.left.evaluate(), this.type);
+    }
+
+    @Override
+    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+        return new MatrixFunction(this.left.evaluate(vars), this.type);
+    }
+    
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 

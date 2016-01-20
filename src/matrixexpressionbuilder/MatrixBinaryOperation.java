@@ -1,11 +1,11 @@
 package matrixexpressionbuilder;
 
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeBinary;
-import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import matrixsimplifymethods.MatrixExpressionCollection;
@@ -331,6 +331,16 @@ public class MatrixBinaryOperation extends MatrixExpression {
         return new MatrixBinaryOperation(this.left.copy(), this.right.copy(), this.type);
     }
 
+    @Override
+    public MatrixExpression evaluate() throws EvaluationException {
+        return new MatrixBinaryOperation(this.left.evaluate(), this.right.evaluate(), this.type);
+    }
+
+    @Override
+    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+        return new MatrixBinaryOperation(this.left.evaluate(vars), this.right.evaluate(vars), this.type);
+    }
+    
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 

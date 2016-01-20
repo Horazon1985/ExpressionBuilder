@@ -661,13 +661,21 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression copy();
 
     /**
+     * Liefert den Wert des zugrundeliegenden Ausdrucks unter Einsetzung aller
+     * Variablenwerte.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression evaluate() throws EvaluationException;
+    
+    /**
      * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
      * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
      * Variablen werden als Unbestimmte gelassen.
      *
      * @throws EvaluationException
      */
-//    public abstract Expression evaluate(HashSet<String> vars) throws EvaluationException;
+    public abstract MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException;
     
     /**
      * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.

@@ -1,10 +1,10 @@
 package matrixexpressionbuilder;
 
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
-import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -609,14 +609,40 @@ public class Matrix extends MatrixExpression {
     @Override
     public MatrixExpression copy() {
 
-        Expression[][] copyOfEntry = new Expression[this.getRowNumber()][this.getColumnNumber()];
+        Expression[][] copyOfEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                copyOfEntry[i][j] = this.entry[i][j].copy();
+                copyOfEntries[i][j] = this.entry[i][j].copy();
             }
         }
-        return new Matrix(copyOfEntry);
+        return new Matrix(copyOfEntries);
 
+    }
+
+    @Override
+    public MatrixExpression evaluate() throws EvaluationException {
+        
+        Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                evaluatedEntries[i][j] = new Constant(this.getEntry(i, j).evaluate());
+            }
+        }
+        return new Matrix(evaluatedEntries);
+        
+    }
+
+    @Override
+    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+        
+        Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                evaluatedEntries[i][j] = this.getEntry(i, j).evaluate(vars);
+            }
+        }
+        return new Matrix(evaluatedEntries);
+        
     }
 
     @Override

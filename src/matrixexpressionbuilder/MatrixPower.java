@@ -1,12 +1,12 @@
 package matrixexpressionbuilder;
 
 import computationbounds.ComputationBounds;
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
-import enumerations.TypeSimplify;
 import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigDecimal;
@@ -293,6 +293,17 @@ public class MatrixPower extends MatrixExpression {
         return new MatrixPower(this.left.copy(), this.right.copy());
     }
 
+    @Override
+    public MatrixExpression evaluate() throws EvaluationException {
+        return new MatrixPower(this.left.evaluate(), new Constant(this.right.evaluate()));
+    }
+
+    @Override
+    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+        return new MatrixPower(this.left.evaluate(vars), this.right.evaluate(vars));
+    }
+    
+    
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
         Object[] params = new Object[2];

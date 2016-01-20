@@ -2,6 +2,7 @@ package matrixexpressionbuilder;
 
 import computation.AnalysisMethods;
 import computationbounds.ComputationBounds;
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
@@ -9,7 +10,6 @@ import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
-import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -660,6 +660,36 @@ public class MatrixOperator extends MatrixExpression {
         return new MatrixOperator(this.type, this.params, this.precise);
     }
 
+    @Override
+    public MatrixExpression evaluate() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).evaluate();
+            } else if (this.params[i] instanceof Expression){
+                resultParams[i] = ((Expression) this.params[i]).evaluate();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, false);
+    }
+
+    @Override
+    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).evaluate(vars);
+            } else if (this.params[i] instanceof Expression){
+                resultParams[i] = ((Expression) this.params[i]).evaluate(vars);
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, false);
+    }
+    
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
