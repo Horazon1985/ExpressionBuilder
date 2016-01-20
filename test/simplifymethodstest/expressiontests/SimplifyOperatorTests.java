@@ -7,7 +7,7 @@ import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import expressionbuilder.Variable;
 import org.junit.AfterClass;
 import org.junit.Assert;

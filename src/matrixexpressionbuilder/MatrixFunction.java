@@ -3,7 +3,7 @@ package matrixexpressionbuilder;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import expressionbuilder.Expression;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
@@ -49,9 +49,9 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression computeMatrixOperations() throws EvaluationException {
+    public MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException {
 
-        MatrixExpression leftComputed = this.left.computeMatrixOperations();
+        MatrixExpression leftComputed = this.left.simplifyComputeMatrixOperations();
         MatrixFunction matExpr = new MatrixFunction(leftComputed, this.type);
 
         if (matExpr.type.equals(TypeMatrixFunction.abs)) {

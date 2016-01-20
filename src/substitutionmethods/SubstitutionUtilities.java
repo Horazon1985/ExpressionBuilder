@@ -8,7 +8,7 @@ import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.TypeFunction;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;

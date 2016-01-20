@@ -4,7 +4,7 @@ import exceptions.EvaluationException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -160,7 +160,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression computeMatrixOperations() {
+    public MatrixExpression simplifyComputeMatrixOperations() {
         return this;
     }
 

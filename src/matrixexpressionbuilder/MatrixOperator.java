@@ -9,7 +9,7 @@ import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeOperator;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1386,11 +1386,11 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression computeMatrixOperations() throws EvaluationException {
+    public MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
-                resultParams[i] = ((MatrixExpression) this.params[i]).computeMatrixOperations();
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyComputeMatrixOperations();
             } else {
                 resultParams[i] = this.params[i];
             }

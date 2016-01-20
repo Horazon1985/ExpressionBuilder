@@ -7,7 +7,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyBinaryOperationMethods;

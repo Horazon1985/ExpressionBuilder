@@ -14,7 +14,7 @@ import expressionbuilder.SelfDefinedFunction;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyExpLog;

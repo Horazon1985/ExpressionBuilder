@@ -7,7 +7,7 @@ import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -593,7 +593,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression computeMatrixOperations() throws EvaluationException;
+    public abstract MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException;
 
     /**
      * Gibt zurück, ob this und matExpr gleich sind.
@@ -735,9 +735,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Matrizenausdrücke. Es wird solange
-     * iteriert, bis sich nichts mehr ändert -> Der Ausdruck ist dann
-     * weitestgehend vereinfacht.
+     * Standardvereinfachung allgemeiner Matrizenausdrücke. 
      *
      * @throws EvaluationException
      */
@@ -756,7 +754,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                 matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
                 matExprSimplified = matExprSimplified.simplifyFactorize();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
-                matExprSimplified = matExprSimplified.computeMatrixOperations();
+                matExprSimplified = matExprSimplified.simplifyComputeMatrixOperations();
             } while (!matExpr.equals(matExprSimplified));
 
             return matExprSimplified;
@@ -767,4 +765,52 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     }
 
+    /**
+     * Spezielle Vereinfachung allgemeiner Matrizenausdrücke. 
+     *
+     * @throws EvaluationException
+     */
+    public MatrixExpression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+
+        try {
+            MatrixExpression matExpr, matExprSimplified = this;
+            do {
+                matExpr = matExprSimplified.copy();
+                if (simplifyTypes.contains(TypeSimplify.order_difference)) {
+                    matExprSimplified = matExprSimplified.orderDifferences();
+                }
+                if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
+                    matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
+                    matExprSimplified = matExprSimplified.simplifyTrivial();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_matrix_entries)) {
+                    matExprSimplified = matExprSimplified.simplifyMatrixEntries(simplifyTypes);
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_collect_products)) {
+                    matExprSimplified = matExprSimplified.simplifyCollectProducts();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize_scalars)) {
+                    matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_factorize)) {
+                    matExprSimplified = matExprSimplified.simplifyFactorize();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_matrix_functional_relations)) {
+                    matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_compute_matrix_operations)) {
+                    matExprSimplified = matExprSimplified.simplifyComputeMatrixOperations();
+                }
+            } while (!matExpr.equals(matExprSimplified));
+        
+            return matExprSimplified;
+
+        } catch (java.lang.StackOverflowError e) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_Expression_STACK_OVERFLOW"));
+        }
+
+    }
+    
 }

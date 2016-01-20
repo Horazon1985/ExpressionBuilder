@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import enumerations.TypeSimplify;
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import enumerations.TypeExpansion;

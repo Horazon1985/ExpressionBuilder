@@ -16,7 +16,7 @@ import expressionbuilder.Function;
 import expressionbuilder.Operator;
 import expressionbuilder.TypeFunction;
 import expressionbuilder.TypeOperator;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import expressionbuilder.Variable;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyExponentialRelations;

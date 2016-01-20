@@ -1,5 +1,6 @@
 package expressionbuilder;
 
+import enumerations.TypeSimplify;
 import enumerations.TypeExpansion;
 import enumerations.TypeLanguage;
 import exceptions.EvaluationException;

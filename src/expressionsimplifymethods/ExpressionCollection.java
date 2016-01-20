@@ -4,7 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;

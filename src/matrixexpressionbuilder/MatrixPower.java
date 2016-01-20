@@ -6,7 +6,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigDecimal;
@@ -83,17 +83,17 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression computeMatrixOperations() throws EvaluationException {
+    public MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException {
 
         Dimension dim = this.getDimension();
 
         // simplify() wird deshalb benutzt, damit alle Ausdrücke in der Basis und im Exponenten möglich weit vereinfacht / verkürzt werden.
         Expression exponentSimplified = this.right.simplify();
-        MatrixExpression leftComputed = this.left.computeMatrixOperations().simplify();
+        MatrixExpression leftComputed = this.left.simplifyComputeMatrixOperations().simplify();
         MatrixPower matExprSimplified = new MatrixPower(leftComputed, exponentSimplified);
 
         if (leftComputed.isNotMatrix()) {
-            return new MatrixPower(this.left.computeMatrixOperations(), exponentSimplified);
+            return new MatrixPower(this.left.simplifyComputeMatrixOperations(), exponentSimplified);
         }
 
         // Bei Diagonalmatrizen sind beliebige Potenzen berechenbar.
@@ -137,7 +137,7 @@ public class MatrixPower extends MatrixExpression {
                 squaresOfBaseMatrix[0] = leftComputed;
                 
                 for (int i = 1; i < binaryRepresentationOfExponent.length; i++) {
-                    squaresOfBaseMatrix[i] = squaresOfBaseMatrix[i - 1].mult(squaresOfBaseMatrix[i - 1]).computeMatrixOperations().simplifyMatrixEntries();
+                    squaresOfBaseMatrix[i] = squaresOfBaseMatrix[i - 1].mult(squaresOfBaseMatrix[i - 1]).simplifyComputeMatrixOperations().simplifyMatrixEntries();
                     // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
                     FlowController.interruptComputationIfNeeded();
                 }
@@ -145,7 +145,7 @@ public class MatrixPower extends MatrixExpression {
                 // Nun kommt die eigentliche Berechnung der Potenz.
                 for (int i = 0; i < binaryRepresentationOfExponent.length; i++) {
                     if (binaryRepresentationOfExponent[i]) {
-                        result = result.mult(squaresOfBaseMatrix[i]).computeMatrixOperations().simplifyMatrixEntries();
+                        result = result.mult(squaresOfBaseMatrix[i]).simplifyComputeMatrixOperations().simplifyMatrixEntries();
                     }
                     // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
                     FlowController.interruptComputationIfNeeded();
@@ -173,7 +173,7 @@ public class MatrixPower extends MatrixExpression {
 
             MatrixExpression result = MatrixExpression.getId(dim.width);
             for (int i = 0; i < exponent; i++) {
-                result = result.mult(leftComputed).computeMatrixOperations();
+                result = result.mult(leftComputed).simplifyComputeMatrixOperations();
             }
             return result;
 

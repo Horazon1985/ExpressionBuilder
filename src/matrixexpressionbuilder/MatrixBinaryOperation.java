@@ -5,7 +5,7 @@ import expressionbuilder.BinaryOperation;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.TypeBinary;
-import expressionbuilder.TypeSimplify;
+import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.util.HashSet;
 import matrixsimplifymethods.MatrixExpressionCollection;
@@ -69,7 +69,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression computeMatrixOperations() throws EvaluationException {
+    public MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException {
 
         /*
          Dient unter anderem dazu, festzustellen, ob das Ergebnis
@@ -78,8 +78,8 @@ public class MatrixBinaryOperation extends MatrixExpression {
          */
         Dimension dim = this.getDimension();
 
-        MatrixExpression leftComputed = this.left.computeMatrixOperations();
-        MatrixExpression rightComputed = this.right.computeMatrixOperations();
+        MatrixExpression leftComputed = this.left.simplifyComputeMatrixOperations();
+        MatrixExpression rightComputed = this.right.simplifyComputeMatrixOperations();
 
         if (leftComputed.isNotMatrix() || rightComputed.isNotMatrix()) {
             return new MatrixBinaryOperation(leftComputed, rightComputed, this.type);
