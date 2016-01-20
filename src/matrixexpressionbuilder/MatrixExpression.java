@@ -1,5 +1,6 @@
 package matrixexpressionbuilder;
 
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionInterfaces.AbstractExpression;
@@ -7,7 +8,6 @@ import expressionbuilder.Constant;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.ZERO;
-import enumerations.TypeSimplify;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -660,6 +660,15 @@ public abstract class MatrixExpression implements AbstractExpression {
      */
     public abstract MatrixExpression copy();
 
+    /**
+     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
+     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
+     * Variablen werden als Unbestimmte gelassen.
+     *
+     * @throws EvaluationException
+     */
+//    public abstract Expression evaluate(HashSet<String> vars) throws EvaluationException;
+    
     /**
      * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.
      */

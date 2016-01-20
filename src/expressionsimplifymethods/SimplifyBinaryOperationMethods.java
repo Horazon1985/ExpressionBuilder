@@ -302,11 +302,50 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression rationalConstantToQuotient(BinaryOperation expr) throws EvaluationException {
         if (expr.isRationalConstant() && !expr.containsApproximates()) {
-            return Constant.constantToQuotient(((Constant) expr.getLeft()).getValue(), ((Constant) expr.getRight()).getValue());
+            return constantToQuotient(((Constant) expr.getLeft()).getValue(), ((Constant) expr.getRight()).getValue());
         }
         return expr;
     }
 
+    /**
+     * Macht auch enumerator/denominator einen (gekürzten) Bruch (als
+     * Expression)
+     */
+    public static Expression constantToQuotient(BigDecimal enumerator, BigDecimal denominator) {
+        BigInteger[] reducedFraction = reduceFraction(enumerator, denominator);
+        if (reducedFraction[1].equals(BigInteger.ONE)) {
+            return new Constant(reducedFraction[0]);
+        }
+        return new Constant(reducedFraction[0]).div(reducedFraction[1]);
+    }
+    
+    /**
+     * Ermittelt den Zähler und Nenner vom Bruch gekürzten Bruch
+     * enumerator/denominator.
+     */
+    private static BigInteger[] reduceFraction(BigDecimal enumerator, BigDecimal denominator) {
+
+        if (denominator.compareTo(BigDecimal.ZERO) < 0) {
+            enumerator = enumerator.negate();
+            denominator = denominator.negate();
+        }
+
+        BigDecimal reducedEnumerator = enumerator;
+        BigDecimal reducedDenominator = denominator;
+
+        while (!(reducedEnumerator.compareTo(reducedEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) == 0)
+                || !(reducedDenominator.compareTo(reducedDenominator.setScale(0, BigDecimal.ROUND_HALF_UP)) == 0)) {
+            reducedEnumerator = reducedEnumerator.multiply(BigDecimal.TEN);
+            reducedDenominator = reducedDenominator.multiply(BigDecimal.TEN);
+        }
+
+        BigInteger[] result = new BigInteger[2];
+        result[0] = reducedEnumerator.toBigInteger().divide(reducedEnumerator.toBigInteger().gcd(reducedDenominator.toBigInteger()));
+        result[1] = reducedDenominator.toBigInteger().divide(reducedEnumerator.toBigInteger().gcd(reducedDenominator.toBigInteger()));
+        return result;
+
+    }
+    
     /**
      * Falls expr einen Bruch mit negativen Nenner darstellt, so wird das
      * Minuszeichen in den Zähler verschoben. Ansonsten wird expr zurückgegeben.
@@ -1177,7 +1216,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
             BigDecimal enumerator = ((Constant) factorsEnumerator.get(0)).getValue();
             BigDecimal denominator = ((Constant) factorsDenominator.get(0)).getValue();
-            BigInteger[] reducedFraction = Constant.reduceFraction(enumerator, denominator);
+            BigInteger[] reducedFraction = reduceFraction(enumerator, denominator);
 
             factorsEnumerator.put(0, new Constant(reducedFraction[0]));
             factorsDenominator.put(0, new Constant(reducedFraction[1]));
@@ -3477,7 +3516,7 @@ public abstract class SimplifyBinaryOperationMethods {
                     continue;
                 }
                 if (summands.get(i).isIntegerConstantOrRationalConstant()) {
-                    constantSummand = Constant.addTwoRationals(constantSummand, summands.get(i));
+                    constantSummand = addTwoRationals(constantSummand, summands.get(i));
                     summands.remove(i);
                 }
             }
@@ -3519,6 +3558,38 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
     }
+    
+    /**
+     * Addiert zwei rationale Zahlen (beide Argumente können entweder Konstanten
+     * oder Quotienten von Konstanten sein). Falls eines der Argumente keine
+     * (rationale) Konstante ist, dann liefert die Funktion einfach c_1 + c_2
+     */
+    public static Expression addTwoRationals(Expression exprLeft, Expression exprRight) {
+
+        if (!exprLeft.isIntegerConstantOrRationalConstant() || !exprRight.isIntegerConstantOrRationalConstant()) {
+            return exprLeft.add(exprRight);
+        }
+
+        BigInteger numeratorLeft, numeratorRight, denominatorLeft, denominatorRight;
+        if (exprLeft.isIntegerConstant()){
+            numeratorLeft = ((Constant) exprLeft).getValue().toBigInteger();
+            denominatorLeft = BigInteger.ONE;
+        } else {
+            numeratorLeft = ((Constant) ((BinaryOperation) exprLeft).getLeft()).getValue().toBigInteger();
+            denominatorLeft = ((Constant) ((BinaryOperation) exprLeft).getRight()).getValue().toBigInteger();
+        }
+        if (exprRight.isIntegerConstant()){
+            numeratorRight = ((Constant) exprRight).getValue().toBigInteger();
+            denominatorRight = BigInteger.ONE;
+        } else {
+            numeratorRight = ((Constant) ((BinaryOperation) exprRight).getLeft()).getValue().toBigInteger();
+            denominatorRight = ((Constant) ((BinaryOperation) exprRight).getRight()).getValue().toBigInteger();
+        }
+
+        return new Constant(numeratorLeft.multiply(denominatorRight).add(numeratorRight.multiply(denominatorLeft))).div(
+                denominatorLeft.multiply(denominatorRight));
+
+    }
 
     /**
      * Sammelt bei Multiplikation Konstanten in factors zu einer einzigen
@@ -3543,7 +3614,7 @@ public abstract class SimplifyBinaryOperationMethods {
             Expression constantFactor = Expression.ONE;
             for (int i = 0; i < factors.getBound(); i++) {
                 if (factors.get(i).isIntegerConstantOrRationalConstant()) {
-                    constantFactor = Constant.multiplyTwoRationals(constantFactor, factors.get(i));
+                    constantFactor = multiplyTwoRationals(constantFactor, factors.get(i));
                     factors.remove(i);
                 }
             }
@@ -3594,6 +3665,38 @@ public abstract class SimplifyBinaryOperationMethods {
 
     }
 
+    /**
+     * Multipliziert zwei rationale Zahlen (beide Argumente können entweder
+     * Konstanten oder Quotienten von Konstanten sein). Falls eines der
+     * Argumente keine (rationale) Konstante ist, dann liefert die Funktion
+     * einfach c_1 * c_2
+     */
+    private static Expression multiplyTwoRationals(Expression exprLeft, Expression exprRight) {
+
+        if (!exprLeft.isIntegerConstantOrRationalConstant() || !exprRight.isIntegerConstantOrRationalConstant()) {
+            return exprLeft.mult(exprRight);
+        }
+        
+        BigInteger numeratorLeft, numeratorRight, denominatorLeft, denominatorRight;
+        if (exprLeft.isIntegerConstant()){
+            numeratorLeft = ((Constant) exprLeft).getValue().toBigInteger();
+            denominatorLeft = BigInteger.ONE;
+        } else {
+            numeratorLeft = ((Constant) ((BinaryOperation) exprLeft).getLeft()).getValue().toBigInteger();
+            denominatorLeft = ((Constant) ((BinaryOperation) exprLeft).getRight()).getValue().toBigInteger();
+        }
+        if (exprRight.isIntegerConstant()){
+            numeratorRight = ((Constant) exprRight).getValue().toBigInteger();
+            denominatorRight = BigInteger.ONE;
+        } else {
+            numeratorRight = ((Constant) ((BinaryOperation) exprRight).getLeft()).getValue().toBigInteger();
+            denominatorRight = ((Constant) ((BinaryOperation) exprRight).getRight()).getValue().toBigInteger();
+        }
+
+        return new Constant(numeratorLeft.multiply(numeratorRight)).div(denominatorLeft.multiply(denominatorRight));
+
+    }
+    
     /**
      * Hilfsprozeduren für das Zusammenfassen von Konstanten.
      */

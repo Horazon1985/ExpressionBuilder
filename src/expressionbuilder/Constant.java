@@ -2,6 +2,7 @@ package expressionbuilder;
 
 import enumerations.TypeExpansion;
 import exceptions.EvaluationException;
+import expressionsimplifymethods.SimplifyBinaryOperationMethods;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -89,130 +90,6 @@ public class Constant extends Expression {
 
     public void setPrecise(boolean precise) {
         this.precise = precise;
-    }
-
-    /**
-     * Ermittelt den Zähler und Nenner vom Bruch gekürzten Bruch
-     * enumerator/denominator.
-     */
-    public static BigInteger[] reduceFraction(BigDecimal enumerator, BigDecimal denominator) {
-
-        if (denominator.compareTo(BigDecimal.ZERO) < 0) {
-            enumerator = enumerator.negate();
-            denominator = denominator.negate();
-        }
-
-        BigDecimal reducedEnumerator = enumerator;
-        BigDecimal reducedDenominator = denominator;
-
-        while (!(reducedEnumerator.compareTo(reducedEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) == 0)
-                || !(reducedDenominator.compareTo(reducedDenominator.setScale(0, BigDecimal.ROUND_HALF_UP)) == 0)) {
-            reducedEnumerator = reducedEnumerator.multiply(BigDecimal.TEN);
-            reducedDenominator = reducedDenominator.multiply(BigDecimal.TEN);
-        }
-
-        BigInteger[] result = new BigInteger[2];
-        result[0] = reducedEnumerator.toBigInteger().divide(reducedEnumerator.toBigInteger().gcd(reducedDenominator.toBigInteger()));
-        result[1] = reducedDenominator.toBigInteger().divide(reducedEnumerator.toBigInteger().gcd(reducedDenominator.toBigInteger()));
-        return result;
-
-    }
-
-    /**
-     * Macht auch enumerator/denominator einen (gekürzten) Bruch (als
-     * Expression)
-     */
-    public static Expression constantToQuotient(BigDecimal enumerator, BigDecimal denominator) {
-        BigInteger[] reducedFraction = reduceFraction(enumerator, denominator);
-        if (reducedFraction[1].equals(BigInteger.ONE)) {
-            return new Constant(reducedFraction[0]);
-        }
-        return new Constant(reducedFraction[0]).div(reducedFraction[1]);
-    }
-
-    /**
-     * Macht aus einem Ausdruck der Form c1 / c2 + c3 / c4 den Ausdruck (c1 * c4
-     * + c2 * c3) / (c2 * c4)
-     */
-    public static Expression addFractionToFraction(BigDecimal c1, BigDecimal c2, BigDecimal c3, BigDecimal c4) {
-        return new Constant((c1.multiply(c4)).add(c2.multiply(c3))).div(c2.multiply(c4));
-    }
-
-    /**
-     * Macht aus einem Ausdruck der Form c1 + c2 / c3 den Ausdruck (c1 * c3 +
-     * c2) / c3
-     */
-    public static Expression addFractionToConstant(BigDecimal c1, BigDecimal c2, BigDecimal c3) {
-        return new Constant(c2.add(c1.multiply(c3))).div(c3);
-    }
-
-    /**
-     * Addiert zwei rationale Zahlen (beide Argumente können entweder Konstanten
-     * oder Quotienten von Konstanten sein). Falls eines der Argumente keine
-     * (rationale) Konstante ist, dann liefert die Funktion einfach c_1 + c_2
-     */
-    public static Expression addTwoRationals(Expression c_1, Expression c_2) {
-
-        if (!c_1.isIntegerConstantOrRationalConstant() || !c_2.isIntegerConstantOrRationalConstant()) {
-            return c_1.add(c_2);
-        }
-
-        // c_1 und c_2 sind hier entweder Konstanten oder Quotienten von Konstanten.
-        if ((c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            return new Constant(((Constant) c_1).getValue().add(((Constant) c_2).getValue()));
-        } else if (!(c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
-            BigDecimal k_3 = ((Constant) c_2).getValue();
-            return addFractionToConstant(k_3, k_1, k_2);
-        } else if ((c_1 instanceof Constant) && !(c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) c_1).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
-            return addFractionToConstant(k_1, k_2, k_3);
-        } else {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
-            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
-            return addFractionToFraction(k_1, k_2, k_3, k_4);
-        }
-
-    }
-
-    /**
-     * Multipliziert zwei rationale Zahlen (beide Argumente können entweder
-     * Konstanten oder Quotienten von Konstanten sein). Falls eines der
-     * Argumente keine (rationale) Konstante ist, dann liefert die Funktion
-     * einfach c_1 * c_2
-     */
-    public static Expression multiplyTwoRationals(Expression c_1, Expression c_2) {
-
-        if (!c_1.isIntegerConstantOrRationalConstant() || !c_2.isIntegerConstantOrRationalConstant()) {
-            return c_1.mult(c_2);
-        }
-
-        // c_1 und c_2 sind hier entweder Konstanten oder Quotienten von Konstanten.
-        if ((c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            return new Constant(((Constant) c_1).getValue().multiply(((Constant) c_2).getValue()));
-        } else if (!(c_1 instanceof Constant) && (c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
-            BigDecimal k_3 = ((Constant) c_2).getValue();
-            return new Constant(k_1.multiply(k_3)).div(k_2);
-        } else if ((c_1 instanceof Constant) && !(c_2 instanceof Constant)) {
-            BigDecimal k_1 = ((Constant) c_1).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
-            return new Constant(k_1.multiply(k_2)).div(k_3);
-        } else {
-            BigDecimal k_1 = ((Constant) ((BinaryOperation) c_1).getLeft()).getValue();
-            BigDecimal k_2 = ((Constant) ((BinaryOperation) c_1).getRight()).getValue();
-            BigDecimal k_3 = ((Constant) ((BinaryOperation) c_2).getLeft()).getValue();
-            BigDecimal k_4 = ((Constant) ((BinaryOperation) c_2).getRight()).getValue();
-            return new Constant(k_1.multiply(k_3)).div(k_2.multiply(k_4));
-        }
-
     }
 
     @Override
@@ -381,7 +258,7 @@ public class Constant extends Expression {
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
         if (this.precise) {
-            return constantToQuotient(this.value, BigDecimal.ONE);
+            return SimplifyBinaryOperationMethods.constantToQuotient(this.value, BigDecimal.ONE);
         }
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
