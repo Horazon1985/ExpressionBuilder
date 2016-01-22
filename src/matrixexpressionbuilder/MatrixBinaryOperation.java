@@ -325,7 +325,12 @@ public class MatrixBinaryOperation extends MatrixExpression {
     public MatrixExpression turnToPrecise() {
         return new MatrixBinaryOperation(this.left.turnToPrecise(), this.right.turnToPrecise(), this.type);
     }
-    
+
+    @Override
+    public boolean containsApproximates() {
+        return this.left.containsApproximates() || this.right.containsApproximates();
+    }
+
     @Override
     public MatrixExpression copy() {
         return new MatrixBinaryOperation(this.left.copy(), this.right.copy(), this.type);
@@ -340,7 +345,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
     public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
         return new MatrixBinaryOperation(this.left.evaluate(vars), this.right.evaluate(vars), this.type);
     }
-    
+
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
@@ -438,10 +443,30 @@ public class MatrixBinaryOperation extends MatrixExpression {
             // Nullmatrizen in Summen beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
 
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant() && this.containsApproximates()) {
+                SimplifyMatrixBinaryOperationMethods.computeSumIfApprox(summands);
+            }
+
             return SimplifyMatrixUtilities.produceSum(summands);
 
-        }
-        if (this.isProduct()) {
+        } else if (this.isDifference()) {
+
+            MatrixExpression matExpr = new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
+
+            MatrixExpression matExprSimplified = SimplifyMatrixBinaryOperationMethods.trivialOperationsInDifferenceWithZeroIdMatrices(matExpr);
+            if (!matExprSimplified.equals(matExpr)) {
+                return matExprSimplified;
+            }
+
+            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
+            if (this.isConstant() && this.containsApproximates()) {
+                return SimplifyMatrixBinaryOperationMethods.computeDifferenceIfApprox(matExpr);
+            }
+
+            return matExpr;
+
+        } else if (this.isProduct()) {
 
             MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
             // In jedem Faktor einzeln vereinfachen.
@@ -460,19 +485,15 @@ public class MatrixBinaryOperation extends MatrixExpression {
             // Identitätsmatrizen in Produkten beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
 
+            if (this.isConstant() && this.containsApproximates()) {
+                SimplifyMatrixBinaryOperationMethods.computeProductIfApprox(factors);
+            }
+            
             return SimplifyMatrixUtilities.produceProduct(factors);
 
         }
 
-        // Hier liegt Matrizensubtraktion vor.
-        MatrixExpression matExpr = new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
-
-        MatrixExpression matExprSimplified = SimplifyMatrixBinaryOperationMethods.trivialOperationsInDifferenceWithZeroIdMatrices(matExpr);
-        if (!matExprSimplified.equals(matExpr)) {
-            return matExprSimplified;
-        }
-
-        return matExpr;
+        return this;
 
     }
 
@@ -576,14 +597,14 @@ public class MatrixBinaryOperation extends MatrixExpression {
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
-            
+
             // In jedem Faktor einzeln faktorisieren.
             MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).simplifyFactorize());
             }
             return SimplifyMatrixUtilities.produceProduct(factors);
-            
+
         }
 
         return new MatrixBinaryOperation(this.left.simplifyFactorize(), this.right.simplifyFactorize(), this.type);

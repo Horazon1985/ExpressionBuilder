@@ -10,6 +10,26 @@ import matrixexpressionbuilder.MatrixExpression;
 
 public abstract class SimplifyMatrixBinaryOperationMethods {
 
+    public static void computeSumIfApprox(MatrixExpressionCollection summands){
+    
+        
+    }
+    
+    public static MatrixExpression computeDifferenceIfApprox(MatrixExpression matExpr) throws EvaluationException{
+        if (matExpr.isDifference() && matExpr.isConstant() && matExpr.containsApproximates()) {
+            MatrixExpression left = ((MatrixBinaryOperation) matExpr).getLeft().simplifyTrivial();
+            MatrixExpression right = ((MatrixBinaryOperation) matExpr).getRight().simplifyTrivial();
+//            if (left instanceof Constant && right instanceof Constant) {
+//                return new Constant(((Constant) left).getApproxValue() - ((Constant) right).getApproxValue());
+//            }
+        }
+        return matExpr;
+    }
+
+    public static void computeProductIfApprox(MatrixExpressionCollection factors){
+    
+    }
+    
     public static void removeZeroMatrixInSum(MatrixExpressionCollection summands) throws EvaluationException {
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) == null) {

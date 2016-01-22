@@ -866,6 +866,18 @@ public class MatrixOperator extends MatrixExpression {
     }
     
     @Override
+    public boolean containsApproximates(){
+        for (Object param : this.params) {
+            if (param instanceof MatrixExpression && ((MatrixExpression) param).containsApproximates()) {
+                return true;
+            } else if (param instanceof Expression && ((Expression) param).containsApproximates()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
     public String writeMatrixExpression() {
 
         String result = (String) getNameFromType(this.type) + "(";

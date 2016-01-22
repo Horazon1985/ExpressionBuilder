@@ -672,6 +672,11 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression turnToPrecise();
 
     /**
+     * Gibt zurück, ob this nichtexakte Konstanten enthält.
+     */
+    public abstract boolean containsApproximates();
+    
+    /**
      * Legt eine neue Kopie von this an.
      */
     public abstract MatrixExpression copy();

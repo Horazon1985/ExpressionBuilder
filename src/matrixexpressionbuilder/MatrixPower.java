@@ -289,6 +289,11 @@ public class MatrixPower extends MatrixExpression {
     }
     
     @Override
+    public boolean containsApproximates(){
+        return this.left.containsApproximates() ||this.right.containsApproximates();
+    }
+    
+    @Override
     public MatrixExpression copy() {
         return new MatrixPower(this.left.copy(), this.right.copy());
     }

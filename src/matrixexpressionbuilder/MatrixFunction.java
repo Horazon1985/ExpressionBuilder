@@ -131,6 +131,11 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
+    public boolean containsApproximates(){
+        return this.left.containsApproximates();
+    }
+    
+    @Override
     public MatrixExpression copy() {
         return new MatrixFunction(this.left, this.type);
     }

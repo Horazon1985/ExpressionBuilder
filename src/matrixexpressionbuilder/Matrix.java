@@ -620,6 +620,18 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
+    public boolean containsApproximates(){
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                if (this.entry[i][j].containsApproximates()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    @Override
     public MatrixExpression copy() {
 
         Expression[][] copyOfEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
