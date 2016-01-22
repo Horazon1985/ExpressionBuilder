@@ -15,7 +15,7 @@ public class Matrix extends MatrixExpression {
 
     /**
      * Konstruktor: erzeugt eine MatrixExpression aus dem Array entry.
-     * Voraussetzung: die Spalten- und die Zeilenzahl ist mindestens 1
+     * VORAUSSETZUNG: die Spalten- und die Zeilenzahl ist mindestens 1
      */
     public Matrix(Expression[][] entry) {
         this.entry = new Expression[entry.length][entry[0].length];
@@ -26,9 +26,22 @@ public class Matrix extends MatrixExpression {
 
     /**
      * Konstruktor: erzeugt eine MatrixExpression aus dem Array entry.
-     * Voraussetzung: die Spalten- und die Zeilenzahl ist mindestens 1
+     * VORAUSSETZUNG: die Spalten- und die Zeilenzahl ist mindestens 1
      */
     public Matrix(int[][] entry) {
+        this.entry = new Expression[entry.length][entry[0].length];
+        for (int i = 0; i < entry.length; i++) {
+            for (int j = 0; j < entry[0].length; j++) {
+                this.entry[i][j] = new Constant(entry[i][j]);
+            }
+        }
+    }
+
+    /**
+     * Konstruktor: erzeugt eine MatrixExpression aus dem Array entry.<br>
+     * VORAUSSETZUNG: die Spalten- und die Zeilenzahl ist mindestens 1
+     */
+    public Matrix(double[][] entry) throws EvaluationException {
         this.entry = new Expression[entry.length][entry[0].length];
         for (int i = 0; i < entry.length; i++) {
             for (int j = 0; j < entry[0].length; j++) {
@@ -621,7 +634,7 @@ public class Matrix extends MatrixExpression {
 
     @Override
     public MatrixExpression evaluate() throws EvaluationException {
-        
+
         Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
@@ -629,12 +642,12 @@ public class Matrix extends MatrixExpression {
             }
         }
         return new Matrix(evaluatedEntries);
-        
+
     }
 
     @Override
     public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
-        
+
         Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
@@ -642,7 +655,7 @@ public class Matrix extends MatrixExpression {
             }
         }
         return new Matrix(evaluatedEntries);
-        
+
     }
 
     @Override

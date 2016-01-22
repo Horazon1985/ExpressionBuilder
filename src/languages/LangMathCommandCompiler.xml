@@ -8,7 +8,7 @@
   <object id = "MCC_PARAMETER_IN_APPROX_IS_INVALID">
     <German>Der Parameter im Befehl 'approx' muss entweder ein gültiger Ausdruck oder ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
     <English>The parameter in command 'approx' must be either a valid expression or a valif matrix expression. Reported Error: </English>
-    <Ukrainian>Параметр команди 'approx' має бути небудь діючим виразом або діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
+    <Ukrainian>Параметр команди 'approx' має бути або діючим виразом або діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
     <Russian>Параматр команды 'approx' должен быть или действительным выражением или действительным матричным выражением. Сообщение об ошибке: </Russian>
   </object>
   <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CCNF">

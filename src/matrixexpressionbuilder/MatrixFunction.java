@@ -1,5 +1,6 @@
 package matrixexpressionbuilder;
 
+import computation.MatrixNumericalMethods;
 import computationbounds.ComputationBounds;
 import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
@@ -128,7 +129,7 @@ public class MatrixFunction extends MatrixExpression {
     public MatrixExpression turnToPrecise() {
         return new MatrixFunction(this.left.turnToPrecise(), this.type);
     }
-    
+
     @Override
     public MatrixExpression copy() {
         return new MatrixFunction(this.left, this.type);
@@ -136,14 +137,36 @@ public class MatrixFunction extends MatrixExpression {
 
     @Override
     public MatrixExpression evaluate() throws EvaluationException {
-        return new MatrixFunction(this.left.evaluate(), this.type);
+
+        MatrixExpression argumentEvaluated = this.left.evaluate();
+
+        // Versuchen, explizit auszuwerten.
+        if (argumentEvaluated.isMatrix()) {
+            switch (this.type) {
+                case cos:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.cos);
+                case cosh:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.cosh);
+                case exp:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.exp);
+                case ln:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.ln);
+                case sin:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.sin);
+                case sinh:
+                    return MatrixNumericalMethods.getApproxOfMatrixFunction((Matrix) argumentEvaluated, TypeMatrixFunction.sinh);
+            }
+        }
+
+        return new MatrixFunction(argumentEvaluated, this.type);
+
     }
 
     @Override
     public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
         return new MatrixFunction(this.left.evaluate(vars), this.type);
     }
-    
+
     @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
@@ -264,10 +287,10 @@ public class MatrixFunction extends MatrixExpression {
             throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixFunction_ABS_NOT_DEFINED"));
         }
 
-        if (this.left instanceof Matrix){
+        if (this.left instanceof Matrix) {
             Matrix m = (Matrix) this.left;
             Expression resultAbs = Expression.ZERO;
-            for (int i = 0; i < m.getRowNumber(); i++){
+            for (int i = 0; i < m.getRowNumber(); i++) {
                 resultAbs = resultAbs.add(m.getEntry(i, 0).pow(2));
             }
             return new Matrix(resultAbs.pow(1, 2));
@@ -276,7 +299,7 @@ public class MatrixFunction extends MatrixExpression {
         return this;
 
     }
-    
+
     /**
      * Berechnet den Kosinus einer MatrixExpression, falls möglich.
      *
@@ -817,12 +840,12 @@ public class MatrixFunction extends MatrixExpression {
     public MatrixExpression simplifyFactorizeScalars() throws EvaluationException {
         return new MatrixFunction(this.left.simplifyFactorizeScalars(), this.type);
     }
-    
+
     @Override
     public MatrixExpression simplifyFactorize() throws EvaluationException {
         return new MatrixFunction(this.left.simplifyFactorize(), this.type);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException {
 

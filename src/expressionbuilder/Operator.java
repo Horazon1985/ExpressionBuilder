@@ -1908,7 +1908,7 @@ public class Operator extends Expression {
             if (argumentRoundedDown.compareTo(BigInteger.ZERO) < 0) {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
             }
-            if (argumentRoundedDown.compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_INTEGER_FACTORIAL"))) <= 0) {
+            if (argumentRoundedDown.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL)) <= 0) {
                 Constant result = new Constant(ArithmeticMethods.factorial(argumentRoundedDown.intValue()));
                 result.setPrecise(this.precise);
                 return result;

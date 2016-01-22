@@ -356,28 +356,28 @@ public abstract class MatrixExpression implements AbstractExpression {
     /**
      * Generiert den i-ten Einheitsvektor im R^n.
      */
-    public static Matrix getUnitVector(int i, int n){
-    
-        if (i < 0){
+    public static Matrix getUnitVector(int i, int n) {
+
+        if (i < 0) {
             i = 0;
-        } else if (i >= n){
+        } else if (i >= n) {
             i = n - 1;
         }
 
         Expression[] entry = new Expression[n];
-        
-        for (int j = 0; j < n; j++){
-            if (j == i){
+
+        for (int j = 0; j < n; j++) {
+            if (j == i) {
                 entry[j] = ONE;
             } else {
                 entry[j] = ZERO;
             }
         }
-        
+
         return new Matrix(entry);
-        
+
     }
-    
+
     public boolean isZeroMatrix() {
 
         if (!(this instanceof Matrix)) {
@@ -548,12 +548,28 @@ public abstract class MatrixExpression implements AbstractExpression {
         return new MatrixFunction(this, TypeMatrixFunction.det);
     }
 
+    public MatrixFunction cos() {
+        return new MatrixFunction(this, TypeMatrixFunction.cos);
+    }
+
+    public MatrixFunction cosh() {
+        return new MatrixFunction(this, TypeMatrixFunction.cosh);
+    }
+
     public MatrixFunction exp() {
         return new MatrixFunction(this, TypeMatrixFunction.exp);
     }
 
     public MatrixFunction ln() {
         return new MatrixFunction(this, TypeMatrixFunction.ln);
+    }
+
+    public MatrixFunction sin() {
+        return new MatrixFunction(this, TypeMatrixFunction.sin);
+    }
+
+    public MatrixFunction sinh() {
+        return new MatrixFunction(this, TypeMatrixFunction.sinh);
     }
 
     public MatrixFunction tr() {
@@ -637,7 +653,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract void addContainedVars(HashSet<String> vars);
 
     @Override
-    public HashSet<String> getContainedVars(){
+    public HashSet<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
@@ -654,7 +670,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      * true).
      */
     public abstract MatrixExpression turnToPrecise();
-    
+
     /**
      * Legt eine neue Kopie von this an.
      */
@@ -667,7 +683,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      * @throws EvaluationException
      */
     public abstract MatrixExpression evaluate() throws EvaluationException;
-    
+
     /**
      * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
      * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
@@ -676,7 +692,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      * @throws EvaluationException
      */
     public abstract MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException;
-    
+
     /**
      * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.
      */
@@ -741,7 +757,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorize() throws EvaluationException;
-    
+
     /**
      * Hier wird die Methode simplify() aus der Klasse
      * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
@@ -752,7 +768,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Matrizenausdrücke. 
+     * Standardvereinfachung allgemeiner Matrizenausdrücke.
      *
      * @throws EvaluationException
      */
@@ -783,7 +799,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Spezielle Vereinfachung allgemeiner Matrizenausdrücke. 
+     * Spezielle Vereinfachung allgemeiner Matrizenausdrücke.
      *
      * @throws EvaluationException
      */
@@ -821,7 +837,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                     matExprSimplified = matExprSimplified.simplifyComputeMatrixOperations();
                 }
             } while (!matExpr.equals(matExprSimplified));
-        
+
             return matExprSimplified;
 
         } catch (java.lang.StackOverflowError e) {
@@ -829,5 +845,5 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
     }
-    
+
 }
