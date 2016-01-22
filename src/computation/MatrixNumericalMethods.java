@@ -56,6 +56,48 @@ public class MatrixNumericalMethods {
         return new Matrix(resultEntry);
     }
 
+    private static Matrix getApproxOfCosOfMatrix(Matrix m, int n) throws EvaluationException {
+
+        Matrix cosOfM = (Matrix) MatrixExpression.getZeroMatrix(n, n).turnToApproximate();
+        Matrix powerOfM = (Matrix) MatrixExpression.getId(n).turnToApproximate();
+        double factorial = 1;
+
+        for (int i = 0; i <= n; i++) {
+            if (i % 4 == 0) {
+                cosOfM = add(cosOfM, div(powerOfM, factorial));
+            } else if (i % 4 == 2) {
+                cosOfM = sub(cosOfM, div(powerOfM, factorial));
+            }
+            if (i < n) {
+                powerOfM = getNextPowerOfMatrix(powerOfM, m);
+                factorial *= i + 1;
+            }
+        }
+
+        return cosOfM;
+
+    }
+
+    private static Matrix getApproxOfCoshOfMatrix(Matrix m, int n) throws EvaluationException {
+
+        Matrix coshOfM = (Matrix) MatrixExpression.getZeroMatrix(n, n).turnToApproximate();
+        Matrix powerOfM = (Matrix) MatrixExpression.getId(n).turnToApproximate();
+        double factorial = 1;
+
+        for (int i = 0; i <= n; i++) {
+            if (i % 4 == 0 || i % 4 == 2) {
+                coshOfM = add(coshOfM, div(powerOfM, factorial));
+            }
+            if (i < n) {
+                powerOfM = getNextPowerOfMatrix(powerOfM, m);
+                factorial *= i + 1;
+            }
+        }
+
+        return coshOfM;
+
+    }
+
     private static Matrix getApproxOfExpOfMatrix(Matrix m, int n) throws EvaluationException {
 
         Matrix expOfM = (Matrix) MatrixExpression.getZeroMatrix(n, n).turnToApproximate();
@@ -94,6 +136,48 @@ public class MatrixNumericalMethods {
 
     }
 
+    private static Matrix getApproxOfSinOfMatrix(Matrix m, int n) throws EvaluationException {
+
+        Matrix sinOfM = (Matrix) MatrixExpression.getZeroMatrix(n, n).turnToApproximate();
+        Matrix powerOfM = (Matrix) MatrixExpression.getId(n).turnToApproximate();
+        double factorial = 1;
+
+        for (int i = 0; i <= n; i++) {
+            if (i % 4 == 1) {
+                sinOfM = add(sinOfM, div(powerOfM, factorial));
+            } else if (i % 4 == 3) {
+                sinOfM = sub(sinOfM, div(powerOfM, factorial));
+            }
+            if (i < n) {
+                powerOfM = getNextPowerOfMatrix(powerOfM, m);
+                factorial *= i + 1;
+            }
+        }
+
+        return sinOfM;
+
+    }
+
+    private static Matrix getApproxOfSinhOfMatrix(Matrix m, int n) throws EvaluationException {
+
+        Matrix sinhOfM = (Matrix) MatrixExpression.getZeroMatrix(n, n).turnToApproximate();
+        Matrix powerOfM = (Matrix) MatrixExpression.getId(n).turnToApproximate();
+        double factorial = 1;
+
+        for (int i = 0; i <= n; i++) {
+            if (i % 4 == 1 || i % 4 == 3) {
+                sinhOfM = add(sinhOfM, div(powerOfM, factorial));
+            }
+            if (i < n) {
+                powerOfM = getNextPowerOfMatrix(powerOfM, m);
+                factorial *= i + 1;
+            }
+        }
+
+        return sinhOfM;
+
+    }
+
     private static double estimateOperatorNormOfMatrix(Matrix m) throws EvaluationException {
         double result = 0;
         for (int i = 0; i < m.getRowNumber(); i++) {
@@ -128,10 +212,10 @@ public class MatrixNumericalMethods {
         switch (type) {
             case cos:
                 boundSummands = Math.max(10, 4 * ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT);
-//                return getApproxOfCoshOfMatrix(argument, boundSummands);
+                return getApproxOfCosOfMatrix(argument, boundSummands);
             case cosh:
                 boundSummands = Math.max(10, 4 * ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT);
-//                return getApproxOfCoshOfMatrix(argument, boundSummands);
+                return getApproxOfCoshOfMatrix(argument, boundSummands);
             case exp:
                 boundSummands = Math.max(10, 4 * ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT);
                 return getApproxOfExpOfMatrix(argument, boundSummands);
@@ -140,12 +224,12 @@ public class MatrixNumericalMethods {
                 return getApproxOfLnOfMatrix(argument, boundSummands);
             case sin:
                 boundSummands = Math.max(10, 4 * ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT);
-//                return getApproxOfSinOfMatrix(argument, boundSummands);
+                return getApproxOfSinOfMatrix(argument, boundSummands);
             case sinh:
                 boundSummands = Math.max(10, 4 * ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT);
-                return getApproxOfExpOfMatrix(argument, boundSummands);
+                return getApproxOfSinhOfMatrix(argument, boundSummands);
         }
-        
+
         return new MatrixFunction(argument, type);
 
     }
