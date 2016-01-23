@@ -1,10 +1,10 @@
 package expressionsimplifymethods;
 
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import expressionbuilder.Constant;
 import expressionbuilder.Expression;
-import enumerations.TypeSimplify;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -94,6 +94,32 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
+    public void insert(int i, Expression expr) {
+        
+        if (i < 0) {
+            return;
+        }
+        
+        if (expr != null) {
+            if (this.terms.get(i) == null){
+                this.terms.put(i, expr);
+                this.bound = Math.max(this.bound, i + 1);
+            } else {
+                if (i >= this.bound){
+                    put(i, expr);
+                } else {
+                    for (int j = this.bound; j > i; j--){
+                        this.terms.put(j, this.terms.get(j - 1));
+                        this.terms.remove(j - 1);
+                    }
+                    put(i, expr);
+                    this.bound++;
+                }
+            }
+        }
+        
+    }
+    
     public void remove(int i) {
         this.terms.remove(i);
         for (int j = this.bound - 1; j >= 0; j--) {

@@ -42,6 +42,32 @@ public class MatrixExpressionCollection implements Iterable<MatrixExpression> {
             this.bound++;
         }
     }
+    
+    public void insert(int i, MatrixExpression matExpr) {
+        
+        if (i < 0) {
+            return;
+        }
+        
+        if (matExpr != null) {
+            if (this.matrixTerms.get(i) == null){
+                this.matrixTerms.put(i, matExpr);
+                this.bound = Math.max(this.bound, i + 1);
+            } else {
+                if (i >= this.bound){
+                    put(i, matExpr);
+                } else {
+                    for (int j = this.bound; j > i; j--){
+                        this.matrixTerms.put(j, this.matrixTerms.get(j - 1));
+                        this.matrixTerms.remove(j - 1);
+                    }
+                    put(i, matExpr);
+                    this.bound++;
+                }
+            }
+        }
+        
+    }
 
     public void add(MatrixExpressionCollection newMatrixTerms) {
         for (int i = 0; i < newMatrixTerms.getBound(); i++) {

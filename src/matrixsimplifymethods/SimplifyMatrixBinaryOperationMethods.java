@@ -376,6 +376,45 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
      *
      * @throws EvaluationException
      */
+    public static MatrixExpressionCollection collectMatricesInDifference(MatrixExpressionCollection summands) throws EvaluationException {
+
+        MatrixExpressionCollection result = new MatrixExpressionCollection();
+
+        Dimension dim = new Dimension(1, 1);
+        if (!summands.isEmpty()) {
+            for (MatrixExpression summand : summands) {
+                dim = summand.getDimension();
+                break;
+            }
+        }
+
+        MatrixExpression constantSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
+
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+            if (summands.get(i).isMatrix()) {
+                constantSummand = constantSummand.add(summands.get(i)).simplifyComputeMatrixOperations();
+                summands.remove(i);
+            }
+        }
+        if (!constantSummand.isZeroMatrix()) {
+            result.put(0, constantSummand);
+        }
+        result.add(summands);
+        return result;
+
+    }
+    
+    /**
+     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
+     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
+     * indiziert.
+     *
+     * @throws EvaluationException
+     */
     public static void collectMatricesInProduct(MatrixExpressionCollection factors) throws EvaluationException {
 
         /*

@@ -444,7 +444,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
 
             // Sammelt Konstanten im ersten Summanden. Beispiel: [2]+exp([x])+[3]+[sin(1)] wird zu [5+sin(1)]+exp([x])
-//            summands = SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
+            summands = SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 

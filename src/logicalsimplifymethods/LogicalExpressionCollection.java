@@ -41,6 +41,32 @@ public class LogicalExpressionCollection implements Iterable<LogicalExpression> 
         this.bound++;
     }
     
+    public void insert(int i, LogicalExpression logExpr) {
+        
+        if (i < 0) {
+            return;
+        }
+        
+        if (logExpr != null) {
+            if (this.logTerms.get(i) == null){
+                this.logTerms.put(i, logExpr);
+                this.bound = Math.max(this.bound, i + 1);
+            } else {
+                if (i >= this.bound){
+                    put(i, logExpr);
+                } else {
+                    for (int j = this.bound; j > i; j--){
+                        this.logTerms.put(j, this.logTerms.get(j - 1));
+                        this.logTerms.remove(j - 1);
+                    }
+                    put(i, logExpr);
+                    this.bound++;
+                }
+            }
+        }
+        
+    }
+    
     public void remove(int i){
         this.logTerms.remove(i);
         for (int j = this.bound - 1; j >= 0; j--){
