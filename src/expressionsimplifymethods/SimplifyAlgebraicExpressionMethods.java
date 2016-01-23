@@ -33,7 +33,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      */
     public static Expression factorizeIntegerFactorsFromIntegerRoots(BinaryOperation expr) {
 
-        if (!expr.getType().equals(TypeBinary.POW) || !expr.getLeft().isIntegerConstant()
+        if (expr.isNotPower() || !expr.getLeft().isIntegerConstant()
                 || !(expr.getRight().isRationalConstant()
                 && ((BinaryOperation) expr.getRight()).getLeft().isIntegerConstant()
                 && ((BinaryOperation) expr.getRight()).getRight().isIntegerConstant())) {
@@ -114,10 +114,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * Dasselbe wie factorizeIntegerFactorsFromIntegerRoots(), nur für rationale
      * Basen statt ganze.
      */
-    public static Expression factorizeIntegerFactorsFromRationalRoots(BinaryOperation expr) {
+    public static Expression factorizeRationalFactorsFromRationalRoots(BinaryOperation expr) {
 
         // Alles außer Ausdrücke der Form (a/b)^(p/q) wird aussortiert.
-        if (!expr.getType().equals(TypeBinary.POW) || !expr.getLeft().isRationalConstant()
+        if (expr.isNotPower() || !expr.getLeft().isRationalConstant()
                 || !(((BinaryOperation) expr.getLeft()).getLeft().isIntegerConstant()
                 && ((BinaryOperation) expr.getLeft()).getRight().isIntegerConstant())
                 || !(expr.getRight().isRationalConstant()

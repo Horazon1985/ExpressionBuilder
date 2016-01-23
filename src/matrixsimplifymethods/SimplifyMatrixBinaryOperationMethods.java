@@ -10,26 +10,25 @@ import matrixexpressionbuilder.MatrixExpression;
 
 public abstract class SimplifyMatrixBinaryOperationMethods {
 
-    public static void computeSumIfApprox(MatrixExpressionCollection summands){
-    
-        
+    public static void computeSumIfApprox(MatrixExpressionCollection summands) {
+
     }
-    
-    public static MatrixExpression computeDifferenceIfApprox(MatrixExpression matExpr) throws EvaluationException{
+
+    public static MatrixExpression computeDifferenceIfApprox(MatrixExpression matExpr) throws EvaluationException {
         if (matExpr.isDifference() && matExpr.isConstant() && matExpr.containsApproximates()) {
             MatrixExpression left = ((MatrixBinaryOperation) matExpr).getLeft().simplifyTrivial();
             MatrixExpression right = ((MatrixBinaryOperation) matExpr).getRight().simplifyTrivial();
-//            if (left instanceof Constant && right instanceof Constant) {
-//                return new Constant(((Constant) left).getApproxValue() - ((Constant) right).getApproxValue());
-//            }
+            if (left.isMatrix() && right.isMatrix()) {
+                // TO DO.
+            }
         }
         return matExpr;
     }
 
-    public static void computeProductIfApprox(MatrixExpressionCollection factors){
-    
+    public static void computeProductIfApprox(MatrixExpressionCollection factors) {
+
     }
-    
+
     public static void removeZeroMatrixInSum(MatrixExpressionCollection summands) throws EvaluationException {
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) == null) {
@@ -322,6 +321,86 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                 // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
                 FlowController.interruptComputationIfNeeded();
 
+            }
+
+        }
+
+    }
+
+    /*
+     * Hilfsprozeduren für das Zusammenfassen von Konstanten.
+     */
+    /**
+     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
+     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
+     * indiziert.
+     *
+     * @throws EvaluationException
+     */
+    public static MatrixExpressionCollection collectMatricesInSum(MatrixExpressionCollection summands) throws EvaluationException {
+
+        MatrixExpressionCollection result = new MatrixExpressionCollection();
+
+        Dimension dim = new Dimension(1, 1);
+        if (!summands.isEmpty()) {
+            for (MatrixExpression summand : summands) {
+                dim = summand.getDimension();
+                break;
+            }
+        }
+
+        MatrixExpression constantSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
+
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+            if (summands.get(i).isMatrix()) {
+                constantSummand = constantSummand.add(summands.get(i)).simplifyComputeMatrixOperations();
+                summands.remove(i);
+            }
+        }
+        if (!constantSummand.isZeroMatrix()) {
+            result.put(0, constantSummand);
+        }
+        result.add(summands);
+        return result;
+
+    }
+
+    /**
+     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
+     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
+     * indiziert.
+     *
+     * @throws EvaluationException
+     */
+    public static void collectMatricesInProduct(MatrixExpressionCollection factors) throws EvaluationException {
+
+        /*
+         Es werden immer nur ZWEI aufeinanderfolgende Matrizen ausmultipliziert.
+         GRUND: Dieses Produkt muss im Zuge von simplify() zunächst möglichst weit
+         vereinfacht werden, damit (schnell) weitermultipliziert werden kann. 
+         Sonst wird es zu rechenlastig.
+         */
+        for (int i = 0; i < factors.getBound(); i++) {
+
+            if (factors.get(i) == null) {
+                continue;
+            }
+            if (factors.get(i).isMatrix()) {
+                for (int j = i + 1; j < factors.getBound(); j++) {
+                    if (factors.get(j) == null) {
+                        continue;
+                    }
+                    if (factors.get(j).isMatrix()) {
+                        factors.put(i, factors.get(i).mult(factors.get(j)).simplifyComputeMatrixOperations());
+                        factors.remove(j);
+                        break;
+                    }
+
+                }
             }
 
         }

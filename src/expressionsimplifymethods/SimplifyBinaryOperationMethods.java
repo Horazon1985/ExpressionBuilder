@@ -318,7 +318,7 @@ public abstract class SimplifyBinaryOperationMethods {
         }
         return new Constant(reducedFraction[0]).div(reducedFraction[1]);
     }
-    
+
     /**
      * Ermittelt den Zähler und Nenner vom Bruch gekürzten Bruch
      * enumerator/denominator.
@@ -345,7 +345,7 @@ public abstract class SimplifyBinaryOperationMethods {
         return result;
 
     }
-    
+
     /**
      * Falls expr einen Bruch mit negativen Nenner darstellt, so wird das
      * Minuszeichen in den Zähler verschoben. Ansonsten wird expr zurückgegeben.
@@ -3451,7 +3451,7 @@ public abstract class SimplifyBinaryOperationMethods {
                     exponentToCompare = Expression.ONE;
                 }
                 if (base.equivalent(baseToCompare)) {
-                    if (!(base instanceof Constant)) {
+                    if (!base.isIntegerConstantOrRationalConstant()) {
                         exponent = exponent.add(exponentToCompare);
                         factors.put(i, base.pow(exponent));
                         factors.remove(j);
@@ -3504,8 +3504,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
         // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
         boolean summandsContainApproximates = false;
-        for (int i = 0; i < summands.getBound(); i++) {
-            summandsContainApproximates = summandsContainApproximates || summands.get(i).containsApproximates();
+        for (Expression summand : summands) {
+            summandsContainApproximates = summandsContainApproximates || summand.containsApproximates();
         }
 
         if (!summandsContainApproximates) {
@@ -3558,7 +3558,7 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
     }
-    
+
     /**
      * Addiert zwei rationale Zahlen (beide Argumente können entweder Konstanten
      * oder Quotienten von Konstanten sein). Falls eines der Argumente keine
@@ -3571,14 +3571,14 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
         BigInteger numeratorLeft, numeratorRight, denominatorLeft, denominatorRight;
-        if (exprLeft.isIntegerConstant()){
+        if (exprLeft.isIntegerConstant()) {
             numeratorLeft = ((Constant) exprLeft).getValue().toBigInteger();
             denominatorLeft = BigInteger.ONE;
         } else {
             numeratorLeft = ((Constant) ((BinaryOperation) exprLeft).getLeft()).getValue().toBigInteger();
             denominatorLeft = ((Constant) ((BinaryOperation) exprLeft).getRight()).getValue().toBigInteger();
         }
-        if (exprRight.isIntegerConstant()){
+        if (exprRight.isIntegerConstant()) {
             numeratorRight = ((Constant) exprRight).getValue().toBigInteger();
             denominatorRight = BigInteger.ONE;
         } else {
@@ -3605,8 +3605,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
         // Im Folgenden werden Konstanten immer im 0-ten Eintrag gesammelt.
         boolean factorsContainApproximatives = false;
-        for (int i = 0; i < factors.getBound(); i++) {
-            factorsContainApproximatives = factorsContainApproximatives || factors.get(i).containsApproximates();
+        for (Expression factor : factors) {
+            factorsContainApproximatives = factorsContainApproximatives || factor.containsApproximates();
         }
 
         if (!factorsContainApproximatives) {
@@ -3676,16 +3676,16 @@ public abstract class SimplifyBinaryOperationMethods {
         if (!exprLeft.isIntegerConstantOrRationalConstant() || !exprRight.isIntegerConstantOrRationalConstant()) {
             return exprLeft.mult(exprRight);
         }
-        
+
         BigInteger numeratorLeft, numeratorRight, denominatorLeft, denominatorRight;
-        if (exprLeft.isIntegerConstant()){
+        if (exprLeft.isIntegerConstant()) {
             numeratorLeft = ((Constant) exprLeft).getValue().toBigInteger();
             denominatorLeft = BigInteger.ONE;
         } else {
             numeratorLeft = ((Constant) ((BinaryOperation) exprLeft).getLeft()).getValue().toBigInteger();
             denominatorLeft = ((Constant) ((BinaryOperation) exprLeft).getRight()).getValue().toBigInteger();
         }
-        if (exprRight.isIntegerConstant()){
+        if (exprRight.isIntegerConstant()) {
             numeratorRight = ((Constant) exprRight).getValue().toBigInteger();
             denominatorRight = BigInteger.ONE;
         } else {
@@ -3696,8 +3696,8 @@ public abstract class SimplifyBinaryOperationMethods {
         return new Constant(numeratorLeft.multiply(numeratorRight)).div(denominatorLeft.multiply(denominatorRight));
 
     }
-    
-    /**
+
+    /*
      * Hilfsprozeduren für das Zusammenfassen von Konstanten.
      */
     /**

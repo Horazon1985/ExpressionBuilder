@@ -55,29 +55,30 @@ public class MatrixFunction extends MatrixExpression {
         MatrixExpression leftComputed = this.left.simplifyComputeMatrixOperations();
         MatrixFunction matExpr = new MatrixFunction(leftComputed, this.type);
 
-        if (matExpr.type.equals(TypeMatrixFunction.abs)) {
-            return matExpr.computeAbs();
-        } else if (matExpr.type.equals(TypeMatrixFunction.cos)) {
-            return matExpr.computeCos();
-        } else if (matExpr.type.equals(TypeMatrixFunction.cosh)) {
-            return matExpr.computeCosh();
-        } else if (matExpr.type.equals(TypeMatrixFunction.det)) {
-            return matExpr.computeDet();
-        } else if (matExpr.type.equals(TypeMatrixFunction.exp)) {
-            return matExpr.computeExp();
-        } else if (matExpr.type.equals(TypeMatrixFunction.ln)) {
-            return matExpr.computeLn();
-        } else if (matExpr.type.equals(TypeMatrixFunction.sin)) {
-            return matExpr.computeSin();
-        } else if (matExpr.type.equals(TypeMatrixFunction.sinh)) {
-            return matExpr.computeSinh();
-        } else if (matExpr.type.equals(TypeMatrixFunction.tr)) {
-            return matExpr.computeTr();
-        } else if (matExpr.type.equals(TypeMatrixFunction.trans)) {
-            return matExpr.computeTrans();
+        switch (matExpr.type) {
+            case abs:
+                return matExpr.computeAbs();
+            case cos:
+                return matExpr.computeCos();
+            case cosh:
+                return matExpr.computeCosh();
+            case det:
+                return matExpr.computeDet();
+            case exp:
+                return matExpr.computeExp();
+            case ln:
+                return matExpr.computeLn();
+            case sin:
+                return matExpr.computeSin();
+            case sinh:
+                return matExpr.computeSinh();
+            case tr:
+                return matExpr.computeTr();
+            case trans:
+                return matExpr.computeTrans();
+            default:
+                return matExpr;
         }
-        // Defaultfall: 
-        return matExpr;
 
     }
 
@@ -131,10 +132,10 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public boolean containsApproximates(){
+    public boolean containsApproximates() {
         return this.left.containsApproximates();
     }
-    
+
     @Override
     public MatrixExpression copy() {
         return new MatrixFunction(this.left, this.type);

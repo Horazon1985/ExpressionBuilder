@@ -1,9 +1,9 @@
 package expressionbuilder;
 
-import enumerations.TypeSimplify;
 import computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import enumerations.TypeExpansion;
+import enumerations.TypeSimplify;
 import exceptions.EvaluationException;
 import expressionsimplifymethods.ExpressionCollection;
 import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;
@@ -2474,14 +2474,14 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        // Sammelt mehrere Wurzeln zu einer zusammen.
-        exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRoot(expr);
+        // Faktorisiert rationale Faktoren aus Radikalen mit rationalem Radikanden
+        exprSimplified = SimplifyAlgebraicExpressionMethods.factorizeRationalFactorsFromRationalRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-
-        // Faktorisiert rationale Faktoren aus Radikalen mit rationalem Radikanden
-        exprSimplified = SimplifyAlgebraicExpressionMethods.factorizeIntegerFactorsFromRationalRoots(expr);
+        
+        // Sammelt mehrere Wurzeln zu einer zusammen.
+        exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRoot(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }

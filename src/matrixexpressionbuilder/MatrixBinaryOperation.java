@@ -443,10 +443,8 @@ public class MatrixBinaryOperation extends MatrixExpression {
             // Nullmatrizen in Summen beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
 
-            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant() && this.containsApproximates()) {
-                SimplifyMatrixBinaryOperationMethods.computeSumIfApprox(summands);
-            }
+            // Sammelt Konstanten im ersten Summanden. Beispiel: [2]+exp([x])+[3]+[sin(1)] wird zu [5+sin(1)]+exp([x])
+//            summands = SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
@@ -484,11 +482,12 @@ public class MatrixBinaryOperation extends MatrixExpression {
             SimplifyMatrixBinaryOperationMethods.reduceZeroProductToZero(factors);
             // Identitätsmatrizen in Produkten beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
+            /* 
+             Sammelt aufeinanderfolgende Matrizen in einem Produkt. 
+             Beispiel: [2]*exp([x])*[3]*[sin(1)] wird [2]*exp([x])*[3*sin(1)]
+             */
+            SimplifyMatrixBinaryOperationMethods.collectMatricesInProduct(factors);
 
-            if (this.isConstant() && this.containsApproximates()) {
-                SimplifyMatrixBinaryOperationMethods.computeProductIfApprox(factors);
-            }
-            
             return SimplifyMatrixUtilities.produceProduct(factors);
 
         }
@@ -523,8 +522,6 @@ public class MatrixBinaryOperation extends MatrixExpression {
         }
 
         MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
-        int l = factors.getBound();
-
         // Zunächst in jedem Faktor einzeln Faktoren sammeln.
         for (int i = 0; i < factors.getBound(); i++) {
             factors.put(i, factors.get(i).simplifyCollectProducts());
