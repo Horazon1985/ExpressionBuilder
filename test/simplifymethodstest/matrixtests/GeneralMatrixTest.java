@@ -93,6 +93,32 @@ public class GeneralMatrixTest {
         }
     }
     
+    @Test
+    public void collectSummandsTest() {
+        try {
+            matExpr = MatrixExpression.build("(exp([a,b;c,d])+[1,2;3,4])+(sin([a,b;c,d])+[5,6;7,8/11])", null);
+            expectedResult = MatrixExpression.build("[6,8;10,52/11]+exp([a,b;c,d])+sin([a,b;c,d])", null);
+            matExpr = matExpr.simplify();
+            TestUtilities.printResult(expectedResult, matExpr);
+            Assert.assertTrue(matExpr.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void collectFactorsTest() {
+        try {
+            matExpr = MatrixExpression.build("(exp([a,b;c,d])*[1,2;3,4])*([5,6;7,8/11]*sin([a,b;c,d]))*[3,-4;1,-9]", null);
+            expectedResult = MatrixExpression.build("exp([a,b;c,d])*[19,82/11;43,230/11]*sin([a,b;c,d])*[3,-4;1,-9]", null);
+            matExpr = matExpr.simplify();
+            TestUtilities.printResult(expectedResult, matExpr);
+            Assert.assertTrue(matExpr.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
     
     
     

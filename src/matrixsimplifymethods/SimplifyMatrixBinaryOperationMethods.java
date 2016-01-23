@@ -10,25 +10,6 @@ import matrixexpressionbuilder.MatrixExpression;
 
 public abstract class SimplifyMatrixBinaryOperationMethods {
 
-    public static void computeSumIfApprox(MatrixExpressionCollection summands) {
-
-    }
-
-    public static MatrixExpression computeDifferenceIfApprox(MatrixExpression matExpr) throws EvaluationException {
-        if (matExpr.isDifference() && matExpr.isConstant() && matExpr.containsApproximates()) {
-            MatrixExpression left = ((MatrixBinaryOperation) matExpr).getLeft().simplifyTrivial();
-            MatrixExpression right = ((MatrixBinaryOperation) matExpr).getRight().simplifyTrivial();
-            if (left.isMatrix() && right.isMatrix()) {
-                // TO DO.
-            }
-        }
-        return matExpr;
-    }
-
-    public static void computeProductIfApprox(MatrixExpressionCollection factors) {
-
-    }
-
     public static void removeZeroMatrixInSum(MatrixExpressionCollection summands) throws EvaluationException {
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) == null) {
@@ -331,15 +312,11 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
      * Hilfsprozeduren für das Zusammenfassen von Konstanten.
      */
     /**
-     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
-     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
-     * indiziert.
+     * Sammelt bei Addition Matrizen in summands im 1. Summanden.
      *
      * @throws EvaluationException
      */
-    public static MatrixExpressionCollection collectMatricesInSum(MatrixExpressionCollection summands) throws EvaluationException {
-
-        MatrixExpressionCollection result = new MatrixExpressionCollection();
+    public static void collectMatricesInSum(MatrixExpressionCollection summands) throws EvaluationException {
 
         Dimension dim = new Dimension(1, 1);
         if (!summands.isEmpty()) {
@@ -349,69 +326,75 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             }
         }
 
-        MatrixExpression constantSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
+        MatrixExpression matrixSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
 
         for (int i = 0; i < summands.getBound(); i++) {
-
             if (summands.get(i) == null) {
                 continue;
             }
             if (summands.get(i).isMatrix()) {
-                constantSummand = constantSummand.add(summands.get(i)).simplifyComputeMatrixOperations();
+                matrixSummand = matrixSummand.add(summands.get(i)).simplifyComputeMatrixOperations();
                 summands.remove(i);
             }
         }
-        if (!constantSummand.isZeroMatrix()) {
-            result.put(0, constantSummand);
+        
+        if (!matrixSummand.isZeroMatrix()) {
+            summands.insert(0, matrixSummand);
         }
-        result.add(summands);
-        return result;
 
     }
 
     /**
-     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
-     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
-     * indiziert.
+     * Sammelt in einer Differenz Matrizen im 1. Summanden in summandsLeft.
      *
      * @throws EvaluationException
      */
-    public static MatrixExpressionCollection collectMatricesInDifference(MatrixExpressionCollection summands) throws EvaluationException {
+    public static void collectMatricesInDifference(MatrixExpressionCollection summandsLeft, MatrixExpressionCollection summandsRight) throws EvaluationException {
 
         MatrixExpressionCollection result = new MatrixExpressionCollection();
 
         Dimension dim = new Dimension(1, 1);
-        if (!summands.isEmpty()) {
-            for (MatrixExpression summand : summands) {
+        if (!summandsLeft.isEmpty()) {
+            for (MatrixExpression summand : summandsLeft) {
+                dim = summand.getDimension();
+                break;
+            }
+        } else if (!summandsRight.isEmpty()) {
+            for (MatrixExpression summand : summandsRight) {
                 dim = summand.getDimension();
                 break;
             }
         }
 
-        MatrixExpression constantSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
+        MatrixExpression matrixSummand = MatrixExpression.getZeroMatrix(dim.height, dim.width);
 
-        for (int i = 0; i < summands.getBound(); i++) {
-
-            if (summands.get(i) == null) {
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i) == null) {
                 continue;
             }
-            if (summands.get(i).isMatrix()) {
-                constantSummand = constantSummand.add(summands.get(i)).simplifyComputeMatrixOperations();
-                summands.remove(i);
+            if (summandsLeft.get(i).isMatrix()) {
+                matrixSummand = matrixSummand.add(summandsLeft.get(i)).simplifyComputeMatrixOperations();
+                summandsLeft.remove(i);
             }
         }
-        if (!constantSummand.isZeroMatrix()) {
-            result.put(0, constantSummand);
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+            if (summandsRight.get(i) == null) {
+                continue;
+            }
+            if (summandsRight.get(i).isMatrix()) {
+                matrixSummand = matrixSummand.sub(summandsRight.get(i)).simplifyComputeMatrixOperations();
+                summandsRight.remove(i);
+            }
         }
-        result.add(summands);
-        return result;
+        
+        if (!matrixSummand.isZeroMatrix()) {
+            summandsLeft.insert(0, matrixSummand);
+        }
 
     }
     
     /**
-     * Sammelt bei Addition konstante Matrizen in summands so weit wie möglich
-     * nach vorne. Die Einträge in summands sind via 0, 1, 2, ..., size - 1
-     * indiziert.
+     * Sammelt Matrizen im Produkt.
      *
      * @throws EvaluationException
      */
@@ -436,6 +419,8 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     if (factors.get(j).isMatrix()) {
                         factors.put(i, factors.get(i).mult(factors.get(j)).simplifyComputeMatrixOperations());
                         factors.remove(j);
+                        break;
+                    } else {
                         break;
                     }
 

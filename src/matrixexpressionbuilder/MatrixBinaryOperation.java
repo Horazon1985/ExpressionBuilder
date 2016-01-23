@@ -178,6 +178,19 @@ public class MatrixBinaryOperation extends MatrixExpression {
                             && SimplifyMatrixUtilities.difference(summandsOfThis, summandsOfExpr).isEmpty();
 
                 }
+                if (this.isProduct()){
+                    MatrixExpressionCollection factorsOfThis = SimplifyMatrixUtilities.getFactors(this);
+                    MatrixExpressionCollection factorsOfExpr = SimplifyMatrixUtilities.getFactors(matExpr);
+                    if (factorsOfThis.getBound() != factorsOfExpr.getBound()){
+                        return false;
+                    }
+                    for (int i = 0; i < factorsOfThis.getBound(); i++){
+                        if (!factorsOfThis.get(i).equivalent(factorsOfExpr.get(i))){
+                            return false;
+                        }
+                    }
+                    return true;
+                }
                 return this.getLeft().equivalent(((MatrixBinaryOperation) matExpr).getLeft())
                         && this.getRight().equivalent(((MatrixBinaryOperation) matExpr).getRight());
             }
@@ -443,8 +456,8 @@ public class MatrixBinaryOperation extends MatrixExpression {
             // Nullmatrizen in Summen beseitigen.
             SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
 
-            // Sammelt Konstanten im ersten Summanden. Beispiel: [2]+exp([x])+[3]+[sin(1)] wird zu [5+sin(1)]+exp([x])
-            summands = SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
+            // Sammelt Matrizen im ersten Summanden. Beispiel: [2]+exp([x])+[3]+[sin(1)] wird zu [5+sin(1)]+exp([x])
+            SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
@@ -456,13 +469,14 @@ public class MatrixBinaryOperation extends MatrixExpression {
             if (!matExprSimplified.equals(matExpr)) {
                 return matExprSimplified;
             }
+            
+            MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(matExpr);
+            MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(matExpr);
 
-            // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
-            if (this.isConstant() && this.containsApproximates()) {
-                return SimplifyMatrixBinaryOperationMethods.computeDifferenceIfApprox(matExpr);
-            }
+            // Sammelt Matrizen im ersten Summanden des Minuenden. Beispiel: ([7]+exp([x]))-([3]+[sin(1)]) wird zu [4-sin(1)]+exp([x])
+            SimplifyMatrixBinaryOperationMethods.collectMatricesInDifference(summandsLeft, summandsRight);
 
-            return matExpr;
+            return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
 
