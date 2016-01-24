@@ -123,9 +123,9 @@ public class Operator extends Expression {
             case lcm:
                 return OperationParser.parseDefaultOperator(operator, params, vars, "lcm(expr+)");
             case max:
-                return OperationParser.parseDefaultOperator(operator, params, vars, "max(expr,expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "max(expr,expr+)");
             case min:
-                return OperationParser.parseDefaultOperator(operator, params, vars, "min(expr,expr)");
+                return OperationParser.parseDefaultOperator(operator, params, vars, "min(expr,expr+)");
             case mod:
                 return OperationParser.parseDefaultOperator(operator, params, vars, "mod(expr,expr)");
             case mu:
@@ -1505,29 +1505,55 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     private Expression simplifyTrivialMax() throws EvaluationException {
-
-        Expression[] arguments = new Expression[2];
-        for (int i = 0; i < 2; i++) {
+        Expression[] arguments = new Expression[this.params.length];
+        for (int i = 0; i < arguments.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
         }
+        return getMaxExplicitly(arguments);
+    }
 
-        return arguments[0].add(arguments[1]).div(2).add(arguments[0].sub(arguments[1]).abs().div(2));
+    private Expression getMaxExplicitly(Expression[] exprs) {
+
+        if (exprs.length == 2) {
+            return exprs[0].add(exprs[1]).div(2).add(exprs[0].sub(exprs[1]).abs().div(2));
+        }
+        
+        Expression[] exprsPrevious = new Expression[exprs.length - 1];
+        for (int i = 0; i < exprs.length - 1; i++){
+            exprsPrevious[i] = exprs[i];
+        }
+        
+        Expression maxPrevious = getMaxExplicitly(exprsPrevious);
+        return maxPrevious.add(exprs[exprs.length - 1]).div(2).add(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
 
     }
-    
+
     /**
      * Vereinfacht den min-Operator, soweit es möglich ist.
      *
      * @throws EvaluationException
      */
     private Expression simplifyTrivialMin() throws EvaluationException {
-
-        Expression[] arguments = new Expression[2];
-        for (int i = 0; i < 2; i++) {
+        Expression[] arguments = new Expression[this.params.length];
+        for (int i = 0; i < arguments.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
         }
+        return getMinExplicitly(arguments);
+    }
 
-        return arguments[0].add(arguments[1]).div(2).sub(arguments[0].sub(arguments[1]).abs().div(2));
+    private Expression getMinExplicitly(Expression[] exprs) {
+
+        if (exprs.length == 2) {
+            return exprs[0].add(exprs[1]).div(2).sub(exprs[0].sub(exprs[1]).abs().div(2));
+        }
+        
+        Expression[] exprsPrevious = new Expression[exprs.length - 1];
+        for (int i = 0; i < exprs.length - 1; i++){
+            exprsPrevious[i] = exprs[i];
+        }
+        
+        Expression maxPrevious = getMinExplicitly(exprsPrevious);
+        return maxPrevious.add(exprs[exprs.length - 1]).div(2).sub(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
 
     }
     

@@ -158,20 +158,20 @@
   <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
     <German>Der </German>
     <English>The </English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian></Ukrainian>
+    <Russian></Russian>
   </object>
   <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
     <German>. Parameter im Operator 'cross' muss ein Vektor der Dimension </German>
     <English>. parameter of the operator 'cross' must be a vector of dimension </English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>. параметр оператора 'cross' має бути вектором розмірності </Ukrainian>
+    <Russian>. параметр оператора 'cross' должен быть вектором размерности </Russian>
   </object>
   <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
     <German> sein.</German>
     <English>.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>.</Ukrainian>
+    <Russian>.</Russian>
   </object>
   <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
     <German>Zu wenig Parameter im Operator 'diff'.</German>
@@ -416,8 +416,8 @@
   <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
     <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
     <English>The 1. parameter of the operator 'rot' must be a threedimensional vector.</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Перший параметр опрераора 'rot' має бути тривимірним вектором.</Ukrainian>
+    <Russian>Первый параметр оператора 'rot' должен быть трёхмерным вектором.</Russian>
   </object>
   <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
     <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
