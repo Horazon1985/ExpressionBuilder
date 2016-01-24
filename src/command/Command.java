@@ -37,4 +37,12 @@ public class Command {
         this.params = params;
     }
 
+    /**
+     * Gibt den entsprechenden Typ des Operators zurück, der zum String operator
+     * (welcher in der Konsole eingegeben wird) gehört.
+     */
+    public static TypeCommand getTypeFromName(String command) {
+        return TypeCommand.valueOf(command);
+    }
+    
 }

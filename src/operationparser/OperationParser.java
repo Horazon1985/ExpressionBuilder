@@ -1,5 +1,7 @@
 package operationparser;
 
+import command.Command;
+import command.TypeCommand;
 import exceptions.ExpressionException;
 import expressionInterfaces.AbstractExpression;
 import expressionbuilder.Expression;
@@ -538,7 +540,7 @@ public abstract class OperationParser {
     }
 
     /**
-     * Parsen mathematischer Standardoperatoren.
+     * Parsen mathematischer Matrizenoperatoren.
      */
     public static MatrixOperator parseDefaultMatrixOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
 
@@ -729,6 +731,200 @@ public abstract class OperationParser {
         }
 
         return new MatrixOperator(type, params);
+
+    }
+
+    /**
+     * Parsen mathematischer Standardoperatoren.
+     */
+    public static Command parseDefaultCommand(String commandName, String[] parameter, String pattern) throws ExpressionException {
+
+        // Operatortyp.
+        TypeCommand type = Command.getTypeFromName(commandName);
+
+        // Muster für das Parsen des Operators.
+        ParseResultPattern resultPattern = getResultPattern(pattern);
+
+        /* 
+         Falls Namen nicht übereinstimmen -> ParseException (!) werfen.
+         In der Klasse Operator sollte man immer zuerst den Namen auslesen und 
+         DANN erst das Parsen anwenden.
+         */
+        if (!commandName.equals(resultPattern.getOperationName())) {
+            throw new ParseException();
+        }
+
+        Object[] params = new Object[parameter.length];
+
+        int indexInOperatorArguments = 0;
+        ParameterPattern p;
+        ArrayList<String> restrictions;
+        ArrayList<Integer> indices = new ArrayList<>();
+
+        // Zunächst nur reines Parsen, OHNE die Einschränkungen für die Variablen zu beachten.
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
+            if (indexInOperatorArguments >= parameter.length) {
+                throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETER_IN_COMMAND_1")
+                        + commandName
+                        + Translator.translateExceptionMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETER_IN_COMMAND_2"));
+            }
+
+            // Indizes loggen!
+            indices.add(indexInOperatorArguments);
+
+            p = resultPattern.getParameterPattern(i);
+            restrictions = p.getRestrictions();
+
+            if (p.getMultiplicity().equals(Multiplicity.one)) {
+                params[indexInOperatorArguments] = getOperatorParameter(commandName, parameter[indexInOperatorArguments], null, p.getParamType(), restrictions, indexInOperatorArguments);
+                indexInOperatorArguments++;
+            } else {
+                while (indexInOperatorArguments < parameter.length) {
+                    try {
+                        params[indexInOperatorArguments] = getOperatorParameter(commandName, parameter[indexInOperatorArguments], null, p.getParamType(), restrictions, indexInOperatorArguments);
+                        indexInOperatorArguments++;
+                    } catch (ExpressionException e) {
+                        if (indexInOperatorArguments == i) {
+                            /* 
+                             Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
+                             In diesem Fall konnte kein einziger Parameter geparst werden.
+                             */
+                            throw new ExpressionException(e.getMessage());
+                        }
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
+        if (indexInOperatorArguments < parameter.length - 1) {
+            throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_TOO_MANY_PARAMETER_IN_COMMAND_1")
+                    + commandName
+                    + Translator.translateExceptionMessage("MCC_COMMAND_TOO_MANY_PARAMETER_IN_COMMAND_2"));
+        }
+
+        /* 
+         Jetzt müssen noch einmal die Einschränkungen für die Variablen kontrolliert werden.
+         Diese Kontrolle muss stattfinden, NACHDEM alle Ausdrücke bereits (erfolgreich) geparst wurden.
+         */
+        int maxIndexForControl, indexOfExpressionToControlInPattern, maxIndexOfExpressionToControl;
+        boolean occurrence;
+        AbstractExpression expr;
+        AbstractExpression[] exprs;
+        String var;
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().getRole().equals(ParamRole.VARIABLE)) {
+                continue;
+            }
+            restrictions = p.getRestrictions();
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+
+                // Jeweilige Variable für die Kontrolle.
+                var = (String) params[j];
+
+                for (String restriction : restrictions) {
+
+                    occurrence = !(restriction.indexOf(ParameterPattern.notin) == 0);
+                    indexOfExpressionToControlInPattern = occurrence ? Integer.valueOf(restriction) : Integer.valueOf(restriction.substring(1));
+
+                    if (indexOfExpressionToControlInPattern < resultPattern.size() - 1) {
+                        maxIndexOfExpressionToControl = indices.get(indexOfExpressionToControlInPattern + 1) - 1;
+                    } else {
+                        maxIndexOfExpressionToControl = params.length - 1;
+                    }
+
+                    // Eigentliche Kontrolle.
+                    for (int q = indices.get(indexOfExpressionToControlInPattern); q <= maxIndexOfExpressionToControl; q++) {
+
+                        if (params[q] instanceof AbstractExpression) {
+                            expr = (AbstractExpression) params[q];
+                            if (occurrence && !expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + commandName
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && expr.contains(var)) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + commandName
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
+                        } else if (params[q] instanceof AbstractExpression[]) {
+                            exprs = (AbstractExpression[]) params[q];
+                            boolean varOccurrs = false;
+                            for (AbstractExpression abstrExpr : exprs) {
+                                varOccurrs = varOccurrs || abstrExpr.contains(var);
+                            }
+                            if (occurrence && !varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + commandName
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                            } else if (!occurrence && varOccurrs) {
+                                throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                        + var
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + (q + 1)
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + commandName
+                                        + Translator.translateExceptionMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        /* 
+         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         vorkommen.
+         */
+        for (int i = 0; i < resultPattern.size(); i++) {
+
+            p = resultPattern.getParameterPattern(i);
+            if (!p.getParamType().equals(ParamType.uniquevar)) {
+                continue;
+            }
+
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            for (int j = indices.get(i); j <= maxIndexForControl; j++) {
+                // Jeweilige Unique-Variable für die Kontrolle.
+                var = (String) params[j];
+                for (int k = 0; k < params.length; k++) {
+                    if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
+                        throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                                + var
+                                + Translator.translateExceptionMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + commandName
+                                + Translator.translateExceptionMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                    }
+                }
+            }
+
+        }
+
+        return new Command(type, params);
 
     }
 
