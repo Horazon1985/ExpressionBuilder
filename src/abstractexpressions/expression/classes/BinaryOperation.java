@@ -2,8 +2,8 @@ package abstractexpressions.expression.classes;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
-import enumerations.TypeExpansion;
-import enumerations.TypeSimplify;
+import enums.TypeExpansion;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyAlgebraicExpressionMethods;

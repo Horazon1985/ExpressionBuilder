@@ -11,7 +11,7 @@ import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;

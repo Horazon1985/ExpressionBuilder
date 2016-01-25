@@ -14,7 +14,7 @@ import abstractexpressions.expression.classes.SelfDefinedFunction;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyExpLog;

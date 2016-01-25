@@ -1,7 +1,7 @@
 package abstractexpressions.matrixexpression.classes;
 
 import computationbounds.ComputationBounds;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;

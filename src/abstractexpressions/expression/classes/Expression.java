@@ -1,8 +1,8 @@
 package abstractexpressions.expression.classes;
 
-import enumerations.TypeSimplify;
-import enumerations.TypeExpansion;
-import enumerations.TypeLanguage;
+import enums.TypeSimplify;
+import enums.TypeExpansion;
+import enums.TypeLanguage;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;

@@ -4,7 +4,7 @@ import abstractexpressions.expression.computation.AnalysisMethods;
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import abstractexpressions.expression.computation.NumericalMethods;
 import computationbounds.ComputationBounds;
-import enumerations.TypeExpansion;
+import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;

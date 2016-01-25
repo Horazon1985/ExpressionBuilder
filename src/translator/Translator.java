@@ -1,6 +1,6 @@
 package translator;
 
-import enumerations.TypeLanguage;
+import enums.TypeLanguage;
 import abstractexpressions.expression.classes.Expression;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;

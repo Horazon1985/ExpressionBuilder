@@ -8,7 +8,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;

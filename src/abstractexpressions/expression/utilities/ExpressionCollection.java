@@ -1,6 +1,6 @@
 package abstractexpressions.expression.utilities;
 
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;

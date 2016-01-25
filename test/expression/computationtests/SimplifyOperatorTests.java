@@ -7,7 +7,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import org.junit.AfterClass;
 import org.junit.Assert;

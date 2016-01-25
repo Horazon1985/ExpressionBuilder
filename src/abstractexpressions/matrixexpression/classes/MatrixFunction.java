@@ -2,7 +2,7 @@ package abstractexpressions.matrixexpression.classes;
 
 import abstractexpressions.matrixexpression.computation.MatrixNumericalMethods;
 import computationbounds.ComputationBounds;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import java.awt.Dimension;

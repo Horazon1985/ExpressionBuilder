@@ -1,13 +1,13 @@
 package expression.generaltests;
 
-import enumerations.TypeExpansion;
+import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;

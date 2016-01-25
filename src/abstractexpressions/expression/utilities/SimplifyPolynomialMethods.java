@@ -13,7 +13,7 @@ import static abstractexpressions.expression.classes.Expression.PI;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;

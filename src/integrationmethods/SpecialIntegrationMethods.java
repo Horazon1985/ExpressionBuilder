@@ -16,7 +16,7 @@ import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyExponentialRelations;

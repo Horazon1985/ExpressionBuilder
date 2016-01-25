@@ -1,6 +1,6 @@
 package abstractexpressions.expression.classes;
 
-import enumerations.TypeExpansion;
+import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;

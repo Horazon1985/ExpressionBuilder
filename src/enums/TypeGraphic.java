@@ -1,4 +1,4 @@
-package enumerations;
+package enums;
 
 public enum TypeGraphic {
 

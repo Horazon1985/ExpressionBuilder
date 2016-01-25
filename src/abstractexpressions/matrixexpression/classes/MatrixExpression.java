@@ -1,6 +1,6 @@
 package abstractexpressions.matrixexpression.classes;
 
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;

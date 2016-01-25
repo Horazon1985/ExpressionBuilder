@@ -2,7 +2,7 @@ package abstractexpressions.matrixexpression.classes;
 
 import abstractexpressions.expression.computation.AnalysisMethods;
 import computationbounds.ComputationBounds;
-import enumerations.TypeSimplify;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;

@@ -2,7 +2,7 @@ package abstractexpressions.expression.utilities;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
-import enumerations.TypeExpansion;
+import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
