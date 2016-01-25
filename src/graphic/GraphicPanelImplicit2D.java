@@ -1,7 +1,7 @@
 package graphic;
 
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
+import abstractexpressions.expression.classes.Expression;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

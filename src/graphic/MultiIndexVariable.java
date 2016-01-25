@@ -1,6 +1,6 @@
 package graphic;
 
-import expressionbuilder.Variable;
+import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 

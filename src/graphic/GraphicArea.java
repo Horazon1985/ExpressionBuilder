@@ -1,14 +1,14 @@
 package graphic;
 
 import command.Command;
-import expressionbuilder.Expression;
+import abstractexpressions.expression.classes.Expression;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JTextArea;
-import logicalexpressionbuilder.LogicalExpression;
-import matrixexpressionbuilder.MatrixExpression;
+import abstractexpressions.logicalexpression.classes.LogicalExpression;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
 
 public class GraphicArea extends JTextArea {
 

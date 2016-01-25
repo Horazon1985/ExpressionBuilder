@@ -2,17 +2,17 @@ package substitutionmethods;
 
 import exceptions.EvaluationException;
 import exceptions.NotSubstitutableException;
-import expressionbuilder.BinaryOperation;
-import expressionbuilder.Expression;
-import static expressionbuilder.Expression.ONE;
-import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.Function;
-import expressionbuilder.TypeFunction;
+import abstractexpressions.expression.classes.BinaryOperation;
+import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.TypeFunction;
 import enumerations.TypeSimplify;
-import expressionbuilder.Variable;
-import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyAlgebraicExpressionMethods;
-import expressionsimplifymethods.SimplifyUtilities;
+import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyAlgebraicExpressionMethods;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.util.HashSet;
 import notations.NotationLoader;
 

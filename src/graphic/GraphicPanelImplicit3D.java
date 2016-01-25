@@ -1,8 +1,8 @@
 package graphic;
 
 import exceptions.EvaluationException;
-import expressionbuilder.Expression;
-import expressionbuilder.Variable;
+import abstractexpressions.expression.classes.Expression;
+import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;

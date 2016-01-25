@@ -1,22 +1,22 @@
 package solveequationmethods;
 
-import computation.ArithmeticMethods;
+import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
-import expressionbuilder.BinaryOperation;
-import expressionbuilder.Constant;
-import expressionbuilder.Expression;
-import static expressionbuilder.Expression.MINUS_ONE;
-import static expressionbuilder.Expression.PI;
-import static expressionbuilder.Expression.TWO;
-import static expressionbuilder.Expression.ZERO;
-import expressionbuilder.Function;
-import expressionbuilder.TypeBinary;
-import expressionbuilder.TypeFunction;
-import expressionbuilder.Variable;
-import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyPolynomialMethods;
-import expressionsimplifymethods.SimplifyUtilities;
+import abstractexpressions.expression.classes.BinaryOperation;
+import abstractexpressions.expression.classes.Constant;
+import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.PI;
+import static abstractexpressions.expression.classes.Expression.TWO;
+import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.TypeBinary;
+import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashMap;
 

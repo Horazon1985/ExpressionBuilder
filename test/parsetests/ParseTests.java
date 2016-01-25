@@ -1,9 +1,9 @@
 package parsetests;
 
 import exceptions.ExpressionException;
-import expressionbuilder.Expression;
-import expressionbuilder.Operator;
-import expressionbuilder.TypeOperator;
+import abstractexpressions.expression.classes.Expression;
+import abstractexpressions.expression.classes.Operator;
+import abstractexpressions.expression.classes.TypeOperator;
 import java.util.ArrayList;
 import operationparser.OperationParser;
 import operationparser.ParameterPattern;

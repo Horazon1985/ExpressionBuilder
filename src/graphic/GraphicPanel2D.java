@@ -1,9 +1,9 @@
 package graphic;
 
 import exceptions.EvaluationException;
-import expressionbuilder.Constant;
-import expressionbuilder.Expression;
-import expressionbuilder.Variable;
+import abstractexpressions.expression.classes.Constant;
+import abstractexpressions.expression.classes.Expression;
+import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import matrixexpressionbuilder.Matrix;
+import abstractexpressions.matrixexpression.classes.Matrix;
 import translator.Translator;
 
 public class GraphicPanel2D extends JPanel implements Exportable {

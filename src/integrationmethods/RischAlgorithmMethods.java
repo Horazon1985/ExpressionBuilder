@@ -1,17 +1,17 @@
 package integrationmethods;
 
-import computation.ArithmeticMethods;
+import abstractexpressions.expression.computation.ArithmeticMethods;
 import exceptions.EvaluationException;
 import exceptions.MathToolException;
-import expressionbuilder.BinaryOperation;
-import expressionbuilder.Constant;
-import expressionbuilder.Expression;
-import expressionbuilder.Function;
-import expressionbuilder.TypeFunction;
+import abstractexpressions.expression.classes.BinaryOperation;
+import abstractexpressions.expression.classes.Constant;
+import abstractexpressions.expression.classes.Expression;
+import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.TypeFunction;
 import enumerations.TypeSimplify;
-import expressionbuilder.Variable;
-import expressionsimplifymethods.ExpressionCollection;
-import expressionsimplifymethods.SimplifyUtilities;
+import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 
