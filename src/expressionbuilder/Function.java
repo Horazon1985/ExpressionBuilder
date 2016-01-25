@@ -675,7 +675,7 @@ public class Function extends Expression {
         }
 
         // Kompositionen bestimmter Funktionen vereinfachen.
-        functionSimplified = SimplifyFunctionMethods.simplifyCompositionOfTwoFunctions(function, argumentSimplified);
+        functionSimplified = SimplifyFunctionMethods.simplifyCompositionOfTwoFunctions(this.type, argumentSimplified);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }

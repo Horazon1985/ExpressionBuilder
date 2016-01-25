@@ -1,13 +1,13 @@
 package expressionsimplifymethods;
 
+import exceptions.EvaluationException;
 import expressionbuilder.BinaryOperation;
 import expressionbuilder.Constant;
-import exceptions.EvaluationException;
 import expressionbuilder.Expression;
 import static expressionbuilder.Expression.MINUS_ONE;
-import static expressionbuilder.Expression.ZERO;
 import static expressionbuilder.Expression.ONE;
 import static expressionbuilder.Expression.TWO;
+import static expressionbuilder.Expression.ZERO;
 import expressionbuilder.Function;
 import expressionbuilder.TypeBinary;
 import expressionbuilder.TypeFunction;
@@ -101,198 +101,198 @@ public abstract class SimplifyFunctionMethods {
     /**
      * Vereinfacht bestimmte Kompositionen zweier Funktionen.
      */
-    public static Expression simplifyCompositionOfTwoFunctions(Function f, Expression argumentF) {
+    public static Expression simplifyCompositionOfTwoFunctions(TypeFunction type, Expression argumentF) {
 
         if (argumentF instanceof Function) {
 
             Function argumentFunction = (Function) argumentF;
 
             //Doppelten Betrag zu einem Betrag machen
-            if (f.getType().equals(TypeFunction.abs) && argumentFunction.getType().equals(TypeFunction.abs)) {
+            if (type.equals(TypeFunction.abs) && argumentFunction.getType().equals(TypeFunction.abs)) {
                 return argumentFunction;
             }
-            if (f.getType().equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
+            if (type.equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arccos)) {
+            if (type.equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arccos)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arctan)) {
+            if (type.equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arctan)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arccot)) {
+            if (type.equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arccot)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.sec) && argumentFunction.getType().equals(TypeFunction.arcsec)) {
+            if (type.equals(TypeFunction.sec) && argumentFunction.getType().equals(TypeFunction.arcsec)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.cosec) && argumentFunction.getType().equals(TypeFunction.arccosec)) {
+            if (type.equals(TypeFunction.cosec) && argumentFunction.getType().equals(TypeFunction.arccosec)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
+            if (type.equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
+            if (type.equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
+            if (type.equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
+            if (type.equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.sech) && argumentFunction.getType().equals(TypeFunction.arsech)) {
+            if (type.equals(TypeFunction.sech) && argumentFunction.getType().equals(TypeFunction.arsech)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.cosech) && argumentFunction.getType().equals(TypeFunction.arcosech)) {
+            if (type.equals(TypeFunction.cosech) && argumentFunction.getType().equals(TypeFunction.arcosech)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.arsinh) && argumentFunction.getType().equals(TypeFunction.sinh)) {
+            if (type.equals(TypeFunction.arsinh) && argumentFunction.getType().equals(TypeFunction.sinh)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.artanh) && argumentFunction.getType().equals(TypeFunction.tanh)) {
+            if (type.equals(TypeFunction.artanh) && argumentFunction.getType().equals(TypeFunction.tanh)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.arcoth) && argumentFunction.getType().equals(TypeFunction.coth)) {
+            if (type.equals(TypeFunction.arcoth) && argumentFunction.getType().equals(TypeFunction.coth)) {
                 return argumentFunction.getLeft();
             }
-            if (f.getType().equals(TypeFunction.arcosech) && argumentFunction.getType().equals(TypeFunction.cosech)) {
+            if (type.equals(TypeFunction.arcosech) && argumentFunction.getType().equals(TypeFunction.cosech)) {
                 return argumentFunction.getLeft();
             }
 
             // Sonstige Identitäten
             //tan(arcsin(x)) = x/(1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
+            if (type.equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
                 return argumentFunction.getLeft().div((ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft()))).pow(1, 2));
             }
             //tanh(arsinh(x)) = x/(1 + x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
+            if (type.equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
                 return argumentFunction.getLeft().div((ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft()))).pow(1, 2));
             }
             //tan(arccos(x)) = (1 - x^2)^(1/2)/x
-            if (f.getType().equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arccos)) {
+            if (type.equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arccos)) {
                 return ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2).div(argumentFunction.getLeft());
             }
             //tanh(arcosh(x)) = (x^2 - 1)^(1/2)/x
-            if (f.getType().equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
+            if (type.equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
                 return ((argumentFunction.getLeft().mult(argumentFunction.getLeft()).sub(ONE))).pow(1, 2).div(argumentFunction.getLeft());
             }
             //tan(arccot(x)) = 1/x (Analoges ist für hyp. Funktionen falsch)
-            if (f.getType().equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arccot)) {
+            if (type.equals(TypeFunction.tan) && argumentFunction.getType().equals(TypeFunction.arccot)) {
                 return ONE.div(argumentFunction.getLeft());
             }
             //cot(arcsin(x)) = (1 - x^2)^(1/2)/x
-            if (f.getType().equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
+            if (type.equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
                 return ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2).div(argumentFunction.getLeft());
             }
             //coth(arsinh(x)) = (1 + x^2)^(1/2)/x
-            if (f.getType().equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
+            if (type.equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
                 return ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2).div(argumentFunction.getLeft());
             }
             //cot(arccos(x)) = x/(1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arccos)) {
+            if (type.equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arccos)) {
                 return argumentFunction.getLeft().div(ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //coth(arcosh(x)) = x/(x^2 - 1)^(1/2)
-            if (f.getType().equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
+            if (type.equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
                 return argumentFunction.getLeft().div(argumentFunction.getLeft().mult(argumentFunction.getLeft()).sub(ONE).pow(1, 2));
             }
             //cot(arctan(x)) = 1/x (Analoges ist für hyp. Funktionen falsch)
-            if (f.getType().equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arctan)) {
+            if (type.equals(TypeFunction.cot) && argumentFunction.getType().equals(TypeFunction.arctan)) {
                 return ONE.div(argumentFunction.getLeft());
             }
             //sin(arccos(x)) = (1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arccos)) {
+            if (type.equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arccos)) {
                 return ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2);
             }
             //sinh(arcosh(x)) = (x^2 - 1)^(1/2)
-            if (f.getType().equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
+            if (type.equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
                 return argumentFunction.getLeft().mult(argumentFunction.getLeft()).sub(ONE).pow(1, 2);
             }
             //sin(arctan(x)) = x/(1 + x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arctan)) {
+            if (type.equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arctan)) {
                 return argumentFunction.getLeft().div(ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //sinh(artanh(x)) = x/(1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
+            if (type.equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
                 return argumentFunction.getLeft().div(ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //sin(arccot(x)) = 1/(x*(1 + 1/x^2)^(1/2))
-            if (f.getType().equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arccot)) {
+            if (type.equals(TypeFunction.sin) && argumentFunction.getType().equals(TypeFunction.arccot)) {
                 return ONE.div(argumentFunction.getLeft().mult((ONE.add(ONE.div(argumentFunction.getLeft().mult(argumentFunction.getLeft())))).pow(1, 2)));
             }
             //sinh(arcoth(x)) = 1/(x*(1 - 1/x^2)^(1/2))
-            if (f.getType().equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
+            if (type.equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
                 return ONE.div(argumentFunction.getLeft().mult((ONE.sub(ONE.div(argumentFunction.getLeft().mult(argumentFunction.getLeft())))).pow(1, 2)));
             }
             //cos(arcsin(x)) = (1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
+            if (type.equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arcsin)) {
                 return ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2);
             }
             //cosh(arsinh(x)) = (1 + x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
+            if (type.equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
                 return ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2);
             }
             //cos(arctan(x)) = 1/(1 + x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arctan)) {
+            if (type.equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arctan)) {
                 return ONE.div(ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //cosh(artanh(x)) = 1/(1 - x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
+            if (type.equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.artanh)) {
                 return ONE.div(ONE.sub(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //cos(arccot(x)) = 1/(1 + 1/x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arccot)) {
+            if (type.equals(TypeFunction.cos) && argumentFunction.getType().equals(TypeFunction.arccot)) {
                 return ONE.div((ONE.add(ONE.div(argumentFunction.getLeft().mult(argumentFunction.getLeft())))).pow(1, 2));
             }
             //cosh(arcoth(x)) = 1/(1 - 1/x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
+            if (type.equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
                 return ONE.div((ONE.sub(ONE.div(argumentFunction.getLeft().mult(argumentFunction.getLeft())))).pow(1, 2));
             }
             //exp(arsinh(x)) = x + (x^2 - 1)^(1/2)
-            if (f.getType().equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
+            if (type.equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arsinh)) {
                 return argumentFunction.getLeft().add(argumentFunction.getLeft().mult(argumentFunction.getLeft()).sub(ONE).pow(1, 2));
             }
             //exp(arcosh(x)) = x + (1 + x^2)^(1/2)
-            if (f.getType().equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
+            if (type.equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arcosh)) {
                 return argumentFunction.getLeft().add(ONE.add(argumentFunction.getLeft().mult(argumentFunction.getLeft())).pow(1, 2));
             }
             //exp(artanh(x)) = ((1 + x)/(1 - x))^(1/2)
-            if (f.getType().equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.artanh)) {
+            if (type.equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.artanh)) {
                 return ONE.add(argumentFunction.getLeft()).div(ONE.sub(argumentFunction.getLeft())).pow(1, 2);
             }
             //exp(arcosh(x)) = ((1 + x)/(x - 1))^(1/2)
-            if (f.getType().equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
+            if (type.equals(TypeFunction.exp) && argumentFunction.getType().equals(TypeFunction.arcoth)) {
                 return ONE.add(argumentFunction.getLeft()).div(argumentFunction.getLeft().sub(ONE)).pow(1, 2);
             }
             //sinh(ln(x)) = x/2-1/(2*x)
-            if (f.getType().equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.sinh) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return argumentFunction.getLeft().div(TWO).sub(ONE.div(TWO.mult(argumentFunction.getLeft())));
             }
             //cosh(ln(x)) = x/2+1/(2*x)
-            if (f.getType().equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.cosh) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return argumentFunction.getLeft().div(TWO).add(ONE.div(TWO.mult(argumentFunction.getLeft())));
             }
             //tanh(ln(x)) = (x-1/x)/(x+1/x) = (x^2-1)/(1+x^2)
-            if (f.getType().equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.tanh) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return argumentFunction.getLeft().pow(2).sub(1).div(ONE.add(argumentFunction.getLeft().pow(2)));
             }
             //coth(ln(x)) = (x+1/x)/(x-1/x) = (x^2+1)/(x^2-1)
-            if (f.getType().equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.coth) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return argumentFunction.getLeft().pow(2).add(1).div(argumentFunction.getLeft().pow(2).sub(1));
             }
             //cosech(ln(x)) = (2*x)/(x^2-1)
-            if (f.getType().equals(TypeFunction.cosech) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.cosech) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return TWO.mult(argumentFunction.getLeft()).div(argumentFunction.getLeft().pow(2).sub(1));
             }
             //sech(ln(x)) = (2*x)/(1+x^2)
-            if (f.getType().equals(TypeFunction.sech) && argumentFunction.getType().equals(TypeFunction.ln)) {
+            if (type.equals(TypeFunction.sech) && argumentFunction.getType().equals(TypeFunction.ln)) {
                 return TWO.mult(argumentFunction.getLeft()).div(ONE.add(argumentFunction.getLeft().pow(2)));
             }
 
         }
 
-        return f;
+        return new Function(argumentF, type);
 
     }
 

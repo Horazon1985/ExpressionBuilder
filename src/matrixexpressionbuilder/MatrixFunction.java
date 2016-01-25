@@ -8,6 +8,7 @@ import expressionbuilder.Expression;
 import java.awt.Dimension;
 import java.util.HashSet;
 import linearalgebraalgorithms.EigenvaluesEigenvectorsAlgorithms;
+import matrixsimplifymethods.SimplifyMatrixFunctionMethods;
 import matrixsimplifymethods.SimplifyMatrixFunctionalRelations;
 import translator.Translator;
 
@@ -824,7 +825,20 @@ public class MatrixFunction extends MatrixExpression {
 
     @Override
     public MatrixExpression simplifyTrivial() throws EvaluationException {
-        return new MatrixFunction(this.left.simplifyTrivial(), this.type);
+
+        MatrixExpression argumentSimplified = this.left.simplifyTrivial();
+        MatrixFunction function = new MatrixFunction(argumentSimplified, this.type);
+
+        MatrixExpression functionSimplified;
+        
+        // Konstante Funktionswerte im Approximationsmodus approximieren.
+        functionSimplified = SimplifyMatrixFunctionMethods.approxConstantMatrixExpression(function);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+
+        return function;
+
     }
 
     @Override
