@@ -1,4 +1,4 @@
-package solveequationmethods;
+package abstractexpressions.expression.equation;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;

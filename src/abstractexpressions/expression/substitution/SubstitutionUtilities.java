@@ -1,4 +1,4 @@
-package substitutionmethods;
+package abstractexpressions.expression.substitution;
 
 import exceptions.EvaluationException;
 import exceptions.NotSubstitutableException;

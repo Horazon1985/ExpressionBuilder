@@ -16,7 +16,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import solveequationmethods.SolveMethods;
+import abstractexpressions.expression.equation.SolveMethods;
 
 public class GeneralEquationMethodsTest {
 

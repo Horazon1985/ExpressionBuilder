@@ -1,4 +1,4 @@
-package solveequationmethods;
+package abstractexpressions.expression.equation;
 
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
@@ -21,7 +21,7 @@ import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 import notations.NotationLoader;
-import substitutionmethods.SubstitutionUtilities;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
 public abstract class SolveMethods {
 

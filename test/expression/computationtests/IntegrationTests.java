@@ -5,7 +5,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.Variable;
-import integrationmethods.SimplifyIntegralMethods;
+import abstractexpressions.expression.integration.SimplifyIntegralMethods;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;

@@ -1,4 +1,4 @@
-package integrationmethods;
+package abstractexpressions.expression.integration;
 
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
@@ -22,7 +22,7 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
-import substitutionmethods.SubstitutionUtilities;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
 public abstract class SimplifyIntegralMethods {
 

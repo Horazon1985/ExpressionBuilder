@@ -1,4 +1,4 @@
-package integrationmethods;
+package abstractexpressions.expression.integration;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import exceptions.EvaluationException;

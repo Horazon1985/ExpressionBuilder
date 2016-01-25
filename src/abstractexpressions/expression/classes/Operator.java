@@ -8,7 +8,7 @@ import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
-import integrationmethods.SimplifyIntegralMethods;
+import abstractexpressions.expression.integration.SimplifyIntegralMethods;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;

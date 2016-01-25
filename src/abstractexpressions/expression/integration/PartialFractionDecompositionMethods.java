@@ -1,4 +1,4 @@
-package integrationmethods;
+package abstractexpressions.expression.integration;
 
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;

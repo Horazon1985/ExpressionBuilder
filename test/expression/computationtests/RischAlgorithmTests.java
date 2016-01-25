@@ -3,7 +3,7 @@ package expression.computationtests;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.utilities.ExpressionCollection;
-import integrationmethods.RischAlgorithmMethods;
+import abstractexpressions.expression.integration.RischAlgorithmMethods;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;

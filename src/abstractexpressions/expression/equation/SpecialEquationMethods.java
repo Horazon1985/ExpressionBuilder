@@ -1,4 +1,4 @@
-package solveequationmethods;
+package abstractexpressions.expression.equation;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import exceptions.EvaluationException;
@@ -16,7 +16,7 @@ import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
-import substitutionmethods.SubstitutionUtilities;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
 public abstract class SpecialEquationMethods extends SolveMethods {
 

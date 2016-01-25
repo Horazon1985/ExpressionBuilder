@@ -1,4 +1,4 @@
-package integrationmethods;
+package abstractexpressions.expression.integration;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
@@ -24,11 +24,11 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyTrigonometricalRelations;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
-import static integrationmethods.SimplifyIntegralMethods.indefiniteIntegration;
+import static abstractexpressions.expression.integration.SimplifyIntegralMethods.indefiniteIntegration;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
-import substitutionmethods.SubstitutionUtilities;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
 public abstract class SpecialIntegrationMethods {
 

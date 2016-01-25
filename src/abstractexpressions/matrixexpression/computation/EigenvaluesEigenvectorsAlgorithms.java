@@ -13,7 +13,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.utilities.MatrixExpressionCollection;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixUtilities;
-import solveequationmethods.SolveMethods;
+import abstractexpressions.expression.equation.SolveMethods;
 
 public abstract class EigenvaluesEigenvectorsAlgorithms {
 

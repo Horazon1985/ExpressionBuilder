@@ -13,7 +13,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import substitutionmethods.SubstitutionUtilities;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
 public class SubstitutionTest {
 
