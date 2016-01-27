@@ -460,8 +460,11 @@ public class MatrixFunction extends MatrixExpression {
         }
 
         // Fall: Logarithmus einer nilpotenten Matrix.
-        if (this.left.isMatrix() && ((Matrix) this.left).isNilpotentMatrix()) {
-            return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.ln);
+        if (this.left.isMatrix()) {
+            MatrixExpression argumentMinusId = this.left.sub(MatrixExpression.getId(dim.width)).simplify();
+            if (argumentMinusId.isMatrix() && ((Matrix) argumentMinusId).isNilpotentMatrix()) {
+//                return SimplifyMatrixFunctionalRelations.simplifyPowerSeriesFunctionOfNilpotentMatrix(this, TypeMatrixFunction.ln);
+            }
         }
 
         return this;
@@ -830,7 +833,7 @@ public class MatrixFunction extends MatrixExpression {
         MatrixFunction function = new MatrixFunction(argumentSimplified, this.type);
 
         MatrixExpression functionSimplified;
-        
+
         // Konstante Funktionswerte im Approximationsmodus approximieren.
         functionSimplified = SimplifyMatrixFunctionMethods.approxConstantMatrixExpression(function);
         if (!functionSimplified.equals(function)) {
@@ -842,7 +845,7 @@ public class MatrixFunction extends MatrixExpression {
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
-        
+
         return function;
 
     }
