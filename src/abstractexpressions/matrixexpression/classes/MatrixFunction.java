@@ -837,6 +837,12 @@ public class MatrixFunction extends MatrixExpression {
             return functionSimplified;
         }
 
+        // Kompositionen bestimmter Funktionen vereinfachen.
+        functionSimplified = SimplifyMatrixFunctionMethods.simplifyCompositionOfTwoFunctions(this.type, argumentSimplified);
+        if (!functionSimplified.equals(function)) {
+            return functionSimplified;
+        }
+        
         return function;
 
     }
