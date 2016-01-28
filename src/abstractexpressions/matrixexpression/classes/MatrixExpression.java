@@ -526,21 +526,33 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     //Multipliziert eine Matrix mit einem Skalar a von links.
     public MatrixExpression mult(Expression a) {
+        if (a.equals(ONE)){
+            return this;
+        }
         return new MatrixBinaryOperation(new Matrix(a), this, TypeMatrixBinary.TIMES);
     }
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(Expression expr) {
+        if (expr.equals(ONE)){
+            return this;
+        }
         return new MatrixPower(this, expr);
     }
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(int n) {
+        if (n == 1){
+            return this;
+        }
         return new MatrixPower(this, new Constant(n));
     }
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(BigInteger n) {
+        if (n.equals(BigInteger.ONE)){
+            return this;
+        }
         return new MatrixPower(this, new Constant(n));
     }
 

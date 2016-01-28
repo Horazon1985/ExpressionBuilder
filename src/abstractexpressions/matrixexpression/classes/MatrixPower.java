@@ -7,6 +7,8 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
+import abstractexpressions.matrixexpression.utilities.SimplifyMatrixBinaryOperationMethods;
 import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigDecimal;
@@ -178,7 +180,12 @@ public class MatrixPower extends MatrixExpression {
             return result;
 
         }
-
+        
+        // Potenzen disgonalisierbarer Matrizen
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixBinaryOperationMethods.simplifyPowerOfDiagonalizableMatrix((Matrix) this.left, this.right);
+        }
+        
         return matExprSimplified;
 
     }

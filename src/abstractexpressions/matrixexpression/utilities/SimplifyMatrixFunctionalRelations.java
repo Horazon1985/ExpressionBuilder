@@ -606,19 +606,18 @@ public abstract class SimplifyMatrixFunctionalRelations {
      * Falls matExpr eine Diagonalmatrix ist, so wird f(matExpr) explizit
      * berechnet. Ansonsten wird f(m) zurückgegeben.
      */
-    public static MatrixExpression simplifyPowerSeriesFunctionOfDiagonalMatrix(MatrixExpression argument, TypeMatrixFunction type) {
+    public static MatrixExpression simplifyPowerSeriesFunctionOfDiagonalMatrix(Matrix argument, TypeMatrixFunction type) {
 
-        if (argument.isMatrix()
-                && ((Matrix) argument).isDiagonalMatrix()) {
+        if (argument.isDiagonalMatrix()) {
 
             // Dann explizit ausrechnen.
-            Expression[][] resultExtry = new Expression[((Matrix) argument).getRowNumber()][((Matrix) argument).getColumnNumber()];
-            for (int i = 0; i < ((Matrix) argument).getRowNumber(); i++) {
-                for (int j = 0; j < ((Matrix) argument).getColumnNumber(); j++) {
+            Expression[][] resultExtry = new Expression[argument.getRowNumber()][argument.getColumnNumber()];
+            for (int i = 0; i < argument.getRowNumber(); i++) {
+                for (int j = 0; j < argument.getColumnNumber(); j++) {
                     if (i != j) {
                         resultExtry[i][j] = Expression.ZERO;
                     } else {
-                        resultExtry[i][j] = new Function(((Matrix) argument).getEntry(i, j), convertMatrixFunctionTypeToFunctionType(type));
+                        resultExtry[i][j] = new Function(argument.getEntry(i, j), convertMatrixFunctionTypeToFunctionType(type));
                     }
                 }
             }
@@ -655,15 +654,14 @@ public abstract class SimplifyMatrixFunctionalRelations {
      * Falls matExpr eine diagonalisierbare Matrix ist, so wird f(matExpr)
      * explizit berechnet. Ansonsten wird f(m) zurückgegeben.
      */
-    public static MatrixExpression simplifyPowerSeriesFunctionOfDiagonalizableMatrix(MatrixExpression argument, TypeMatrixFunction type) {
+    public static MatrixExpression simplifyPowerSeriesFunctionOfDiagonalizableMatrix(Matrix argument, TypeMatrixFunction type) {
 
-        if (argument.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) argument)) {
+        if (EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable(argument)) {
 
-            Object eigenvectorMatrix = EigenvaluesEigenvectorsAlgorithms.getEigenvectorBasisMatrix((Matrix) argument);
+            Object eigenvectorMatrix = EigenvaluesEigenvectorsAlgorithms.getEigenvectorBasisMatrix(argument);
             if (eigenvectorMatrix instanceof Matrix) {
                 try {
-                    Matrix m = (Matrix) argument;
-                    MatrixExpression matrixInDiagonalForm = ((Matrix) eigenvectorMatrix).pow(-1).mult(m).mult((Matrix) eigenvectorMatrix).simplify();
+                    MatrixExpression matrixInDiagonalForm = ((Matrix) eigenvectorMatrix).pow(-1).mult(argument).mult((Matrix) eigenvectorMatrix).simplify();
                     if (matrixInDiagonalForm instanceof Matrix && ((Matrix) matrixInDiagonalForm).isDiagonalMatrix()) {
                         // Das Folgende kann dann direkt explizit berechnet werden.
                         return ((Matrix) eigenvectorMatrix).mult(new MatrixFunction(((Matrix) matrixInDiagonalForm), type)).mult(((Matrix) eigenvectorMatrix).pow(-1));
@@ -683,18 +681,17 @@ public abstract class SimplifyMatrixFunctionalRelations {
      * Falls matExpr eine nilpotente Matrix ist, so wird f(matExpr) explizit
      * berechnet. Ansonsten wird f(m) zurückgegeben.
      */
-    public static MatrixExpression simplifyPowerSeriesFunctionOfNilpotentMatrix(MatrixExpression argument, TypeMatrixFunction type) {
+    public static MatrixExpression simplifyPowerSeriesFunctionOfNilpotentMatrix(Matrix argument, TypeMatrixFunction type) {
 
-        if (argument.isMatrix() && ((Matrix) argument).isNilpotentMatrix()) {
+        if (argument.isNilpotentMatrix()) {
 
             try {
 
-                Dimension dim = ((Matrix) argument).getDimension();
-                Matrix m = (Matrix) argument;
-                MatrixExpression powerOfM = m;
+                Dimension dim = argument.getDimension();
+                MatrixExpression powerOfArgument = argument;
                 int maxExponent = 1;
-                while (!powerOfM.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width)) && maxExponent < dim.height) {
-                    powerOfM = powerOfM.mult(m).simplify();
+                while (!powerOfArgument.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width)) && maxExponent < dim.height) {
+                    powerOfArgument = powerOfArgument.mult(argument).simplify();
                     maxExponent++;
                 }
 
@@ -710,9 +707,9 @@ public abstract class SimplifyMatrixFunctionalRelations {
                         continue;
                     }
                     if (result.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width))) {
-                        result = new Matrix(taylorCoefficients.get(i)).mult(m.pow(i));
+                        result = new Matrix(taylorCoefficients.get(i)).mult(argument.pow(i));
                     } else {
-                        result = result.add(new Matrix(taylorCoefficients.get(i)).mult(m.pow(i)));
+                        result = result.add(new Matrix(taylorCoefficients.get(i)).mult(argument.pow(i)));
                     }
                 }
                 return result;

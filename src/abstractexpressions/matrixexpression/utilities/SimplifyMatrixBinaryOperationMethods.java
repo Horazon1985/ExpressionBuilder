@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixBinaryOperation;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import abstractexpressions.matrixexpression.classes.MatrixPower;
+import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
 
 public abstract class SimplifyMatrixBinaryOperationMethods {
 
@@ -337,7 +339,7 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                 summands.remove(i);
             }
         }
-        
+
         if (!matrixSummand.isZeroMatrix()) {
             summands.insert(0, matrixSummand);
         }
@@ -386,13 +388,13 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                 summandsRight.remove(i);
             }
         }
-        
+
         if (!matrixSummand.isZeroMatrix()) {
             summandsLeft.insert(0, matrixSummand);
         }
 
     }
-    
+
     /**
      * Sammelt Matrizen im Produkt.
      *
@@ -428,6 +430,29 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             }
 
         }
+
+    }
+
+    public static MatrixExpression simplifyPowerOfDiagonalizableMatrix(Matrix m, Expression exp) {
+
+        if (EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable(m)) {
+
+            Object eigenvectorMatrix = EigenvaluesEigenvectorsAlgorithms.getEigenvectorBasisMatrix(m);
+            if (eigenvectorMatrix instanceof Matrix) {
+                try {
+                    MatrixExpression matrixInDiagonalForm = ((Matrix) eigenvectorMatrix).pow(-1).mult(m).mult((Matrix) eigenvectorMatrix).simplify();
+                    if (matrixInDiagonalForm instanceof Matrix && ((Matrix) matrixInDiagonalForm).isDiagonalMatrix()) {
+                        // Das Folgende kann dann direkt explizit berechnet werden.
+                        return ((Matrix) eigenvectorMatrix).mult(new MatrixPower(((Matrix) matrixInDiagonalForm), exp)).mult(((Matrix) eigenvectorMatrix).pow(-1));
+                    }
+                } catch (EvaluationException e) {
+                    return new MatrixPower(m, exp);
+                }
+            }
+
+        }
+
+        return new MatrixPower(m, exp);
 
     }
 
