@@ -571,9 +571,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1")
                         + operatorName
-                        + Translator.translateExceptionMessage("EB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2"));
+                        + Translator.translateExceptionMessage("MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -608,9 +608,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1) {
-            throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1")
                     + operatorName
-                    + Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2"));
+                    + Translator.translateExceptionMessage("MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2"));
         }
 
         /* 
@@ -653,21 +653,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -676,21 +676,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateExceptionMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateExceptionMessage("MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -719,11 +719,11 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                        throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
                                 + var
-                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + Translator.translateExceptionMessage("MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
                                 + operatorName
-                                + Translator.translateExceptionMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                                + Translator.translateExceptionMessage("MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
                     }
                 }
             }

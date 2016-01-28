@@ -553,7 +553,27 @@ public class MatrixOperator extends MatrixExpression {
                 resultParams[i] = this.params[i];
             }
         }
-        return new MatrixOperator(this.type, resultParams, this.precise);
+        MatrixOperator operator = new MatrixOperator(this.type, resultParams, this.precise);
+        
+        // Nun wird noch operatorspezifisch vereinfacht.
+        switch (type) {
+            case diff:
+                return operator.simplifyTrivialDiff();
+            case div:
+                return operator.simplifyTrivialDiv();
+            case integral:
+                return operator.simplifyTrivialInt();
+            case laplace:
+                return operator.simplifyTrivialLaplace();
+            case prod:
+                return operator.simplifyTrivialProd();
+            case sum:
+                return operator.simplifyTrivialSum();
+            default:
+                // Kommt nicht vor, aber trotzdem;
+                return operator;
+        }
+        
     }
 
     @Override

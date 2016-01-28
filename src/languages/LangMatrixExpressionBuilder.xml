@@ -1,464 +1,388 @@
 ﻿<objects>
-  <object id = "MEB_MatrixExpression_ROW_MISSING">
-    <German>Die Matrix enthält mindestens eine leere Zeile.</German>
-    <English>The matrix contains at least one empty row.</English>
-    <Ukrainian>Матриця містить щонайменше один порожній рядок.</Ukrainian>
-    <Russian>Матрица содержит по крайней мере одну пустую строку.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_NO_ROWS">
-    <German>Die Matrix enthält keine Zeilen.</German>
-    <English>The matrix contains no rows.</English>
-    <Ukrainian>Матриця не містить жодного рядка.</Ukrainian>
-    <Russian>Матрица не содоржит ни одной строки.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_WRONG_BRACKETS">
-    <German>Falsche Klammerung.</German>
-    <English>Incorrect brackets.</English>
-    <Ukrainian>Неправильні дужки.</Ukrainian>
-    <Russian>Неправильные скобки.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_EMPTY_PARAMETER">
-    <German>Leerer Parameter.</German>
-    <English>Empty parameter.</English>
-    <Ukrainian>Порожній ппараметр.</Ukrainian>
-    <Russian>Пустой параметр.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_NOT_A_MATRIX">
-    <German>Der Ausdruck enthält eine nicht wohldefinierte Matrix.</German>
-    <English>The expression contains a not well-defined matrix.</English>
-    <Ukrainian>Вираз містить неправильно визначену матрицю.</Ukrainian>
-    <Russian>Выражение содержит матрицу, которая задана неверно.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
-    <German>Der Ausdruck ist leer oder unvollständig.</German>
-    <English>The expression is either epmty or incomplete.</English>
-    <Ukrainian>Вираз порожній або неповний.</Ukrainian>
-    <Russian>Выражение пустое либо неполное.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
-    <German>Linke Seite eines binären Operators ist leer.</German>
-    <English>Left side of a binary operator is empty.</English>
-    <Ukrainian>Ліва частина бінарного оператора порожня.</Ukrainian>
-    <Russian>Левая часть бинарного оператора пуста.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
-    <German>Rechte Seite eines binären Operators ist leer.</German>
-    <English>Right side of a binary operator is empty.</English>
-    <Ukrainian>Права частина бінарного оператора порожня.</Ukrainian>
-    <Russian>Правая часть бинарного оператора пуста.</Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED">
-    <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
-    <English>The following formula/part of the formula cannot be interpreted: </English>
-    <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
-    <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
-  </object>
-  <object id = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED">
-    <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
-    <English>The following formula/part of the formula cannot be interpreted: </English>
-    <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
-    <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
-  </object>
-  <object id = "MEB_Expression_STACK_OVERFLOW">
-    <German>Speicher voll. Die Berechnung wurde beendet.</German>
-    <English>Stack overflow. The computation was aborted.</English>
-    <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>
-    <Russian>Оперативная память переполнена. Вычисление было прекращено.</Russian>
-  </object>
-  <object id = "MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED">
-    <German>Die Summe oder die Differenz zweier auftretender Matrizen ist nicht definiert.</German>
-    <English>The sum or the difference of two occurring matrices is not defined.</English>
-    <Ukrainian>Суму або різницю матриць не визначено.</Ukrainian>
-    <Russian>Сумма или разница матриц не определена.</Russian>
-  </object>
-  <object id = "MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED">
-    <German>Das Produkt zweier auftretender Matrizen ist nicht definiert.</German>
-    <English>The product of two occurring matrices is not defined.</English>
-    <Ukrainian>Добуток матриць не визначено.</Ukrainian>
-    <Russian>Произведение матриц не определено.</Russian>
-  </object>
-  <object id = "MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED">
-    <German>Die Potenz einer auftretender Matrix ist nicht definiert.</German>
-    <English>The power of an occurring matrix is not defined.</English>
-    <Ukrainian>Степінь однієї з матриць невизначена.</Ukrainian>
-    <Russian>Степень одной из матриц неопределена.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_DET_NOT_DEFINED">
-    <German>Die Determinante einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The determinant of an occurring matrix is not defined.</English>
-    <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
-    <Russian>Определитель одной из матриц не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_COS_NOT_DEFINED">
-    <German>Der Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The cosine of an occurring matrix is not defined.</English>
-    <Ukrainian>Косинус даної матриці не визначено.</Ukrainian>
-    <Russian>Косинус данной матрицы не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_COSH_NOT_DEFINED">
-    <German>Der hyperbolische Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The hyperbolic cosine of an occurring matrix is not defined.</English>
-    <Ukrainian>Гіперболичний косинус даної матриці не визначено.</Ukrainian>
-    <Russian>Гиперболический косинус данной матрицы не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
-    <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The exponential function of an occurring matrix is not defined.</English>
-    <Ukrainian>Експоненційна функція даної матриці не визначена.</Ukrainian>
-    <Russian>Экспоненциальная функция данной матрицы не определена.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_LN_NOT_DEFINED">
-    <German>Der Logarithmus einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The logarithm of an occurring matrix is not defined.</English>
-    <Ukrainian>Логарифм функція даної матриці не визначено.</Ukrainian>
-    <Russian>Логарифм функция данной матрицы не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_SIN_NOT_DEFINED">
-    <German>Der Sinus von einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The sine of an occurring matrix is not defined.</English>
-    <Ukrainian>Синус даної матриці не визначено.</Ukrainian>
-    <Russian>Синус данной матрицы не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_SINH_NOT_DEFINED">
-    <German>Der hyperbolische Sinus von einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The hyperbolic sine of an occurring matrix is not defined.</English>
-    <Ukrainian>Гіперболичний синус даної матриці не визначено.</Ukrainian>
-    <Russian>Гиперболический синус данной матрицы не определён.</Russian>
-  </object>
-  <object id = "MEB_MatrixFunction_TR_NOT_DEFINED">
-    <German>Die Spur einer auftretenden Matrix ist nicht definiert.</German>
-    <English>The trace of an occurring matrix is not defined.</English>
-    <Ukrainian>Слід однієї з матриць невизначений.</Ukrainian>
-    <Russian>След одной из матриц не определён.</Russian>
-  </object>
-  <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_COV">
-    <German>Zu wenig Parameter im Operator 'cov'.</German>
-    <English>Not enought parameters in operator 'cov'.</English>
-    <Ukrainian>Недостатньо параметрів у оператора 'cov'.</Ukrainian>
-    <Russian>Недостаточно параметров у оператора 'cov'.</Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian> </Ukrainian>
-    <Russian> </Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_COV_IS_INVALID_2">
-    <German>. Parameter im Operator 'cov' muss ein zweidimensionaler Punkt sein.</German>
-    <English>. parameter in operator 'cov' must be a two dimensional point.</English>
-    <Ukrainian>. параметр оператора 'cov' має бути двовимірною точкою.</Ukrainian>
-    <Russian>. параметр оператора 'cov' должен быть двумерной точкой.</Russian>
-  </object>
-  <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
-    <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
-    <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
-    <Ukrainian>Неможливо знайти ковариацію, оскільки параметри не є двовимірними точками.</Ukrainian>
-    <Russian>Невозможно найти коваріацію, поскольку параметры не являются двумерніми точками.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
-    <German>. Parameter im Operator 'cross' muss ein Vektor der Dimension </German>
-    <English>. parameter of the operator 'cross' must be a vector of dimension </English>
-    <Ukrainian>. параметр оператора 'cross' має бути вектором розмірності </Ukrainian>
-    <Russian>. параметр оператора 'cross' должен быть вектором размерности </Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
-    <German> sein.</German>
-    <English>.</English>
-    <Ukrainian>.</Ukrainian>
-    <Russian>.</Russian>
-  </object>
-  <object id = "MEB_Operator_NOT_ENOUGH_PARAMETERS_IN_DIFF">
-    <German>Zu wenig Parameter im Operator 'diff'.</German>
-    <English>Not enought parameters in operator 'diff'.</English>
-    <Ukrainian>Замало параметрів для оператора 'diff'.</Ukrainian>
-    <Russian>Слишком мало параметров для оператора 'diff'.</Russian>
-  </object>
-  <object id = "MEB_Operator_1_PARAMETER_IN_DIFF_IS_WRONG">
-    <German>Der 1. Parameter im Operator 'diff' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The 1. parameter in the operator 'diff' has to be a valid matrix expression. Error message: </English>
-    <Ukrainian>1. параметр оператора 'diff' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параметр оператора 'diff' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_2_PARAMETER_IN_DIFF_IS_INVALID">
-    <German>Der 2. Parameter im Operator 'diff' muss eine gültige Variable sein.</German>
-    <English>The 2. parameter in the operator 'diff' has to be a valid variable.</English>
-    <Ukrainian>2. параметр оператора 'diff' має бути діючою змінною.</Ukrainian>
-    <Russian>2. параметр оператора 'diff' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID">
-    <German>Der 3. Parameter im Operator 'diff' muss entweder eine gültige Variable oder eine nicht-negative ganze Zahl sein.</German>
-    <English>The 3. parameter in the operator 'diff' must either be a valid variable or a non-negative integer.</English>
-    <Ukrainian>3. параметр оператора 'diff' має бути діючою змінною або невід'ємним цілим числом.</Ukrainian>
-    <Russian>3. параметр оператора 'diff' должен быть действительной переменной или неотрицательным целым числом.</Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIFF_IS_INVALID_2">
-    <German>. Parameter im Operator 'diff' muss eine gültige Variable sein.</German>
-    <English>. parameter in the operator 'diff' must be a valid variable.</English>
-    <Ukrainian>. параметр оператора 'diff' має бути діючою змінною.</Ukrainian>
-    <Russian>. параметр оператора 'diff' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_DIV">
-    <German>Im Operator 'div' müssen mindestens zwei Parameter stehen.</German>
-    <English>Operator 'div' must contain at least two parameter.</English>
-    <Ukrainian>У оператора 'div' має бути щонайменше два параметра.</Ukrainian>
-    <Russian>У оператора 'div' по крайней мере два параметра</Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_DIV_IS_INVALID">
-    <German>Der Parameter im Operator 'div' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The parameter in operator 'div' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'div' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'div' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_DIV_IS_INVALID_2">
-    <German>. Parameter im Operator 'div' muss eine gültige Veränderliche sein.</German>
-    <English>. parameter in operator 'div' must be a valid variable.</English>
-    <Ukrainian>. параметр оператора 'div' має бути діючою змінною.</Ukrainian>
-    <Russian>. параметр оператора 'div' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_PARAMETER_IN_DIV_REPEATED">
-    <German>Die Veränderlichen im Operator 'div' müssen paarweise verschieden sein.</German>
-    <English>The variables in operator 'div' must be pairwise distinct.</English>
-    <Ukrainian>Змінні оператора 'div' мають попарно відрізнятися.</Ukrainian>
-    <Russian>Переменные оператора 'div' должны попарно отличаться.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_GRAD">
-    <German>Im Operator 'grad' müssen mindestens zwei Parameter stehen.</German>
-    <English>Operator 'grad' must contain at least two parameters.</English>
-    <Ukrainian>У оператора 'grad' маэ бути щонайменше два параметра.</Ukrainian>
-    <Russian>У оператора 'grad' должно быть по крайней мере два параметра.</Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID">
-    <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. Reported error: </English>
-    <Ukrainian>Перший параметр оператора 'grad' має бути діючим 1x1-матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Первый параматр оператора 'grad' должен быть действительным 1x1-матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_1">
-    <German>Der erste Parameter im Operator 'grad' muss ein gültiger Ausdruck oder ein gültiger 1x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
-    <English>The first parameter in operator 'grad' must be a valid expression or a valid 1x1-matrix expression. The argument is a </English>
-    <Ukrainian>Первий параметр оператора 'grad' має бути діючим виразом або діючим 1x1-матричним виразом. Аргументом є </Ukrainian>
-    <Russian>Перший параматр оператора 'grad' должен быть действительным выражением или действительным 1x1-матричным выражением. Аргументом является </Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_2">
-    <German> x </German>
-    <English> x </English>
-    <Ukrainian> x </Ukrainian>
-    <Russian> x </Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_GRAD_IS_INVALID_3">
-    <German> Matrix.</German>
-    <English> matrix.</English>
-    <Ukrainian> матриця.</Ukrainian>
-    <Russian> матрица.</Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_GRAD_IS_INVALID_2">
-    <German>. Parameter im Operator 'grad' muss eine gültige Veränderliche sein.</German>
-    <English>. parameter in operator 'grad' must be a valid variable.</English>
-    <Ukrainian>. параметр оператора 'grad' має бути діючою змінною.</Ukrainian>
-    <Russian>. параметр оператора 'grad' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_PARAMETER_IN_GRAD_REPEATED">
-    <German>Die Veränderlichen im Operator 'grad' müssen paarweise verschieden sein.</German>
-    <English>The variables in operator 'grad' must be pairwise distinct.</English>
-    <Ukrainian>Змінні оператора 'grad' повинні попарно відрізнятися.</Ukrainian>
-    <Russian>Переменные оператора 'grad' должны попарно отличаться.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_PARAMETER_IN_INT">
-    <German>Im Operator 'int' müssen entweder genau zwei Parameter (im Falle einer unbestimmten Integration) oder genau vier Parameter (im Falle einer bestimmten Integration) stehen.</German>
-    <English>Operator 'int' must either contain exactly two parameters (in case of indefinite integration) or exactly four parameters (in case of definite integration).</English>
-    <Ukrainian>У оператора має 'int' бути або рівно два параметра (у випадку невизначеного інтеграла) або рівно чотири параметра (у випадку визначеного інтеграла).</Ukrainian>
-    <Russian>У оператора 'int' должно быть ровно два параметра (в случае неопределённого интеграла) или ровно четыре параметра (в случае определённого интеграла).</Russian>
-  </object>
-  <object id = "MEB_Operator_1_PARAMETER_IN_INT_IS_INVALID">
-    <German>Der 1. Parameter im Operator 'int' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The 1. parameter in operator 'int' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'int' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'int' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_2_PARAMETER_IN_INT_IS_INVALID">
-    <German>Der 2. Parameter im Operator 'int' muss eine gültige Veränderliche sein.</German>
-    <English>The 2. parameter in operator 'int' must be a valid variable.</English>
-    <Ukrainian>2. параметр оператора 'int' має бути діючою змінною.</Ukrainian>
-    <Russian>2. параматр оператора 'int' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_3_PARAMETER_IN_INT_IS_INVALID">
-    <German>Der 3. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Matrizenausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
-    <English>The 3. parameter in operator 'int' is the lower limit of integration. This must be a valid matrix expression, which does not contain the integration variable.</English>
-    <Ukrainian>3. параметр оператора 'int' є нижньою границею інтегрування. Він має бути діючим матричним виразом, який не містить змінної інтегрування.</Ukrainian>
-    <Russian>3. параметр оператора 'int' является нижним пределом интегрирования. Он должен быть действительным матричным выражением, которое не содержит переменной интегрирования.</Russian>
-  </object>
-  <object id = "MEB_Operator_4_PARAMETER_IN_INT_IS_INVALID">
-    <German>Der 4. Parameter im Operator 'int' ist die untere Integrationsgrenze. Dies muss ein gültiger Matrizenausdruck sein, welcher die Integrationsvariable nicht enthält.</German>
-    <English>The 4. parameter in operator 'int' is the upper limit of integration. This must be a valid matrix expression, which does not contain the integration variable.</English>
-    <Ukrainian>4. параметр оператора 'int' є верхньою границею інтегрування. Він має бути діючим матричним виразом, який не містить змінної інтегрування.</Ukrainian>
-    <Russian>4. параметр оператора 'int' является верхним пределом интегрирования. Он должен быть действительным матричным выражением, которое не содержит переменной интегрирования.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_LAPLACE">
-    <German>Im Operator 'laplace' muss genau ein Parameter stehen.</German>
-    <English>Operator 'laplace' must contain exactly one parameter.</English>
-    <Ukrainian>У оператора 'laplace' має бути рівно один параметр.</Ukrainian>
-    <Russian>У оператора 'laplace' должен быть ровно один параметр.</Russian>
-  </object>
-  <object id = "MEB_Operator_PARAMETER_IN_LAPLACE_IS_INVALID">
-    <German>Der Parameter im Operator 'laplace' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The parameter in operator 'laplace' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'int' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'int' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_PROD">
-    <German>Im Operator 'prod' müssen genau vier parameter stehen.</German>
-    <English>Operator 'prod' must contain exactly four parameters.</English>
-    <Ukrainian>У оператора 'prod' має бути рівно чотири параметра.</Ukrainian>
-    <Russian>У оператора 'prod' должно быть ровно четыре параметра.</Russian>
-  </object>
-  <object id = "MEB_Operator_1_PARAMETER_IN_PROD_IS_INVALID">
-    <German>Der 1. Parameter im Operator 'prod' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The 1. parameter in operator 'prod' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'prod' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'prod' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_2_PARAMETER_IN_PROD_IS_INVALID">
-    <German>Der 2. Parameter im Operator 'prod' muss eine Variable sein, nach der multipliziert wird.</German>
-    <English>The 2. parameter in operator 'prod' must be a valid variable by that multiplication will be performed.</English>
-    <Ukrainian>2. параметр оператора 'prod' має бути діючою змінною, по якій буде здійснюватися множення.</Ukrainian>
-    <Russian>2. параматр оператора 'prod' должен быть действительной переменной, по которой будет производиться умножение.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PROD_2">
-    <German>. Parameter im Operator 'prod' muss entweder eine ganze Zahl sein, welche im Definitionsbereich des Matrizenausdrucks liegt, oder ein Ausdruck sein, welcher Veränderliche enthält.</German>
-    <English>. parameter in operator 'prod' must be either an integer, where the matrix expression is defined at, or an expression, containing a variable.</English>
-    <Ukrainian>. параметр оператора 'prod' має бути або цілим числом з області визначення або виразом, що містить змінну.</Ukrainian>
-    <Russian>. параметр оператора 'prod' должен быть целым числом из области определения или выражением, которое содержит переменную.</Russian>
-  </object>
-  <object id = "MEB_Operator_BOUNDS_IN_PROD_CANNOT_CONTAIN_INDEX_VARIABLE">
-    <German>Die Grenzen im Operator 'prod' dürfen die Indexvariable nicht enthalten.</German>
-    <English>The limits in operator 'prod' are not allowed to contain the index variable.</English>
-    <Ukrainian>Границі оператора 'prod' не мають містити індексної змінної.</Ukrainian>
-    <Russian>Пределы оператора 'prod' не должны содержать индексной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_ROT">
-    <German>Im Operator 'rot' müssen genau vier Parameter stehen.</German>
-    <English>Operator 'rot' must contain exactly four parameters.</English>
-    <Ukrainian>У оператора 'rot' має бути рівно чотири параметра.</Ukrainian>
-    <Russian>У оператора 'rot' должно быть ровно четыре параметра.</Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID">
-    <German>Der Parameter im Operator 'rot' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The parameter in operator 'rot' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>Параметр оператора 'rot' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>Параматр оператора 'rot' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_ROT_IS_INVALID_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_GENERAL_PARAMETER_IN_ROT_IS_INVALID_2">
-    <German>. Parameter im Operator 'rot' muss eine gültige Veränderliche sein.</German>
-    <English>. parameter in operator 'rot' must be a valid variable.</English>
-    <Ukrainian>. параметр оператора 'rot' має бути діючою змінною.</Ukrainian>
-    <Russian>. параметр оператора 'rot' должен быть действительной переменной.</Russian>
-  </object>
-  <object id = "MEB_Operator_PARAMETER_IN_ROT_REPEATED">
-    <German>Die Veränderlichen im Operator 'rot' müssen paarweise verschieden sein.</German>
-    <English>The variables in operator 'rot' must be pairwise distinct.</English>
-    <Ukrainian>Змінні оператора 'rot' мають попарно відрізнятися.</Ukrainian>
-    <Russian>Переменные оператора 'rot' должны попарно отличаться.</Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_1">
-    <German>Der erste Parameter im Operator 'rot' muss ein gültiger 3x1-Matrizenausdruck sein. Das Argument ist jedoch eine </German>
-    <English>The first parameter in operator 'rot' must be a valid 3x1-matrix expression. The argument is a </English>
-    <Ukrainian>Первий параметр оператора 'rot' має бути діючим виразом або діючим 3x1-матричним виразом. Аргументом є </Ukrainian>
-    <Russian>Перший параматр оператора 'rot' должен быть действительным выражением или действительным 3x1-матричным выражением. Аргументом является </Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_2">
-    <German> x </German>
-    <English> x </English>
-    <Ukrainian> x </Ukrainian>
-    <Russian> x </Russian>
-  </object>
-  <object id = "MEB_Operator_FIRST_PARAMETER_IN_ROT_IS_INVALID_3">
-    <German> Matrix.</German>
-    <English> matrix.</English>
-    <Ukrainian> матриця.</Ukrainian>
-    <Russian> матрица.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
-    <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
-    <English>The 1. parameter of the operator 'rot' must be a threedimensional vector.</English>
-    <Ukrainian>Перший параметр опрераора 'rot' має бути тривимірним вектором.</Ukrainian>
-    <Russian>Первый параметр оператора 'rot' должен быть трёхмерным вектором.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_NUMBER_OF_PARAMETERS_IN_SUM">
-    <German>Im Operator 'sum' müssen genau vier parameter stehen.</German>
-    <English>Operator 'sum' must contain exactly four parameters.</English>
-    <Ukrainian>У оператора 'sum' має бути рівно чотири параметра.</Ukrainian>
-    <Russian>У оператора 'sum' должно быть ровно четыре параметра.</Russian>
-  </object>
-  <object id = "MEB_Operator_1_PARAMETER_IN_SUM_IS_INVALID">
-    <German>Der 1. Parameter im Operator 'sum' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-    <English>The 1. parameter in operator 'sum' must be a valid matrix expression. Reported error: </English>
-    <Ukrainian>1. параметр оператора 'sum' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-    <Russian>1. параматр оператора 'sum' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-  </object>
-  <object id = "MEB_Operator_2_PARAMETER_IN_SUM_IS_INVALID">
-    <German>Der 2. Parameter im Operator 'sum' muss eine Variable sein, nach der addiert wird.</German>
-    <English>The 2. parameter in operator 'sum' must be a valid variable by that addition will be performed.</English>
-    <Ukrainian>2. параметр оператора 'sum' має бути діючою змінною, по якій буде здійснюватися додавання.</Ukrainian>
-    <Russian>2. параматр оператора 'sum' должен быть действительной переменной, по которой будет производиться сложение.</Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_1">
-    <German>Der </German>
-    <English>The </English>
-    <Ukrainian></Ukrainian>
-    <Russian></Russian>
-  </object>
-  <object id = "MEB_Operator_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SUM_2">
-    <German>. Parameter im Operator 'sum' muss entweder eine ganze Zahl sein, welche im Definitionsbereich des Matrizenausdrucks liegt, oder ein Ausdruck sein, welcher Veränderliche enthält.</German>
-    <English>. parameter in operator 'sum' must be either an integer, where the matrix expression is defined at, or an expression, containing a variable.</English>
-    <Ukrainian>. параметр оператора 'sum' має бути або цілим числом з області визначення або виразом, що містить змінну.</Ukrainian>
-    <Russian>. параметр оператора 'sum' должен быть целым числом из области определения или выражением, которое содержит переменную.</Russian>
-  </object>
-  <object id = "MEB_Operator_BOUNDS_IN_SUM_CANNOT_CONTAIN_INDEX_VARIABLE">
-    <German>Die Grenzen im Operator 'sum' dürfen die Indexvariable nicht enthalten.</German>
-    <English>The limits in operator 'sum' are not allowed to contain the index variable.</English>
-    <Ukrainian>Границі оператора 'sum' не мають містити індексної змінної.</Ukrainian>
-    <Russian>Пределы оператора 'sum' не должны содержать индексной переменной.</Russian>
-  </object>
-  <object id = "MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED">
-    <German>Berechnung abgebrochen.</German>
-    <English>Computation aborted.</English>
-    <Ukrainian>Обчислення припинено.</Ukrainian>
-    <Russian>Вычисление прекращено.</Russian>
-  </object>
+    <object id = "MEB_MatrixExpression_ROW_MISSING">
+        <German>Die Matrix enthält mindestens eine leere Zeile.</German>
+        <English>The matrix contains at least one empty row.</English>
+        <Ukrainian>Матриця містить щонайменше один порожній рядок.</Ukrainian>
+        <Russian>Матрица содержит по крайней мере одну пустую строку.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_NO_ROWS">
+        <German>Die Matrix enthält keine Zeilen.</German>
+        <English>The matrix contains no rows.</English>
+        <Ukrainian>Матриця не містить жодного рядка.</Ukrainian>
+        <Russian>Матрица не содоржит ни одной строки.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_WRONG_BRACKETS">
+        <German>Falsche Klammerung.</German>
+        <English>Incorrect brackets.</English>
+        <Ukrainian>Неправильні дужки.</Ukrainian>
+        <Russian>Неправильные скобки.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_EMPTY_PARAMETER">
+        <German>Leerer Parameter.</German>
+        <English>Empty parameter.</English>
+        <Ukrainian>Порожній ппараметр.</Ukrainian>
+        <Russian>Пустой параметр.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_NOT_A_MATRIX">
+        <German>Der Ausdruck enthält eine nicht wohldefinierte Matrix.</German>
+        <English>The expression contains a not well-defined matrix.</English>
+        <Ukrainian>Вираз містить неправильно визначену матрицю.</Ukrainian>
+        <Russian>Выражение содержит матрицу, которая задана неверно.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
+        <German>Der Ausdruck ist leer oder unvollständig.</German>
+        <English>The expression is either epmty or incomplete.</English>
+        <Ukrainian>Вираз порожній або неповний.</Ukrainian>
+        <Russian>Выражение пустое либо неполное.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
+        <German>Linke Seite eines binären Operators ist leer.</German>
+        <English>Left side of a binary operator is empty.</English>
+        <Ukrainian>Ліва частина бінарного оператора порожня.</Ukrainian>
+        <Russian>Левая часть бинарного оператора пуста.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
+        <German>Rechte Seite eines binären Operators ist leer.</German>
+        <English>Right side of a binary operator is empty.</English>
+        <Ukrainian>Права частина бінарного оператора порожня.</Ukrainian>
+        <Russian>Правая часть бинарного оператора пуста.</Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED">
+        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
+        <English>The following formula/part of the formula cannot be interpreted: </English>
+        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
+        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+    </object>
+    <object id = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED">
+        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
+        <English>The following formula/part of the formula cannot be interpreted: </English>
+        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
+        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+    </object>
+    <object id = "MEB_Expression_STACK_OVERFLOW">
+        <German>Speicher voll. Die Berechnung wurde beendet.</German>
+        <English>Stack overflow. The computation was aborted.</English>
+        <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>
+        <Russian>Оперативная память переполнена. Вычисление было прекращено.</Russian>
+    </object>
+    <object id = "MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED">
+        <German>Die Summe oder die Differenz zweier auftretender Matrizen ist nicht definiert.</German>
+        <English>The sum or the difference of two occurring matrices is not defined.</English>
+        <Ukrainian>Суму або різницю матриць не визначено.</Ukrainian>
+        <Russian>Сумма или разница матриц не определена.</Russian>
+    </object>
+    <object id = "MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED">
+        <German>Das Produkt zweier auftretender Matrizen ist nicht definiert.</German>
+        <English>The product of two occurring matrices is not defined.</English>
+        <Ukrainian>Добуток матриць не визначено.</Ukrainian>
+        <Russian>Произведение матриц не определено.</Russian>
+    </object>
+    <object id = "MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED">
+        <German>Die Potenz einer auftretender Matrix ist nicht definiert.</German>
+        <English>The power of an occurring matrix is not defined.</English>
+        <Ukrainian>Степінь однієї з матриць невизначена.</Ukrainian>
+        <Russian>Степень одной из матриц неопределена.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_DET_NOT_DEFINED">
+        <German>Die Determinante einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The determinant of an occurring matrix is not defined.</English>
+        <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
+        <Russian>Определитель одной из матриц не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_COS_NOT_DEFINED">
+        <German>Der Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The cosine of an occurring matrix is not defined.</English>
+        <Ukrainian>Косинус даної матриці не визначено.</Ukrainian>
+        <Russian>Косинус данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_COSH_NOT_DEFINED">
+        <German>Der hyperbolische Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The hyperbolic cosine of an occurring matrix is not defined.</English>
+        <Ukrainian>Гіперболичний косинус даної матриці не визначено.</Ukrainian>
+        <Russian>Гиперболический косинус данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
+        <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The exponential function of an occurring matrix is not defined.</English>
+        <Ukrainian>Експоненційна функція даної матриці не визначена.</Ukrainian>
+        <Russian>Экспоненциальная функция данной матрицы не определена.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_LN_NOT_DEFINED">
+        <German>Der Logarithmus einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The logarithm of an occurring matrix is not defined.</English>
+        <Ukrainian>Логарифм функція даної матриці не визначено.</Ukrainian>
+        <Russian>Логарифм функция данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_SIN_NOT_DEFINED">
+        <German>Der Sinus von einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The sine of an occurring matrix is not defined.</English>
+        <Ukrainian>Синус даної матриці не визначено.</Ukrainian>
+        <Russian>Синус данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_SINH_NOT_DEFINED">
+        <German>Der hyperbolische Sinus von einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The hyperbolic sine of an occurring matrix is not defined.</English>
+        <Ukrainian>Гіперболичний синус даної матриці не визначено.</Ukrainian>
+        <Russian>Гиперболический синус данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_TR_NOT_DEFINED">
+        <German>Die Spur einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The trace of an occurring matrix is not defined.</English>
+        <Ukrainian>Слід однієї з матриць невизначений.</Ukrainian>
+        <Russian>След одной из матриц не определён.</Russian>
+    </object>
+  
+    <object id = "MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1">
+        <German>Zu wenig Parameter im Operator </German>
+        <English>Not enough parameters in operator </English>
+        <Ukrainian>Замало параметрів у оператора </Ukrainian>
+        <Russian>Недостаточно параметров у оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1">
+        <German>Zu viele Parameter im Operator </German>
+        <English>Too many parameters in operator </English>
+        <Ukrainian>Забагато параметрів у оператора </Ukrainian>
+        <Russian>Слишком много параметров у оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+        <German> muss im Ausdruck im </German>
+        <English> must occur in the </English>
+        <Ukrainian> повинна міститися у </Ukrainian>
+        <Russian> должна встречаться в </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+        <German> Parameter des Operators </German>
+        <English> parameter of the operator </English>
+        <Ukrainian> параметрі оператора </Ukrainian>
+        <Russian> параметре оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+        <German> vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+        <German> darf im Ausdruck im </German>
+        <English> must not occur in the </English>
+        <Ukrainian> не повинна міститися у </Ukrainian>
+        <Russian> не должна встречаться в </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+        <German> nicht vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2">
+        <German> darf in den Parametern des Operators </German>
+        <English> is not allowed to occur twice in the parameters of the operator </English>
+        <Ukrainian> не повинна міститися у параметрах оператора </Ukrainian>
+        <Russian> не должна встречаться в параметрах оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3">
+        <German> nicht mehrmals vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>частіше одного разу.</Ukrainian>
+        <Russian>чаще одного раза.</Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must contain least </English>
+        <Ukrainian> має містити щонайменше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must contain at most </English>
+        <Ukrainian> має містити щонайбільше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+        <German> Variablen enthalten.</German>
+        <English> variables.</English>
+        <Ukrainian> змінних.</Ukrainian>
+        <Russian> переменных.</Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_1">
+        <German>Die ganze Zahl im </German>
+        <English>The integer value in the </English>
+        <Ukrainian>Ціле число у </Ukrainian>
+        <Russian>Целое число в </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must be at least </English>
+        <Ukrainian> має бути щонайменше </Ukrainian>
+        <Russian> должно быть минимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must be at most </English>
+        <Ukrainian> має бути щонайбільш </Ukrainian>
+        <Russian> должно быть максимум </Russian>
+    </object>
+    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_6">
+        <German> betragen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+        <German>. Parameter im Operator </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметр оператора </Ukrainian>
+        <Russian>. параметр оператора </Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+        <German> muss eine gültige Veränderliche sein.</German>
+        <English> must be a valid variable.</English>
+        <Ukrainian> має бути діючою змінною.</Ukrainian>
+        <Russian> должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+        <German> muss eine gültige Gleichung der Form 'f = g' sein.</German>
+        <English> must be a valid equation of the form 'f = g'.</English>
+        <Ukrainian> має бути діючим рівнянням у формі 'f = g'.</Ukrainian>
+        <Russian> должен быть действительным уравнением в форме 'f = g'.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+        <German> muss ein gültiger Ausdruck sein.</German>
+        <English> must be a valid expression.</English>
+        <Ukrainian> має бути діючим виразом.</Ukrainian>
+        <Russian> должен быть действительным выражением.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+        <German> muss eine ganze Zahl sein.</German>
+        <English> must be an integer.</English>
+        <Ukrainian> має бути цілим числом.</Ukrainian>
+        <Russian> должен быть целым числом.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+        <German> muss ein gültiger logischer Ausdruck sein.</German>
+        <English> must be a valid logical expression.</English>
+        <Ukrainian> має бути діючим логічним виразом.</Ukrainian>
+        <Russian> должен быть действительным логическим выражением.</Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+        <German> muss ein gültiger Matrizenausdruck sein.</German>
+        <English> must be a valid matrix expression.</English>
+        <Ukrainian> має бути діючим матричним виразом.</Ukrainian>
+        <Russian> должен быть действительным матричным выражением.</Russian>
+    </object>
+    <object id = "MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID">
+        <German>Der 3. Parameter im Operator 'diff' muss entweder eine gültige Variable oder eine nicht-negative ganze Zahl sein.</German>
+        <English>The 3. parameter in the operator 'diff' must either be a valid variable or a non-negative integer.</English>
+        <Ukrainian>3. параметр оператора 'diff' має бути діючою змінною або невід'ємним цілим числом.</Ukrainian>
+        <Russian>3. параметр оператора 'diff' должен быть действительной переменной или неотрицательным целым числом.</Russian>
+    </object>
+  
+    <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
+        <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
+        <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
+        <Ukrainian>Неможливо знайти ковариацію, оскільки параметри не є двовимірними точками.</Ukrainian>
+        <Russian>Невозможно найти коваріацію, поскольку параметры не являются двумерніми точками.</Russian>
+    </object>    
+    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
+        <German>. Parameter im Operator 'cross' muss ein Vektor der Dimension </German>
+        <English>. parameter of the operator 'cross' must be a vector of dimension </English>
+        <Ukrainian>. параметр оператора 'cross' має бути вектором розмірності </Ukrainian>
+        <Russian>. параметр оператора 'cross' должен быть вектором размерности </Russian>
+    </object>
+    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
+        <German> sein.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>    
+    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
+        <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
+        <English>The 1. parameter of the operator 'rot' must be a threedimensional vector.</English>
+        <Ukrainian>Перший параметр опрераора 'rot' має бути тривимірним вектором.</Ukrainian>
+        <Russian>Первый параметр оператора 'rot' должен быть трёхмерным вектором.</Russian>  
+    </object>
+    <object id = "MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED">
+        <German>Berechnung abgebrochen.</German>
+        <English>Computation aborted.</English>
+        <Ukrainian>Обчислення припинено.</Ukrainian>
+        <Russian>Вычисление прекращено.</Russian>
+    </object>
 </objects>
