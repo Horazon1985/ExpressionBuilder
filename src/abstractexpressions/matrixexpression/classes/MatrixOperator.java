@@ -894,7 +894,7 @@ public class MatrixOperator extends MatrixExpression {
 
         Dimension dim = factor.getDimension();
         if (dim.width != dim.height) {
-            throw new EvaluationException(Translator.translateExceptionMessage("TO DO"));
+            throw new EvaluationException(Translator.translateExceptionMessage("MEB_Operator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX"));
         }
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {

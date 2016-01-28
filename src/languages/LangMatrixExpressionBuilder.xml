@@ -83,11 +83,11 @@
         <Ukrainian>Степінь однієї з матриць невизначена.</Ukrainian>
         <Russian>Степень одной из матриц неопределена.</Russian>
     </object>
-    <object id = "MEB_MatrixFunction_DET_NOT_DEFINED">
-        <German>Die Determinante einer auftretenden Matrix ist nicht definiert.</German>
-        <English>The determinant of an occurring matrix is not defined.</English>
-        <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
-        <Russian>Определитель одной из матриц не определён.</Russian>
+    <object id = "MEB_MatrixFunction_ABS_NOT_DEFINED">
+        <German>Der Betrag einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The absolute value of an occurring matrix is not defined.</English>
+        <Ukrainian>??? з матриць невизначений.</Ukrainian>
+        <Russian>??? одной из матриц не определён.</Russian>
     </object>
     <object id = "MEB_MatrixFunction_COS_NOT_DEFINED">
         <German>Der Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
@@ -100,6 +100,12 @@
         <English>The hyperbolic cosine of an occurring matrix is not defined.</English>
         <Ukrainian>Гіперболичний косинус даної матриці не визначено.</Ukrainian>
         <Russian>Гиперболический косинус данной матрицы не определён.</Russian>
+    </object>
+    <object id = "MEB_MatrixFunction_DET_NOT_DEFINED">
+        <German>Die Determinante einer auftretenden Matrix ist nicht definiert.</German>
+        <English>The determinant of an occurring matrix is not defined.</English>
+        <Ukrainian>Визначник однієї з матриць невизначений.</Ukrainian>
+        <Russian>Определитель одной из матриц не определён.</Russian>
     </object>
     <object id = "MEB_MatrixFunction_EXP_NOT_DEFINED">
         <German>Die Exponentialfunktion von einer auftretenden Matrix ist nicht definiert.</German>
@@ -373,6 +379,12 @@
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>    
+    <object id = "MEB_Operator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
+        <German>Der 1. Parameter im Operator 'prod' muss eine quadratische Matrix sein.</German>
+        <English>The 1. parameter of the operator 'prod' must be square matrix.</English>
+        <Ukrainian>Перший параметр опрераора 'prod' має бути ???.</Ukrainian>
+        <Russian>Первый параметр оператора 'prod' должен быть ???.</Russian>  
+    </object>
     <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
         <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
         <English>The 1. parameter of the operator 'rot' must be a threedimensional vector.</English>
