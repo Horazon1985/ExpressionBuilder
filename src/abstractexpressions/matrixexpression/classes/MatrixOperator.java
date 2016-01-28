@@ -557,16 +557,24 @@ public class MatrixOperator extends MatrixExpression {
         
         // Nun wird noch operatorspezifisch vereinfacht.
         switch (type) {
+            case cov:
+                return operator.simplifyTrivialCov();
+            case cross:
+                return operator.simplifyTrivialCross();
             case diff:
                 return operator.simplifyTrivialDiff();
             case div:
                 return operator.simplifyTrivialDiv();
+            case grad:
+                return operator.simplifyTrivialGrad();
             case integral:
                 return operator.simplifyTrivialInt();
             case laplace:
                 return operator.simplifyTrivialLaplace();
             case prod:
                 return operator.simplifyTrivialProd();
+            case rot:
+                return operator.simplifyTrivialRot();
             case sum:
                 return operator.simplifyTrivialSum();
             default:
