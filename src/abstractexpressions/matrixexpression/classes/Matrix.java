@@ -4,10 +4,13 @@ import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Matrix extends MatrixExpression {
 
@@ -269,6 +272,10 @@ public class Matrix extends MatrixExpression {
      */
     public boolean isNilpotentMatrix() {
 
+        if (!this.isSquareMatrix()) {
+            return false;
+        }
+
         Dimension dim = this.getDimension();
         if (this.isUpperTriangularMatrix() || this.isLowerTriangularMatrix()) {
             // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.
@@ -287,9 +294,71 @@ public class Matrix extends MatrixExpression {
         if (this.isRationalMatrix()) {
             int exponent = 1;
             MatrixExpression powerOfMatrix = this;
+            // Prüfung, ob m^(dim.height) == 0 liefert mit m = this. 
             try {
                 while (!powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width)) && exponent <= dim.height) {
                     powerOfMatrix = powerOfMatrix.mult(this).simplify();
+                    exponent++;
+                }
+                return powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width));
+            } catch (EvaluationException e) {
+                return false;
+            }
+        }
+
+        return false;
+
+    }
+
+    /**
+     * Gibt zurück, ob eine Matrix A = (a_{i, j}) Dreiecksgestalt besitzt und
+     * unipotent ist (d.h. auf der Diagonalen stehen nur Einsen), ODER ob A
+     * rational und unipotent ist.
+     */
+    public boolean isUnipotentMatrix() {
+
+        if (!this.isSquareMatrix()) {
+            return false;
+        }
+
+        Dimension dim = this.getDimension();
+        if (this.isUpperTriangularMatrix() || this.isLowerTriangularMatrix()) {
+            // Ab hier ist this eine quadratische Matrix in Dreiecksgestalt.
+            for (int i = 0; i < dim.height; i++) {
+                if (!this.entry[i][i].equals(ONE)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        /* 
+         Nächster Test: Matrix ist rational und es gibt eine Potenz der Ordnung 
+         <= dim, die eine Nullmatrix ergibt.
+         */
+        if (this.isRationalMatrix()) {
+            int exponent = 1;
+            MatrixExpression powerOfMatrix = this;
+            // m = Matrix - Id berechnen.
+            Expression[][] entry = new Expression[dim.width][dim.height];
+            for (int i = 0; i < dim.height; i++) {
+                for (int j = 0; j < dim.width; j++) {
+                    if (i == j){
+                        try {
+                            entry[i][j] = this.getEntry(i, j).sub(ONE).simplify();
+                        } catch (EvaluationException ex) {
+                            return false;
+                        }
+                    } else {
+                        entry[i][j] = this.getEntry(i, j);
+                    }
+                }
+            }
+            Matrix mMinusId = new Matrix(entry);
+            // Prüfung, ob m^(dim.height) == 0 liefert. 
+            try {
+                while (!powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width)) && exponent <= dim.height) {
+                    powerOfMatrix = powerOfMatrix.mult(mMinusId).simplify();
                     exponent++;
                 }
                 return powerOfMatrix.equals(MatrixExpression.getZeroMatrix(dim.height, dim.width));
@@ -620,17 +689,17 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public boolean containsApproximates(){
+    public boolean containsApproximates() {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                if (this.entry[i][j].containsApproximates()){
+                if (this.entry[i][j].containsApproximates()) {
                     return true;
                 }
             }
         }
         return false;
     }
-    
+
     @Override
     public MatrixExpression copy() {
 
