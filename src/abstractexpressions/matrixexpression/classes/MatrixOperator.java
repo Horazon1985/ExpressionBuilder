@@ -25,6 +25,20 @@ public class MatrixOperator extends MatrixExpression {
     private Object[] params;
     private boolean precise;
 
+    // Patterns für die einzelnen Matrizenoperatoren.
+    public static final String patternCov = "cov(matexpr+)";
+    public static final String patternCross = "cross(matexpr+)";
+    public static final String patternDiff = "diff(matexpr,var+)";
+    public static final String patternDiffWithOrder = "diff(matexpr,var,integer(0,2147483647))";
+    public static final String patternDiv = "div(matexpr,uniquevar+)";
+    public static final String patternGrad = "grad(matexpr,uniquevar+)";
+    public static final String patternIntIndef = "int(matexpr,var)";
+    public static final String patternIntDef = "int(matexpr,var(!2,!3),expr,expr)";
+    public static final String patternLaplace = "laplace(matexpr,uniquevar+)";
+    public static final String patternProd = "prod(matexpr,var(!2,!3),expr,expr)";
+    public static final String patternRot = "rot(matexpr,uniquevar,uniquevar,uniquevar)";
+    public static final String patternSum = "sum(matexpr,var(!2,!3),expr,expr)";
+    
     public MatrixOperator() {
     }
 
@@ -101,39 +115,39 @@ public class MatrixOperator extends MatrixExpression {
 
         switch (type) {
             case cov:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "cov(matexpr+)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternCov);
             case cross:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "cross(matexpr+)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternCross);
             case diff:
                 if (params.length != 3) {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "diff(matexpr,var+)");
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiff);
                 }
                 try {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "diff(matexpr,var+)");
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiff);
                 } catch (ExpressionException e) {
                     try {
-                        return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "diff(matexpr,var,integer(0,2147483647))");
+                        return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiffWithOrder);
                     } catch (ExpressionException ex) {
                         throw new ExpressionException(Translator.translateExceptionMessage("MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
                     }
                 }
             case div:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "div(matexpr,uniquevar+)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiv);
             case grad:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "grad(matexpr,uniquevar+)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternGrad);
             case integral:
                 if (params.length <= 2) {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "int(matexpr,var)");
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternIntIndef);
                 }
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "int(matexpr,var(!2,!3),expr,expr)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternIntDef);
             case laplace:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "laplace(matexpr,uniquevar+)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternLaplace);
             case prod:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "prod(matexpr,var(!2,!3),expr,expr)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternProd);
             case rot:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "rot(matexpr,uniquevar,uniquevar,uniquevar)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternRot);
             case sum:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, "sum(matexpr,var(!2,!3),expr,expr)");
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternSum);
             // Sollte theoretisch nie vorkommen.
             default:
                 return new MatrixOperator();
