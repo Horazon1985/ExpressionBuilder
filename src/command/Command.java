@@ -23,7 +23,7 @@ public class Command {
     public static final String patternSolveWithParameter = "solve(equation,var)";
     public static final String patternSolveApprox = "solve(equation(0,1),expr(0),expr(0))";
     public static final String patternSolveApproxWithNumberOfIntervals = "solve(equation(0,1),expr(0),expr(0),integer(0,2147483647))";
-    public static final String patternSolveSystem = "solve(equation+,uniquevar+)";
+    public static final String patternSolveSystem = "solvesystem(equation+,uniquevar+)";
     public static final String patternTable = "table(logexpr)";
     public static final String patternUndef = "undef(var+)";
     public static final String patternUndefAll = "undefall()";

@@ -138,254 +138,256 @@
         <Russian>След одной из матриц не определён.</Russian>
     </object>
   
-    <object id = "MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_1">
+    <!-- Fehlermeldungen für das Kompilieren eines Standardmatrizenoperators -->  
+  
+    <object id = "MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1">
         <German>Zu wenig Parameter im Operator </German>
         <English>Not enough parameters in operator </English>
         <Ukrainian>Замало параметрів у оператора </Ukrainian>
         <Russian>Недостаточно параметров у оператора </Russian>
     </object>
-    <object id = "MEB_Operator_NOT_ENOUGH_PARAMETER_IN_OPERATOR_2">
+    <object id = "MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2">
         <German>.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_1">
+    <object id = "MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1">
         <German>Zu viele Parameter im Operator </German>
         <English>Too many parameters in operator </English>
         <Ukrainian>Забагато параметрів у оператора </Ukrainian>
         <Russian>Слишком много параметров у оператора </Russian>
     </object>
-    <object id = "MEB_Operator_TOO_MANY_PARAMETER_IN_OPERATOR_2">
+    <object id = "MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2">
         <German>.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
         <German>Die Variable </German>
         <English>The variable </English>
         <Ukrainian>Змінна </Ukrainian>
         <Russian>Переменная </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
         <German> muss im Ausdruck im </German>
         <English> must occur in the </English>
         <Ukrainian> повинна міститися у </Ukrainian>
         <Russian> должна встречаться в </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
         <German> Parameter des Operators </German>
         <English> parameter of the operator </English>
         <Ukrainian> параметрі оператора </Ukrainian>
         <Russian> параметре оператора </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
         <German> vorkommen.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
         <German>Die Variable </German>
         <English>The variable </English>
         <Ukrainian>Змінна </Ukrainian>
         <Russian>Переменная </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
         <German> darf im Ausdruck im </German>
         <English> must not occur in the </English>
         <Ukrainian> не повинна міститися у </Ukrainian>
         <Russian> не должна встречаться в </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
         <German>. Parameter des Operators </German>
         <English>. parameter of the operator </English>
         <Ukrainian>. параметрі оператора </Ukrainian>
         <Russian>. параметре оператора </Russian>
     </object>
-    <object id = "MEB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+    <object id = "MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
         <German> nicht vorkommen.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1">
+    <object id = "MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_1">
         <German>Die Variable </German>
         <English>The variable </English>
         <Ukrainian>Змінна </Ukrainian>
         <Russian>Переменная </Russian>
     </object>
-    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2">
+    <object id = "MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_2">
         <German> darf in den Parametern des Operators </German>
         <English> is not allowed to occur twice in the parameters of the operator </English>
         <Ukrainian> не повинна міститися у параметрах оператора </Ukrainian>
         <Russian> не должна встречаться в параметрах оператора </Russian>
     </object>
-    <object id = "MEB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3">
+    <object id = "MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_3">
         <German> nicht mehrmals vorkommen.</German>
         <English>.</English>
         <Ukrainian>частіше одного разу.</Ukrainian>
         <Russian>чаще одного раза.</Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
         <German>Der Ausdruck im </German>
         <English>The expression in the </English>
         <Ukrainian>Вираз у </Ukrainian>
         <Russian>Выражение в </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
         <German>. Parameter des Operators </German>
         <English>. parameter of the operator </English>
         <Ukrainian>. параметрі оператора </Ukrainian>
         <Russian>. параметре оператора </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
         <German> muss mindestens </German>
         <English> must contain least </English>
         <Ukrainian> має містити щонайменше </Ukrainian>
         <Russian> должно содержать минимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
         <German> und höchstens </German>
         <English> and at most </English>
         <Ukrainian> та щонайбільше </Ukrainian>
         <Russian> и максимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
         <German> muss höchstens </German>
         <English> must contain at most </English>
         <Ukrainian> має містити щонайбільше </Ukrainian>
         <Russian> должно содержать минимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
         <German> Variablen enthalten.</German>
         <English> variables.</English>
         <Ukrainian> змінних.</Ukrainian>
         <Russian> переменных.</Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_1">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_1">
         <German>Die ganze Zahl im </German>
         <English>The integer value in the </English>
         <Ukrainian>Ціле число у </Ukrainian>
         <Russian>Целое число в </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_2">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_2">
         <German>. Parameter des Operators </German>
         <English>. parameter of the operator </English>
         <Ukrainian>. параметрі оператора </Ukrainian>
         <Russian>. параметре оператора </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_3">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_3">
         <German> muss mindestens </German>
         <English> must be at least </English>
         <Ukrainian> має бути щонайменше </Ukrainian>
         <Russian> должно быть минимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_4">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_4">
         <German> und höchstens </German>
         <English> and at most </English>
         <Ukrainian> та щонайбільше </Ukrainian>
         <Russian> и максимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_5">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_5">
         <German> muss höchstens </German>
         <English> must be at most </English>
         <Ukrainian> має бути щонайбільш </Ukrainian>
         <Russian> должно быть максимум </Russian>
     </object>
-    <object id = "MEB_Operator_BOUNDS_FOR_PARAMETER_6">
+    <object id = "MEB_MatrixOperator_BOUNDS_FOR_PARAMETER_6">
         <German> betragen.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
         <German>Der </German>
         <English>The </English>
         <Ukrainian></Ukrainian>
         <Russian></Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
         <German>. Parameter im Operator </German>
         <English>. parameter of the operator </English>
         <Ukrainian>. параметр оператора </Ukrainian>
         <Russian>. параметр оператора </Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
         <German> muss eine gültige Veränderliche sein.</German>
         <English> must be a valid variable.</English>
         <Ukrainian> має бути діючою змінною.</Ukrainian>
         <Russian> должен быть действительной переменной.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
         <German> muss eine gültige Gleichung der Form 'f = g' sein.</German>
         <English> must be a valid equation of the form 'f = g'.</English>
         <Ukrainian> має бути діючим рівнянням у формі 'f = g'.</Ukrainian>
         <Russian> должен быть действительным уравнением в форме 'f = g'.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
         <German> muss ein gültiger Ausdruck sein.</German>
         <English> must be a valid expression.</English>
         <Ukrainian> має бути діючим виразом.</Ukrainian>
         <Russian> должен быть действительным выражением.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
         <German> muss eine ganze Zahl sein.</German>
         <English> must be an integer.</English>
         <Ukrainian> має бути цілим числом.</Ukrainian>
         <Russian> должен быть целым числом.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
         <German> muss ein gültiger logischer Ausdruck sein.</German>
         <English> must be a valid logical expression.</English>
         <Ukrainian> має бути діючим логічним виразом.</Ukrainian>
         <Russian> должен быть действительным логическим выражением.</Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
         <German> muss ein gültiger Matrizenausdruck sein.</German>
         <English> must be a valid matrix expression.</English>
         <Ukrainian> має бути діючим матричним виразом.</Ukrainian>
         <Russian> должен быть действительным матричным выражением.</Russian>
     </object>
-    <object id = "MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID">
+    <object id = "MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID">
         <German>Der 3. Parameter im Operator 'diff' muss entweder eine gültige Variable oder eine nicht-negative ganze Zahl sein.</German>
         <English>The 3. parameter in the operator 'diff' must either be a valid variable or a non-negative integer.</English>
         <Ukrainian>3. параметр оператора 'diff' має бути діючою змінною або невід'ємним цілим числом.</Ukrainian>
         <Russian>3. параметр оператора 'diff' должен быть действительной переменной или неотрицательным целым числом.</Russian>
     </object>
   
-    <object id = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS">
+    <object id = "MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS">
         <German>Die Kovarianz kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
         <English>The covariance cannot be computetd, since the occurring parameters are not two dimensional points.</English>
         <Ukrainian>Неможливо знайти ковариацію, оскільки параметри не є двовимірними точками.</Ukrainian>
         <Russian>Невозможно найти коваріацію, поскольку параметры не являются двумерніми точками.</Russian>
     </object>    
-    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
         <German>Der </German>
         <English>The </English>
         <Ukrainian></Ukrainian>
         <Russian></Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
         <German>. Parameter im Operator 'cross' muss ein Vektor der Dimension </German>
         <English>. parameter of the operator 'cross' must be a vector of dimension </English>
         <Ukrainian>. параметр оператора 'cross' має бути вектором розмірності </Ukrainian>
         <Russian>. параметр оператора 'cross' должен быть вектором размерности </Russian>
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
         <German> sein.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>    
-    <object id = "MEB_Operator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
+    <object id = "MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
         <German>Der 1. Parameter im Operator 'prod' muss eine quadratische Matrix sein.</German>
         <English>The 1. parameter of the operator 'prod' must be square matrix.</English>
         <Ukrainian>Перший параметр опрераора 'prod' має бути ???.</Ukrainian>
         <Russian>Первый параметр оператора 'prod' должен быть ???.</Russian>  
     </object>
-    <object id = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
         <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
         <English>The 1. parameter of the operator 'rot' must be a threedimensional vector.</English>
         <Ukrainian>Перший параметр опрераора 'rot' має бути тривимірним вектором.</Ukrainian>
