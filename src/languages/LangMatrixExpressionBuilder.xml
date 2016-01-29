@@ -86,8 +86,8 @@
     <object id = "MEB_MatrixFunction_ABS_NOT_DEFINED">
         <German>Der Betrag einer auftretenden Matrix ist nicht definiert.</German>
         <English>The absolute value of an occurring matrix is not defined.</English>
-        <Ukrainian>??? з матриць невизначений.</Ukrainian>
-        <Russian>??? одной из матриц не определён.</Russian>
+        <Ukrainian>Модуль однієї з матриць невизначений.</Ukrainian>
+        <Russian>Модуль одной из матриц не определён.</Russian>
     </object>
     <object id = "MEB_MatrixFunction_COS_NOT_DEFINED">
         <German>Der Kosinus von einer auftretenden Matrix ist nicht definiert.</German>
@@ -229,6 +229,24 @@
         <English>.</English>
         <Ukrainian>частіше одного разу.</Ukrainian>
         <Russian>чаще одного раза.</Russian>
+    </object>
+    <object id = "MEB_MatrixOperator_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "MEB_MatrixOperator_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "MEB_MatrixOperator_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3">
+        <German> muss ein '='-Zeichen enthalten.</German>
+        <English> must contain a '=' sign.</English>
+        <Ukrainian> має містити символ '='.</Ukrainian>
+        <Russian> должно содержать символ '='.</Russian>
     </object>
     <object id = "MEB_MatrixOperator_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
         <German>Der Ausdruck im </German>
@@ -384,8 +402,8 @@
     <object id = "MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
         <German>Der 1. Parameter im Operator 'prod' muss eine quadratische Matrix sein.</German>
         <English>The 1. parameter of the operator 'prod' must be square matrix.</English>
-        <Ukrainian>Перший параметр опрераора 'prod' має бути ???.</Ukrainian>
-        <Russian>Первый параметр оператора 'prod' должен быть ???.</Russian>  
+        <Ukrainian>Перший параметр опрераора 'prod' має бути квадратною матрицєю.</Ukrainian>
+        <Russian>Первый параметр оператора 'prod' должен быть квадратной матрицей.</Russian>  
     </object>
     <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT">
         <German>Der 1. Parameter im Operator 'rot' muss ein dreidimensionaler Vektor sein.</German>
