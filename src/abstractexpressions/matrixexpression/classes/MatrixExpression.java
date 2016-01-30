@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Variable;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -671,6 +672,18 @@ public abstract class MatrixExpression implements AbstractExpression {
         return vars;
     }
 
+    @Override
+    public HashSet<String> getContainedIndeterminates(){
+        HashSet<String> vars = getContainedVars();
+        HashSet<String> varsWithPredefinedValues = Variable.getVariablesWithPredefinedValues();
+        for (String var : vars){
+            if (varsWithPredefinedValues.contains(var)){
+                vars.remove(var);
+            }
+        }
+        return vars;
+    }
+    
     /**
      * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
      * (precise = false).
@@ -708,7 +721,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException;
+    public abstract MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException;
 
     /**
      * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.

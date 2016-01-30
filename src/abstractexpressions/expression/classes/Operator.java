@@ -41,7 +41,7 @@ public class Operator extends Expression {
     public static final String patternSum = "sum(expr,var(!2,!3),expr,expr)";
     public static final String patternTaylor = "taylor(expr,var(!2),expr,integer(0,2147483647))";
     public static final String patternVar = "var(expr+)";
-    
+
     public Operator() {
     }
 
@@ -256,37 +256,41 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
+    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
         Object[] paramsEvaluated = new Object[this.params.length];
 
         /*
          Bei den Operator INT, PROD und SUM sollen die (lokalen) Variablen
          (Integrationsvariable/Index) NICHT ausgewertet werden; Daher die
          Strategie: Erst die lokale Variable aus vars entfernen (sofern
-         vorhanden), dann evaluate() anwenden, dann wieder hinzufügen.
+         vorhanden), dann evaluateByInsertingDefinedVars() anwenden, dann wieder hinzufügen.
          */
         if (this.type.equals(TypeOperator.integral) || this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
 
             String localVar = (String) this.params[1];
-            if (vars.contains(localVar)) {
-                vars.remove(localVar);
-                for (int i = 0; i < this.params.length; i++) {
-                    if (this.params[i] instanceof Expression) {
-                        paramsEvaluated[i] = ((Expression) this.params[i]).evaluate(vars);
-                    } else {
-                        paramsEvaluated[i] = this.params[i];
-                    }
+            /*
+            Falls die lokale variable (Indexvariable, Integrationsvariable) einen
+            vordefinierten Wert besitzt, so soll dieser kurzzeitig vergessen werden.
+            */
+            Expression valueOfLocalVar = Variable.create(localVar).getPreciseExpression();
+            Variable.setPreciseExpression(localVar, null);
+            for (int i = 0; i < this.params.length; i++) {
+                if (this.params[i] instanceof Expression) {
+                    paramsEvaluated[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
+                } else {
+                    paramsEvaluated[i] = this.params[i];
                 }
-                vars.add(localVar);
-                return new Operator(this.type, paramsEvaluated, this.precise);
             }
+            // Den Wert der lokalen Variable wiederherstellen.
+            Variable.setPreciseExpression(localVar, valueOfLocalVar);
+            return new Operator(this.type, paramsEvaluated, this.precise);
 
         }
 
         // Alle anderen Operatoren.
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                paramsEvaluated[i] = ((Expression) this.params[i]).evaluate(vars);
+                paramsEvaluated[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
             } else {
                 paramsEvaluated[i] = this.params[i];
             }
@@ -1537,12 +1541,12 @@ public class Operator extends Expression {
         if (exprs.length == 2) {
             return exprs[0].add(exprs[1]).div(2).add(exprs[0].sub(exprs[1]).abs().div(2));
         }
-        
+
         Expression[] exprsPrevious = new Expression[exprs.length - 1];
-        for (int i = 0; i < exprs.length - 1; i++){
+        for (int i = 0; i < exprs.length - 1; i++) {
             exprsPrevious[i] = exprs[i];
         }
-        
+
         Expression maxPrevious = getMaxExplicitly(exprsPrevious);
         return maxPrevious.add(exprs[exprs.length - 1]).div(2).add(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
 
@@ -1566,17 +1570,17 @@ public class Operator extends Expression {
         if (exprs.length == 2) {
             return exprs[0].add(exprs[1]).div(2).sub(exprs[0].sub(exprs[1]).abs().div(2));
         }
-        
+
         Expression[] exprsPrevious = new Expression[exprs.length - 1];
-        for (int i = 0; i < exprs.length - 1; i++){
+        for (int i = 0; i < exprs.length - 1; i++) {
             exprsPrevious[i] = exprs[i];
         }
-        
+
         Expression maxPrevious = getMinExplicitly(exprsPrevious);
         return maxPrevious.add(exprs[exprs.length - 1]).div(2).sub(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
 
     }
-    
+
     /**
      * Vereinfacht den mod-Operator, soweit es möglich ist.
      *

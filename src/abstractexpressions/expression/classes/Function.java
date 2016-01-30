@@ -239,8 +239,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
-        return new Function(this.left.evaluate(vars), this.type);
+    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return new Function(this.left.evaluateByInsertingDefinedVars(), this.type);
     }
 
     @Override

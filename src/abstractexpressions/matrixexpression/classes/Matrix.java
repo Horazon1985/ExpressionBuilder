@@ -9,8 +9,6 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Matrix extends MatrixExpression {
 
@@ -727,12 +725,12 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
 
         Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
-                evaluatedEntries[i][j] = this.getEntry(i, j).evaluate(vars);
+                evaluatedEntries[i][j] = this.getEntry(i, j).evaluateByInsertingDefinedVars();
             }
         }
         return new Matrix(evaluatedEntries);

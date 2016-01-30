@@ -170,8 +170,8 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
-        return new MatrixFunction(this.left.evaluate(vars), this.type);
+    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixFunction(this.left.evaluateByInsertingDefinedVars(), this.type);
     }
 
     @Override

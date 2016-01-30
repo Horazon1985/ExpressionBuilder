@@ -1,5 +1,6 @@
 package abstractexpressions.logicalexpression.classes;
 
+import abstractexpressions.expression.classes.Variable;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
@@ -393,6 +394,11 @@ public abstract class LogicalExpression implements AbstractExpression {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
+    }
+    
+    @Override
+    public HashSet<String> getContainedIndeterminates(){
+        return getContainedVars();
     }
     
     /**

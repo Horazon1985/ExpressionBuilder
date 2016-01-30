@@ -249,13 +249,13 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
+    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
-                resultParams[i] = ((MatrixExpression) this.params[i]).evaluate(vars);
+                resultParams[i] = ((MatrixExpression) this.params[i]).evaluateByInsertingDefinedVars();
             } else if (this.params[i] instanceof Expression){
-                resultParams[i] = ((Expression) this.params[i]).evaluate(vars);
+                resultParams[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
             } else {
                 resultParams[i] = this.params[i];
             }

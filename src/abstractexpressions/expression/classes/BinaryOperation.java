@@ -110,8 +110,8 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
-        return new BinaryOperation(this.left.evaluate(vars), this.right.evaluate(vars), this.type);
+    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return new BinaryOperation(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars(), this.type);
     }
 
     @Override

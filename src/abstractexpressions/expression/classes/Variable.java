@@ -2,7 +2,6 @@ package abstractexpressions.expression.classes;
 
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
 import translator.Translator;
@@ -10,7 +9,7 @@ import translator.Translator;
 public class Variable extends Expression {
 
     private static HashMap<String, Variable> variables = new HashMap<>();
-    private static HashMap<String, Variable> preciseExpressions = new HashMap<>();
+//    private static HashMap<String, Variable> preciseExpressions = new HashMap<>();
     private final String name;
     private double value;
     private Expression preciseExpression;
@@ -21,7 +20,7 @@ public class Variable extends Expression {
      vorkommenden Variablen der precise-Wert auf false gesetzt (und nach
      Beenden des Approximationsmodus wieder auf true). Dies bewirkt, dass der
      exakte Wert (welcher in preciseExpression gespeichert ist) sofort
-     (approximativ per evaluate()) ausgewertet und zurückgegeben wird.
+     (approximativ per evaluateByInsertingDefinedVars()) ausgewertet und zurückgegeben wird.
      Benötigt wird dies eigentlich nur bei PI.
      */
     private boolean precise;
@@ -29,7 +28,7 @@ public class Variable extends Expression {
     private Variable(String name, double value) {
         this.name = name;
         this.value = value;
-        this.preciseExpression = new Constant(new BigDecimal(value));
+        this.preciseExpression = null;
         this.precise = true;
     }
 
@@ -75,7 +74,6 @@ public class Variable extends Expression {
             } else {
                 Variable result = new Variable(name, 0);
                 variables.put(name, result);
-                preciseExpressions.put(name, result);
                 return result;
             }
         }
@@ -96,7 +94,6 @@ public class Variable extends Expression {
             } else {
                 Variable result = new Variable(name, value);
                 variables.put(name, result);
-                preciseExpressions.put(name, result);
                 return result;
             }
         }
@@ -117,7 +114,6 @@ public class Variable extends Expression {
             } else {
                 Variable result = new Variable(name, preciseExpression);
                 variables.put(name, result);
-                preciseExpressions.put(name, result);
                 return result;
             }
         }
@@ -134,7 +130,6 @@ public class Variable extends Expression {
         }
         if (variables.containsKey(name)) {
             variables.get(name).value = value;
-            preciseExpressions.get(name).preciseExpression = new Constant(value);
         } else {
             Variable.create(name, value);
         }
@@ -148,13 +143,6 @@ public class Variable extends Expression {
             } else {
                 Variable.create("pi", Math.PI);
             }
-        } else if (preciseExpressions.containsKey(name)) {
-            try {
-                variables.get(name).value = preciseExpression.evaluate();
-            } catch (EvaluationException e) {
-                variables.get(name).value = Double.NaN;
-            }
-            preciseExpressions.get(name).preciseExpression = preciseExpression;
         } else {
             Variable.create(name, preciseExpression);
         }
@@ -163,15 +151,9 @@ public class Variable extends Expression {
     public static void setPrecise(String name, boolean precise) {
         if (variables.containsKey(name)) {
             variables.get(name).precise = precise;
-            if (!name.equals("pi")) {
-                preciseExpressions.get(name).precise = precise;
-            }
         } else {
             Variable.create(name);
             variables.get(name).precise = precise;
-            if (!name.equals("pi")) {
-                preciseExpressions.get(name).precise = precise;
-            }
         }
     }
 
@@ -179,11 +161,20 @@ public class Variable extends Expression {
         for (String var : variables.keySet()) {
             variables.get(var).precise = precise;
         }
-        for (String var : preciseExpressions.keySet()) {
-            if (!var.equals("pi")) {
-                preciseExpressions.get(var).precise = precise;
+    }
+
+    /**
+     * Liefert eine Liste mit allen Variablen, denen ein fester Wert zugeordnet
+     * wurde.
+     */
+    public static HashSet<String> getVariablesWithPredefinedValues() {
+        HashSet<String> vars = new HashSet<>();
+        for (String var : variables.keySet()) {
+            if (variables.get(var).preciseExpression != null) {
+                vars.add(var);
             }
         }
+        return vars;
     }
 
     @Override
@@ -193,6 +184,15 @@ public class Variable extends Expression {
 
     @Override
     public double evaluate() throws EvaluationException {
+
+        /* 
+         Falls der Variable ein konstanter Wert zugeordnet wurde, dann soll dieser  
+         ausgewertet werden. Beispiel: x wurde als 4/3 definiert (durch das Command def()).
+         Dann soll x beim Evaluieren 1.33333333333333 zurückgeben.
+         */
+        if (this.preciseExpression != null) {
+            return this.preciseExpression.evaluate();
+        }
         if (!Double.isNaN(this.value) && !Double.isInfinite(this.value)) {
             return this.value;
         }
@@ -202,8 +202,8 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
-        if (vars.contains(this.name)) {
+    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
+        if (this.preciseExpression != null) {
             return this.preciseExpression;
         }
         return this;
@@ -420,7 +420,7 @@ public class Variable extends Expression {
     public Expression simplifyFactorize() {
         return this;
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInSums() {
         return this;
@@ -487,10 +487,10 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var){
+    public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) {
         return this;
     }
-    
+
     @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) {
         return this;

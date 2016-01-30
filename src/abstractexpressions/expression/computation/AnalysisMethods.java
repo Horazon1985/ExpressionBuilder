@@ -561,8 +561,7 @@ public abstract class AnalysisMethods {
     public static Expression getTangentSpace(Expression f, HashMap<String, Expression> x_0)
             throws EvaluationException {
 
-        HashSet vars = new HashSet();
-        f.addContainedVars(vars);
+        HashSet vars = f.getContainedVars();
 
         Expression result = new Constant(BigDecimal.ZERO);
         String var;
@@ -583,13 +582,13 @@ public abstract class AnalysisMethods {
             for (int i = 0; i < vars.size(); i++) {
                 var = (String) iter.next();
                 factor = f.diff(var);
-                factor = factor.evaluate(vars).simplify();
+                factor = factor.evaluateByInsertingDefinedVars().simplify();
                 result = new BinaryOperation(result, new BinaryOperation(factor,
                         new BinaryOperation(Variable.create(var), x_0.get(var), TypeBinary.MINUS), TypeBinary.TIMES),
                         TypeBinary.PLUS);
             }
 
-            f = f.evaluate(vars).simplify();
+            f = f.evaluateByInsertingDefinedVars().simplify();
             result = new BinaryOperation(f, result, TypeBinary.PLUS).simplify();
             return result;
         } catch (EvaluationException e) {

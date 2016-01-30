@@ -355,8 +355,8 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
-        return new MatrixBinaryOperation(this.left.evaluate(vars), this.right.evaluate(vars), this.type);
+    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixBinaryOperation(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars(), this.type);
     }
 
     @Override

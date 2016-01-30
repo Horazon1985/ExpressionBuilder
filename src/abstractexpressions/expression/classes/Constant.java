@@ -106,7 +106,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) {
+    public Expression evaluateByInsertingDefinedVars() {
         return this;
     }
 

@@ -491,7 +491,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression evaluate(HashSet<String> vars) throws EvaluationException;
+    public abstract Expression evaluateByInsertingDefinedVars() throws EvaluationException;
 
     /**
      * Fügt alle Variablen, die in dem gegebenen Ausdruck vorkommen, zum HashSet
@@ -505,6 +505,18 @@ public abstract class Expression implements AbstractExpression {
     public HashSet<String> getContainedVars(){
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
+        return vars;
+    }
+
+    @Override
+    public HashSet<String> getContainedIndeterminates(){
+        HashSet<String> vars = getContainedVars();
+        HashSet<String> varsWithPredefinedValues = Variable.getVariablesWithPredefinedValues();
+        for (String var : vars){
+            if (varsWithPredefinedValues.contains(var)){
+                vars.remove(var);
+            }
+        }
         return vars;
     }
 

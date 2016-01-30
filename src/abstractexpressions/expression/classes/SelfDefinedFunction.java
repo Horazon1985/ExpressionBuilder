@@ -100,8 +100,8 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression evaluate(HashSet<String> vars) throws EvaluationException {
-        return this.replaceSelfDefinedFunctionsByPredefinedFunctions().evaluate(vars);
+    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return this.replaceSelfDefinedFunctionsByPredefinedFunctions().evaluateByInsertingDefinedVars();
     }
 
     @Override

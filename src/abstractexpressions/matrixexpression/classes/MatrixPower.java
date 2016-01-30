@@ -311,8 +311,8 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluate(HashSet<String> vars) throws EvaluationException {
-        return new MatrixPower(this.left.evaluate(vars), this.right.evaluate(vars));
+    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixPower(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars());
     }
     
     
