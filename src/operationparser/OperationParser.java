@@ -7,6 +7,7 @@ import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
+import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
@@ -943,7 +944,7 @@ public abstract class OperationParser {
 
         if (type.getRole().equals(ParamRole.VARIABLE)) {
 
-            if (Expression.isValidVariable(parameter)) {
+            if (Expression.isValidVariable(parameter) && Variable.create(parameter).getPreciseExpression() == null) {
                 return parameter;
             }
 
@@ -959,10 +960,9 @@ public abstract class OperationParser {
                 }
                 Expression exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
                 Expression exprRight = Expression.build(parameter.substring(parameter.indexOf("=")), vars);
-                exprLeft.addContainedVars(containedVars);
-                exprRight.addContainedVars(containedVars);
+                exprLeft.addContainedIndeterminates(containedVars);
+                exprRight.addContainedIndeterminates(containedVars);
                 if (!restrictions.isEmpty()) {
-                    exprLeft.addContainedVars(containedVars);
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         return new Expression[]{exprLeft, exprRight};
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
@@ -1026,7 +1026,7 @@ public abstract class OperationParser {
                 }
 
                 if (!restrictions.isEmpty()) {
-                    containedVars = abstrExpr.getContainedVars();
+                    containedVars = abstrExpr.getContainedIndeterminates();
                     if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         return abstrExpr;
                     } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
