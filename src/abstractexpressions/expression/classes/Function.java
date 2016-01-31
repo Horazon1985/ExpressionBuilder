@@ -249,6 +249,11 @@ public class Function extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        this.left.addContainedIndeterminates(vars);
+    }
+    
+    @Override
     public boolean contains(String var) {
         return this.left.contains(var);
     }

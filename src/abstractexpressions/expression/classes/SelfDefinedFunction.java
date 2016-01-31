@@ -112,6 +112,13 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        for (int i = 0; i < this.left.length; i++) {
+            this.left[i].addContainedIndeterminates(vars);
+        }
+    }
+
+    @Override
     public boolean contains(String var) {
         boolean result = false;
         for (int i = 0; i < this.left.length; i++) {

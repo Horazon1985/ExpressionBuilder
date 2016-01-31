@@ -217,6 +217,13 @@ public class Variable extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        if (!this.name.equals("pi") && this.preciseExpression == null) {
+            vars.add(this.name);
+        }
+    }
+    
+    @Override
     public boolean contains(String var) {
         return this.name.equals(var);
     }

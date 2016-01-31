@@ -336,6 +336,42 @@ public class Operator extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        /*
+         Bei bestimmter Integration/Summen/Produkten zählt die
+         Integrationsvariable/der Index NICHT als vorkommende Variable.
+         */
+        if (this.type.equals(TypeOperator.integral) && this.params.length == 2) {
+            ((Expression) this.params[0]).addContainedIndeterminates(vars);
+            return;
+        }
+        if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
+            String var = (String) this.params[1];
+            ((Expression) this.params[0]).addContainedIndeterminates(vars);
+            vars.remove(var);
+            ((Expression) this.params[2]).addContainedIndeterminates(vars);
+            ((Expression) this.params[3]).addContainedIndeterminates(vars);
+            return;
+        }
+        if (this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
+            String index = (String) this.params[1];
+            ((Expression) this.params[0]).addContainedIndeterminates(vars);
+            vars.remove(index);
+            ((Expression) this.params[2]).addContainedIndeterminates(vars);
+            ((Expression) this.params[3]).addContainedIndeterminates(vars);
+            return;
+        }
+
+        // Alle anderen möglichen Operatoren
+        for (Object param : this.params) {
+            if (param instanceof Expression) {
+                ((Expression) param).addContainedIndeterminates(vars);
+            }
+        }
+
+    }
+    
+    @Override
     public boolean contains(String var) {
 
         if (this.type.equals(TypeOperator.integral) && this.params.length == 2) {

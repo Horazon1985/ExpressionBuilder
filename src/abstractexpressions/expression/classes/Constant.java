@@ -115,6 +115,10 @@ public class Constant extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+    }
+    
+    @Override
     public boolean contains(String var) {
         return false;
     }

@@ -665,6 +665,15 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                this.entry[i][j].addContainedIndeterminates(vars);
+            }
+        }
+    }
+
+    @Override
     public MatrixExpression turnToApproximate() {
         Expression[][] entryApprox = new Expression[this.entry.length][this.entry[0].length];
         for (int i = 0; i < this.entry.length; i++) {

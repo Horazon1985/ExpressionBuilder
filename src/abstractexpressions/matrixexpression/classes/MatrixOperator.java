@@ -413,6 +413,45 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+
+        /*
+         Bei bestimmter Integration/Summen/Produkten zählt die
+         Integrationsvariable/der Index NICHT als vorkommende Variable.
+         */
+        if (this.type.equals(TypeMatrixOperator.integral) && this.params.length == 2) {
+            ((MatrixExpression) this.params[0]).addContainedIndeterminates(vars);
+            return;
+        }
+        if (this.type.equals(TypeMatrixOperator.integral) && this.params.length == 4) {
+            String var = (String) this.params[1];
+            ((MatrixExpression) this.params[0]).addContainedIndeterminates(vars);
+            vars.remove(var);
+            ((Expression) this.params[2]).addContainedIndeterminates(vars);
+            ((Expression) this.params[3]).addContainedIndeterminates(vars);
+            return;
+        }
+        if (this.type.equals(TypeMatrixOperator.prod) || this.type.equals(TypeMatrixOperator.sum)) {
+            String index = (String) this.params[1];
+            ((MatrixExpression) this.params[0]).addContainedIndeterminates(vars);
+            vars.remove(index);
+            ((Expression) this.params[2]).addContainedIndeterminates(vars);
+            ((Expression) this.params[3]).addContainedIndeterminates(vars);
+            return;
+        }
+
+        // Alle anderen möglichen Matrizenoperatoren
+        for (Object param : this.params) {
+            if (param instanceof Expression) {
+                ((Expression) param).addContainedIndeterminates(vars);
+            } else if (param instanceof MatrixExpression) {
+                ((MatrixExpression) param).addContainedIndeterminates(vars);
+            }
+        }
+
+    }
+
+    @Override
     public MatrixExpression turnToApproximate() {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {

@@ -121,6 +121,12 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        this.left.addContainedIndeterminates(vars);
+        this.right.addContainedIndeterminates(vars);
+    }
+    
+    @Override
     public boolean contains(String var) {
         return this.left.contains(var) || this.right.contains(var);
     }

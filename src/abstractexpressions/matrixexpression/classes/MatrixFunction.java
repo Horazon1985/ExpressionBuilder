@@ -123,6 +123,11 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        this.left.addContainedIndeterminates(vars);
+    }
+
+    @Override
     public MatrixExpression turnToApproximate() {
         return new MatrixFunction(this.left.turnToApproximate(), this.type);
     }

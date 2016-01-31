@@ -330,6 +330,12 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        this.left.addContainedIndeterminates(vars);
+        this.right.addContainedIndeterminates(vars);
+    }
+
+    @Override
     public MatrixExpression turnToApproximate() {
         return new MatrixBinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
     }

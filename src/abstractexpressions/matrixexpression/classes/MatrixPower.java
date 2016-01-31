@@ -286,6 +286,12 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
+    public void addContainedIndeterminates(HashSet<String> vars) {
+        this.left.addContainedIndeterminates(vars);
+        this.right.addContainedIndeterminates(vars);
+    }
+
+    @Override
     public MatrixExpression turnToApproximate() {
         return new MatrixPower(this.left.turnToApproximate(), this.right.turnToApproximate());
     }

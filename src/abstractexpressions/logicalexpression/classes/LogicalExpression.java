@@ -397,6 +397,11 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
     
     @Override
+    public void addContainedIndeterminates(HashSet vars){
+        addContainedVars(vars);
+    }
+    
+    @Override
     public HashSet<String> getContainedIndeterminates(){
         return getContainedVars();
     }

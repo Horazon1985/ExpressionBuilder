@@ -673,14 +673,12 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     @Override
+    public abstract void addContainedIndeterminates(HashSet<String> vars);
+    
+    @Override
     public HashSet<String> getContainedIndeterminates(){
         HashSet<String> vars = getContainedVars();
-        HashSet<String> varsWithPredefinedValues = Variable.getVariablesWithPredefinedValues();
-        for (String var : vars){
-            if (varsWithPredefinedValues.contains(var)){
-                vars.remove(var);
-            }
-        }
+        addContainedIndeterminates(vars);
         return vars;
     }
     
