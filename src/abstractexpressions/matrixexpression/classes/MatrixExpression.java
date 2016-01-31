@@ -677,7 +677,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     
     @Override
     public HashSet<String> getContainedIndeterminates(){
-        HashSet<String> vars = getContainedVars();
+        HashSet<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;
     }

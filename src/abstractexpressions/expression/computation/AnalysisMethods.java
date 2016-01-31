@@ -5,6 +5,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
@@ -558,41 +559,40 @@ public abstract class AnalysisMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression getTangentSpace(Expression f, HashMap<String, Expression> x_0)
+    public static Expression getTangentSpace(Expression f, HashMap<String, Expression> point)
             throws EvaluationException {
 
-        HashSet vars = f.getContainedVars();
+        HashSet<String> vars = f.getContainedIndeterminates();
 
-        Expression result = new Constant(BigDecimal.ZERO);
-        String var;
+        Expression result = ZERO;
         Expression factor;
 
-        Iterator iter;
-
         // Alle Variablen auf die Werte setzen, die dem Punkt x_0 entsprechen.
-        iter = vars.iterator();
-        for (int i = 0; i < vars.size(); i++) {
-            var = (String) iter.next();
-            Variable.setPreciseExpression(var, x_0.get(var));
-            Variable.setPrecise(var, true);
+        for (String var : vars) {
+            Variable.setPreciseExpression(var, point.get(var));
+//            Variable.setPrecise(var, true);
         }
 
-        iter = vars.iterator();
         try {
-            for (int i = 0; i < vars.size(); i++) {
-                var = (String) iter.next();
+            for (String var : vars) {
                 factor = f.diff(var);
                 factor = factor.evaluateByInsertingDefinedVars().simplify();
-                result = new BinaryOperation(result, new BinaryOperation(factor,
-                        new BinaryOperation(Variable.create(var), x_0.get(var), TypeBinary.MINUS), TypeBinary.TIMES),
-                        TypeBinary.PLUS);
+                result = result.add(factor.mult(Variable.create(var).sub(point.get(var))));
             }
 
             f = f.evaluateByInsertingDefinedVars().simplify();
-            result = new BinaryOperation(f, result, TypeBinary.PLUS).simplify();
-            return result;
+            return f.add(result).simplify();
         } catch (EvaluationException e) {
             throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
+        } finally {
+            /* 
+             Egal, ob die Berechnung des tangentialraumes erfolgreich war oder nicht,
+             die Variablen, welchen ein fester Wert zugeordnet wurde, müssen wieder 
+             zu Unbestimmten werden.
+             */
+            for (String var : vars) {
+                Variable.setPreciseExpression(var, null);
+            }
         }
 
     }
