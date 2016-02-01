@@ -3,8 +3,10 @@ package enums;
 public enum TypeSimplify {
 
     // Für alle abstrakten Ausdrücke
+// Für alle abstrakten Ausdrücke
     order_sums_and_products, 
-    simplify_trivial, simplify_collect_products, simplify_factorize,
+    simplify_trivial, simplify_by_inserting_defined_vars, simplify_collect_products, 
+    simplify_factorize,
     
     // Für algebraische Ausdrücke
     order_difference_and_division, simplify_expand_rational_factors, 

@@ -175,11 +175,6 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return new MatrixFunction(this.left.evaluateByInsertingDefinedVars(), this.type);
-    }
-
-    @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
         if (this.type.equals(TypeMatrixFunction.tr) || this.type.equals(TypeMatrixFunction.trans)) {
@@ -850,6 +845,11 @@ public class MatrixFunction extends MatrixExpression {
 
         return function;
 
+    }
+
+    @Override
+    public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixFunction(this.left.simplifyByInsertingDefinedVars(), this.type);
     }
 
     @Override

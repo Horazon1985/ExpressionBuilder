@@ -202,7 +202,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
+    public Expression simplifyByInsertingDefinedVars() throws EvaluationException {
         if (this.preciseExpression != null) {
             return this.preciseExpression;
         }

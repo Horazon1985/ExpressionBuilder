@@ -249,21 +249,6 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
-        Object[] resultParams = new Object[this.params.length];
-        for (int i = 0; i < this.params.length; i++) {
-            if (this.params[i] instanceof MatrixExpression) {
-                resultParams[i] = ((MatrixExpression) this.params[i]).evaluateByInsertingDefinedVars();
-            } else if (this.params[i] instanceof Expression){
-                resultParams[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
-            } else {
-                resultParams[i] = this.params[i];
-            }
-        }
-        return new MatrixOperator(this.type, resultParams, false);
-    }
-    
-    @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
         if (!this.contains(var)) {
@@ -637,6 +622,21 @@ public class MatrixOperator extends MatrixExpression {
         
     }
 
+    @Override
+    public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyByInsertingDefinedVars();
+            } else if (this.params[i] instanceof Expression){
+                resultParams[i] = ((Expression) this.params[i]).simplifyByInsertingDefinedVars();
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new MatrixOperator(this.type, resultParams, false);
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 

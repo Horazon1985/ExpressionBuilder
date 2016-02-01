@@ -110,11 +110,6 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return new BinaryOperation(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars(), this.type);
-    }
-
-    @Override
     public void addContainedVars(HashSet<String> vars) {
         this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
@@ -923,6 +918,11 @@ public class BinaryOperation extends Expression {
 
         return expr;
 
+    }
+
+    @Override
+    public Expression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return new BinaryOperation(this.left.simplifyByInsertingDefinedVars(), this.right.simplifyByInsertingDefinedVars(), this.type);
     }
 
     @Override

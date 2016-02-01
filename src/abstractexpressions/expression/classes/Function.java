@@ -239,11 +239,6 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return new Function(this.left.evaluateByInsertingDefinedVars(), this.type);
-    }
-
-    @Override
     public void addContainedVars(HashSet<String> vars) {
         this.left.addContainedVars(vars);
     }
@@ -917,6 +912,11 @@ public class Function extends Expression {
 
         return function;
 
+    }
+
+    @Override
+    public Expression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return new Function(this.left.simplifyByInsertingDefinedVars(), this.type);
     }
 
     @Override

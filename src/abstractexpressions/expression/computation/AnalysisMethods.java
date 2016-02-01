@@ -2,18 +2,15 @@ package abstractexpressions.expression.computation;
 
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
-import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
-import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import translator.Translator;
@@ -576,11 +573,11 @@ public abstract class AnalysisMethods {
         try {
             for (String var : vars) {
                 factor = f.diff(var);
-                factor = factor.evaluateByInsertingDefinedVars().simplify();
+                factor = factor.simplifyByInsertingDefinedVars().simplify();
                 result = result.add(factor.mult(Variable.create(var).sub(point.get(var))));
             }
 
-            f = f.evaluateByInsertingDefinedVars().simplify();
+            f = f.simplifyByInsertingDefinedVars().simplify();
             return f.add(result).simplify();
         } catch (EvaluationException e) {
             throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));

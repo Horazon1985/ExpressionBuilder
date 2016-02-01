@@ -734,19 +734,6 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
-
-        Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
-        for (int i = 0; i < this.getRowNumber(); i++) {
-            for (int j = 0; j < this.getColumnNumber(); j++) {
-                evaluatedEntries[i][j] = this.getEntry(i, j).evaluateByInsertingDefinedVars();
-            }
-        }
-        return new Matrix(evaluatedEntries);
-
-    }
-
-    @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
         Dimension dim = this.getDimension();
@@ -809,6 +796,19 @@ public class Matrix extends MatrixExpression {
     @Override
     public MatrixExpression simplifyTrivial() {
         return this;
+    }
+
+    @Override
+    public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
+
+        Expression[][] evaluatedEntries = new Expression[this.getRowNumber()][this.getColumnNumber()];
+        for (int i = 0; i < this.getRowNumber(); i++) {
+            for (int j = 0; j < this.getColumnNumber(); j++) {
+                evaluatedEntries[i][j] = this.getEntry(i, j).simplifyByInsertingDefinedVars();
+            }
+        }
+        return new Matrix(evaluatedEntries);
+
     }
 
     @Override

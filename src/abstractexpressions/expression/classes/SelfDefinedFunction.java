@@ -100,11 +100,6 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return this.replaceSelfDefinedFunctionsByPredefinedFunctions().evaluateByInsertingDefinedVars();
-    }
-
-    @Override
     public void addContainedVars(HashSet<String> vars) {
         for (int i = 0; i < this.left.length; i++) {
             this.left[i].addContainedVars(vars);
@@ -382,7 +377,16 @@ public class SelfDefinedFunction extends Expression {
 
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
+        for (int i = 0; i < this.left.length; i++){
+            this.left[i] = this.left[i].simplifyTrivial();
+        }
+        this.abstractExpression = this.abstractExpression.simplifyTrivial();
         return this.replaceAllVariables(left);
+    }
+
+    @Override
+    public Expression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return this.replaceSelfDefinedFunctionsByPredefinedFunctions().simplifyByInsertingDefinedVars();
     }
 
     @Override

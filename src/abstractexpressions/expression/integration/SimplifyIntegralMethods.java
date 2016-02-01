@@ -35,6 +35,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
@@ -50,6 +51,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
@@ -66,6 +68,7 @@ public abstract class SimplifyIntegralMethods {
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);

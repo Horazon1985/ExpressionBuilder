@@ -106,11 +106,6 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() {
-        return this;
-    }
-
-    @Override
     public void addContainedVars(HashSet<String> vars) {
     }
 
@@ -267,6 +262,11 @@ public class Constant extends Expression {
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
             throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
+        return this;
+    }
+
+    @Override
+    public Expression simplifyByInsertingDefinedVars() {
         return this;
     }
 

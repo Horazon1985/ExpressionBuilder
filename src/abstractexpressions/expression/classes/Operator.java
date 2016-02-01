@@ -256,49 +256,6 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression evaluateByInsertingDefinedVars() throws EvaluationException {
-        Object[] paramsEvaluated = new Object[this.params.length];
-
-        /*
-         Bei den Operator INT, PROD und SUM sollen die (lokalen) Variablen
-         (Integrationsvariable/Index) NICHT ausgewertet werden; Daher die
-         Strategie: Erst die lokale Variable aus vars entfernen (sofern
-         vorhanden), dann evaluateByInsertingDefinedVars() anwenden, dann wieder hinzufügen.
-         */
-        if (this.type.equals(TypeOperator.integral) || this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
-
-            String localVar = (String) this.params[1];
-            /*
-            Falls die lokale variable (Indexvariable, Integrationsvariable) einen
-            vordefinierten Wert besitzt, so soll dieser kurzzeitig vergessen werden.
-            */
-            Expression valueOfLocalVar = Variable.create(localVar).getPreciseExpression();
-            Variable.setPreciseExpression(localVar, null);
-            for (int i = 0; i < this.params.length; i++) {
-                if (this.params[i] instanceof Expression) {
-                    paramsEvaluated[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
-                } else {
-                    paramsEvaluated[i] = this.params[i];
-                }
-            }
-            // Den Wert der lokalen Variable wiederherstellen.
-            Variable.setPreciseExpression(localVar, valueOfLocalVar);
-            return new Operator(this.type, paramsEvaluated, this.precise);
-
-        }
-
-        // Alle anderen Operatoren.
-        for (int i = 0; i < this.params.length; i++) {
-            if (this.params[i] instanceof Expression) {
-                paramsEvaluated[i] = ((Expression) this.params[i]).evaluateByInsertingDefinedVars();
-            } else {
-                paramsEvaluated[i] = this.params[i];
-            }
-        }
-        return new Operator(this.type, paramsEvaluated, this.precise);
-    }
-
-    @Override
     public void addContainedVars(HashSet<String> vars) {
 
         /*
@@ -1310,6 +1267,49 @@ public class Operator extends Expression {
                 return operator;
         }
 
+    }
+
+    @Override
+    public Expression simplifyByInsertingDefinedVars() throws EvaluationException {
+        Object[] paramsEvaluated = new Object[this.params.length];
+
+        /*
+         Bei den Operator INT, PROD und SUM sollen die (lokalen) Variablen
+         (Integrationsvariable/Index) NICHT ausgewertet werden; Daher die
+         Strategie: Erst die lokale Variable aus vars entfernen (sofern
+         vorhanden), dann evaluateByInsertingDefinedVars() anwenden, dann wieder hinzufügen.
+         */
+        if (this.type.equals(TypeOperator.integral) || this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
+
+            String localVar = (String) this.params[1];
+            /*
+            Falls die lokale variable (Indexvariable, Integrationsvariable) einen
+            vordefinierten Wert besitzt, so soll dieser kurzzeitig vergessen werden.
+            */
+            Expression valueOfLocalVar = Variable.create(localVar).getPreciseExpression();
+            Variable.setPreciseExpression(localVar, null);
+            for (int i = 0; i < this.params.length; i++) {
+                if (this.params[i] instanceof Expression) {
+                    paramsEvaluated[i] = ((Expression) this.params[i]).simplifyByInsertingDefinedVars();
+                } else {
+                    paramsEvaluated[i] = this.params[i];
+                }
+            }
+            // Den Wert der lokalen Variable wiederherstellen.
+            Variable.setPreciseExpression(localVar, valueOfLocalVar);
+            return new Operator(this.type, paramsEvaluated, this.precise);
+
+        }
+
+        // Alle anderen Operatoren.
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof Expression) {
+                paramsEvaluated[i] = ((Expression) this.params[i]).simplifyByInsertingDefinedVars();
+            } else {
+                paramsEvaluated[i] = this.params[i];
+            }
+        }
+        return new Operator(this.type, paramsEvaluated, this.precise);
     }
 
     /**

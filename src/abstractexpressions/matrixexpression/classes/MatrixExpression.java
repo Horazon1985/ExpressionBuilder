@@ -713,15 +713,6 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression evaluate() throws EvaluationException;
 
     /**
-     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
-     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
-     * Variablen werden als Unbestimmte gelassen.
-     *
-     * @throws EvaluationException
-     */
-    public abstract MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException;
-
-    /**
      * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.
      */
     public abstract MatrixExpression diff(String var) throws EvaluationException;
@@ -746,6 +737,15 @@ public abstract class MatrixExpression implements AbstractExpression {
      * Triviale Vereinfachungen für Matrizenausdrücke.
      */
     public abstract MatrixExpression simplifyTrivial() throws EvaluationException;
+
+    /**
+     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
+     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
+     * Variablen werden als Unbestimmte gelassen.
+     *
+     * @throws EvaluationException
+     */
+    public abstract MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException;
 
     /**
      * Hier wird die Methode simplify() aus der Klasse
@@ -810,6 +810,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                 matExprSimplified = matExprSimplified.orderDifferences();
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 matExprSimplified = matExprSimplified.simplifyTrivial();
+                matExprSimplified = matExprSimplified.simplifyByInsertingDefinedVars();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
                 matExprSimplified = matExprSimplified.simplifyCollectProducts();
                 matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
@@ -845,6 +846,9 @@ public abstract class MatrixExpression implements AbstractExpression {
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
                     matExprSimplified = matExprSimplified.simplifyTrivial();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {
+                    matExprSimplified = matExprSimplified.simplifyByInsertingDefinedVars();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_matrix_entries)) {
                     matExprSimplified = matExprSimplified.simplifyMatrixEntries(simplifyTypes);

@@ -485,15 +485,6 @@ public abstract class Expression implements AbstractExpression {
     public abstract double evaluate() throws EvaluationException;
 
     /**
-     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
-     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
-     * Variablen werden als Unbestimmte gelassen.
-     *
-     * @throws EvaluationException
-     */
-    public abstract Expression evaluateByInsertingDefinedVars() throws EvaluationException;
-
-    /**
      * Fügt alle Variablen, die in dem gegebenen Ausdruck vorkommen, zum HashSet
      * vars hinzu. Ziel: Start mit vars = {} liefert alle vorkommenden
      * Variablen.
@@ -1346,6 +1337,15 @@ public abstract class Expression implements AbstractExpression {
     public abstract Expression simplifyTrivial() throws EvaluationException;
 
     /**
+     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
+     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
+     * Variablen werden als Unbestimmte gelassen.
+     *
+     * @throws EvaluationException
+     */
+    public abstract Expression simplifyByInsertingDefinedVars() throws EvaluationException;
+    
+    /**
      * Distributivgesetz für Konstanten: a*(b + c) = a*b + a*c für konstantes
      * rationales a.
      *
@@ -1571,6 +1571,7 @@ public abstract class Expression implements AbstractExpression {
                 exprSimplified = exprSimplified.orderSumsAndProducts();
 //                System.out.println(exprSimplified.writeExpression());
                 exprSimplified = exprSimplified.simplifyTrivial();
+                exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
                 exprSimplified = exprSimplified.simplifyPullApartPowers();
                 exprSimplified = exprSimplified.simplifyCollectProducts();
                 exprSimplified = exprSimplified.simplifyExpandRationalFactors();
@@ -1610,6 +1611,8 @@ public abstract class Expression implements AbstractExpression {
                         exprSimplified = exprSimplified.orderSumsAndProducts();
                     } else if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
                         exprSimplified = exprSimplified.simplifyTrivial();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_by_inserting_defined_vars)) {
+                        exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_short)) {
                         exprSimplified = exprSimplified.simplifyExpandShort();
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_moderate)) {
@@ -1678,6 +1681,9 @@ public abstract class Expression implements AbstractExpression {
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
                     exprSimplified = exprSimplified.simplifyTrivial();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {
+                    exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_short)) {
                     exprSimplified = exprSimplified.simplifyExpandShort();
@@ -1771,6 +1777,9 @@ public abstract class Expression implements AbstractExpression {
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
                     exprSimplified = exprSimplified.simplifyTrivial();
+                }
+                if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {
+                    exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_short)) {
                     exprSimplified = exprSimplified.simplifyExpandShort();

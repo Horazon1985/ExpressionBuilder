@@ -317,12 +317,6 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return new MatrixPower(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars());
-    }
-    
-    
-    @Override
     public MatrixExpression diff(String var) throws EvaluationException {
         Object[] params = new Object[2];
         params[0] = this;
@@ -362,6 +356,11 @@ public class MatrixPower extends MatrixExpression {
         return this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
     }
 
+    @Override
+    public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixPower(this.left.simplifyByInsertingDefinedVars(), this.right.simplifyByInsertingDefinedVars());
+    }
+    
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
         return new MatrixPower(this.left.simplifyMatrixEntries(), this.right.simplify());

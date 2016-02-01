@@ -361,11 +361,6 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression evaluateByInsertingDefinedVars() throws EvaluationException {
-        return new MatrixBinaryOperation(this.left.evaluateByInsertingDefinedVars(), this.right.evaluateByInsertingDefinedVars(), this.type);
-    }
-
-    @Override
     public MatrixExpression diff(String var) throws EvaluationException {
 
         if (this.isSum() || this.isDifference()) {
@@ -514,6 +509,11 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         return this;
 
+    }
+
+    @Override
+    public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
+        return new MatrixBinaryOperation(this.left.simplifyByInsertingDefinedVars(), this.right.simplifyByInsertingDefinedVars(), this.type);
     }
 
     @Override
