@@ -36,7 +36,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      */
     private ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> graphs2D = new ArrayList<>();
-    private ArrayList<double[]> implicitGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
     final static Color[] fixedColors = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
@@ -45,8 +44,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     private double maxX, maxY;
     private int expX, expY;
 
-    private boolean isExplicit;
-    private boolean isFixed;
     private boolean movable = false;
 
     private double[][] specialPoints;
@@ -88,18 +85,16 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (isExplicit) {
-                    if (movable) {
-                        axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
-                        axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
-                        lastMousePosition = e.getPoint();
-                        repaint();
-                    } else {
-                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-                        lastMousePosition = e.getPoint();
-                        repaint();
-                    }
+                if (movable) {
+                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
+                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
+                    lastMousePosition = e.getPoint();
+                    repaint();
+                } else {
+                    maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
+                    maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
+                    lastMousePosition = e.getPoint();
+                    repaint();
                 }
             }
 
@@ -111,39 +106,29 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         addMouseWheelListener(new MouseWheelListener() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent e) {
-                if (isExplicit) {
-                    maxX *= Math.pow(1.1, e.getWheelRotation());
-                    maxY *= Math.pow(1.1, e.getWheelRotation());
+                maxX *= Math.pow(1.1, e.getWheelRotation());
+                maxY *= Math.pow(1.1, e.getWheelRotation());
 
-                    /*
+                /*
                      Vorbeugende Maßnahme: Falls der Wert
                      axe_center_x*Math.pow(10,-exp_x) oder
                      axe_center_y*Math.pow(10,-exp_y) zu groß ist, so ist der
                      maximale Zoom-Grad erreicht! -> Keine weitere
                      Vergrößerung mehr.
-                     */
-                    if (Math.abs(axeCenterX * Math.pow(10, -expX)) >= 500000000 || Math.abs(axeCenterY * Math.pow(10, -expY)) >= 500000000) {
-                        maxX /= Math.pow(1.1, e.getWheelRotation());
-                        maxY /= Math.pow(1.1, e.getWheelRotation());
-                        computeExpXExpY();
-                    }
-
-                    repaint();
+                 */
+                if (Math.abs(axeCenterX * Math.pow(10, -expX)) >= 500000000 || Math.abs(axeCenterY * Math.pow(10, -expY)) >= 500000000) {
+                    maxX /= Math.pow(1.1, e.getWheelRotation());
+                    maxY /= Math.pow(1.1, e.getWheelRotation());
+                    computeExpXExpY();
                 }
+
+                repaint();
             }
         });
     }
 
-    public boolean getIsExplicit() {
-        return this.isExplicit;
-    }
-
     public ArrayList<double[][]> getGraphs() {
         return this.graphs2D;
-    }
-
-    public ArrayList<double[]> getImplicitGraph() {
-        return this.implicitGraph2D;
     }
 
     public double getAxeCenterX() {
@@ -164,15 +149,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     public ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
-        if (this.isExplicit) {
-            // Expliziter Fall
-            instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-            instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-            instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
-            return instructions;
-        }
-        // Impliziter Fall
-        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_IMPOSSIBLE_MOVE_GRAPH"));
+        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
         return instructions;
     }
 
@@ -183,14 +162,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void setVars(String varAbsc, String varOrd) {
         this.varAbsc = varAbsc;
         this.varOrd = varOrd;
-    }
-
-    public void setIsExplicit(boolean isExplicit) {
-        this.isExplicit = isExplicit;
-    }
-
-    public void setIsFixed(boolean isFixed) {
-        this.isFixed = isFixed;
     }
 
     public void setSpecialPoints(double[][] specialPoints) {
@@ -249,7 +220,8 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     private void setColors() {
         int numberOfColors = Math.max(this.exprs.size(), this.graphs2D.size());
-        for (int i = this.colors.size(); i < numberOfColors; i++) {
+        this.colors.clear();
+        for (int i = 0; i < numberOfColors; i++) {
             if (i < GraphicPanel2D.fixedColors.length) {
                 this.colors.add(GraphicPanel2D.fixedColors[i]);
             } else {
@@ -401,10 +373,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.maxX = varAbscEnd - this.axeCenterX;
         this.maxY = varOrdEnd - this.axeCenterY;
 
-    }
-
-    public void setImplicitGraph(ArrayList<double[]> implicitGraph2D) {
-        this.implicitGraph2D = implicitGraph2D;
     }
 
     /**
@@ -817,7 +785,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
             g.setColor(this.colors.get(i));
 
-            if (graphs2D.get(i).length > 1) {
+            if (this.graphs2D.get(i).length > 1) {
 
                 HashMap<Integer, int[][]> graphicalGraph = convertGraphToGraphicalGraph();
                 for (int j = 0; j < graphicalGraph.get(i).length - 1; j++) {
@@ -841,30 +809,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         }
 
         g.setColor(Color.black);
-
-    }
-
-    private void drawImplicitGraph2D(Graphics g, String varAbsc, String varOrd) {
-        /**
-         * Weißen Hintergrund zeichnen.
-         */
-        g.setColor(Color.white);
-        g.fillRect(0, 0, 500, 500);
-
-        /**
-         * Markierungen an den Achsen berechnen.
-         */
-        computeExpXExpY();
-
-        //Niveaulinien und Achsen zeichnen
-        drawAxesAndLines(g, varAbsc, varOrd);
-
-        g.setColor(Color.blue);
-        int[] pixelsOfImplicitGraph;
-        for (double[] point : this.implicitGraph2D) {
-            pixelsOfImplicitGraph = convertToPixel(point[0], point[1]);
-            g.drawLine(pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1], pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1]);
-        }
 
     }
 
@@ -896,26 +840,22 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        if (this.isExplicit) {
-            drawGraphs2D(g, this.varAbsc);
-        } else {
-            drawImplicitGraph2D(g, this.varAbsc, this.varOrd);
-        }
+        drawGraphs2D(g, this.varAbsc);
 
         /**
          * Im Folgenden wird der Graph in einem größeren/kleineren Bereich
          * gezeichnet, falls der aktuelle Zoomfaktor derart berechnet wurde,
          * dass der Graph zu grob oder zu klein ist.
          */
-        if (this.isExplicit && !this.isFixed && (this.graphs2D.size() > 0)) {
-            try {
-                Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
-                Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
+        try {
+            Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
+            Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
+            if (this.exprs.size() > 0) {
                 expressionToGraph(varAbscStart, varAbscEnd);
-            } catch (EvaluationException e) {
             }
-            convertGraphToGraphicalGraph();
+        } catch (EvaluationException e) {
         }
+        convertGraphToGraphicalGraph();
 
         drawSpecialPoints(g, this.specialPoints);
 
