@@ -9,11 +9,11 @@ import translator.Translator;
 public class SelfDefinedFunction extends Expression {
 
     // Tabelle für Funktionsname <-> abstrakte Funktionsterme für Funktionen
-    public static HashMap<String, Expression> abstractExpressionsForSelfDefinedFunctions = new HashMap<>();
+    private static HashMap<String, Expression> abstractExpressionsForSelfDefinedFunctions = new HashMap<>();
     // Tabelle für Funktionsname <-> Funktionsterme für abstrakte Variablen
-    public static HashMap<String, Expression[]> innerExpressionsForSelfDefinedFunctions = new HashMap<>();
+    private static HashMap<String, Expression[]> innerExpressionsForSelfDefinedFunctions = new HashMap<>();
     // Tabelle für Funktionsname <-> Funktionsargumente
-    public static HashMap<String, String[]> varsForSelfDefinedFunctions = new HashMap<>();
+    private static HashMap<String, String[]> varsForSelfDefinedFunctions = new HashMap<>();
     /*
      Beispiel: Die Funktionen f(x, y) = x + y und g(x, y, z) = x^2*y-z liefern
      folgende Tabellen: abstractExpressionsForSelfDefinedFunctions {f ->
@@ -89,6 +89,48 @@ public class SelfDefinedFunction extends Expression {
         this.left = left;
     }
 
+    /**
+     * @return the abstractExpressionsForSelfDefinedFunctions
+     */
+    public static HashMap<String, Expression> getAbstractExpressionsForSelfDefinedFunctions() {
+        return abstractExpressionsForSelfDefinedFunctions;
+    }
+
+    /**
+     * @param aAbstractExpressionsForSelfDefinedFunctions the abstractExpressionsForSelfDefinedFunctions to set
+     */
+    public static void setAbstractExpressionsForSelfDefinedFunctions(HashMap<String, Expression> aAbstractExpressionsForSelfDefinedFunctions) {
+        abstractExpressionsForSelfDefinedFunctions = aAbstractExpressionsForSelfDefinedFunctions;
+    }
+
+    /**
+     * @return the innerExpressionsForSelfDefinedFunctions
+     */
+    public static HashMap<String, Expression[]> getInnerExpressionsForSelfDefinedFunctions() {
+        return innerExpressionsForSelfDefinedFunctions;
+    }
+
+    /**
+     * @param aInnerExpressionsForSelfDefinedFunctions the innerExpressionsForSelfDefinedFunctions to set
+     */
+    public static void setInnerExpressionsForSelfDefinedFunctions(HashMap<String, Expression[]> aInnerExpressionsForSelfDefinedFunctions) {
+        innerExpressionsForSelfDefinedFunctions = aInnerExpressionsForSelfDefinedFunctions;
+    }
+
+    /**
+     * @return the varsForSelfDefinedFunctions
+     */
+    public static HashMap<String, String[]> getVarsForSelfDefinedFunctions() {
+        return varsForSelfDefinedFunctions;
+    }
+
+    /**
+     * @param aVarsForSelfDefinedFunctions the varsForSelfDefinedFunctions to set
+     */
+    public static void setVarsForSelfDefinedFunctions(HashMap<String, String[]> aVarsForSelfDefinedFunctions) {
+        varsForSelfDefinedFunctions = aVarsForSelfDefinedFunctions;
+    }
+    
     @Override
     public Expression copy() {
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression, this.left);

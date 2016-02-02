@@ -9,7 +9,6 @@ import translator.Translator;
 public class Variable extends Expression {
 
     private static HashMap<String, Variable> variables = new HashMap<>();
-//    private static HashMap<String, Variable> preciseExpressions = new HashMap<>();
     private final String name;
     private double value;
     private Expression preciseExpression;

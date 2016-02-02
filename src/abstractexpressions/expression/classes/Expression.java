@@ -448,19 +448,19 @@ public abstract class Expression implements AbstractExpression {
             String function = getOperatorAndArguments(formula)[0];
             String[] functionArguments = getArguments(getOperatorAndArguments(formula)[1]);
 
-            if (SelfDefinedFunction.innerExpressionsForSelfDefinedFunctions.containsKey(function)) {
-                if (SelfDefinedFunction.varsForSelfDefinedFunctions.get(function).length == functionArguments.length) {
-                    Expression[] exprs_in_arguments = new Expression[functionArguments.length];
+            if (SelfDefinedFunction.getInnerExpressionsForSelfDefinedFunctions().containsKey(function)) {
+                if (SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function).length == functionArguments.length) {
+                    Expression[] exprsInArguments = new Expression[functionArguments.length];
                     for (int i = 0; i < functionArguments.length; i++) {
-                        exprs_in_arguments[i] = Expression.build(functionArguments[i], vars);
+                        exprsInArguments[i] = Expression.build(functionArguments[i], vars);
                     }
-                    return new SelfDefinedFunction(function, SelfDefinedFunction.varsForSelfDefinedFunctions.get(function),
-                            SelfDefinedFunction.abstractExpressionsForSelfDefinedFunctions.get(function), exprs_in_arguments);
+                    return new SelfDefinedFunction(function, SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function),
+                            SelfDefinedFunction.getAbstractExpressionsForSelfDefinedFunctions().get(function), exprsInArguments);
                 } else {
                     throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_1")
                             + function
                             + Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_2")
-                            + String.valueOf(SelfDefinedFunction.varsForSelfDefinedFunctions.get(function).length)
+                            + String.valueOf(SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function).length)
                             + Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_3"));
                 }
             }
