@@ -449,18 +449,18 @@ public abstract class Expression implements AbstractExpression {
             String[] functionArguments = getArguments(getOperatorAndArguments(formula)[1]);
 
             if (SelfDefinedFunction.getInnerExpressionsForSelfDefinedFunctions().containsKey(function)) {
-                if (SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function).length == functionArguments.length) {
+                if (SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length == functionArguments.length) {
                     Expression[] exprsInArguments = new Expression[functionArguments.length];
                     for (int i = 0; i < functionArguments.length; i++) {
                         exprsInArguments[i] = Expression.build(functionArguments[i], vars);
                     }
-                    return new SelfDefinedFunction(function, SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function),
+                    return new SelfDefinedFunction(function, SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function),
                             SelfDefinedFunction.getAbstractExpressionsForSelfDefinedFunctions().get(function), exprsInArguments);
                 } else {
                     throw new ExpressionException(Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_1")
                             + function
                             + Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_2")
-                            + String.valueOf(SelfDefinedFunction.getVarsForSelfDefinedFunctions().get(function).length)
+                            + String.valueOf(SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length)
                             + Translator.translateExceptionMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_3"));
                 }
             }

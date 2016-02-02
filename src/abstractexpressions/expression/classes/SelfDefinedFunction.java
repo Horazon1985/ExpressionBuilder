@@ -13,7 +13,7 @@ public class SelfDefinedFunction extends Expression {
     // Tabelle für Funktionsname <-> Funktionsterme für abstrakte Variablen
     private static HashMap<String, Expression[]> innerExpressionsForSelfDefinedFunctions = new HashMap<>();
     // Tabelle für Funktionsname <-> Funktionsargumente
-    private static HashMap<String, String[]> varsForSelfDefinedFunctions = new HashMap<>();
+    private static HashMap<String, String[]> argumentsForSelfDefinedFunctions = new HashMap<>();
     /*
      Beispiel: Die Funktionen f(x, y) = x + y und g(x, y, z) = x^2*y-z liefern
      folgende Tabellen: abstractExpressionsForSelfDefinedFunctions {f ->
@@ -24,7 +24,7 @@ public class SelfDefinedFunction extends Expression {
      auch immer}.
      */
 
-    /*
+ /*
      name = Funktionsname arguments = abstrakte Funktionsargumente; das sind
      Variablen von der Form var_ABSTRACT. Diese können beim parsen mittels
      Expression.build NICHT eingelesen werden, denn das sind keine legalen
@@ -97,7 +97,8 @@ public class SelfDefinedFunction extends Expression {
     }
 
     /**
-     * @param aAbstractExpressionsForSelfDefinedFunctions the abstractExpressionsForSelfDefinedFunctions to set
+     * @param aAbstractExpressionsForSelfDefinedFunctions the
+     * abstractExpressionsForSelfDefinedFunctions to set
      */
     public static void setAbstractExpressionsForSelfDefinedFunctions(HashMap<String, Expression> aAbstractExpressionsForSelfDefinedFunctions) {
         abstractExpressionsForSelfDefinedFunctions = aAbstractExpressionsForSelfDefinedFunctions;
@@ -111,7 +112,8 @@ public class SelfDefinedFunction extends Expression {
     }
 
     /**
-     * @param aInnerExpressionsForSelfDefinedFunctions the innerExpressionsForSelfDefinedFunctions to set
+     * @param aInnerExpressionsForSelfDefinedFunctions the
+     * innerExpressionsForSelfDefinedFunctions to set
      */
     public static void setInnerExpressionsForSelfDefinedFunctions(HashMap<String, Expression[]> aInnerExpressionsForSelfDefinedFunctions) {
         innerExpressionsForSelfDefinedFunctions = aInnerExpressionsForSelfDefinedFunctions;
@@ -120,17 +122,28 @@ public class SelfDefinedFunction extends Expression {
     /**
      * @return the varsForSelfDefinedFunctions
      */
-    public static HashMap<String, String[]> getVarsForSelfDefinedFunctions() {
-        return varsForSelfDefinedFunctions;
+    public static HashMap<String, String[]> getArgumentsForSelfDefinedFunctions() {
+        return argumentsForSelfDefinedFunctions;
     }
 
     /**
-     * @param aVarsForSelfDefinedFunctions the varsForSelfDefinedFunctions to set
+     * @param aVarsForSelfDefinedFunctions the varsForSelfDefinedFunctions to
+     * set
      */
-    public static void setVarsForSelfDefinedFunctions(HashMap<String, String[]> aVarsForSelfDefinedFunctions) {
-        varsForSelfDefinedFunctions = aVarsForSelfDefinedFunctions;
+    public static void setArgumentsForSelfDefinedFunctions(HashMap<String, String[]> aVarsForSelfDefinedFunctions) {
+        argumentsForSelfDefinedFunctions = aVarsForSelfDefinedFunctions;
     }
-    
+
+    public static void createSelfDefinedFunction(SelfDefinedFunction f) {
+        /*
+         Falls eine Funktion mit demselben Namen bereits vorhanden ist, wird diese 
+         überschrieben!
+         */
+        abstractExpressionsForSelfDefinedFunctions.put(f.getName(), f.getAbstractExpression());
+        argumentsForSelfDefinedFunctions.put(f.getName(), f.getArguments());
+        innerExpressionsForSelfDefinedFunctions.put(f.getName(), f.getLeft());
+    }
+
     @Override
     public Expression copy() {
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression, this.left);
@@ -217,7 +230,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return result || this.abstractExpression.containsOperator();
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -419,7 +432,7 @@ public class SelfDefinedFunction extends Expression {
 
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
-        for (int i = 0; i < this.left.length; i++){
+        for (int i = 0; i < this.left.length; i++) {
             this.left[i] = this.left[i].simplifyTrivial();
         }
         this.abstractExpression = this.abstractExpression.simplifyTrivial();
@@ -493,7 +506,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorize(), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -520,7 +533,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyFactorizeAllButRationals(), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyReduceQuotients() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -619,7 +632,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(var), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -628,7 +641,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyExpandProductsOfComplexExponentialFunctions(var), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
