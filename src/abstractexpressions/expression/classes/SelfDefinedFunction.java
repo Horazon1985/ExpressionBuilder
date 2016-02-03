@@ -89,49 +89,16 @@ public class SelfDefinedFunction extends Expression {
         this.left = left;
     }
 
-    /**
-     * @return the abstractExpressionsForSelfDefinedFunctions
-     */
     public static HashMap<String, Expression> getAbstractExpressionsForSelfDefinedFunctions() {
         return abstractExpressionsForSelfDefinedFunctions;
     }
 
-    /**
-     * @param aAbstractExpressionsForSelfDefinedFunctions the
-     * abstractExpressionsForSelfDefinedFunctions to set
-     */
-    public static void setAbstractExpressionsForSelfDefinedFunctions(HashMap<String, Expression> aAbstractExpressionsForSelfDefinedFunctions) {
-        abstractExpressionsForSelfDefinedFunctions = aAbstractExpressionsForSelfDefinedFunctions;
-    }
-
-    /**
-     * @return the innerExpressionsForSelfDefinedFunctions
-     */
     public static HashMap<String, Expression[]> getInnerExpressionsForSelfDefinedFunctions() {
         return innerExpressionsForSelfDefinedFunctions;
     }
 
-    /**
-     * @param aInnerExpressionsForSelfDefinedFunctions the
-     * innerExpressionsForSelfDefinedFunctions to set
-     */
-    public static void setInnerExpressionsForSelfDefinedFunctions(HashMap<String, Expression[]> aInnerExpressionsForSelfDefinedFunctions) {
-        innerExpressionsForSelfDefinedFunctions = aInnerExpressionsForSelfDefinedFunctions;
-    }
-
-    /**
-     * @return the varsForSelfDefinedFunctions
-     */
     public static HashMap<String, String[]> getArgumentsForSelfDefinedFunctions() {
         return argumentsForSelfDefinedFunctions;
-    }
-
-    /**
-     * @param aVarsForSelfDefinedFunctions the varsForSelfDefinedFunctions to
-     * set
-     */
-    public static void setArgumentsForSelfDefinedFunctions(HashMap<String, String[]> aVarsForSelfDefinedFunctions) {
-        argumentsForSelfDefinedFunctions = aVarsForSelfDefinedFunctions;
     }
 
     public static void createSelfDefinedFunction(SelfDefinedFunction f) {

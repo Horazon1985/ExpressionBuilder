@@ -384,38 +384,15 @@ public class GraphicPanelFormula extends JPanel {
             } else {
 
                 // Fall: Funktionsdeklaration.
-                Object[] originalParams = new Object[params.length];
-
-                originalParams[0] = params[0];
-
-                for (int i = 1; i < params.length - 1; i++) {
-                    /*
-                     Die Variablennamen in f_arguments haben alle "_ABSTRACT"
-                     als Anhängsel. Dieses wird nun beseitigt, um die
-                     Originalnamen wiederzubekommen. Die Variablen mit den
-                     Originalnamen werden im Array result abgespechert.
-                     */
-                    originalParams[i] = ((String) params[i]).substring(0, ((String) params[i]).indexOf("_ABSTRACT"));
-                }
-
-                Expression f = (Expression) params[params.length - 1];
-
-                for (int i = 1; i < params.length - 1; i++) {
-                    f = f.replaceVariable(((String) params[i]), Variable.create((String) originalParams[i]));
-                }
-
-                originalParams[params.length - 1] = f;
-
-                // Originalbezeichnungen wurden zurückgewonnen. Nun wird die Länge berechnet.
-                resultLength = resultLength + g.getFontMetrics().stringWidth((String) originalParams[0])
+                resultLength = resultLength + g.getFontMetrics().stringWidth((String) params[0])
                         + 2 * getWidthOfBracket(fontSize) + (params.length - 3) * g.getFontMetrics().stringWidth(", ");
 
-                for (int i = 1; i < originalParams.length - 1; i++) {
-                    resultLength = resultLength + g.getFontMetrics().stringWidth((String) originalParams[i]);
+                for (int i = 1; i < params.length - 1; i++) {
+                    resultLength = resultLength + g.getFontMetrics().stringWidth((String) params[i]);
                 }
 
                 resultLength = resultLength + getWidthOfSignEquals(g, fontSize);
-                resultLength = resultLength + getLengthOfExpression(g, (Expression) originalParams[originalParams.length - 1], fontSize);
+                resultLength = resultLength + getLengthOfExpression(g, (Expression) params[params.length - 1], fontSize);
 
                 return resultLength;
 
@@ -4086,13 +4063,7 @@ public class GraphicPanelFormula extends JPanel {
 
             for (int i = 0; i < params.length - 2; i++) {
                 functionArguments[i] = (String) params[i + 1];
-                /*
-                 Die Variablennamen in f_arguments haben alle "_ABSTRACT" als
-                 Anhängsel. Dieses wird nun beseitigt, um die Originalnamen
-                 wiederzubekommen. Die Variablen mit den Originalnamen werden
-                 im Array vars_for_output abgespechert.
-                 */
-                varsForOutput[i] = Variable.create(functionArguments[i].substring(0, functionArguments[i].indexOf("_ABSTRACT")));
+                varsForOutput[i] = Variable.create(functionArguments[i]);
             }
 
             Expression function = (Expression) params[params.length - 1];
@@ -4119,10 +4090,13 @@ public class GraphicPanelFormula extends JPanel {
 
             for (int i = 0; i < varsForOutput.length; i++) {
 
-                g.drawString(((Variable) varsForOutput[i]).getName(),
-                        x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-                        y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(((Variable) varsForOutput[i]).getName());
+                drawVariable(g, (Variable) varsForOutput[i], x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                        y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
+//                g.drawString(((Variable) varsForOutput[i]).getName(),
+//                        x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+//                        y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfVariable(g, (Variable) varsForOutput[i], fontSize);
+//                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(((Variable) varsForOutput[i]).getName());
 
                 // Einzelne Funktionsvariablen mit einem Komma abtrennen.
                 if (i < varsForOutput.length - 1) {
