@@ -73,6 +73,12 @@
     <Russian>Файл</Russian>
     <Ukrainian>Файл</Ukrainian>
   </object>
+  <object id = "GUI_MathToolForm_MENU_OPEN">
+    <German>Öffnen</German>
+    <English>Open</English>
+    <Russian>Открыть</Russian>
+    <Ukrainian>Відкрити</Ukrainian>
+  </object>
   <object id = "GUI_MathToolForm_MENU_SAVE">
     <German>Speichern</German>
     <English>Save</English>

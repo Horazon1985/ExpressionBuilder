@@ -11,4 +11,7 @@
   <object id = "FREE_REAL_PARAMETER_VAR">
     <value>T</value>
   </object>
+  <object id = "SELFDEFINEDFUNCTION_VAR">
+    <value>U</value>
+  </object>
 </objects>
