@@ -1263,6 +1263,18 @@
         <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
         <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
     </object>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNC_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNC_2">
+        <German>. Parameter im Befehl 'undeffunc' ist keine gültige Funktion.</German>
+        <English>. parameter in command 'undeffunc' is not a valid function.</English>
+        <Ukrainian>. параметр команди 'undeffunc' не є діючою функцією.</Ukrainian>
+        <Russian>. параметр команды 'undeffunc' не является действительной функцией.</Russian>
+    </object>
     <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFVAR_1">
         <German>Der </German>
         <English>The </English>
@@ -1545,6 +1557,18 @@
         <English>The graph and the tangent can not be drawn, because the values for abscissa or for the ordinate are too big.</English>
         <Ukrainian>Графік та дотичну не можна зобразити, оскільки значення абсциси або ординати завеликі.</Ukrainian>
         <Russian>График и касательную нельзя изобраыить, поскольку значения абсциссы или ординаты слишком большие.</Russian>
+    </object>
+    <object id = "MCC_FUNCTION_IS_REMOVED_1">
+        <German>Die Funktion </German>
+        <English>The function </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_FUNCTION_IS_REMOVED_2">
+        <German> wurde entfernt.</German>
+        <English> was removed.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_1">
         <German>Die Veränderliche </German>
