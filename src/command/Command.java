@@ -18,6 +18,8 @@ public class Command {
     public static final String patternExpand = "expand(expr)";
     public static final String patternKer = "ker(matexpr)";
     public static final String patternPi = "pi(integer(0,2147483647))";
+    public static final String patternPlotCurve = "plotcurve(matexpr(0,1),expr(0),expr(0))";
+    public static final String patternPlotImplicit = "plotimplicit(equation(2),expr(0),expr(0),expr(0),expr(0))";
     public static final String patternRegressionLine = "regressionline(matexpr,matexpr+)";
     public static final String patternSolveOneVar = "solve(equation(0,1))";
     public static final String patternSolveWithParameter = "solve(equation,var)";

@@ -1588,4 +1588,10 @@
         <Ukrainian>Всі змінні знову невизначені.</Ukrainian>
         <Russian>Все переменные снова неопределены.</Russian>
     </object>
+    <object id = "MCC_ALL_FUNCTIONS_ARE_REMOVED">
+        <German>Alle Funktionen wurden entfernt.</German>
+        <English>All functions were removed.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
 </objects>
