@@ -1263,17 +1263,17 @@
         <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
         <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEF_1">
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFVAR_1">
         <German>Der </German>
         <English>The </English>
         <Ukrainian></Ukrainian>
         <Russian></Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEF_2">
-        <German>. Parameter im Befehl 'undef' ist keine gültige Veränderliche.</German>
-        <English>. parameter in command 'undef' is not a valid variable.</English>
-        <Ukrainian>. параметр команди 'undef' не є діючою змінною.</Ukrainian>
-        <Russian>. параметр команды 'undef' не является действительной переменной.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFVAR_2">
+        <German>. Parameter im Befehl 'undefvar' ist keine gültige Veränderliche.</German>
+        <English>. parameter in command 'undefvar' is not a valid variable.</English>
+        <Ukrainian>. параметр команди 'undefvar' не є діючою змінною.</Ukrainian>
+        <Russian>. параметр команды 'undefvar' не является действительной переменной.</Russian>
     </object>
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_UNDEFALL">
         <German>Im Befehl 'undefall' dürfen keine Parameter stehen.</German>
