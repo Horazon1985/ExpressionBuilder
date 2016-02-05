@@ -231,48 +231,6 @@
         <Russian> должен быть действительным матричным выражением.</Russian>
     </object>
     
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_APPROX">
-        <German>Im Befehl 'approx' muss genau ein Parameter stehen.</German>
-        <English>The command 'approx' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'approx' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'approx' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_PARAMETER_IN_APPROX_IS_INVALID">
-        <German>Der Parameter im Befehl 'approx' muss entweder ein gültiger Ausdruck oder ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'approx' must be either a valid expression or a valif matrix expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'approx' має бути або діючим виразом або діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параматр команды 'approx' должен быть или действительным выражением или действительным матричным выражением. Сообщение об ошибке: </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CCNF">
-        <German>Im Befehl 'ccnf' muss genau ein Parameter stehen.</German>
-        <English>The command 'ccnf' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'ccnf' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'ccnf' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_CCNF">
-        <German>Der Parameter im Befehl 'ccnf' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'ccnf' must be a valid logical expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'ccnf' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'ccnf' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CDNF">
-        <German>Im Befehl 'cdnf' muss genau ein Parameter stehen.</German>
-        <English>The command 'cdnf' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'cdnf' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'cdnf' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_CDNF">
-        <German>Der Parameter im Befehl 'cdnf' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'cdnf' must be a valid logical expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'cdnf' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'cdnf' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CLEAR">
-        <German>Im Befehl 'clear' dürfen keine Parameter stehen.</German>
-        <English>The command 'clear' allowes no parameter.</English>
-        <Ukrainian>У команди 'clear' не має бути параметрів.</Ukrainian>
-        <Russian>У команды 'clear' не должно быть параметров.</Russian>
-    </object>
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEF">
         <German>Im Befehl 'def' muss genau ein Parameter stehen, welcher aus einer Variablenzuweisung oder einer Funktionszuweisung besteht.</German>
         <English>The command 'def' must contain exactly one parameter, which is a definition either of a variable or of a function.</English>
@@ -369,30 +327,6 @@
         <Ukrainian>Права частина містить змінну, що не є параметром функції.</Ukrainian>
         <Russian>Правая часть содержит переменную, которая не является параметром функции.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEFFUNCS">
-        <German>Im Befehl 'deffuncs' dürfen keine Parameter stehen.</German>
-        <English>The command 'deffuncs' allows no parameter.</English>
-        <Ukrainian>У команди 'deffuncs' не має бути параметрів.</Ukrainian>
-        <Russian>У команды 'deffuncs' не должно быть параметров.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEFVARS">
-        <German>Im Befehl 'defvars' dürfen keine Parameter stehen.</German>
-        <English>The command 'defvars' allows no parameter.</English>
-        <Ukrainian>У команди 'defvars' не має бути параметрів.</Ukrainian>
-        <Russian>У команды 'defvars' не должно быть параметров.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EIGENVALUES">
-        <German>Im Befehl 'eigenvalues' muss genau ein Parameter stehen.</German>
-        <English>The command 'eigenvalues' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'eigenvalues' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'eigenvalues' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVALUES">
-        <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'eigenvalues' must be a valid matrix expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'eigenvalues' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'eigenvalues' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
-    </object>
     <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVALUES_NOT_QUADRATIC">
         <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
         <English>The parameter in command 'eigenvalues' must be a valid matrix expression, which represents a quadratic matrix. Reported Error: </English>
@@ -422,18 +356,6 @@
         <English> found.</English>
         <Ukrainian> не було знайдено.</Ukrainian>
         <Russian> не было найдено.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EIGENVECTORS">
-        <German>Im Befehl 'eigenvectors' muss genau ein Parameter stehen.</German>
-        <English>The command 'eigenvectors' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'eigenvectors' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'eigenvectors' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVECTORS">
-        <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'eigenvectors' must be a valid matrix expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVECTORS_NOT_QUADRATIC">
         <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
@@ -465,47 +387,11 @@
         <Ukrainian>Жоден власний вектор не можна визначити.</Ukrainian>
         <Russian>Ни один собственный вектор нельзя определить.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EULER">
-        <German>Im Befehl 'euler' muss genau ein Parameter stehen.</German>
-        <English>The command 'euler' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'euler' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'euler' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EULER">
-        <German>Der Parameter im Befehl 'euler' muss eine nichtnegative ganze Zahl sein.</German>
-        <English>The parameter in command 'euler' must be a nonnegative integer.</English>
-        <Ukrainian>Параметром команди 'euler' має бути невід'ємне ціле число.</Ukrainian>
-        <Russian>Параметром команды 'euler' должно быть неотрицательное целое число.</Russian>
-    </object>
     <object id = "MCC_ENTER_SMALLER_NUMBER_IN_EULER">
         <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
         <English>Please choose a smaller number of digits.</English>
         <Ukrainian>Оберіть, будь ласка, менше число для кількості знаків.</Ukrainian>
         <Russian>Выберите, пожалуйста, меньшее число для количества знаков.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_EXPAND">
-        <German>Im Befehl 'expand' muss genau ein Parameter stehen.</German>
-        <English>The command 'expand' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'expand' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'expand' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EXPAND">
-        <German>Der Parameter im Befehl 'expand' muss ein gültiger Ausdruck sein.</German>
-        <English>The parameter in command 'expand' must be a valid expression.</English>
-        <Ukrainian>Параметр команди 'div' має бути діючим виразом.</Ukrainian>
-        <Russian>Параматр команды 'div' должен быть действительным выражением.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_KER">
-        <German>Im Befehl 'ker' muss genau ein Parameter stehen.</German>
-        <English>The command 'ker' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'ker' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'ker' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_KER">
-        <German>Der Parameter im Befehl 'ker' muss ein gültiger Matrizenausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'ker' must be a valid matrix expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'ker' має бути діючим матричним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'ker' должен быть действительным матричным выражением. Сообщение об ошибке: </Russian>
     </object>
     <object id = "MCC_BASIS_OF_KER_1">
         <German>Eine Basis des Kerns der Matrix </German>
@@ -554,18 +440,6 @@
         <English>Error in the parameter of command 'latex': </English>
         <Ukrainian>Помилка у параметрі команди 'latex': </Ukrainian>
         <Russian>Ошибка в параметре команды 'latex': </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PI">
-        <German>Im Befehl 'pi' muss genau ein Parameter stehen.</German>
-        <English>The command 'pi' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'pi' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'pi' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_PI">
-        <German>Der Parameter im Befehl 'pi' muss eine nichtnegative ganze Zahl sein.</German>
-        <English>The parameter in command 'pi' must be a nonnegative integer.</English>
-        <Ukrainian>Параметром команди 'pi' має бути невід'ємне ціле число.</Ukrainian>
-        <Russian>Параметром команды 'pi' должно быть неотрицательное целое число.</Russian>
     </object>
     <object id = "MCC_ENTER_SMALLER_NUMBER_IN_PI">
         <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
@@ -879,24 +753,6 @@
         <Ukrainian>. параметр.</Ukrainian>
         <Russian>. параметр.</Russian>
     </object>
-    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_REGRESSIONLINE">
-        <German>Zu wenig Parameter im Befehl 'regressionline'.</German>
-        <English>Not enough parameters in command 'regressionline'.</English>
-        <Ukrainian>Недостатньо параметрів у команди 'regressionline'.</Ukrainian>
-        <Russian>Недостаточно параметров у команды 'regressionline'.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_REGRESSIONLINE_WITH_REPORTED_ERROR_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_REGRESSIONLINE_WITH_REPORTED_ERROR_2">
-        <German>. Parameter muss von der Form '[a;b]' sein, wobei a und b reelle Zahlen sind.</German>
-        <English>. parameter must be of the form '[a;b]', where a and b are reals.</English>
-        <Ukrainian>. параметр має бути у формі '[a;b]', де a та b дійсні числа.</Ukrainian>
-        <Russian>. параметр должен быть в форме '[a;b]', где a и b вещественные числа.</Russian>
-    </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
         <German>Zu wenig Parameter im Befehl 'solve'.</German>
         <English>Not enough parameters in command 'solve'.</English>
@@ -1101,18 +957,6 @@
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_TABLE">
-        <German>Im Befehl 'table' muss genau ein Parameter stehen.</German>
-        <English>The command 'table' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'table' має бути рівно один параметр.</Ukrainian>
-        <Russian>У команды 'table' должен быть ровно один параметр.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_TABLE">
-        <German>Der Parameter im Befehl 'table' muss ein gültiger logischer Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'table' must be a valid logical expression. Reported Error: </English>
-        <Ukrainian>Параметр команди 'table' має бути діючим логічним виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'table' должен быть действительным логическим выражением. Сообщение об ошибке: </Russian>
-    </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
         <German>Zu wenig Parameter im Befehl 'tangent'.</German>
         <English>Not enough parameters in command 'tangent'.</English>
@@ -1262,36 +1106,6 @@
         <English>The last parameter in command 'taylordeq' must be a nonnegative integer.</English>
         <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
         <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNC_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNC_2">
-        <German>. Parameter im Befehl 'undeffunc' ist keine gültige Funktion.</German>
-        <English>. parameter in command 'undeffunc' is not a valid function.</English>
-        <Ukrainian>. параметр команди 'undeffunc' не є діючою функцією.</Ukrainian>
-        <Russian>. параметр команды 'undeffunc' не является действительной функцией.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFVAR_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFVAR_2">
-        <German>. Parameter im Befehl 'undefvar' ist keine gültige Veränderliche.</German>
-        <English>. parameter in command 'undefvar' is not a valid variable.</English>
-        <Ukrainian>. параметр команди 'undefvar' не є діючою змінною.</Ukrainian>
-        <Russian>. параметр команды 'undefvar' не является действительной переменной.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_UNDEFALL">
-        <German>Im Befehl 'undefall' dürfen keine Parameter stehen.</German>
-        <English>In command 'undefall' no parameters are allowed.</English>
-        <Ukrainian>У команди 'undefall' не має бути параметрів.</Ukrainian>
-        <Russian>У команды 'undefall' не должно быть параметров.</Russian>
     </object>
     <object id = "MCC_INVALID_COMMAND">
         <German>Ungültiger Befehl.</German>
