@@ -1,4 +1,4 @@
-package operationparser;
+package exceptions;
 
 public class ParseException extends RuntimeException {
 

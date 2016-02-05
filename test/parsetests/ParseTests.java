@@ -9,7 +9,7 @@ import operationparser.OperationParser;
 import operationparser.ParameterPattern;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamType;
-import operationparser.ParseException;
+import exceptions.ParseException;
 import operationparser.ParseResultPattern;
 import org.junit.AfterClass;
 import org.junit.Assert;

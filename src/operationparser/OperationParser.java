@@ -1,5 +1,6 @@
 package operationparser;
 
+import exceptions.ParseException;
 import command.Command;
 import command.TypeCommand;
 import exceptions.ExpressionException;
