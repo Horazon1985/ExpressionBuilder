@@ -28,8 +28,8 @@ public class Command {
     public static final String patternSolveApproxWithNumberOfIntervals = "solve(equation(0,1),expr(0,0),expr(0,0),integer(0,2147483647))";
     public static final String patternSolveSystem = "solvesystem(equation+,uniquevar+)";
     public static final String patternTable = "table(logexpr)";
-    public static final String patternUndefVar = "undefvar(var+)";
-    public static final String patternUndefFunc = "undeffunc(var+)";
+    public static final String patternUndefVars = "undefvar(var+)";
+    public static final String patternUndefFuncs = "undeffunc(var+)";
     public static final String patternUndefAll = "undefall()";
     
     public Command(){
