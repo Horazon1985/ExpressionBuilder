@@ -11,7 +11,7 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class SimplifyFunctionMethods {
 

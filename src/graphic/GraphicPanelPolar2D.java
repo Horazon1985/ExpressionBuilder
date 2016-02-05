@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class GraphicPanelPolar2D extends JPanel implements Exportable {
 

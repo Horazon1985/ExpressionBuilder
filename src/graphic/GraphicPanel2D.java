@@ -22,7 +22,7 @@ import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import abstractexpressions.matrixexpression.classes.Matrix;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class GraphicPanel2D extends JPanel implements Exportable {
 

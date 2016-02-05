@@ -3,7 +3,7 @@ package abstractexpressions.expression.computation;
 import exceptions.EvaluationException;
 import java.math.BigInteger;
 import java.util.HashMap;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class ArithmeticMethods {
 

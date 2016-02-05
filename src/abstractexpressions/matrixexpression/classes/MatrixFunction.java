@@ -10,7 +10,7 @@ import java.util.HashSet;
 import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionMethods;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionalRelations;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class MatrixFunction extends MatrixExpression {
 

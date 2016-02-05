@@ -1,4 +1,4 @@
-package translator;
+package lang.translator;
 
 import enums.TypeLanguage;
 import abstractexpressions.expression.classes.Expression;
@@ -18,32 +18,32 @@ public abstract class Translator {
         try {
             URL langFile;
             if (exceptionId.substring(0, 2).equals("CC")) {
-                langFile = ClassLoader.getSystemResource("languages/LangComputationalClasses.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangComputationalClasses.xml");
             } else if (exceptionId.substring(0, 2).equals("EB")) {
-                langFile = ClassLoader.getSystemResource("languages/LangExpressionBuilder.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 2).equals("FC")) {
-                langFile = ClassLoader.getSystemResource("languages/LangFlowController.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangFlowController.xml");
             } else if (exceptionId.substring(0, 3).equals("GUI")) {
-                langFile = ClassLoader.getSystemResource("languages/LangGUI.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangGUI.xml");
             } else if (exceptionId.substring(0, 2).equals("GR")) {
-                langFile = ClassLoader.getSystemResource("languages/LangGraphic.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangGraphic.xml");
             } else if (exceptionId.substring(0, 3).equals("LAA")) {
-                langFile = ClassLoader.getSystemResource("languages/LangLinearAlgebraAlgorithms.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangLinearAlgebraAlgorithms.xml");
             } else if (exceptionId.substring(0, 3).equals("LEB")) {
-                langFile = ClassLoader.getSystemResource("languages/LangLogicalExpressionBuilder.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangLogicalExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 3).equals("MCC")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMathCommandCompiler.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangMathCommandCompiler.xml");
             } else if (exceptionId.substring(0, 3).equals("MTF")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMathToolForm.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangMathToolForm.xml");
             } else if (exceptionId.substring(0, 3).equals("MEB")) {
-                langFile = ClassLoader.getSystemResource("languages/LangMatrixExpressionBuilder.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangMatrixExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 3).equals("PRM")) {
-                langFile = ClassLoader.getSystemResource("languages/LangPolynomialRootMethods.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangPolynomialRootMethods.xml");
             } else if (exceptionId.substring(0, 2).equals("SM")) {
-                langFile = ClassLoader.getSystemResource("languages/LangSimplifyMethods.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangSimplifyMethods.xml");
             } else {
                 // Datei für unbekannten Fehler öffnen.
-                langFile = ClassLoader.getSystemResource("languages/LangUndefinedError.xml");
+                langFile = ClassLoader.getSystemResource("lang/messages/LangUndefinedError.xml");
             }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();

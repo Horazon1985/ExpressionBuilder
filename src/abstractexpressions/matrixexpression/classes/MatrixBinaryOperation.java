@@ -12,7 +12,7 @@ import abstractexpressions.matrixexpression.utilities.MatrixExpressionCollection
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixBinaryOperationMethods;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionalRelations;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixUtilities;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class MatrixBinaryOperation extends MatrixExpression {
 

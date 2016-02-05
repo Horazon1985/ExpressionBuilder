@@ -17,7 +17,7 @@ import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class BinaryOperation extends Expression {
 

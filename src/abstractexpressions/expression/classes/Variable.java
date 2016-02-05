@@ -4,7 +4,7 @@ import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class Variable extends Expression {
 

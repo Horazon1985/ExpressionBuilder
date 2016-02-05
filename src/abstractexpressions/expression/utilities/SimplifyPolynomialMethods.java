@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class SimplifyPolynomialMethods {
 

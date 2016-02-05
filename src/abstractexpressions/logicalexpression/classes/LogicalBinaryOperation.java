@@ -6,7 +6,7 @@ import abstractexpressions.logicalexpression.utilities.LogicalExpressionCollecti
 import abstractexpressions.logicalexpression.utilities.LogicalSimplifyUtilities;
 import abstractexpressions.logicalexpression.utilities.LogicalTrivialSimplifyMethods;
 import abstractexpressions.logicalexpression.utilities.SimplifyLogicalBinaryOperationMethods;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class LogicalBinaryOperation extends LogicalExpression {
 

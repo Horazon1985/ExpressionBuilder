@@ -17,7 +17,7 @@ import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class OperationParser {
 

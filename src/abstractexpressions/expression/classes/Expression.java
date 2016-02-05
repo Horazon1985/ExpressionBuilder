@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class Expression implements AbstractExpression {
 

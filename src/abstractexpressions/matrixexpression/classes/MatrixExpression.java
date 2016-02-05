@@ -13,7 +13,7 @@ import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class MatrixExpression implements AbstractExpression {
 

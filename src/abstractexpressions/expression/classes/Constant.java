@@ -6,7 +6,7 @@ import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class Constant extends Expression {
 

@@ -9,7 +9,7 @@ import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class SimplifyTrigonometry {
 

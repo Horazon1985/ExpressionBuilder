@@ -7,7 +7,7 @@ import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixBinaryOperation;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class SimplifyMatrixUtilities {
 

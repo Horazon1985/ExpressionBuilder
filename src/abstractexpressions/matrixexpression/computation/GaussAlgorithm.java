@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.utilities.MatrixExpressionCollection;
 import notations.NotationLoader;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class GaussAlgorithm {
 

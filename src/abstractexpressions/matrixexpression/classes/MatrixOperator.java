@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixOperatorMethods;
 import operationparser.OperationParser;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class MatrixOperator extends MatrixExpression {
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class GraphicPanelImplicit2D extends JPanel implements Exportable {
 

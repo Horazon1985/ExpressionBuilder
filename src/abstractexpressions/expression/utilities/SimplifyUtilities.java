@@ -5,7 +5,7 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import java.math.BigInteger;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class SimplifyUtilities {
 

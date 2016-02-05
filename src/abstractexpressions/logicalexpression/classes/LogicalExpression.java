@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class LogicalExpression implements AbstractExpression {
 

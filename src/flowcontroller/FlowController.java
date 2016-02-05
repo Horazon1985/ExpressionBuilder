@@ -1,7 +1,7 @@
 package flowcontroller;
 
 import exceptions.EvaluationException;
-import translator.Translator;
+import lang.translator.Translator;
 
 public final class FlowController {
 

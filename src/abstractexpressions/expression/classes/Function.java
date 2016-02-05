@@ -8,7 +8,7 @@ import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyTrigonometry;
 import java.math.BigDecimal;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class Function extends Expression {
 

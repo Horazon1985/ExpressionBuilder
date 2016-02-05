@@ -14,7 +14,7 @@ import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionalRelations;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class MatrixPower extends MatrixExpression {
 

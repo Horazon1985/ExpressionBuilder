@@ -19,7 +19,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import translator.Translator;
+import lang.translator.Translator;
 
 /**
  * Viele kleine Einzelmethoden zur Vereinfachung von Ausdrücken der Klasse

@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable {
 

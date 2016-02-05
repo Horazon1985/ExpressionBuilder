@@ -14,7 +14,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import operationparser.OperationParser;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class Operator extends Expression {
 

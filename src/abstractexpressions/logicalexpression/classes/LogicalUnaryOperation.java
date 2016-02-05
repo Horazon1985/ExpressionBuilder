@@ -2,7 +2,7 @@ package abstractexpressions.logicalexpression.classes;
 
 import exceptions.EvaluationException;
 import java.util.HashSet;
-import translator.Translator;
+import lang.translator.Translator;
 
 public class LogicalUnaryOperation extends LogicalExpression {
 

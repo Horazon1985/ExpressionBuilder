@@ -4,7 +4,7 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class NumericalMethods {
 

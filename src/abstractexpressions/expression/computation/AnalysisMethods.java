@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
-import translator.Translator;
+import lang.translator.Translator;
 
 public abstract class AnalysisMethods {
 
