@@ -960,7 +960,7 @@ public abstract class OperationParser {
                             + Translator.translateExceptionMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3"));
                 }
                 Expression exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
-                Expression exprRight = Expression.build(parameter.substring(parameter.indexOf("=")), vars);
+                Expression exprRight = Expression.build(parameter.substring(parameter.indexOf("=") + 1), vars);
                 exprLeft.addContainedIndeterminates(containedVars);
                 exprRight.addContainedIndeterminates(containedVars);
                 if (!restrictions.isEmpty()) {

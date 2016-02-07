@@ -415,15 +415,6 @@ public class GraphicPanelFormula extends JPanel {
                 resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
             }
 
-//        } else if (c.getTypeCommand().equals(TypeCommand.plotcurve)) {
-//
-//            resultLength = resultLength + 2 * getWidthOfBracket(fontSize)
-//                    + (params.length - 1) * g.getFontMetrics().stringWidth(", ");
-//
-//            for (Object param : params) {
-//                resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
-//            }
-
         } else if (c.getTypeCommand().equals(TypeCommand.solve)) {
 
             resultLength = resultLength + (params.length - 2) * g.getFontMetrics().stringWidth(", ");
@@ -436,8 +427,7 @@ public class GraphicPanelFormula extends JPanel {
                 } else if (param instanceof Integer) {
                     setFont(g, fontSize);
                     resultLength = resultLength + g.getFontMetrics().stringWidth(String.valueOf((Integer) param));
-                } else {
-                    // Hier ist params[i] eine Instanz von String;
+                } else if (param instanceof String){
                     setFont(g, fontSize);
                     resultLength = resultLength + g.getFontMetrics().stringWidth((String) param);
                 }
@@ -4009,8 +3999,6 @@ public class GraphicPanelFormula extends JPanel {
                 break;
             case plotimplicit:
                 drawCommandPlotImplicit(g, c, x_0, y_0, fontSize);
-//        } else if (c.getTypeCommand().equals(TypeCommand.plotcurve2d)) {
-//            drawCommandPlotCurve(g, c, x_0, y_0, fontSize);
                 break;
             case solve:
                 drawCommandSolve(g, c, x_0, y_0, fontSize);
@@ -4230,69 +4218,14 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-//    private void drawCommandPlotCurve(Graphics g, Command c, int x_0, int y_0, int fontSize) {
-//
-//        setFont(g, fontSize);
-//
-//        Object[] params = c.getParams();
-//
-//        int heightCommand = getHeightOfCommand(g, c, fontSize);
-//        int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
-//        setFont(g, fontSize);
-//        int lengthName = g.getFontMetrics().stringWidth(c.getName());
-//
-//        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-//        drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
-//
-//        int distanceFromOpeningBracket = 0;
-//
-//        for (int i = 0; i < params.length; i++) {
-//
-//            // Öffnende Klammer für die Komponenten der Kurve.
-//            if (i == 0) {
-//                drawOpeningBracket(g, x_0 + lengthName + getWidthOfBracket(fontSize), y_0, fontSize, heightCommand);
-//                distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfBracket(fontSize);
-//            }
-//
-//            drawExpression(g, (Expression) params[i],
-//                    x_0 + lengthName
-//                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-//                    y_0 - (heightCenterCommand - getHeightOfCenterOfExpression(g, (Expression) params[i], fontSize)), fontSize);
-//            distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[i], fontSize);
-//
-//            // Schließende Klammer für die Komponenten der Kurve.
-//            if (i == params.length - 3) {
-//                drawClosingBracket(g, x_0 + lengthName
-//                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-//                        y_0, fontSize, heightCommand);
-//                distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfBracket(fontSize);
-//            }
-//
-//            if (i < params.length - 1) {
-//                setFont(g, fontSize);
-//                g.drawString(", ", x_0 + lengthName
-//                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-//                        y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-//                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
-//            }
-//
-//        }
-//
-//        drawClosingBracket(g,
-//                x_0 + lengthName
-//                + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-//                y_0, fontSize, heightCommand);
-//
-//    }
-
     private void drawCommandSolve(Graphics g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
         Object[] params = c.getParams();
 
-        int heightCenterLeftSideOfEquation = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
-        int heightCenterRightSideOfEquation = getHeightOfCenterOfExpression(g, (Expression) params[1], fontSize);
+        int heightCenterLeftSideOfEquation = getHeightOfCenterOfExpression(g, ((Expression[]) params[0])[0], fontSize);
+        int heightCenterRightSideOfEquation = getHeightOfCenterOfExpression(g, ((Expression[]) params[0])[1], fontSize);
         int heightCommand = getHeightOfCommand(g, c, fontSize);
         int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
         setFont(g, fontSize);
@@ -4304,11 +4237,11 @@ public class GraphicPanelFormula extends JPanel {
         drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
 
         //1. Ausdruck zeichnen.
-        drawExpression(g, (Expression) params[0],
+        drawExpression(g, ((Expression[]) params[0])[0],
                 x_0 + lengthName
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                 y_0 - (heightCenterCommand - heightCenterLeftSideOfEquation), fontSize);
-        distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[0], fontSize);
+        distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, ((Expression[]) params[0])[0], fontSize);
         //"=" zeichnen.
         setFont(g, fontSize);
         drawSignEquals(g, x_0 + lengthName
@@ -4316,11 +4249,11 @@ public class GraphicPanelFormula extends JPanel {
                 y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
         distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfSignEquals(g, fontSize);
         //2. Ausdruck zeichnen.
-        drawExpression(g, (Expression) params[1],
+        drawExpression(g, ((Expression[]) params[0])[1],
                 x_0 + lengthName
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                 y_0 - (heightCenterCommand - heightCenterRightSideOfEquation), fontSize);
-        distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[1], fontSize);
+        distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, ((Expression[]) params[0])[1], fontSize);
 
         if (params.length == 3) {
 
