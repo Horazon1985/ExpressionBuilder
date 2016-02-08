@@ -111,6 +111,15 @@ public class SelfDefinedFunction extends Expression {
         innerExpressionsForSelfDefinedFunctions.put(f.getName(), f.getLeft());
     }
 
+    /**
+     * Entfernt eine vom Benutzer definierte Funktion mit dem Name f, falls vorhanden.
+     */
+    public static void removeSelfDefinedFunction(String f) {
+        abstractExpressionsForSelfDefinedFunctions.remove(f);
+        argumentsForSelfDefinedFunctions.remove(f);
+        innerExpressionsForSelfDefinedFunctions.remove(f);
+    }
+    
     @Override
     public Expression copy() {
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression, this.left);

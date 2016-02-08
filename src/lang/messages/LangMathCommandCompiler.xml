@@ -2,25 +2,25 @@
     
     <!-- Fehlermeldungen für das Kompilieren eines Standardbefehls -->  
     
-    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1">
+    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_1">
         <German>Zu wenig Parameter im Befehl </German>
         <English>Not enough parameters in command </English>
         <Ukrainian>Замало параметрів у команди </Ukrainian>
         <Russian>Недостаточно параметров у команды </Russian>
     </object>
-    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2">
+    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_2">
         <German>.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_OPERATOR_1">
+    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_1">
         <German>Zu viele Parameter im Befehl </German>
         <English>Too many parameters in command </English>
         <Ukrainian>Забагато параметрів у команди </Ukrainian>
         <Russian>Слишком много параметров у команды </Russian>
     </object>
-    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_OPERATOR_2">
+    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_2">
         <German>.</German>
         <English>.</English>
         <Ukrainian>.</Ukrainian>
@@ -1204,11 +1204,23 @@
         <Ukrainian>Список усіх функцій визначених користувачем: </Ukrainian>
         <Russian>Список всех функций определённых пользователем: </Russian>
     </object>
+    <object id = "MCC_NO_DEFINED_FUNCTIONS">
+        <German>Es wurden keine Funktionen definiert.</German>
+        <English>No functions were defined.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_LIST_OF_VARIABLES">
         <German>Liste aller Veränderlichen mit vordefinierten Werten: </German>
         <English>List of all variables which are given values: </English>
         <Ukrainian>Список усіх функцій, яким було присвоєно значення: </Ukrainian>
         <Russian>Список всех функций, которым было присвоено значение: </Russian>
+    </object>
+    <object id = "MCC_NO_DEFINED_VARS">
+        <German>Es wurden keine Variablen definiert.</German>
+        <English>No variables were defined.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_E_1">
         <German>Eulersche Zahl e auf </German>

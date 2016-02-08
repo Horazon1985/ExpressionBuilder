@@ -410,7 +410,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInOperatorArguments < arguments.length - 1) {
+        if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
                     + Translator.translateExceptionMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
@@ -605,7 +605,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInOperatorArguments < arguments.length - 1) {
+        if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateExceptionMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
                     + Translator.translateExceptionMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
@@ -754,7 +754,7 @@ public abstract class OperationParser {
 
         Object[] params = new Object[parameter.length];
 
-        int indexInOperatorArguments = 0;
+        int indexInCommandParameters = 0;
         ParameterPattern p;
         ArrayList<String> restrictions;
         ArrayList<Integer> indices = new ArrayList<>();
@@ -763,28 +763,28 @@ public abstract class OperationParser {
         for (int i = 0; i < resultPattern.size(); i++) {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
-            if (indexInOperatorArguments >= parameter.length) {
+            if (indexInCommandParameters >= parameter.length) {
                 throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_1")
                         + commandName
                         + Translator.translateExceptionMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_2"));
             }
 
             // Indizes loggen!
-            indices.add(indexInOperatorArguments);
+            indices.add(indexInCommandParameters);
 
             p = resultPattern.getParameterPattern(i);
             restrictions = p.getRestrictions();
 
             if (p.getMultiplicity().equals(Multiplicity.one)) {
-                params[indexInOperatorArguments] = getOperationParameter(commandName, parameter[indexInOperatorArguments], null, p.getParamType(), restrictions, indexInOperatorArguments, Command.class);
-                indexInOperatorArguments++;
+                params[indexInCommandParameters] = getOperationParameter(commandName, parameter[indexInCommandParameters], null, p.getParamType(), restrictions, indexInCommandParameters, Command.class);
+                indexInCommandParameters++;
             } else {
-                while (indexInOperatorArguments < parameter.length) {
+                while (indexInCommandParameters < parameter.length) {
                     try {
-                        params[indexInOperatorArguments] = getOperationParameter(commandName, parameter[indexInOperatorArguments], null, p.getParamType(), restrictions, indexInOperatorArguments, Command.class);
-                        indexInOperatorArguments++;
+                        params[indexInCommandParameters] = getOperationParameter(commandName, parameter[indexInCommandParameters], null, p.getParamType(), restrictions, indexInCommandParameters, Command.class);
+                        indexInCommandParameters++;
                     } catch (ExpressionException e) {
-                        if (indexInOperatorArguments == i) {
+                        if (indexInCommandParameters == i) {
                             /* 
                              Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
                              In diesem Fall konnte kein einziger Parameter geparst werden.
@@ -799,7 +799,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInOperatorArguments < parameter.length - 1) {
+        if (indexInCommandParameters < parameter.length - 1 || parameter.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateExceptionMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_1")
                     + commandName
                     + Translator.translateExceptionMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_2"));
