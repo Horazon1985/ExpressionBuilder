@@ -270,13 +270,18 @@ public class GraphicPanelFormula extends JPanel {
 
             /*
              WICHTIG: In allen Fällen, außer im TANGENT-Fall, können params[i]
-             nur Instanzen von Expression, LogicalExpression,
+             nur Instanzen von Expression, Expression[], LogicalExpression,
              MatrixExpression, String, Integer sein.
              */
             for (Object param : params) {
                 if (param instanceof Expression) {
                     heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfExpression(g, (Expression) param, fontSize));
                     heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfExpression(g, (Expression) param, fontSize) - getHeightOfCenterOfExpression(g, (Expression) param, fontSize));
+                } else if (param instanceof Expression[]) {
+                    for (Expression expr : (Expression[]) param) {
+                        heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfExpression(g, (Expression) expr, fontSize));
+                        heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfExpression(g, (Expression) expr, fontSize) - getHeightOfCenterOfExpression(g, (Expression) expr, fontSize));
+                    }
                 } else if (param instanceof LogicalExpression) {
                     heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) param, fontSize));
                     heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfLogicalExpression(g, (LogicalExpression) param, fontSize) - getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) param, fontSize));
@@ -330,14 +335,18 @@ public class GraphicPanelFormula extends JPanel {
 
             /*
              WICHTIG: ist c.typeCommand != TypeCommand.TANGENT, dann kann
-             params[i] nur eine Instanz von Expression, LogicalExpression,
-             String, Integer sein.
+             params[i] nur eine Instanz von Expression, Expression[], 
+             LogicalExpression, String, Integer sein.
              */
             heightParameterCenter = (2 * fontSize) / 5;
 
             for (Object param : params) {
                 if (param instanceof Expression) {
                     heightParameterCenter = Math.max(heightParameterCenter, getHeightOfCenterOfExpression(g, (Expression) param, fontSize));
+                } else if (param instanceof Expression[]) {
+                    for (Expression expr : (Expression[]) param) {
+                        heightParameterCenter = Math.max(heightParameterCenter, getHeightOfCenterOfExpression(g, expr, fontSize));
+                    }
                 } else if (param instanceof LogicalExpression) {
                     heightParameterCenter = Math.max(heightParameterCenter, getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) param, fontSize));
                 } else if (param instanceof MatrixExpression) {
@@ -451,6 +460,13 @@ public class GraphicPanelFormula extends JPanel {
                 for (Object param : params) {
                     if (param instanceof Expression) {
                         resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
+                    } else if (param instanceof Expression[]) {
+                        for (int i = 0; i < ((Expression[]) param).length; i++) {
+                            resultLength += getLengthOfExpression(g, ((Expression[]) param)[i], fontSize);
+                            if (i < ((Expression[]) param).length - 1) {
+                                resultLength += getWidthOfSignEquals(g, fontSize);
+                            }
+                        }
                     } else if (param instanceof LogicalExpression) {
                         resultLength = resultLength + getLengthOfLogicalExpression(g, (LogicalExpression) param, fontSize);
                     } else if (param instanceof MatrixExpression) {
@@ -616,79 +632,70 @@ public class GraphicPanelFormula extends JPanel {
             // Hier ist matExpr eine Instanz von MatrixOperator.
             Object[] params = ((MatrixOperator) matExpr).getParams();
 
-            if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.diff)) {
+            switch (((MatrixOperator) matExpr).getType()) {
+                case diff:
+                    if (params.length == 2) {
 
-                if (params.length == 2) {
+                        return Math.max(3 * fontSize, getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
 
-                    return Math.max(3 * fontSize, getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                    } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                } else if (params.length == 3 && params[2] instanceof Integer) {
+                        return Math.max(3 * fontSize + 2 * getSizeForSup(fontSize), getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
 
-                    return Math.max(3 * fontSize + 2 * getSizeForSup(fontSize), getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                    } else {
 
-                } else {
+                        return Math.max(3 * fontSize + getSizeForSup(fontSize), getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
 
-                    return Math.max(3 * fontSize + getSizeForSup(fontSize), getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                    }
+                case integral:
+                    if (params.length == 2) {
 
-                }
+                        // Unbestimmtes Integral.
+                        return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
 
-            } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.integral)) {
+                    } else {
 
-                if (params.length == 2) {
+                        // Bestimmtes Integral.
+                        return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
+                                + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize))
+                                + getHeightOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
 
-                    // Unbestimmtes Integral.
+                    }
+                case laplace:
                     return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-
-                } else {
-
-                    // Bestimmtes Integral.
+                case prod:
+                case sum:
                     return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
                             + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize))
                             + getHeightOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
+                default:
+                    int heightBelowCommonCenter = (2 * fontSize) / 5;
+                    int heightBeyondCommonCenter = (3 * fontSize) / 5;
+                    Object[] left = ((MatrixOperator) matExpr).getParams();
 
-                }
+                    for (int i = 0; i < left.length; i++) {
 
-            } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.laplace)) {
+                        if (left[i] instanceof Expression) {
+                            heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize));
+                            heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter,
+                                    getHeightOfExpression(g, (Expression) left[i], fontSize) - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize));
+                        } else if (left[i] instanceof MatrixExpression) {
+                            heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize));
+                            heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter,
+                                    getHeightOfMatrixExpression(g, (MatrixExpression) left[i], fontSize) - getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize));
+                        }
+                        /*
+                        Ansonsten ist left[i] eine Instanz von String oder von
+                        Integer. In beiden Fällen wird das gleiche berechnet (so,
+                        als wäre es eine Variable; die Höhe des Zentrums beträgt
+                        40% der Gesamthöhe des Ausdrucks). Dann ändern sich aber
+                        heightBelowCommonCenter und heightBeyondCommonCenter
+                        NICHT.
+                         */
 
-                return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-
-            } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.prod)
-                    || ((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.sum)) {
-
-                return getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
-                        + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize))
-                        + getHeightOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
-
-            } else {
-
-                int heightBelowCommonCenter = (2 * fontSize) / 5;
-                int heightBeyondCommonCenter = (3 * fontSize) / 5;
-                Object[] left = ((MatrixOperator) matExpr).getParams();
-
-                for (int i = 0; i < left.length; i++) {
-
-                    if (left[i] instanceof Expression) {
-                        heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize));
-                        heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter,
-                                getHeightOfExpression(g, (Expression) left[i], fontSize) - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize));
-                    } else if (left[i] instanceof MatrixExpression) {
-                        heightBelowCommonCenter = Math.max(heightBelowCommonCenter, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize));
-                        heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter,
-                                getHeightOfMatrixExpression(g, (MatrixExpression) left[i], fontSize) - getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize));
                     }
-                    /*
-                     Ansonsten ist left[i] eine Instanz von String oder von
-                     Integer. In beiden Fällen wird das gleiche berechnet (so,
-                     als wäre es eine Variable; die Höhe des Zentrums beträgt
-                     40% der Gesamthöhe des Ausdrucks). Dann ändern sich aber
-                     heightBelowCommonCenter und heightBeyondCommonCenter
-                     NICHT.
-                     */
 
-                }
-
-                return heightBelowCommonCenter + heightBeyondCommonCenter;
-
+                    return heightBelowCommonCenter + heightBeyondCommonCenter;
             }
 
         }
@@ -752,51 +759,46 @@ public class GraphicPanelFormula extends JPanel {
         // Hier ist matExpr eine Instanz von MatrixOperator.
         Object[] params = ((MatrixOperator) matExpr).getParams();
 
-        if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.diff)) {
-
-            if (params.length == 2) {
-                return Math.max((3 * fontSize) / 2, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
-            } else if (params.length == 3 && params[2] instanceof Integer) {
-                return Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
-            } else {
-                return Math.max((3 * fontSize) / 2, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
-            }
-
-        } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.integral)) {
-
-            if (params.length == 2) {
-                // Unbestimmtes Integral.
+        switch (((MatrixOperator) matExpr).getType()) {
+            case diff:
+                if (params.length == 2) {
+                    return Math.max((3 * fontSize) / 2, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                } else if (params.length == 3 && params[2] instanceof Integer) {
+                    return Math.max((3 * fontSize) / 2 + getSizeForSup(fontSize), getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                } else {
+                    return Math.max((3 * fontSize) / 2, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
+                }
+            case integral:
+                if (params.length == 2) {
+                    // Unbestimmtes Integral.
+                    return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                } else {
+                    // Bestimmtes Integral.
+                    return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
+                            + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
+                }
+            case laplace:
                 return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            } else {
-                // Bestimmtes Integral.
+            case prod:
+            case sum:
                 return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
                         + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
-            }
-
-        } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.laplace)) {
-            return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-        } else if (((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.prod)
-                || ((MatrixOperator) matExpr).getType().equals(TypeMatrixOperator.sum)) {
-            return getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
-                    + getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
-        } else {
-
-            int result = 2 * fontSize / 5;
-            for (Object param : ((MatrixOperator) matExpr).getParams()) {
-                /*
-                 Von allen möglichen Parametern in Operatoren können nur die
-                 Parameter, welche Instanzen von Expression oder von
-                 MatrixExpression sind, zur Höhe des Zentrums beitragen. Alle
-                 anderen haben die Zentrumhöhe 2 * fontsize / 5.
-                 */
-                if (param instanceof Expression) {
-                    result = Math.max(result, getHeightOfCenterOfExpression(g, (Expression) param, fontSize));
-                } else if (param instanceof MatrixExpression) {
-                    result = Math.max(result, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) param, fontSize));
+            default:
+                int result = 2 * fontSize / 5;
+                for (Object param : ((MatrixOperator) matExpr).getParams()) {
+                    /*
+                    Von allen möglichen Parametern in Operatoren können nur die
+                    Parameter, welche Instanzen von Expression oder von
+                    MatrixExpression sind, zur Höhe des Zentrums beitragen. Alle
+                    anderen haben die Zentrumhöhe 2 * fontsize / 5.
+                     */
+                    if (param instanceof Expression) {
+                        result = Math.max(result, getHeightOfCenterOfExpression(g, (Expression) param, fontSize));
+                    } else if (param instanceof MatrixExpression) {
+                        result = Math.max(result, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) param, fontSize));
+                    }
                 }
-            }
-            return result;
-
+                return result;
         }
 
     }
@@ -930,121 +932,125 @@ public class GraphicPanelFormula extends JPanel {
 
         Object[] params = matOperator.getParams();
 
-        if (matOperator.getType().equals(TypeMatrixOperator.diff)) {
+        switch (matOperator.getType()) {
+            case diff: {
 
-            int result;
+                int result;
 
-            if (params.length == 2) {
+                if (params.length == 2) {
 
-                result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
-                        + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                    result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
+                            + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
 
-            } else if (params.length == 3 && params[2] instanceof Integer) {
+                } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    setFont(g, getSizeForSup(fontSize));
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
+                    result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+
+                } else {
+
+                    int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+                    for (int i = 2; i < params.length; i++) {
+                        widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                    }
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
+                    result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+
+                }
+
+                /*
+                Die Addition von fontSize / 2 ist dazu da, damit nach dem
+                Differentialoperator etwas Abstand zum nächsten Zeichen ist
+                (nämlich fontSize / 2 Pixel).
+                 */
+                return result + fontSize / 2;
+
+            }
+            case integral: {
+
+                int heightOfIntegral = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                int result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
+
+                if (params.length == 4) {
+                    // Bestimmtes Integral.
+                    result = Math.max(result, getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                    result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
+                }
+
+                result = result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                setFont(g, fontSize);
+                /*
+                Die Addition von fontSize / 2 ist dazu da, damit nach dem dx (x =
+                var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
+                Pixel).
+                 */
+                return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
+
+            }
+            case laplace:
+                return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+            case prod: {
+
+                int heightFactor = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                int result = getWidthOfSignPi(g, fontSize, heightFactor);
                 setFont(g, getSizeForSup(fontSize));
-                widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
-                result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-
-            } else {
-
-                int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
-                for (int i = 2; i < params.length; i++) {
-                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
-                }
-                widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
-                result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-
-            }
-
-            /*
-             Die Addition von fontSize / 2 ist dazu da, damit nach dem
-             Differentialoperator etwas Abstand zum nächsten Zeichen ist
-             (nämlich fontSize / 2 Pixel).
-             */
-            return result + fontSize / 2;
-
-        } else if (matOperator.getType().equals(TypeMatrixOperator.integral)) {
-
-            int heightOfIntegral = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            int result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
-
-            if (params.length == 4) {
-                // Bestimmtes Integral.
-                result = Math.max(result, getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            }
-
-            result = result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            setFont(g, fontSize);
-            /*
-             Die Addition von fontSize / 2 ist dazu da, damit nach dem dx (x =
-             var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
-             Pixel).
-             */
-            return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
-
-        } else if (matOperator.getType().equals(TypeMatrixOperator.laplace)) {
-
-            return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-
-        } else if (matOperator.getType().equals(TypeMatrixOperator.prod)) {
-
-            int heightFactor = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            int result = getWidthOfSignPi(g, fontSize, heightFactor);
-            setFont(g, getSizeForSup(fontSize));
-            int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
-            result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
-            result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
-                    && ((((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.PLUS)
-                    || (((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.MINUS))) {
-                return result + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            } else {
-                return result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            }
-
-        } else if (matOperator.getType().equals(TypeMatrixOperator.sum)) {
-
-            int heightSummand = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            int result = getWidthOfSignSigma(g, fontSize, heightSummand);
-            setFont(g, getSizeForSup(fontSize));
-            int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
-            result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
-            result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
-                    && ((((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.PLUS)
-                    || (((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.MINUS))) {
-                return result + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            } else {
-                return result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
-            }
-
-        } else {
-
-            // Sonstiger Standardfall
-            String name = MatrixOperator.getNameFromType(matOperator.getType());
-            int result = g.getFontMetrics().stringWidth(name) + 2 * getWidthOfBracket(fontSize);
-
-            for (int i = 0; i < params.length; i++) {
-
-                if (params[i] instanceof Expression) {
-                    result = result + getLengthOfExpression(g, (Expression) matOperator.getParams()[i], fontSize);
-                } else if (params[i] instanceof MatrixExpression) {
-                    result = result + getLengthOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[i], fontSize);
-                } else if (params[i] instanceof String) {
-                    result = result + g.getFontMetrics().stringWidth((String) params[i]);
-                } else if (params[i] instanceof Integer) {
-                    result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
-                }
-
-                if (i < params.length - 1) {
-                    result = result + g.getFontMetrics().stringWidth(", ");
+                if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
+                        && ((((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.PLUS)
+                        || (((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.MINUS))) {
+                    return result + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                } else {
+                    return result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
                 }
 
             }
-            return result;
+            case sum: {
 
+                int heightSummand = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                int result = getWidthOfSignSigma(g, fontSize, heightSummand);
+                setFont(g, getSizeForSup(fontSize));
+                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
+                if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
+                        && ((((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.PLUS)
+                        || (((MatrixBinaryOperation) params[0]).getType()).equals(TypeMatrixBinary.MINUS))) {
+                    return result + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                } else {
+                    return result + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                }
+
+            }
+            default: {
+
+                // Sonstiger Standardfall
+                String name = MatrixOperator.getNameFromType(matOperator.getType());
+                int result = g.getFontMetrics().stringWidth(name) + 2 * getWidthOfBracket(fontSize);
+
+                for (int i = 0; i < params.length; i++) {
+
+                    if (params[i] instanceof Expression) {
+                        result = result + getLengthOfExpression(g, (Expression) matOperator.getParams()[i], fontSize);
+                    } else if (params[i] instanceof MatrixExpression) {
+                        result = result + getLengthOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[i], fontSize);
+                    } else if (params[i] instanceof String) {
+                        result = result + g.getFontMetrics().stringWidth((String) params[i]);
+                    } else if (params[i] instanceof Integer) {
+                        result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
+                    }
+
+                    if (i < params.length - 1) {
+                        result = result + g.getFontMetrics().stringWidth(", ");
+                    }
+
+                }
+                return result;
+
+            }
         }
 
     }
@@ -1580,152 +1586,160 @@ public class GraphicPanelFormula extends JPanel {
 
         Object[] params = expr.getParams();
 
-        if (expr.getType().equals(TypeOperator.diff)) {
+        switch (expr.getType()) {
+            case diff: {
 
-            int result;
+                int result;
 
-            if (params.length == 2) {
+                if (params.length == 2) {
 
-                result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
-                        + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                    result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
+                            + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
 
-            } else if (params.length == 3 && params[2] instanceof Integer) {
+                } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    setFont(g, getSizeForSup(fontSize));
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
+                    result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+
+                } else {
+
+                    int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+                    for (int i = 2; i < params.length; i++) {
+                        widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                    }
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
+                    result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+
+                }
+
+                /*
+                Die Addition von fontSize / 2 ist dazu da, damit nach dem
+                Differentialoperator etwas Abstand zum nächsten Zeichen ist
+                (nämlich fontSize / 2 Pixel).
+                 */
+                return result + fontSize / 2;
+
+            }
+            case fac:
+                Expression argument = (Expression) params[0];
+
+                if (argument instanceof BinaryOperation || (argument instanceof Constant
+                        && ((Constant) argument).getValue().compareTo(BigDecimal.ZERO) < 0)) {
+
+                    // l = l("(") + l(interior) + l(")") + l("!")
+                    int lengthArgument = getLengthOfExpression(g, argument, fontSize);
+                    setFont(g, fontSize);
+                    return lengthArgument + 2 * getWidthOfBracket(fontSize) + getWidthOfSignFac(g, fontSize);
+
+                } else {
+
+                    // l = l(Argument) + l("!")
+                    int lengthArgument = getLengthOfExpression(g, argument, fontSize);
+                    setFont(g, fontSize);
+                    return lengthArgument + getWidthOfSignFac(g, fontSize);
+
+                }
+            case integral: {
+
+                int heightOfIntegral = getHeightOfExpression(g, (Expression) params[0], fontSize);
+                int result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
+
+                if (params.length == 4) {
+                    // Bestimmtes Integral.
+                    result = Math.max(result, getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                    result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
+                }
+
+                result = result + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                setFont(g, fontSize);
+                /*
+                Die Addition von fontSize / 2 ist dazu da, damit nach dem dx (x =
+                var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
+                Pixel).
+                 */
+                return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
+
+            }
+            case laplace:
+                return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+            case prod: {
+
+                int heightFactor = getHeightOfExpression(g, (Expression) params[0], fontSize);
+                int result = getWidthOfSignPi(g, fontSize, heightFactor);
                 setFont(g, getSizeForSup(fontSize));
-                widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
-                result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
-
-            } else {
-
-                int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
-                for (int i = 2; i < params.length; i++) {
-                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
-                }
-                widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
-                result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
-
-            }
-
-            /*
-             Die Addition von fontSize / 2 ist dazu da, damit nach dem
-             Differentialoperator etwas Abstand zum nächsten Zeichen ist
-             (nämlich fontSize / 2 Pixel).
-             */
-            return result + fontSize / 2;
-
-        } else if (expr.getType().equals(TypeOperator.fac)) {
-
-            Expression argument = (Expression) params[0];
-
-            if (argument instanceof BinaryOperation || (argument instanceof Constant
-                    && ((Constant) argument).getValue().compareTo(BigDecimal.ZERO) < 0)) {
-
-                // l = l("(") + l(interior) + l(")") + l("!")
-                int lengthArgument = getLengthOfExpression(g, argument, fontSize);
-                setFont(g, fontSize);
-                return lengthArgument + 2 * getWidthOfBracket(fontSize) + getWidthOfSignFac(g, fontSize);
-
-            } else {
-
-                // l = l(Argument) + l("!")
-                int lengthArgument = getLengthOfExpression(g, argument, fontSize);
-                setFont(g, fontSize);
-                return lengthArgument + getWidthOfSignFac(g, fontSize);
-
-            }
-
-        } else if (expr.getType().equals(TypeOperator.integral)) {
-
-            int heightOfIntegral = getHeightOfExpression(g, (Expression) params[0], fontSize);
-            int result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
-
-            if (params.length == 4) {
-                // Bestimmtes Integral.
-                result = Math.max(result, getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            }
-
-            result = result + getLengthOfExpression(g, (Expression) params[0], fontSize);
-            setFont(g, fontSize);
-            /*
-             Die Addition von fontSize / 2 ist dazu da, damit nach dem dx (x =
-             var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
-             Pixel).
-             */
-            return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
-
-        } else if (expr.getType().equals(TypeOperator.laplace)) {
-
-            return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
-
-        } else if (expr.getType().equals(TypeOperator.prod)) {
-
-            int heightFactor = getHeightOfExpression(g, (Expression) params[0], fontSize);
-            int result = getWidthOfSignPi(g, fontSize, heightFactor);
-            setFont(g, getSizeForSup(fontSize));
-            int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
-            result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
-            result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            if (((Expression) params[0]) instanceof BinaryOperation
-                    && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
-                    || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
-                return result + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
-            } else {
-                return result + getLengthOfExpression(g, (Expression) params[0], fontSize);
-            }
-
-        } else if (expr.getType().equals(TypeOperator.sum)) {
-
-            int heightSummand = getHeightOfExpression(g, (Expression) params[0], fontSize);
-            int result = getWidthOfSignSigma(g, fontSize, heightSummand);
-            setFont(g, getSizeForSup(fontSize));
-            int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
-            result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
-            result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
-            if (((Expression) params[0]) instanceof BinaryOperation
-                    && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
-                    || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
-                return result + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
-            } else {
-                return result + getLengthOfExpression(g, (Expression) params[0], fontSize);
-            }
-
-        } else {
-
-            String name = Operator.getNameFromType(expr.getType());
-            int lengthOfName;
-            if (expr.getType().equals(TypeOperator.laplace)) {
-                lengthOfName = getWidthOfSignDelta(g, fontSize);
-            } else if (expr.getType().equals(TypeOperator.mu)) {
-                lengthOfName = getWidthOfSignSmallMu(g, fontSize);
-            } else if (expr.getType().equals(TypeOperator.sigma)) {
-                lengthOfName = getWidthOfSignSmallSigma(g, fontSize);
-            } else if (expr.getType().equals(TypeOperator.taylor)) {
-                lengthOfName = getWidthOfSignTaylor(g, fontSize);
-            } else {
-                lengthOfName = g.getFontMetrics().stringWidth(name);
-            }
-
-            int result = lengthOfName + 2 * getWidthOfBracket(fontSize);
-
-            for (int i = 0; i < params.length; i++) {
-
-                if (params[i] instanceof Expression) {
-                    result = result + getLengthOfExpression(g, (Expression) expr.getParams()[i], fontSize);
-                } else if (params[i] instanceof String) {
-                    result = result + g.getFontMetrics().stringWidth((String) params[i]);
-                } else if (params[i] instanceof Integer) {
-                    result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
-                }
-
-                if (i < params.length - 1) {
-                    result = result + g.getFontMetrics().stringWidth(", ");
+                if (((Expression) params[0]) instanceof BinaryOperation
+                        && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
+                        || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
+                    return result + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                } else {
+                    return result + getLengthOfExpression(g, (Expression) params[0], fontSize);
                 }
 
             }
-            return result;
+            case sum: {
 
+                int heightSummand = getHeightOfExpression(g, (Expression) params[0], fontSize);
+                int result = getWidthOfSignSigma(g, fontSize, heightSummand);
+                setFont(g, getSizeForSup(fontSize));
+                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
+                result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
+                if (((Expression) params[0]) instanceof BinaryOperation
+                        && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
+                        || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
+                    return result + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                } else {
+                    return result + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                }
+
+            }
+            default: {
+
+                String name = Operator.getNameFromType(expr.getType());
+                int lengthOfName;
+                switch (expr.getType()) {
+                    case laplace:
+                        lengthOfName = getWidthOfSignDelta(g, fontSize);
+                        break;
+                    case mu:
+                        lengthOfName = getWidthOfSignSmallMu(g, fontSize);
+                        break;
+                    case sigma:
+                        lengthOfName = getWidthOfSignSmallSigma(g, fontSize);
+                        break;
+                    case taylor:
+                        lengthOfName = getWidthOfSignTaylor(g, fontSize);
+                        break;
+                    default:
+                        lengthOfName = g.getFontMetrics().stringWidth(name);
+                        break;
+                }
+
+                int result = lengthOfName + 2 * getWidthOfBracket(fontSize);
+
+                for (int i = 0; i < params.length; i++) {
+
+                    if (params[i] instanceof Expression) {
+                        result = result + getLengthOfExpression(g, (Expression) expr.getParams()[i], fontSize);
+                    } else if (params[i] instanceof String) {
+                        result = result + g.getFontMetrics().stringWidth((String) params[i]);
+                    } else if (params[i] instanceof Integer) {
+                        result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
+                    }
+
+                    if (i < params.length - 1) {
+                        result = result + g.getFontMetrics().stringWidth(", ");
+                    }
+
+                }
+                return result;
+
+            }
         }
 
     }
@@ -2947,21 +2961,27 @@ public class GraphicPanelFormula extends JPanel {
 
         int distanceFromOpeningBracket = 0;
 
-        if (operator.getType().equals(TypeOperator.laplace)) {
-            drawSignDelta(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-            distanceFromOpeningBracket += getWidthOfSignDelta(g, fontSize);
-        } else if (operator.getType().equals(TypeOperator.mu)) {
-            drawSignSmallMu(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-            distanceFromOpeningBracket += getWidthOfSignSmallMu(g, fontSize);
-        } else if (operator.getType().equals(TypeOperator.sigma)) {
-            drawSignSmallSigma(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-            distanceFromOpeningBracket += getWidthOfSignSmallSigma(g, fontSize);
-        } else if (operator.getType().equals(TypeOperator.taylor)) {
-            drawSignTaylor(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-            distanceFromOpeningBracket += getWidthOfSignTaylor(g, fontSize);
-        } else {
-            g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-            distanceFromOpeningBracket += g.getFontMetrics().stringWidth(name);
+        switch (operator.getType()) {
+            case laplace:
+                drawSignDelta(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
+                distanceFromOpeningBracket += getWidthOfSignDelta(g, fontSize);
+                break;
+            case mu:
+                drawSignSmallMu(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
+                distanceFromOpeningBracket += getWidthOfSignSmallMu(g, fontSize);
+                break;
+            case sigma:
+                drawSignSmallSigma(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
+                distanceFromOpeningBracket += getWidthOfSignSmallSigma(g, fontSize);
+                break;
+            case taylor:
+                drawSignTaylor(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
+                distanceFromOpeningBracket += getWidthOfSignTaylor(g, fontSize);
+                break;
+            default:
+                g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
+                distanceFromOpeningBracket += g.getFontMetrics().stringWidth(name);
+                break;
         }
 
         drawOpeningBracket(g, x_0 + distanceFromOpeningBracket, y_0, fontSize, heightOperator);
