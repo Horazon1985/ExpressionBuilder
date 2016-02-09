@@ -4321,7 +4321,7 @@ public class GraphicPanelFormula extends JPanel {
             } else if (params[i] instanceof Expression[]) {
 
                 //1. Ausdruck zeichnen.
-                drawExpression(g, ((Expression[]) params[0])[0],
+                drawExpression(g, ((Expression[]) params[i])[0],
                         x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - getHeightOfCenterOfExpression(g, ((Expression[]) params[i])[0], fontSize)), fontSize);
@@ -4333,7 +4333,7 @@ public class GraphicPanelFormula extends JPanel {
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfSignEquals(g, fontSize);
                 //2. Ausdruck zeichnen.
-                drawExpression(g, ((Expression[]) params[0])[1],
+                drawExpression(g, ((Expression[]) params[i])[1],
                         x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - getHeightOfCenterOfExpression(g, ((Expression[]) params[i])[1], fontSize)), fontSize);
