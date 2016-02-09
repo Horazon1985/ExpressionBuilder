@@ -1207,8 +1207,8 @@
     <object id = "MCC_NO_DEFINED_FUNCTIONS">
         <German>Es wurden keine Funktionen definiert.</German>
         <English>No functions were defined.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не задано жодної функції.</Ukrainian>
+        <Russian>Ни одной фуункции не задано.</Russian>
     </object>
     <object id = "MCC_LIST_OF_VARIABLES">
         <German>Liste aller Veränderlichen mit vordefinierten Werten: </German>
@@ -1219,8 +1219,8 @@
     <object id = "MCC_NO_DEFINED_VARS">
         <German>Es wurden keine Variablen definiert.</German>
         <English>No variables were defined.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не задано жодної змінної.</Ukrainian>
+        <Russian>Ни одной переменной не задано.</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_E_1">
         <German>Eulersche Zahl e auf </German>
@@ -1387,14 +1387,14 @@
     <object id = "MCC_FUNCTION_IS_REMOVED_1">
         <German>Die Funktion </German>
         <English>The function </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Функція </Ukrainian>
+        <Russian>Функция </Russian>
     </object>
     <object id = "MCC_FUNCTION_IS_REMOVED_2">
         <German> wurde entfernt.</German>
         <English> was removed.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> була видалена.</Ukrainian>
+        <Russian> была удалена.</Russian>
     </object>
     <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_1">
         <German>Die Veränderliche </German>
@@ -1417,7 +1417,7 @@
     <object id = "MCC_ALL_FUNCTIONS_ARE_REMOVED">
         <German>Alle Funktionen wurden entfernt.</German>
         <English>All functions were removed.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Усі функції були видалені.</Ukrainian>
+        <Russian>Все функции были удалены.</Russian>
     </object>
 </objects>

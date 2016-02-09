@@ -339,7 +339,7 @@ public class Variable extends Expression {
 
     @Override
     public boolean isConstant() {
-        return this.name.equals("pi");
+        return this.name.equals("pi") || this.preciseExpression != null;
     }
 
     @Override

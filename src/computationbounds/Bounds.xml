@@ -63,6 +63,9 @@
   <object id = "BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY">
     <value>5</value>
   </object>
+  <object id = "BOUND_NUMERIC_DEFAULT_NUMBER_OF_INTERVALS">
+    <value>10000</value>
+  </object>
   <object id = "BOUND_NUMERIC_MAX_OPERATOR_NORM_TO_COMPUTE_MATRIX_FUNCTION">
     <value>20</value>
   </object>
