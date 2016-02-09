@@ -395,7 +395,7 @@ public abstract class OperationParser {
                         params[indexInOperatorArguments] = getOperationParameter(operatorName, arguments[indexInOperatorArguments], vars, p.getParamType(), restrictions, indexInOperatorArguments, Operator.class);
                         indexInOperatorArguments++;
                     } catch (ExpressionException e) {
-                        if (indexInOperatorArguments == i) {
+                        if (indexInOperatorArguments == i || indexInOperatorArguments < arguments.length && i == resultPattern.size() - 1) {
                             /* 
                              Es muss mindestens ein Parameter geparst werden, damit KEIN Fehler geworfen wird.
                              In diesem Fall konnte kein einziger Parameter geparst werden.
