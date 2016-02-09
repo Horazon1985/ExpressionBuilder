@@ -16,6 +16,10 @@ public class Command {
     public static final String patternEigenvectors = "eigenvectors(matexpr)";
     public static final String patternEuler = "euler(integer(0,2147483647))";
     public static final String patternExpand = "expand(expr)";
+    public static final String patternExtremaOneVar = "extrema(expr(0,1))";
+    public static final String patternExtremaWithParameter = "extrema(expr,var)";
+    public static final String patternExtremaApprox = "extrema(expr(0,1),expr(0,0),expr(0,0))";
+    public static final String patternExtremaApproxWithNumberOfIntervals = "extrema(expr(0,1),expr(0,0),expr(0,0),integer(0,2147483647))";
     public static final String patternKer = "ker(matexpr)";
     public static final String patternPi = "pi(integer(0,2147483647))";
     public static final String patternPlotCurve2D = "plotcurve2d(matexpr(0,1),expr(0,0),expr(0,0))";
