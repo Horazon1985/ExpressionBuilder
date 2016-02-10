@@ -411,13 +411,6 @@ public class GraphicPanelFormula extends JPanel {
                     resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
                 }
                 break;
-            case plotimplicit:
-                resultLength = resultLength + 2 * getWidthOfBracket(fontSize)
-                        + 4 * g.getFontMetrics().stringWidth(", ") + g.getFontMetrics().stringWidth("=");
-                for (Object param : params) {
-                    resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
-                }
-                break;
             case solve:
                 resultLength = resultLength + (params.length - 2) * g.getFontMetrics().stringWidth(", ");
                 for (Object param : params) {
@@ -4000,9 +3993,6 @@ public class GraphicPanelFormula extends JPanel {
             case latex:
                 drawCommandLatex(g, c, x_0, y_0, fontSize);
                 break;
-            case plotimplicit:
-                drawCommandPlotImplicit(g, c, x_0, y_0, fontSize);
-                break;
             case tangent:
                 drawCommandTangent(g, c, x_0, y_0, fontSize);
                 break;
@@ -4085,11 +4075,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 drawVariable(g, (Variable) varsForOutput[i], x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
-//                g.drawString(((Variable) varsForOutput[i]).getName(),
-//                        x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-//                        y_0 - (heightCenterCommand - (2 * fontSize) / 5));
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfVariable(g, (Variable) varsForOutput[i], fontSize);
-//                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(((Variable) varsForOutput[i]).getName());
 
                 // Einzelne Funktionsvariablen mit einem Komma abtrennen.
                 if (i < varsForOutput.length - 1) {
@@ -4154,56 +4140,6 @@ public class GraphicPanelFormula extends JPanel {
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5),
                         fontSize);
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfSignEquals(g, fontSize);
-            }
-
-        }
-
-        drawClosingBracket(g,
-                x_0 + lengthName
-                + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-                y_0, fontSize, heightCommand);
-
-    }
-
-    private void drawCommandPlotImplicit(Graphics g, Command c, int x_0, int y_0, int fontSize) {
-
-        setFont(g, fontSize);
-
-        Object[] params = c.getParams();
-
-        int heightCommand = getHeightOfCommand(g, c, fontSize);
-        int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
-        setFont(g, fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(c.getName());
-
-        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-        drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
-
-        int distanceFromOpeningBracket = 0;
-
-        for (int i = 0; i < params.length; i++) {
-
-            drawExpression(g, (Expression) params[i],
-                    x_0 + lengthName
-                    + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-                    y_0 - (heightCenterCommand - getHeightOfCenterOfExpression(g, (Expression) params[i], fontSize)), fontSize);
-            distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[i], fontSize);
-
-            if (i < params.length - 1) {
-                setFont(g, fontSize);
-                if (i == 0) {
-                    // Gleichheitszeichen zeichnen.
-                    drawSignEquals(g, x_0 + lengthName
-                            + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-                            y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize);
-                    distanceFromOpeningBracket = distanceFromOpeningBracket + getWidthOfSignEquals(g, fontSize);
-                } else {
-                    // Komma zeichnen.
-                    g.drawString(", ", x_0 + lengthName
-                            + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
-                            y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                    distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
-                }
             }
 
         }
