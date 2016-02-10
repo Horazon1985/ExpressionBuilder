@@ -1234,6 +1234,36 @@
         <Ukrainian> знаків: </Ukrainian>
         <Russian> знаков: </Russian>
     </object>
+    <object id = "MCC_NO_EXTREMA_FOUND">
+        <German>Es konnten keine lokalen Extrema ermittelt werden.</German>
+        <English>No local extrema found.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_EXTREMA">
+        <German>Lokale Extrema der Funktion </German>
+        <English>Lokal extrema of the function </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_LOCAL_MINIMUM_IN">
+        <German>Lokales Minimum in </German>
+        <English>Lokal minimum in </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_LOCAL_MAXIMUM_IN">
+        <German>Lokales Maximum in </German>
+        <English>Lokal maximum in </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_LOCAL_EXTREMA_FUNCTION_VALUE">
+        <German>. Funktionswert: </German>
+        <English>. Function value: </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_DIGITS_OF_PI_1">
         <German>Konstante pi auf </German>
         <English>Constant pi rounded to </English>
