@@ -513,55 +513,7 @@
         <Ukrainian>Не вдалося побудувати графік.</Ukrainian>
         <Russian>Не удалось построить график.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_IMPLICIT_PLOT2D">
-        <German>Beim Plotten impliziter Funktionen muss der Befehl 'plot2d' genau 5 Parameter enthalten: der erste ist die Gleichung, die anderen vier sind die Grenzen, innerhalb derer der Graph geplottet wird.</German>
-        <English>If plotting implicit functions, the command 'plot2d' must contain exactly 5 parameters: the first parameter is the equation, the remaining parameters define the interval limits for the corresponding variables.</English>
-        <Ukrainian>При побудові графіку неявної фуннкції, команда 'plot2d' має місити рівно 5 параметрів: перший параметр - це рівняння, решта параметрів визначають інтервали, що обмежують відповідні змінні.</Ukrainian>
-        <Russian>При построении графика невной функции, команда 'plot2d' должна содержать ровно 5 параметров: первый параметр - это уравнение, остальные параметры определяют интервалы, которые ограничивают соответствующие переменные.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_IMPLICIT_PLOT2D">
-        <German>Der 1. Parameter im Befehl 'plot2d' muss aus zwei gültigen Ausdrücken bestehen, welche durch ein '=' verbunden sind. Gemeldeter Fehler: </German>
-        <English>The 1. parameter in command 'plot2d' must consist of two valid expressions, connected by an '='. Reported eror: </English>
-        <Ukrainian>1. параметр команди 'plot2d' має складатися з двох діючих виразів, що поєднані знаком '='. Повідомлення про помилку: </Ukrainian>
-        <Russian>1. параметр кманды 'plot2d' должен состоять из двух действительных выражений объединённых знаком '='. Сообщение об ошибке: </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_IMPLICIT_PLOT2D_1">
-        <German>Die beiden Ausdrücke im Befehl 'plot2d' dürfen höchstens zwei Veränderliche enthalten. Diese enthalten jedoch </German>
-        <English>The expressions in command 'plot2d' must contain at most two variables. They contain </English>
-        <Ukrainian>Обидва вирази у команді 'plot2d' повинні містити щонайбільше дві змінні. Вони містять </Ukrainian>
-        <Russian>Оба Выражения в команде 'plot2d' должны содержать не более двух переменных. Они содержат </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_IMPLICIT_PLOT2D_2">
-        <German> Veränderliche.</German>
-        <English> variables.</English>
-        <Ukrainian> змінні.</Ukrainian>
-        <Russian> переменные.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_IMPLICIT_PLOT2D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_IMPLICIT_PLOT2D_2">
-        <German>. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
-        <English>. parameter in command 'plot2d' must be a real number.</English>
-        <Ukrainian>. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
-        <Russian>. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
-    </object>
-    <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D">
-        <German>3. Parameter im Befehl 'plot2d' muss größer sein als der 2. Parameter.</German>
-        <English>3. parameter in command 'plot2d' must be greater than the 2. parameter.</English>
-        <Ukrainian>3. параметр команди 'plot2d' має бути більше ніж 2. параметр.</Ukrainian>
-        <Russian>3. параметр команды 'plot2d' должен быть меньше чем 2. параметр.</Russian>
-    </object>
-    <object id = "MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D">
-        <German>5. Parameter im Befehl 'plot2d' muss größer sein als der 4. Parameter.</German>
-        <English>5. parameter in command 'plot2d' must be greater than the 4. parameter.</English>
-        <Ukrainian>5. параметр команди 'plot2d' має бути більше ніж 4. параметр.</Ukrainian>
-        <Russian>5. параметр команды 'plot2d' должен быть меньше чем 4. параметр.</Russian>
-    </object>
-    <object id = "MCC_IMPLICIT_GRAPH_CANNOT_BE_PLOTTED_PLOT2D">
+    <object id = "MCC_IMPLICIT_GRAPH_CANNOT_BE_PLOTTED">
         <German>Der Graph der implizit definierten Funktion konnte nicht geplottet werden.</German>
         <English>The graph of the implicitly defined function cannot be plotted.</English>
         <Ukrainian>Не вдалося побудувати графік неявно заданої функції.</Ukrainian>
@@ -639,53 +591,17 @@
         <Ukrainian>Неможливо побудувати графік.</Ukrainian>
         <Russian>Невозможно построить график.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTCURVE">
-        <German>Im Befehl 'plotcurve' müssen genau drei Parameter stehen.</German>
-        <English>The command 'plotcurve' must contain exactly three parameters.</English>
-        <Ukrainian>У команди 'plotcurve' має бути рівно три параметра.</Ukrainian>
-        <Russian>У команды 'plotcurve' должно быть ровно три параметра.</Russian>
+    <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
+        <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein zweidimensionaler Vektor sein.</German>
+        <English>The 1. parameter in command 'plotcurve2d' must be a two dimensional vector.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_PLOTCURVE">
-        <German>Der 1. Parameter im Befehl 'plotcurve' muss eine parametrisierte Kurve sein.</German>
-        <English>The 1. parameter in command 'plotcurve' must be a parameterized curve.</English>
-        <Ukrainian>1. параметр команди 'plotcurve' має бути параметризованою кривою.</Ukrainian>
-        <Russian>1. параметр команды 'plotcurve' должен быть параметризированной кривой.</Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_CURVE_COMPONENTS_IN_PLOTCURVE">
-        <German>Die parametrisierte Kurve im Befehl 'plotcurve' muss entweder aus zwei oder aus drei Komponenten bestehen.</German>
-        <English>The parameterized curve in command 'plotcurve' must consist either of two or of three components.</English>
-        <Ukrainian>Параметризована крива у команді 'plotcurve' повинна складатися або з двох або з трьох компонент.</Ukrainian>
-        <Russian>Параметризированная кривая в команде 'plotcurve' должна состоять либо из двух либо из трёх компонент.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_CURVE_COMPONENTS_IN_PLOTCURVE_1">
-        <German>Die </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_CURVE_COMPONENTS_IN_PLOTCURVE_2">
-        <German>. Kompomente in der Kurvendarstellung muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>. component in the representation of the curve must be a valid expression. Reported Error: </English>
-        <Ukrainian>. компонента у зображенні кривої має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>. компонента в представлении кривой должна быть действительным выражением. Сообщение об ошибке: </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_CURVE_COMPONENTS_IN_PLOTCURVE">
-        <German>Die Kurve im Befehl 'plotcurve' darf durch höchstens einen Parameter parametrisiert werden.</German>
-        <English>The curve in command 'plotcurve' must be parameterized by at most one parameter variable.</English>
-        <Ukrainian>Крива у команді 'plotcurve' може бути параметризована максимум одним параметром.</Ukrainian>
-        <Russian>Кривая в команде 'plotcurve' может быть параметризирована максимум одним параметром.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCURVE_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCURVE_2">
-        <German>. Parameter im Befehl 'plotcurve' muss eine reelle Zahl sein.</German>
-        <English>. parameter in command 'plotcurve' must be a real number.</English>
-        <Ukrainian>. параметр команди 'plotcurve' має бути дійсним числом.</Ukrainian>
-        <Russian>. параметр команды 'plotcurve' должен быть вещественным числом.</Russian>
+    <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_3_DIM_VECTOR">
+        <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein dreidimensionaler Vektor sein.</German>
+        <English>The 1. parameter in command 'plotcurve2d' must be a three dimensional vector.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_CURVE_CANNOT_BE_PLOTTED_PLOTCURVE">
         <German>Die Kurve konnte nicht geplottet werden.</German>
