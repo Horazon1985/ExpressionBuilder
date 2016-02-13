@@ -11,6 +11,7 @@ import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
 import abstractexpressions.expression.integration.SimplifyIntegralMethods;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import operationparser.OperationParser;
@@ -27,6 +28,7 @@ public class Operator extends Expression {
     public static final String patternDiffWithOrder = "diff(expr,var,integer(0,2147483647))";
     public static final String patternDiv = "div(expr,uniquevar+)";
     public static final String patternFac = "fac(expr)";
+    public static final String patternFourier = "fourier(expr,var(!2,!3),expr,expr,integer(0,2147483647))";
     public static final String patternGCD = "gcd(expr+)";
     public static final String patternIntIndef = "int(expr,var)";
     public static final String patternIntDef = "int(expr,var(!2,!3),expr,expr)";
@@ -131,6 +133,8 @@ public class Operator extends Expression {
                 return OperationParser.parseDefaultOperator(operator, params, vars, patternDiv);
             case fac:
                 return OperationParser.parseDefaultOperator(operator, params, vars, patternFac);
+            case fourier:
+                return OperationParser.parseDefaultOperator(operator, params, vars, patternFourier);
             case gcd:
                 return OperationParser.parseDefaultOperator(operator, params, vars, patternGCD);
             case integral:
@@ -327,7 +331,7 @@ public class Operator extends Expression {
         }
 
     }
-    
+
     @Override
     public boolean contains(String var) {
 
@@ -539,10 +543,8 @@ public class Operator extends Expression {
             }
         }
 
-        if (this.type.equals(TypeOperator.fac)) {
-            if (!((Expression) this.params[0]).contains(var)) {
-                return Expression.ZERO;
-            }
+        if (this.type.equals(TypeOperator.fac) && !((Expression) this.params[0]).contains(var)) {
+            return Expression.ZERO;
         }
 
         if (this.type.equals(TypeOperator.prod)) {
@@ -1236,6 +1238,8 @@ public class Operator extends Expression {
                 return operator.simplifyTrivialDiv();
             case fac:
                 return operator.simplifyTrivialFac();
+            case fourier:
+                return operator.simplifyTrivialFourier();
             case gcd:
                 return operator.simplifyTrivialGCD();
             case integral:
@@ -1285,7 +1289,7 @@ public class Operator extends Expression {
             /*
             Falls die lokale variable (Indexvariable, Integrationsvariable) einen
             vordefinierten Wert besitzt, so soll dieser kurzzeitig vergessen werden.
-            */
+             */
             Expression valueOfLocalVar = Variable.create(localVar).getPreciseExpression();
             Variable.setPreciseExpression(localVar, null);
             for (int i = 0; i < this.params.length; i++) {
@@ -1319,36 +1323,20 @@ public class Operator extends Expression {
      */
     private Expression simplifyTrivialDiff() throws EvaluationException {
 
-        if (!this.type.equals(TypeOperator.fac)) {
-            Expression expr = (Expression) this.params[0];
-            if (this.params.length == 2) {
+        Expression expr = (Expression) this.params[0];
+        if (this.params.length == 3 && this.params[2] instanceof Integer) {
+            int k = (int) this.params[2];
+            for (int i = 0; i < k; i++) {
                 expr = expr.diff((String) this.params[1]);
                 expr = expr.simplify();
-                return expr;
-            } else {
-                /*
-                 Es wird zunächst geprüft, ob alle übrigen Parameter gültige
-                 Variablen sind, oder ob der dritte Parameter eine ganze Zahl
-                 ist.
-                 */
-                if (this.params[2] instanceof String) {
-                    for (int i = 1; i < this.params.length; i++) {
-                        expr = expr.diff((String) this.params[i]);
-                        expr = expr.simplify();
-                    }
-                } else {
-                    int k = (int) this.params[2];
-                    for (int i = 0; i < k; i++) {
-                        expr = expr.diff((String) this.params[1]);
-                        expr = expr.simplify();
-                    }
-                }
-                return expr;
             }
-        } else if (this.type.equals(TypeOperator.fac) && ((Expression) this.params[0]).isConstant()) {
-            return Expression.ZERO;
+        } else {
+            for (int i = 1; i < this.params.length; i++) {
+                expr = expr.diff((String) this.params[i]);
+                expr = expr.simplify();
+            }
         }
-        return this;
+        return expr;
 
     }
 
@@ -1437,6 +1425,83 @@ public class Operator extends Expression {
     }
 
     /**
+     * Vereinfacht den Fourieroperator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    private Expression simplifyTrivialFourier() throws EvaluationException {
+
+        Expression f = ((Expression) this.params[0]).simplify();
+        String var = (String) this.params[1];
+        Expression startPoint = ((Expression) this.params[2]).simplify();
+        Expression endPoint = ((Expression) this.params[3]).simplify();
+        int n = (int) this.params[4];
+
+        Expression sumOfSines = ZERO, sumOfCosines;
+
+        Object[] paramsSumOfSines = new Object[4];
+        paramsSumOfSines[0] = new Operator(type, params);
+        paramsSumOfSines[1] = var;
+        paramsSumOfSines[2] = startPoint;
+        paramsSumOfSines[3] = endPoint;
+
+//        sumOfSines = new Operator();
+        Expression argument = ((Expression) this.params[0]).simplify();
+
+        if (argument.isRationalConstant() && ((BinaryOperation) argument).getRight().equals(Expression.TWO)) {
+            /*
+             (n+1/2)! lässt sich explizit angeben. Dieser Wert wird nur für n
+             <= einer bestimmten Schranke angegeben.
+             */
+            BigDecimal argumentEnumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getValue();
+            if (argumentEnumerator.equals(argumentEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) && argumentEnumerator.abs().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_FACTORIAL_WITH_DENOMINATOR_TWO"))) <= 0) {
+                BigInteger argumentEnumeratorAsBigInteger = argumentEnumerator.toBigInteger();
+                if (argumentEnumeratorAsBigInteger.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
+
+                    BigDecimal resultEnumerator = BigDecimal.ONE;
+                    BigDecimal resultDenominator = BigDecimal.ONE;
+                    if (argumentEnumeratorAsBigInteger.intValue() >= -1) {
+                        for (int i = 0; i < (argumentEnumeratorAsBigInteger.intValue() + 1) / 2; i++) {
+                            resultEnumerator = resultEnumerator.multiply(BigDecimal.valueOf(2 * i + 1));
+                            resultDenominator = resultDenominator.multiply(BigDecimal.valueOf(2));
+                        }
+                        return (new Constant(resultEnumerator)).mult(Expression.PI.pow(Expression.ONE.div(Expression.TWO))).div(new Constant(resultDenominator));
+                    } else {
+                        for (int i = 0; i < (-argumentEnumeratorAsBigInteger.intValue() - 1) / 2; i++) {
+                            resultEnumerator = resultEnumerator.multiply(BigDecimal.valueOf(-2));
+                            resultDenominator = resultDenominator.multiply(BigDecimal.valueOf(2 * i + 1));
+                        }
+                        return (new Constant(resultEnumerator)).mult(Expression.PI.pow(Expression.ONE.div(Expression.TWO))).div(new Constant(resultDenominator));
+                    }
+
+                }
+            }
+        }
+
+        BigInteger argumentRoundedDown;
+
+        if (argument.isIntegerConstant()) {
+            argumentRoundedDown = ((Constant) argument).getValue().toBigInteger();
+            // Nur Fakultäten mit Argument <= einer bestimmten Schranke werden explizit ausgeben.
+            if (argumentRoundedDown.compareTo(BigInteger.ZERO) < 0) {
+                throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
+            }
+            if (argumentRoundedDown.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL)) <= 0) {
+                Constant result = new Constant(ArithmeticMethods.factorial(argumentRoundedDown.intValue()));
+                result.setPrecise(this.precise);
+                return result;
+            }
+            return this;
+        } else {
+            if (this.precise) {
+                return this;
+            }
+            return new Constant(AnalysisMethods.Gamma(((Expression) this.params[0]).evaluate() + 1));
+        }
+
+    }
+
+    /**
      * Vereinfacht den gcd-Operator, soweit es möglich ist.
      *
      * @throws EvaluationException
@@ -1444,24 +1509,37 @@ public class Operator extends Expression {
     private Expression simplifyTrivialGCD() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
+        ArrayList<BigInteger> integerArguments = new ArrayList<>();
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
-        }
-
-        BigInteger[] argumentsAsBigInteger = new BigInteger[this.params.length];
-        for (int i = 0; i < argumentsAsBigInteger.length; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
-            } else {
+                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+            } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_1")
                         + (i + 1)
                         + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_2"));
             }
         }
 
-        Constant result = new Constant(ArithmeticMethods.gcd(argumentsAsBigInteger));
-        result.setPrecise(this.precise);
-        return result;
+        if (integerArguments.isEmpty()) {
+            return new Operator(this.type, arguments);
+        }
+
+        Constant resultGCD = new Constant(ArithmeticMethods.gcd(integerArguments));
+        if (this.params.length == integerArguments.size()) {
+            return resultGCD;
+        }
+
+        ArrayList<Expression> resultParams = new ArrayList<>();
+        resultParams.add(resultGCD);
+        for (Expression argument : arguments) {
+            if (!argument.isIntegerConstant()) {
+                resultParams.add(argument);
+            }
+        }
+
+        Object[] resultParamsAsArray = new Object[1];
+        return new Operator(this.type, resultParams.toArray(resultParamsAsArray));
 
     }
 
@@ -1538,24 +1616,37 @@ public class Operator extends Expression {
     private Expression simplifyTrivialLCM() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
+        ArrayList<BigInteger> integerArguments = new ArrayList<>();
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
-        }
-
-        BigInteger[] argumentsAsBigInteger = new BigInteger[this.params.length];
-        for (int i = 0; i < argumentsAsBigInteger.length; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
-            } else {
+                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+            } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_1")
                         + (i + 1)
                         + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_2"));
             }
         }
 
-        Constant result = new Constant(ArithmeticMethods.lcm(argumentsAsBigInteger));
-        result.setPrecise(this.precise);
-        return result;
+        if (integerArguments.isEmpty()) {
+            return new Operator(this.type, arguments);
+        }
+
+        Constant resultLCM = new Constant(ArithmeticMethods.lcm(integerArguments));
+        if (this.params.length == integerArguments.size()) {
+            return resultLCM;
+        }
+
+        ArrayList<Expression> resultParams = new ArrayList<>();
+        resultParams.add(resultLCM);
+        for (Expression argument : arguments) {
+            if (!argument.isIntegerConstant()) {
+                resultParams.add(argument);
+            }
+        }
+
+        Object[] resultParamsAsArray = new Object[1];
+        return new Operator(this.type, resultParams.toArray(resultParamsAsArray));
 
     }
 
@@ -1624,25 +1715,25 @@ public class Operator extends Expression {
      */
     private Expression simplifyTrivialMod() throws EvaluationException {
 
-        Expression[] arguments = new Expression[2];
-        for (int i = 0; i < 2; i++) {
+        Expression[] arguments = new Expression[this.params.length];
+        ArrayList<BigInteger> integerArguments = new ArrayList<>();
+        for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
-        }
-
-        BigInteger[] argumentsAsBigInteger = new BigInteger[2];
-        for (int i = 0; i < 2; i++) {
             if (arguments[i].isIntegerConstant()) {
-                argumentsAsBigInteger[i] = ((Constant) arguments[i]).getValue().toBigInteger();
-            } else {
+                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+            } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_1")
                         + (i + 1)
                         + Translator.translateExceptionMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_2"));
             }
         }
 
-        Constant result = new Constant(ArithmeticMethods.mod(argumentsAsBigInteger[0], argumentsAsBigInteger[1]));
-        result.setPrecise(this.precise);
-        return result;
+        if (integerArguments.size() == 2) {
+            Constant resultMod = new Constant(ArithmeticMethods.mod(integerArguments.get(0), integerArguments.get(1)));
+            return resultMod;
+        }
+
+        return new Operator(this.type, arguments);
 
     }
 

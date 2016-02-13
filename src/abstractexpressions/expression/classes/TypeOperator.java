@@ -7,6 +7,6 @@ public enum TypeOperator {
      bereits einen primitiven Datentyp kennzeichnet. In der Konsole aber muss
      'int' eingegeben werden.
      */
-    diff, div, fac, gcd, integral, laplace, lcm, max, min, mod, mu, prod, sigma, sum, taylor, var;
+    diff, div, fac, fourier, gcd, integral, laplace, lcm, max, min, mod, mu, prod, sigma, sum, taylor, var;
 
 }

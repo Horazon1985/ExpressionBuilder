@@ -2,6 +2,7 @@ package abstractexpressions.expression.computation;
 
 import exceptions.EvaluationException;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import lang.translator.Translator;
 
@@ -94,6 +95,11 @@ public abstract class ArithmeticMethods {
 
     }
 
+    public static BigInteger gcd(ArrayList<BigInteger> a) {
+        BigInteger[] result = new BigInteger[a.size()];
+        return gcd(a.toArray(result));
+    }
+    
     /**
      * Gibt den kgV von a und b zurück.
      */
@@ -118,6 +124,11 @@ public abstract class ArithmeticMethods {
             return lcm(aReduced);
         }
 
+    }
+
+    public static BigInteger lcm(ArrayList<BigInteger> a) {
+        BigInteger[] result = new BigInteger[a.size()];
+        return lcm(a.toArray(result));
     }
 
     /**
