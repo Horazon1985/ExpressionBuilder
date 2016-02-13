@@ -594,14 +594,14 @@
     <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
         <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein zweidimensionaler Vektor sein.</German>
         <English>The 1. parameter in command 'plotcurve2d' must be a two dimensional vector.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Перший параметр команди 'plotcurve2d' має бути двовимірним вектором.</Ukrainian>
+        <Russian>Первый параметр команды 'plotcurve2d' должен быть двумерным вектором.</Russian>
     </object>
     <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_3_DIM_VECTOR">
-        <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein dreidimensionaler Vektor sein.</German>
-        <English>The 1. parameter in command 'plotcurve2d' must be a three dimensional vector.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <German>Der 1. Parameter im Befehl 'plotcurve3d' muss ein dreidimensionaler Vektor sein.</German>
+        <English>The 1. parameter in command 'plotcurve3d' must be a three dimensional vector.</English>
+        <Ukrainian>Перший параметр команди 'plotcurve3d' має бути тривимірним вектором.</Ukrainian>
+        <Russian>Первый параметр команды 'plotcurve3d' должен быть трёхмерным вектором.</Russian>
     </object>
     <object id = "MCC_CURVE_CANNOT_BE_PLOTTED_PLOTCURVE">
         <German>Die Kurve konnte nicht geplottet werden.</German>
@@ -1202,7 +1202,7 @@
         <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter keine zweidimensionalen Punkte sind.</German>
         <English>The equation of the regression line cannot be computetd, since the occurring parameters are not two dimensional points.</English>
         <Ukrainian>Неможливо знайти рівняння регресійної прямої, оскільки параметри не є двовимірними точками.</Ukrainian>
-        <Russian>Невозможно найти уравнение регрессионной прямой, поскольку параметры не являются двумерніми точками.</Russian>
+        <Russian>Невозможно найти уравнение регрессионной прямой, поскольку параметры не являются двумерными точками.</Russian>
     </object>
     <object id = "MCC_REGRESSIONLINE_MESSAGE">
         <German>Gleichung der Regressionsgeraden: </German>
