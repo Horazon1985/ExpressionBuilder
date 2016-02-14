@@ -599,10 +599,10 @@ public abstract class AnalysisMethods {
      *
      * @throws ExpressionException
      */
-    public static BigDecimal getDigitsOfE(int n) throws ExpressionException {
+    public static BigDecimal getDigitsOfE(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_E")) {
-            throw new ExpressionException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
         BigDecimal e = BigDecimal.ONE;
@@ -634,10 +634,10 @@ public abstract class AnalysisMethods {
      *
      * @throws ExpressionException
      */
-    public static BigDecimal getDigitsOfPi(int n) throws ExpressionException {
+    public static BigDecimal getDigitsOfPi(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI")) {
-            throw new ExpressionException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
         BigDecimal pi = BigDecimal.ONE.divide(BigDecimal.valueOf(2));
