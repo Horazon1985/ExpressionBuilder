@@ -165,6 +165,11 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public boolean containsOperator(TypeOperator type) {
+        return this.left.containsOperator(type) || this.right.containsOperator(type);
+    }
+
+    @Override
     public Expression turnToApproximate() {
         return new BinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
     }
@@ -1642,7 +1647,7 @@ public class BinaryOperation extends Expression {
 
         }
 
-        if (expr.isProduct()) {
+        if (this.isProduct()) {
 
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // In jedem Faktor einzeln Funktionalgleichungen anwenden.
@@ -1702,6 +1707,8 @@ public class BinaryOperation extends Expression {
             SimplifyFunctionalRelations.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sin, TypeFunction.cos);
             //sinh(x)*cosh(x) = sinh(2*x)/2
             SimplifyFunctionalRelations.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sinh, TypeFunction.cosh);
+            // x!*(-1-x)! = x/sin(pi*x) (Ergänzungssatz)
+            SimplifyFunctionalRelations.collectFactorialsInProductByReflectionFormula(factors);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);

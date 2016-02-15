@@ -208,6 +208,15 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean containsOperator(TypeOperator type) {
+        boolean result = false;
+        for (int i = 0; i < this.left.length; i++) {
+            result = result || this.left[i].containsOperator(type);
+        }
+        return result || this.abstractExpression.containsOperator(type);
+    }
+
+    @Override
     public Expression turnToApproximate() {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {

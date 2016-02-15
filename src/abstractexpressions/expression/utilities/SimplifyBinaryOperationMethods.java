@@ -9,10 +9,13 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.PI;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.TypeOperator;
 import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -3482,9 +3485,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("FC_FlowController_COMPUTATION_ABORTED"));
-            }
+            FlowController.interruptComputationIfNeeded();
 
         }
 

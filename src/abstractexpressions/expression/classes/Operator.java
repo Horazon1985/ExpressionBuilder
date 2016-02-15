@@ -419,6 +419,11 @@ public class Operator extends Expression {
     }
 
     @Override
+    public boolean containsOperator(TypeOperator type) {
+        return this.type.equals(type);
+    }
+
+    @Override
     public Expression turnToApproximate() {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {

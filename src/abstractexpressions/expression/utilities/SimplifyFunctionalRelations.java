@@ -4,8 +4,13 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.PI;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.TypeOperator;
+import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -1768,4 +1773,62 @@ public abstract class SimplifyFunctionalRelations {
 
     }
 
+    /**
+     * Sammelt Fakultäten in einem Produkt mittels Ergänzungssatz.
+     *
+     * @throws EvaluationException
+     */
+    public static void collectFactorialsInProductByReflectionFormula(ExpressionCollection factors) throws EvaluationException {
+
+        Expression base;
+        Expression exponent;
+        Expression baseToCompare;
+        Expression exponentToCompare;
+
+        Expression argument, sumOfArguments;
+        
+        for (int i = 0; i < factors.getBound(); i++) {
+
+            if (factors.get(i) == null) {
+                continue;
+            }
+            if (factors.get(i).isPower()) {
+                base = ((BinaryOperation) factors.get(i)).getLeft();
+                exponent = ((BinaryOperation) factors.get(i)).getRight();
+            } else {
+                base = factors.get(i);
+                exponent = Expression.ONE;
+            }
+
+            for (int j = i + 1; j < factors.getBound(); j++) {
+
+                if (factors.get(j) == null) {
+                    continue;
+                }
+                if (factors.get(j).isPower()) {
+                    baseToCompare = ((BinaryOperation) factors.get(j)).getLeft();
+                    exponentToCompare = ((BinaryOperation) factors.get(j)).getRight();
+                } else {
+                    baseToCompare = factors.get(j);
+                    exponentToCompare = Expression.ONE;
+                }
+
+                // Nun: x!^n*(-1-x)!^n = (Gamma(1+x)*Gamma(-x))^n = (x/sin(pi*x))^n.
+                if (base.isOperator(TypeOperator.fac) && baseToCompare.isOperator(TypeOperator.fac) && exponent.equivalent(exponentToCompare)){
+                    sumOfArguments = ((Expression) ((Operator) base).getParams()[0]).add((Expression) ((Operator) baseToCompare).getParams()[0]).simplify();
+                    if (sumOfArguments.equals(MINUS_ONE)){
+                        argument = (Expression) ((Operator) base).getParams()[0];
+                        factors.put(i, argument.div(PI.mult(argument).sin()).pow(exponent));
+                        factors.remove(j);
+                    }
+                }
+
+            }
+
+            FlowController.interruptComputationIfNeeded();
+
+        }
+
+    }
+    
 }

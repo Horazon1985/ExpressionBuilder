@@ -149,6 +149,11 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean containsOperator(TypeOperator type) {
+        return false;
+    }
+
+    @Override
     public Expression turnToApproximate() {
         return new Constant(this.getValue(), false);
     }

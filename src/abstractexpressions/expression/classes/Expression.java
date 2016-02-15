@@ -491,9 +491,9 @@ public abstract class Expression implements AbstractExpression {
      */
     @Override
     public abstract void addContainedVars(HashSet<String> vars);
-    
+
     @Override
-    public HashSet<String> getContainedVars(){
+    public HashSet<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
@@ -501,9 +501,9 @@ public abstract class Expression implements AbstractExpression {
 
     @Override
     public abstract void addContainedIndeterminates(HashSet<String> vars);
-    
+
     @Override
-    public HashSet<String> getContainedIndeterminates(){
+    public HashSet<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;
@@ -544,6 +544,11 @@ public abstract class Expression implements AbstractExpression {
      * Gibt zurück, ob this Operatoren enthält.
      */
     public abstract boolean containsOperator();
+
+    /**
+     * Gibt zurück, ob this einen Operator vom Type type enthält.
+     */
+    public abstract boolean containsOperator(TypeOperator type);
 
     /**
      * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
@@ -1344,7 +1349,7 @@ public abstract class Expression implements AbstractExpression {
      * @throws EvaluationException
      */
     public abstract Expression simplifyByInsertingDefinedVars() throws EvaluationException;
-    
+
     /**
      * Distributivgesetz für Konstanten: a*(b + c) = a*b + a*c für konstantes
      * rationales a.
@@ -1580,7 +1585,7 @@ public abstract class Expression implements AbstractExpression {
                 exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                 exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                if (exprSimplified.containsFunction()) {
+                if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     exprSimplified = exprSimplified.simplifyCollectLogarithms();
                 }
@@ -1639,7 +1644,7 @@ public abstract class Expression implements AbstractExpression {
                         exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
-                    } else if (exprSimplified.containsFunction()) {
+                    } else if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
                         if (simplifyType.equals(TypeSimplify.simplify_functional_relations)) {
                             exprSimplified = exprSimplified.simplifyFunctionalRelations();
                         } else if (simplifyType.equals(TypeSimplify.simplify_replace_exponential_functions_by_definitions)) {
@@ -1724,7 +1729,7 @@ public abstract class Expression implements AbstractExpression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                     exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 }
-                if (exprSimplified.containsFunction()) {
+                if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
                     if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
                         exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     }
@@ -1820,7 +1825,7 @@ public abstract class Expression implements AbstractExpression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                     exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 }
-                if (exprSimplified.containsFunction()) {
+                if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
                     if (simplifyTypes.contains(TypeSimplify.simplify_functional_relations)) {
                         exprSimplified = exprSimplified.simplifyFunctionalRelations();
                     }

@@ -258,6 +258,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public boolean containsOperator(TypeOperator type) {
+        return false;
+    }
+
+    @Override
     public Expression turnToApproximate() {
         Variable.setPrecise(this.name, false);
         return this;
