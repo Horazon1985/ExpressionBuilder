@@ -1478,35 +1478,9 @@ public class Operator extends Expression {
         String var = (String) this.params[1];
         Expression startPoint = ((Expression) this.params[2]).simplify();
         Expression endPoint = ((Expression) this.params[3]).simplify();
-        int n = (int) this.params[4];
+        int degree = (int) this.params[4];
 
-        Expression l = endPoint.sub(startPoint).simplify();
-
-        Expression sumOfSines = ZERO, sumOfCosines;
-
-        Object[][] paramsOfCosineSummands = new Object[n + 1][4];
-        Object[][] paramsOfSineSummands = new Object[n + 1][4];
-
-        paramsOfCosineSummands[0][0] = f;
-        paramsOfCosineSummands[0][1] = var;
-        paramsOfCosineSummands[0][2] = startPoint;
-        paramsOfCosineSummands[0][3] = endPoint;
-        sumOfCosines = new Operator(TypeOperator.integral, paramsOfCosineSummands[0]).div(l);
-
-        for (int i = 1; i <= n; i++) {
-            paramsOfCosineSummands[i][0] = f.mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).cos());
-            paramsOfCosineSummands[i][1] = var;
-            paramsOfCosineSummands[i][2] = startPoint;
-            paramsOfCosineSummands[i][3] = endPoint;
-            sumOfCosines = sumOfCosines.add(TWO.mult(new Operator(TypeOperator.integral, paramsOfCosineSummands[i]).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).cos())).div(l));
-            paramsOfSineSummands[i][0] = f.mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).sin());
-            paramsOfSineSummands[i][1] = var;
-            paramsOfSineSummands[i][2] = startPoint;
-            paramsOfSineSummands[i][3] = endPoint;
-            sumOfSines = sumOfSines.add(TWO.mult(new Operator(TypeOperator.integral, paramsOfSineSummands[i]).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).sin())).div(l));
-        }
-
-        return sumOfCosines.add(sumOfSines);
+        return AnalysisMethods.getFourierPolynomial(f, var, startPoint, endPoint, degree);
 
     }
 

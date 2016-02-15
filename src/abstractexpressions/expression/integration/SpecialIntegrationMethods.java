@@ -1516,8 +1516,7 @@ public abstract class SpecialIntegrationMethods {
 
         try {
 
-            Expression fSubstitutedAsObject = SubstitutionUtilities.substitute(f, var, substitution);
-            Expression fSubstituted = (Expression) fSubstitutedAsObject;
+            Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution).simplify();
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
 
             /*
@@ -1565,8 +1564,6 @@ public abstract class SpecialIntegrationMethods {
             // Rücksubstitution!
             return resultFunction.replaceVariable(substVarForIntegral,
                     factorOfTrigonometricalArgument.mult(Variable.create(var)).div(2).tan());
-//            return resultFunction.replaceVariable(substVarForIntegral,
-//                    TWO.mult(factorOfTrigonometricalArgument.mult(Variable.create(var)).arctan()));
 
         } catch (NotSubstitutableException e) {
             throw new NotPreciseIntegrableException();

@@ -4,9 +4,13 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.PI;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,6 +18,7 @@ import java.util.HashSet;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import lang.translator.Translator;
+import notations.NotationLoader;
 
 public abstract class AnalysisMethods {
 
@@ -489,7 +494,77 @@ public abstract class AnalysisMethods {
 
     /**
      * Ermittelt das Taylorpolynom vom Grad degree von f (mit Entwicklungsstelle
-     * x_0). VORAUSSETZUNG: k >= 0, ord >= 1.
+     * x_0).<br>
+     * VORAUSSETZUNG: k >= 0, ord >= 1.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression getFourierPolynomial(Expression f, String var, Expression startPoint, Expression endPoint, int degree) throws EvaluationException {
+
+        if (degree < 0) {
+            return Expression.ZERO;
+        }
+
+        // l ist die Periodenlänge
+        Expression l = endPoint.sub(startPoint).simplify();
+
+        Expression sumOfSines = ZERO, sumOfCosines;
+
+        Object[][] paramsOfCosineSummands = new Object[degree + 1][4];
+        Object[][] paramsOfSineSummands = new Object[degree + 1][4];
+
+        paramsOfCosineSummands[0][0] = f;
+        paramsOfCosineSummands[0][1] = var;
+        paramsOfCosineSummands[0][2] = startPoint;
+        paramsOfCosineSummands[0][3] = endPoint;
+        sumOfCosines = new Operator(TypeOperator.integral, paramsOfCosineSummands[0]).div(l);
+
+        // Es wird versucht, die Stammfunktion von f(x)*cos(2*pi*x/l) exakt zu berechnen.
+        String parameterVar = NotationLoader.FREE_INTEGER_PARAMETER_VAR;
+        Expression integralOfFunctionTimesCosine = new Operator(TypeOperator.integral,
+                new Object[]{f.mult(TWO.mult(PI).mult(Variable.create(parameterVar)).mult(Variable.create(var)).div(l).cos()), var}).simplify();
+        Expression integralOfFunctionTimesSine = new Operator(TypeOperator.integral,
+                new Object[]{f.mult(TWO.mult(PI).mult(Variable.create(parameterVar)).mult(Variable.create(var)).div(l).sin()), var}).simplify();
+
+        /* 
+         Falls die Integrale, die in den Koeffizienten auftreten, nicht exakt
+         berechnet werden können, so werden sie als Integrale eben stehengelassen.
+         */
+        if (integralOfFunctionTimesCosine.containsIndefiniteIntegral() || integralOfFunctionTimesSine.containsIndefiniteIntegral()) {
+            for (int i = 1; i <= degree; i++) {
+                paramsOfCosineSummands[i][0] = f.mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).cos());
+                paramsOfCosineSummands[i][1] = var;
+                paramsOfCosineSummands[i][2] = startPoint;
+                paramsOfCosineSummands[i][3] = endPoint;
+                sumOfCosines = sumOfCosines.add(TWO.mult(new Operator(TypeOperator.integral, paramsOfCosineSummands[i]).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).cos())).div(l));
+                paramsOfSineSummands[i][0] = f.mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).sin());
+                paramsOfSineSummands[i][1] = var;
+                paramsOfSineSummands[i][2] = startPoint;
+                paramsOfSineSummands[i][3] = endPoint;
+                sumOfSines = sumOfSines.add(TWO.mult(new Operator(TypeOperator.integral, paramsOfSineSummands[i]).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).sin())).div(l));
+            }
+            return sumOfCosines.add(sumOfSines);
+        }
+
+        Expression cosineSummand, sineSummand;
+
+        for (int i = 1; i <= degree; i++) {
+            cosineSummand = integralOfFunctionTimesCosine.replaceVariable(parameterVar, new Constant(i)).replaceVariable(var, endPoint).sub(
+                    integralOfFunctionTimesCosine.replaceVariable(parameterVar, new Constant(i)).replaceVariable(var, startPoint)).simplify();
+            sineSummand = integralOfFunctionTimesSine.replaceVariable(parameterVar, new Constant(i)).replaceVariable(var, endPoint).sub(
+                    integralOfFunctionTimesSine.replaceVariable(parameterVar, new Constant(i)).replaceVariable(var, startPoint)).simplify();
+            sumOfCosines = sumOfCosines.add(TWO.mult(cosineSummand).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).cos()).div(l));
+            sumOfSines = sumOfSines.add(TWO.mult(sineSummand).mult(TWO.mult(PI).mult(i).mult(Variable.create(var)).div(l).sin()).div(l));
+        }
+
+        return sumOfCosines.add(sumOfSines);
+
+    }
+
+    /**
+     * Ermittelt das Taylorpolynom vom Grad degree von f (mit Entwicklungsstelle
+     * x_0).<br>
+     * VORAUSSETZUNG: k >= 0, ord >= 1.
      *
      * @throws EvaluationException
      */
@@ -499,7 +574,7 @@ public abstract class AnalysisMethods {
             return Expression.ZERO;
         }
 
-        //Entwicklungspunkt ist a und die Variable var, nach der entwickelt wird, hat den Wert a.
+        // Entwicklungspunkt ist a und die Variable var, nach der entwickelt wird, hat den Wert a.
         f = f.simplify();
         Expression taylorPolynomial = Expression.ZERO;
 
@@ -567,7 +642,6 @@ public abstract class AnalysisMethods {
         // Alle Variablen auf die Werte setzen, die dem Punkt x_0 entsprechen.
         for (String var : vars) {
             Variable.setPreciseExpression(var, point.get(var));
-//            Variable.setPrecise(var, true);
         }
 
         try {
@@ -583,7 +657,7 @@ public abstract class AnalysisMethods {
             throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
         } finally {
             /* 
-             Egal, ob die Berechnung des tangentialraumes erfolgreich war oder nicht,
+             Egal, ob die Berechnung des Tangentialraumes erfolgreich war oder nicht,
              die Variablen, welchen ein fester Wert zugeordnet wurde, müssen wieder 
              zu Unbestimmten werden.
              */
