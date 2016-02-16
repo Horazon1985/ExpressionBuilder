@@ -68,6 +68,14 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      */
     private boolean isAngleMeant = true;
     private Point lastMousePosition;
+    
+    private GraphicMode graphicMode;
+    
+    public enum GraphicMode{
+        
+        WHOLE_GRAPH, NET_ONLY;
+    
+    }
 
     public GraphicPanel3D() {
         isRotating = false;
@@ -551,6 +559,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g2.setPaint(c);
         g2.fill(tangent);
         g2.setPaint(Color.black);
+//        g2.setPaint(Color.green);
         g2.draw(tangent);
 
     }
@@ -1354,6 +1363,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
         //Zunächst weißen Hintergrund zeichnen.
         g.setColor(Color.white);
+//        g.setColor(Color.black);
         g.fillRect(0, 0, 500, 500);
 
         /*
