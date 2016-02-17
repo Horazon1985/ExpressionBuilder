@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.PI;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
@@ -40,61 +41,11 @@ public abstract class AnalysisMethods {
             return new Constant(k_1 - k_0 + 1).mult(f);
         }
 
-        /*
-         Zunächst soll anhand von etwa 5 Gliedern getestet werden, ob man
-         Glieder zusammenfassen kann. Konkret: Man wendet simplify() auf die
-         entweder auf die ersten 5 Glieder an, falls k_0 <= -6, oder auf die
-         letzten 5 Glieder, falls k_1 >= 6. Falls das Ergebnis ungleich dem
-         vorherigen ist -> bei jedem neu hinzugekommenen Glied erneut
-         vereinfachen. Ansonsten: nicht vereinfachen. (Später in der
-         Hauptprozedur simplify() wird die gesamte Summe erneut vereinfacht).
-         GRUND: Falls man nichts zusammenfassen kann, so dauert die gliedweise
-         Anwendung von simplify() SEHR LANGE.
-         */
-        Expression result;
-        Expression currentSummand;
-
-        if (k_1 - k_0 >= 5) {
-
-            // Vorab-Test auf die Möglichkeit einer "Zwischendurch-Vereinfachung" (s. o.)
-            result = f.replaceVariable(var, new Constant(k_1));
-            for (int i = k_1 - 1; i > k_1 - 5; i--) {
-                currentSummand = f.replaceVariable(var, new Constant(i));
-                result = currentSummand.add(result);
-            }
-
-            try {
-                if (!result.equivalent(result.simplify())) {
-
-                    for (int i = k_1 - 5; i >= k_0; i--) {
-                        currentSummand = f.replaceVariable(var, new Constant(i));
-                        result = currentSummand.add(result).simplify();
-                    }
-
-                } else {
-
-                    for (int i = k_1 - 5; i >= k_0; i--) {
-                        currentSummand = f.replaceVariable(var, new Constant(i));
-                        result = currentSummand.add(result);
-                    }
-
-                }
-
-                return result;
-            } catch (EvaluationException e) {
-            }
-
+        Expression result = ZERO;
+        for (int i = k_1; i >= k_0; i--) {
+            result = f.replaceVariable(var, new Constant(i)).add(result);
         }
-
-        if (k_1 >= k_0) {
-            result = f.replaceVariable(var, new Constant(k_0));
-            for (int i = k_0 + 1; i <= k_1; i++) {
-                result = result.add(f.replaceVariable(var, new Constant(i)));
-            }
-            return result;
-        }
-
-        return Expression.ZERO;
+        return result;
 
     }
 
@@ -208,78 +159,11 @@ public abstract class AnalysisMethods {
             return f.pow(k_1 - k_0 + 1);
         }
 
-        /*
-         Zunächst soll anhand von etwa 5 Gliedern getestet werden, ob man
-         Glieder zusammenfassen kann. Konkret: Man wendet simplify() auf die
-         entweder auf die ersten 5 Glieder an, falls k_0 <= -6, oder auf die
-         letzten 5 Glieder, falls k_1 >= 6. Falls das Ergebnis ungleich dem
-         vorherigen ist -> bei jedem neu hinzugekommenen Glied erneut
-         vereinfachen. Ansonsten: nicht vereinfachen. (Später in der
-         Hauptprozedur simplify() wird die gesamte Summe erneut vereinfacht).
-         GRUND: Falls man nichts zusammenfassen kann, so dauert die gliedweise
-         Anwendung von simplify() SEHR LANGE.
-         */
-        Expression result;
-        Expression currentFactor;
-
-        if ((k_0 <= -6 || k_1 >= 6) && (k_1 - k_0 >= 5)) {
-
-            // Vorab-Test auf die Möglichkeit einer "Zwischendurch-Vereinfachung" (s. o.)
-            if (k_0 <= -6) {
-                result = f.replaceVariable(var, new Constant(k_0));
-                for (int i = k_0 + 1; i < k_0 + 5; i++) {
-                    currentFactor = f.replaceVariable(var, new Constant(i));
-                    result = result.mult(currentFactor);
-                }
-            } else {
-                result = f.replaceVariable(var, new Constant(k_1));
-                for (int i = k_1 - 1; i > k_1 - 5; i--) {
-                    currentFactor = f.replaceVariable(var, new Constant(i));
-                    result = currentFactor.mult(result);
-                }
-            }
-
-            try {
-                if (!result.equivalent(result.simplify())) {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentFactor = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentFactor;
-                        } else {
-                            result = result.mult(currentFactor).simplify();
-                        }
-                    }
-
-                } else {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentFactor = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentFactor;
-                        } else {
-                            result = result.mult(currentFactor);
-                        }
-                    }
-
-                }
-
-                return result;
-            } catch (EvaluationException e) {
-            }
-
+        Expression result = ONE;
+        for (int i = k_1; i >= k_0; i--) {
+            result = f.replaceVariable(var, new Constant(i)).mult(result);
         }
-
-        if (k_1 >= k_0) {
-            result = f.replaceVariable(var, new Constant(k_0));
-            for (int i = k_0 + 1; i <= k_1; i++) {
-                currentFactor = f.replaceVariable(var, new Constant(i));
-                result = result.mult(currentFactor);
-            }
-            return result;
-        }
-
-        return Expression.ONE;
+        return result;
 
     }
 
@@ -768,34 +652,31 @@ public abstract class AnalysisMethods {
             Expression expr = Variable.create("x").pow(new Constant(s - 1)).mult(new Function(
                     Expression.MINUS_ONE.mult(Variable.create("x")), TypeFunction.exp));
             return NumericalMethods.integrateBySimpson(expr, "x", 0, 40, 100000);
-        } else {
-            /*
+        } else /*
              Gilt !(s >= 1 && s < 2), wird die Funktionalgleichung Gamma(s +1) 
              = s * Gamma(s) ausgenutzt, um das Argument wieder in den
              Bereich [1, 2) zu bekommen. Der Wert der Gammafunktion von diesem
              Argument wird dann wie oben berechnet.
-             */
-            if (s >= 2) {
-                int k = (int) Math.floor(s) - 1;
-                double factor = 1;
-                for (int i = 1; i <= k; i++) {
-                    factor = factor * (s - i);
-                }
-                return factor * Gamma(s - k);
-            } else {
-                int k;
-                if (-s == Math.floor(-s)) {
-                    k = (int) Math.floor(-s + 1);
-                } else {
-                    k = (int) Math.floor(-s + 1) + 1;
-                }
-
-                double factor = 1;
-                for (int i = 0; i < k; i++) {
-                    factor = factor * (s + i);
-                }
-                return Gamma(s + k) / factor;
+         */ if (s >= 2) {
+            int k = (int) Math.floor(s) - 1;
+            double factor = 1;
+            for (int i = 1; i <= k; i++) {
+                factor = factor * (s - i);
             }
+            return factor * Gamma(s - k);
+        } else {
+            int k;
+            if (-s == Math.floor(-s)) {
+                k = (int) Math.floor(-s + 1);
+            } else {
+                k = (int) Math.floor(-s + 1) + 1;
+            }
+
+            double factor = 1;
+            for (int i = 0; i < k; i++) {
+                factor = factor * (s + i);
+            }
+            return Gamma(s + k) / factor;
         }
 
     }
