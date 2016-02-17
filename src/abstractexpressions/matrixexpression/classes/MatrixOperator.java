@@ -1036,7 +1036,7 @@ public class MatrixOperator extends MatrixExpression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
-                return AnalysisMethods.sum(summand, (String) this.params[1], lowerLimit.intValue(), upperLimit.intValue());
+                return AnalysisMethods.sum(summand, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }

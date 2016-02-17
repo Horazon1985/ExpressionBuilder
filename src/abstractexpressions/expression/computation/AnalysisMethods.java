@@ -19,6 +19,7 @@ import java.util.HashSet;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import java.awt.Dimension;
+import java.math.BigInteger;
 import lang.translator.Translator;
 import notations.NotationLoader;
 
@@ -30,21 +31,23 @@ public abstract class AnalysisMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression sum(Expression f, String var, int k_0, int k_1) {
+    public static Expression sum(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
+        int difference = k_1.subtract(k_0).intValue();
+        
         // Trivialer Fall: k_1 < k_0
-        if (k_1 < k_0) {
+        if (difference < 0) {
             return Expression.ZERO;
         }
 
         // Trivialer Fall: expr hängt von var nicht ab.
         if (!f.contains(var)) {
-            return new Constant(k_1 - k_0 + 1).mult(f);
+            return new Constant(difference + 1).mult(f);
         }
 
         Expression result = ZERO;
-        for (int i = k_1; i >= k_0; i--) {
-            result = f.replaceVariable(var, new Constant(i)).add(result);
+        for (int i = difference; i >= 0; i--) {
+            result = f.replaceVariable(var, new Constant(k_0.add(BigInteger.valueOf(i)))).add(result);
         }
         return result;
 
@@ -56,10 +59,12 @@ public abstract class AnalysisMethods {
      *
      * @throws EvaluationException
      */
-    public static MatrixExpression sum(MatrixExpression f, String var, int k_0, int k_1) {
+    public static MatrixExpression sum(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
+        int difference = k_1.subtract(k_0).intValue();
+        
         // Trivialer Fall: k_1 < k_0
-        if (k_1 < k_0) {
+        if (difference < 0) {
             try {
                 Dimension dim = f.getDimension();
                 return MatrixExpression.getZeroMatrix(dim.height, dim.width);
@@ -70,13 +75,13 @@ public abstract class AnalysisMethods {
 
         // Trivialer Fall: expr hängt von var nicht ab.
         if (!f.contains(var)) {
-            return new Matrix(new Constant(k_1 - k_0 + 1)).mult(f);
+            return new Matrix(new Constant(difference + 1)).mult(f);
         }
 
         MatrixExpression result;
         result = f.replaceVariable(var, new Constant(k_1));
-        for (int i = k_1 - 1; i >= k_0; i--) {
-            result = f.replaceVariable(var, new Constant(i)).add(result);
+        for (int i = difference - 1; i >= 0; i--) {
+            result = f.replaceVariable(var, new Constant(k_0.add(BigInteger.valueOf(i)))).add(result);
         }
         return result;
 
