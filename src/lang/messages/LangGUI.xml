@@ -169,6 +169,12 @@
     <Ukrainian>Опції виводу</Ukrainian>
     <Russian>Опции вывода</Russian>
   </object>
+  <object id = "GUI_MathToolForm_MENU_GRAPHIC_OPTIONS">
+    <German>Grafikoptionen</German>
+    <English>Graphic options</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>Опции графики</Russian>
+  </object>
 <!-- DevelopersDialogGUI -->    
   <object id = "GUI_DevelopersDialogGUI_ABOUT">
     <German>Über MathTool</German>
@@ -351,5 +357,65 @@
     <English>(No logarithm options)</English>
     <Ukrainian>(Без логарифмізації)</Ukrainian>
     <Russian>(Без логарифмизации)</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_GRAPHIC_OPTIONS_TITLE">
+    <German>Grafikoptionen</German>
+    <English>Graphic options</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>Опции графики</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_SAVE_BUTTON">
+    <German>Einstellungen speichern</German>
+    <English>Save options</English>
+    <Ukrainian>Зберегти опції</Ukrainian>
+    <Russian>Сохпанить опции</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_CANCEL_BUTTON">
+    <German>Abbrechen</German>
+    <English>Cancel</English>
+    <Ukrainian>Відміна</Ukrainian>
+    <Russian>Отмена</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_GRAPHIC_OPTIONS_GROUP_NAME">
+    <German>Grafikoptionen für 3D-Graphen</German>
+    <English>Graphic options for 3D-graphs</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION">
+    <German>Hintergrundfarbe</German>
+    <English>Background color</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_BRIGHT">
+    <German>Weiß</German>
+    <English>White</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_DARK">
+    <German>Schwarz</German>
+    <English>Black</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION">
+    <German>Darstellungsoptionen</German>
+    <English>Presentation options</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_WHOLE_GRAPH">
+    <German>Kompletter Graph</German>
+    <English>Complete graph</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
+  </object>
+  <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_NET_ONLY">
+    <German>Nur Rasternetz</German>
+    <English>Grid only</English>
+    <Ukrainian>???</Ukrainian>
+    <Russian>???</Russian>
   </object>
 </objects>

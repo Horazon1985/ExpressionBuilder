@@ -68,13 +68,27 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      */
     private boolean isAngleMeant = true;
     private Point lastMousePosition;
-    
-    private GraphicMode graphicMode;
-    
-    public enum GraphicMode{
-        
+
+    private PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
+    private BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
+
+    private static final Color backgroundColorBright = Color.white;
+    private static final Color backgroundColorDark = Color.black;
+    private static final Color netColorWholeGraphBright = Color.black;
+    private static final Color netColorWholeGraphDark = Color.green;
+    private static final Color netColorNetOnlyBright = Color.black;
+    private static final Color netColorNetOnlyDark = Color.green;
+
+    public enum BackgroundColorMode {
+
+        BRIGHT, DARK;
+
+    }
+
+    public enum PresentationMode {
+
         WHOLE_GRAPH, NET_ONLY;
-    
+
     }
 
     public GraphicPanel3D() {
@@ -183,6 +197,14 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         instructions.add(Translator.translateExceptionMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateExceptionMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
         return instructions;
+    }
+
+    public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
+        this.backgroundColorMode = backgroundColorMode;
+    }
+
+    public void setPresentationMode(PresentationMode presentationMode) {
+        this.presentationMode = presentationMode;
     }
 
     public void setExpressions(ArrayList<Expression> exprs) {
@@ -556,10 +578,36 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         tangent.lineTo(x_4, y_4);
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
-        g2.setPaint(c);
-        g2.fill(tangent);
-        g2.setPaint(Color.black);
-//        g2.setPaint(Color.green);
+
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+            g2.setPaint(c);
+            g2.fill(tangent);
+        }
+
+        switch (backgroundColorMode) {
+            case BRIGHT:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(netColorWholeGraphBright);
+                        break;
+                    case NET_ONLY:
+                        g2.setPaint(netColorNetOnlyBright);
+                        break;
+                }
+                break;
+            case DARK:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(netColorWholeGraphDark);
+                        break;
+                    case NET_ONLY:
+                        g2.setPaint(netColorNetOnlyDark);
+                        break;
+                }
+                break;
+        }
+
+//        g2.setPaint(Color.black);
         g2.draw(tangent);
 
     }
@@ -1339,11 +1387,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                 if (indexWithLeastElement == -1) {
                     indexWithLeastElement = i;
                     minimalValue = copyOfCenters.get(i);
-                } else {
-                    if (copyOfCenters.get(i) < minimalValue) {
-                        indexWithLeastElement = i;
-                        minimalValue = copyOfCenters.get(i);
-                    }
+                } else if (copyOfCenters.get(i) < minimalValue) {
+                    indexWithLeastElement = i;
+                    minimalValue = copyOfCenters.get(i);
                 }
             }
 
@@ -1361,9 +1407,15 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      */
     private void drawGraph3D(Graphics g, double angle) {
 
-        //Zunächst weißen Hintergrund zeichnen.
-        g.setColor(Color.white);
-//        g.setColor(Color.black);
+        //Zunächst Hintergrund zeichnen.
+        switch (backgroundColorMode) {
+            case BRIGHT:
+                g.setColor(Color.white);
+                break;
+            case DARK:
+                g.setColor(Color.black);
+                break;
+        }
         g.fillRect(0, 0, 500, 500);
 
         /*
@@ -1438,13 +1490,13 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         expressionToGraph(x_0, x_1, y_0, y_1);
         drawGraphs3D();
     }
-    
+
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(x_0, x_1, x_0, x_1);
         drawGraphs3D();
     }
-    
+
     private void drawGraphs3D() {
         repaint();
     }
