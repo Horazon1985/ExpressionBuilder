@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import java.awt.Dimension;
 import lang.translator.Translator;
 import notations.NotationLoader;
 
@@ -59,7 +60,12 @@ public abstract class AnalysisMethods {
 
         // Trivialer Fall: k_1 < k_0
         if (k_1 < k_0) {
-            return new Matrix(Expression.ZERO);
+            try {
+                Dimension dim = f.getDimension();
+                return MatrixExpression.getZeroMatrix(dim.height, dim.width);
+            } catch (EvaluationException e) {
+                return new Matrix(Expression.ZERO);
+            }
         }
 
         // Trivialer Fall: expr hängt von var nicht ab.
@@ -67,78 +73,12 @@ public abstract class AnalysisMethods {
             return new Matrix(new Constant(k_1 - k_0 + 1)).mult(f);
         }
 
-        /*
-         Zunächst soll anhand von etwa 5 Gliedern getestet werden, ob man
-         Glieder zusammenfassen kann. Konkret: Man wendet simplify() auf die
-         entweder auf die ersten 5 Glieder an, falls k_0 <= -6, oder auf die
-         letzten 5 Glieder, falls k_1 >= 6. Falls das Ergebnis ungleich dem
-         vorherigen ist -> bei jedem neu hinzugekommenen Glied erneut
-         vereinfachen. Ansonsten: nicht vereinfachen. (Später in der
-         Hauptprozedur simplify() wird die gesamte Summe erneut vereinfacht).
-         GRUND: Falls man nichts zusammenfassen kann, so dauert die gliedweise
-         Anwendung von simplify() SEHR LANGE.
-         */
         MatrixExpression result;
-        MatrixExpression currentSummand;
-
-        if ((k_0 <= -6 || k_1 >= 6) && (k_1 - k_0 >= 5)) {
-
-            // Vorab-Test auf die Möglichkeit einer "Zwischendurch-Vereinfachung" (s. o.)
-            if (k_0 <= -6) {
-                result = f.replaceVariable(var, new Constant(k_0));
-                for (int i = k_0 + 1; i < k_0 + 5; i++) {
-                    currentSummand = f.replaceVariable(var, new Constant(i));
-                    result = result.add(currentSummand);
-                }
-            } else {
-                result = f.replaceVariable(var, new Constant(k_1));
-                for (int i = k_1 - 1; i > k_1 - 5; i--) {
-                    currentSummand = f.replaceVariable(var, new Constant(i));
-                    result = currentSummand.add(result);
-                }
-            }
-
-            try {
-                if (!result.equivalent(result.simplify())) {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentSummand = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentSummand;
-                        } else {
-                            result = result.add(currentSummand).simplify();
-                        }
-                    }
-
-                } else {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentSummand = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentSummand;
-                        } else {
-                            result = result.add(currentSummand);
-                        }
-                    }
-
-                }
-
-                return result;
-            } catch (EvaluationException e) {
-            }
-
+        result = f.replaceVariable(var, new Constant(k_1));
+        for (int i = k_1 - 1; i >= k_0; i--) {
+            result = f.replaceVariable(var, new Constant(i)).add(result);
         }
-
-        if (k_1 >= k_0) {
-            result = f.replaceVariable(var, new Constant(k_0));
-            for (int i = k_0 + 1; i <= k_1; i++) {
-                currentSummand = f.replaceVariable(var, new Constant(i));
-                result = result.add(currentSummand);
-            }
-            return result;
-        }
-
-        return new Matrix(Expression.ZERO);
+        return result;
 
     }
 
@@ -184,78 +124,12 @@ public abstract class AnalysisMethods {
             return f.pow(k_1 - k_0 + 1);
         }
 
-        /*
-         Zunächst soll anhand von etwa 5 Gliedern getestet werden, ob man
-         Glieder zusammenfassen kann. Konkret: Man wendet simplify() auf die
-         entweder auf die ersten 5 Glieder an, falls k_0 <= -6, oder auf die
-         letzten 5 Glieder, falls k_1 >= 6. Falls das Ergebnis ungleich dem
-         vorherigen ist -> bei jedem neu hinzugekommenen Glied erneut
-         vereinfachen. Ansonsten: nicht vereinfachen. (Später in der
-         Hauptprozedur simplify() wird die gesamte Summe erneut vereinfacht).
-         GRUND: Falls man nichts zusammenfassen kann, so dauert die gliedweise
-         Anwendung von simplify() SEHR LANGE.
-         */
         MatrixExpression result;
-        MatrixExpression currentFactor;
-
-        if ((k_0 <= -6 || k_1 >= 6) && (k_1 - k_0 >= 5)) {
-
-            // Vorab-Test auf die Möglichkeit einer "Zwischendurch-Vereinfachung" (s. o.)
-            if (k_0 <= -6) {
-                result = f.replaceVariable(var, new Constant(k_0));
-                for (int i = k_0 + 1; i < k_0 + 5; i++) {
-                    currentFactor = f.replaceVariable(var, new Constant(i));
-                    result = result.mult(currentFactor);
-                }
-            } else {
-                result = f.replaceVariable(var, new Constant(k_1));
-                for (int i = k_1 - 1; i > k_1 - 5; i--) {
-                    currentFactor = f.replaceVariable(var, new Constant(i));
-                    result = currentFactor.mult(result);
-                }
-            }
-
-            try {
-                if (!result.equivalent(result.simplify())) {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentFactor = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentFactor;
-                        } else {
-                            result = result.mult(currentFactor).simplify();
-                        }
-                    }
-
-                } else {
-
-                    for (int i = k_0; i <= k_1; i++) {
-                        currentFactor = f.replaceVariable(var, new Constant(i));
-                        if (i == k_0) {
-                            result = currentFactor;
-                        } else {
-                            result = result.mult(currentFactor);
-                        }
-                    }
-
-                }
-
-                return result;
-            } catch (EvaluationException e) {
-            }
-
+        result = f.replaceVariable(var, new Constant(k_1));
+        for (int i = k_1 - 1; i >= k_0; i--) {
+            result = f.replaceVariable(var, new Constant(i)).mult(result);
         }
-
-        if (k_1 >= k_0) {
-            result = f.replaceVariable(var, new Constant(k_0));
-            for (int i = k_0 + 1; i <= k_1; i++) {
-                currentFactor = f.replaceVariable(var, new Constant(i));
-                result = result.mult(currentFactor);
-            }
-            return result;
-        }
-
-        return new Matrix(Expression.ONE);
+        return result;
 
     }
 
