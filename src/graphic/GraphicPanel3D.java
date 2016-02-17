@@ -74,10 +74,10 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     private static final Color backgroundColorBright = Color.white;
     private static final Color backgroundColorDark = Color.black;
-    private static final Color netColorWholeGraphBright = Color.black;
-    private static final Color netColorWholeGraphDark = Color.green;
-    private static final Color netColorNetOnlyBright = Color.black;
-    private static final Color netColorNetOnlyDark = Color.green;
+    private static final Color gridColorWholeGraphBright = Color.black;
+    private static final Color gridColorWholeGraphDark = Color.green;
+    private static final Color gridColorNetOnlyBright = Color.black;
+    private static final Color gridColorNetOnlyDark = Color.green;
 
     public enum BackgroundColorMode {
 
@@ -87,7 +87,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     public enum PresentationMode {
 
-        WHOLE_GRAPH, NET_ONLY;
+        WHOLE_GRAPH, GRID_ONLY;
 
     }
 
@@ -199,10 +199,18 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         return instructions;
     }
 
+    public BackgroundColorMode getBackgroundColorMode() {
+        return this.backgroundColorMode;
+    }
+    
     public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
         this.backgroundColorMode = backgroundColorMode;
     }
 
+    public PresentationMode getPresentationMode() {
+        return this.presentationMode;
+    }
+    
     public void setPresentationMode(PresentationMode presentationMode) {
         this.presentationMode = presentationMode;
     }
@@ -588,26 +596,25 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             case BRIGHT:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:
-                        g2.setPaint(netColorWholeGraphBright);
+                        g2.setPaint(gridColorWholeGraphBright);
                         break;
-                    case NET_ONLY:
-                        g2.setPaint(netColorNetOnlyBright);
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorNetOnlyBright);
                         break;
                 }
                 break;
             case DARK:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:
-                        g2.setPaint(netColorWholeGraphDark);
+                        g2.setPaint(gridColorWholeGraphDark);
                         break;
-                    case NET_ONLY:
-                        g2.setPaint(netColorNetOnlyDark);
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorNetOnlyDark);
                         break;
                 }
                 break;
         }
 
-//        g2.setPaint(Color.black);
         g2.draw(tangent);
 
     }
