@@ -453,4 +453,10 @@
         <Ukrainian> має невизначене значення.</Ukrainian>
         <Russian> имеет неопределённое значение.</Russian>
     </object>
+    <object id = "EB_Operator_INVALID_OPERATOR">
+        <German>Ungültiger Operator.</German>
+        <English>Invalid operator.</English>
+        <Ukrainian>Невірний оператор.</Ukrainian>
+        <Russian>Неправильный оператор.</Russian>
+    </object>
 </objects>

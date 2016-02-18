@@ -382,39 +382,27 @@
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>
-  <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION">
-    <German>Hintergrundfarbe</German>
-    <English>Background color</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
-  </object>
   <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_BRIGHT">
-    <German>Weiß</German>
-    <English>White</English>
+    <German>Hintergrundfarbe: Weiß</German>
+    <English>Background color: White</English>
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_DARK">
-    <German>Schwarz</German>
-    <English>Black</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
-  </object>
-  <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION">
-    <German>Darstellungsoptionen</German>
-    <English>Presentation options</English>
+    <German>Hintergrundfarbe: Schwarz</German>
+    <English>Background color: Black</English>
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_WHOLE_GRAPH">
-    <German>Kompletter Graph</German>
-    <English>Complete graph</English>
+    <German>Darstellung: Kompletter Graph</German>
+    <English>Presentation: Complete graph</English>
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_GRID_ONLY">
-    <German>Nur Rasternetz</German>
-    <English>Grid only</English>
+    <German>Darstellung: Nur Rasternetz</German>
+    <English>Presentation: Grid only</English>
     <Ukrainian>???</Ukrainian>
     <Russian>???</Russian>
   </object>

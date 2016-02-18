@@ -1238,62 +1238,6 @@ public class Operator extends Expression {
         }
         Operator operator = new Operator(this.type, resultParams, this.precise);
 
-        // Nun wird noch operatorspezifisch vereinfacht.
-        switch (type) {
-            case diff:
-                return operator.simplifyTrivialDiff();
-            case div:
-                return operator.simplifyTrivialDiv();
-            case fac:
-                return operator.simplifyTrivialFac();
-            case fourier:
-                return operator.simplifyTrivialFourier();
-            case gcd:
-                return operator.simplifyTrivialGCD();
-            case integral:
-                return operator.simplifyTrivialInt();
-            case laplace:
-                return operator.simplifyTrivialLaplace();
-            case lcm:
-                return operator.simplifyTrivialLCM();
-            case max:
-                return operator.simplifyTrivialMax();
-            case min:
-                return operator.simplifyTrivialMin();
-            case mod:
-                return operator.simplifyTrivialMod();
-            case mu:
-                return operator.simplifyTrivialMu();
-            case prod:
-                return operator.simplifyTrivialProd();
-            case sigma:
-                return operator.simplifyTrivialSigma();
-            case sum:
-                return operator.simplifyTrivialSum();
-            case taylor:
-                return operator.simplifyTrivialTaylor();
-            case var:
-                return operator.simplifyTrivialVar();
-            default:
-                // Kommt nicht vor, aber trotzdem;
-                return operator;
-        }
-
-    }
-
-    public Expression simplifyTrivial2() throws EvaluationException {
-
-        // Zunächst alle Parameter, welche gültige Ausdrücke darstellen, vereinfachen.
-        Object[] resultParams = new Object[this.params.length];
-        for (int i = 0; i < this.params.length; i++) {
-            if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyTrivial();
-            } else {
-                resultParams[i] = this.params[i];
-            }
-        }
-        Operator operator = new Operator(this.type, resultParams, this.precise);
-
         // Mittels Reflection die passende Ausführmethode ermittln (durch Vergleich der Annotation).
         Method[] methods = Operator.class.getDeclaredMethods();
         SimplifyOperator annotation;
@@ -1301,9 +1245,13 @@ public class Operator extends Expression {
             annotation = method.getAnnotation(SimplifyOperator.class);
             if (annotation != null && annotation.type().equals(this.type)) {
                 try {
-                    method.invoke(operator);
-                    break;
+                    return (Expression) method.invoke(operator);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    if (e.getCause() instanceof EvaluationException){
+                        // Methoden können nur EvaluationExceptions werfen.
+                        throw (EvaluationException) e.getCause();
+                    } 
+                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Operator_INVALID_OPERATOR"));
                 }
             }
         }
