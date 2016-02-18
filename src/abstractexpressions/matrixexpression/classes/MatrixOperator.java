@@ -1,5 +1,6 @@
 package abstractexpressions.matrixexpression.classes;
 
+import abstractexpressions.annotations.SimplifyMatrixOperator;
 import abstractexpressions.expression.computation.AnalysisMethods;
 import computationbounds.ComputationBounds;
 import enums.TypeSimplify;
@@ -16,6 +17,8 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixOperatorMethods;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import operationparser.OperationParser;
 import lang.translator.Translator;
 
@@ -583,45 +586,40 @@ public class MatrixOperator extends MatrixExpression {
 
     @Override
     public MatrixExpression simplifyTrivial() throws EvaluationException {
+
+        // Zunächst alle Parameter, welche gültige Ausdrücke darstellen, vereinfachen.
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
-            if (this.params[i] instanceof MatrixExpression) {
-                resultParams[i] = ((MatrixExpression) this.params[i]).simplifyTrivial();
+            if (this.params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyTrivial();
             } else {
                 resultParams[i] = this.params[i];
             }
         }
         MatrixOperator operator = new MatrixOperator(this.type, resultParams, this.precise);
-        
-        // Nun wird noch operatorspezifisch vereinfacht.
-        switch (type) {
-            case cov:
-                return operator.simplifyTrivialCov();
-            case cross:
-                return operator.simplifyTrivialCross();
-            case diff:
-                return operator.simplifyTrivialDiff();
-            case div:
-                return operator.simplifyTrivialDiv();
-            case grad:
-                return operator.simplifyTrivialGrad();
-            case integral:
-                return operator.simplifyTrivialInt();
-            case laplace:
-                return operator.simplifyTrivialLaplace();
-            case prod:
-                return operator.simplifyTrivialProd();
-            case rot:
-                return operator.simplifyTrivialRot();
-            case sum:
-                return operator.simplifyTrivialSum();
-            default:
-                // Kommt nicht vor, aber trotzdem;
-                return operator;
-        }
-        
-    }
 
+        // Mittels Reflection die passende Ausführmethode ermittln (durch Vergleich der Annotation).
+        Method[] methods = MatrixOperator.class.getDeclaredMethods();
+        SimplifyMatrixOperator annotation;
+        for (Method method : methods) {
+            annotation = method.getAnnotation(SimplifyMatrixOperator.class);
+            if (annotation != null && annotation.type().equals(this.type)) {
+                try {
+                    return (MatrixExpression) method.invoke(operator);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    if (e.getCause() instanceof EvaluationException){
+                        // Methoden können nur EvaluationExceptions werfen.
+                        throw (EvaluationException) e.getCause();
+                    } 
+                    throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixOperator_INVALID_MATRIX_OPERATOR"));
+                }
+            }
+        }
+
+        return operator;
+
+    }
+    
     @Override
     public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];

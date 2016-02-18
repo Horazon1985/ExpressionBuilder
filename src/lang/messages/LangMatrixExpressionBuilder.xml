@@ -417,4 +417,10 @@
         <Ukrainian>Обчислення припинено.</Ukrainian>
         <Russian>Вычисление прекращено.</Russian>
     </object>
+    <object id = "MEB_MatrixOperator_INVALID_MATRIX_OPERATOR">
+        <German>Ungültiger Operator.</German>
+        <English>Invalid operator.</English>
+        <Ukrainian>Невірний оператор.</Ukrainian>
+        <Russian>Неправильный оператор.</Russian>
+    </object>
 </objects>
