@@ -21,7 +21,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import lang.translator.Translator;
 
-public class GraphicPanelPolar2D extends JPanel implements Exportable {
+public class GraphicPanelPolar extends JPanel implements Exportable {
 
     //Parameter für 2D-Graphen
     private String var;
@@ -47,7 +47,7 @@ public class GraphicPanelPolar2D extends JPanel implements Exportable {
 
     private Point lastMousePosition;
 
-    public GraphicPanelPolar2D() {
+    public GraphicPanelPolar() {
 
         this.isInitialized = false;
 
@@ -173,8 +173,8 @@ public class GraphicPanelPolar2D extends JPanel implements Exportable {
     public void setColors() {
         int numberOfColors = Math.max(this.exprs.size(), this.polarGraph2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
-            if (i < GraphicPanelPolar2D.fixedColors.length) {
-                this.colors.add(GraphicPanelPolar2D.fixedColors[i]);
+            if (i < GraphicPanelPolar.fixedColors.length) {
+                this.colors.add(GraphicPanelPolar.fixedColors[i]);
             } else {
                 this.colors.add(new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random())));
             }

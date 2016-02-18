@@ -24,7 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import lang.translator.Translator;
 
-public class GraphicPanelCylindrical3D extends JPanel implements Runnable, Exportable {
+public class GraphicPanelCylindrical extends JPanel implements Runnable, Exportable {
 
     //Parameter für 3D-Graphen
     //Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
@@ -91,7 +91,7 @@ public class GraphicPanelCylindrical3D extends JPanel implements Runnable, Expor
 
     }
 
-    public GraphicPanelCylindrical3D() {
+    public GraphicPanelCylindrical() {
         isRotating = false;
         addMouseListener(new MouseListener() {
             @Override
@@ -446,22 +446,11 @@ public class GraphicPanelCylindrical3D extends JPanel implements Runnable, Expor
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongAbsc = cylindricalGraphs3D.get(0).length;
-        int numberOfIntervalsAlongOrd = cylindricalGraphs3D.get(0)[0].length;
+        int numberOfIntervalsAlongR = Math.min(100, (int) (100 * zoomfactor));
+        int numberOfIntervalsAlongPhi = Math.min(100, (int) (100 * zoomfactor));
 
-        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (cylindricalGraphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - cylindricalGraphs3D.get(0)[0][0][0]) / maxX) {
-            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (cylindricalGraphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - cylindricalGraphs3D.get(0)[0][0][0]) / maxX);
-            if (numberOfIntervalsAlongAbsc < 1) {
-                numberOfIntervalsAlongAbsc = 1;
-            }
-        }
-        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (cylindricalGraphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - cylindricalGraphs3D.get(0)[0][0][1]) / maxY) {
-            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (cylindricalGraphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - cylindricalGraphs3D.get(0)[0][0][1]) / maxY);
-            if (numberOfIntervalsAlongOrd < 1) {
-                numberOfIntervalsAlongOrd = 1;
-            }
-        }
-
+        // TO DO.
+        
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
@@ -469,24 +458,24 @@ public class GraphicPanelCylindrical3D extends JPanel implements Runnable, Expor
         this.cylindricalGraphs3DAreDefined.clear();
         for (double[][][] graph3D : this.cylindricalGraphs3D) {
 
-            graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
-            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
+            graph3DForGraphic = new double[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi][3];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi];
 
             int currentIndexI, currentIndexJ;
 
-            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+            for (int i = 0; i < numberOfIntervalsAlongR; i++) {
 
-                if (graph3D.length <= numberOfIntervalsAlongAbsc) {
+                if (graph3D.length <= numberOfIntervalsAlongR) {
                     currentIndexI = i;
                 } else {
-                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongR - 1));
                 }
 
-                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-                    if (graph3D[0].length <= numberOfIntervalsAlongOrd) {
+                for (int j = 0; j < numberOfIntervalsAlongPhi; j++) {
+                    if (graph3D[0].length <= numberOfIntervalsAlongPhi) {
                         currentIndexJ = j;
                     } else {
-                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongPhi - 1));
                     }
                     graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
                     graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
