@@ -92,21 +92,23 @@ public abstract class AnalysisMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression prod(Expression f, String var, int k_0, int k_1) {
+    public static Expression prod(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
+        int difference = k_1.subtract(k_0).intValue();
+        
         // Trivialer Fall: k_1 < k_0
-        if (k_1 < k_0) {
+        if (difference < 0) {
             return Expression.ONE;
         }
 
         // Trivialer Fall: expr hängt von var nicht ab.
         if (!f.contains(var)) {
-            return f.pow(k_1 - k_0 + 1);
+            return f.pow(difference + 1);
         }
 
         Expression result = ONE;
-        for (int i = k_1; i >= k_0; i--) {
-            result = f.replaceVariable(var, new Constant(i)).mult(result);
+        for (int i = difference; i >= 0; i--) {
+            result = f.replaceVariable(var, new Constant(k_0.add(BigInteger.valueOf(i)))).mult(result);
         }
         return result;
 
@@ -117,22 +119,24 @@ public abstract class AnalysisMethods {
      *
      * @throws EvaluationException
      */
-    public static MatrixExpression prod(MatrixExpression f, String var, int k_0, int k_1) {
+    public static MatrixExpression prod(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
+        int difference = k_1.subtract(k_0).intValue();
+        
         // Trivialer Fall: k_1 < k_0
-        if (k_1 < k_0) {
+        if (difference < 0) {
             return new Matrix(Expression.ONE);
         }
 
         // Trivialer Fall: expr hängt von var nicht ab.
         if (!f.contains(var)) {
-            return f.pow(k_1 - k_0 + 1);
+            return f.pow(difference + 1);
         }
 
         MatrixExpression result;
         result = f.replaceVariable(var, new Constant(k_1));
-        for (int i = k_1 - 1; i >= k_0; i--) {
-            result = f.replaceVariable(var, new Constant(i)).mult(result);
+        for (int i = difference - 1; i >= 0; i--) {
+            result = f.replaceVariable(var, new Constant(k_0.add(BigInteger.valueOf(i)))).mult(result);
         }
         return result;
 

@@ -965,7 +965,7 @@ public class MatrixOperator extends MatrixExpression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man das Produkt explizit ausschreiben.
-                return AnalysisMethods.prod(factor, (String) this.params[1], lowerLimit.intValue(), upperLimit.intValue());
+                return AnalysisMethods.prod(factor, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }
