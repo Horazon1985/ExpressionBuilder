@@ -945,7 +945,7 @@ public abstract class OperationParser {
 
         if (type.getRole().equals(ParamRole.VARIABLE)) {
 
-            if (Expression.isValidVariable(parameter) && Variable.create(parameter).getPreciseExpression() == null) {
+            if (Expression.isValidDerivateOfVariable(parameter) && Variable.create(parameter).getPreciseExpression() == null) {
                 return parameter;
             }
 
