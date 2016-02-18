@@ -24,24 +24,24 @@ import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import lang.translator.Translator;
 
-public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
+public class GraphicPanelCylindrical3D extends JPanel implements Runnable, Exportable {
 
     //Parameter für 3D-Graphen
     //Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
     private boolean isRotating;
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
-    private String varAbsc, varOrd;
+    private String varR, varPhi;
     private final ArrayList<Expression> exprs = new ArrayList<>();
     //Array, indem die Punkte am Graphen gespeichert sind
-    private ArrayList<double[][][]> graphs3D = new ArrayList<>();
+    private ArrayList<double[][][]> cylindricalGraphs3D = new ArrayList<>();
     /*
      "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
      Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
      werden).
      */
-    private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
+    private ArrayList<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
     //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
-    private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
+    private ArrayList<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
     // Grundfarben für die einzelnen Graphen.
     private final ArrayList<Color> colors = new ArrayList<>();
     // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
@@ -91,7 +91,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    public GraphicPanel3D() {
+    public GraphicPanelCylindrical3D() {
         isRotating = false;
         addMouseListener(new MouseListener() {
             @Override
@@ -202,7 +202,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     public BackgroundColorMode getBackgroundColorMode() {
         return this.backgroundColorMode;
     }
-    
+
     public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
         this.backgroundColorMode = backgroundColorMode;
     }
@@ -210,7 +210,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     public PresentationMode getPresentationMode() {
         return this.presentationMode;
     }
-    
+
     public void setPresentationMode(PresentationMode presentationMode) {
         this.presentationMode = presentationMode;
     }
@@ -233,7 +233,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     private void setColors() {
-        int numberOfColors = Math.max(this.exprs.size(), this.graphs3D.size());
+        int numberOfColors = Math.max(this.exprs.size(), this.cylindricalGraphs3D.size());
         this.colors.clear();
         for (int i = this.colors.size(); i < numberOfColors; i++) {
             if (i < fixedColors.length) {
@@ -252,10 +252,10 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         this.isRotating = isRotating;
     }
 
-    public void setParameters(String varAbsc, String varOrd, double bigRadius, double heightProjection, double angle,
+    public void setParameters(String varR, String varPhi, double bigRadius, double heightProjection, double angle,
             double verticalAngle) {
-        this.varAbsc = varAbsc;
-        this.varOrd = varOrd;
+        this.varR = varR;
+        this.varPhi = varPhi;
         this.heightProjection = heightProjection;
         this.bigRadius = bigRadius;
         this.smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
@@ -271,7 +271,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      */
     private void computeMaxXMaxYMaxZ() {
 
-        if (this.graphs3D.isEmpty()) {
+        if (this.cylindricalGraphs3D.isEmpty()) {
 
             this.maxX = 1;
             this.maxY = 1;
@@ -281,25 +281,28 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
             double globalMaxX = 0, globalMaxY = 0, globalMaxZ = 0;
 
-            for (int k = 0; k < this.graphs3D.size(); k++) {
+            for (int k = 0; k < this.cylindricalGraphs3D.size(); k++) {
 
-                if (this.graphs3D.get(0).length == 0) {
+                if (this.cylindricalGraphs3D.get(0).length == 0) {
                     continue;
                 }
-                globalMaxX = Math.max(globalMaxX, Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0])));
-                globalMaxY = Math.max(globalMaxY, Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1])));
 
-                for (int i = 0; i <= this.graphs3D.get(k).length - 1; i++) {
-                    for (int j = 0; j <= this.graphs3D.get(k)[0].length - 1; j++) {
-                        if (graphs3DAreDefined.get(k)[i][j]) {
-                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.graphs3D.get(k)[i][j][2]));
+                for (int i = 0; i < this.cylindricalGraphs3D.get(k).length; i++) {
+                    for (int j = 0; j < this.cylindricalGraphs3D.get(k)[0].length; j++) {
+                        globalMaxX = Math.max(globalMaxX, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][0]));
+                        globalMaxY = Math.max(globalMaxY, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][1]));
+                        if (cylindricalGraphs3DAreDefined.get(k)[i][j]) {
+                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][2]));
                         }
                     }
                 }
+
                 this.maxX = globalMaxX;
                 this.maxY = globalMaxY;
                 this.maxZ = globalMaxZ;
-                // 30 % Rand auf der z-Achse lassen!
+                // 30 % Rand auf jeder der Achsen lassen!
+                this.maxX = this.maxX * 1.3;
+                this.maxY = this.maxY * 1.3;
                 this.maxZ = this.maxZ * 1.3;
 
             }
@@ -368,37 +371,40 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      *
      * @throws EvaluationException
      */
-    private void expressionToGraph(Expression exprX_0, Expression exprX_1, Expression exprY_0, Expression exprY_1) throws EvaluationException {
+    private void expressionToGraph(Expression exprR_0, Expression exprR_1, Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
 
-        double x_0 = exprX_0.evaluate();
-        double x_1 = exprX_1.evaluate();
-        double y_0 = exprY_0.evaluate();
-        double y_1 = exprY_1.evaluate();
+        double r_0 = exprR_0.evaluate();
+        double r_1 = exprR_1.evaluate();
+        double phi_0 = exprPhi_0.evaluate();
+        double phi_1 = exprPhi_1.evaluate();
 
-        if (x_0 >= x_1) {
+        if (r_0 >= r_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
         }
-        if (y_0 >= y_1) {
+        if (phi_0 >= phi_1) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
         }
 
-        this.graphs3D = new ArrayList<>();
-        this.graphs3DAreDefined = new ArrayList<>();
+        this.cylindricalGraphs3D = new ArrayList<>();
+        this.cylindricalGraphs3DAreDefined = new ArrayList<>();
 
+        double currentR, currentPhi;
         double[][][] singleGraph;
         boolean[][] singleGraphIsDefined;
         for (Expression expr : exprs) {
 
             singleGraph = new double[101][101][3];
             singleGraphIsDefined = new boolean[101][101];
-            Variable.setValue(this.varAbsc, x_0);
-            Variable.setValue(this.varOrd, y_0);
+            Variable.setValue(this.varR, r_0);
+            Variable.setValue(this.varPhi, phi_0);
             for (int i = 0; i <= 100; i++) {
                 for (int j = 0; j <= 100; j++) {
-                    singleGraph[i][j][0] = x_0 + (x_1 - x_0) * i / 100;
-                    singleGraph[i][j][1] = y_0 + (y_1 - y_0) * j / 100;
-                    Variable.setValue(this.varAbsc, x_0 + (x_1 - x_0) * i / 100);
-                    Variable.setValue(this.varOrd, y_0 + (y_1 - y_0) * j / 100);
+                    currentR = r_0 + (r_1 - r_0) * i / 100;
+                    currentPhi = phi_0 + (phi_1 - phi_0) * j / 100;
+                    singleGraph[i][j][0] = currentR * Math.cos(currentPhi);
+                    singleGraph[i][j][1] = currentR * Math.sin(currentPhi);
+                    Variable.setValue(this.varR, currentR);
+                    Variable.setValue(this.varPhi, currentPhi);
                     try {
                         singleGraph[i][j][2] = expr.evaluate();
                         singleGraphIsDefined[i][j] = true;
@@ -408,8 +414,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
                     }
                 }
             }
-            this.graphs3D.add(singleGraph);
-            this.graphs3DAreDefined.add(singleGraphIsDefined);
+            this.cylindricalGraphs3D.add(singleGraph);
+            this.cylindricalGraphs3DAreDefined.add(singleGraphIsDefined);
 
         }
 
@@ -440,17 +446,17 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongAbsc = graphs3D.get(0).length;
-        int numberOfIntervalsAlongOrd = graphs3D.get(0)[0].length;
+        int numberOfIntervalsAlongAbsc = cylindricalGraphs3D.get(0).length;
+        int numberOfIntervalsAlongOrd = cylindricalGraphs3D.get(0)[0].length;
 
-        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX) {
-            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX);
+        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (cylindricalGraphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - cylindricalGraphs3D.get(0)[0][0][0]) / maxX) {
+            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (cylindricalGraphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - cylindricalGraphs3D.get(0)[0][0][0]) / maxX);
             if (numberOfIntervalsAlongAbsc < 1) {
                 numberOfIntervalsAlongAbsc = 1;
             }
         }
-        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY) {
-            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY);
+        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (cylindricalGraphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - cylindricalGraphs3D.get(0)[0][0][1]) / maxY) {
+            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (cylindricalGraphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - cylindricalGraphs3D.get(0)[0][0][1]) / maxY);
             if (numberOfIntervalsAlongOrd < 1) {
                 numberOfIntervalsAlongOrd = 1;
             }
@@ -460,8 +466,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
-        this.graphs3DAreDefined.clear();
-        for (double[][][] graph3D : this.graphs3D) {
+        this.cylindricalGraphs3DAreDefined.clear();
+        for (double[][][] graph3D : this.cylindricalGraphs3D) {
 
             graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
             coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
@@ -492,7 +498,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             }
 
             graphsForGraphic.add(graph3DForGraphic);
-            this.graphs3DAreDefined.add(coarserGraph3DIsDefined);
+            this.cylindricalGraphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
 
@@ -594,46 +600,29 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
         switch (backgroundColorMode) {
             case BRIGHT:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphBright);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyBright);
-                        break;
-                }
+//                switch (presentationMode) {
+//                    case WHOLE_GRAPH:
+//                        g2.setPaint(gridColorWholeGraphBright);
+//                        break;
+//                    case GRID_ONLY:
+//                        g2.setPaint(gridColorNetOnlyBright);
+//                        break;
+//                }
+                g2.setPaint(gridColorGridOnlyBright);
                 break;
             case DARK:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphDark);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyDark);
-                        break;
-                }
+//                switch (presentationMode) {
+//                    case WHOLE_GRAPH:
+//                        g2.setPaint(gridColorWholeGraphDark);
+//                        break;
+//                    case GRID_ONLY:
+//                        g2.setPaint(gridColorGridOnlyDark);
+//                        break;
+//                }
+                g2.setPaint(gridColorGridOnlyDark);
                 break;
         }
 
-        g2.draw(tangent);
-
-    }
-
-    /**
-     * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
-     */
-    private void drawInfinitesimalTriangleTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, Graphics g, Color c) {
-
-        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 3);
-        tangent.moveTo(x_1, y_1);
-        tangent.lineTo(x_2, y_2);
-        tangent.lineTo(x_3, y_3);
-        tangent.closePath();
-        Graphics2D g2 = (Graphics2D) g;
-        g2.setPaint(c);
-        g2.fill(tangent);
-        g2.setPaint(Color.black);
         g2.draw(tangent);
 
     }
@@ -661,8 +650,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
 
         g.setColor(Color.GRAY);
@@ -693,9 +682,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 270) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(varPhi, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(varPhi, borderPixels[0][0] - g.getFontMetrics().stringWidth(varPhi) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -760,8 +749,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
 
         g.setColor(Color.GRAY);
@@ -792,9 +781,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 90) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(varPhi, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(varPhi, borderPixels[0][0] - g.getFontMetrics().stringWidth(varPhi) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -858,8 +847,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         g.setColor(Color.GRAY);
@@ -890,9 +879,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 180) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(varR, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(varR, borderPixels[0][0] - g.getFontMetrics().stringWidth(varR) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -957,8 +946,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         g.setColor(Color.GRAY);
@@ -989,9 +978,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle <= 90) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(varR, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(varR, borderPixels[0][0] - g.getFontMetrics().stringWidth(varR) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -1051,8 +1040,8 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     private void drawLevelsBottom(Graphics g, double f_min, double f_max, double R, double r, double h, double angle) {
 
-        double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
+        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
 
         //Zunächst den Rahmen auf dem Boden zeichnen
@@ -1161,20 +1150,20 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         double averageHeightOfTangentSpace = 0;
         int numberOfDefinedBorderPoints = 0;
 
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
-            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
+        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
+            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
-            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
+        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
+            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
-            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
+        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
+            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.graphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
-            averageHeightOfTangentSpace += this.graphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
+        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
+            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
 
@@ -1189,17 +1178,17 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
      * Achsen)
      */
-    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
+    private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
             double bigRadius, double smallRadius, double height, double angle) {
 
         int numberOfIntervalsAlongAbsc = 0;
         int numberOfIntervalsAlongOrd = 0;
 
         // Anzahl der Intervalle für das Zeichnen ermitteln.
-        for (double[][][] graph3DForGraphic : this.graphs3DForGraphic) {
-            if (graph3DForGraphic.length > 0) {
-                numberOfIntervalsAlongAbsc = graph3DForGraphic.length - 1;
-                numberOfIntervalsAlongOrd = graph3DForGraphic[0].length - 1;
+        for (double[][][] cylindricalgraph3DForGraphic : this.cylindricalGraphs3DForGraphic) {
+            if (cylindricalgraph3DForGraphic.length > 0) {
+                numberOfIntervalsAlongAbsc = cylindricalgraph3DForGraphic.length - 1;
+                numberOfIntervalsAlongOrd = cylindricalgraph3DForGraphic[0].length - 1;
                 break;
             }
         }
@@ -1213,12 +1202,12 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         ArrayList<int[][][]> graphicalGraphs = new ArrayList<>();
         int[][][] graphicalGraph;
 
-        for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+        for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
             graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
             for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
                 for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-                    graphicalGraph[i][j] = convertToPixel(this.graphs3DForGraphic.get(k)[i][j][0], this.graphs3DForGraphic.get(k)[i][j][1],
-                            this.graphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
+                    graphicalGraph[i][j] = convertToPixel(this.cylindricalGraphs3DForGraphic.get(k)[i][j][0], this.cylindricalGraphs3DForGraphic.get(k)[i][j][1],
+                            this.cylindricalGraphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
                 }
             }
             graphicalGraphs.add(graphicalGraph);
@@ -1242,7 +1231,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1253,7 +1242,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
@@ -1275,7 +1264,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1286,7 +1275,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][j][2]);
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
@@ -1308,7 +1297,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1319,7 +1308,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
@@ -1341,7 +1330,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -1352,7 +1341,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
+                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
@@ -1412,7 +1401,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen.
      */
-    private void drawGraph3D(Graphics g, double angle) {
+    private void drawCylindricalGraph3D(Graphics g, double angle) {
 
         //Zunächst Hintergrund zeichnen.
         switch (backgroundColorMode) {
@@ -1432,11 +1421,11 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
          aber varAbsc und varOrd nicht initialisiert und es gibt eine
          Exception. Dies wird hiermit verhindert.
          */
-        if (this.graphs3D.isEmpty()) {
+        if (this.cylindricalGraphs3D.isEmpty()) {
             return;
         }
         computeExpXExpYExpZ();
-        this.graphs3DForGraphic = convertGraphsToCoarserGraphs();
+        this.cylindricalGraphs3DForGraphic = convertGraphsToCoarserGraphs();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um
@@ -1447,13 +1436,13 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
         // Zunächst wird geprüft, ob mindestens ein Graph IRGENDWO definiert ist
         boolean graphIsSomewhereDefined = false;
-        for (int k = 0; k < this.graphs3DAreDefined.size(); k++) {
-            for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
-                for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.graphs3DAreDefined.get(k)[i][j]) {
+        for (int k = 0; k < this.cylindricalGraphs3DAreDefined.size(); k++) {
+            for (int i = 0; i < this.cylindricalGraphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.cylindricalGraphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.cylindricalGraphs3DAreDefined.get(k)[i][j]) {
                         graphIsSomewhereDefined = true;
-                        minExpr = this.graphs3DForGraphic.get(k)[i][j][2];
-                        maxExpr = this.graphs3DForGraphic.get(k)[i][j][2];
+                        minExpr = this.cylindricalGraphs3DForGraphic.get(k)[i][j][2];
+                        maxExpr = this.cylindricalGraphs3DForGraphic.get(k)[i][j][2];
                         break;
                     }
                 }
@@ -1472,12 +1461,12 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             maxExpr = 1;
         }
 
-        for (int k = 0; k < this.graphs3DForGraphic.size(); k++) {
-            for (int i = 0; i < this.graphs3DForGraphic.get(k).length; i++) {
-                for (int j = 0; j < this.graphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.graphs3DAreDefined.get(k)[i][j]) {
-                        minExpr = Math.min(minExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
-                        maxExpr = Math.max(maxExpr, this.graphs3DForGraphic.get(k)[i][j][2]);
+        for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+            for (int i = 0; i < this.cylindricalGraphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.cylindricalGraphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.cylindricalGraphs3DAreDefined.get(k)[i][j]) {
+                        minExpr = Math.min(minExpr, this.cylindricalGraphs3DForGraphic.get(k)[i][j][2]);
+                        maxExpr = Math.max(maxExpr, this.cylindricalGraphs3DForGraphic.get(k)[i][j][2]);
                     }
                 }
             }
@@ -1488,30 +1477,30 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         drawLevelsOnWest(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsOnNorth(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
         drawLevelsBottom(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
+        drawGraphsFromCylindricalGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
 
     }
 
-    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
+    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
-        expressionToGraph(x_0, x_1, y_0, y_1);
-        drawGraphs3D();
+        expressionToGraph(r_0, r_1, phi_0, phi_1);
+        drawCylindricalGraphs3D();
     }
 
-    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
-        expressionToGraph(x_0, x_1, x_0, x_1);
-        drawGraphs3D();
+        expressionToGraph(r_0, r_1, phi_0, phi_1);
+        drawCylindricalGraphs3D();
     }
 
-    private void drawGraphs3D() {
+    private void drawCylindricalGraphs3D() {
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawGraph3D(g, angle);
+        drawCylindricalGraph3D(g, angle);
     }
 
     @Override

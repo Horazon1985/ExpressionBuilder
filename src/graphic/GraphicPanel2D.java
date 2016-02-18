@@ -222,8 +222,8 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         int numberOfColors = Math.max(this.exprs.size(), this.graphs2D.size());
         this.colors.clear();
         for (int i = 0; i < numberOfColors; i++) {
-            if (i < GraphicPanel2D.fixedColors.length) {
-                this.colors.add(GraphicPanel2D.fixedColors[i]);
+            if (i < fixedColors.length) {
+                this.colors.add(fixedColors[i]);
             } else {
                 this.colors.add(generateColor());
             }
