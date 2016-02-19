@@ -48,6 +48,7 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
     private double zoomfactor;
+    private double minR, maxR, minPhi, maxPhi;
     private double maxX, maxY, maxZ;
     private int expX, expY, expZ;
 
@@ -373,16 +374,28 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
      */
     private void expressionToGraph(Expression exprR_0, Expression exprR_1, Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
 
-        double r_0 = exprR_0.evaluate();
-        double r_1 = exprR_1.evaluate();
-        double phi_0 = exprPhi_0.evaluate();
-        double phi_1 = exprPhi_1.evaluate();
+        this.minR = exprR_0.evaluate();
+        this.maxR = exprR_1.evaluate();
+        this.minPhi = exprPhi_0.evaluate();
+        this.maxPhi = exprPhi_1.evaluate();
 
-        if (r_0 >= r_1) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
+        if (this.minR < 0) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_1")
+                    + (this.exprs.size() + 3)
+                    + Translator.translateExceptionMessage("MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_2"));
         }
-        if (phi_0 >= phi_1) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
+        if (this.minR >= this.maxR) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL"));
+        }
+        if (this.minPhi >= this.maxPhi) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL"));
+        }
+        if (this.maxPhi - this.minPhi > 20 * Math.PI) {
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_1")
+                    + (this.exprs.size() + 5)
+                    + Translator.translateExceptionMessage("MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_2")
+                    + (this.exprs.size() + 6)
+                    + Translator.translateExceptionMessage("MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_3"));
         }
 
         this.cylindricalGraphs3D = new ArrayList<>();
@@ -391,16 +404,21 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         double currentR, currentPhi;
         double[][][] singleGraph;
         boolean[][] singleGraphIsDefined;
+        /*
+         Entlang r wird in 100 Intervalle unterteilt, entlang phi in 
+         100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle.
+         */
+        int numberOfIntervalsAlongPhi = (int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI));
         for (Expression expr : exprs) {
 
-            singleGraph = new double[101][101][3];
-            singleGraphIsDefined = new boolean[101][101];
-            Variable.setValue(this.varR, r_0);
-            Variable.setValue(this.varPhi, phi_0);
+            singleGraph = new double[101][numberOfIntervalsAlongPhi + 1][3];
+            singleGraphIsDefined = new boolean[101][numberOfIntervalsAlongPhi + 1];
+            Variable.setValue(this.varR, this.minR);
+            Variable.setValue(this.varPhi, this.minPhi);
             for (int i = 0; i <= 100; i++) {
-                for (int j = 0; j <= 100; j++) {
-                    currentR = r_0 + (r_1 - r_0) * i / 100;
-                    currentPhi = phi_0 + (phi_1 - phi_0) * j / 100;
+                for (int j = 0; j <= numberOfIntervalsAlongPhi; j++) {
+                    currentR = this.minR + (this.maxR - this.minR) * i / 100;
+                    currentPhi = this.minPhi + (this.maxPhi - this.minPhi) * j / numberOfIntervalsAlongPhi;
                     singleGraph[i][j][0] = currentR * Math.cos(currentPhi);
                     singleGraph[i][j][1] = currentR * Math.sin(currentPhi);
                     Variable.setValue(this.varR, currentR);
@@ -446,11 +464,13 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongR = Math.min(100, (int) (100 * zoomfactor));
-        int numberOfIntervalsAlongPhi = Math.min(100, (int) (100 * zoomfactor));
+        System.out.println(zoomfactor);
+        int numberOfIntervalsAlongR = Math.min(100, (int) (30 * (this.maxR - this.minR) / (this.maxR * zoomfactor)));
+        System.out.println("R : " + numberOfIntervalsAlongR);
+        // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
+        int numberOfIntervalsAlongPhi = Math.min((int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI)), (int) (100 / zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI)));
+        System.out.println("Phi : " + numberOfIntervalsAlongPhi);
 
-        // TO DO.
-        
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
@@ -477,7 +497,11 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
                     } else {
                         currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongPhi - 1));
                     }
-                    graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
+                    try {
+                        graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        double x = 1;
+                    }
                     graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
                     graph3DForGraphic[i][j][2] = graph3D[currentIndexI][currentIndexJ][2];
                     // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
@@ -582,11 +606,10 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
 
-        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
-            g2.setPaint(c);
-            g2.fill(tangent);
-        }
-
+//        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+//            g2.setPaint(c);
+//            g2.fill(tangent);
+//        }
         switch (backgroundColorMode) {
             case BRIGHT:
 //                switch (presentationMode) {
@@ -632,36 +655,31 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
      * Voraussetzung: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
      * sind bekannt/initialisiert.
      */
-    private void drawLevelsOnEast(Graphics g, double minExpr, double maxExpr, double bigRadius,
-            double smallRadius, double height, double angle) {
+    private void drawLevelsOnEast(Graphics g, double angle) {
 
         if ((angle >= 0) && (angle <= 180)) {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
-        double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
-
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
-        border[0][0] = maxValueAbsc;
-        border[0][1] = maxValueOrd;
-        border[0][2] = maxValueAppl;
-        border[1][0] = maxValueAbsc;
-        border[1][1] = -maxValueOrd;
-        border[1][2] = maxValueAppl;
-        border[2][0] = maxValueAbsc;
-        border[2][1] = -maxValueOrd;
-        border[2][2] = -maxValueAppl;
-        border[3][0] = maxValueAbsc;
-        border[3][1] = maxValueOrd;
-        border[3][2] = -maxValueAppl;
+        border[0][0] = this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = this.maxX;
+        border[1][1] = -this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = this.maxY;
+        border[3][2] = -this.maxZ;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], bigRadius, smallRadius, height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
         }
 
         //Rahmen zeichnen
@@ -680,22 +698,22 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
-            lineLevel[0][0] = maxValueAbsc;
-            lineLevel[0][1] = maxValueOrd;
+        while (i * Math.pow(10, this.expZ) <= this.maxZ) {
+            lineLevel[0][0] = this.maxX;
+            lineLevel[0][1] = this.maxY;
             lineLevel[0][2] = i * Math.pow(10, this.expZ);
-            lineLevel[1][0] = maxValueAbsc;
-            lineLevel[1][1] = -maxValueOrd;
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = -this.maxY;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], bigRadius, smallRadius, height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], bigRadius, smallRadius, height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 270) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
+            if ((angle > 270) && ((i + 1) * Math.pow(10, this.expZ) <= this.maxZ)) {
                 g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
@@ -703,19 +721,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         }
 
         //Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (maxValueOrd / Math.pow(10, this.expY));
+        bound = (int) (this.maxY / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, this.expY) <= maxValueOrd) {
-            lineLevel[0][0] = maxValueAbsc;
+        while (i * Math.pow(10, this.expY) <= this.maxY) {
+            lineLevel[0][0] = this.maxX;
             lineLevel[0][1] = i * Math.pow(10, this.expY);
-            lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = maxValueAbsc;
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = this.maxX;
             lineLevel[1][1] = i * Math.pow(10, this.expY);
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], bigRadius, smallRadius, height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], bigRadius, smallRadius, height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 270) {
@@ -731,36 +749,31 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
 
     }
 
-    private void drawLevelsOnWest(Graphics g, double minExpr, double maxExpr, double bigRadius,
-            double smallRadius, double height, double angle) {
+    private void drawLevelsOnWest(Graphics g, double angle) {
 
         if ((angle >= 180) && (angle <= 360)) {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
-        double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
-
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
-        border[0][0] = -maxValueAbsc;
-        border[0][1] = -maxValueOrd;
-        border[0][2] = maxValueAppl;
-        border[1][0] = -maxValueAbsc;
-        border[1][1] = maxValueOrd;
-        border[1][2] = maxValueAppl;
-        border[2][0] = -maxValueAbsc;
-        border[2][1] = maxValueOrd;
-        border[2][2] = -maxValueAppl;
-        border[3][0] = -maxValueAbsc;
-        border[3][1] = -maxValueOrd;
-        border[3][2] = -maxValueAppl;
+        border[0][0] = -this.maxX;
+        border[0][1] = -this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = -this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], bigRadius, smallRadius, height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
         }
 
         //Rahmen zeichnen
@@ -779,22 +792,22 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, expZ));
+        int bound = (int) (this.maxZ / Math.pow(10, expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
-            lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = -maxValueOrd;
+        while (i * Math.pow(10, expZ) <= this.maxZ) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = -this.maxY;
             lineLevel[0][2] = i * Math.pow(10, expZ);
-            lineLevel[1][0] = -maxValueAbsc;
-            lineLevel[1][1] = maxValueOrd;
+            lineLevel[1][0] = -this.maxX;
+            lineLevel[1][1] = this.maxY;
             lineLevel[1][2] = i * Math.pow(10, expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], bigRadius, smallRadius, height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], bigRadius, smallRadius, height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
+            if ((angle > 90) && ((i + 1) * Math.pow(10, this.expZ) <= this.maxZ)) {
                 g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
@@ -802,19 +815,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         }
 
         //Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (maxValueOrd / Math.pow(10, expY));
+        bound = (int) (this.maxY / Math.pow(10, expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
-            lineLevel[0][0] = -maxValueAbsc;
+        while (i * Math.pow(10, expY) <= this.maxY) {
+            lineLevel[0][0] = -this.maxX;
             lineLevel[0][1] = i * Math.pow(10, expY);
-            lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = -maxValueAbsc;
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = -this.maxX;
             lineLevel[1][1] = i * Math.pow(10, expY);
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], bigRadius, smallRadius, height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], bigRadius, smallRadius, height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 90) {
@@ -830,35 +843,31 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
 
     }
 
-    private void drawLevelsOnSouth(Graphics g, double f_min, double f_max, double R, double r, double h, double angle) {
+    private void drawLevelsOnSouth(Graphics g, double angle) {
 
         if ((angle <= 90) || (angle >= 270)) {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
-        double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
-
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
-        border[0][0] = maxValueAbsc;
-        border[0][1] = -maxValueOrd;
-        border[0][2] = maxValueAppl;
-        border[1][0] = -maxValueAbsc;
-        border[1][1] = -maxValueOrd;
-        border[1][2] = maxValueAppl;
-        border[2][0] = -maxValueAbsc;
-        border[2][1] = -maxValueOrd;
-        border[2][2] = -maxValueAppl;
-        border[3][0] = maxValueAbsc;
-        border[3][1] = -maxValueOrd;
-        border[3][2] = -maxValueAppl;
+        border[0][0] = this.maxX;
+        border[0][1] = -this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = -this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], R, r, h, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
         }
 
         //Rahmen zeichnen
@@ -877,22 +886,22 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
-            lineLevel[0][0] = maxValueAbsc;
-            lineLevel[0][1] = -maxValueOrd;
+        while (i * Math.pow(10, expZ) <= this.maxZ) {
+            lineLevel[0][0] = this.maxX;
+            lineLevel[0][1] = -this.maxY;
             lineLevel[0][2] = i * Math.pow(10, expZ);
-            lineLevel[1][0] = -maxValueAbsc;
-            lineLevel[1][1] = -maxValueOrd;
+            lineLevel[1][0] = -this.maxX;
+            lineLevel[1][1] = -this.maxY;
             lineLevel[1][2] = i * Math.pow(10, expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 180) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
+            if ((angle > 180) && ((i + 1) * Math.pow(10, this.expZ) <= this.maxZ)) {
                 g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
@@ -901,19 +910,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (this.maxX / Math.pow(10, expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
+        while (i * Math.pow(10, expX) <= this.maxX) {
             lineLevel[0][0] = i * Math.pow(10, expX);
-            lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = maxValueAppl;
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = this.maxZ;
             lineLevel[1][0] = i * Math.pow(10, expX);
-            lineLevel[1][1] = -maxValueOrd;
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][1] = -this.maxY;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 180) {
@@ -929,35 +938,31 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
 
     }
 
-    private void drawLevelsOnNorth(Graphics g, double f_min, double f_max, double R, double r, double h, double angle) {
+    private void drawLevelsOnNorth(Graphics g, double angle) {
 
         if ((angle >= 90) && (angle <= 270)) {
             return;
         }
 
-        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
-        double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
-
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
-        border[0][0] = -maxValueAbsc;
-        border[0][1] = maxValueOrd;
-        border[0][2] = maxValueAppl;
-        border[1][0] = maxValueAbsc;
-        border[1][1] = maxValueOrd;
-        border[1][2] = maxValueAppl;
-        border[2][0] = maxValueAbsc;
-        border[2][1] = maxValueOrd;
-        border[2][2] = -maxValueAppl;
-        border[3][0] = -maxValueAbsc;
-        border[3][1] = maxValueOrd;
-        border[3][2] = -maxValueAppl;
+        border[0][0] = -this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = this.maxX;
+        border[2][1] = this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = -this.maxX;
+        border[3][1] = this.maxY;
+        border[3][2] = -this.maxZ;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], R, r, h, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
         }
 
         //Rahmen zeichnen
@@ -976,22 +981,22 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
-            lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = maxValueOrd;
+        while (i * Math.pow(10, expZ) <= this.maxZ) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = this.maxY;
             lineLevel[0][2] = i * Math.pow(10, expZ);
-            lineLevel[1][0] = maxValueAbsc;
-            lineLevel[1][1] = maxValueOrd;
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = this.maxY;
             lineLevel[1][2] = i * Math.pow(10, expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle < 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
+            if ((angle < 90) && ((i + 1) * Math.pow(10, this.expZ) <= this.maxZ)) {
                 g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
@@ -999,19 +1004,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (this.maxX / Math.pow(10, expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
+        while (i * Math.pow(10, expX) <= this.maxX) {
             lineLevel[0][0] = i * Math.pow(10, expX);
-            lineLevel[0][1] = maxValueOrd;
-            lineLevel[0][2] = maxValueAppl;
+            lineLevel[0][1] = this.maxY;
+            lineLevel[0][2] = this.maxZ;
             lineLevel[1][0] = i * Math.pow(10, expX);
-            lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle <= 90) {
@@ -1027,31 +1032,27 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
 
     }
 
-    private void drawLevelsBottom(Graphics g, double f_min, double f_max, double R, double r, double h, double angle) {
-
-        double maxValueAbsc = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][0]), Math.abs(this.cylindricalGraphs3D.get(0)[this.cylindricalGraphs3D.get(0).length - 1][0][0]));
-        double maxValueOrd = Math.max(Math.abs(this.cylindricalGraphs3D.get(0)[0][0][1]), Math.abs(this.cylindricalGraphs3D.get(0)[0][this.cylindricalGraphs3D.get(0)[0].length - 1][1]));
-        double maxValueAppl = Math.max(Math.abs(f_min), Math.abs(f_max));
+    private void drawLevelsBottom(Graphics g, double angle) {
 
         //Zunächst den Rahmen auf dem Boden zeichnen
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
-        border[0][0] = maxValueAbsc;
-        border[0][1] = maxValueOrd;
-        border[0][2] = -maxValueAppl;
-        border[1][0] = -maxValueAbsc;
-        border[1][1] = maxValueOrd;
-        border[1][2] = -maxValueAppl;
-        border[2][0] = -maxValueAbsc;
-        border[2][1] = -maxValueOrd;
-        border[2][2] = -maxValueAppl;
-        border[3][0] = maxValueAbsc;
-        border[3][1] = -maxValueOrd;
-        border[3][2] = -maxValueAppl;
+        border[0][0] = this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = -this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = -this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], R, r, h, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
         }
 
         //Rahmen zeichnen
@@ -1065,19 +1066,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         int[][] lineLevelPixels = new int[2][2];
 
         //horizontale x-Niveaulinien zeichnen
-        int bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
+        int bound = (int) (this.maxX / Math.pow(10, this.expX));
         int i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
+        while (i * Math.pow(10, expX) <= this.maxX) {
             lineLevel[0][0] = i * Math.pow(10, expX);
-            lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = -maxValueAppl;
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = -this.maxZ;
             lineLevel[1][0] = i * Math.pow(10, expX);
-            lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1085,19 +1086,19 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         }
 
         //horizontale y-Niveaulinien zeichnen
-        bound = (int) (maxValueOrd / Math.pow(10, this.expY));
+        bound = (int) (this.maxY / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
-            lineLevel[0][0] = -maxValueAbsc;
+        while (i * Math.pow(10, expY) <= this.maxY) {
+            lineLevel[0][0] = -this.maxX;
             lineLevel[0][1] = i * Math.pow(10, expY);
-            lineLevel[0][2] = -maxValueAppl;
-            lineLevel[1][0] = maxValueAbsc;
+            lineLevel[0][2] = -this.maxZ;
+            lineLevel[1][0] = this.maxX;
             lineLevel[1][1] = i * Math.pow(10, expY);
-            lineLevel[1][2] = -maxValueAppl;
+            lineLevel[1][2] = -this.maxZ;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], R, r, h, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], R, r, h, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1461,11 +1462,11 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
             }
         }
 
-        drawLevelsOnEast(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        drawLevelsOnSouth(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        drawLevelsOnWest(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        drawLevelsOnNorth(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
-        drawLevelsBottom(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
+        drawLevelsOnEast(g, angle);
+        drawLevelsOnSouth(g, angle);
+        drawLevelsOnWest(g, angle);
+        drawLevelsOnNorth(g, angle);
+        drawLevelsBottom(g, angle);
         drawGraphsFromCylindricalGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
 
     }
