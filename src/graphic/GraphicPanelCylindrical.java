@@ -464,12 +464,9 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        System.out.println(zoomfactor);
         int numberOfIntervalsAlongR = Math.min(100, (int) (30 * (this.maxR - this.minR) / (this.maxR * zoomfactor)));
-        System.out.println("R : " + numberOfIntervalsAlongR);
         // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
         int numberOfIntervalsAlongPhi = Math.min((int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI)), (int) (100 / zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI)));
-        System.out.println("Phi : " + numberOfIntervalsAlongPhi);
 
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 

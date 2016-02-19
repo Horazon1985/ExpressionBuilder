@@ -1052,7 +1052,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
         double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
         double maxValueAppl = Math.max(Math.abs(minExpr), Math.abs(maxExpr));
-
+        
         //Zunächst den Rahmen auf dem Boden zeichnen
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
