@@ -694,9 +694,9 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 270) {
-            g.drawString(varPhi, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varPhi, borderPixels[0][0] - g.getFontMetrics().stringWidth(varPhi) - 10, borderPixels[0][1] + 15);
+            g.drawString("2. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -788,9 +788,9 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 90) {
-            g.drawString(varPhi, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varPhi, borderPixels[0][0] - g.getFontMetrics().stringWidth(varPhi) - 10, borderPixels[0][1] + 15);
+            g.drawString("2. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -882,9 +882,9 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 180) {
-            g.drawString(varR, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varR, borderPixels[0][0] - g.getFontMetrics().stringWidth(varR) - 10, borderPixels[0][1] + 15);
+            g.drawString("1. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -977,9 +977,9 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle <= 90) {
-            g.drawString(varR, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varR, borderPixels[0][0] - g.getFontMetrics().stringWidth(varR) - 10, borderPixels[0][1] + 15);
+            g.drawString("1. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
