@@ -172,7 +172,7 @@
   <object id = "GUI_MathToolForm_MENU_GRAPHIC_OPTIONS">
     <German>Grafikoptionen</German>
     <English>Graphic options</English>
-    <Ukrainian>???</Ukrainian>
+    <Ukrainian>Опції графіки</Ukrainian>
     <Russian>Опции графики</Russian>
   </object>
 <!-- DevelopersDialogGUI -->    
@@ -361,7 +361,7 @@
   <object id = "GUI_GraphicOptionsDialogGUI_GRAPHIC_OPTIONS_TITLE">
     <German>Grafikoptionen</German>
     <English>Graphic options</English>
-    <Ukrainian>???</Ukrainian>
+    <Ukrainian>Опції графіки</Ukrainian>
     <Russian>Опции графики</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_SAVE_BUTTON">
@@ -379,31 +379,31 @@
   <object id = "GUI_GraphicOptionsDialogGUI_GRAPHIC_OPTIONS_GROUP_NAME">
     <German>Grafikoptionen für 3D-Graphen</German>
     <English>Graphic options for 3D-graphs</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Опції для тривимірних графіків</Ukrainian>
+    <Russian>Опции для трёхмерных графиков</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_BRIGHT">
     <German>Hintergrundfarbe: Weiß</German>
     <English>Background color: White</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Фон: Білый</Ukrainian>
+    <Russian>Фон: Белый</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_DARK">
     <German>Hintergrundfarbe: Schwarz</German>
     <English>Background color: Black</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Фон: Чорний</Ukrainian>
+    <Russian>Фон: Чорный</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_WHOLE_GRAPH">
     <German>Darstellung: Kompletter Graph</German>
     <English>Presentation: Complete graph</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Зображення: Весь графік</Ukrainian>
+    <Russian>Изображение: Весь график</Russian>
   </object>
   <object id = "GUI_GraphicOptionsDialogGUI_PRESENTATION_OPTION_GRID_ONLY">
     <German>Darstellung: Nur Rasternetz</German>
     <English>Presentation: Grid only</English>
-    <Ukrainian>???</Ukrainian>
-    <Russian>???</Russian>
+    <Ukrainian>Зображення: Тільки решітка</Ukrainian>
+    <Russian>Изображение: Только решётка</Russian>
   </object>
 </objects>

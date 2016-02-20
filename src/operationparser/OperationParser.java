@@ -951,6 +951,8 @@ public abstract class OperationParser {
 
         } else if (type.equals(ParamType.equation)) {
 
+            Expression exprLeft, exprRight;
+
             try {
                 if (!parameter.contains("=")) {
                     throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1")
@@ -959,41 +961,36 @@ public abstract class OperationParser {
                             + opName
                             + Translator.translateExceptionMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3"));
                 }
-                Expression exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
-                Expression exprRight = Expression.build(parameter.substring(parameter.indexOf("=") + 1), vars);
-                exprLeft.addContainedIndeterminates(containedVars);
-                exprRight.addContainedIndeterminates(containedVars);
-                if (!restrictions.isEmpty()) {
-                    if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+                exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
+                exprRight = Expression.build(parameter.substring(parameter.indexOf("=") + 1), vars);
+            } catch (ExpressionException e) {
+                String failureMessage = Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                        + (index + 1) + Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+                        + opName
+                        + Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION");
+                throw new ExpressionException(failureMessage);
+            }
+
+            exprLeft.addContainedIndeterminates(containedVars);
+            exprRight.addContainedIndeterminates(containedVars);
+            if (!restrictions.isEmpty()) {
+                if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+                    return new Expression[]{exprLeft, exprRight};
+                } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
+                    if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                         return new Expression[]{exprLeft, exprRight};
-                    } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return new Expression[]{exprLeft, exprRight};
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
-                                    + (index + 1)
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + opName
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
-                                    + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
-                            );
-                        }
-                    } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return new Expression[]{exprLeft, exprRight};
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
-                                    + (index + 1)
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + opName
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
-                                    + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
-                            );
-                        }
-                    } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
-                            && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
+                    } else {
+                        throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                + (index + 1)
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + opName
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
+                                + Integer.parseInt(restrictions.get(1))
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                        );
+                    }
+                } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+                    if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                         return new Expression[]{exprLeft, exprRight};
                     } else {
                         throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
@@ -1002,15 +999,26 @@ public abstract class OperationParser {
                                 + opName
                                 + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                 + Integer.parseInt(restrictions.get(0))
-                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
-                                + Integer.parseInt(restrictions.get(1))
                                 + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
-                } else {
+                } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
+                        && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                     return new Expression[]{exprLeft, exprRight};
+                } else {
+                    throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                            + (index + 1)
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                            + opName
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                            + Integer.parseInt(restrictions.get(0))
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            + Integer.parseInt(restrictions.get(1))
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                    );
                 }
-            } catch (ExpressionException e) {
+            } else {
+                return new Expression[]{exprLeft, exprRight};
             }
 
         } else if (type.getRole().equals(ParamRole.EXPRESSION)) {
@@ -1025,39 +1033,43 @@ public abstract class OperationParser {
                 } else {
                     abstrExpr = MatrixExpression.build(parameter, vars);
                 }
+            } catch (ExpressionException e) {
+                String failureMessage = Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                        + (index + 1) + Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+                        + opName;
+                switch (type) {
+                    case expr:
+                        failureMessage += Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION");
+                        break;
+                    case logexpr:
+                        failureMessage += Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION");
+                        break;
+                    case matexpr:
+                        failureMessage += Translator.translateExceptionMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION");
+                        break;
+                }
+                throw new ExpressionException(failureMessage);
+            }
 
-                if (!restrictions.isEmpty()) {
-                    containedVars = abstrExpr.getContainedIndeterminates();
-                    if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+            if (!restrictions.isEmpty()) {
+                containedVars = abstrExpr.getContainedIndeterminates();
+                if (restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+                    return abstrExpr;
+                } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
+                    if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                         return abstrExpr;
-                    } else if (restrictions.get(0).equals(ParameterPattern.none) && !restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
-                            return abstrExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
-                                    + (index + 1)
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + opName
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
-                                    + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
-                            );
-                        }
-                    } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
-                        if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
-                            return abstrExpr;
-                        } else {
-                            throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
-                                    + (index + 1)
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
-                                    + opName
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
-                                    + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
-                            );
-                        }
-                    } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
-                            && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
+                    } else {
+                        throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                                + (index + 1)
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + opName
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
+                                + Integer.parseInt(restrictions.get(1))
+                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                        );
+                    }
+                } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
+                    if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                         return abstrExpr;
                     } else {
                         throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
@@ -1066,15 +1078,26 @@ public abstract class OperationParser {
                                 + opName
                                 + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                 + Integer.parseInt(restrictions.get(0))
-                                + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
-                                + Integer.parseInt(restrictions.get(1))
                                 + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
-                } else {
+                } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
+                        && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                     return abstrExpr;
+                } else {
+                    throw new ExpressionException(Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                            + (index + 1)
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                            + opName
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                            + Integer.parseInt(restrictions.get(0))
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            + Integer.parseInt(restrictions.get(1))
+                            + Translator.translateExceptionMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                    );
                 }
-            } catch (ExpressionException e) {
+            } else {
+                return abstrExpr;
             }
 
         } else if (type.getRole().equals(ParamRole.INTEGER)) {

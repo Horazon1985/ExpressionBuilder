@@ -385,10 +385,18 @@ public class GraphicPanelCylindrical extends JPanel implements Runnable, Exporta
                     + Translator.translateExceptionMessage("MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_2"));
         }
         if (this.minR >= this.maxR) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL"));
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_1")
+            + (exprs.size() + 3)
+            + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_2")
+            + (exprs.size() + 4)
+            + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_3"));
         }
         if (this.minPhi >= this.maxPhi) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL"));
+            throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_1")
+            + (exprs.size() + 5)
+            + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_2")
+            + (exprs.size() + 6)
+            + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_3"));
         }
         if (this.maxPhi - this.minPhi > 20 * Math.PI) {
             throw new EvaluationException(Translator.translateExceptionMessage("MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_1")

@@ -307,11 +307,14 @@ public class Operator extends Expression {
          */
         if (this.type.equals(TypeOperator.integral) && this.params.length == 2) {
             ((Expression) this.params[0]).addContainedIndeterminates(vars);
+            // Integrationsvariable wird mitgezählt!
+            vars.add((String) this.params[1]);
             return;
         }
         if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
             String var = (String) this.params[1];
             ((Expression) this.params[0]).addContainedIndeterminates(vars);
+            // Integrationsvariable wird nicht mitgezählt!
             vars.remove(var);
             ((Expression) this.params[2]).addContainedIndeterminates(vars);
             ((Expression) this.params[3]).addContainedIndeterminates(vars);
