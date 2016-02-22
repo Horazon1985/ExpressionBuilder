@@ -66,24 +66,10 @@ public class GraphicPanelImplicit2D extends JPanel implements Exportable {
      * @throws EvaluationException
      */
     private void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
-        
-        double varAbscStart = exprAbscStart.evaluate();
-        double varAbscEnd = exprAbscEnd.evaluate();
-        double varOrdStart = exprOrdStart.evaluate();
-        double varOrdEnd = exprOrdEnd.evaluate();
-        
-        if (varAbscStart >= varAbscEnd) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
-        }
-        if (varOrdStart >= varOrdEnd) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
-        }
-        
-        this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
-        this.axeCenterY = (varOrdStart + varOrdEnd) / 2;
-        this.maxX = varAbscEnd - this.axeCenterX;
-        this.maxY = varOrdEnd - this.axeCenterY;
-        
+        this.axeCenterX = (exprAbscStart.evaluate() + exprAbscEnd.evaluate()) / 2;
+        this.axeCenterY = (exprOrdStart.evaluate() + exprOrdEnd.evaluate()) / 2;
+        this.maxX = exprAbscEnd.evaluate() - this.axeCenterX;
+        this.maxY = exprOrdEnd.evaluate() - this.axeCenterY;
     }
 
     /**

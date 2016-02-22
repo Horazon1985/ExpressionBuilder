@@ -513,12 +513,6 @@
         <Ukrainian>Не вдалося побудувати графік.</Ukrainian>
         <Russian>Не удалось построить график.</Russian>
     </object>
-    <object id = "MCC_IMPLICIT_GRAPH_CANNOT_BE_PLOTTED">
-        <German>Der Graph der implizit definierten Funktion konnte nicht geplottet werden.</German>
-        <English>The graph of the implicitly defined function cannot be plotted.</English>
-        <Ukrainian>Не вдалося побудувати графік неявно заданої функції.</Ukrainian>
-        <Russian>Не удалось построить график неявно заданной функции.</Russian>
-    </object>
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOT3D">
         <German>Im Befehl 'plot3d' müssen genau fünf Parameter stehen.</German>
         <English>The command 'plot3d' must contain exactly five parameters.</English>
@@ -591,6 +585,24 @@
         <Ukrainian>. параметр.</Ukrainian>
         <Russian>. праметр.</Russian>
     </object>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_2">
+        <German>. Parameter im Befehl 'plotimplicit' muss kleiner sein als der </German>
+        <English>. parameter in command 'plotimplicit' must be smaller than the </English>
+        <Ukrainian>. параметр команди 'plotimplicit' має бути меншим ніж </Ukrainian>
+        <Russian>. параметр команды 'plotimplicit' должен быть меньше чем </Russian>
+    </object>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_3">
+        <German>. Parameter.</German>
+        <English>. parameter.</English>
+        <Ukrainian>. параметр.</Ukrainian>
+        <Russian>. праметр.</Russian>
+    </object>
     <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_REGRESSIONLINE">
         <German>Der 3. Parameter im Befehl 'plot3d' muss größer sein als der 2. Parameter.</German>
         <English>The 3. parameter in command 'plot3d' must be greater than the 2. parameter.</English>
@@ -603,12 +615,6 @@
         <Ukrainian>5. параметр команди 'plot3d' має бути більше ніж 4. параметр.</Ukrainian>
         <Russian>5. параметр команды 'plot3d' должен быть меньше чем 4. параметр.</Russian>
     </object>
-    <object id = "MCC_GRAPH_CANNOT_BE_PLOTTED_PLOT3D">
-        <German>Der Graph konnte nicht geplottet werden.</German>
-        <English>The graph cannot be plotted.</English>
-        <Ukrainian>Неможливо побудувати графік.</Ukrainian>
-        <Russian>Невозможно построить график.</Russian>
-    </object>
     <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
         <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein zweidimensionaler Vektor sein.</German>
         <English>The 1. parameter in command 'plotcurve2d' must be a two dimensional vector.</English>
@@ -620,12 +626,6 @@
         <English>The 1. parameter in command 'plotcurve3d' must be a three dimensional vector.</English>
         <Ukrainian>Перший параметр команди 'plotcurve3d' має бути тривимірним вектором.</Ukrainian>
         <Russian>Первый параметр команды 'plotcurve3d' должен быть трёхмерным вектором.</Russian>
-    </object>
-    <object id = "MCC_CURVE_CANNOT_BE_PLOTTED_PLOTCURVE">
-        <German>Die Kurve konnte nicht geplottet werden.</German>
-        <English>The curve cannot be plotted.</English>
-        <Ukrainian>Неможливо побудувати криву.</Ukrainian>
-        <Russian>Невозможно постоить кривую.</Russian>
     </object>
     <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_PLOTPOLAR">
         <German>Zu wenig Parameter im Befehl 'plotpolar'.</German>
