@@ -165,8 +165,9 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         this.var = var;
     }
 
-    public void addExpression(Expression expr) {
-        this.exprs.add(expr);
+    public void setExpressions(ArrayList<Expression> exprs) {
+        this.exprs.clear();
+        this.exprs.addAll(exprs);
         setColors();
     }
 

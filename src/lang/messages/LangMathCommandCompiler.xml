@@ -507,7 +507,7 @@
         <Ukrainian>. параметр.</Ukrainian>
         <Russian>. праметр.</Russian>
     </object>
-    <object id = "MCC_GRAPHS_CANNOT_BE_PLOTTED_PLOT2D">
+    <object id = "MCC_GRAPHS_CANNOT_BE_PLOTTED">
         <German>Graphen konnten nicht geplottet werden.</German>
         <English>Graphs cannot be plotted.</English>
         <Ukrainian>Не вдалося побудувати графік.</Ukrainian>
