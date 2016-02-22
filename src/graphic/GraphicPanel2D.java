@@ -244,7 +244,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    private void computeScreenSizes() throws EvaluationException {
+    private void computeScreenSizes() {
 
         this.axeCenterX = 0;
         this.axeCenterY = 0;
@@ -749,7 +749,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         }
     }
 
-    private void drawGraphs2D(Graphics g, String varAbsc) {
+    private void drawGraphs2D(Graphics g) {
 
         // Weißen Hintergrund zeichnen.
         g.setColor(Color.white);
@@ -759,7 +759,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         computeExpXExpY();
 
         //Niveaulinien und Achsen zeichnen
-        drawAxesAndLines(g, varAbsc);
+        drawAxesAndLines(g, this.varAbsc);
 
         //Graphen zeichnen
         if (this.graphs2D.isEmpty()) {
@@ -825,7 +825,7 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        drawGraphs2D(g, this.varAbsc);
+        drawGraphs2D(g);
 
         /**
          * Im Folgenden wird der Graph in einem größeren/kleineren Bereich

@@ -42,14 +42,11 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
     private double maxX, maxY;
     private int expX, expY;
 
-    private boolean isInitialized;
     private boolean movable = false;
 
     private Point lastMousePosition;
 
     public GraphicPanelPolar() {
-
-        this.isInitialized = false;
 
         addMouseListener(new MouseListener() {
             @Override
@@ -152,13 +149,6 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
         return instructions;
-    }
-
-    public void setIsInitialized(boolean isInitialized) {
-        this.isInitialized = isInitialized;
-        this.zoomfactor = 1;
-        this.zoomfactorX = 1;
-        this.zoomfactorY = 1;
     }
 
     public void setVar(String var) {
@@ -292,7 +282,7 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(String var, double phiStart, double phiEnd) throws EvaluationException {
+    public void expressionToGraph(double phiStart, double phiEnd) throws EvaluationException {
 
         this.polarGraph2D.clear();
         double[][] pointsOnGraphs;
@@ -302,9 +292,9 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
             pointsOnGraphs = new double[1001][2];
 
             // Falls this.expr.get(i) konstant ist -> den Funktionswert nur einmal berechnen!
-            Variable.setValue(var, phiStart);
+            Variable.setValue(this.var, phiStart);
             for (int j = 0; j <= 1000; j++) {
-                Variable.setValue(var, phiStart + (phiEnd - phiStart) * j / 1000);
+                Variable.setValue(this.var, phiStart + (phiEnd - phiStart) * j / 1000);
                 try {
                     pointsOnGraphs[j][0] = this.exprs.get(i).evaluate() * Math.cos(phiStart + (phiEnd - phiStart) * j / 1000);
                     pointsOnGraphs[j][1] = this.exprs.get(i).evaluate() * Math.sin(phiStart + (phiEnd - phiStart) * j / 1000);
@@ -478,7 +468,14 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         g.drawString("y", 250 - (int) (250 * axeCenterX / maxX) - 5 - g.getFontMetrics().stringWidth("y"), 20);
     }
 
-    private void drawPolarGraph2D(Graphics g) {
+    public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+        setExpressions(exprs);
+        computeScreenSizes(phi_0, phi_1);
+        expressionToGraph(phi_0.evaluate(), phi_1.evaluate());
+        drawGraphPolar();
+    }
+    
+    private void drawGraphPolar(Graphics g) {
 
         /**
          * Weißen Hintergrund zeichnen.
@@ -529,24 +526,15 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         g.setColor(Color.black);
 
     }
-
-    public void drawPolarGraph2D() {
+    
+    private void drawGraphPolar() {
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
-
-        /**
-         * Falls repaint() aufgerufen wird, bevor irgendwelche Attribute gesetzt
-         * wurden -> Abbruch!
-         */
-        if (!this.isInitialized) {
-            return;
-        }
         super.paintComponent(g);
-        drawPolarGraph2D(g);
-
+        drawGraphPolar(g);
     }
 
     // Grafikexport.

@@ -118,7 +118,7 @@ public class Variable extends Expression {
         }
     }
 
-    public static void setValue(String name, double value) throws EvaluationException {
+    public static void setValue(String name, double value) {
         // PI darf nicht verändert werden.
         if (name.equals("pi")) {
             if (variables.containsKey("pi")) {
