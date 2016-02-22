@@ -34,7 +34,7 @@ public abstract class AnalysisMethods {
     public static Expression sum(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
         int difference = k_1.subtract(k_0).intValue();
-        
+
         // Trivialer Fall: k_1 < k_0
         if (difference < 0) {
             return Expression.ZERO;
@@ -62,7 +62,7 @@ public abstract class AnalysisMethods {
     public static MatrixExpression sum(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
         int difference = k_1.subtract(k_0).intValue();
-        
+
         // Trivialer Fall: k_1 < k_0
         if (difference < 0) {
             try {
@@ -95,7 +95,7 @@ public abstract class AnalysisMethods {
     public static Expression prod(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
         int difference = k_1.subtract(k_0).intValue();
-        
+
         // Trivialer Fall: k_1 < k_0
         if (difference < 0) {
             return Expression.ONE;
@@ -122,7 +122,7 @@ public abstract class AnalysisMethods {
     public static MatrixExpression prod(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
         int difference = k_1.subtract(k_0).intValue();
-        
+
         // Trivialer Fall: k_1 < k_0
         if (difference < 0) {
             return new Matrix(Expression.ONE);
@@ -419,6 +419,12 @@ public abstract class AnalysisMethods {
             }
 
             f = f.simplifyByInsertingDefinedVars().simplify();
+
+            // Wichtig: allen Variablen, die in point vorkommen, wieder zu Unbestimmten machen.
+            for (String var : vars) {
+                Variable.setPreciseExpression(var, null);
+            }
+
             return f.add(result).simplify();
         } catch (EvaluationException e) {
             throw new EvaluationException(Translator.translateExceptionMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
