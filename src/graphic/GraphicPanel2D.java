@@ -297,14 +297,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
 
-        if (varAbscStart >= varAbscEnd) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1")
-                    + (exprs.size() + 1)
-                    + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_2")
-                    + (exprs.size() + 2)
-                    + Translator.translateExceptionMessage("MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_3"));
-        }
-
         this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
         this.maxX = varAbscEnd - this.axeCenterX;
         double globalMinY = Double.NaN;
@@ -360,13 +352,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         double varAbscEnd = exprAbscEnd.evaluate();
         double varOrdStart = exprOrdStart.evaluate();
         double varOrdEnd = exprOrdEnd.evaluate();
-
-        if (varAbscStart >= varAbscEnd) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
-        }
-        if (varOrdStart >= varOrdEnd) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_IMPLICIT_PLOT2D"));
-        }
 
         this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
         this.axeCenterY = (varOrdStart + varOrdEnd) / 2;

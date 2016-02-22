@@ -375,13 +375,6 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         double y_0 = exprY_0.evaluate();
         double y_1 = exprY_1.evaluate();
 
-        if (x_0 >= x_1) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
-        }
-        if (y_0 >= y_1) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D"));
-        }
-
         this.graphs3D = new ArrayList<>();
         this.graphs3DAreDefined = new ArrayList<>();
 
