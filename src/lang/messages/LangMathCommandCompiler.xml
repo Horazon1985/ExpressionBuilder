@@ -732,80 +732,80 @@
     <object id = "MCC_VARIABLES_MUST_BE_PAIRWISE_DIFFERENT_IN_PLOTCYLINDRICAL">
         <German>Die Veränderlichen im Befehl 'plotcylindrical' müssen paarweise verschieden sein.</German>
         <English>The variables in command 'plotcylindrical' must be pairwise different.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Змінні у команді 'plotcylindrical' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'plotcylindrical' должны попарно отличаться.</Russian>
     </object>
     <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSPHERICAL_1">
         <German>Die Veränderliche </German>
         <English>The variable </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
     </object>
     <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSPHERICAL_2">
         <German> darf nicht in den Ausdrücken im Befehl 'plotcylindrical' vorkommen.</German>
         <English> is not allowed to occur in the expressions in command 'plotcylindrical'.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> не повинна зустрічатися у виразах команди 'plotcylindrical'.</Ukrainian>
+        <Russian> не должна встречаться в выражениях команды 'plotcylindrical'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCYLINDRICAL_1">
         <German>Der </German>
         <English>The </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> </Ukrainian>
+        <Russian> </Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCYLINDRICAL_2">
         <German>. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter Ausdruck sein.</German>
         <English>. parameter in command 'plotcylindrical' must be a valid constant expression.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючою константою.</Ukrainian>
+        <Russian>. Параматр команды 'plotcylindrical' должен быть действительной констатой.</Russian>
     </object>
     <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_1">
         <German>Der </German>
         <English>The </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> </Ukrainian>
+        <Russian> </Russian>
     </object>
     <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_2">
         <German>. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter nichtnegativer Ausdruck sein.</German>
         <English>. parameter in command 'plotcylindrical' must be a valid constant non-negative expression.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючою невід'ємною константою.</Ukrainian>
+        <Russian>. Параматр команды 'plotcylindrical' должен быть действительной неотрицательной констатой.</Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_1">
         <German>Der </German>
         <English>The </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> </Ukrainian>
+        <Russian> </Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_2">
         <German>. Parameter im Befehl 'plotcylindrical' muss kleiner sein als der </German>
         <English>. parameter in command 'plotcylindrical' must be smaller than the </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. параметр команди 'plotcylindrical' має бути меншим ніж </Ukrainian>
+        <Russian>. Параматр команды 'plotcylindrical' должен быть меньше чем </Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_3">
         <German>. Parameter.</German>
         <English>. parameter.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. параметр.</Ukrainian>
+        <Russian>. параметр.</Russian>
     </object>
     <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_1">
         <German>Die Differenz zwischen dem </German>
         <English>The difference between the </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Різниця між </Ukrainian>
+        <Russian>Разница между </Russian>
     </object>
     <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_2">
         <German>. und dem </German>
         <English>. and the </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. і </Ukrainian>
+        <Russian>. и </Russian>
     </object>
     <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_3">
         <German>. Parameter im Befehl 'plotcylindrical' muss höchstens 20*pi betragen.</German>
         <English>. parameter in command 'plotcylindrical' must be at most 20*pi.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>. параметр команди 'plotcylindrical' не повинен перевищувати 20*pi.</Ukrainian>
+        <Russian>. параметр команды 'plotcylindrical' не должен превышать 20*pi.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
         <German>Zu wenig Parameter im Befehl 'solve'.</German>
