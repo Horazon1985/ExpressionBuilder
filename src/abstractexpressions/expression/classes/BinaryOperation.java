@@ -24,6 +24,27 @@ public class BinaryOperation extends Expression {
     private final Expression left, right;
     private final TypeBinary type;
 
+    private static final HashSet<TypeSimplify> simplifyTypesExpandAndCollectIfShorter = getSimplifyTypesExpandAndCollectIfShorter();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesExpandAndCollectIfShorter() {
+        /*
+         Als Vereinfachungstyp darf NICHT 
+         simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
+         */
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        return simplifyTypes;
+    }
+    
     public BinaryOperation(Expression left, Expression right, TypeBinary type) {
         this.left = left;
         this.right = right;
@@ -1842,25 +1863,8 @@ public class BinaryOperation extends Expression {
         Expression expr = this;
         Expression exprSimplified;
 
-        /*
-         Nun muss man expr vereinfachen, aber als Vereinfachungstyp
-         darf NICHT simplifyExpandAndCollectEquivalentsIfShorter() 
-         verwendet werden.
-         */
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-
         try {
-            // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden (Boolscher Parameter = false).
+            // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
             if (this.isQuotient()) {
                 /* 
                  Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
@@ -1868,10 +1872,10 @@ public class BinaryOperation extends Expression {
                  */
                 exprSimplified = ((BinaryOperation) expr).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
                         ((BinaryOperation) expr).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
-                exprSimplified = exprSimplified.simplify(simplifyTypes);
+                exprSimplified = exprSimplified.simplify(simplifyTypesExpandAndCollectIfShorter);
             } else {
                 exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
-                exprSimplified = exprSimplified.simplify(simplifyTypes);
+                exprSimplified = exprSimplified.simplify(simplifyTypesExpandAndCollectIfShorter);
             }
             if (exprSimplified.length() < expr.length()) {
                 return exprSimplified;

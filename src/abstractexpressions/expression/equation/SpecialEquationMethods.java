@@ -226,7 +226,6 @@ public abstract class SpecialEquationMethods extends SolveMethods {
              Jetzt werden zwei Versuche unternommen: (1) Sinusausdrücke durch Cosinusausdrücke zu ersetzen.
              (2) Cosinusausdrücke durch Sinusausdrücke zu ersetzen. Danach wird jeweils geprüft, ob 
              der so entstandene Ausdruck ein Polynom in einem Cosinus- oder einem Sinusausdruck ist.
-             WICHTIG:
              */
             Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
 

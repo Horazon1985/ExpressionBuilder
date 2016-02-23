@@ -6,6 +6,7 @@ import abstractexpressions.expression.utilities.SimplifyExpLog;
 import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyTrigonometry;
+import enums.TypeSimplify;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import lang.translator.Translator;
@@ -14,6 +15,27 @@ public class Function extends Expression {
 
     private final Expression left;
     private final TypeFunction type;
+
+    private static final HashSet<TypeSimplify> simplifyTypesExpandAndCollectIfShorter = getSimplifyTypesExpandAndCollectIfShorter();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesExpandAndCollectIfShorter() {
+        /*
+         Als Vereinfachungstyp darf NICHT 
+         simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
+         */
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        return simplifyTypes;
+    }
 
     public Function(Expression left, TypeFunction type) {
         this.left = left;
@@ -247,7 +269,7 @@ public class Function extends Expression {
     public void addContainedIndeterminates(HashSet<String> vars) {
         this.left.addContainedIndeterminates(vars);
     }
-    
+
     @Override
     public boolean contains(String var) {
         return this.left.contains(var);
@@ -958,7 +980,7 @@ public class Function extends Expression {
     public Expression simplifyFactorize() throws EvaluationException {
         return new Function(this.getLeft().simplifyFactorize(), this.getType());
     }
-    
+
     @Override
     public Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException {
         return new Function(this.getLeft().simplifyFactorizeAllButRationalsInSums(), this.getType());
@@ -986,7 +1008,28 @@ public class Function extends Expression {
 
     @Override
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
+
+        if (this.type.isTrigonometric()) {
+
+//            try {
+//
+//                Expression expr = this.left;
+//                Expression exprSimplified;
+//
+//                // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
+//
+//
+//
+//                if (exprSimplified.length() < expr.length()) {
+//                    return exprSimplified;
+//                }
+//            } catch (EvaluationException e) {
+//            }
+
+        }
+
         return new Function(this.left.simplifyExpandAndCollectEquivalentsIfShorter(), this.type);
+
     }
 
     @Override

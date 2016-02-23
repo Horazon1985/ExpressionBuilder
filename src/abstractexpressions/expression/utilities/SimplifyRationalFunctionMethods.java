@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
+import enums.TypeExpansion;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -84,8 +85,8 @@ public abstract class SimplifyRationalFunctionMethods {
         }
         if (f.isFunction() && f.contains(var)) {
             Expression argument = ((Function) f).getLeft();
-            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos) && 
-                    (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
+            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)
+                    && (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
                 /*
                  Es werden nur Ausdrücke der Form sin(n*x) oder cos(n*x) vereinfach, wenn
                  |n| <= maximaler Grad eines Polynoms für das Lösen von Polynomgleichungen
@@ -99,6 +100,62 @@ public abstract class SimplifyRationalFunctionMethods {
                     }
                     n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
                     if (Math.abs(n) > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
+                        return f;
+                    }
+                }
+                if (f.isFunction(TypeFunction.sin)) {
+                    return SimplifyTrigonometricalRelations.getSinOfMultipleArgument(var, n);
+                } else if (f.isFunction(TypeFunction.cos)) {
+                    return SimplifyTrigonometricalRelations.getCosOfMultipleArgument(var, n);
+                }
+            }
+        }
+        return f;
+    }
+
+    /**
+     * Ersetzt in einer rationalen Funktion in trigonometrischen Funktionen
+     * Ausdrücke cos(n*x) und sin(m*x) durch die Ausdrücke sin(x) und cos(x).
+     * VORAUSSETZUNG: f ist eine rationale Funktion in trigonometrischen
+     * Funktionen (in der Variablen var). Ferner muss m und n im Integerbereich
+     * liegen.
+     */
+    public static Expression expandRationalFunctionInTrigonometricalFunctions(Expression f, String var, TypeExpansion type) {
+        if (f instanceof BinaryOperation) {
+            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var), expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
+        }
+        if (f.isFunction() && f.contains(var)) {
+            Expression argument = ((Function) f).getLeft();
+            if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)
+                    && (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
+                /*
+                 Es werden nur Ausdrücke der Form sin(n*x) oder cos(n*x) vereinfach, wenn
+                 |n| <= maximaler Grad eines Polynoms für das Lösen von Polynomgleichungen
+                 gilt. GRUND: sin(n*x) und cos(n*x) werden zu Polynomen vom Grad n in
+                 sin(x) und cos(x).
+                 */
+                int n = 1;
+                if (argument.isProduct()) {
+                    if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+                        return f;
+                    }
+
+                    // Je nach Modus wird nur bis zu einer bestimmten Potenz entwickelt.
+                    int bound = 0;
+                    switch (type) {
+                        case SHORT:
+                            bound = bound = ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION;
+                            break;
+                        case MODERATE:
+                            bound = bound = ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_MODERATE_EXPANSION;
+                            break;
+                        case POWERFUL:
+                            bound = bound = ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION;
+                            break;
+                    }
+
+                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
+                    if (Math.abs(n) > bound) {
                         return f;
                     }
                 }
