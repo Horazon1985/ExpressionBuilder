@@ -58,12 +58,43 @@ public abstract class SimplifyTrigonometricalRelations {
             }
             if (i == 1) {
                 result = new Constant(n).mult(sinOfArgument.mult(cosOfArgument.pow(n - 1)));
+            } else if (i % 4 == 1) {
+                result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
             } else {
-                if (i % 4 == 1) {
-                    result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                } else {
-                    result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                }
+                result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
+            }
+        }
+
+        return result;
+
+    }
+
+    /**
+     * Sei x = var. Diese Methode gibt sin(n*x) zurück.
+     */
+    public static Expression getSinOfMultipleArgument(Expression argument, int n) {
+
+        if (n == 0) {
+            return Expression.ZERO;
+        } else if (n < 0) {
+            return Expression.MINUS_ONE.mult(getSinOfMultipleArgument(argument, -n));
+        }
+
+        // Ab hier ist n > 0.
+        Expression sinOfArgument = argument.sin();
+        Expression cosOfArgument = argument.cos();
+        Expression result = Expression.ZERO;
+
+        for (int i = 1; i <= n; i++) {
+            if (i % 2 == 0) {
+                continue;
+            }
+            if (i == 1) {
+                result = new Constant(n).mult(sinOfArgument.mult(cosOfArgument.pow(n - 1)));
+            } else if (i % 4 == 1) {
+                result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
+            } else {
+                result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
             }
         }
 
@@ -93,12 +124,43 @@ public abstract class SimplifyTrigonometricalRelations {
             }
             if (i == 0) {
                 result = cosOfArgument.pow(n);
+            } else if (i % 4 == 0) {
+                result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
             } else {
-                if (i % 4 == 0) {
-                    result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                } else {
-                    result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
-                }
+                result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
+            }
+        }
+
+        return result;
+
+    }
+
+    /**
+     * Sei x = var. Diese Methode gibt cos(n*x) zurück.
+     */
+    public static Expression getCosOfMultipleArgument(Expression argument, int n) {
+
+        if (n == 0) {
+            return Expression.ONE;
+        } else if (n < 0) {
+            return getCosOfMultipleArgument(argument, -n);
+        }
+
+        // Ab hier ist n > 0.
+        Expression sinOfArgument = argument.sin();
+        Expression cosOfArgument = argument.cos();
+        Expression result = Expression.ZERO;
+
+        for (int i = 0; i <= n; i++) {
+            if (i % 2 == 1) {
+                continue;
+            }
+            if (i == 0) {
+                result = cosOfArgument.pow(n);
+            } else if (i % 4 == 0) {
+                result = result.add(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
+            } else {
+                result = result.sub(new Constant(binCoefficient(n, i)).mult(sinOfArgument.pow(i).mult(cosOfArgument.pow(n - i))));
             }
         }
 
@@ -111,7 +173,7 @@ public abstract class SimplifyTrigonometricalRelations {
      * ist c von x unabhängig, so wird sin(f(x))*cos(x) + cos(f(x))*sin(c)
      * zurückgegeben.
      */
-    public static Expression simplifyAdditionTheoremForSinus(Expression sinArgument, String var) {
+    public static Expression simplifyAdditionTheoremForSine(Expression sinArgument, String var) {
 
         ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(sinArgument, var);
         ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(sinArgument, var);
@@ -130,11 +192,27 @@ public abstract class SimplifyTrigonometricalRelations {
     }
 
     /**
+     * Additionstheorem für den Sinus: sinArgument = a +- b, so wird
+     * sin(a)*cos(b) +- cos(a)*sin(b) zurückgegeben.
+     */
+    public static Expression simplifyAdditionTheoremForSine(Expression sinArgument) {
+        if (sinArgument.isSum() || sinArgument.isDifference()) {
+            Expression leftSummand = ((BinaryOperation) sinArgument).getLeft();
+            Expression rightSummand = ((BinaryOperation) sinArgument).getRight();
+            if (sinArgument.isSum()) {
+                return leftSummand.sin().mult(rightSummand.cos()).add(leftSummand.cos().mult(rightSummand.sin()));
+            }
+            return leftSummand.sin().mult(rightSummand.cos()).sub(leftSummand.cos().mult(rightSummand.sin()));
+        }
+        return sinArgument.sin();
+    }
+
+    /**
      * Additionstheorem für den Kosinus: ist x = var, cosArgument = f(x) + c und
      * ist c von x unabhängig, so wird cos(f(x))*cos(x) + sin(f(x))*sin(c)
      * zurückgegeben.
      */
-    public static Expression simplifyAdditionTheoremForCosinus(Expression cosArgument, String var) {
+    public static Expression simplifyAdditionTheoremForCosine(Expression cosArgument, String var) {
 
         ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(cosArgument, var);
         ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(cosArgument, var);
@@ -153,7 +231,23 @@ public abstract class SimplifyTrigonometricalRelations {
     }
 
     /**
-     * Gibt einen Ausdruck zurück, indem in trigonometrische Funktionen bzgl.
+     * Additionstheorem für den Sinus: sinArgument = a +- b, so wird
+     * cos(a)*cos(b) -+ sin(a)*sin(b) zurückgegeben.
+     */
+    public static Expression simplifyAdditionTheoremForCosine(Expression sinArgument) {
+        if (sinArgument.isSum() || sinArgument.isDifference()) {
+            Expression leftSummand = ((BinaryOperation) sinArgument).getLeft();
+            Expression rightSummand = ((BinaryOperation) sinArgument).getRight();
+            if (sinArgument.isSum()) {
+                return leftSummand.cos().mult(rightSummand.cos()).sub(leftSummand.sin().mult(rightSummand.sin()));
+            }
+            return leftSummand.cos().mult(rightSummand.cos()).add(leftSummand.sin().mult(rightSummand.sin()));
+        }
+        return sinArgument.cos();
+    }
+
+    /**
+     * Gibt einen Ausdruck zurück, indem in trigonometrischen Funktionen bzgl.
      * var der von var abhängige Teil von dem von var unabhängigen Teil getrennt
      * wurde.<br>
      * BEISPIEL: Für f = 5+sin(2*x+7) wird 5 + sin(2*x)*cos(7)+cos(2*x)*sin(7)
@@ -164,7 +258,8 @@ public abstract class SimplifyTrigonometricalRelations {
             return f;
         }
         if (f instanceof BinaryOperation) {
-            return new BinaryOperation(separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getLeft(), var), separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
+            return new BinaryOperation(separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getLeft(), var),
+                    separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
         }
         if (f instanceof Function && f.contains(var)) {
             if (!((Function) f).getType().equals(TypeFunction.cos) && !((Function) f).getType().equals(TypeFunction.sin)) {
@@ -172,9 +267,37 @@ public abstract class SimplifyTrigonometricalRelations {
             }
             Expression argumentOfTrigonometricalFunction = ((Function) f).getLeft();
             if (((Function) f).getType().equals(TypeFunction.cos)) {
-                return simplifyAdditionTheoremForCosinus(argumentOfTrigonometricalFunction, var);
+                return simplifyAdditionTheoremForCosine(argumentOfTrigonometricalFunction, var);
             } else {
-                return simplifyAdditionTheoremForSinus(argumentOfTrigonometricalFunction, var);
+                return simplifyAdditionTheoremForSine(argumentOfTrigonometricalFunction, var);
+            }
+        }
+        return f;
+    }
+
+    /**
+     * Gibt einen Ausdruck zurück, indem in trigonometrischen Funktionen die
+     * Additionstheoreme angewendet wurden.<br>
+     * BEISPIEL: Für f = 5+sin(2*x+7) wird 5 + sin(2*x)*cos(7)+cos(2*x)*sin(7)
+     * zurückgegeben.
+     */
+    public static Expression separateConstantPartsInRationalTrigonometricalEquations(Expression f) {
+        if (f instanceof Constant || f instanceof Variable) {
+            return f;
+        }
+        if (f instanceof BinaryOperation) {
+            return new BinaryOperation(separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getLeft()),
+                    separateConstantPartsInRationalTrigonometricalEquations(((BinaryOperation) f).getRight()), ((BinaryOperation) f).getType());
+        }
+        if (f instanceof Function) {
+            if (!((Function) f).getType().equals(TypeFunction.cos) && !((Function) f).getType().equals(TypeFunction.sin)) {
+                return new Function(separateConstantPartsInRationalTrigonometricalEquations(((Function) f).getLeft()), ((Function) f).getType());
+            }
+            Expression argumentOfTrigonometricalFunction = ((Function) f).getLeft();
+            if (((Function) f).getType().equals(TypeFunction.cos)) {
+                return simplifyAdditionTheoremForCosine(argumentOfTrigonometricalFunction);
+            } else {
+                return simplifyAdditionTheoremForSine(argumentOfTrigonometricalFunction);
             }
         }
         return f;

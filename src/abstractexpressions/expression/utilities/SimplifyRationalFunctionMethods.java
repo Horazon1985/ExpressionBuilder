@@ -120,14 +120,15 @@ public abstract class SimplifyRationalFunctionMethods {
      * Funktionen (in der Variablen var). Ferner muss m und n im Integerbereich
      * liegen.
      */
-    public static Expression expandRationalFunctionInTrigonometricalFunctions(Expression f, String var, TypeExpansion type) {
+    public static Expression expandRationalFunctionInTrigonometricalFunctions(Expression f, TypeExpansion type) {
         if (f instanceof BinaryOperation) {
-            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var), expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), var), ((BinaryOperation) f).getType());
+            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), type), 
+                    expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), type), ((BinaryOperation) f).getType());
         }
-        if (f.isFunction() && f.contains(var)) {
+        if (f.isFunction()) {
             Expression argument = ((Function) f).getLeft();
             if (f.isFunction(TypeFunction.sin) || f.isFunction(TypeFunction.cos)
-                    && (argument.equals(Variable.create(var)) || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight().equals(Variable.create(var)))) {
+                    && (argument instanceof Variable || argument.isProduct() && ((BinaryOperation) argument).getLeft().isIntegerConstant() && ((BinaryOperation) argument).getRight() instanceof Variable)) {
                 /*
                  Es werden nur Ausdrücke der Form sin(n*x) oder cos(n*x) vereinfach, wenn
                  |n| <= maximaler Grad eines Polynoms für das Lösen von Polynomgleichungen
@@ -135,6 +136,7 @@ public abstract class SimplifyRationalFunctionMethods {
                  sin(x) und cos(x).
                  */
                 int n = 1;
+                Expression variable = argument;
                 if (argument.isProduct()) {
                     if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                         return f;
@@ -155,14 +157,15 @@ public abstract class SimplifyRationalFunctionMethods {
                     }
 
                     n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
+                    variable = ((BinaryOperation) argument).getRight();
                     if (Math.abs(n) > bound) {
                         return f;
                     }
                 }
                 if (f.isFunction(TypeFunction.sin)) {
-                    return SimplifyTrigonometricalRelations.getSinOfMultipleArgument(var, n);
+                    return SimplifyTrigonometricalRelations.getSinOfMultipleArgument(variable, n);
                 } else if (f.isFunction(TypeFunction.cos)) {
-                    return SimplifyTrigonometricalRelations.getCosOfMultipleArgument(var, n);
+                    return SimplifyTrigonometricalRelations.getCosOfMultipleArgument(variable, n);
                 }
             }
         }
