@@ -21,9 +21,6 @@ public class ExpressionCollectionTest {
 
     Expression f, g, h;
 
-    public ExpressionCollectionTest() {
-    }
-
     @BeforeClass
     public static void setUpClass() {
     }

@@ -54,14 +54,14 @@ public class GeneralSimplifyExpressionTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void computeFractionsTest2() {
         // Subtraktion und Multiplikation von Brüchen: 2-7/2+3*5/7 = 9/14
         try {
             Expression f = Expression.build("2-7/2+3*5/7", null);
             Expression g = new Constant(9).div(14);
-            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products, 
+            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products,
                     TypeSimplify.order_difference_and_division, TypeSimplify.simplify_trivial);
             Assert.assertTrue(fSimplified.equals(g));
             fSimplified = f.simplify();
@@ -70,7 +70,7 @@ public class GeneralSimplifyExpressionTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void orderSumsAndProductsTest() {
         // Ordnen von Summen und Produkten.
@@ -304,7 +304,7 @@ public class GeneralSimplifyExpressionTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void factorizeAllButRationalsInDifferencesTest2() {
         // (a*b)/3-(b*a)/7 = (1/3-1/7)*(a*b) 
@@ -330,7 +330,7 @@ public class GeneralSimplifyExpressionTest {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void factorizeAllButRationalsInDifferencesTest4() {
         // 5^(1/2)*a+5^(1/2)*b wird nicht faktorisiert.

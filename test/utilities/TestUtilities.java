@@ -12,7 +12,7 @@ public class TestUtilities {
         System.out.println("Test: " + callerMethodName);
         System.out.println("Erwartetes Ergebnis: " + expected.toString());
         System.out.println("Ergebnis: " + result.toString());
-        System.out.println("--------------Testende----------------");
+        System.out.println("--------------Testende------------------");
     }
     
 }
