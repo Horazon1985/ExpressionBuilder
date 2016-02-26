@@ -820,7 +820,7 @@ public class BinaryOperation extends Expression {
              auftauchen, in denen die Summanden alle negatives Vorzeichen besitzen: 
              -1 ausklammern!
              */
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(expr);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
             SimplifyBinaryOperationMethods.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factorsEnumerator, factorsDenominator);
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
@@ -1073,7 +1073,7 @@ public class BinaryOperation extends Expression {
             termsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
             termsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         } else {
-            termsLeft = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+            termsLeft = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
             termsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
         }
 
@@ -1118,7 +1118,7 @@ public class BinaryOperation extends Expression {
              etwa (5*a + 7*b)/(15*a + 21*b) = 1/3, (x - 3*y)/(12*y - 4*x) =
              -1/4 etc.
              */
-            SimplifyBinaryOperationMethods.reduceFactorsInEnumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
+            SimplifyBinaryOperationMethods.reduceFactorsInNumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
 
             /*
              Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad)
@@ -1486,7 +1486,7 @@ public class BinaryOperation extends Expression {
             return new BinaryOperation(this.left.simplifyReduceQuotients(), this.right.simplifyReduceQuotients(), this.type);
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
 
         // In jedem Faktor einzeln kürzen
@@ -1745,7 +1745,7 @@ public class BinaryOperation extends Expression {
             }
             expr = (BinaryOperation) simplifiedQuotient;
 
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(expr);
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(expr);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
 
             //Potenzen von rationalen Zahlen sammeln
@@ -1753,7 +1753,7 @@ public class BinaryOperation extends Expression {
             //Exponentialfunktionen sammeln
             SimplifyExpLog.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             //Bringt allgemeine nichtkonstante Exponentialfunktionen aus dem Nenner in den Zähler
-            SimplifyExpLog.bringNonConstantExponentialFunctionsToEnumerator(factorsEnumerator, factorsDenominator);
+            SimplifyExpLog.bringNonConstantExponentialFunctionsToNumerator(factorsEnumerator, factorsDenominator);
             //Logarithmen zur Basis 10 zu rationalen Zahlen kürzen
             SimplifyExpLog.simplifyQuotientsOfLogarithms(factorsEnumerator, factorsDenominator, TypeFunction.lg);
             //Logarithmen zur Basis e zu rationalen Zahlen kürzen
@@ -1978,7 +1978,7 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isProduct() || this.isQuotient()) {
 
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
             // In jedem Faktor einzeln Logarithmen auseinanderziehen.
             for (int i = 0; i < factorsEnumerator.getBound(); i++) {

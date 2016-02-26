@@ -67,7 +67,7 @@ public abstract class SimplifyOperatorMethods {
      */
     public static Expression takeConstantsOutOfSums(BinaryOperation summand, String var, Expression lowerLimit, Expression upperLimit) {
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(summand);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
         ExpressionCollection resultFactorsInEnumeratorOutsideOfSum = new ExpressionCollection();
         ExpressionCollection resultFactorsInDenominatorOutsideOfSum = new ExpressionCollection();
@@ -181,7 +181,7 @@ public abstract class SimplifyOperatorMethods {
             return new Operator(TypeOperator.prod, params);
         }
 
-        ExpressionCollection exponentFactorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(factor.getRight());
+        ExpressionCollection exponentFactorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(factor.getRight());
         ExpressionCollection exponentFactorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(factor.getRight());
         Expression exponentEnumeratorOutsideOfProduct = Expression.ONE;
         Expression exponentDenominatorOutsideOfProduct = Expression.ONE;

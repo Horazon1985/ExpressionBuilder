@@ -233,7 +233,7 @@ public abstract class SimplifyPolynomialMethods {
             if (!summand.contains(var)) {
                 coefficients.put(0, coefficients.get(0).add(summand));
             }
-            factorsNumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+            factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(summand);
             factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
             for (int j = 0; j < factorsNumerator.getBound(); j++) {
                 // Zunächst lineare Koeffizienten separat sammeln:
@@ -254,7 +254,7 @@ public abstract class SimplifyPolynomialMethods {
             if (!summand.contains(var)) {
                 coefficients.put(0, coefficients.get(0).sub(summand));
             }
-            factorsNumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summand);
+            factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(summand);
             factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summand);
             for (int j = 0; j < factorsNumerator.getBound(); j++) {
                 // Zunächst lineare Koeffizienten separat sammeln:

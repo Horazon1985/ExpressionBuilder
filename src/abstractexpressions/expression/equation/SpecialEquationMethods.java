@@ -87,7 +87,7 @@ public abstract class SpecialEquationMethods extends SolveMethods {
             return zeros;
         }
 
-        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger gcdOfNumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
         Iterator<Expression> iter = argumentsInExp.iterator();
@@ -100,9 +100,9 @@ public abstract class SpecialEquationMethods extends SolveMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
                             ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
@@ -111,7 +111,7 @@ public abstract class SpecialEquationMethods extends SolveMethods {
         }
 
         // Das ist die eigentliche Substitution.
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).exp().simplify();
+        Expression substitution = new Constant(gcdOfNumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).exp().simplify();
 
         try {
 
@@ -170,7 +170,7 @@ public abstract class SpecialEquationMethods extends SolveMethods {
             return zeros;
         }
 
-        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger gcdOfNumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
         Iterator<Expression> iter = argumentsInTrigonometricFunctions.iterator();
@@ -183,9 +183,9 @@ public abstract class SpecialEquationMethods extends SolveMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
                             ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
@@ -198,7 +198,7 @@ public abstract class SpecialEquationMethods extends SolveMethods {
          Dann substitution = 2*a*x/7. Die substitutierte Gleichung lautet demnach: 
          f = sin(2*X_1) + 4*cos(3*X_1). X_1 ist dabei der Ausdruck substitution.
          */
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfNumerators).mult(firstFactorOfArgument).div(lcmOfDenominators).simplify();
 
         try {
 

@@ -82,7 +82,7 @@ public abstract class SolveMethods {
      */
     protected static ExpressionCollection solveGeneralEquation(Expression f, Expression g, String var) throws EvaluationException {
 
-        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
+//        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
 
         if (solveTries <= 0) {
             return new ExpressionCollection();
@@ -1336,13 +1336,13 @@ public abstract class SolveMethods {
         ExpressionCollection factorsF, factorsG;
 
         if (f.isQuotient()) {
-            factorsF = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((BinaryOperation) f).getLeft());
+            factorsF = SimplifyUtilities.getFactorsOfNumeratorInExpression(((BinaryOperation) f).getLeft());
         } else {
             factorsF = SimplifyUtilities.getFactors(f);
         }
 
         if (g.isQuotient()) {
-            factorsG = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((BinaryOperation) g).getLeft());
+            factorsG = SimplifyUtilities.getFactorsOfNumeratorInExpression(((BinaryOperation) g).getLeft());
         } else {
             factorsG = SimplifyUtilities.getFactors(g);
         }
@@ -1454,7 +1454,7 @@ public abstract class SolveMethods {
      */
     protected static ExpressionCollection solveZeroEquation(Expression f, String var) throws EvaluationException {
 
-        System.out.println(solveTries + ": Löse Nullgl. " + f.writeExpression() + " = 0");
+//        System.out.println(solveTries + ": Löse Nullgl. " + f.writeExpression() + " = 0");
 
         if (solveTries <= 0) {
             return new ExpressionCollection();

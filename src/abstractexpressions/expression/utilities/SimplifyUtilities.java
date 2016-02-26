@@ -490,7 +490,7 @@ public abstract class SimplifyUtilities {
      * BEISPIEL: (a*b^2*exp(x))/(u*v) liefert die Faktoren {a, b^2, exp(x)} (als
      * ExpressionCollection, nummeriert via 0, 1, 2).
      */
-    public static ExpressionCollection getFactorsOfEnumeratorInExpression(Expression expr) {
+    public static ExpressionCollection getFactorsOfNumeratorInExpression(Expression expr) {
         if (expr.isQuotient()) {
             return getFactors(((BinaryOperation) expr).getLeft());
         }
@@ -522,9 +522,9 @@ public abstract class SimplifyUtilities {
      * BEISPIEL: expr = (sin(1)*a*x^3*b^2*exp(x))/(5*u*v) liefert die Faktoren
      * {sin(1)} (als ExpressionCollection, nummeriert via 0).
      */
-    public static ExpressionCollection getConstantFactorsOfEnumeratorInExpression(Expression expr) {
+    public static ExpressionCollection getConstantFactorsOfNumeratorInExpression(Expression expr) {
 
-        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection factors = getFactorsOfNumeratorInExpression(expr);
         ExpressionCollection constantFactors = new ExpressionCollection();
 
         for (int i = 0; i < factors.getBound(); i++) {
@@ -546,9 +546,9 @@ public abstract class SimplifyUtilities {
      * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die
      * Faktoren {x^3, exp(x)} (als ExpressionCollection, nummeriert via 0, 1).
      */
-    public static ExpressionCollection getConstantFactorsOfEnumeratorInExpression(Expression expr, String var) {
+    public static ExpressionCollection getConstantFactorsOfNumeratorInExpression(Expression expr, String var) {
 
-        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection factors = getFactorsOfNumeratorInExpression(expr);
         ExpressionCollection constantFactors = new ExpressionCollection();
 
         for (int i = 0; i < factors.getBound(); i++) {
@@ -570,9 +570,9 @@ public abstract class SimplifyUtilities {
      * BEISPIEL: expr = (7*a*x^3*b^2*sin(1))/(6*u*v) liefert die Faktoren {a,
      * x^3, b^2} (als ExpressionCollection, nummeriert via 0, 1, 2).
      */
-    public static ExpressionCollection getNonConstantFactorsOfEnumeratorInExpression(Expression expr) {
+    public static ExpressionCollection getNonConstantFactorsOfNumeratorInExpression(Expression expr) {
 
-        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection factors = getFactorsOfNumeratorInExpression(expr);
         ExpressionCollection nonConstantFactors = new ExpressionCollection();
 
         for (int i = 0; i < factors.getBound(); i++) {
@@ -594,9 +594,9 @@ public abstract class SimplifyUtilities {
      * BEISPIEL: expr = (a*x^3*b^2*exp(x))/(u*v) und var = "x" liefert die
      * Faktoren {x^3, exp(x)} (als ExpressionCollection, nummeriert via 0, 1).
      */
-    public static ExpressionCollection getNonConstantFactorsOfEnumeratorInExpression(Expression expr, String var) {
+    public static ExpressionCollection getNonConstantFactorsOfNumeratorInExpression(Expression expr, String var) {
 
-        ExpressionCollection factors = getFactorsOfEnumeratorInExpression(expr);
+        ExpressionCollection factors = getFactorsOfNumeratorInExpression(expr);
         ExpressionCollection nonConstantFactors = new ExpressionCollection();
 
         for (int i = 0; i < factors.getBound(); i++) {

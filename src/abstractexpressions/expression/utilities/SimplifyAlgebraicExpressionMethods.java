@@ -138,7 +138,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         int q = n.intValue();
 
         BigInteger divisor;
-        BigInteger factorOutsideInEnumerator = BigInteger.ONE;
+        BigInteger factorOutsideInNumerator = BigInteger.ONE;
         BigInteger factorOutsideInDenominator = BigInteger.ONE;
 
         // Im Zähler faktorisieren.
@@ -153,7 +153,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
                 divisor = setOfDivisors.get(i);
                 if (divisor.compareTo(BigInteger.ONE) > 0 && a.mod(divisor.pow(q)).compareTo(BigInteger.ZERO) == 0) {
-                    factorOutsideInEnumerator = factorOutsideInEnumerator.multiply(divisor.pow(p));
+                    factorOutsideInNumerator = factorOutsideInNumerator.multiply(divisor.pow(p));
                     a = a.divide(divisor.pow(q));
                     // Derselbe Teiler darf noch einmal probiert werden!
                     i--;
@@ -171,7 +171,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
                 divisor = BigInteger.valueOf(i);
                 if (divisor.compareTo(BigInteger.ONE) > 0 && a.mod(divisor.pow(q)).compareTo(BigInteger.ZERO) == 0) {
-                    factorOutsideInEnumerator = factorOutsideInEnumerator.multiply(divisor.pow(p));
+                    factorOutsideInNumerator = factorOutsideInNumerator.multiply(divisor.pow(p));
                     a = a.divide(divisor.pow(q));
                     // Derselbe Teiler darf noch einmal probiert werden!
                     i--;
@@ -224,14 +224,14 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         }
 
-        if (factorOutsideInEnumerator.compareTo(BigInteger.ONE) == 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) == 0) {
+        if (factorOutsideInNumerator.compareTo(BigInteger.ONE) == 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) == 0) {
             return expr;
-        } else if (factorOutsideInEnumerator.compareTo(BigInteger.ONE) > 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) == 0) {
-            return new Constant(factorOutsideInEnumerator).mult((new Constant(a).div(b)).pow(expr.getRight()));
-        } else if (factorOutsideInEnumerator.compareTo(BigInteger.ONE) == 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) > 0) {
+        } else if (factorOutsideInNumerator.compareTo(BigInteger.ONE) > 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) == 0) {
+            return new Constant(factorOutsideInNumerator).mult((new Constant(a).div(b)).pow(expr.getRight()));
+        } else if (factorOutsideInNumerator.compareTo(BigInteger.ONE) == 0 && factorOutsideInDenominator.compareTo(BigInteger.ONE) > 0) {
             return new Constant(a).div(b).pow(expr.getRight()).div(factorOutsideInDenominator);
         } else {
-            return new Constant(factorOutsideInEnumerator).mult((new Constant(a).div(b)).pow(expr.getRight())).div(factorOutsideInDenominator);
+            return new Constant(factorOutsideInNumerator).mult((new Constant(a).div(b)).pow(expr.getRight())).div(factorOutsideInDenominator);
         }
 
     }
@@ -679,19 +679,19 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(expr.getRight());
         /*
-         additionalFactorsInEnumerator stellt ZUSÄTZLICHE Faktoren im Zähler
+         additionalFactorsInNumerator stellt ZUSÄTZLICHE Faktoren im Zähler
          dar, die durch Rationalisierung des Nenners hinzugekommen sind.
          */
-        ExpressionCollection additionalFactorsInEnumerator = new ExpressionCollection();
+        ExpressionCollection additionalFactorsInNumerator = new ExpressionCollection();
 
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
             if (factorsDenominator.get(i) instanceof BinaryOperation && isSuitableCandidateForMakingDenominatorRational((BinaryOperation) factorsDenominator.get(i))) {
 
                 if (factorsDenominator.get(i).isSum()) {
-                    additionalFactorsInEnumerator.add(((BinaryOperation) factorsDenominator.get(i)).getLeft().sub(((BinaryOperation) factorsDenominator.get(i)).getRight()));
+                    additionalFactorsInNumerator.add(((BinaryOperation) factorsDenominator.get(i)).getLeft().sub(((BinaryOperation) factorsDenominator.get(i)).getRight()));
                     factorsDenominator.put(i, ((BinaryOperation) factorsDenominator.get(i)).getLeft().pow(2).sub(((BinaryOperation) factorsDenominator.get(i)).getRight().pow(2)));
                 } else if (factorsDenominator.get(i).isDifference()) {
-                    additionalFactorsInEnumerator.add(((BinaryOperation) factorsDenominator.get(i)).getLeft().add(((BinaryOperation) factorsDenominator.get(i)).getRight()));
+                    additionalFactorsInNumerator.add(((BinaryOperation) factorsDenominator.get(i)).getLeft().add(((BinaryOperation) factorsDenominator.get(i)).getRight()));
                     factorsDenominator.put(i, ((BinaryOperation) factorsDenominator.get(i)).getLeft().pow(2).sub(((BinaryOperation) factorsDenominator.get(i)).getRight().pow(2)));
                 }
 
@@ -699,7 +699,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         // Ergebnis bilden.
-        if (additionalFactorsInEnumerator.isEmpty()) {
+        if (additionalFactorsInNumerator.isEmpty()) {
             // Dann konnte im Nenner nichts rationalisiert werden.
             return expr;
         }
@@ -707,9 +707,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
          Der gesamte Zähler muss als Faktor im neuen Zähler ebenfalls
          aufgenommen werden.
          */
-        additionalFactorsInEnumerator.add(expr.getLeft());
+        additionalFactorsInNumerator.add(expr.getLeft());
 
-        return SimplifyUtilities.produceProduct(additionalFactorsInEnumerator).div(SimplifyUtilities.produceProduct(factorsDenominator));
+        return SimplifyUtilities.produceProduct(additionalFactorsInNumerator).div(SimplifyUtilities.produceProduct(factorsDenominator));
 
     }
 

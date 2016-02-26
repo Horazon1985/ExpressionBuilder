@@ -62,9 +62,9 @@ public abstract class RischAlgorithmMethods {
                 return constantSummandsLeft.isEmpty() && constantSummandsRight.isEmpty();
             }
             if (fieldExtension.isFunction(TypeFunction.ln)) {
-                ExpressionCollection constantFactorsEnumerator = SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(fieldExtension, var);
+                ExpressionCollection constantFactorsNumerator = SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(fieldExtension, var);
                 ExpressionCollection constantFactorsDenominator = SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(fieldExtension, var);
-                return constantFactorsEnumerator.isEmpty() && constantFactorsDenominator.isEmpty();
+                return constantFactorsNumerator.isEmpty() && constantFactorsDenominator.isEmpty();
             }
             if (!fieldExtension.isFunction(TypeFunction.exp) && !fieldExtension.isFunction(TypeFunction.ln)) {
                 return false;
@@ -274,12 +274,12 @@ public abstract class RischAlgorithmMethods {
                              */
                             BigInteger a = BigInteger.ONE;
                             BigInteger b = BigInteger.ONE;
-                            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(nonConstantSummand);
+                            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(nonConstantSummand);
                             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
 
-                            if (factorsEnumerator.get(0).isIntegerConstant()) {
-                                a = ((Constant) factorsEnumerator.get(0)).getValue().toBigInteger().abs();
-                                factorsEnumerator.remove(0);
+                            if (factorsNumerator.get(0).isIntegerConstant()) {
+                                a = ((Constant) factorsNumerator.get(0)).getValue().toBigInteger().abs();
+                                factorsNumerator.remove(0);
                             }
                             if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()) {
                                 b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
@@ -299,9 +299,9 @@ public abstract class RischAlgorithmMethods {
 
                             a = a.gcd(c);
                             b = ArithmeticMethods.lcm(b, d);
-                            factorsEnumerator.add(new Constant(a));
+                            factorsNumerator.add(new Constant(a));
                             factorsDenominator.add(new Constant(b));
-                            Expression expArgument = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+                            Expression expArgument = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
 
                             fieldGenerators.put(i, expArgument.exp().simplify());
                             return true;

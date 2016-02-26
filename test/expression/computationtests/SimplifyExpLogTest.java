@@ -47,7 +47,7 @@ public class SimplifyExpLogTest {
         try{
             Expression f = Expression.build("(a*exp(x)*b*exp(y^2))/(c*exp(z)*d)", new HashSet<String>());
             Expression g = Expression.build("(a*exp(x+y^2-z)*b)/(c*d)", new HashSet<String>());
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
             SimplifyExpLog.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferencesAndQuotients();

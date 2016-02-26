@@ -66,7 +66,7 @@ public class SimplifyUtilitiesTest {
 
     @Test
     public void getFactorsOfEnumeratorOfFTest() {
-        ExpressionCollection factors = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+        ExpressionCollection factors = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         assertTrue(factors.getBound() == 2);
     }
 
@@ -78,7 +78,7 @@ public class SimplifyUtilitiesTest {
 
     @Test
     public void getFactorsOfEnumeratorOfGTest() {
-        ExpressionCollection factors = SimplifyUtilities.getFactorsOfEnumeratorInExpression(g);
+        ExpressionCollection factors = SimplifyUtilities.getFactorsOfNumeratorInExpression(g);
         assertTrue(factors.getBound() == 2);
     }
 
@@ -90,7 +90,7 @@ public class SimplifyUtilitiesTest {
 
     @Test
     public void getNonConstantFactorsOfEnumeratorOfExprTest() {
-        ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(exprWithMultipleVariables, "x");
+        ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfNumeratorInExpression(exprWithMultipleVariables, "x");
         assertTrue(factors.getBound() == 2);
     }
 

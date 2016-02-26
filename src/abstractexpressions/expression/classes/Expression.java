@@ -827,7 +827,7 @@ public abstract class Expression implements AbstractExpression {
      * Negiert den Ausdruck expr.
      */
     public Expression negate() {
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(this);
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
         for (int i = 0; i < factorsEnumerator.getBound(); i++) {
             if (factorsEnumerator.get(i) instanceof Constant) {

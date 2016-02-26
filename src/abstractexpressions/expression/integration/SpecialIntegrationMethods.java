@@ -104,12 +104,12 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degreeEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degreeDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+        BigInteger degNnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
         // Nur bei Graden <= gewisse Schranke fortfahren.
-        if (degreeEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
-                || degreeDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+        if (degNnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+                || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -151,15 +151,15 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
         BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
-        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+        if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
         BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
 
@@ -169,11 +169,11 @@ public abstract class SpecialIntegrationMethods {
 
         int n = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().intValue();
 
-        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
+        if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 
-        // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
+        // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
         Expression denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, var);
 
         // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
@@ -182,17 +182,17 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
-        if (coefficientsEnumerator.getBound() < 2) {
-            for (int i = coefficientsEnumerator.getBound(); i < 2; i++) {
-                coefficientsEnumerator.put(i, Expression.ZERO);
+        if (coefficientsNumerator.getBound() < 2) {
+            for (int i = coefficientsNumerator.getBound(); i < 2; i++) {
+                coefficientsNumerator.put(i, Expression.ZERO);
             }
         }
 
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
         Expression c = coefficientsDenominator.get(0);
-        Expression d = coefficientsEnumerator.get(1);
-        Expression e = coefficientsEnumerator.get(0);
+        Expression d = coefficientsNumerator.get(1);
+        Expression e = coefficientsNumerator.get(0);
 
         /*
          Falls der Nenner reduzibel ist -> Falsche Methode (es muss auf
@@ -244,31 +244,31 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
         BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
-        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+        if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
-        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
+        if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 
-        // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
+        // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
         // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
             throw new NotPreciseIntegrableException();
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
-        if (coefficientsEnumerator.getBound() < 2) {
-            for (int i = coefficientsEnumerator.getBound(); i < 2; i++) {
-                coefficientsEnumerator.put(i, Expression.ZERO);
+        if (coefficientsNumerator.getBound() < 2) {
+            for (int i = coefficientsNumerator.getBound(); i < 2; i++) {
+                coefficientsNumerator.put(i, Expression.ZERO);
             }
         }
 
@@ -291,8 +291,8 @@ public abstract class SpecialIntegrationMethods {
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
         Expression c = coefficientsDenominator.get(0);
-        Expression d = coefficientsEnumerator.get(1);
-        Expression e = coefficientsEnumerator.get(0);
+        Expression d = coefficientsNumerator.get(1);
+        Expression e = coefficientsNumerator.get(0);
 
         Expression p = d.div(TWO.mult(a)).simplify();
         Expression q = e.div(a).sub(d.mult(b).div(TWO.mult(a.pow(2)))).simplify();
@@ -324,25 +324,25 @@ public abstract class SpecialIntegrationMethods {
         ExpressionCollection summands = SimplifyUtilities.getSummandsLeftInExpression(f);
         summands.add(SimplifyUtilities.getSummandsRightInExpression(f));
 
-        ExpressionCollection factorsEnumerator, factorsDenominator;
+        ExpressionCollection factorsNumerator, factorsDenominator;
         int numberOfExpFactors, numberOfTrigonometricalFactors;
         for (int i = 0; i < summands.getBound(); i++) {
             if (summands.get(i) == null || !summands.get(i).contains(var)) {
                 continue;
             }
-            factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(summands.get(i));
+            factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(summands.get(i));
             factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(i));
             numberOfExpFactors = 0;
             numberOfTrigonometricalFactors = 0;
-            for (int j = 0; j < factorsEnumerator.getBound(); j++) {
-                if (factorsEnumerator.get(j).contains(var) && !isExponentialFunction(factorsEnumerator.get(j), var)
-                        && !isTrigonometricalFunction(factorsEnumerator.get(j), var)) {
+            for (int j = 0; j < factorsNumerator.getBound(); j++) {
+                if (factorsNumerator.get(j).contains(var) && !isExponentialFunction(factorsNumerator.get(j), var)
+                        && !isTrigonometricalFunction(factorsNumerator.get(j), var)) {
                     return false;
                 }
-                if (isExponentialFunction(factorsEnumerator.get(j), var)) {
+                if (isExponentialFunction(factorsNumerator.get(j), var)) {
                     numberOfExpFactors++;
                 }
-                if (isTrigonometricalFunction(factorsEnumerator.get(j), var)) {
+                if (isTrigonometricalFunction(factorsNumerator.get(j), var)) {
                     numberOfTrigonometricalFactors++;
                 }
             }
@@ -474,15 +474,15 @@ public abstract class SpecialIntegrationMethods {
             return f.mult(Variable.create(var));
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-        ExpressionCollection constantfactorsEnumerator = new ExpressionCollection();
+        ExpressionCollection constantfactorsNumerator = new ExpressionCollection();
         ExpressionCollection constantfactorsDenominator = new ExpressionCollection();
 
-        for (int i = 0; i < factorsEnumerator.getBound(); i++) {
-            if (!factorsEnumerator.get(i).contains(var)) {
-                constantfactorsEnumerator.add(factorsEnumerator.get(i));
-                factorsEnumerator.remove(i);
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (!factorsNumerator.get(i).contains(var)) {
+                constantfactorsNumerator.add(factorsNumerator.get(i));
+                factorsNumerator.remove(i);
             }
         }
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
@@ -492,49 +492,49 @@ public abstract class SpecialIntegrationMethods {
             }
         }
 
-        if (!factorsDenominator.isEmpty() || factorsEnumerator.getSize() > 2) {
+        if (!factorsDenominator.isEmpty() || factorsNumerator.getSize() > 2) {
             throw new NotPreciseIntegrableException();
         }
 
         // Jetzt wird die Stammfunktion, abhängig von der Gestalt des Summanden, explizit bestimmt.
-        ExpressionCollection factors = new ExpressionCollection(factorsEnumerator);
-        Expression constantEnumerator = SimplifyUtilities.produceProduct(constantfactorsEnumerator);
+        ExpressionCollection factors = new ExpressionCollection(factorsNumerator);
+        Expression constantNumerator = SimplifyUtilities.produceProduct(constantfactorsNumerator);
         Expression constantDenominator = SimplifyUtilities.produceProduct(constantfactorsDenominator);
 
         // Fall: Integration von exp(a*x+b).
         if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.exp)) {
             Expression integral = integrateExpOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von cos(a*x+b).
         if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.cos)) {
             Expression integral = integrateCosOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von sin(a*x+b).
         if (factors.getBound() == 1 && factors.get(0).isFunction(TypeFunction.sin)) {
             Expression integral = integrateSinOfLinearFunction(((Function) factors.get(0)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von exp(a*x+b)*cos(c*x+d).
         if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.exp) && factors.get(1).isFunction(TypeFunction.cos)) {
             Expression integral = integrateProductOfExpCos(((Function) factors.get(0)).getLeft(), ((Function) factors.get(1)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von cos(a*x+b)*exp(c*x+d).
         if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.cos) && factors.get(1).isFunction(TypeFunction.exp)) {
             Expression integral = integrateProductOfExpCos(((Function) factors.get(1)).getLeft(), ((Function) factors.get(0)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von exp(a*x+b)*sin(c*x+d).
         if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.exp) && factors.get(1).isFunction(TypeFunction.sin)) {
             Expression integral = integrateProductOfExpSin(((Function) factors.get(0)).getLeft(), ((Function) factors.get(1)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
         // Fall: Integration von sin(a*x+b)*exp(c*x+d).
         if (factors.getBound() == 2 && factors.get(0).isFunction(TypeFunction.sin) && factors.get(1).isFunction(TypeFunction.exp)) {
             Expression integral = integrateProductOfExpSin(((Function) factors.get(1)).getLeft(), ((Function) factors.get(0)).getLeft(), var);
-            return constantEnumerator.mult((Expression) integral).div(constantDenominator);
+            return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
 
         throw new NotPreciseIntegrableException();
@@ -755,9 +755,9 @@ public abstract class SpecialIntegrationMethods {
         Expression c = coefficients.get(0);
         Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
 
-        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
 
-        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+        if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
@@ -938,8 +938,8 @@ public abstract class SpecialIntegrationMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
-            return exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
+            return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
 
@@ -960,8 +960,8 @@ public abstract class SpecialIntegrationMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) rightFactor).getLeft(), var)
                 && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) rightFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft()).getValue().toBigInteger();
-            return exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft()).getValue().toBigInteger();
+            return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
 
@@ -974,8 +974,8 @@ public abstract class SpecialIntegrationMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) leftFactor).getLeft(), var)
                 && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) leftFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft()).getValue().toBigInteger();
-            return exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft()).getValue().toBigInteger();
+            return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
 
@@ -1122,13 +1122,13 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
-        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+        if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        n = (exponentEnumerator.intValue() - 1) / 2;
+        n = (exponentNumerator.intValue() - 1) / 2;
 
         if (n == 0) {
             return integrateReciprocalOfSqrtOfQuadraticFunction(expr);
@@ -1191,25 +1191,25 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
         BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
-        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+        if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
-        if (coefficientsEnumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
+        if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 
         // Fehlende Koeffizienten im Zählen mit Nullen auffüllen.
         for (int i = 0; i < 2; i++) {
-            if (coefficientsEnumerator.get(i) == null) {
-                coefficientsEnumerator.put(i, ZERO);
+            if (coefficientsNumerator.get(i) == null) {
+                coefficientsNumerator.put(i, ZERO);
             }
         }
 
@@ -1220,25 +1220,25 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
-        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+        if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        n = (exponentEnumerator.intValue() - 1) / 2;
+        n = (exponentNumerator.intValue() - 1) / 2;
 
         if (coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 
-        // In den folgenden Kommentaren sei a = coefficientsEnumerator, b = coefficientsDenominator.
+        // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), d = b.get(1), e = b.get(0), x = var.
         Expression a = coefficientsDenominator.get(2);
         Expression b = coefficientsDenominator.get(1);
         Expression c = coefficientsDenominator.get(0);
-        Expression d = coefficientsEnumerator.get(1);
-        Expression e = coefficientsEnumerator.get(0);
+        Expression d = coefficientsNumerator.get(1);
+        Expression e = coefficientsNumerator.get(0);
 
         // discriminant = b^2 - 4ac.
         Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
@@ -1286,15 +1286,15 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degEnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
         BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
-        if (degEnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
+        if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection coefficientsEnumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
+        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficientsDenominator.getBound() != 3) {
@@ -1308,19 +1308,19 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
-        if (exponentEnumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
+        if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
         }
 
-        n = (exponentEnumerator.intValue() - 1) / 2;
+        n = (exponentNumerator.intValue() - 1) / 2;
 
         if (coefficientsDenominator.getBound() != 3) {
             throw new NotPreciseIntegrableException();
         }
 
-        int maxExponent = (coefficientsEnumerator.getBound() - 1) / 2;
+        int maxExponent = (coefficientsNumerator.getBound() - 1) / 2;
 
         if (maxExponent == 0) {
             // f ist von der Form (A*x+B)/(a*x^2+b*x+c)^((2*n+1)/2).
@@ -1342,7 +1342,7 @@ public abstract class SpecialIntegrationMethods {
          bilden.
          */
         ExpressionCollection coefficientsOfPowerOfQuadraticPolynomial = getCoefficientsOfPowerOfPolynomial(coefficientsDenominator, maxExponent);
-        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsEnumerator, coefficientsOfPowerOfQuadraticPolynomial);
+        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsOfPowerOfQuadraticPolynomial);
 
         /* 
          Man hat nun eine Darstellung der Form P(x) = (A*x+B)*(a*x^2+b*x+c)^k + Q(x)
@@ -1393,7 +1393,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger gcdOfNumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
         Iterator<Expression> iter = argumentsInExp.iterator();
@@ -1417,9 +1417,9 @@ public abstract class SpecialIntegrationMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
                             ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
@@ -1428,8 +1428,8 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Das ist die eigentliche Substitution.
-        Expression factorOfExpArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
+        Expression factorOfExpArgument = new Constant(gcdOfNumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfNumerators).mult(firstArgument).div(lcmOfDenominators).exp().simplify();
 
         try {
             Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution);
@@ -1476,7 +1476,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger gcdOfEnumerators = BigInteger.ONE;
+        BigInteger gcdOfNumerators = BigInteger.ONE;
         BigInteger lcmOfDenominators = BigInteger.ONE;
 
         Iterator<Expression> iter = argumentsInTrigonometricalFunctions.iterator();
@@ -1500,9 +1500,9 @@ public abstract class SpecialIntegrationMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
                 } else {
-                    gcdOfEnumerators = gcdOfEnumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
                             ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
                 }
@@ -1511,8 +1511,8 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Das ist die eigentliche Substitution.
-        Expression factorOfTrigonometricalArgument = new Constant(gcdOfEnumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
-        Expression substitution = new Constant(gcdOfEnumerators).mult(firstArgument).div(lcmOfDenominators).simplify();
+        Expression factorOfTrigonometricalArgument = new Constant(gcdOfNumerators).mult(derivativeOfFirstArgument).div(lcmOfDenominators).simplify();
+        Expression substitution = new Constant(gcdOfNumerators).mult(firstArgument).div(lcmOfDenominators).simplify();
 
         try {
 

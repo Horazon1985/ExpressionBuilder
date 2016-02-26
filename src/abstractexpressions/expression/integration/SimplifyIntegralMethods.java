@@ -294,31 +294,31 @@ public abstract class SimplifyIntegralMethods {
 
             if (integralFunction.isQuotient()) {
 
-                ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(integralFunction);
+                ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(integralFunction);
                 ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(integralFunction);
-                boolean integralOccursInEnumerator = false;
+                boolean integralOccursInNumerator = false;
                 boolean integralOccursTwiceOrInDenominator = false;
                 boolean varOccurs = false;
 
-                for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+                for (int i = 0; i < factorsNumerator.getBound(); i++) {
 
-                    if (factorsEnumerator.get(i).contains(var)) {
+                    if (factorsNumerator.get(i).contains(var)) {
                         varOccurs = true;
                     }
-                    if (factorsEnumerator.get(i) instanceof Operator && ((Operator) factorsEnumerator.get(i)).getType().equals(TypeOperator.integral)
-                            && ((Operator) factorsEnumerator.get(i)).getParams().length == 2
-                            && ((String) ((Operator) factorsEnumerator.get(i)).getParams()[1]).equals(var)) {
+                    if (factorsNumerator.get(i) instanceof Operator && ((Operator) factorsNumerator.get(i)).getType().equals(TypeOperator.integral)
+                            && ((Operator) factorsNumerator.get(i)).getParams().length == 2
+                            && ((String) ((Operator) factorsNumerator.get(i)).getParams()[1]).equals(var)) {
 
-                        if (integralOccursInEnumerator) {
+                        if (integralOccursInNumerator) {
                             integralOccursTwiceOrInDenominator = true;
                         }
                         Object[] paramsOfInnerDefiniteIntegral = new Object[4];
-                        paramsOfInnerDefiniteIntegral[0] = ((Operator) factorsEnumerator.get(i)).getParams()[0];
+                        paramsOfInnerDefiniteIntegral[0] = ((Operator) factorsNumerator.get(i)).getParams()[0];
                         paramsOfInnerDefiniteIntegral[1] = var;
                         paramsOfInnerDefiniteIntegral[2] = lowerLimit;
                         paramsOfInnerDefiniteIntegral[3] = upperLimit;
-                        factorsEnumerator.put(i, new Operator(TypeOperator.integral, paramsOfInnerDefiniteIntegral));
-                        integralOccursInEnumerator = true;
+                        factorsNumerator.put(i, new Operator(TypeOperator.integral, paramsOfInnerDefiniteIntegral));
+                        integralOccursInNumerator = true;
                     }
 
                 }
@@ -335,11 +335,11 @@ public abstract class SimplifyIntegralMethods {
 
                 }
 
-                if (varOccurs && !integralOccursInEnumerator) {
+                if (varOccurs && !integralOccursInNumerator) {
                     return integralFunction.replaceVariable(var, upperLimit).sub(integralFunction.replaceVariable(var, lowerLimit));
                 }
-                if (!varOccurs && integralOccursInEnumerator && !integralOccursTwiceOrInDenominator) {
-                    return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+                if (!varOccurs && integralOccursInNumerator && !integralOccursTwiceOrInDenominator) {
+                    return SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
                 }
 
                 // Eigentlich ein Fehler, so etwas darf in einer korrekten Stammfunktion nicht vorkommen.
@@ -709,19 +709,19 @@ public abstract class SimplifyIntegralMethods {
         }
         if (f.isQuotient()) {
 
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-            ExpressionCollection resultFactorsInIntegrandEnumerator = new ExpressionCollection();
+            ExpressionCollection resultFactorsInIntegrandNumerator = new ExpressionCollection();
             ExpressionCollection resultFactorsInIntegrandDenominator = new ExpressionCollection();
-            ExpressionCollection resultFactorsInEnumeratorOutsideOfIntegrand = new ExpressionCollection();
+            ExpressionCollection resultFactorsInNumeratorOutsideOfIntegrand = new ExpressionCollection();
             ExpressionCollection resultFactorsInDenominatorOutsideOfIntegrand = new ExpressionCollection();
 
-            for (int i = 0; i < factorsEnumerator.getBound(); i++) {
-                if (factorsEnumerator.get(i).contains(var)) {
-                    resultFactorsInIntegrandEnumerator.add(factorsEnumerator.get(i));
+            for (int i = 0; i < factorsNumerator.getBound(); i++) {
+                if (factorsNumerator.get(i).contains(var)) {
+                    resultFactorsInIntegrandNumerator.add(factorsNumerator.get(i));
                 } else {
-                    if (!factorsEnumerator.get(i).equals(Expression.ONE)) {
-                        resultFactorsInEnumeratorOutsideOfIntegrand.add(factorsEnumerator.get(i));
+                    if (!factorsNumerator.get(i).equals(Expression.ONE)) {
+                        resultFactorsInNumeratorOutsideOfIntegrand.add(factorsNumerator.get(i));
                     }
                 }
             }
@@ -736,15 +736,15 @@ public abstract class SimplifyIntegralMethods {
             }
 
             Object[] paramsResultIntegrand = new Object[2];
-            paramsResultIntegrand[0] = SimplifyUtilities.produceQuotient(resultFactorsInIntegrandEnumerator, resultFactorsInIntegrandDenominator);
+            paramsResultIntegrand[0] = SimplifyUtilities.produceQuotient(resultFactorsInIntegrandNumerator, resultFactorsInIntegrandDenominator);
             paramsResultIntegrand[1] = var;
 
-            if (!resultFactorsInEnumeratorOutsideOfIntegrand.isEmpty() && resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial());
-            } else if (resultFactorsInEnumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
+            if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
+                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial());
+            } else if (resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
                 return new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial().div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
-            } else if (!resultFactorsInEnumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial()).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
+            } else if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
+                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial()).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
             }
 
         }
@@ -1594,23 +1594,23 @@ public abstract class SimplifyIntegralMethods {
              Dasselbe wie oben, nur hier wird sowohl im Zähler als auch im
              Nenner von f nach potenziellen Substitutionen gesucht.
              */
-            ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
 
             // Im Zähler suchen.
-            for (int i = 0; i < factorsEnumerator.getBound(); i++) {
+            for (int i = 0; i < factorsNumerator.getBound(); i++) {
 
                 setOfSubstitutions.clear();
-                setOfSubstitutions = getSuitableSubstitutionForIntegration(factorsEnumerator.get(i), var, true);
-                factor = factorsEnumerator.get(i);
-                factorsEnumerator.remove(i);
+                setOfSubstitutions = getSuitableSubstitutionForIntegration(factorsNumerator.get(i), var, true);
+                factor = factorsNumerator.get(i);
+                factorsNumerator.remove(i);
 
                 // Jede potentielle Substitution ausprobieren.
                 for (int j = 0; j < setOfSubstitutions.getBound(); j++) {
 
                     substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
-                    quotient = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).div(derivative).simplify();
+                    quotient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).div(derivative).simplify();
 
                     /*
                      Sei g(x) der Integrand, x = var und subst = f(x). Es wird
@@ -1651,7 +1651,7 @@ public abstract class SimplifyIntegralMethods {
                  factor wieder zu Faktoren von f hinzufügen und weiter
                  versuchen.
                  */
-                factorsEnumerator.put(i, factor);
+                factorsNumerator.put(i, factor);
 
             }
 
@@ -1668,7 +1668,7 @@ public abstract class SimplifyIntegralMethods {
 
                     substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
-                    quotient = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).div(derivative).simplify();
+                    quotient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).div(derivative).simplify();
 
                     /*
                      Sei g(x) der Integrand, x = var und subst = f(x). Es wird
@@ -1937,21 +1937,21 @@ public abstract class SimplifyIntegralMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
         Expression uPrime, v;
         Operator integralOfUPrime;
         Object u;
 
         // Zunächst wird versucht, eine geschickte Wahl für u' zu treffen.
-        Object indexOfUPrime = cleverChoiceForPartialIntegration(factorsEnumerator, var);
+        Object indexOfUPrime = cleverChoiceForPartialIntegration(factorsNumerator, var);
 
         // Falls eine "clevere" Wahl für u' vorliegt.
         if (indexOfUPrime instanceof Integer) {
 
-            v = factorsEnumerator.get((int) indexOfUPrime);
-            factorsEnumerator.remove((int) indexOfUPrime);
-            uPrime = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
+            v = factorsNumerator.get((int) indexOfUPrime);
+            factorsNumerator.remove((int) indexOfUPrime);
+            uPrime = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
 
             Object[] paramsIntegralOfUPrime = new Object[2];
             paramsIntegralOfUPrime[0] = uPrime;
@@ -1972,11 +1972,11 @@ public abstract class SimplifyIntegralMethods {
                 if (restOfPartialIntegral instanceof Expression) {
                     return ((Expression) u).mult(v).sub((Expression) restOfPartialIntegral);
                 } else {
-                    factorsEnumerator.put((int) indexOfUPrime, v);
+                    factorsNumerator.put((int) indexOfUPrime, v);
                 }
 
             } else {
-                factorsEnumerator.put((int) indexOfUPrime, v);
+                factorsNumerator.put((int) indexOfUPrime, v);
             }
 
         }

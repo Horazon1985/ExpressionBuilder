@@ -1275,7 +1275,7 @@ public abstract class SimplifyFunctionalRelations {
             return expr;
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((Function) expr).getLeft());
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(((Function) expr).getLeft());
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(((Function) expr).getLeft());
         ExpressionCollection resultFactorsInEnumeratorOutsideOfAbs = new ExpressionCollection();
         ExpressionCollection resultFactorsInDenominatorOutsideOfAbs = new ExpressionCollection();
@@ -1452,7 +1452,7 @@ public abstract class SimplifyFunctionalRelations {
             return expr;
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((Function) expr).getLeft());
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(((Function) expr).getLeft());
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(((Function) expr).getLeft());
         ExpressionCollection resultFactorsInEnumeratorOutsideOfAbs = new ExpressionCollection();
         ExpressionCollection resultFactorsInDenominatorOutsideOfAbs = new ExpressionCollection();
@@ -1554,7 +1554,7 @@ public abstract class SimplifyFunctionalRelations {
             return expr;
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((Function) expr).getLeft());
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(((Function) expr).getLeft());
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(((Function) expr).getLeft());
 
         // Gerade Potenzen von Faktoren in sgn() auf Quadrate reduzieren.
@@ -1673,7 +1673,7 @@ public abstract class SimplifyFunctionalRelations {
             return expr;
         }
 
-        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfEnumeratorInExpression(((Function) expr).getLeft());
+        ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(((Function) expr).getLeft());
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(((Function) expr).getLeft());
 
         /*

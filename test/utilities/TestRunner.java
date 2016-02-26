@@ -87,10 +87,10 @@ public class TestRunner {
                     try {
                         test.invoke(obj);
                         numberOfSuccessfulTests++;
-                        System.out.println(test.getName() + " successful.");
+                        System.out.println("Execution of test " + test.getName() + ": successful.");
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                         numberOfFailedTests++;
-                        System.err.println(test.getName() + " failed.");
+                        System.err.println("Execution of test " + test.getName() + ": failed.");
                     }
                 }
             }

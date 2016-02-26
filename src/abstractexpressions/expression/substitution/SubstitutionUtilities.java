@@ -434,9 +434,9 @@ public abstract class SubstitutionUtilities {
             throw new NotSubstitutableException();
         }
 
-        ExpressionCollection factorsEnumeratorF = SimplifyUtilities.getFactorsOfEnumeratorInExpression(f);
+        ExpressionCollection factorsEnumeratorF = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominatorF = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-        ExpressionCollection nonConstantFactorsEnumeratorSubstitution = SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(substitution, var);
+        ExpressionCollection nonConstantFactorsEnumeratorSubstitution = SimplifyUtilities.getNonConstantFactorsOfNumeratorInExpression(substitution, var);
         ExpressionCollection nonConstantFactorsDenominatorSubstitution = SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(substitution, var);
         Expression firstNonConstantFactorInSubstitution;
         if (nonConstantFactorsEnumeratorSubstitution.isEmpty()) {
@@ -536,7 +536,7 @@ public abstract class SubstitutionUtilities {
         }
 
         Expression restSubstituted = substituteExpression(SimplifyUtilities.produceQuotient(factorsEnumeratorFDividedByPowerOfSubstitutionEnumerator, factorsDenominatorFDividedByPowerOfSubstitutionDenominator), var, substitution, false);
-        Expression constantFactorOfSubstitution = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(substitution, var), SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(substitution, var));
+        Expression constantFactorOfSubstitution = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(substitution, var), SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(substitution, var));
         return Variable.create(getSubstitutionVariable(f)).pow(exponent).mult(restSubstituted).div(constantFactorOfSubstitution.pow(exponent));
 
     }
@@ -556,9 +556,9 @@ public abstract class SubstitutionUtilities {
 
         // Fall f = subst^n, n >= 1 ganz.
         try {
-            Expression constantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfEnumeratorInExpression(substitution, var),
+            Expression constantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(substitution, var),
                     SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(substitution, var));
-            Expression nonConstantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getNonConstantFactorsOfEnumeratorInExpression(substitution, var),
+            Expression nonConstantFactorOfSubst = SimplifyUtilities.produceQuotient(SimplifyUtilities.getNonConstantFactorsOfNumeratorInExpression(substitution, var),
                     SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(substitution, var));
             Expression integerExponent = getExponentIfIsPositiveIntegerPower(nonConstantFactorOfSubst, f);
             return Variable.create(getSubstitutionVariable(f)).pow(integerExponent).div(constantFactorOfSubst.pow(integerExponent));
