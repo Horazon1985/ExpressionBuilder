@@ -362,9 +362,7 @@ public abstract class AnalysisMethods {
                  das Taylorpolynom etwa Integrationskonstanten enthalten
                  kann).
                  */
-                throw new EvaluationException(Translator.translateMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED_1")
-                        + f.writeExpression()
-                        + Translator.translateMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED_2"));
+                throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED", f));
             }
 
         }
@@ -413,7 +411,7 @@ public abstract class AnalysisMethods {
 
             return f.add(result).simplify();
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
+            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
         } finally {
             /* 
              Egal, ob die Berechnung des Tangentialraumes erfolgreich war oder nicht,
@@ -435,7 +433,7 @@ public abstract class AnalysisMethods {
     public static BigDecimal getDigitsOfE(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_E")) {
-            throw new EvaluationException(Translator.translateMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
         BigDecimal e = BigDecimal.ONE;
@@ -470,7 +468,7 @@ public abstract class AnalysisMethods {
     public static BigDecimal getDigitsOfPi(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI")) {
-            throw new EvaluationException(Translator.translateMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
         BigDecimal pi = BigDecimal.ONE.divide(BigDecimal.valueOf(2));

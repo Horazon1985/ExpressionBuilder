@@ -208,7 +208,7 @@ public abstract class SimplifyPolynomialMethods {
             return coefficients;
         }
         if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
-            throw new EvaluationException(Translator.translateMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
 
         f = f.simplify(simplifyTypesExpandPolynomial);
@@ -833,7 +833,7 @@ public abstract class SimplifyPolynomialMethods {
          (und muss im Vorfeld geprüft werden).
          */
         if (coefficientsDenominator.isEmpty()) {
-            throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
         }
 
         int degreeDenominator = coefficientsDenominator.getBound() - 1;

@@ -265,7 +265,7 @@ public class SelfDefinedFunction extends Expression {
      */
     public Expression replaceAllVariables(Expression[] exprs) throws EvaluationException {
         if (this.arguments.length != exprs.length) {
-            throw new EvaluationException(Translator.translateMessage("EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS"));
         }
         Expression result = this.abstractExpression;
         for (int i = 0; i < exprs.length; i++) {

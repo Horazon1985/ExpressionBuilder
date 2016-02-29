@@ -38,7 +38,7 @@ public class MatrixPower extends MatrixExpression {
     public Dimension getDimension() throws EvaluationException {
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
         }
         return dim;
     }
@@ -208,10 +208,10 @@ public class MatrixPower extends MatrixExpression {
         try {
             det = new MatrixFunction(matrix, TypeMatrixFunction.det).simplify();
             if (det.isZeroMatrix()) {
-                throw new EvaluationException(Translator.translateMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
             }
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixPower_POWER_OF_MATRIX_NOT_DEFINED"));
         }
 
         // Nun wird die adjungierte Matrix berechnet.

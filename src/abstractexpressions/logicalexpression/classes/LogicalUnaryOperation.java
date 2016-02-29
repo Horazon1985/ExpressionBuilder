@@ -1,6 +1,7 @@
 package abstractexpressions.logicalexpression.classes;
 
 import exceptions.EvaluationException;
+import flowcontroller.FlowController;
 import java.util.HashSet;
 import lang.translator.Translator;
 
@@ -73,9 +74,7 @@ public class LogicalUnaryOperation extends LogicalExpression {
     public LogicalExpression simplifyTrivial() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateMessage("LEB_LogicalUnaryOperation_COMPUTATION_ABORTED"));
-        }
+        FlowController.interruptComputationIfNeeded();
 
         //Linken und rechten Teil bei logischen Binäroperationen zunächst separat vereinfachen
         LogicalUnaryOperation logExpr = new LogicalUnaryOperation(this.getLeft().simplifyTrivial(), this.getType());

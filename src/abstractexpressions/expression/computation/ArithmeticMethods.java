@@ -138,7 +138,7 @@ public abstract class ArithmeticMethods {
      */
     public static BigInteger mod(BigInteger a, BigInteger m) throws EvaluationException {
         if (m.compareTo(BigInteger.ZERO) <= 0) {
-            throw new EvaluationException(Translator.translateMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
+            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
         }
         return a.mod(m);
     }

@@ -75,33 +75,33 @@ public class BinaryOperation extends Expression {
         double valueRight = this.right.evaluate();
 
         if (Double.isNaN(valueLeft) || Double.isInfinite(valueLeft) || Double.isNaN(valueRight) || Double.isInfinite(valueRight)) {
-            throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
         }
 
         switch (type) {
             case PLUS:
                 if (Double.isNaN(valueLeft + valueRight) || Double.isInfinite(valueLeft + valueRight)) {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                 }
                 return valueLeft + valueRight;
             case MINUS:
                 if (Double.isNaN(valueLeft - valueRight) || Double.isInfinite(valueLeft - valueRight)) {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                 }
                 return valueLeft - valueRight;
             case TIMES:
                 if (Double.isNaN(valueLeft * valueRight) || Double.isInfinite(valueLeft * valueRight)) {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                 }
                 return valueLeft * valueRight;
             case DIV:
                 if ((!Double.isNaN(valueLeft / valueRight)) && (!Double.isInfinite(valueLeft / valueRight))) {
                     if (Double.isNaN(valueLeft / valueRight) || Double.isInfinite(valueLeft / valueRight)) {
-                        throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                        throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                     }
                     return valueLeft / valueRight;
                 } else {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
                 }
             case POW:
                 // Abfangen von Wurzeln ungerader Ordnung aus negativen Zahlen.
@@ -115,14 +115,14 @@ public class BinaryOperation extends Expression {
                     if (!Double.isNaN(result) && !Double.isInfinite(result)) {
                         return result;
                     } else {
-                        throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                        throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                     }
                 }
                 // Dann ganz normal weiter.
                 if (!Double.isNaN(Math.pow(valueLeft, valueRight)) && !Double.isInfinite(Math.pow(valueLeft, valueRight))) {
                     return Math.pow(valueLeft, valueRight);
                 } else {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_UNDEFINED_VALUE"));
                 }
             default:
                 return 0;
@@ -236,7 +236,7 @@ public class BinaryOperation extends Expression {
                 //Regel: (a^g)' = ln(a)*a^g*g')
                 //Fehlerbehandlung: a muss > 0 sein!
                 if (this.left.isConstant() && this.left.isNonPositive()) {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
                 }
                 return new Function(this.left, TypeFunction.ln).mult(this).mult(this.right.diff(var));
             } else {
@@ -273,7 +273,7 @@ public class BinaryOperation extends Expression {
                 //Regel: (a^g)' = ln(a)*a^g*g')
                 //Fehlerbehandlung: a muss > 0 sein!
                 if (this.left.isConstant() && this.left.isNonPositive()) {
-                    throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
+                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
                 }
                 return new Function(this.left, TypeFunction.ln).mult(this).mult(this.right.diffDifferentialEquation(var));
             } else {

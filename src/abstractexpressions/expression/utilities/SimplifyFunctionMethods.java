@@ -44,44 +44,44 @@ public abstract class SimplifyFunctionMethods {
             valueComputable = true;
 
             if (type.equals(TypeFunction.lg) && value < 0) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             if (type.equals(TypeFunction.ln) && value < 0) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             if ((type.equals(TypeFunction.arcsin) || type.equals(TypeFunction.arccos)
                     || type.equals(TypeFunction.artanh)) && Math.abs(value) > 1) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             if (type.equals(TypeFunction.arsech) && ((value > 1) || value < 0)) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             if ((type.equals(TypeFunction.arcsec) || type.equals(TypeFunction.arccosec)
                     || type.equals(TypeFunction.arcoth)) && Math.abs(value) < 1) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             if (type.equals(TypeFunction.arcosh) && value < 1) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
             return f;
         } catch (EvaluationException e) {
             if (valueComputable) {
-                throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
             }
         }
 
         // Weitere Fälle abgreifen, in denen Funktionswerte definitiv nicht definiert sind.
         if (type.equals(TypeFunction.lg) && left.isNonPositive()) {
-            throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
         }
         if (type.equals(TypeFunction.ln) && left.isNonPositive()) {
-            throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
         }
         if ((type.equals(TypeFunction.arcsin) || type.equals(TypeFunction.arccos)
                 || type.equals(TypeFunction.artanh)) && (left.isNonNegative()
                 || left.isNonPositive())) {
             // Dann muss |left| definitiv >= 10^309, also > 1 sein.
-            throw new EvaluationException(Translator.translateMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_UNDEFINED_VALUE"));
         }
 
         return f;
@@ -446,8 +446,7 @@ public abstract class SimplifyFunctionMethods {
                     || f.getType().equals(TypeFunction.cosech)
                     || f.getType().equals(TypeFunction.lg)
                     || f.getType().equals(TypeFunction.ln)) {
-                throw new EvaluationException(f.writeExpression()
-                        + Translator.translateMessage("SM_SimplifyFunctionMethods_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage("SM_SimplifyFunctionMethods_NOT_DEFINED", f));
             }
 
         }

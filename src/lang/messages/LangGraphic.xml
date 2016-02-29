@@ -17,7 +17,7 @@
     <Ukrainian>Прокрутити колесо миші: збільшувати, зменшувати</Ukrainian>
     <Russian>Прокрутить колёсико мыши: увеличивать, уменьшать</Russian>
   </object>
-  <object id = "GR_Graphic2D_IMPOSSIBLE_MOVE_GRAPH">
+  <object id = "GR_GraphicImplicit2D_IMPOSSIBLE_MOVE_GRAPH">
     <German>Graphen impliziter Funktionen können weder bewegt, noch verschoben werden.</German>
     <English>Graphs of implicit functions cannot be moved.</English>
     <Ukrainian>Графіки неявних функцій не можна рухати.</Ukrainian>

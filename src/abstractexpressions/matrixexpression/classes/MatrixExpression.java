@@ -38,11 +38,11 @@ public abstract class MatrixExpression implements AbstractExpression {
 
         String[] rows = matrix.split(";");
         if (rows.length != numberOfRows) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_ROW_MISSING"));
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_ROW_MISSING"));
         }
 
         if (rows.length == 0) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_NO_ROWS"));
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NO_ROWS"));
         }
         return rows;
 
@@ -89,14 +89,14 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
             if ((bracketsCount == 0) && (currentChar.equals(","))) {
                 if (row.substring(startPositionOfCurrentParameter, i).equals("")) {
-                    throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
                 }
                 result.add(row.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == row.length() - 1) {
                 if (startPositionOfCurrentParameter == row.length()) {
-                    throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
                 }
                 result.add(row.substring(startPositionOfCurrentParameter, row.length()));
             }
@@ -104,7 +104,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         if (bracketsCount != 0) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
         }
 
         return result;
@@ -125,11 +125,11 @@ public abstract class MatrixExpression implements AbstractExpression {
         for (int i = 0; i < rows.length; i++) {
 
             if (rows[i].isEmpty()) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
             }
             currentRow = getEntriesFromRow(rows[i]).toArray();
             if (currentRow.length != entry[0].length) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
             }
             for (int j = 0; j < currentRow.length; j++) {
                 entry[i][j] = Expression.build((String) currentRow[j], vars);
@@ -175,7 +175,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         String currentChar;
 
         if (formula.isEmpty()) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
         }
 
         for (int i = 1; i <= formulaLength; i++) {
@@ -183,10 +183,10 @@ public abstract class MatrixExpression implements AbstractExpression {
 
             // Öffnende und schließende Klammern zählen.
             if (currentChar.equals("(") && bracketCounter == 0) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
             }
             if (currentChar.equals("[") && squareBracketCounter == 0) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
             }
 
             if (currentChar.equals(")")) {
@@ -223,7 +223,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         if (bracketCounter > 0) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
         }
 
         // Aufteilung, falls eine Elementaroperation (-, +, *, ^) vorliegt
@@ -232,10 +232,10 @@ public abstract class MatrixExpression implements AbstractExpression {
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
             if (formulaLeft.isEmpty() && priority > 1) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
             }
             if (formulaRight.isEmpty()) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
             }
 
             //Falls der Ausdruck die Form "+A..." besitzt -> daraus "A..." machen
@@ -258,7 +258,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                         Expression exponent = Expression.build(formulaRight, vars);
                         return new MatrixPower(build(formulaLeft, vars), exponent);
                     } catch (ExpressionException e) {
-                        throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED"));
+                        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED"));
                     }
             }
         }
@@ -309,7 +309,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
         }
 
-        throw new ExpressionException(Translator.translateMessage("MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
+        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
 
     }
 
@@ -822,7 +822,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             return matExprSimplified;
 
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("MEB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("MEB_Expression_STACK_OVERFLOW"));
         }
 
     }
@@ -873,7 +873,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             return matExprSimplified;
 
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("MEB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("MEB_Expression_STACK_OVERFLOW"));
         }
 
     }

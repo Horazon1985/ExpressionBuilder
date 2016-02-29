@@ -84,9 +84,9 @@
     <Russian>Неопределённое значение.</Russian>
   </object>
   <object id = "SM_SimplifyFunctionMethods_NOT_DEFINED">
-    <German> ist nicht definiert.</German>
-    <English> is not defined.</English>
-    <Ukrainian> не визначено.</Ukrainian>
-    <Russian> не определен.</Russian>
+    <German>[0] ist nicht definiert.</German>
+    <English>[0] is not defined.</English>
+    <Ukrainian>[0] не визначено.</Ukrainian>
+    <Russian>[0] не определен.</Russian>
   </object>
 </objects>

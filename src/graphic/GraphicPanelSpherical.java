@@ -194,9 +194,9 @@ public class GraphicPanelSpherical extends JPanel implements Runnable, Exportabl
 
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
+        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
         return instructions;
     }
 

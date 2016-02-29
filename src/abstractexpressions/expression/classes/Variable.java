@@ -195,9 +195,7 @@ public class Variable extends Expression {
         if (!Double.isNaN(this.value) && !Double.isInfinite(this.value)) {
             return this.value;
         }
-        throw new EvaluationException(Translator.translateMessage("EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_1")
-                + this.name
-                + Translator.translateMessage("EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_2"));
+        throw new EvaluationException(Translator.translateOutputMessage("EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE", this.name));
     }
 
     @Override

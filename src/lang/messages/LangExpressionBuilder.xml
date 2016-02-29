@@ -41,17 +41,11 @@
         <Ukrainian> не є діючою командою або оператором.</Ukrainian>
         <Russian> не является действительной командой или оператором.</Russian>
     </object>
-    <object id = "EB_Expression_MISSING_CLOSING_BRACKET_1">
-        <German>In </German>
-        <English>In </English>
-        <Ukrainian>В</Ukrainian>
-        <Russian>В</Russian>
-    </object>
-    <object id = "EB_Expression_MISSING_CLOSING_BRACKET_2">
-        <German> fehlt am Ende eine schließende Klammer.</German>
-        <English> a closing bracket is missing.</English>
-        <Ukrainian> в кінці відсутня закриваюча дужка.</Ukrainian>
-        <Russian> в конце отсуствует закрывающая скобка.</Russian>
+    <object id = "EB_Expression_MISSING_CLOSING_BRACKET">
+        <German>In [0] fehlt am Ende eine schließende Klammer.</German>
+        <English>In [0] a closing bracket is missing.</English>
+        <Ukrainian>В [0] в кінці відсутня закриваюча дужка.</Ukrainian>
+        <Russian>В [0] в конце отсуствует закрывающая скобка.</Russian>
     </object>
     <object id = "EB_Expression_WRONG_BRACKETS">
         <German>Falsche Klammerung.</German>
@@ -83,23 +77,11 @@
         <Ukrainian>Права частина бінарного оператора порожня.</Ukrainian>
         <Russian>Правая часть бинарного оператора пуста.</Russian>
     </object>
-    <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_1">
-        <German>Die Funktion '</German>
-        <English>The function '</English>
-        <Ukrainian>Функція '</Ukrainian>
-        <Russian>Функция '</Russian>
-    </object>
-    <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_2">
-        <German>' benötigt genau </German>
-        <English>' requires precisely</English>
-        <Ukrainian>' вимагає точно</Ukrainian>
-        <Russian>' требует в точности</Russian>
-    </object>
-    <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_3">
-        <German> Argumente.</German>
-        <English> arguments.</English>
-        <Ukrainian> аргументів.</Ukrainian>
-        <Russian> аргументов.</Russian>
+    <object id = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION">
+        <German>Die Funktion '[0]' benötigt genau [1] Argumente.</German>
+        <English>The function '[0]' requires precisely [1] arguments.</English>
+        <Ukrainian>Функція '[0]' вимагає точно [1] аргументів.</Ukrainian>
+        <Russian>Функция '[0]' требует в точности [1] аргументов.</Russian>
     </object>
     <object id = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED">
         <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
@@ -441,17 +423,11 @@
         <Ukrainian>Кількіть використаних функцій має бути рівна кількості параметрів функції.</Ukrainian>
         <Russian>Количество используемых функций должно быть равно количеству параметров функции.</Russian>
     </object>
-    <object id = "EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_1">
-        <German>Die Variable </German>
-        <English>The variable </English>
-        <Ukrainian>Змінна </Ukrainian>
-        <Russian>Переменная </Russian>
-    </object>
-    <object id = "EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE_2">
-        <German> besitzt einen nicht definierten Wert.</German>
-        <English> has an undefined value.</English>
-        <Ukrainian> має невизначене значення.</Ukrainian>
-        <Russian> имеет неопределённое значение.</Russian>
+    <object id = "EB_Variable_VARIABLE_HAS_UNDEFINED_VALUE">
+        <German>Die Variable [0] besitzt einen nicht definierten Wert.</German>
+        <English>The variable [0] has an undefined value.</English>
+        <Ukrainian>Змінна [0] має невизначене значення.</Ukrainian>
+        <Russian>Переменная [0] имеет неопределённое значение.</Russian>
     </object>
     <object id = "EB_Operator_INVALID_OPERATOR">
         <German>Ungültiger Operator.</German>

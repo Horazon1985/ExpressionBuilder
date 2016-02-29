@@ -60,19 +60,17 @@ public abstract class Expression implements AbstractExpression {
 
         //Wenn der Befehl leer ist -> Fehler.
         if (result[0].length() == 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
         }
 
         //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
         if (result[0].length() > input.length() - 2) {
-            throw new ExpressionException(input + Translator.translateMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
+            throw new ExpressionException(input + Translator.translateOutputMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
         }
 
         //Wenn am Ende nicht ")" steht.
         if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_MISSING_CLOSING_BRACKET_1")
-                    + input
-                    + Translator.translateMessage("EB_Expression_MISSING_CLOSING_BRACKET_2"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_MISSING_CLOSING_BRACKET", input));
         }
 
         result[1] = input.substring(result[0].length() + 1, input.length() - 1);
@@ -127,14 +125,14 @@ public abstract class Expression implements AbstractExpression {
             }
             if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
                 if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ExpressionException(Translator.translateMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == input.length() - 1) {
                 if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ExpressionException(Translator.translateMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
             }
@@ -142,7 +140,7 @@ public abstract class Expression implements AbstractExpression {
         }
 
         if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
         }
 
         String[] resultParametersAsArray = new String[resultParameters.size()];
@@ -227,7 +225,7 @@ public abstract class Expression implements AbstractExpression {
         String currentChar;
 
         if (formula.isEmpty()) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
         }
 
         for (int i = 1; i <= formulaLength; i++) {
@@ -235,7 +233,7 @@ public abstract class Expression implements AbstractExpression {
 
             // Öffnende und schließende Klammern zählen.
             if (currentChar.equals("(") && bracketCounter == 0) {
-                throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
             }
 
             if (currentChar.equals(")")) {
@@ -260,7 +258,7 @@ public abstract class Expression implements AbstractExpression {
                 } else {
                     absBracketCounter = absBracketCounter - k;
                     if (absBracketCounter != 0) {
-                        throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+                        throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
                     }
                     break;
                 }
@@ -289,7 +287,7 @@ public abstract class Expression implements AbstractExpression {
             }
 
             if (absBracketCounter < 0) {
-                throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
             }
 
             if (bracketCounter != 0 || absBracketCounter != 0) {
@@ -316,10 +314,10 @@ public abstract class Expression implements AbstractExpression {
         }
 
         if (bracketCounter > 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
         }
         if (absBracketCounter > 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
         }
 
         // Aufteilung, falls eine Elementaroperation (-, +, /, *, ^) vorliegt
@@ -328,10 +326,10 @@ public abstract class Expression implements AbstractExpression {
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
             if (formulaLeft.isEmpty() && priority > 1) {
-                throw new ExpressionException(Translator.translateMessage("EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY"));
             }
             if (formulaRight.isEmpty()) {
-                throw new ExpressionException(Translator.translateMessage("EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY"));
             }
 
             //Falls der Ausdruck die Form "+abc..." besitzt -> daraus "abc..." machen
@@ -457,17 +455,13 @@ public abstract class Expression implements AbstractExpression {
                     return new SelfDefinedFunction(function, SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function),
                             SelfDefinedFunction.getAbstractExpressionsForSelfDefinedFunctions().get(function), exprsInArguments);
                 } else {
-                    throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_1")
-                            + function
-                            + Translator.translateMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_2")
-                            + String.valueOf(SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length)
-                            + Translator.translateMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION_3"));
+                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION", function, String.valueOf(SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length)));
                 }
             }
 
         }
 
-        throw new ExpressionException(Translator.translateMessage("EB_Expression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
+        throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
 
     }
 
@@ -1592,7 +1586,7 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
         }
 
     }
@@ -1662,7 +1656,7 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
         }
 
     }
@@ -1758,7 +1752,7 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
         }
 
     }
@@ -1845,7 +1839,7 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
         }
 
     }
