@@ -357,23 +357,11 @@
         <Russian>3. параметр оператора 'diff' должен быть действительной переменной или неотрицательным целым числом.</Russian>
     </object>
   
-    <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_1">
-        <German>Der Ausdruck </German>
-        <English>The expression </English>
-        <Ukrainian>Вираз </Ukrainian>
-        <Russian>Выражение </Russian>
-    </object>
-    <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_2">
-        <German> kann nicht explizit nach </German>
-        <English> cannot be explicitly differentiated with respect to </English>
-        <Ukrainian> не може бути точно продиференційована по </Ukrainian>
-        <Russian> не может быть точно продифферинциирована по </Russian>
-    </object>
-    <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE_3">
-        <German> differenziert werden.</German>
-        <English>.</English>
-        <Ukrainian>.</Ukrainian>
-        <Russian>.</Russian>
+    <object id = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE">
+        <German>Der Ausdruck [0] kann nicht explizit nach [1] differenziert werden.</German>
+        <English>The expression [0] cannot be explicitly differentiated with respect to [1].</English>
+        <Ukrainian>Вираз [0] не може бути точно продиференційована по [1].</Ukrainian>
+        <Russian>Выражение [0] не может быть точно продифферинциирована по [1].</Russian>
     </object>
     <object id = "EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED">
         <German>Fakultäten von negativen ganzen Zahlen sind nicht definiert.</German>
@@ -381,41 +369,23 @@
         <Ukrainian>Факторіали від'ємних чисел не визначено.</Ukrainian>
         <Russian>Факториалы отрицательных чисел не определены.</Russian>
     </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER">
+        <German>Der [0]. Parameter im Operator 'gcd' muss eine ganze Zahl sein.</German>
+        <English>The [0]. parameter in operator 'gcd' must be an integer.</English>
+        <Ukrainian>[0]. парамер оператора 'gcd' має бути цілим числом.</Ukrainian>
+        <Russian>[0]. параметр оператора 'gcd' должен быть целым числом.</Russian>
     </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER_2">
-        <German>. Parameter im Operator 'gcd' muss eine ganze Zahl sein.</German>
-        <English>. parameter in operator 'gcd' must be an integer.</English>
-        <Ukrainian>. парамер оператора 'gcd' має бути цілим числом.</Ukrainian>
-        <Russian>. параметр оператора 'gcd' должен быть целым числом.</Russian>
+    <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER">
+        <German>Der [0]. Parameter im Operator 'lcm' muss eine ganze Zahl sein.</German>
+        <English>The [0]. parameter in operator 'lcm' must be an integer.</English>
+        <Ukrainian>[0]. парамер оператора 'lcm' має бути цілим числом.</Ukrainian>
+        <Russian>[0]. параметр оператора 'lcm' должен быть целым числом.</Russian>
     </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER_2">
-        <German>. Parameter im Operator 'lcm' muss eine ganze Zahl sein.</German>
-        <English>. parameter in operator 'lcm' must be an integer.</English>
-        <Ukrainian>. парамер оператора 'lcm' має бути цілим числом.</Ukrainian>
-        <Russian>. параметр оператора 'lcm' должен быть целым числом.</Russian>
-    </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER_2">
-        <German>. Parameter im Operator 'mod' muss eine ganze Zahl sein.</German>
-        <English>. parameter in operator 'mod' must be an integer.</English>
-        <Ukrainian>. парамер оператора 'mod' має бути цілим числом.</Ukrainian>
-        <Russian>. параметр оператора 'mod' должен быть целым числом.</Russian>
+    <object id = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER">
+        <German>Der [0]. Parameter im Operator 'mod' muss eine ganze Zahl sein.</German>
+        <English>The [0]. parameter in operator 'mod' must be an integer.</English>
+        <Ukrainian>[0]. парамер оператора 'mod' має бути цілим числом.</Ukrainian>
+        <Russian>[0]. параметр оператора 'mod' должен быть целым числом.</Russian>
     </object>
     <object id = "EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS">
         <German>Die Anzahl der eingesetzten Funktionen muss mit der Anzahl der Parameter der Funktion übereinstimmen.</German>

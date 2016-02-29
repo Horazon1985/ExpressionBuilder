@@ -39,10 +39,6 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     public GraphicPanelCurves2D() {
 
-        this.zoomfactor = 1;
-        this.zoomfactorX = 1;
-        this.zoomfactorY = 1;
-
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -503,6 +499,9 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
     }
 
     public void drawCurve2D(Expression t_0, Expression t_1, Expression[] expr) throws EvaluationException {
+        this.zoomfactor = 1;
+        this.zoomfactorX = 1;
+        this.zoomfactorY = 1;
         setExpression(expr);
         computeScreenSizes(t_0, t_1);
         expressionToGraph(t_0, t_1);

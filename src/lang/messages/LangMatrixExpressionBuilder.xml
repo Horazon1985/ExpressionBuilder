@@ -381,24 +381,12 @@
         <Ukrainian>Неможливо знайти ковариацію, оскільки параметри не є двовимірними точками.</Ukrainian>
         <Russian>Невозможно найти коваріацію, поскольку параметры не являются двумерніми точками.</Russian>
     </object>    
-    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS">
+        <German>Der [0]. Parameter im Operator 'cross' muss ein Vektor der Dimension [1] sein.</German>
+        <English>The [0]. parameter of the operator 'cross' must be a vector of dimension [1].</English>
+        <Ukrainian>[0]. параметр оператора 'cross' має бути вектором розмірності [1].</Ukrainian>
+        <Russian>[0]. параметр оператора 'cross' должен быть вектором размерности  [1].</Russian>
     </object>
-    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_2">
-        <German>. Parameter im Operator 'cross' muss ein Vektor der Dimension </German>
-        <English>. parameter of the operator 'cross' must be a vector of dimension </English>
-        <Ukrainian>. параметр оператора 'cross' має бути вектором розмірності </Ukrainian>
-        <Russian>. параметр оператора 'cross' должен быть вектором размерности </Russian>
-    </object>
-    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS_3">
-        <German> sein.</German>
-        <English>.</English>
-        <Ukrainian>.</Ukrainian>
-        <Russian>.</Russian>
-    </object>    
     <object id = "MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
         <German>Der 1. Parameter im Operator 'prod' muss eine quadratische Matrix sein.</German>
         <English>The 1. parameter of the operator 'prod' must be square matrix.</English>

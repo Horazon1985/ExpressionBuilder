@@ -5,41 +5,17 @@
     <Ukrainian>tan(pi/2) не визначено.</Ukrainian>
     <Russian>tan(pi/2) не определен.</Russian>
   </object>
-  <object id = "SM_SimplifyTrigonometry_COT_ZERO_NOT_DEFINED">
-    <German>cot(0) ist nicht definiert.</German>
-    <English>cot(0) is not defined.</English>
-    <Ukrainian>cot(0) не визначено.</Ukrainian>
-    <Russian>cot(0) не определен.</Russian>
+  <object id = "SM_SimplifyTrigonometry_COT_NOT_DEFINED">
+    <German>[0] ist nicht definiert.</German>
+    <English>[0] is not defined.</English>
+    <Ukrainian>[0] не визначено.</Ukrainian>
+    <Russian>[0] не определен.</Russian>
   </object>
-  <object id = "SM_SimplifyTrigonometry_COT_PI_NOT_DEFINED">
-    <German>cot(pi) ist nicht definiert.</German>
-    <English>cot(pi) is not defined.</English>
-    <Ukrainian>cot(pi) не визначено.</Ukrainian>
-    <Russian>cot(pi) не определен.</Russian>
-  </object>
-  <object id = "SM_SimplifyTrigonometry_COT_MULTIPLE_OF_PI_NOT_DEFINED">
-    <German> ist nicht definiert.</German>
-    <English> is not defined.</English>
-    <Ukrainian> не визначено.</Ukrainian>
-    <Russian> не определен.</Russian>
-  </object>
-  <object id = "SM_SimplifyTrigonometry_COSEC_ZERO_NOT_DEFINED">
-    <German>cosec(0) ist nicht definiert.</German>
-    <English>cosec(0) is not defined.</English>
-    <Ukrainian>cosec(0) не визначено.</Ukrainian>
-    <Russian>cosec(0) не определен.</Russian>
-  </object>
-  <object id = "SM_SimplifyTrigonometry_COSEC_PI_NOT_DEFINED">
-    <German>cosec(pi) ist nicht definiert.</German>
-    <English>cosec(pi) is not defined.</English>
-    <Ukrainian>cosec(pi) не визначено.</Ukrainian>
-    <Russian>cosec(pi) не определен.</Russian>
-  </object>
-  <object id = "SM_SimplifyTrigonometry_COSEC_MULITPLE_OF_PI_NOT_DEFINED">
-    <German> ist nicht definiert.</German>
-    <English> is not defined.</English>
-    <Ukrainian> не визначено.</Ukrainian>
-    <Russian> не определен.</Russian>
+  <object id = "SM_SimplifyTrigonometry_COSEC_NOT_DEFINED">
+    <German>[0] ist nicht definiert.</German>
+    <English>[0] is not defined.</English>
+    <Ukrainian>[0] не визначено.</Ukrainian>
+    <Russian>[0] не определен.</Russian>
   </object>
   <object id = "SM_SimplifyTrigonometry_SEC_PI_DIVIDED_BY_TWO_NOT_DEFINED">
     <German>sec(pi/2) ist nicht definiert.</German>

@@ -61,7 +61,6 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
     public GraphicPanelCurves3D() {
         
         isRotating = false;
-        this.zoomfactor = 1;
         
         addMouseListener(new MouseListener() {
             @Override
@@ -992,6 +991,7 @@ public class GraphicPanelCurves3D extends JPanel implements Runnable, Exportable
     }
 
     public void drawCurve3D(Expression t_0, Expression t_1, Expression[] expr) throws EvaluationException {
+        this.zoomfactor = 1;
         setExpression(expr);
         computeScreenSizes(t_0, t_1);
         expressionToGraph(t_0, t_1);

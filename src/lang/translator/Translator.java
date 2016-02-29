@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 public abstract class Translator {
 
-    public static String translateMessage(String exceptionId) {
+    private static String translateMessage(String exceptionId) {
 
         // Die entsprechende XML-Datei öffnen.
         try {
@@ -33,8 +33,6 @@ public abstract class Translator {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangLogicalExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 3).equals("MCC")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangMathCommandCompiler.xml");
-            } else if (exceptionId.substring(0, 3).equals("MTF")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangMathToolForm.xml");
             } else if (exceptionId.substring(0, 3).equals("MEB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangMatrixExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 3).equals("PRM")) {

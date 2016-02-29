@@ -46,19 +46,17 @@ public abstract class OperationParser {
 
         //Wenn der Befehl leer ist -> Fehler.
         if (result[0].length() == 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
         }
 
         //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
         if (result[0].length() > input.length() - 2) {
-            throw new ExpressionException(input + Translator.translateMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
+            throw new ExpressionException(input + Translator.translateOutputMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
         }
 
         //Wenn am Ende nicht ")" steht.
         if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_MISSING_CLOSING_BRACKET_1")
-                    + input
-                    + Translator.translateMessage("EB_Expression_MISSING_CLOSING_BRACKET_2"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_MISSING_CLOSING_BRACKET", input));
         }
 
         result[1] = input.substring(result[0].length() + 1, input.length() - 1);
@@ -113,14 +111,14 @@ public abstract class OperationParser {
             }
             if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
                 if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ExpressionException(Translator.translateMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == input.length() - 1) {
                 if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ExpressionException(Translator.translateMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
             }
@@ -128,7 +126,7 @@ public abstract class OperationParser {
         }
 
         if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Expression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
         }
 
         String[] resultParametersAsArray = new String[resultParameters.size()];
@@ -375,9 +373,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
                         + operatorName
-                        + Translator.translateMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
+                        + Translator.translateOutputMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -411,9 +409,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
-            throw new ExpressionException(Translator.translateMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
-                    + Translator.translateMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
+                    + Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
         }
 
         /* 
@@ -456,21 +454,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -479,21 +477,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -522,11 +520,11 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                        throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
                                 + var
-                                + Translator.translateMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
                                 + operatorName
-                                + Translator.translateMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                                + Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
                     }
                 }
             }
@@ -569,9 +567,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
                         + operatorName
-                        + Translator.translateMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
+                        + Translator.translateOutputMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -606,9 +604,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
-            throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
-                    + Translator.translateMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
+                    + Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
         }
 
         /* 
@@ -651,21 +649,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -674,21 +672,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -717,11 +715,11 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
                                 + var
-                                + Translator.translateMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
                                 + operatorName
-                                + Translator.translateMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                                + Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
                     }
                 }
             }
@@ -764,9 +762,7 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInCommandParameters >= parameter.length) {
-                throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_1")
-                        + commandName
-                        + Translator.translateMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_2"));
+                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND", commandName));
             }
 
             // Indizes loggen!
@@ -800,9 +796,7 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInCommandParameters < parameter.length - 1 || parameter.length > 0 && resultPattern.size() == 0) {
-            throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_1")
-                    + commandName
-                    + Translator.translateMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_2"));
+            throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND", commandName));
         }
 
         /* 
@@ -845,21 +839,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + commandName
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + commandName
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -868,21 +862,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + commandName
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + commandName
-                                        + Translator.translateMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -911,11 +905,7 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_1")
-                                + var
-                                + Translator.translateMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_2")
-                                + commandName
-                                + Translator.translateMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                        throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE", var, commandName));
                     }
                 }
             }
@@ -955,19 +945,15 @@ public abstract class OperationParser {
 
             try {
                 if (!parameter.contains("=")) {
-                    throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1")
-                            + (index + 1)
-                            + Translator.translateMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2")
-                            + opName
-                            + Translator.translateMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3"));
+                    throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "PARAMETER_MUST_CONTAIN_EQUALITY_SIGN", index + 1, opName));
                 }
                 exprLeft = Expression.build(parameter.substring(0, parameter.indexOf("=")), vars);
                 exprRight = Expression.build(parameter.substring(parameter.indexOf("=") + 1), vars);
             } catch (ExpressionException e) {
-                String failureMessage = Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
-                        + (index + 1) + Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+                String failureMessage = Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                        + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                         + opName
-                        + Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION");
+                        + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION");
                 throw new ExpressionException(failureMessage);
             }
 
@@ -980,41 +966,41 @@ public abstract class OperationParser {
                     if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                         return new Expression[]{exprLeft, exprRight};
                     } else {
-                        throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                        throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                 + (index + 1)
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                                 + opName
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
                                 + Integer.parseInt(restrictions.get(1))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
                 } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                     if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                         return new Expression[]{exprLeft, exprRight};
                     } else {
-                        throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                        throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                 + (index + 1)
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                                 + opName
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                 + Integer.parseInt(restrictions.get(0))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
                 } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                         && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                     return new Expression[]{exprLeft, exprRight};
                 } else {
-                    throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                    throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                             + (index + 1)
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                             + opName
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                             + Integer.parseInt(restrictions.get(0))
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
                             + Integer.parseInt(restrictions.get(1))
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                     );
                 }
             } else {
@@ -1034,18 +1020,18 @@ public abstract class OperationParser {
                     abstrExpr = MatrixExpression.build(parameter, vars);
                 }
             } catch (ExpressionException e) {
-                String failureMessage = Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
-                        + (index + 1) + Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+                String failureMessage = Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                        + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                         + opName;
                 switch (type) {
                     case expr:
-                        failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION");
+                        failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION");
                         break;
                     case logexpr:
-                        failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION");
+                        failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION");
                         break;
                     case matexpr:
-                        failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION");
+                        failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION");
                         break;
                 }
                 throw new ExpressionException(failureMessage);
@@ -1059,41 +1045,41 @@ public abstract class OperationParser {
                     if (containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                         return abstrExpr;
                     } else {
-                        throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                        throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                 + (index + 1)
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                                 + opName
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5")
                                 + Integer.parseInt(restrictions.get(1))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
                 } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                     if (containedVars.size() >= Integer.parseInt(restrictions.get(0))) {
                         return abstrExpr;
                     } else {
-                        throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                        throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                                 + (index + 1)
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                                 + opName
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                                 + Integer.parseInt(restrictions.get(0))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                         );
                     }
                 } else if (containedVars.size() >= Integer.parseInt(restrictions.get(0))
                         && containedVars.size() <= Integer.parseInt(restrictions.get(1))) {
                     return abstrExpr;
                 } else {
-                    throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
+                    throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1")
                             + (index + 1)
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2")
                             + opName
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3")
                             + Integer.parseInt(restrictions.get(0))
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4")
                             + Integer.parseInt(restrictions.get(1))
-                            + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
+                            + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6")
                     );
                 }
             } else {
@@ -1111,40 +1097,40 @@ public abstract class OperationParser {
                         if (n <= Integer.parseInt(restrictions.get(1))) {
                             return n;
                         } else {
-                            throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
+                            throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
                                     + (index + 1)
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
                                     + opName
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_5")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_5")
                                     + Integer.parseInt(restrictions.get(1))
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
                             );
                         }
                     } else if (!restrictions.get(0).equals(ParameterPattern.none) && restrictions.get(1).equals(ParameterPattern.none)) {
                         if (n >= Integer.parseInt(restrictions.get(0))) {
                             return n;
                         } else {
-                            throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
+                            throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
                                     + (index + 1)
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
                                     + opName
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_3")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_3")
                                     + Integer.parseInt(restrictions.get(0))
-                                    + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
+                                    + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
                             );
                         }
                     } else if (n >= Integer.parseInt(restrictions.get(0)) && n <= Integer.parseInt(restrictions.get(1))) {
                         return n;
                     } else {
-                        throw new ExpressionException(Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
+                        throw new ExpressionException(Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_1")
                                 + (index + 1)
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_2")
                                 + opName
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_3")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_3")
                                 + Integer.parseInt(restrictions.get(0))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_4")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_4")
                                 + Integer.parseInt(restrictions.get(1))
-                                + Translator.translateMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
+                                + Translator.translateOutputMessage(errorMessagePrefix + "BOUNDS_FOR_PARAMETER_6")
                         );
                     }
                 } else {
@@ -1155,28 +1141,28 @@ public abstract class OperationParser {
 
         }
 
-        String failureMessage = Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
-                + (index + 1) + Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+        String failureMessage = Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                 + opName;
         switch (type) {
             case uniquevar:
             case var:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR");
                 break;
             case equation:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION");
                 break;
             case expr:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION");
                 break;
             case integer:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER");
                 break;
             case logexpr:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION");
                 break;
             case matexpr:
-                failureMessage += Translator.translateMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION");
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION");
                 break;
         }
 

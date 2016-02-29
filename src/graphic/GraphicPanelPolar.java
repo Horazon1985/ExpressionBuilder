@@ -469,12 +469,15 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
     }
 
     public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+        this.zoomfactor = 1;
+        this.zoomfactorX = 1;
+        this.zoomfactorY = 1;
         setExpressions(exprs);
         computeScreenSizes(phi_0, phi_1);
         expressionToGraph(phi_0.evaluate(), phi_1.evaluate());
         drawGraphPolar();
     }
-    
+
     private void drawGraphPolar(Graphics g) {
 
         /**
@@ -526,7 +529,7 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         g.setColor(Color.black);
 
     }
-    
+
     private void drawGraphPolar() {
         repaint();
     }

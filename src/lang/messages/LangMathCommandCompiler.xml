@@ -2,29 +2,17 @@
     
     <!-- Fehlermeldungen für das Kompilieren eines Standardbefehls -->  
     
-    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_1">
-        <German>Zu wenig Parameter im Befehl </German>
-        <English>Not enough parameters in command </English>
-        <Ukrainian>Замало параметрів у команди </Ukrainian>
-        <Russian>Недостаточно параметров у команды </Russian>
+    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND">
+        <German>Zu wenig Parameter im Befehl [0].</German>
+        <English>Not enough parameters in command [0].</English>
+        <Ukrainian>Замало параметрів у команди [0].</Ukrainian>
+        <Russian>Недостаточно параметров у команды [0].</Russian>
     </object>
-    <object id = "MCC_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND_2">
-        <German>.</German>
-        <English>.</English>
-        <Ukrainian>.</Ukrainian>
-        <Russian>.</Russian>
-    </object>
-    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_1">
-        <German>Zu viele Parameter im Befehl </German>
-        <English>Too many parameters in command </English>
-        <Ukrainian>Забагато параметрів у команди </Ukrainian>
-        <Russian>Слишком много параметров у команды </Russian>
-    </object>
-    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND_2">
-        <German>.</German>
-        <English>.</English>
-        <Ukrainian>.</Ukrainian>
-        <Russian>.</Russian>
+    <object id = "MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND">
+        <German>Zu viele Parameter im Befehl [0].</German>
+        <English>Too many parameters in command [0].</English>
+        <Ukrainian>Забагато параметрів у команди [0].</Ukrainian>
+        <Russian>Слишком много параметров у команды [0].</Russian>
     </object>
     <object id = "MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
         <German>Die Variable </German>
@@ -74,41 +62,17 @@
         <Ukrainian>.</Ukrainian>
         <Russian>.</Russian>
     </object>
-    <object id = "MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_1">
-        <German>Die Variable </German>
-        <English>The variable </English>
-        <Ukrainian>Змінна </Ukrainian>
-        <Russian>Переменная </Russian>
+    <object id = "MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE">
+        <German>Die Variable [0] darf in den Parametern des Befehls '[1]' nicht mehrmals vorkommen.</German>
+        <English>The variable [0] is not allowed to occur twice in the parameters of the command '[1]'.</English>
+        <Ukrainian>Змінна [0] не повинна міститися у параметрах команди '[1]' частіше одного разу.</Ukrainian>
+        <Russian>Переменная [0] не должна встречаться в параметрах команды '[1]' чаще одного раза.</Russian>
     </object>
-    <object id = "MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_2">
-        <German> darf in den Parametern des Befehls </German>
-        <English> is not allowed to occur twice in the parameters of the command </English>
-        <Ukrainian> не повинна міститися у параметрах команди </Ukrainian>
-        <Russian> не должна встречаться в параметрах команды </Russian>
-    </object>
-    <object id = "MCC_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE_3">
-        <German> nicht mehrmals vorkommen.</German>
-        <English>.</English>
-        <Ukrainian>частіше одного разу.</Ukrainian>
-        <Russian>чаще одного раза.</Russian>
-    </object>
-    <object id = "MCC_COMMAND_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1">
-        <German>Der Ausdruck im </German>
-        <English>The expression in the </English>
-        <Ukrainian>Вираз у </Ukrainian>
-        <Russian>Выражение в </Russian>
-    </object>
-    <object id = "MCC_COMMAND_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2">
-        <German>. Parameter des Befehls </German>
-        <English>. parameter of the command </English>
-        <Ukrainian>. параметрі команди </Ukrainian>
-        <Russian>. параметре команды </Russian>
-    </object>
-    <object id = "MCC_COMMAND_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3">
-        <German> muss ein '='-Zeichen enthalten.</German>
-        <English> must contain a '=' sign.</English>
-        <Ukrainian> має містити символ '='.</Ukrainian>
-        <Russian> должно содержать символ '='.</Russian>
+    <object id = "MCC_COMMAND_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN">
+        <German>Der Ausdruck im [0]. Parameter des Befehls '[1]' muss ein '='-Zeichen enthalten.</German>
+        <English>The expression in the [0]. parameter of the command '[1]' must contain a '=' sign.</English>
+        <Ukrainian>Вираз у [0]. параметрі команди '[1]' має містити символ '='.</Ukrainian>
+        <Russian>Выражение в [0]. параметре команды '[1]' должно содержать символ '='.</Russian>
     </object>
     <object id = "MCC_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
         <German>Der Ausdruck im </German>
@@ -231,11 +195,17 @@
         <Russian> должен быть действительным матричным выражением.</Russian>
     </object>
     
+    <object id = "MCC_PARAMETER_IN_APPROX_IS_INVALID">
+        <German>Der Parameter im Befehl 'approx' muss entweder ein Ausdruck oder ein Matrizenausdruck sein.</German>
+        <English>The parameter in command 'approx' must be either an expression or a matrix expression.</English>
+        <Ukrainian>Параметр команди 'approx' має бути виразом або матричним виразом.</Ukrainian>
+        <Russian>Параметр команды 'approx' должен быть либо выражением либо матричным выражением.</Russian>
+    </object>
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_DEF">
         <German>Im Befehl 'def' muss genau ein Parameter stehen, welcher aus einer Variablenzuweisung oder einer Funktionszuweisung besteht.</German>
         <English>The command 'def' must contain exactly one parameter, which is a definition either of a variable or of a function.</English>
-        <Ukrainian>У команди 'approx' має бути рівно один параметр, що є визначенням змінної або .</Ukrainian>
-        <Russian>У команды 'approx' должен быть ровно один параметр.</Russian>
+        <Ukrainian>У команди 'def' має бути рівно один параметр, що є визначенням змінної або функкції.</Ukrainian>
+        <Russian>У команды 'def' должен быть ровно один параметр, который является определением переменной или функции.</Russian>
     </object>
     <object id = "MCC_NO_EQUAL_IN_DEF">
         <German>Im Befehl 'def' muss ein Gleichheitszeichen als Zuweisungsoperator vorhanden sein.</German>
@@ -285,41 +255,23 @@
         <Ukrainian>' не є діючою змінною.</Ukrainian>
         <Russian>' не является действительной переменной.</Russian>
     </object>
-    <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_DEF_1">
-        <German>In der Funktionsdeklaration der Funktion </German>
-        <English>In the declaration of the function </English>
-        <Ukrainian>В оголошенні функції </Ukrainian>
-        <Russian>В обьявлении функции </Russian>
+    <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_DEF">
+        <German>In der Funktionsdeklaration der Funktion '[0]' dürfen nicht mehrmals dieselben Veränderlichen vorkommen.</German>
+        <English>In the declaration of the function '[0]' it is not allowed that same variables occur twice.</English>
+        <Ukrainian>В оголошенні функції '[0]' не можна більше одного разу використовувати ту саму змінну.</Ukrainian>
+        <Russian>В обьявлении функции '[0]' нельзя более одного раза использовать одну и ту же переменную.</Russian>
     </object>
-    <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_DEF_2">
-        <German> dürfen nicht mehrmals dieselben Veränderlichen vorkommen.</German>
-        <English> it is not allowed that same variables occur twice.</English>
-        <Ukrainian> не можна більше одного разу використовувати ту саму змінну.</Ukrainian>
-        <Russian> нельзя более одного раза использовать одну и ту же переменную.</Russian>
+    <object id = "MCC_PROTECTED_FUNC_NAME">
+        <German>Der Funktionsname '[0]' ist der Name einer geschützten Funktion, eines geschützten Operators oder eines geschützten Befehls. Bitte wählen Sie einen anderen Namen.</German>
+        <English>The function name '[0]' is the name of either a protected function, a protected operator or a protected command. Please, choose another function name.</English>
+        <Ukrainian>Ім'я функції '[0]' є ім'ям захищеної функції, захищеного оператора або захищеної команди. Оберіть, будь ласка, інше ім'я для функції.</Ukrainian>
+        <Russian>Имя функции '[0]' является именем защищённой функции, защищённого оператора или защищённой команды. Выберите, пожалуйста, другое имя функции.</Russian>
     </object>
-    <object id = "MCC_PROTECTED_FUNC_NAME_1">
-        <German>Der Funktionsname '</German>
-        <English>The function name '</English>
-        <Ukrainian>Ім'я функції '</Ukrainian>
-        <Russian>Имя функции '</Russian>
-    </object>
-    <object id = "MCC_PROTECTED_FUNC_NAME_2">
-        <German>' ist der Name einer geschützten Funktion, eines geschützten Operators oder eines geschützten Befehls. Bitte wählen Sie einen anderen Namen.</German>
-        <English>' is the name of either a protected function, a protected operator or a protected command. Please, choose another function name.</English>
-        <Ukrainian>' є ім'ям захищеної функції, захищеного оператора або захищеної команди. Оберіть, будь ласка, інше ім'я для функції.</Ukrainian>
-        <Russian>' является именем защищённой функции, защищённого оператора или защищённой команды. Выберите, пожалуйста, другое имя функции.</Russian>
-    </object>
-    <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS_1">
-        <German>Der Funktionsname '</German>
-        <English>The function name '</English>
-        <Ukrainian>Ім'я функції '</Ukrainian>
-        <Russian>Имя функции '</Russian>
-    </object>
-    <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS_2">
-        <German>' enthält Sonderzeichen. Bitte wählen Sie einen anderen Namen, welcher nur aus Buchstaben und Ziffern besteht.</German>
-        <English>' contains special characters. Please, choose another function name, which consists only of letters and digits..</English>
-        <Ukrainian>' містить спеціальні символи. Оберіть, будь ласка, інше ім'я функції, що складається лише з літер та цифр.</Ukrainian>
-        <Russian>' содержит специальные символы. Выберите, пожалуйста, другое имя функции, которое состоит только из букв и цифр.</Russian>
+    <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS">
+        <German>Der Funktionsname '[0]' enthält Sonderzeichen. Bitte wählen Sie einen anderen Namen, welcher nur aus Buchstaben und Ziffern besteht.</German>
+        <English>The function name '[0]' contains special characters. Please, choose another function name, which consists only of letters and digits..</English>
+        <Ukrainian>Ім'я функції '[0]' містить спеціальні символи. Оберіть, будь ласка, інше ім'я функції, що складається лише з літер та цифр.</Ukrainian>
+        <Russian>Имя функции '[0]' содержит специальные символы. Выберите, пожалуйста, другое имя функции, которое состоит только из букв и цифр.</Russian>
     </object>
     <object id = "MCC_RIGHT_SIDE_OF_DEF_CONTAINS_WRONG_VAR">
         <German>Auf der rechten Seite taucht eine Veränderliche auf, die nicht als Funktionsparameter vorkommt.</German>

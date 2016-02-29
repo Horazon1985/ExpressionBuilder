@@ -1,5 +1,24 @@
 <objects>
-<!-- MathToolForm -->    
+<!-- Grafische / Textliche Ausgabe -->
+  <object id = "GUI_ERROR">
+    <German>FEHLER: </German>
+    <English>ERROR: </English>
+    <Ukrainian>ПОМИЛКА: </Ukrainian>
+    <Russian>ОШИБКА: </Russian>
+  </object>
+  <object id = "GUI_UNEXPECTED_EXCEPTION">
+    <German>Es trat ein unerwarteter Fehler auf. Fehlermeldung: </German>
+    <English>An unexpected exception occurred. Exception message: </English>
+    <Ukrainian>Виникла неочікувана помилка. Повідомлення про помилку: </Ukrainian>
+    <Russian>Возникла неожиданная ошибка. Сообщение об ошибке: </Russian>
+  </object>
+  <object id = "GUI_EQUIVALENT_TO">
+    <German> ist äquivalent zu </German>
+    <English> is equivalent to </English>
+    <Ukrainian> еквівалентно </Ukrainian>
+    <Russian> экивалентно </Russian>
+  </object>
+<!-- MathToolGUI -->    
   <object id = "GUI_MathToolForm_INPUT">
     <German>Eingabe</German>
     <English>Input</English>
