@@ -22,7 +22,7 @@ public class Constant extends Expression {
     // Verschiedene Konstruktoren
     public Constant(double approxValue) throws EvaluationException {
         if (Double.isNaN(approxValue) || Double.isInfinite(approxValue)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
         this.approxValue = approxValue;
         this.value = BigDecimal.valueOf(this.approxValue);
@@ -100,7 +100,7 @@ public class Constant extends Expression {
     @Override
     public double evaluate() throws EvaluationException {
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
         return this.approxValue;
     }
@@ -265,7 +265,7 @@ public class Constant extends Expression {
             return SimplifyBinaryOperationMethods.constantToQuotient(this.value, BigDecimal.ONE);
         }
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
         }
         return this;
     }

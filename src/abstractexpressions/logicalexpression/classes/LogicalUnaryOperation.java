@@ -74,7 +74,7 @@ public class LogicalUnaryOperation extends LogicalExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateExceptionMessage("LEB_LogicalUnaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateMessage("LEB_LogicalUnaryOperation_COMPUTATION_ABORTED"));
         }
 
         //Linken und rechten Teil bei logischen Binäroperationen zunächst separat vereinfachen

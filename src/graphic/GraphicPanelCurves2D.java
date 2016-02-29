@@ -126,9 +126,9 @@ public class GraphicPanelCurves2D extends JPanel implements Exportable {
 
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
+        instructions.add(Translator.translateMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
+        instructions.add(Translator.translateMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
         return instructions;
     }
 

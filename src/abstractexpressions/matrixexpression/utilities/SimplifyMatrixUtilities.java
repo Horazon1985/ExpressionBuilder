@@ -305,7 +305,7 @@ public abstract class SimplifyMatrixUtilities {
 
             // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
             if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
+                throw new EvaluationException(Translator.translateMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
             }
 
         }
@@ -354,7 +354,7 @@ public abstract class SimplifyMatrixUtilities {
 
             // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
             if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
+                throw new EvaluationException(Translator.translateMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
             }
 
         }

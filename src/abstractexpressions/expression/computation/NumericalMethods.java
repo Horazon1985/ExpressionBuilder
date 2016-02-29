@@ -16,7 +16,7 @@ public abstract class NumericalMethods {
     private static double[] add(double[] a, double[] b) throws EvaluationException {
 
         if (a.length != b.length) {
-            throw new EvaluationException(Translator.translateExceptionMessage("CC_NumericalMethods_VECTORS_MUST_HAVE_SAME_DIMENSION"));
+            throw new EvaluationException(Translator.translateMessage("CC_NumericalMethods_VECTORS_MUST_HAVE_SAME_DIMENSION"));
         }
 
         double[] result = new double[a.length];
@@ -239,11 +239,11 @@ public abstract class NumericalMethods {
         for (int i = 0; i < n; i++) {
             Variable.setValue(var, zeroOfEquation);
             if (derivative.evaluate() == 0) {
-                throw new EvaluationException(Translator.translateExceptionMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
             }
             zeroOfEquation = zeroOfEquation - f.evaluate() / derivative.evaluate();
             if (Double.isNaN(zeroOfEquation) || Double.isInfinite(zeroOfEquation)) {
-                throw new EvaluationException(Translator.translateExceptionMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
             }
         }
 

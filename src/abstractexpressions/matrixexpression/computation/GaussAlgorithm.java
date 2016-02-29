@@ -213,7 +213,7 @@ public abstract class GaussAlgorithm {
 
         if (dimM.height == 0 || dimM.width == 0 || dimB.width != 1 || dimM.height != dimB.height) {
             // Sollte eigentlich nie vorkommen.
-            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            throw new EvaluationException(Translator.translateMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width + 1];
@@ -231,7 +231,7 @@ public abstract class GaussAlgorithm {
         try {
             mExtended = computeRowEcholonForm(mExtended);
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            throw new EvaluationException(Translator.translateMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         int maxIndexOfNonZeroRow = dimM.height - 1;
@@ -261,7 +261,7 @@ public abstract class GaussAlgorithm {
             allCoefficientsAreZero = allCoefficientsAreZero && mExtended.getEntry(maxIndexOfNonZeroRow, i).equals(ZERO);
         }
         if (allCoefficientsAreZero && !mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width).equals(ZERO)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            throw new EvaluationException(Translator.translateMessage("LAA_SYSTEM_NOT_SOLVABLE"));
         }
 
         // Ab hier existieren Lösungen.

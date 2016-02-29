@@ -67,13 +67,13 @@ public class Function extends Expression {
                 if (!Double.isNaN(argumentValue) && !Double.isInfinite(argumentValue)) {
                     return argumentValue;
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case abs:
                 if (!Double.isNaN(argumentValue) && !Double.isInfinite(argumentValue)) {
                     return Math.abs(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sgn:
                 if (!Double.isNaN(argumentValue) && !Double.isInfinite(argumentValue)) {
@@ -85,175 +85,175 @@ public class Function extends Expression {
                     }
                     return -1;
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case exp:
                 if (!Double.isNaN(Math.exp(argumentValue)) && !Double.isInfinite(Math.exp(argumentValue))) {
                     return Math.exp(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case lg:
                 if (!Double.isNaN(Math.log10(argumentValue)) && !Double.isInfinite(Math.log10(argumentValue))) {
                     return Math.log10(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case ln:
                 if (!Double.isNaN(Math.log(argumentValue)) && !Double.isInfinite(Math.log(argumentValue))) {
                     return Math.log(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sin:
                 if (!Double.isNaN(Math.sin(argumentValue)) && !Double.isInfinite(Math.sin(argumentValue))) {
                     return Math.sin(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case cos:
                 if (!Double.isNaN(Math.cos(argumentValue)) && !Double.isInfinite(Math.cos(argumentValue))) {
                     return Math.cos(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case tan:
                 if (!Double.isNaN(Math.tan(argumentValue)) && !Double.isInfinite(Math.tan(argumentValue))) {
                     return Math.tan(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case cot:
                 if (!Double.isNaN(1 / Math.tan(argumentValue)) && !Double.isInfinite(1 / Math.tan(argumentValue))) {
                     return 1 / Math.tan(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sec:
                 if (!Double.isNaN(1 / Math.cos(argumentValue)) && !Double.isInfinite(1 / Math.cos(argumentValue))) {
                     return 1 / Math.cos(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case cosec:
                 if (!Double.isNaN(1 / Math.sin(argumentValue)) && !Double.isInfinite(1 / Math.sin(argumentValue))) {
                     return 1 / Math.sin(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sinh:
                 if (!Double.isNaN(Math.sinh(argumentValue)) && !Double.isInfinite(Math.sinh(argumentValue))) {
                     return Math.sinh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case cosh:
                 if (!Double.isNaN(Math.cosh(argumentValue)) && !Double.isInfinite(Math.cosh(argumentValue))) {
                     return Math.cosh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case tanh:
                 if (!Double.isNaN(Math.tanh(argumentValue)) && !Double.isInfinite(Math.tanh(argumentValue))) {
                     return Math.tanh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case coth:
                 if (!Double.isNaN(1 / Math.tanh(argumentValue)) && !Double.isInfinite(1 / Math.tanh(argumentValue))) {
                     return 1 / Math.tanh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sech:
                 if (!Double.isNaN(1 / Math.cosh(argumentValue)) && !Double.isInfinite(1 / Math.cosh(argumentValue))) {
                     return 1 / Math.cosh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case cosech:
                 if (!Double.isNaN(1 / Math.sinh(argumentValue)) && !Double.isInfinite(1 / Math.sinh(argumentValue))) {
                     return 1 / Math.sinh(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arcsin:
                 if (!Double.isNaN(Math.asin(argumentValue)) && !Double.isInfinite(Math.asin(argumentValue))) {
                     return Math.asin(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arccos:
                 if (!Double.isNaN(Math.acos(argumentValue)) && !Double.isInfinite(Math.acos(argumentValue))) {
                     return Math.acos(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arctan:
                 if (!Double.isNaN(Math.atan(argumentValue)) && !Double.isInfinite(Math.atan(argumentValue))) {
                     return Math.atan(argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arccot:
                 if (!Double.isNaN(Math.atan(1 / argumentValue)) && !Double.isInfinite(Math.atan(1 / argumentValue))) {
                     return Math.atan(1 / argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arcsec:
                 if (!Double.isNaN(Math.acos(1 / argumentValue)) && !Double.isInfinite(Math.acos(1 / argumentValue))) {
                     return Math.acos(1 / argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arccosec:
                 if (!Double.isNaN(Math.asin(1 / argumentValue)) && !Double.isInfinite(Math.asin(1 / argumentValue))) {
                     return Math.asin(1 / argumentValue);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arsinh:
                 if (!Double.isNaN(Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) + 1))) && !Double.isInfinite(Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) + 1)))) {
                     return Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) + 1));
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arcosh:
                 if (!Double.isNaN(Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) - 1))) && !Double.isInfinite(Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) - 1)))) {
                     return Math.log(argumentValue + Math.sqrt(Math.pow(argumentValue, 2) - 1));
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case artanh:
                 if (!Double.isNaN(Math.log((1 + argumentValue) / (1 - argumentValue)) / 2) && !Double.isInfinite(Math.log((1 + argumentValue) / (1 - argumentValue)) / 2)) {
                     return Math.log((1 + argumentValue) / (1 - argumentValue)) / 2;
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arcoth:
                 if (!Double.isNaN(Math.log((1 + argumentValue) / (argumentValue - 1)) / 2) && !Double.isInfinite(Math.log((1 + argumentValue) / (argumentValue - 1)) / 2)) {
                     return Math.log((1 + argumentValue) / (argumentValue - 1)) / 2;
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arsech:
                 if (!Double.isNaN(Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) - 1))) && !Double.isInfinite(Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) - 1)))) {
                     return Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) - 1));
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case arcosech:
                 if (!Double.isNaN(Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) + 1))) && !Double.isInfinite(Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) + 1)))) {
                     return Math.log(1 / argumentValue + Math.sqrt(Math.pow(1 / argumentValue, 2) + 1));
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             case sqrt:
                 if (!Double.isNaN(Math.pow(argumentValue, 0.5)) && !Double.isInfinite(Math.pow(argumentValue, 0.5))) {
                     return Math.pow(argumentValue, 0.5);
                 } else {
-                    throw new EvaluationException(Translator.translateExceptionMessage("EB_Function_UNDEFINED_VALUE"));
+                    throw new EvaluationException(Translator.translateMessage("EB_Function_UNDEFINED_VALUE"));
                 }
             default:
                 return 0;

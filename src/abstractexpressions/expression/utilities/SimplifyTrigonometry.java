@@ -530,7 +530,7 @@ public abstract class SimplifyTrigonometry {
                 }
                 //tan(pi/2) = FEHLER!
                 if (n.compareTo(BigInteger.valueOf(2)) == 0) {
-                    throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
                 }
 
             }
@@ -544,19 +544,19 @@ public abstract class SimplifyTrigonometry {
 
         //cot(0) = FEHLER!
         if (f.getType().equals(TypeFunction.cot) && f.getLeft().equals(ZERO)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COT_ZERO_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_COT_ZERO_NOT_DEFINED"));
         }
 
         //cot(pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cot) && f.getLeft().equals(PI)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COT_PI_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_COT_PI_NOT_DEFINED"));
         }
 
         //cot(k*pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cot) && f.getLeft().isProduct()
                 && ((BinaryOperation) f.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) f.getLeft()).getRight().equals(PI)) {
             throw new EvaluationException(f.writeExpression()
-                    + Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COT_MULTIPLE_OF_PI_NOT_DEFINED"));
+                    + Translator.translateMessage("SM_SimplifyTrigonometry_COT_MULTIPLE_OF_PI_NOT_DEFINED"));
         }
 
         //cot(m*pi/n) = (Kotangenstabelle)
@@ -619,19 +619,19 @@ public abstract class SimplifyTrigonometry {
 
         //cosec(0) = FEHLER!
         if (f.getType().equals(TypeFunction.cosec) && f.getLeft().equals(ZERO)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COSEC_ZERO_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_COSEC_ZERO_NOT_DEFINED"));
         }
 
         //cosec(pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cosec) && f.getLeft().equals(PI)) {
-            throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COSEC_PI_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_COSEC_PI_NOT_DEFINED"));
         }
 
         //cosec(k*pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cosec) && f.getLeft().isProduct()
                 && ((BinaryOperation) f.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) f.getLeft()).getRight().equals(PI)) {
             throw new EvaluationException(f.writeExpression()
-                    + Translator.translateExceptionMessage("SM_SimplifyTrigonometry_COSEC_MULITPLE_OF_PI_NOT_DEFINED"));
+                    + Translator.translateMessage("SM_SimplifyTrigonometry_COSEC_MULITPLE_OF_PI_NOT_DEFINED"));
         }
 
         //cosec(m*pi/n) = (Kosecanstabelle)
@@ -758,7 +758,7 @@ public abstract class SimplifyTrigonometry {
                 }
                 //sec(pi/2) = FEHLER!
                 if (n.compareTo(BigInteger.valueOf(2)) == 0) {
-                    throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_SEC_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_SEC_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
                 }
 
             }
@@ -914,7 +914,7 @@ public abstract class SimplifyTrigonometry {
 
             // arccosec(0) = 0
             if (f.getLeft().equals(ZERO)) {
-                throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_ARCCOSEC_ZERO_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_ARCCOSEC_ZERO_NOT_DEFINED"));
             }
             // arccosec(1) = pi/2
             if (f.getLeft().equals(ONE)) {
@@ -947,7 +947,7 @@ public abstract class SimplifyTrigonometry {
 
             // arcsec(0) = FEHLER!
             if (f.getLeft().equals(ZERO)) {
-                throw new EvaluationException(Translator.translateExceptionMessage("SM_SimplifyTrigonometry_ARCSEC_ZERO_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateMessage("SM_SimplifyTrigonometry_ARCSEC_ZERO_NOT_DEFINED"));
             }
             // arcsec(1) = 0
             if (f.getLeft().equals(ONE)) {

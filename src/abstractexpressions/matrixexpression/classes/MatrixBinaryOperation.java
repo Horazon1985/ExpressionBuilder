@@ -45,7 +45,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         if (!this.isProduct()) {
             if (dimLeft.height != dimRight.height || dimLeft.width != dimRight.width) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateMessage("MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED"));
             }
             return dimLeft;
         } else {
@@ -61,7 +61,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 return dimLeft;
             }
             if (dimLeft.width != dimRight.height) {
-                throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateMessage("MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED"));
             }
             return new Dimension(dimRight.width, dimLeft.height);
         }
@@ -287,7 +287,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateExceptionMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
         }
 
         MatrixExpressionCollection termsLeft = new MatrixExpressionCollection();
@@ -633,7 +633,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateExceptionMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
         }
 
         if (this.isSum()) {

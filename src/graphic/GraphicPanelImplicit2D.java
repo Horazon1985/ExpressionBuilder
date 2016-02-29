@@ -46,7 +46,7 @@ public class GraphicPanelImplicit2D extends JPanel implements Exportable {
     
     public ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateExceptionMessage("GR_Graphic2D_IMPOSSIBLE_MOVE_GRAPH"));
+        instructions.add(Translator.translateMessage("GR_Graphic2D_IMPOSSIBLE_MOVE_GRAPH"));
         return instructions;
     }
     

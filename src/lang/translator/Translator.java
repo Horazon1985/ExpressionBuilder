@@ -12,7 +12,7 @@ import org.w3c.dom.NodeList;
 
 public abstract class Translator {
 
-    public static String translateExceptionMessage(String exceptionId) {
+    public static String translateMessage(String exceptionId) {
 
         // Die entsprechende XML-Datei öffnen.
         try {
@@ -81,6 +81,18 @@ public abstract class Translator {
         // Sollte nie eintreten.
         return "";
 
+    }
+
+    public static String translateOutputMessage(String messageId, Object... params) {
+        String message = translateMessage(messageId);
+        String token;
+        for (int i = 0; i < params.length; i++){
+            token = "[" + i + "]";
+            while (message.contains(token)){
+                message = message.substring(0, message.indexOf(token)) + params[i].toString() + message.substring(message.indexOf(token) + token.length());
+            }
+        }
+        return message;
     }
 
 }

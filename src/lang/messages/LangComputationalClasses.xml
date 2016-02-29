@@ -1,39 +1,15 @@
 ﻿<objects>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED_1">
-    <German>Das Taylorpolynom der Lösung der Differentialgleichung </German>
-    <English>The taylor polynomial of the solution of the differential equation </English>
-    <Ukrainian>Поліном Тейлора розв'язку диференціального рівняння </Ukrainian>
-    <Russian>Полином Тейлора решения дифференциального уравнения </Russian>
+  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED">
+    <German>Das Taylorpolynom der Lösung der Differentialgleichung [0]^([1]) = [2] kann nicht explizit berechnet werden, da entweder in der Differentialgleichung oder in den Koeffizienten des Taylorpolynoms unbestimmte Integrale auftreten.</German>
+    <English>The taylor polynomial of the solution of the differential equation [0]^([1]) = [2] cannot be computed explicitly, since either the differential equation or the coefficients of the taylor polynomial contain indefinite integrals.</English>
+    <Ukrainian>Поліном Тейлора розв'язку диференціального рівняння [0]^([1]) = [2] не може бути точно обчислено, оскільки або в диференціальному рівнянні або в коєфіцієнтах полінома Тейлора містяться невизначені інтеграли.</Ukrainian>
+    <Russian>Полином Тейлора решения дифференциального уравнения [0]^([1]) = [2] не может быть точно вычеслен, поскольку либо в дифференциальном уравнении либо в коэффициентах полинома Тейлора содержатся неопределённые интегралы.</Russian>
   </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED_2">
-    <German>^(</German>
-    <English>^(</English>
-    <Ukrainian>^(</Ukrainian>
-    <Russian>^(</Russian>
-  </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED_3">
-    <German>) = </German>
-    <English>) = </English>
-    <Ukrainian> = </Ukrainian>
-    <Russian>) = </Russian>
-  </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED_4">
-    <German> kann nicht explizit berechnet werden, da entweder in der Differentialgleichung oder in den Koeffizienten des Taylorpolynoms unbestimmte Integrale auftreten.</German>
-    <English> cannot be computed explicitly, since either the differential equation or the coefficients of the taylor polynomial contain indefinite integrals.</English>
-    <Ukrainian> не може бути точно обчислено, оскільки або в диференціальному рівнянні або в коєфіцієнтах полінома Тейлора містяться невизначені інтеграли.</Ukrainian>
-    <Russian> не может быть точно вычеслен, поскольку либо в дифференциальном уравнении либо в коэффициентах полинома Тейлора содержатся неопределённые интегралы.</Russian>
-  </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED_1">
-    <German>Das Taylorpolynom der Funktion </German>
-    <English>The taylor polynomial of the function </English>
-    <Ukrainian>Поліном Тейлора функції </Ukrainian>
-    <Russian>Полином Тейлора функции </Russian>
-  </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED_2">
-    <German> kann nicht explizit berechnet werden, da in den Koeffizienten unbestimmte Integrale auftreten.</German>
-    <English> cannot be computed explicitly, since its coefficients contain indefinite integrals.</English>
-    <Ukrainian> не може бути точно обчислено, оскільки в коєфіцієнтах містяться невизначені інтеграли.</Ukrainian>
-    <Russian> не может быть точно вычеслен, поскольку в коэффициентах содержатся неопределённые интегралы.</Russian>
+  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED">
+    <German>Das Taylorpolynom der Funktion [0] kann nicht explizit berechnet werden, da in den Koeffizienten unbestimmte Integrale auftreten.</German>
+    <English>The taylor polynomial of the function [0] cannot be computed explicitly, since its coefficients contain indefinite integrals.</English>
+    <Ukrainian>Поліном Тейлора функції [0] не може бути точно обчислено, оскільки в коєфіцієнтах містяться невизначені інтеграли.</Ukrainian>
+    <Russian>Полином Тейлора функции [0] не может быть точно вычеслен, поскольку в коэффициентах содержатся неопределённые интегралы.</Russian>
   </object>
   <object id = "CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED">
     <German>Die Tangentialebene kann im vorgegebenen Punkt nicht berechnet werden, da die Funktion oder eine ihrer partiellen Ableitungen in diesem Punkt nicht definiert ist.</German>
@@ -53,17 +29,11 @@
     <Ukrainian>Другий параметр оператора 'mod' має бути додатним.</Ukrainian>
     <Russian>Второй параметр оператора 'mod' должен быть положительным.</Russian>
   </object>
-  <object id = "CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST_1">
-    <German>Wurzeln gerader Ordnung können aus </German>
-    <English>Roots of even order cannot be taken from </English>
-    <Ukrainian>Корені парного степеня не можна брати з </Ukrainian>
-    <Russian>Корни четного степеня нельзя брать из </Russian>
-  </object>
-  <object id = "CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST_2">
-    <German> nicht gezogen werden.</German>
-    <English>.</English>
-    <Ukrainian>.</Ukrainian>
-    <Russian>.</Russian>
+  <object id = "CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST">
+    <German>Wurzeln gerader Ordnung können aus [0] nicht gezogen werden.</German>
+    <English>Roots of even order cannot be taken from [0].</English>
+    <Ukrainian>Корені парного степеня не можна брати з [0].</Ukrainian>
+    <Russian>Корни четного степеня нельзя брать из [0].</Russian>
   </object>
   <object id = "CC_NumericalMethods_VECTORS_MUST_HAVE_SAME_DIMENSION">
     <German>Die zu addierenden Vektoren müssen die gleiche Dimension besitzen.</German>
