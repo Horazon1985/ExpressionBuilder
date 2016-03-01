@@ -60,14 +60,17 @@ public abstract class Translator {
                     Element eElement = (Element) nNode;
 
                     if (eElement.getAttribute("id").equals(exceptionId)) {
-                        if (Expression.getLanguage().equals(TypeLanguage.DE)) {
-                            return eElement.getElementsByTagName("German").item(0).getTextContent();
-                        } else if (Expression.getLanguage().equals(TypeLanguage.EN)) {
-                            return eElement.getElementsByTagName("English").item(0).getTextContent();
-                        } else if (Expression.getLanguage().equals(TypeLanguage.RU)) {
-                            return eElement.getElementsByTagName("Russian").item(0).getTextContent();
-                        } else if (Expression.getLanguage().equals(TypeLanguage.UA)) {
-                            return eElement.getElementsByTagName("Ukrainian").item(0).getTextContent();
+                        switch (Expression.getLanguage()) {
+                            case DE:
+                                return eElement.getElementsByTagName("German").item(0).getTextContent();
+                            case EN:
+                                return eElement.getElementsByTagName("English").item(0).getTextContent();
+                            case RU:
+                                return eElement.getElementsByTagName("Russian").item(0).getTextContent();
+                            case UA:
+                                return eElement.getElementsByTagName("Ukrainian").item(0).getTextContent();
+                            default:
+                                break;
                         }
                     }
 

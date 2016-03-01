@@ -405,41 +405,23 @@
         <Ukrainian>Недостатньо параметрів у команди 'plot2d'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'plot2d'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT2D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT2D">
+        <German>Der [0]. Parameter im Befehl 'plot2d' muss ein gültiger Ausdruck in einer Veränderlichen sein.</German>
+        <English>The [0]. parameter in command 'plot2d' must be a valid expression in one variable.</English>
+        <Ukrainian>[0]. параметр команди 'plot2d' має бути діючим виразом однієї змінної.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot2d' должен быть действительным выражением одной переменной.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT2D_2">
-        <German>. Parameter im Befehl 'plot2d' muss ein gültiger Ausdruck in einer Veränderlichen sein.</German>
-        <English>. parameter in command 'plot2d' must be a valid expression in one variable.</English>
-        <Ukrainian>. параметр команди 'plot2d' має бути діючим виразом однієї змінної.</Ukrainian>
-        <Russian>. параметр команды 'plot2d' должен быть действительным выражением одной переменной.</Russian>
+    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D">
+        <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens eine Veränderliche enthalten. Diese enthalten jedoch [0] Veränderliche.</German>
+        <English>The expressions in command 'plot2d' must contain at most one variable. They contain [0] variables.</English>
+        <Ukrainian>Вирази у команді 'plot2d' мають містити не більше однієї змінної. Вони містять [0] змінних.</Ukrainian>
+        <Russian>Выражения в команде 'plot2d' должны содержать не более одной переменной. Они содержат [0] переменных.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D_1">
-        <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens eine Veränderliche enthalten. Diese enthalten jedoch </German>
-        <English>The expressions in command 'plot2d' must contain at most one variable. They contain </English>
-        <Ukrainian>Вирази у команді 'plot2d' мають містити не більше однієї змінної. Вони містять </Ukrainian>
-        <Russian>Выражения в команде 'plot2d' должны содержать не более одной переменной. Они содержат </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D_2">
-        <German> Veränderliche.</German>
-        <English> variable.</English>
-        <Ukrainian> змінних.</Ukrainian>
-        <Russian> переменных.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D_2">
-        <German>. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
-        <English>. parameter in command 'plot2d' must be a real number.</English>
-        <Ukrainian>. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
-        <Russian>. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D">
+        <German>Der [0]. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
+        <English>The [0]. parameter in command 'plot2d' must be a real number.</English>
+        <Ukrainian>[0]. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1">
         <German>Der </German>
@@ -483,41 +465,23 @@
         <Ukrainian>1. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
         <Russian>1. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: </Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT3D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT3D">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: [1]</German>
+        <English>The [0]. parameter in command 'plot3d' must be a valid expression. Reported eror: [1]</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: [1]</Ukrainian>
+        <Russian>[0]. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: [1]</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOT3D_2">
-        <German>. Parameter im Befehl 'plot3d' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>. parameter in command 'plot3d' must be a valid expression. Reported eror: </English>
-        <Ukrainian>. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D">
+        <German>Der Ausdruck im Befehl 'plot3d' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch [0] Veränderliche.</German>
+        <English>The expression in command 'plot3d' must contain at most two variables. It contains [0] variables.</English>
+        <Ukrainian>Вираз у команді 'plot3d' має місити не більше двох змінних. Він містить [0] змінних.</Ukrainian>
+        <Russian>Выражение в команде 'plot3d' должно содержать не более двух переменных. Оно содержит [0] переменных.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D_1">
-        <German>Der Ausdruck im Befehl 'plot3d' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch </German>
-        <English>The expression in command 'plot3d' must contain at most two variables. It contains </English>
-        <Ukrainian>Вираз у команді 'plot3d' має місити не більше двох змінних. Він містить </Ukrainian>
-        <Russian>Выражение в команде 'plot3d' должно содержать не более двух переменных. Оно содержит </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D_2">
-        <German> Veränderliche.</German>
-        <English> variables.</English>
-        <Ukrainian> змінних.</Ukrainian>
-        <Russian> переменных.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOT3D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOT3D_2">
-        <German>. Parameter im Befehl 'plot3d' muss eine reelle Zahl sein.</German>
-        <English>. parameter in command 'plot3d' must be a real number.</English>
-        <Ukrainian>. параметр команди 'plot3d' має бути дійсним числом.</Ukrainian>
-        <Russian>. параметр команды 'plot3d' должен быть действительным числом.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOT3D">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss eine reelle Zahl sein.</German>
+        <English>The [0]. parameter in command 'plot3d' must be a real number.</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути дійсним числом.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot3d' должен быть действительным числом.</Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D_1">
         <German>Der </German>
@@ -645,41 +609,23 @@
         <Ukrainian>Замало параметрів у команди 'plotcylindrical'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'plotcylindrical'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOTCYLINDRICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOTCYLINDRICAL">
+        <German>Der [0]. Parameter im Befehl 'plotcylindrical' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: [1]</German>
+        <English>The [0]. parameter in command 'plotcylindrical' must be a valid expression. Reported error: [1]</English>
+        <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути діючим виразом. Повідомлення про помилку: [1]</Ukrainian>
+        <Russian>[0]. Параматр команды 'plotcylindrical' должен быть действительным выражением. Сообщение об ошибке: [1]</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_PLOTCYLINDRICAL_2">
-        <German>. Parameter im Befehl 'plotcylindrical' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>. parameter in command 'plotcylindrical' must be a valid expression. Reported error: </English>
-        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>. Параматр команды 'plotcylindrical' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTCYLINDRICAL">
+        <German>Die Ausdrücke im Befehl 'plotcylindrical' dürfen höchstens zwei Veränderliche enthalten. Diese enthalten jedoch insgesamt [0] Veränderliche.</German>
+        <English>The expressions in command 'plotcylindrical' may contain at most two variables. They contain [0] variables.</English>
+        <Ukrainian>Вирази у команді 'plotcylindrical' мають містити не більше двох змінних. Вони містять [0] змінних.</Ukrainian>
+        <Russian>Выражения в команде 'plotcylindrical' должны содержать не более двух переменных. Они содержат [0] переменных.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTCYLINDRICAL_1">
-        <German>Die Ausdrücke im Befehl 'plotcylindrical' dürfen höchstens zwei Veränderliche enthalten. Diese enthalten jedoch insgesamt </German>
-        <English>The expressions in command 'plotcylindrical' may contain at most two variables. They contain </English>
-        <Ukrainian>Вирази у команді 'plotcylindrical' мають містити не більше двох змінних. Вони містять </Ukrainian>
-        <Russian>Выражения в команде 'plotcylindrical' должны содержать не более двух переменных. Они содержат </Russian>
-    </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTCYLINDRICAL_2">
-        <German> Veränderliche.</German>
-        <English> variables.</English>
-        <Ukrainian> змінних.</Ukrainian>
-        <Russian> переменных.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_VARIABLE_PARAMETER_IN_PLOTCYLINDRICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_VARIABLE_PARAMETER_IN_PLOTCYLINDRICAL_2">
-        <German>. Parameter im Befehl 'plotcylindrical' muss eine gültige Veränderliche sein.</German>
-        <English>. parameter in command 'plotcylindrical' must be a valid variable.</English>
-        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючою змінною.</Ukrainian>
-        <Russian>. параматр команды 'plotcylindrical' должен быть действительной переменной.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_VARIABLE_PARAMETER_IN_PLOTCYLINDRICAL">
+        <German>Der [0]. Parameter im Befehl 'plotcylindrical' muss eine gültige Veränderliche sein.</German>
+        <English>The [0]. parameter in command 'plotcylindrical' must be a valid variable.</English>
+        <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути діючою змінною.</Ukrainian>
+        <Russian>[0]. параматр команды 'plotcylindrical' должен быть действительной переменной.</Russian>
     </object>
     <object id = "MCC_VARIABLES_MUST_BE_PAIRWISE_DIFFERENT_IN_PLOTCYLINDRICAL">
         <German>Die Veränderlichen im Befehl 'plotcylindrical' müssen paarweise verschieden sein.</German>
@@ -687,29 +633,17 @@
         <Ukrainian>Змінні у команді 'plotcylindrical' мають бути попрарно різними.</Ukrainian>
         <Russian>Переменные в команде 'plotcylindrical' должны попарно отличаться.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTCYLINDRICAL_1">
-        <German>Die Veränderliche </German>
-        <English>The variable </English>
-        <Ukrainian>Змінна </Ukrainian>
-        <Russian>Переменная </Russian>
+    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTCYLINDRICAL">
+        <German>Die Veränderliche [0] darf nicht in den Ausdrücken im Befehl 'plotcylindrical' vorkommen.</German>
+        <English>The variable [0] is not allowed to occur in the expressions in command 'plotcylindrical'.</English>
+        <Ukrainian>Змінна [0] не повинна зустрічатися у виразах команди 'plotcylindrical'.</Ukrainian>
+        <Russian>Переменная [0] не должна встречаться в выражениях команды 'plotcylindrical'.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTCYLINDRICAL_2">
-        <German> darf nicht in den Ausdrücken im Befehl 'plotcylindrical' vorkommen.</German>
-        <English> is not allowed to occur in the expressions in command 'plotcylindrical'.</English>
-        <Ukrainian> не повинна зустрічатися у виразах команди 'plotcylindrical'.</Ukrainian>
-        <Russian> не должна встречаться в выражениях команды 'plotcylindrical'.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCYLINDRICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian> </Ukrainian>
-        <Russian> </Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCYLINDRICAL_2">
-        <German>. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter Ausdruck sein.</German>
-        <English>. parameter in command 'plotcylindrical' must be a valid constant expression.</English>
-        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючою константою.</Ukrainian>
-        <Russian>. Параматр команды 'plotcylindrical' должен быть действительной констатой.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTCYLINDRICAL">
+        <German>Der [0]. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter Ausdruck sein.</German>
+        <English>The [0]. parameter in command 'plotcylindrical' must be a valid constant expression.</English>
+        <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути діючою константою.</Ukrainian>
+        <Russian>[0]. Параматр команды 'plotcylindrical' должен быть действительной констатой.</Russian>
     </object>
     <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_1">
         <German>Der </German>
@@ -807,17 +741,11 @@
         <Ukrainian>Змінні у команді 'plotspherical' мають бути попрарно різними.</Ukrainian>
         <Russian>Переменные в команде 'plotspherical' должны попарно отличаться.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSPHERICAL_1">
-        <German>Die Veränderliche </German>
-        <English>The variable </English>
-        <Ukrainian>Змінна </Ukrainian>
-        <Russian>Переменная </Russian>
-    </object>
-    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSPHERICAL_2">
-        <German> darf nicht in den Ausdrücken im Befehl 'plotspherical' vorkommen.</German>
-        <English> is not allowed to occur in the expressions in command 'plotspherical'.</English>
-        <Ukrainian> не повинна зустрічатися у виразах команди 'plotspherical'.</Ukrainian>
-        <Russian> не должна встречаться в выражениях команды 'plotspherical'.</Russian>
+    <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSPHERICAL">
+        <German>Die Veränderliche [0] darf nicht in den Ausdrücken im Befehl 'plotspherical' vorkommen.</German>
+        <English>The variable [0] is not allowed to occur in the expressions in command 'plotspherical'.</English>
+        <Ukrainian>Змінна [0] не повинна зустрічатися у виразах команди 'plotspherical'.</Ukrainian>
+        <Russian>Переменная [0] не должна встречаться в выражениях команды 'plotspherical'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTSPHERICAL_1">
         <German>Der </German>
