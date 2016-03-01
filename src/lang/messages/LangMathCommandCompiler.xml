@@ -423,23 +423,11 @@
         <Ukrainian>[0]. параметр команди 'plot2d' має бути дійсним числом.</Ukrainian>
         <Russian>[0]. параметр команды 'plot2d' должен быть вещественным числом.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_2">
-        <German>. Parameter im Befehl 'plot2d' muss kleiner sein als der </German>
-        <English>. parameter in command 'plot2d' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'plot2d' має бути меншим ніж </Ukrainian>
-        <Russian>. параметр команды 'plot2d' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. праметр.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT2D">
+        <German>Der [0]. Parameter im Befehl 'plot2d' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plot2d' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plot2d' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot2d' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_GRAPHS_CANNOT_BE_PLOTTED">
         <German>Graphen konnten nicht geplottet werden.</German>
@@ -499,25 +487,13 @@
         <German>. Parameter.</German>
         <English>. parameter.</English>
         <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. праметр.</Russian>
+        <Russian>. параметр.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_2">
-        <German>. Parameter im Befehl 'plotimplicit' muss kleiner sein als der </German>
-        <English>. parameter in command 'plotimplicit' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'plotimplicit' має бути меншим ніж </Ukrainian>
-        <Russian>. параметр команды 'plotimplicit' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. праметр.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D">
+        <German>Der [0]. Parameter im Befehl 'plotimplicit' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plotimplicit' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plotimplicit' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plotimplicit' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_REGRESSIONLINE">
         <German>Der 3. Parameter im Befehl 'plot3d' muss größer sein als der 2. Parameter.</German>
@@ -1059,29 +1035,17 @@
         <Ukrainian>. порядку.</Ukrainian>
         <Russian>. порядка.</Russian>
     </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF_1">
-        <German>Der logische Ausdruck </German>
-        <English>The logical expression </English>
-        <Ukrainian>Логічний вираз </Ukrainian>
-        <Russian>Логическое выражение </Russian>
+    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF">
+        <German>Der logische Ausdruck [0] enthält mehr als 20 Veränderliche. Die kanonische konjunktive Normalform ist damit zu groß für die Ausgabe.</German>
+        <English>The logical expression [0] contains more than 20 variables. The canonical conjunctive normal form is too big for output.</English>
+        <Ukrainian>Логічний вираз [0] містить більше 20 змінних. Канонічна кон'юнктивна нормальна форма завелика для виводу.</Ukrainian>
+        <Russian>Логическое выражение [0] содержит более 20 переменных. Каноническая конъюнктивная нормальная форма слишком большая для вывода.</Russian>
     </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF_2">
-        <German> enthält mehr als 20 Veränderliche. Die kanonische konjunktive Normalform ist damit zu groß für die Ausgabe.</German>
-        <English> contains more than 20 variables. The canonical conjunctive normal form is too big for output.</English>
-        <Ukrainian> містить більше 20 змінних. Канонічна кон'юнктивна нормальна форма завелика для виводу.</Ukrainian>
-        <Russian> содержит более 20 переменных. Каноническая конъюнктивная нормальная форма слишком большая для вывода.</Russian>
-    </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CDNF_1">
-        <German>Der logische Ausdruck </German>
-        <English>The logical expression </English>
-        <Ukrainian>Логічний вираз </Ukrainian>
-        <Russian>Логическое выражение </Russian>
-    </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CDNF_2">
-        <German> enthält mehr als 20 Veränderliche. Die kanonische disjunktive Normalform ist damit zu groß für die Ausgabe.</German>
-        <English> contains more than 20 variables. The canonical disjunctive normal form is too big for output.</English>
-        <Ukrainian> містить більше 20 змінних. Канонічна диз'юнктивна нормальна форма завелика для виводу.</Ukrainian>
-        <Russian> содержит более 20 переменных. Каноническая дизъюнктивная нормальная форма слишком большая для вывода.</Russian>
+    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CDNF">
+        <German>Der logische Ausdruck [0] enthält mehr als 20 Veränderliche. Die kanonische disjunktive Normalform ist damit zu groß für die Ausgabe.</German>
+        <English>The logical expression [0] contains more than 20 variables. The canonical disjunctive normal form is too big for output.</English>
+        <Ukrainian>Логічний вираз [0] містить більше 20 змінних. Канонічна диз'юнктивна нормальна форма завелика для виводу.</Ukrainian>
+        <Russian>Логическое выражение [0] содержит более 20 переменных. Каноническая дизъюнктивная нормальная форма слишком большая для вывода.</Russian>
     </object>
     <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES_1">
         <German>Der logische Ausdruck </German>
@@ -1150,17 +1114,11 @@
         <Ukrainian>Не задано жодної змінної.</Ukrainian>
         <Russian>Ни одной переменной не задано.</Russian>
     </object>
-    <object id = "MCC_DIGITS_OF_E_1">
-        <German>Eulersche Zahl e auf </German>
-        <English>Euler constant e rounded to </English>
-        <Ukrainian>Число Ейлера e округлено до </Ukrainian>
-        <Russian>Число Эйлера e округлено до </Russian>
-    </object>
-    <object id = "MCC_DIGITS_OF_E_2">
-        <German> Stellen gerundet: </German>
-        <English> digits: </English>
-        <Ukrainian> знаків: </Ukrainian>
-        <Russian> знаков: </Russian>
+    <object id = "MCC_DIGITS_OF_E">
+        <German>Eulersche Zahl e auf [0] Stellen gerundet: </German>
+        <English>Euler constant e rounded to [0] digits: </English>
+        <Ukrainian>Число Ейлера e округлено до [0] знаків: </Ukrainian>
+        <Russian>Число Эйлера e округлено до [0] знаков: </Russian>
     </object>
     <object id = "MCC_NO_EXTREMA_FOUND">
         <German>Es konnten keine lokalen Extrema ermittelt werden.</German>
@@ -1208,19 +1166,13 @@
         <German>. Parameter.</German>
         <English>. parameter.</English>
         <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. праметр.</Russian>
+        <Russian>. параметр.</Russian>
     </object>
-    <object id = "MCC_DIGITS_OF_PI_1">
-        <German>Konstante pi auf </German>
-        <English>Constant pi rounded to </English>
-        <Ukrainian>Константа pi округлена до </Ukrainian>
-        <Russian>Константа pi округлена до </Russian>
-    </object>
-    <object id = "MCC_DIGITS_OF_PI_2">
-        <German> Stellen gerundet: </German>
-        <English> digits: </English>
-        <Ukrainian> знаків: </Ukrainian>
-        <Russian> знаков: </Russian>
+    <object id = "MCC_DIGITS_OF_PI">
+        <German>Konstante pi auf [0] Stellen gerundet: </German>
+        <English>Constant pi rounded to [0] digits: </English>
+        <Ukrainian>Константа pi округлена до [0] знаків: </Ukrainian>
+        <Russian>Константа pi округлена до [0] знаков: </Russian>
     </object>
     <object id = "MCC_REGRESSIONLINE_CANNOT_BE_COMPUTED">
         <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
@@ -1304,7 +1256,7 @@
         <German>. Parameter.</German>
         <English>. parameter.</English>
         <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. праметр.</Russian>
+        <Russian>. параметр.</Russian>
     </object>
     <object id = "MCC_SOLUTION_OF_DEQ_NOT_DEFINED_IN_POINT">
         <German>Die Lösung der Differentialgleichung ist nicht definiert an der Stelle </German>
