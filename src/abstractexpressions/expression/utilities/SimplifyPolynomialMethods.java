@@ -60,10 +60,10 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Private Fehlerklasse für den Fall, dass die Partialbruchzerlegung nicht
-     * ermittelt werden konnte.
+     * Fehlerklasse für den Fall, dass die Partialbruchzerlegung nicht ermittelt
+     * werden konnte.
      */
-    private static class PolynomialNotDecomposableException extends MathToolException {
+    public static class PolynomialNotDecomposableException extends MathToolException {
 
         private static final String NO_EXPLICIT_DECOMPOSITION_MESSAGE = "Polynomial admits no explicit decomposition.";
 
@@ -365,7 +365,6 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
-//                return decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
                 return decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
@@ -408,7 +407,7 @@ public abstract class SimplifyPolynomialMethods {
     /**
      * Prüfung, ob ein Polynom rational ist.
      */
-    private static boolean isPolynomialRational(ExpressionCollection a) {
+    public static boolean isPolynomialRational(ExpressionCollection a) {
         for (int i = 0; i < a.getBound(); i++) {
             if (!a.get(i).isIntegerConstantOrRationalConstant()) {
                 return false;
@@ -464,7 +463,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -473,7 +472,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                                Variable.create(var).sub(zeros.get(2)).simplify());
+                        Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -502,7 +501,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -510,7 +509,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -522,7 +521,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -530,7 +529,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -714,7 +713,7 @@ public abstract class SimplifyPolynomialMethods {
      * Faktoren von f und f'.<br>
      * VORAUSSETZUNG: Alle Elemente von a sind rational.
      */
-    private static Expression decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+    public static Expression decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
 
@@ -990,11 +989,9 @@ public abstract class SimplifyPolynomialMethods {
                             break;
                         }
                     }
-                } else {
-                    if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
-                        periodFound = false;
-                        break;
-                    }
+                } else if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
+                    periodFound = false;
+                    break;
                 }
                 if (!periodFound) {
                     break;

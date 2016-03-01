@@ -17,6 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import abstractexpressions.expression.equation.SolveMethods;
+import java.math.BigDecimal;
 
 public class GeneralEquationMethodsTest {
 
@@ -63,7 +64,7 @@ public class GeneralEquationMethodsTest {
     }
 
     @Test
-    public void solvePolynomialEquationTest1() {
+    public void solvePolynomialEquationTest() {
         try {
             // Test: f = x^3+3*x^2-5*x+1 = 0. Lösungen sind 1, -2-5^(1/2), 5^(1/2)-2.
             Expression f = Expression.build("x^3+3*x^2-5*x+1", null);
@@ -78,7 +79,7 @@ public class GeneralEquationMethodsTest {
     }
 
     @Test
-    public void solvePolynomialEquationTest2() {
+    public void solvePolynomialEquationNoSolutionTest() {
         try {
             // Test: f = x^4+2 = 0. Keine Lösungen.
             Expression f = Expression.build("x^4+2", null);
@@ -90,7 +91,7 @@ public class GeneralEquationMethodsTest {
     }
 
     @Test
-    public void solvePolynomialEquationTest3() {
+    public void solvePolynomialEquationWithRationalZerosTest() {
         try {
             // Test: f = 14+93*x+125*x^2+51*x^3+5*x^4 = 0. Die Lösungen sind -1, -2, -7, -1/5.
             Expression f = Expression.build("14+93*x+125*x^2+51*x^3+5*x^4", null);
@@ -104,7 +105,25 @@ public class GeneralEquationMethodsTest {
             fail(e.getMessage());
         }
     }
-    
+
+    @Test
+    public void solvePolynomialEquationByFactorizingTest() {
+        try {
+            /* 
+             Test: f = 2*x^9+x^11+126*x^7+294*x^3+147*x^5+2058*x-(686+6*x^10+42*x^6+21*x^8+882*x^4+343*x^2)
+             = (x^3-7)^3*(x^2-6*x+2). Die Lösungen sind 3-7^(1/2), 3+7^(1/2), 7^(1/3).
+             */
+            Expression f = Expression.build("2*x^9+x^11+126*x^7+294*x^3+147*x^5+2058*x-(686+6*x^10+42*x^6+21*x^8+882*x^4+343*x^2)", null);
+            ExpressionCollection zeros = SolveMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 3);
+            assertTrue(zeros.contains(new Constant(3).sub(new Constant(7).pow(1, 2))));
+            assertTrue(zeros.contains(new Constant(3).add(new Constant(7).pow(1, 2))));
+            assertTrue(zeros.contains(new Constant(7).pow(1, 3)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     public void solveFunctionalEquationTest1() {
         try {
@@ -167,5 +186,5 @@ public class GeneralEquationMethodsTest {
             fail(e.getMessage());
         }
     }
-    
+
 }

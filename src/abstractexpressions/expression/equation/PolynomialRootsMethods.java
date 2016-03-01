@@ -170,7 +170,7 @@ public abstract class PolynomialRootsMethods {
             return PolynomialRootsMethods.solvePeriodicPolynomialEquation(coefficients, var);
         }
 
-        // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= 100 ist.
+        // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= gewisse Schranke ist.
         if (degree <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
 
             if (degree == 0) {
@@ -192,6 +192,27 @@ public abstract class PolynomialRootsMethods {
                 zeros = SimplifyUtilities.union(zeros, rationalZeros);
             }
 
+            // Versuchen, rationale Polynome zu faktorisieren.
+            if (SimplifyPolynomialMethods.isPolynomialRational(coefficients)){
+                try{
+                    Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(coefficients, var);
+                    // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
+                    if (factorizedPolynomial.isProduct() 
+                            && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
+                            && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0){
+                        return SimplifyUtilities.union(SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var), 
+                                SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
+                    }
+                    // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
+                    if (factorizedPolynomial.isIntegerPower()
+                            && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0){
+                        return SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
+                    }
+                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e){
+                    // Nichts tun.
+                }
+            }
+            
             // Nullstellen von Polynomen vom Grad 1 - 3 können direkt ermittelt werden.
             if (degree == 1) {
                 return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveLinearEquation(coefficients));

@@ -11,11 +11,7 @@ import parsetests.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -23,10 +19,7 @@ import org.junit.Test;
 
 public class TestRunner {
 
-    private static final char PKG_SEPARATOR = '.';
-    private static final char DIR_SEPARATOR = '/';
-    private static final String CLASS_FILE_SUFFIX = ".class";
-    private static ArrayList<Class> testClasses = new ArrayList<>();
+    private static final ArrayList<Class> testClasses = new ArrayList<>();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
