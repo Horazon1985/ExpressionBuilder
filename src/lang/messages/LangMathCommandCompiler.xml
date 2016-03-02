@@ -471,41 +471,17 @@
         <Ukrainian>[0]. параметр команди 'plot3d' має бути дійсним числом.</Ukrainian>
         <Russian>[0]. параметр команды 'plot3d' должен быть действительным числом.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D_2">
-        <German>. Parameter im Befehl 'plot3d' muss kleiner sein als der </German>
-        <English>. parameter in command 'plot3d' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'plot3d' має бути меншим ніж </Ukrainian>
-        <Russian>. параметр команды 'plot3d' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOT3D">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plot3d' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot3d' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D">
         <German>Der [0]. Parameter im Befehl 'plotimplicit' muss kleiner sein als der [1]. Parameter.</German>
         <English>The [0]. parameter in command 'plotimplicit' must be smaller than the [1]. parameter.</English>
         <Ukrainian>[0]. параметр команди 'plotimplicit' має бути меншим ніж [1]. параметр.</Ukrainian>
         <Russian>[0]. параметр команды 'plotimplicit' должен быть меньше чем [1]. параметр.</Russian>
-    </object>
-    <object id = "MCC_FIRST_LIMITS_MUST_BE_WELL_ORDERED_IN_REGRESSIONLINE">
-        <German>Der 3. Parameter im Befehl 'plot3d' muss größer sein als der 2. Parameter.</German>
-        <English>The 3. parameter in command 'plot3d' must be greater than the 2. parameter.</English>
-        <Ukrainian>3. параметр команди 'plot3d' має бути більше ніж 2. параметр.</Ukrainian>
-        <Russian>3. параметр команды 'plot3d' должен быть меньше чем 2. параметр.</Russian>
-    </object>
-    <object id = "MCC_SECOND_LIMITS_MUST_BE_WELL_ORDERED_IN_REGRESSIONLINE">
-        <German>Der 5. Parameter im Befehl 'plot3d' muss größer sein als der 4. Parameter.</German>
-        <English>The 5. parameter in command 'plot3d' must be greater than the 4. parameter.</English>
-        <Ukrainian>5. параметр команди 'plot3d' має бути більше ніж 4. параметр.</Ukrainian>
-        <Russian>5. параметр команды 'plot3d' должен быть меньше чем 4. параметр.</Russian>
     </object>
     <object id = "MCC_PLOTCURVE2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
         <German>Der 1. Parameter im Befehl 'plotcurve2d' muss ein zweidimensionaler Vektor sein.</German>
@@ -543,23 +519,11 @@
         <Ukrainian>[0]. параметр команди 'plotpolar' має бути дійсним числом.</Ukrainian>
         <Russian>[0]. параметр команды 'plotpolar' должен быть вещественным числом.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_2">
-        <German>. Parameter im Befehl 'plotpolar' muss größer sein als der </German>
-        <English>. parameter in command 'plotpolar' must be greater than the </English>
-        <Ukrainian>. параметр команди 'plotpolar' має бути більше ніж </Ukrainian>
-        <Russian>. параметр команды 'plotpolar' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTPOLAR">
+        <German>Der [0]. Parameter im Befehl 'plotpolar' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plotpolar' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plotpolar' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plotpolar' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOTCYLINDRICAL">
         <German>Zu wenig Parameter im Befehl 'plotcylindrical'.</German>
@@ -603,53 +567,23 @@
         <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути діючою константою.</Ukrainian>
         <Russian>[0]. Параматр команды 'plotcylindrical' должен быть действительной констатой.</Russian>
     </object>
-    <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian> </Ukrainian>
-        <Russian> </Russian>
+    <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL">
+        <German>Der [0]. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter nichtnegativer Ausdruck sein.</German>
+        <English>The [0]. parameter in command 'plotcylindrical' must be a valid constant non-negative expression.</English>
+        <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути діючою невід'ємною константою.</Ukrainian>
+        <Russian>[0]. Параматр команды 'plotcylindrical' должен быть действительной неотрицательной констатой.</Russian>
     </object>
-    <object id = "MCC_MIN_RADIUS_MUST_BE_NONNEGATIVE_IN_PLOTCYLINDRICAL_2">
-        <German>. Parameter im Befehl 'plotcylindrical' muss ein gültiger konstanter nichtnegativer Ausdruck sein.</German>
-        <English>. parameter in command 'plotcylindrical' must be a valid constant non-negative expression.</English>
-        <Ukrainian>. параметр команди 'plotcylindrical' має бути діючою невід'ємною константою.</Ukrainian>
-        <Russian>. Параматр команды 'plotcylindrical' должен быть действительной неотрицательной констатой.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL">
+        <German>Der [0]. Parameter im Befehl 'plotcylindrical' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plotcylindrical' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plotcylindrical' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. Параматр команды 'plotcylindrical' должен быть меньше чем [1]. параметр.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian> </Ukrainian>
-        <Russian> </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_2">
-        <German>. Parameter im Befehl 'plotcylindrical' muss kleiner sein als der </German>
-        <English>. parameter in command 'plotcylindrical' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'plotcylindrical' має бути меншим ніж </Ukrainian>
-        <Russian>. Параматр команды 'plotcylindrical' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTCYLINDRICAL_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_1">
-        <German>Die Differenz zwischen dem </German>
-        <English>The difference between the </English>
-        <Ukrainian>Різниця між </Ukrainian>
-        <Russian>Разница между </Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_2">
-        <German>. und dem </German>
-        <English>. and the </English>
-        <Ukrainian>. і </Ukrainian>
-        <Russian>. и </Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL_3">
-        <German>. Parameter im Befehl 'plotcylindrical' muss höchstens 20*pi betragen.</German>
-        <English>. parameter in command 'plotcylindrical' must be at most 20*pi.</English>
-        <Ukrainian>. параметр команди 'plotcylindrical' не повинен перевищувати 20*pi.</Ukrainian>
-        <Russian>. параметр команды 'plotcylindrical' не должен превышать 20*pi.</Russian>
+    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTCYLINDRICAL">
+        <German>Die Differenz zwischen dem [0]. und dem [1]. Parameter im Befehl 'plotcylindrical' muss höchstens 20*pi betragen.</German>
+        <English>The difference between the [0]. and the [1]. parameter in command 'plotcylindrical' must be at most 20*pi.</English>
+        <Ukrainian>Різниця між [0]. і [1]. параметр команди 'plotcylindrical' не повинен перевищувати 20*pi.</Ukrainian>
+        <Russian>Разница между [0]. и [1]. параметр команды 'plotcylindrical' не должен превышать 20*pi.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOTSPHERICAL">
         <German>Zu wenig Parameter im Befehl 'plotspherical'.</German>
@@ -693,41 +627,17 @@
         <Ukrainian>[0]. параметр команди 'plotspherical' має бути діючою константою.</Ukrainian>
         <Russian>[0]. Параматр команды 'plotspherical' должен быть действительной констатой.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTSPHERICAL_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian> </Ukrainian>
-        <Russian> </Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTSPHERICAL">
+        <German>Der [0]. Parameter im Befehl 'plotspherical' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plotspherical' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plotspherical' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. Параматр команды 'plotspherical' должен быть меньше чем [1]. параметр.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTSPHERICAL_2">
-        <German>. Parameter im Befehl 'plotspherical' muss kleiner sein als der </German>
-        <English>. parameter in command 'plotspherical' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'plotspherical' має бути меншим ніж </Ukrainian>
-        <Russian>. Параматр команды 'plotspherical' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTSPHERICAL_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTSPHERICAL_1">
-        <German>Die Differenz zwischen dem </German>
-        <English>The difference between the </English>
-        <Ukrainian>Різниця між </Ukrainian>
-        <Russian>Разница между </Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTSPHERICAL_2">
-        <German>. und dem </German>
-        <English>. and the </English>
-        <Ukrainian>. і </Ukrainian>
-        <Russian>. и </Russian>
-    </object>
-    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTSPHERICAL_3">
-        <German>. Parameter im Befehl 'plotspherical' muss höchstens 20*pi betragen.</German>
-        <English>. parameter in command 'plotspherical' must be at most 20*pi.</English>
-        <Ukrainian>. параметр команди 'plotspherical' не повинен перевищувати 20*pi.</Ukrainian>
-        <Russian>. параметр команды 'plotspherical' не должен превышать 20*pi.</Russian>
+    <object id = "MCC_DIFFERENCE_OF_ANGLES_MUST_BE_AT_MOST_20_PI_IN_PLOTSPHERICAL">
+        <German>Die Differenz zwischen dem [0]. und dem [1]. Parameter im Befehl 'plotspherical' muss höchstens 20*pi betragen.</German>
+        <English>The difference between the [0]. and the [1]. parameter in command 'plotspherical' must be at most 20*pi.</English>
+        <Ukrainian>Різниця між [0]. і [1]. параметр команди 'plotspherical' не повинен перевищувати 20*pi.</Ukrainian>
+        <Russian>Разница между [0]. и [1]. параметр команды 'plotspherical' не должен превышать 20*pi.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
         <German>Zu wenig Parameter im Befehl 'solve'.</German>
@@ -789,55 +699,55 @@
         <Ukrainian>4. параметр команди 'solve' має бути додатним цілим числом.</Ukrainian>
         <Russian>4. параметр команды 'solve' должна быть положительным целым числом.</Russian>
     </object>
-    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVEDEQ">
+    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVEDIFFEQ">
         <German>Zu wenig Parameter im Befehl 'solvedeq'.</German>
         <English>Not enough parameters in command 'solvedeq'.</English>
         <Ukrainian>Недостатньо параметрів у команди 'solvedeq'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'solvedeq'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_SOLVEDEQ">
+    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 3. Parameter im Befehl 'solvedeq' muss eine positive ganze Zahl sein.</German>
         <English>The 3. parameter in command 'solvedeq' must be a positive integer.</English>
         <Ukrainian>3. параметр команди 'solvedeq' має бути додатним цілим числом.</Ukrainian>
         <Russian>3. параметр команды 'solvedeq' должна быть положительным целым числом.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVEDEQ">
+    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 1. Parameter im Befehl 'solvedeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
         <English>The 1. parameter in command 'solvedeq' must be a valid expression. Reported error: </English>
         <Ukrainian>1. параметр команди 'solvedeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
         <Russian>1. Параматр команды 'solvedeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
     </object>
-    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDEQ">
+    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDIFFEQ">
         <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
         <English>The differential equation has order [0]. Hence only derivatives of order at most [1]. are allowed.</English>
         <Ukrainian>Дифененціальне рівняння має порядок [0]. Тому дозволені похідні до [1]. порядку.</Ukrainian>
         <Russian>Дифференциальное уравнение имеет порядок [0]. Потому разрешены производние до [1]. порядка.</Russian>
     </object>
-    <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_SOLVEDEQ">
+    <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_SOLVEDIFFEQ">
         <German>In der Differentialgleichung dürfen höchstens zwei Veränderliche auftreten.</German>
         <English>The differential equation must contain at most two variables.</English>
         <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
         <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_SOLVEDEQ">
+    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_SOLVEDIFFEQ">
         <German>Die Veränderliche [0] muss in der Differentialgleichung vorkommen.</German>
         <English>The variable [0] must occur in the differential equation.</English>
         <Ukrainian>Змінна [0] має бути присутня у диференціальному рівнянні.</Ukrainian>
         <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDEQ">
+    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 2. Parameter im Befehl 'solvedeq' muss eine gültige Veränderliche sein.</German>
         <English>The 2. parameter in command 'solvedeq' must be a valid variable.</English>
         <Ukrainian>2. параметр команди 'solvedeq' має бути діючою змінною.</Ukrainian>
         <Russian>2. параматр команды 'solvedeq' должен быть действительной переменной.</Russian>
     </object>
-    <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVEDEQ">
+    <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVEDIFFEQ">
         <German>Zu viele Parameter im Befehl 'solvedeq'.</German>
         <English>Too many parameters in command 'solvedeq'.</English>
         <Ukrainian>Забагато параметрів у команди 'solvedeq'.</Ukrainian>
         <Russian>Слишком много параметров у команды 'solvedeq'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVEDEQ">
+    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der [0]. Parameter im Befehl 'solvedeq' muss eine reelle Zahl sein, deren Betrag höchstens 1.7E308 beträgt.</German>
         <English>The [0]. parameter in command 'solvedeq' must be a real number with absolute value of at most 1.7E308.</English>
         <Ukrainian>[0]. параметр команди 'solvedeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
@@ -891,23 +801,11 @@
         <Ukrainian>Змінні у команді 'solvesystem' мають бути попрарно різними.</Ukrainian>
         <Russian>Переменные в команде 'solvesystem' должны попарно отличаться.</Russian>
     </object>
-    <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_1">
-        <German>Die </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_2">
-        <German>. Gleichung ist nicht linear in der Veränderlichen </German>
-        <English>. equation is not linear in the variable </English>
-        <Ukrainian>. рівняння не є лінійним за змінною </Ukrainian>
-        <Russian>. уравнение не является линейным по переменной </Russian>
-    </object>
-    <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM_3">
-        <German>.</German>
-        <English>.</English>
-        <Ukrainian>.</Ukrainian>
-        <Russian>.</Russian>
+    <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM">
+        <German>Die [0]. Gleichung ist nicht linear in der Veränderlichen [1].</German>
+        <English>The [0]. equation is not linear in the variable [1].</English>
+        <Ukrainian>[0]. рівняння не є лінійним за змінною [1].</Ukrainian>
+        <Russian>[0]. уравнение не является линейным по переменной [1].</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
         <German>Zu wenig Parameter im Befehl 'tangent'.</German>
@@ -951,61 +849,61 @@
         <Ukrainian>Змінна [0] має бути у параметррах.</Ukrainian>
         <Russian>Переменная [0] должна быть в параметрах.</Russian>
     </object>
-    <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_TAYLORDEQ">
+    <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_TAYLORDIFFEQ">
         <German>Zu wenig Parameter im Befehl 'taylordeq'.</German>
         <English>Not enough parameters in command 'taylordeq'.</English>
         <Ukrainian>Недостатньо параметрів у команди 'taylordeq'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'taylordeq'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der 3. Parameter im Befehl 'taylordeq' muss eine positive ganze Zahl sein.</German>
         <English>The 3. parameter in command 'taylordeq' must be a positive integer.</English>
         <Ukrainian>3. параметр команди 'taylordeq' має бути додатним цілим числом.</Ukrainian>
         <Russian>3. команды 'taylordeq' должен быть положительным целым числом.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der 1. Parameter im Befehl 'taylordeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
         <English>The 1. parameter in command 'taylordeq' must be a valid expression. Reported error: </English>
         <Ukrainian>1. параметр команди 'taylordeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
         <Russian>1. Параматр команды 'taylordeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
     </object>
-    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDIFFEQ">
         <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
         <English>The differential equation has order [0]. Hence only derivatives of order at most [1] are allowed.</English>
         <Ukrainian>Дифененціальне рівняння має порядок [0]. Тому дозволені похідні до [1]. порядку.</Ukrainian>
         <Russian>Дифференциальное уравнение имеет порядок [0]. Потому разрешены производние до [1]. порядка.</Russian>
     </object>
-    <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_TAYLORDEQ">
+    <object id = "MCC_TWO_VARIABLES_ARE_ALLOWED_IN_TAYLORDIFFEQ">
         <German>In der Differentialgleichung dürfen höchstens zwei Veränderliche auftreten.</German>
         <English>The differential equation must contain at most two variables.</English>
         <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
         <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TAYLORDEQ">
+    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TAYLORDIFFEQ">
         <German>Die Veränderliche [0] muss in der Differentialgleichung vorkommen.</German>
         <English>The variable [0] must occur in the differential equation.</English>
         <Ukrainian>Змінна [0] має бути присутня у диференціальному рівнянні.</Ukrainian>
         <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der 2. Parameter im Befehl 'taylordeq' muss eine gültige Veränderliche sein.</German>
         <English>The 2. parameter in command 'taylordeq' must be a valid variable.</English>
         <Ukrainian>2. параметр команди 'taylordeq' має бути діючою змінною.</Ukrainian>
         <Russian>2. параматр команды 'taylordeq' должен быть действительной переменной.</Russian>
     </object>
-    <object id = "MCC_TOO_MANY_PARAMETERS_IN_TAYLORDEQ">
+    <object id = "MCC_TOO_MANY_PARAMETERS_IN_TAYLORDIFFEQ">
         <German>Zu viele Parameter im Befehl 'taylordeq'.</German>
         <English>Too many parameters in command 'taylordeq'.</English>
         <Ukrainian>Забагато параметрів у команди 'taylordeq'.</Ukrainian>
         <Russian>Слишком много параметров у команды 'taylordeq'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der [0]. Parameter im Befehl 'taylordeq' muss gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
         <English>The [0]. parameter in command 'taylordeq' must be a valid expression, which does not contain any variable occurring in the differential equation.</English>
         <Ukrainian>[0]. параметр в команді 'taylordeq' має бути діючим виразом, що не містить змінних, що задіяні у диференціальному рівнянні.</Ukrainian>
         <Russian>[0]. параметр в команде 'taylordeq' должен быть действительным выражением, не содержащим переменных, учавствующих в дифференциальном уравнении.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETER_IN_TAYLORDEQ">
+    <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der letzte Parameter im Befehl 'taylordeq' muss eine nichtnegative ganze Zahl sein.</German>
         <English>The last parameter in command 'taylordeq' must be a nonnegative integer.</English>
         <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
@@ -1017,23 +915,11 @@
         <Ukrainian>Невірна команда.</Ukrainian>
         <Russian>Неправильная команда.</Russian>
     </object>
-    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_1">
-        <German>Die Differentialgleichung besitzt die Ordnung </German>
-        <English>The differential equation has order </English>
-        <Ukrainian>Дифененціальне рівняння має порядок </Ukrainian>
-        <Russian>Дифференциальное уравнение имеет порядок </Russian>
-    </object>
-    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_2">
-        <German>. Es dürfen daher nur Ableitungen höchstens </German>
-        <English>. Hence only derivatives of order at most </English>
-        <Ukrainian>. Тому дозволені похідні до </Ukrainian>
-        <Russian>. Потому разрешены производние до </Russian>
-    </object>
-    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DEQ_3">
-        <German>. Ordnung auftreten.</German>
-        <English> are allowed.</English>
-        <Ukrainian>. порядку.</Ukrainian>
-        <Russian>. порядка.</Russian>
+    <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_DIFFEQ">
+        <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
+        <English>The differential equation has order [0]. Hence only derivatives of order at most [1] are allowed.</English>
+        <Ukrainian>Дифененціальне рівняння має порядок [0]. Тому дозволені похідні до [1]. порядку.</Ukrainian>
+        <Russian>Дифференциальное уравнение имеет порядок [0]. Потому разрешены производние до [1]. порядка.</Russian>
     </object>
     <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_TOO_MANY_VARIABLES_FOR_CCNF">
         <German>Der logische Ausdruck [0] enthält mehr als 20 Veränderliche. Die kanonische konjunktive Normalform ist damit zu groß für die Ausgabe.</German>
@@ -1047,17 +933,11 @@
         <Ukrainian>Логічний вираз [0] містить більше 20 змінних. Канонічна диз'юнктивна нормальна форма завелика для виводу.</Ukrainian>
         <Russian>Логическое выражение [0] содержит более 20 переменных. Каноническая дизъюнктивная нормальная форма слишком большая для вывода.</Russian>
     </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES_1">
-        <German>Der logische Ausdruck </German>
-        <English>The logical expression </English>
-        <Ukrainian>Логічний вираз </Ukrainian>
-        <Russian>Логическое выражение </Russian>
-    </object>
-    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES_2">
-        <German> enthält mehr als 20 Veränderliche. Die Wertetabelle ist damit zu groß für die Ausgabe.</German>
-        <English> contains more than 20 variables. The table of values is too big for output.</English>
-        <Ukrainian> містить більше 20 змінних. Таблиця значень є завеликою для відображення.</Ukrainian>
-        <Russian> содержит более 20 переменных. Таблица значений является слишком большой для отображения.</Russian>
+    <object id = "MCC_LOGICAL_EXPRESSION_CONTAINS_MORE_THAN_20_VARIABLES">
+        <German>Der logische Ausdruck [0] enthält mehr als 20 Veränderliche. Die Wertetabelle ist damit zu groß für die Ausgabe.</German>
+        <English>The logical expression [0] contains more than 20 variables. The table of values is too big for output.</English>
+        <Ukrainian>Логічний вираз [0] містить більше 20 змінних. Таблиця значень є завеликою для відображення.</Ukrainian>
+        <Russian>Логическое выражение [0] содержит более 20 переменных. Таблица значений является слишком большой для отображения.</Russian>
     </object>
     <object id = "MCC_TABLE_OF_VALUES_FOR_LOGICAL_EXPRESSION">
         <German>Wertetabelle für den logischen Ausdruck </German>
@@ -1240,31 +1120,19 @@
         <Ukrainian>Точних розв'язків не знайдено.</Ukrainian>
         <Russian>Точные решения не найдены.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVE_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVE">
+        <German>Der [0]. Parameter im Befehl 'solve' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'solve' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'solve' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'solve' должен быть меньше чем [1]. параметр.</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVE_2">
-        <German>. Parameter im Befehl 'solve' muss kleiner sein als der </German>
-        <English>. parameter in command 'solve' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'solve' має бути меншим ніж </Ukrainian>
-        <Russian>. параметр команды 'solve' должен быть меньше чем </Russian>
+    <object id = "MCC_SOLUTION_OF_DIFFEQ_NOT_DEFINED_IN_POINT">
+        <German>Die Lösung der Differentialgleichung ist nicht definiert an der Stelle [0]</German>
+        <English>The solution of the differential equation is not defined in [0]</English>
+        <Ukrainian>Розв'язок рівняння не визначено в точці [0]</Ukrainian>
+        <Russian>Решение уравнения не определено в точке [0]</Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVE_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
-    </object>
-    <object id = "MCC_SOLUTION_OF_DEQ_NOT_DEFINED_IN_POINT">
-        <German>Die Lösung der Differentialgleichung ist nicht definiert an der Stelle </German>
-        <English>The solution of the differential equation is not defined in </English>
-        <Ukrainian>Розв'язок рівняння не визначено в точці </Ukrainian>
-        <Russian>Решение уравнения не определено в точке </Russian>
-    </object>
-    <object id = "MCC_SOLUTION_OF_DEQ">
+    <object id = "MCC_SOLUTION_OF_DIFFEQ">
         <German>Lösung der Differentialgleichung </German>
         <English>Solution of the differential equation </English>
         <Ukrainian>Розв'язок диференціального рівняння </Ukrainian>
@@ -1330,29 +1198,17 @@
         <Ukrainian>Графік та дотичну не можна зобразити, оскільки значення абсциси або ординати завеликі.</Ukrainian>
         <Russian>График и касательную нельзя изобраыить, поскольку значения абсциссы или ординаты слишком большие.</Russian>
     </object>
-    <object id = "MCC_FUNCTION_IS_REMOVED_1">
-        <German>Die Funktion </German>
-        <English>The function </English>
-        <Ukrainian>Функція </Ukrainian>
-        <Russian>Функция </Russian>
+    <object id = "MCC_FUNCTION_IS_REMOVED">
+        <German>Die Funktion '[0]' wurde entfernt.</German>
+        <English>The function '[0]' was removed.</English>
+        <Ukrainian>Функція '[0]' була видалена.</Ukrainian>
+        <Russian>Функция '[0]' была удалена.</Russian>
     </object>
-    <object id = "MCC_FUNCTION_IS_REMOVED_2">
-        <German> wurde entfernt.</German>
-        <English> was removed.</English>
-        <Ukrainian> була видалена.</Ukrainian>
-        <Russian> была удалена.</Russian>
-    </object>
-    <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_1">
-        <German>Die Veränderliche </German>
-        <English>The variable </English>
-        <Ukrainian>Змінна </Ukrainian>
-        <Russian>Переменная </Russian>
-    </object>
-    <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN_2">
-        <German> ist wieder eine Unbestimmte.</German>
-        <English> is again an indeterminate.</English>
-        <Ukrainian> знову невизначена.</Ukrainian>
-        <Russian> снова неопределена.</Russian>
+    <object id = "MCC_VARIABLE_IS_INDETERMINATE_AGAIN">
+        <German>Die Veränderliche [0] ist wieder eine Unbestimmte.</German>
+        <English>The variable [0] is again an indeterminate.</English>
+        <Ukrainian>Змінна [0] знову невизначена.</Ukrainian>
+        <Russian>Переменная [0] снова неопределена.</Russian>
     </object>
     <object id = "MCC_ALL_VARIABLES_ARE_INDETERMINATES_AGAIN">
         <German>Alle Veränderlichen sind wieder Unbestimmte.</German>
