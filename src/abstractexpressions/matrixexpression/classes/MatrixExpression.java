@@ -304,7 +304,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             for (TypeMatrixOperator type : TypeMatrixOperator.values()) {
                 operatorName = MatrixOperator.getNameFromType(type);
                 if (operatorNameAndParams[0].equals(operatorName)) {
-                    return MatrixOperator.getOperator(operatorName, params, vars);
+                    return MatrixOperator.getMatrixOperator(operatorName, params, vars);
                 }
             }
         }

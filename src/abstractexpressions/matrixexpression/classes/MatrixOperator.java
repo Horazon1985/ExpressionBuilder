@@ -17,8 +17,10 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixOperatorMethods;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import operationparser.OperationParser;
 import lang.translator.Translator;
 
@@ -29,19 +31,19 @@ public class MatrixOperator extends MatrixExpression {
     private boolean precise;
 
     // Patterns für die einzelnen Matrizenoperatoren.
-    public static final String patternCov = "cov(matexpr+)";
-    public static final String patternCross = "cross(matexpr+)";
-    public static final String patternDiff = "diff(matexpr,var+)";
-    public static final String patternDiffWithOrder = "diff(matexpr,var,integer(0,2147483647))";
-    public static final String patternDiv = "div(matexpr,uniquevar+)";
-    public static final String patternGrad = "grad(matexpr,uniquevar+)";
-    public static final String patternIntIndef = "int(matexpr,var)";
-    public static final String patternIntDef = "int(matexpr,var(!2,!3),expr,expr)";
-    public static final String patternLaplace = "laplace(matexpr,uniquevar+)";
-    public static final String patternProd = "prod(matexpr,var(!2,!3),expr,expr)";
-    public static final String patternRot = "rot(matexpr,uniquevar,uniquevar,uniquevar)";
-    public static final String patternSum = "sum(matexpr,var(!2,!3),expr,expr)";
-    
+    public static final String PATTERN_COV = "cov(matexpr+)";
+    public static final String PATTERN_CROSS = "cross(matexpr+)";
+    public static final String PATTERN_DIFF = "diff(matexpr,var+)";
+    public static final String PATTERN_DIFF_WITHOUT_ORDER = "diff(matexpr,var,integer(0,2147483647))";
+    public static final String PATTERN_DIV = "div(matexpr,uniquevar+)";
+    public static final String PATTERN_GRAD = "grad(matexpr,uniquevar+)";
+    public static final String PATTERN_INT_INDEF = "int(matexpr,var)";
+    public static final String PATTERN_INT_DEF = "int(matexpr,var(!2,!3),expr,expr)";
+    public static final String PATTERN_LAPLACE = "laplace(matexpr,uniquevar+)";
+    public static final String PATTERN_PROD = "prod(matexpr,var(!2,!3),expr,expr)";
+    public static final String PATTERN_ROT = "rot(matexpr,uniquevar,uniquevar,uniquevar)";
+    public static final String PATTERN_SUM = "sum(matexpr,var(!2,!3),expr,expr)";
+
     public MatrixOperator() {
     }
 
@@ -112,49 +114,44 @@ public class MatrixOperator extends MatrixExpression {
      *
      * @throws ExpressionException
      */
-    public static MatrixOperator getOperator(String operator, String[] params, HashSet<String> vars) throws ExpressionException {
+    public static MatrixOperator getMatrixOperator(String operator, String[] params, HashSet<String> vars) throws ExpressionException {
 
         TypeMatrixOperator type = getTypeFromName(operator);
 
+        // Sonderfälle: überladene Operatoren.
         switch (type) {
-            case cov:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternCov);
-            case cross:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternCross);
             case diff:
                 if (params.length != 3) {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiff);
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_DIFF);
                 }
                 try {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiff);
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_DIFF);
                 } catch (ExpressionException e) {
                     try {
-                        return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiffWithOrder);
+                        return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_DIFF_WITHOUT_ORDER);
                     } catch (ExpressionException ex) {
                         throw new ExpressionException(Translator.translateOutputMessage("MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
                     }
                 }
-            case div:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternDiv);
-            case grad:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternGrad);
             case integral:
                 if (params.length <= 2) {
-                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternIntIndef);
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_INT_INDEF);
                 }
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternIntDef);
-            case laplace:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternLaplace);
-            case prod:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternProd);
-            case rot:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternRot);
-            case sum:
-                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, patternSum);
-            // Sollte theoretisch nie vorkommen.
-            default:
-                return new MatrixOperator();
+                return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_INT_DEF);
         }
+
+        // Mittels Reflection das passende Pattern suchen.
+        Field[] fields = MatrixOperator.class.getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                if (field.getType().equals(String.class) && Modifier.isStatic(field.getModifiers()) && ((String) field.get(null)).startsWith(operator)) {
+                    return OperationParser.parseDefaultMatrixOperator(operator, params, vars, (String) field.get(null));
+                }
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+            }
+        }
+
+        throw new ExpressionException("MEB_MatrixOperator_INVALID_MATRIX_OPERATOR");
 
     }
 
@@ -242,7 +239,7 @@ public class MatrixOperator extends MatrixExpression {
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).evaluate();
-            } else if (this.params[i] instanceof Expression){
+            } else if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).evaluate();
             } else {
                 resultParams[i] = this.params[i];
@@ -464,9 +461,9 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, this.precise);
     }
-    
+
     @Override
-    public boolean containsApproximates(){
+    public boolean containsApproximates() {
         for (Object param : this.params) {
             if (param instanceof MatrixExpression && ((MatrixExpression) param).containsApproximates()) {
                 return true;
@@ -476,7 +473,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return false;
     }
-    
+
     @Override
     public String writeMatrixExpression() {
 
@@ -607,10 +604,10 @@ public class MatrixOperator extends MatrixExpression {
                 try {
                     return (MatrixExpression) method.invoke(operator);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                    if (e.getCause() instanceof EvaluationException){
+                    if (e.getCause() instanceof EvaluationException) {
                         // Methoden können nur EvaluationExceptions werfen.
                         throw (EvaluationException) e.getCause();
-                    } 
+                    }
                     throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixOperator_INVALID_MATRIX_OPERATOR"));
                 }
             }
@@ -619,14 +616,14 @@ public class MatrixOperator extends MatrixExpression {
         return operator;
 
     }
-    
+
     @Override
     public MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof MatrixExpression) {
                 resultParams[i] = ((MatrixExpression) this.params[i]).simplifyByInsertingDefinedVars();
-            } else if (this.params[i] instanceof Expression){
+            } else if (this.params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).simplifyByInsertingDefinedVars();
             } else {
                 resultParams[i] = this.params[i];
@@ -634,7 +631,7 @@ public class MatrixOperator extends MatrixExpression {
         }
         return new MatrixOperator(this.type, resultParams, false);
     }
-    
+
     @Override
     public MatrixExpression simplifyMatrixEntries() throws EvaluationException {
 
