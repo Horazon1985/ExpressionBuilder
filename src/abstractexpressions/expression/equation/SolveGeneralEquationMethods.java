@@ -23,7 +23,7 @@ import java.util.HashSet;
 import notations.NotationLoader;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
-public abstract class SolveMethods {
+public abstract class SolveGeneralEquationMethods {
 
     /**
      * Anzahl der Versuche, wie oft eine Gleichung versucht werden soll, gelöst
@@ -1518,12 +1518,12 @@ public abstract class SolveMethods {
 
         // Fall: f ist eine rationale Funktion in einer Exponentialfunktion.
         if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
-            return SpecialEquationMethods.solveExponentialEquation(f, var);
+            return SolveSpecialEquationMethods.solveExponentialEquation(f, var);
         }
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
         if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
-            return SpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
         }
 
         /*
@@ -1579,7 +1579,7 @@ public abstract class SolveMethods {
         HashSet<Expression> factorsOfVar = new HashSet<>();
         if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
             if (!fByDefinition.equals(f)) {
-                return SpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
+                return SolveSpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
             }
         }
         fByDefinition = f.simplifyReplaceTrigonometricalFunctionsByDefinitions();

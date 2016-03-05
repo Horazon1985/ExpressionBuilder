@@ -18,7 +18,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
-public abstract class SpecialEquationMethods extends SolveMethods {
+public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();
@@ -117,13 +117,13 @@ public abstract class SpecialEquationMethods extends SolveMethods {
 
             Expression fSubstituted = SubstitutionUtilities.substitute(f, var, substitution);
             String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
-            ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(fSubstituted, substVar);
+            ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(fSubstituted, substVar);
             zeros = new ExpressionCollection();
             ExpressionCollection currentZeros;
             // Rücksubstitution.
             for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                 try {
-                    currentZeros = SolveMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var);
+                    currentZeros = SolveGeneralEquationMethods.solveGeneralEquation(substitution, zerosOfSubstitutedEquation.get(i), var);
                     for (int j = 0; j < currentZeros.getBound(); j++) {
                         /*
                          Für die Vereinfachung der Lösungen sollen HIER Logarithmen auseinandergezogen werden, 
@@ -234,13 +234,13 @@ public abstract class SpecialEquationMethods extends SolveMethods {
 
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
                 Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
-                ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
+                ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(polynomial, polynomVar);
                 zeros = new ExpressionCollection();
 
                 // Rücksubstitution.
                 for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                     try {
-                        zeros.add(SolveMethods.solveGeneralEquation(substitution.cos(), zerosOfSubstitutedEquation.get(i), var));
+                        zeros.add(SolveGeneralEquationMethods.solveGeneralEquation(substitution.cos(), zerosOfSubstitutedEquation.get(i), var));
                     } catch (EvaluationException e) {
                         /*
                          Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
@@ -257,12 +257,12 @@ public abstract class SpecialEquationMethods extends SolveMethods {
                     
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
                     Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
-                    ExpressionCollection zerosOfSubstitutedEquation = SolveMethods.solveZeroEquation(polynomial, polynomVar);
+                    ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(polynomial, polynomVar);
                     zeros = new ExpressionCollection();
                     // Rücksubstitution.
                     for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                         try {
-                            zeros.add(SolveMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
+                            zeros.add(SolveGeneralEquationMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
                         } catch (EvaluationException e) {
                             /*
                              Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige

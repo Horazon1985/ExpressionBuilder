@@ -17,7 +17,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import abstractexpressions.expression.equation.SolveMethods;
+import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 
 public class SpecialEquationMethodsTest {
 
@@ -82,7 +82,7 @@ public class SpecialEquationMethodsTest {
         try {
             // Test: f = e^(3*x) - 20*e^(2*x) + 101*e^(x) - 130 = 0. Lösungen sind ln(2), ln(5), ln(13).
             Expression f = Expression.build("exp(3*x)-20*exp(2*x)+101*exp(x)-130", null);
-            ExpressionCollection zeros = SolveMethods.solveEquation(f, ZERO, "x");
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 3);
             assertTrue(zeros.contains(new Constant(2).ln()));
             assertTrue(zeros.contains(new Constant(5).ln()));
@@ -97,7 +97,7 @@ public class SpecialEquationMethodsTest {
         try {
             // Test: f = exp(x) + exp(2^(1/2)*x) = 10. Keine algebraischen Lösungen.
             Expression f = Expression.build("exp(x) + exp(2^(1/2)*x) - 10", null);
-            ExpressionCollection zeros = SolveMethods.solveEquation(f, ZERO, "x");
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 0);
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -109,7 +109,7 @@ public class SpecialEquationMethodsTest {
         try {
             // Test: f = 5^x + 3*25^x - 8/25 = 0. Lösung ist x = -1.
             Expression f = Expression.build("5^x + 3*25^x - 8/25", null);
-            ExpressionCollection zeros = SolveMethods.solveEquation(f, ZERO, "x");
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(Expression.MINUS_ONE));
         } catch (ExpressionException | EvaluationException e) {
@@ -122,7 +122,7 @@ public class SpecialEquationMethodsTest {
         try {
             // Test: a^x+a^(2*x)-30 = 0. Lösung x = ln(5)/ln(a)
             Expression f = Expression.build("a^x+a^(2*x)-30", null);
-            ExpressionCollection zeros = SolveMethods.solveEquation(f, ZERO, "x");
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.contains(new Constant(5).ln().div(Variable.create("a").ln())));
         } catch (ExpressionException | EvaluationException e) {

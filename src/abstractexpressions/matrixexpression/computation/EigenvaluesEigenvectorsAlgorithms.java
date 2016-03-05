@@ -13,7 +13,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.utilities.MatrixExpressionCollection;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixUtilities;
-import abstractexpressions.expression.equation.SolveMethods;
+import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 
 public abstract class EigenvaluesEigenvectorsAlgorithms {
 
@@ -53,7 +53,7 @@ public abstract class EigenvaluesEigenvectorsAlgorithms {
             if (!(charPolynomial instanceof Expression)) {
                 return new ExpressionCollection();
             }
-            return SolveMethods.solveEquation((Expression) charPolynomial, ZERO, var);
+            return SolveGeneralEquationMethods.solveEquation((Expression) charPolynomial, ZERO, var);
 
         } catch (EvaluationException e) {
             return new ExpressionCollection();

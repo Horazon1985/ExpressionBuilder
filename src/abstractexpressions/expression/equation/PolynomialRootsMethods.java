@@ -200,13 +200,13 @@ public abstract class PolynomialRootsMethods {
                     if (factorizedPolynomial.isProduct() 
                             && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
                             && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0){
-                        return SimplifyUtilities.union(SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var), 
-                                SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
+                        return SimplifyUtilities.union(SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var), 
+                                SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
                     }
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
                     if (factorizedPolynomial.isIntegerPower()
                             && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0){
-                        return SolveMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
+                        return SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
                     }
                 } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e){
                     // Nichts tun.
