@@ -4405,18 +4405,27 @@ public class GraphicPanelFormula extends JPanel {
         g.setColor(Color.black);
         setFont(g, fontSize);
         // Pufferrahmen mit Breite fontsize/2 lassen!
-        if (type.equals(TypeGraphicFormula.EXPRESSION)) {
-            drawExpression(g, this.expr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-        } else if (type.equals(TypeGraphicFormula.LOGICAL_EXPRESSION)) {
-            drawLogicalExpression(g, this.logExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-        } else if (type.equals(TypeGraphicFormula.MATRIX_EXPRESSION)) {
-            drawMatrixExpression(g, this.matExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-        } else if (type.equals(TypeGraphicFormula.COMMAND)) {
-            drawCommand(g, c, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-        } else if (type.equals(TypeGraphicFormula.TEXT)) {
-            drawText(g, this.t, this.fontSize / 2, this.height - this.fontSize / 2, fontSize);
-        } else if (type.equals(TypeGraphicFormula.OUTPUT)) {
-            drawOutput(g, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
+        switch (type) {
+            case EXPRESSION:
+                drawExpression(g, this.expr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
+                break;
+            case LOGICAL_EXPRESSION:
+                drawLogicalExpression(g, this.logExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
+                break;
+            case MATRIX_EXPRESSION:
+                drawMatrixExpression(g, this.matExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
+                break;
+            case COMMAND:
+                drawCommand(g, c, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
+                break;
+            case TEXT:
+                drawText(g, this.t, this.fontSize / 2, this.height - this.fontSize / 2, fontSize);
+                break;
+            case OUTPUT:
+                drawOutput(g, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
+                break;
+            default:
+                break;
         }
 
     }
