@@ -18,6 +18,12 @@ public class MultiIndexVariable {
         this.indices = indices;
     }
 
+    public MultiIndexVariable(String name, BigInteger index) {
+        this.name = name;
+        this.indices = new ArrayList<>();
+        indices.add(index);
+    }
+
     public MultiIndexVariable(String var) {
         if (var.contains("_")) {
             // In diesem Fall besitzt v einen Index.
@@ -35,7 +41,7 @@ public class MultiIndexVariable {
             this.indices = new ArrayList<>();
         }
     }
-    
+
     public MultiIndexVariable(Variable v) {
         this(v.getName());
     }
@@ -55,13 +61,18 @@ public class MultiIndexVariable {
     public void setIndices(ArrayList<BigInteger> indices) {
         this.indices = indices;
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
+        if (this.indices.size() == 1) {
+            // Falls es nur ein Index ist.
+            return this.name + this.indices.get(0).toString();
+        }
+        // Falls es nur ein echter Multiindex ist.
         String result = this.name + "_{";
-        for (int i = 0; i < this.indices.size(); i++){
+        for (int i = 0; i < this.indices.size(); i++) {
             result = result + this.indices.get(i).toString();
-            if (i < this.indices.size() - 1){
+            if (i < this.indices.size() - 1) {
                 result = result + ",";
             }
         }
