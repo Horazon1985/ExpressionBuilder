@@ -132,7 +132,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                         currentZeros.put(j, currentZeros.get(j).simplify(simplifyTypesRationalExponentialEquation));
                     }
                     // Lösungen hinzufügen.
-                    zeros.add(currentZeros);
+                    zeros.addAll(currentZeros);
                 } catch (EvaluationException e) {
                     /*
                      Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
@@ -240,7 +240,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                 // Rücksubstitution.
                 for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                     try {
-                        zeros.add(SolveGeneralEquationMethods.solveGeneralEquation(substitution.cos(), zerosOfSubstitutedEquation.get(i), var));
+                        zeros.addAll(SolveGeneralEquationMethods.solveGeneralEquation(substitution.cos(), zerosOfSubstitutedEquation.get(i), var));
                     } catch (EvaluationException e) {
                         /*
                          Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
@@ -262,7 +262,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                     // Rücksubstitution.
                     for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
                         try {
-                            zeros.add(SolveGeneralEquationMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
+                            zeros.addAll(SolveGeneralEquationMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
                         } catch (EvaluationException e) {
                             /*
                              Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige

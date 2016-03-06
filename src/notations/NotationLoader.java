@@ -14,6 +14,7 @@ public abstract class NotationLoader {
     public static final String PFD_VAR = getVarName("PFD_VAR");
     public static final String FREE_INTEGER_PARAMETER_VAR = getVarName("FREE_INTEGER_PARAMETER_VAR");
     public static final String FREE_REAL_PARAMETER_VAR = getVarName("FREE_REAL_PARAMETER_VAR");
+    public static final String FREE_INTEGRATION_CONSTANT_VAR = getVarName("FREE_INTEGRATION_CONSTANT_VAR");
     public static final String SELFDEFINEDFUNCTION_VAR = getVarName("SELFDEFINEDFUNCTION_VAR");
     
     public static String getVarName(String varName) {

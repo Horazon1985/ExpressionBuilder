@@ -11,6 +11,9 @@
   <object id = "FREE_REAL_PARAMETER_VAR">
     <value>T</value>
   </object>
+  <object id = "FREE_INTEGRATION_CONSTANT_VAR">
+    <value>C</value>
+  </object>
   <object id = "SELFDEFINEDFUNCTION_VAR">
     <value>U</value>
   </object>

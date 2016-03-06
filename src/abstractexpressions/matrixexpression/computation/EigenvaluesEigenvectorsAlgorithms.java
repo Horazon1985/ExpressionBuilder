@@ -159,7 +159,7 @@ public abstract class EigenvaluesEigenvectorsAlgorithms {
             MatrixExpressionCollection eigenvectorsForEigenvalue;
             for (int i = 0; i < eigenvalues.getBound(); i++) {
                 eigenvectorsForEigenvalue = getEigenvectorsForEigenvalue(m, eigenvalues.get(i));
-                allEigenvectors.add(eigenvectorsForEigenvalue);
+                allEigenvectors.addAll(eigenvectorsForEigenvalue);
             }
 
             if (allEigenvectors.getBound() == m.getDimension().width) {

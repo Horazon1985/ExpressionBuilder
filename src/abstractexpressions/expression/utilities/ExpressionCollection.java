@@ -86,7 +86,7 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
-    public void add(ExpressionCollection newTerms) {
+    public void addAll(ExpressionCollection newTerms) {
         for (int i = 0; i < newTerms.getBound(); i++) {
             if (newTerms.get(i) != null) {
                 this.add(newTerms.get(i));

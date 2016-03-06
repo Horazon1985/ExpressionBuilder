@@ -41,6 +41,14 @@ public class LogicalExpressionCollection implements Iterable<LogicalExpression> 
         this.bound++;
     }
     
+    public void addAll(LogicalExpressionCollection newLogicalTerms) {
+        for (int i = 0; i < newLogicalTerms.getBound(); i++) {
+            if (newLogicalTerms.get(i) != null) {
+                this.add(newLogicalTerms.get(i));
+            }
+        }
+    }
+    
     public void insert(int i, LogicalExpression logExpr) {
         
         if (i < 0) {

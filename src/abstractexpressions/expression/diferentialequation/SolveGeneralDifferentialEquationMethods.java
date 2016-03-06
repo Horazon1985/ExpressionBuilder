@@ -1,14 +1,17 @@
 package abstractexpressions.expression.diferentialequation;
 
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import java.util.HashSet;
+import notations.NotationLoader;
 
-public class SolveGeneralDifferentialEquationMethods {
+public abstract class SolveGeneralDifferentialEquationMethods {
 
     /**
      * Konstanten, die aussagen, ob bei einer Gleichung keine Lösungen gefunden
@@ -40,6 +43,20 @@ public class SolveGeneralDifferentialEquationMethods {
         return simplifyTypes;
     }
 
+    /**
+     * In f sind Variablen enthalten, unter anderem möglicherweise auch
+     * "Parametervariablen" C_1, C_2, .... Diese Funktion liefert dasjenige C_i
+     * mit dem kleinsten Index i, welches in f noch nicht vorkommt.
+     */
+    public static String getFreeIntegrationConstantVariable(Expression f) {
+        String var = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_";
+        int j = 1;
+        while (f.contains(var + String.valueOf(j))) {
+            j++;
+        }
+        return var + j;
+    }
+    
     /**
      * Hauptprozedur zum algebraischen Lösen von Differntialgleichungen f(x, y,
      * y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
@@ -106,7 +123,7 @@ public class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection solutions = new ExpressionCollection();
 
         // Typ: trennbare Veränderliche.
-        solutions = solveDEQWithSeparableVariables(f, varAbsc, varOrd);
+        solutions = solveDifferentialEquationWithSeparableVariables(f, varAbsc, varOrd);
         if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
             return solutions;
         }
@@ -128,13 +145,74 @@ public class SolveGeneralDifferentialEquationMethods {
     /*
      Algorithmen zum Lösen spezieller Differentialgleichungstypen der Ordnung 1.
      */
-    private static ExpressionCollection solveDEQWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+ /*
+    Typ: trennbare Veränderliche.
+     */
+    private static ExpressionCollection solveDifferentialEquationWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
-        ExpressionCollection  solutionsForDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrd + "'");
-        
-        
+        ExpressionCollection solutionsForDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrd + "'");
+
+        for (Expression singleSolutionForDerivative : solutionsForDerivative) {
+            if (isRightSideOfDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd)) {
+                Expression[] separatedFactors = getSeparationForDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd);
+                solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd));
+            }
+        }
+
+        solutions.removeMultipleTerms();
+        return solutions;
+
+    }
+
+    private static boolean isRightSideOfDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
+
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        for (Expression factor : factors) {
+            /*
+            Wichtig: Da die DGL die Ordnung 1 besitzt und im Vorfeld bereits y'
+            aufgelöst wurdde, kann die rechte Seite der DGL y' = f die Variablen
+            y', y'', y''' nicht enthalten.
+             */
+            if (factor.contains(varAbsc) && factor.contains(varOrd)) {
+                return false;
+            }
+        }
+        return true;
+
+    }
+
+    private static Expression[] getSeparationForDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
+
+        Expression factorWithVarAbsc = ONE, factorWithVarOrd = ONE;
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        for (Expression factor : factors) {
+            if (factor.contains(varOrd)) {
+                factorWithVarOrd = factorWithVarOrd.mult(factor);
+            } else {
+                // Konstante Faktoren kommen in den Faktor für x (ist an sich völlig egal, wohin).
+                factorWithVarAbsc = factorWithVarAbsc.mult(factor);
+            }
+        }
+        return new Expression[]{factorWithVarAbsc, factorWithVarOrd};
+
+    }
+
+    private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        /*
+            Seien x = varAbsc, y = varOrd, factorWithVarAbsc = f(x), factorWithVarOrd = g(y).
+         */
+        try {
+            // 1. Alle Nullstellen von g(y) zu den Lösungen hinzufügen.
+            ExpressionCollection constantZeros = SolveGeneralEquationMethods.solveEquation(factorWithVarOrd, ZERO, varOrd);
+            solutions.addAll(constantZeros);
+        } catch (EvaluationException ex) {
+        }
+
         
         
         

@@ -69,7 +69,7 @@ public class MatrixExpressionCollection implements Iterable<MatrixExpression> {
         
     }
 
-    public void add(MatrixExpressionCollection newMatrixTerms) {
+    public void addAll(MatrixExpressionCollection newMatrixTerms) {
         for (int i = 0; i < newMatrixTerms.getBound(); i++) {
             if (newMatrixTerms.get(i) != null) {
                 this.add(newMatrixTerms.get(i));

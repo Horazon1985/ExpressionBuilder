@@ -322,7 +322,7 @@ public abstract class SpecialIntegrationMethods {
     private static boolean isSumOfProductsOfExponentialAndTrigonometricalFunctions(Expression f, String var) {
 
         ExpressionCollection summands = SimplifyUtilities.getSummandsLeftInExpression(f);
-        summands.add(SimplifyUtilities.getSummandsRightInExpression(f));
+        summands.addAll(SimplifyUtilities.getSummandsRightInExpression(f));
 
         ExpressionCollection factorsNumerator, factorsDenominator;
         int numberOfExpFactors, numberOfTrigonometricalFactors;

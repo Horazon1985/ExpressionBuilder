@@ -275,7 +275,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
         if (factorsOrdered.isEmpty()) {
             return factors;
         }
-        factorsOrdered.add(factors);
+        factorsOrdered.addAll(factors);
         return factorsOrdered;
 
     }

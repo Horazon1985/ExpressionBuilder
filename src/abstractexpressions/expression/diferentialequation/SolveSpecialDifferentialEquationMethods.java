@@ -1,5 +1,5 @@
 package abstractexpressions.expression.diferentialequation;
 
-public class SolveSpecialDifferentialEquationMethods {
+public abstract class SolveSpecialDifferentialEquationMethods {
     
 }
