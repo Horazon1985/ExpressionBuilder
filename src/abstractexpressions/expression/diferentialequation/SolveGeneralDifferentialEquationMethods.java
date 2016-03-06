@@ -3,6 +3,8 @@ package abstractexpressions.expression.diferentialequation;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Operator;
+import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
@@ -56,7 +58,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
         return var + j;
     }
-    
+
     /**
      * Hauptprozedur zum algebraischen Lösen von Differntialgleichungen f(x, y,
      * y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
@@ -213,9 +215,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
         }
 
+        Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc});
+        Expression integralOfReciprocalOfFactorWithVarOrd = new Operator(TypeOperator.integral, new Object[]{ONE.div(factorWithVarOrd), varOrd});
         
-        
-        
+        try {
+            ExpressionCollection solutionOfDiffEq = SolveGeneralEquationMethods.solveEquation(integralOfFactorWithVarAbsc, integralOfReciprocalOfFactorWithVarOrd, varOrd);
+            solutions.addAll(solutionOfDiffEq);
+        } catch (EvaluationException ex) {
+        }
+
         return solutions;
 
     }
