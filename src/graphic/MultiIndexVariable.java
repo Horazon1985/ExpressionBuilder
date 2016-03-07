@@ -66,7 +66,7 @@ public class MultiIndexVariable {
     public String toString() {
         if (this.indices.size() == 1) {
             // Falls es nur ein Index ist.
-            return this.name + this.indices.get(0).toString();
+            return this.name + "_" + this.indices.get(0).toString();
         }
         // Falls es nur ein echter Multiindex ist.
         String result = this.name + "_{";

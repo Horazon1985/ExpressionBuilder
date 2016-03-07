@@ -369,6 +369,12 @@
         <Ukrainian> містить лише нульовий вектор </Ukrainian>
         <Russian> содержит только нулевой вектор </Russian>
     </object>
+    <object id = "MCC_TRIVIAL_KER_3">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
     <object id = "MCC_KER_COULD_NOT_BE_COMPUTED_1">
         <German>Der Kern der Matrix </German>
         <English>The kernel of the matrix </English>
@@ -995,10 +1001,10 @@
         <Russian>Ни одной переменной не задано.</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_E">
-        <German>Eulersche Zahl e auf [0] Stellen gerundet: </German>
-        <English>Euler constant e rounded to [0] digits: </English>
-        <Ukrainian>Число Ейлера e округлено до [0] знаків: </Ukrainian>
-        <Russian>Число Эйлера e округлено до [0] знаков: </Russian>
+        <German>Eulersche Zahl e auf [0] Stellen gerundet: [1]</German>
+        <English>Euler constant e rounded to [0] digits: [1]</English>
+        <Ukrainian>Число Ейлера e округлено до [0] знаків: [1]</Ukrainian>
+        <Russian>Число Эйлера e округлено до [0] знаков: [1]</Russian>
     </object>
     <object id = "MCC_NO_EXTREMA_FOUND">
         <German>Es konnten keine lokalen Extrema ermittelt werden.</German>
@@ -1030,29 +1036,17 @@
         <Ukrainian>. Значення функції: </Ukrainian>
         <Russian>. Значение функции: </Russian>
     </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_EXTREMA_1">
-        <German>Der </German>
-        <English>The </English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_EXTREMA_2">
-        <German>. Parameter im Befehl 'extrema' muss kleiner sein als der </German>
-        <English>. parameter in command 'extrema' must be smaller than the </English>
-        <Ukrainian>. параметр команди 'extrema' має бути меншим ніж </Ukrainian>
-        <Russian>. параметр команды 'extrema' должен быть меньше чем </Russian>
-    </object>
-    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_EXTREMA_3">
-        <German>. Parameter.</German>
-        <English>. parameter.</English>
-        <Ukrainian>. параметр.</Ukrainian>
-        <Russian>. параметр.</Russian>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_EXTREMA">
+        <German>Der [0]. Parameter im Befehl 'extrema' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'extrema' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'extrema' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'extrema' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_PI">
-        <German>Konstante pi auf [0] Stellen gerundet: </German>
-        <English>Constant pi rounded to [0] digits: </English>
-        <Ukrainian>Константа pi округлена до [0] знаків: </Ukrainian>
-        <Russian>Константа pi округлена до [0] знаков: </Russian>
+        <German>Kreiszahl pi auf [0] Stellen gerundet: [1]</German>
+        <English>Constant pi rounded to [0] digits: [1]</English>
+        <Ukrainian>Число pi e округлено до [0] знаків: [1]</Ukrainian>
+        <Russian>Число pi e округлено до [0] знаков: [1]</Russian>
     </object>
     <object id = "MCC_REGRESSIONLINE_CANNOT_BE_COMPUTED">
         <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>
