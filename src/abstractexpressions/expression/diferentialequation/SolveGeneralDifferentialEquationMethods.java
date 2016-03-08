@@ -110,10 +110,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         f = f.simplify(simplifyTypesDifferentialEquation);
         g = g.simplify(simplifyTypesDifferentialEquation);
-        
+
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
-        
         return solveZeroDifferentialEquation(f.sub(g), varAbsc, varOrd);
 
     }
@@ -127,24 +126,24 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     protected static ExpressionCollection solveZeroDifferentialEquation(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
         f = f.simplify(simplifyTypesDifferentialEquation);
-        
+
         // Zunächst: Zerlegen in einfachere DGLen, wenn möglich.
         // Fall: f hat Produktgestalt.
-        if (f.isProduct()){
+        if (f.isProduct()) {
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             return solveZeroDifferentialEquationIfProduct(factors, varAbsc, varOrd);
         }
-        
+
         // Fall: f hat Quotientgestalt.
-        if (f.isQuotient()){
+        if (f.isQuotient()) {
             return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
-        
+
         // Fall: f hat Potenzgestalt.
-        if (f.isPower()){
+        if (f.isPower()) {
             return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
-        
+
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
 
@@ -155,31 +154,31 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException{
+    private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException {
         ExpressionCollection solutions = new ExpressionCollection();
-        for (Expression factor : factors){
+        for (Expression factor : factors) {
             solutions = SimplifyUtilities.union(solutions, solveZeroDifferentialEquation(factor, varAbsc, varOrd));
         }
         solutions.removeMultipleTerms();
         return solutions;
     }
-    
-    private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException{
+
+    private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
         ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
         ExpressionCollection solutionsRight = solveZeroDifferentialEquation(denominator, varAbsc, varOrd);
         ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
         solutions.removeMultipleTerms();
         return solutions;
     }
-    
-    private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException{
+
+    private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException {
         ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(base, varAbsc, varOrd);
         ExpressionCollection solutionsRight = solveZeroDifferentialEquation(exponent, varAbsc, varOrd);
         ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
         solutions.removeMultipleTerms();
         return solutions;
     }
-    
+
     /**
      * Berechnet die Ordnung der Differentialgleichung f(x, y, y', ..., y^(n)) =
      * 0 mit x = varAbsc, y = varOrd.
@@ -317,6 +316,29 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     /**
      * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
+     * varOrd eine lineare DGL mit konstanten Koeffizienten ist.
+     */
+    private static boolean isDifferentialEquationLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
+
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        String varOrdWithPrimes = varOrd;
+        Expression restCoefficient = f;
+        for (int i = 0; i <= n; i++) {
+            restCoefficient = restCoefficient.replaceVariable(varOrdWithPrimes, ZERO);
+            varOrdWithPrimes += "'";
+        }
+
+        try {
+            f = f.sub(restCoefficient).simplify();
+            return isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+        } catch (EvaluationException e) {
+            return false;
+        }
+        
+    }
+
+    /**
+     * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
      * varOrd eine lineare homogene DGL mit konstanten Koeffizienten ist.
      */
     private static boolean isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
@@ -335,10 +357,24 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
+            varOrdWithPrimes += "'";
         }
 
         BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
-        return deg.compareTo(BigInteger.ZERO) >= 0 && deg.compareTo(BigInteger.ONE) <= 0;
+        if (!(deg.compareTo(BigInteger.ZERO) >= 0 && deg.compareTo(BigInteger.ONE) <= 0)) {
+            return false;
+        }
+
+        // Jetzt wird auf Homogenität überprüft.
+        for (int i = 0; i <= n; i++) {
+            f = f.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ZERO);
+        }
+        try {
+            f = f.simplify();
+            return f.equals(ZERO);
+        } catch (EvaluationException e) {
+            return false;
+        }
 
     }
 
@@ -346,10 +382,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
      */
     private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutionBase = new ExpressionCollection();
 
-        if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)){
+        if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)) {
             return solutionBase;
         }
 
@@ -430,7 +466,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             // Fall: Irreduzibler quadratischer Faktor.
             try {
                 ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(base, varInCharPolynomial);
-                if (coefficients.getBound() < 3){
+                if (coefficients.getBound() < 3) {
                     return solutionBase;
                 }
                 Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(0)).mult(coefficients.get(2))).simplify();
