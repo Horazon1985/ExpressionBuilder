@@ -5,6 +5,7 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
+import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
@@ -20,7 +21,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * werden konnten oder ob die Gleichung definitiv alle reellen Zahlen als
      * Lösungen besitzt.
      */
-    public static final ExpressionCollection ALL_REALS = new ExpressionCollection();
+    public static final ExpressionCollection ALL_FUNCTIONS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
     private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
@@ -56,6 +57,26 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         while (f.contains(var + String.valueOf(j))) {
             j++;
         }
+        return var + j;
+    }
+
+    /**
+     * In f sind Variablen enthalten, unter anderem möglicherweise auch
+     * "Parametervariablen" C_1, C_2, .... Diese Funktion liefert dasjenige C_i
+     * mit dem kleinsten Index i, welches in f noch nicht vorkommt.
+     */
+    public static String getFreeIntegrationConstantVariable(ExpressionCollection exprs) {
+        String var = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_";
+        int j = 1;
+        boolean someTermContainsTheCurrentFreeIntegrationConstant = false;
+        do {
+            for (Expression expr : exprs) {
+                someTermContainsTheCurrentFreeIntegrationConstant = someTermContainsTheCurrentFreeIntegrationConstant || expr.contains(var + j);
+            }
+            if (someTermContainsTheCurrentFreeIntegrationConstant){
+                j++;
+            }
+        } while (someTermContainsTheCurrentFreeIntegrationConstant);
         return var + j;
     }
 
@@ -159,7 +180,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         for (Expression singleSolutionForDerivative : solutionsForDerivative) {
             if (isRightSideOfDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd)) {
                 Expression[] separatedFactors = getSeparationForDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd);
-                solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd));
+                solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd, solutions));
             }
         }
 
@@ -201,7 +222,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd) {
+    private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd, ExpressionCollection solutionsOfDiffEqAlreadyFound) {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -215,9 +236,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
         }
 
-        Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc});
+        Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc}).add(
+                Variable.create(getFreeIntegrationConstantVariable(solutionsOfDiffEqAlreadyFound)));
         Expression integralOfReciprocalOfFactorWithVarOrd = new Operator(TypeOperator.integral, new Object[]{ONE.div(factorWithVarOrd), varOrd});
-        
+
         try {
             ExpressionCollection solutionOfDiffEq = SolveGeneralEquationMethods.solveEquation(integralOfFactorWithVarAbsc, integralOfReciprocalOfFactorWithVarOrd, varOrd);
             solutions.addAll(solutionOfDiffEq);
