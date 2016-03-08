@@ -312,8 +312,8 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             Assert.assertTrue(factors.getBound() == 2);
-            Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
-            Assert.assertTrue(SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(1), "x").compareTo(BigInteger.valueOf(2)) == 0);
+            Assert.assertTrue(SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
+            Assert.assertTrue(SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(1), "x").compareTo(BigInteger.valueOf(2)) == 0);
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

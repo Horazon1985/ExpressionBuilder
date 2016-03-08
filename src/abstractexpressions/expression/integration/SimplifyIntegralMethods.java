@@ -1823,7 +1823,7 @@ public abstract class SimplifyIntegralMethods {
             }
 
             if (SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)
-                    && SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(100)) <= 0) {
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(100)) <= 0) {
                 continue;
             }
 

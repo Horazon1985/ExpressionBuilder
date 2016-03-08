@@ -1716,7 +1716,7 @@ public abstract class SolveGeneralEquationMethods {
             return zeros;
         }
 
-        BigInteger degree = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
+        BigInteger degree = SimplifyPolynomialMethods.getDegreeOfPolynomial(f, var);
         BigInteger order = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
         /*
          Falls k := Ord(f) >= 0 -> 0 ist eine k-fache Nullstelle von f.

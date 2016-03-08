@@ -198,8 +198,8 @@ public abstract class PolynomialRootsMethods {
                     Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(coefficients, var);
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
                     if (factorizedPolynomial.isProduct() 
-                            && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
-                            && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0){
+                            && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
+                            && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0){
                         return SimplifyUtilities.union(SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var), 
                                 SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
                     }

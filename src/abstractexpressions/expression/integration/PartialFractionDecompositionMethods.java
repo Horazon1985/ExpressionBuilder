@@ -69,8 +69,8 @@ public abstract class PartialFractionDecompositionMethods {
             }
 
             // Ab hier ist f eine echte rationale Funktion.
-            BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-            BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+            BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+            BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
             if (degNumerator.compareTo(BigInteger.ZERO) < 0
                     || degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
@@ -229,12 +229,12 @@ public abstract class PartialFractionDecompositionMethods {
                     && ((BinaryOperation) factorsDenominator.get(i)).getRight().isIntegerConstant()
                     && ((BinaryOperation) factorsDenominator.get(i)).getRight().isPositive()) {
                 exponent = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().intValue();
-                degOfFactorBase = SimplifyPolynomialMethods.degreeOfPolynomial(
+                degOfFactorBase = SimplifyPolynomialMethods.getDegreeOfPolynomial(
                         ((BinaryOperation) factorsDenominator.get(i)).getLeft(), var).intValue();
                 currentBase = ((BinaryOperation) factorsDenominator.get(i)).getLeft();
             } else {
                 exponent = 1;
-                degOfFactorBase = SimplifyPolynomialMethods.degreeOfPolynomial(factorsDenominator.get(i), var).intValue();
+                degOfFactorBase = SimplifyPolynomialMethods.getDegreeOfPolynomial(factorsDenominator.get(i), var).intValue();
                 currentBase = factorsDenominator.get(i);
             }
 
@@ -332,7 +332,7 @@ public abstract class PartialFractionDecompositionMethods {
             throw new PartialFractionDecompositionNotComputableException();
         }
 
-        int n = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var).intValue();
+        int n = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var).intValue();
         Expression[] coefficientsForPFD = new Expression[n];
         ExpressionCollection summandsApproach = SimplifyUtilities.getSummands(approachForPFD);
         ExpressionCollection coefficientsDenominator;
@@ -380,8 +380,8 @@ public abstract class PartialFractionDecompositionMethods {
         }
 
         // Hier sind beide Grade >= 0.
-        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
         if (degNumerator.compareTo(degDenominator) >= 0) {
             return false;
@@ -392,7 +392,7 @@ public abstract class PartialFractionDecompositionMethods {
         BigInteger degOfFactor;
 
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
-            degOfFactor = SimplifyPolynomialMethods.degreeOfPolynomial(factorsDenominator.get(i), var);
+            degOfFactor = SimplifyPolynomialMethods.getDegreeOfPolynomial(factorsDenominator.get(i), var);
             if (degOfFactor.compareTo(BigInteger.ONE) > 0) {
                 return false;
             }

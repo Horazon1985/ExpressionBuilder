@@ -106,7 +106,7 @@ public abstract class SimplifyPolynomialMethods {
      * repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1 (als
      * BigInteger) zurückgegeben.
      */
-    public static BigInteger degreeOfPolynomial(Expression f, String var) {
+    public static BigInteger getDegreeOfPolynomial(Expression f, String var) {
         if (!f.contains(var)) {
             return BigInteger.ZERO;
         }
@@ -118,17 +118,17 @@ public abstract class SimplifyPolynomialMethods {
         }
         if (f instanceof BinaryOperation) {
             if (f.isSum() || f.isDifference()) {
-                return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).max(degreeOfPolynomial(((BinaryOperation) f).getRight(), var));
+                return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).max(getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var));
             }
             if (f.isProduct()) {
-                return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).add(degreeOfPolynomial(((BinaryOperation) f).getRight(), var));
+                return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).add(getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var));
             }
             if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
-                return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+                return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
                 BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
-                return degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
+                return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
         }
         if (f instanceof Operator) {
@@ -136,7 +136,56 @@ public abstract class SimplifyPolynomialMethods {
                 return BigInteger.ZERO;
             }
         }
-        // Dann ist f kein Polynom
+        // Dann ist f kein Polynom.
+        return BigInteger.valueOf(-1);
+    }
+
+    /**
+     * Liefert (eine OBERE SCHRANKE für) den Grad des Multipolynoms bzgl. der
+     * Variablen vars, welches von f repräsentiert wird. Falls f kein Polynom
+     * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
+     */
+    public static BigInteger getDegreeOfMultiPolynomial(Expression f, HashSet<String> vars) {
+        boolean fContainsVars = false;
+        for (String var : vars){
+            fContainsVars = fContainsVars || f.contains(var);
+        }
+        if (!fContainsVars) {
+            return BigInteger.ZERO;
+        }
+        if (f instanceof Variable) {
+            if (vars.contains(((Variable) f).getName())) {
+                return BigInteger.ONE;
+            }
+            return BigInteger.ZERO;
+        }
+        if (f instanceof BinaryOperation) {
+            if (f.isSum() || f.isDifference()) {
+                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).max(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
+            }
+            if (f.isProduct()) {
+                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).add(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
+            }
+            if (f.isQuotient()) {
+                for (String var : vars){
+                    if (((BinaryOperation) f).getRight().contains(var)){
+                        // Dann ist f kein Multipolynom.
+                        return BigInteger.valueOf(-1);
+                    }
+                }
+                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars);
+            }
+            if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
+                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).multiply(exp);
+            }
+        }
+        if (f instanceof Operator) {
+            if (f.isConstant()) {
+                return BigInteger.ZERO;
+            }
+        }
+        // Dann ist f kein Mulitpolynom.
         return BigInteger.valueOf(-1);
     }
 
@@ -203,7 +252,7 @@ public abstract class SimplifyPolynomialMethods {
             return coefficients;
         }
 
-        BigInteger deg = SimplifyPolynomialMethods.degreeOfPolynomial(f, var);
+        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfPolynomial(f, var);
         if (deg.compareTo(BigInteger.ZERO) < 0) {
             return coefficients;
         }
@@ -867,8 +916,8 @@ public abstract class SimplifyPolynomialMethods {
 
         try {
 
-            BigInteger degF = degreeOfPolynomial(f, var);
-            BigInteger degG = degreeOfPolynomial(g, var);
+            BigInteger degF = getDegreeOfPolynomial(f, var);
+            BigInteger degG = getDegreeOfPolynomial(g, var);
 
             if (degF.compareTo(BigInteger.ZERO) < 0 || degG.compareTo(BigInteger.ZERO) < 0
                     || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0

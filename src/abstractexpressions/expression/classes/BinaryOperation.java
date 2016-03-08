@@ -2171,7 +2171,7 @@ public class BinaryOperation extends Expression {
             return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
                     || f.isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
-                    && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
         }
         if (f instanceof Operator) {
             return !f.contains(var);

@@ -8,9 +8,11 @@ import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeSimplify;
 import exceptions.EvaluationException;
+import java.math.BigInteger;
 import java.util.HashSet;
 import notations.NotationLoader;
 
@@ -73,7 +75,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             for (Expression expr : exprs) {
                 someTermContainsTheCurrentFreeIntegrationConstant = someTermContainsTheCurrentFreeIntegrationConstant || expr.contains(var + j);
             }
-            if (someTermContainsTheCurrentFreeIntegrationConstant){
+            if (someTermContainsTheCurrentFreeIntegrationConstant) {
                 j++;
             }
         } while (someTermContainsTheCurrentFreeIntegrationConstant);
@@ -246,6 +248,70 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
         }
 
+        return solutions;
+
+    }
+
+    /*
+     Algorithmen zum Lösen spezieller Differentialgleichungstypen der Ordnung 1.
+     */
+ /*
+    Typ: Homogene lineare DGLen mit konstanten Koeffizienten.
+     */
+    /**
+     * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
+     * varOrd eine lineare homogene DGL mit konstanten Koeffizienten ist.
+     */
+    private static boolean isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
+
+        if (f.contains(varAbsc)){
+            return false;
+        }
+        
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        String varOrdWithPrimes = varOrd;
+        HashSet<String> vars = new HashSet<>();
+        for (int i = 0; i <= n; i++){
+            f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
+            vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
+        }
+        
+        return SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars).compareTo(BigInteger.ONE) <= 0;
+
+    }
+
+    /**
+     * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
+     */
+    private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        // 1. Ermittlung der Koeffizienten.
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        ExpressionCollection coefficients = new ExpressionCollection();
+        String varOrdWithPrimes = varOrd;
+        HashSet<String> vars = f.getContainedIndeterminates();
+
+        Expression coefficient;
+        for (int i = 0; i <= n; i++) {
+            coefficient = f;
+            for (String var : vars) {
+                if (var.equals(varOrdWithPrimes)) {
+                    f = f.replaceVariable(varOrdWithPrimes, ONE);
+                } else {
+                    f = f.replaceVariable(varOrdWithPrimes, ZERO);
+                }
+            }
+            f = f.simplify();
+            coefficients.add(coefficient);
+        }
+
+        Expression charPolynomial = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, NotationLoader.SUBSTITUTION_VAR);
+
+        /**
+         * Polynom versuchen, vollständig zu faktorisieren.
+         */
         return solutions;
 
     }

@@ -104,8 +104,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degNnumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+        BigInteger degNnumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
         // Nur bei Graden <= gewisse Schranke fortfahren.
         if (degNnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
@@ -151,8 +151,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
@@ -244,8 +244,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getRight(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
@@ -311,12 +311,12 @@ public abstract class SpecialIntegrationMethods {
     // Weitere Typen.
     private static boolean isExponentialFunction(Expression f, String var) {
         return f.isFunction(TypeFunction.exp) && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
-                && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
+                && SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
     }
 
     private static boolean isTrigonometricalFunction(Expression f, String var) {
         return (f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)) && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
-                && SimplifyPolynomialMethods.degreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
+                && SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) == 0;
     }
 
     private static boolean isSumOfProductsOfExponentialAndTrigonometricalFunctions(Expression f, String var) {
@@ -408,9 +408,9 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) factors.get(1)).getLeft().isFunction(TypeFunction.sin))
                 && SimplifyPolynomialMethods.isPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var)) {
 
-            BigInteger degPolynomial = SimplifyPolynomialMethods.degreeOfPolynomial(factors.get(0), var);
+            BigInteger degPolynomial = SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(0), var);
             BigInteger exponentOfTrigonometricFunction = ((Constant) ((BinaryOperation) factors.get(1)).getRight()).getValue().toBigInteger();
-            BigInteger degArgument = SimplifyPolynomialMethods.degreeOfPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var);
+            BigInteger degArgument = SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var);
 
             if (degPolynomial.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                     || exponentOfTrigonometricFunction.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
@@ -548,7 +548,7 @@ public abstract class SpecialIntegrationMethods {
      */
     private static Expression integrateExpOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
-                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+                || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
@@ -562,7 +562,7 @@ public abstract class SpecialIntegrationMethods {
      */
     private static Expression integrateCosOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
-                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+                || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
@@ -576,7 +576,7 @@ public abstract class SpecialIntegrationMethods {
      */
     private static Expression integrateSinOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
-                || SimplifyPolynomialMethods.degreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
+                || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
             throw new NotPreciseIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
@@ -936,7 +936,7 @@ public abstract class SpecialIntegrationMethods {
                 && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
-                && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
+                && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
             BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
@@ -958,7 +958,7 @@ public abstract class SpecialIntegrationMethods {
                 && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) rightFactor).getLeft(), var)
-                && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) rightFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
+                && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) rightFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
             BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft()).getValue().toBigInteger();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
@@ -972,7 +972,7 @@ public abstract class SpecialIntegrationMethods {
                 && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft().isPositive()
                 && ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getRight().equals(TWO)
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) leftFactor).getLeft(), var)
-                && SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) leftFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
+                && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) leftFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
             BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft()).getValue().toBigInteger();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
@@ -1036,7 +1036,7 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotPreciseIntegrableException();
@@ -1191,8 +1191,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
@@ -1286,8 +1286,8 @@ public abstract class SpecialIntegrationMethods {
             throw new NotPreciseIntegrableException();
         }
 
-        BigInteger degNumerator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
-        BigInteger degDenominator = SimplifyPolynomialMethods.degreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
+        BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
+        BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
