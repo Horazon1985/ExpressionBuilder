@@ -392,7 +392,7 @@ public class PolynomialTests {
             fail(e.getMessage());
         }
     }
-
+    
     @Test
     public void decomposePolynomialTest10() {
         /* 
@@ -408,4 +408,19 @@ public class PolynomialTests {
         }
     }
     
+    @Test
+    public void decomposePolynomialTest11() {
+        /* 
+         Zerlegung von f = 27*x+27*x^3+9*x^5+x^7-(135+135*x^2+45*x^4+5*x^6) = (x^2+3)^3*(x-5) in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("27*x+27*x^3+9*x^5+x^7-(135+135*x^2+45*x^4+5*x^6)", null);
+            fFactorized = Expression.build("(x^2+3)^3*(x-5)", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

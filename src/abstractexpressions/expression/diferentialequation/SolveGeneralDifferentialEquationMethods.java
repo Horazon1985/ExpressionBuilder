@@ -108,10 +108,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     protected static ExpressionCollection solveGeneralDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions = new ExpressionCollection();
-
+        f = f.simplify(simplifyTypesDifferentialEquation);
+        g = g.simplify(simplifyTypesDifferentialEquation);
+        
+        // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
-        return solutions;
+        
+        return solveZeroDifferentialEquation(f.sub(g), varAbsc, varOrd);
 
     }
 
@@ -123,6 +126,25 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     protected static ExpressionCollection solveZeroDifferentialEquation(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
+        f = f.simplify(simplifyTypesDifferentialEquation);
+        
+        // Zunächst: Zerlegen in einfachere DGLen, wenn möglich.
+        // Fall: f hat Produktgestalt.
+        if (f.isProduct()){
+            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+            return solveZeroDifferentialEquationIfProduct(factors, varAbsc, varOrd);
+        }
+        
+        // Fall: f hat Quotientgestalt.
+        if (f.isQuotient()){
+            return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+        }
+        
+        // Fall: f hat Potenzgestalt.
+        if (f.isPower()){
+            return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+        }
+        
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
 
@@ -133,6 +155,31 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException{
+        ExpressionCollection solutions = new ExpressionCollection();
+        for (Expression factor : factors){
+            solutions = SimplifyUtilities.union(solutions, solveZeroDifferentialEquation(factor, varAbsc, varOrd));
+        }
+        solutions.removeMultipleTerms();
+        return solutions;
+    }
+    
+    private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException{
+        ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
+        ExpressionCollection solutionsRight = solveZeroDifferentialEquation(denominator, varAbsc, varOrd);
+        ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
+        solutions.removeMultipleTerms();
+        return solutions;
+    }
+    
+    private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException{
+        ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(base, varAbsc, varOrd);
+        ExpressionCollection solutionsRight = solveZeroDifferentialEquation(exponent, varAbsc, varOrd);
+        ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
+        solutions.removeMultipleTerms();
+        return solutions;
+    }
+    
     /**
      * Berechnet die Ordnung der Differentialgleichung f(x, y, y', ..., y^(n)) =
      * 0 mit x = varAbsc, y = varOrd.
@@ -299,8 +346,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
      */
     private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-
+        
         ExpressionCollection solutionBase = new ExpressionCollection();
+
+        if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)){
+            return solutionBase;
+        }
 
         // 1. Ermittlung der Koeffizienten.
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
@@ -365,8 +416,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection zeros;
 
         if (deg.equals(BigInteger.ONE)) {
+            // Fall: Linearfaktor.
             try {
-                zeros = SolveGeneralEquationMethods.solveEquation(base, ZERO, varAbsc);
+                zeros = SolveGeneralEquationMethods.solveEquation(base, ZERO, varInCharPolynomial);
                 if (!zeros.isEmpty()) {
                     for (int i = 0; i < exponent; i++) {
                         solutionBase.add(Variable.create(varAbsc).pow(i).mult(zeros.get(0).mult(Variable.create(varAbsc)).exp()));
@@ -375,6 +427,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             } catch (EvaluationException ex) {
             }
         } else if (deg.equals(BigInteger.valueOf(2))) {
+            // Fall: Irreduzibler quadratischer Faktor.
             try {
                 ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(base, varInCharPolynomial);
                 if (coefficients.getBound() < 3){
@@ -383,7 +436,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(0)).mult(coefficients.get(2))).simplify();
                 if (discriminant.isAlwaysNegative()) {
                     Expression factorForExp = MINUS_ONE.mult(coefficients.get(1)).div(TWO.mult(coefficients.get(2))).simplify();
-                    Expression factorForSinCos = MINUS_ONE.mult(discriminant).pow(1, 2).simplify();
+                    Expression factorForSinCos = MINUS_ONE.mult(discriminant).pow(1, 2).div(TWO.mult(coefficients.get(2))).simplify();
                     for (int i = 0; i < exponent; i++) {
                         solutionBase.add(Variable.create(varAbsc).pow(i).mult(factorForExp.mult(Variable.create(varAbsc)).exp()).mult(
                                 factorForSinCos.mult(Variable.create(varAbsc)).sin()));
