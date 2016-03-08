@@ -147,7 +147,7 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static BigInteger getDegreeOfMultiPolynomial(Expression f, HashSet<String> vars) {
         boolean fContainsVars = false;
-        for (String var : vars){
+        for (String var : vars) {
             fContainsVars = fContainsVars || f.contains(var);
         }
         if (!fContainsVars) {
@@ -167,8 +167,8 @@ public abstract class SimplifyPolynomialMethods {
                 return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).add(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
             }
             if (f.isQuotient()) {
-                for (String var : vars){
-                    if (((BinaryOperation) f).getRight().contains(var)){
+                for (String var : vars) {
+                    if (((BinaryOperation) f).getRight().contains(var)) {
                         // Dann ist f kein Multipolynom.
                         return BigInteger.valueOf(-1);
                     }

@@ -1,7 +1,11 @@
 package abstractexpressions.expression.diferentialequation;
 
+import abstractexpressions.expression.classes.BinaryOperation;
+import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
@@ -12,6 +16,7 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeSimplify;
 import exceptions.EvaluationException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import notations.NotationLoader;
@@ -145,7 +150,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     protected static ExpressionCollection solveDifferentialEquationOfDegOne(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection solutions;
 
         // Typ: trennbare Veränderliche.
         solutions = solveDifferentialEquationWithSeparableVariables(f, varAbsc, varOrd);
@@ -160,9 +165,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     protected static ExpressionCollection solveDifferentialEquationOfHigherDeg(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection solutions;
 
-        // TO DO.
+        // Typ: trennbare Veränderliche.
+        solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+        if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+            return solutions;
+        }
+
         return solutions;
 
     }
@@ -264,19 +274,24 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static boolean isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
 
-        if (f.contains(varAbsc)){
+        if (f.contains(varAbsc)) {
             return false;
         }
-        
+
+        /*
+        Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
+        geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
+         */
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
         HashSet<String> vars = new HashSet<>();
-        for (int i = 0; i <= n; i++){
+        for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
         }
-        
-        return SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars).compareTo(BigInteger.ONE) <= 0;
+
+        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
+        return deg.compareTo(BigInteger.ZERO) >= 0 && deg.compareTo(BigInteger.ONE) <= 0;
 
     }
 
@@ -285,7 +300,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection solutionBase = new ExpressionCollection();
 
         // 1. Ermittlung der Koeffizienten.
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
@@ -298,21 +313,89 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             coefficient = f;
             for (String var : vars) {
                 if (var.equals(varOrdWithPrimes)) {
-                    f = f.replaceVariable(varOrdWithPrimes, ONE);
+                    coefficient = coefficient.replaceVariable(var, ONE);
                 } else {
-                    f = f.replaceVariable(varOrdWithPrimes, ZERO);
+                    coefficient = coefficient.replaceVariable(var, ZERO);
                 }
             }
-            f = f.simplify();
+            coefficient = coefficient.simplify();
             coefficients.add(coefficient);
+            varOrdWithPrimes = varOrdWithPrimes + "'";
         }
 
         Expression charPolynomial = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, NotationLoader.SUBSTITUTION_VAR);
 
-        /**
-         * Polynom versuchen, vollständig zu faktorisieren.
-         */
-        return solutions;
+        // Charakteristisches Polynom versuchen, vollständig zu faktorisieren.
+        charPolynomial = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(charPolynomial, NotationLoader.SUBSTITUTION_VAR);
+        ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
+
+        for (Expression factor : factors) {
+            solutionBase.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR, solutionBase));
+        }
+
+        // Aus den Basisvektoren nun die allgemeine Lösung basteln.
+        Expression solution = ZERO;
+        for (int i = 0; i < solutionBase.getBound(); i++) {
+            solution = solution.add(Variable.create(getFreeIntegrationConstantVariable(solution)).mult(solutionBase.get(i)));
+        }
+
+        return new ExpressionCollection(solution.simplify());
+
+    }
+
+    private static ExpressionCollection getSolutionForParticularIrredicibleFactor(Expression factor, String varAbsc, String varInCharPolynomial, ExpressionCollection solutionsAlreadyFound) {
+
+        ExpressionCollection solutionBase = new ExpressionCollection();
+
+        Expression base;
+        int exponent;
+        if (factor.isIntegerPower()) {
+            base = ((BinaryOperation) factor).getLeft();
+            if (((Constant) ((BinaryOperation) factor).getRight()).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) > 0) {
+                // Sollte eigentlich nie vorkommen.
+                return solutionBase;
+            }
+            exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
+        } else {
+            base = factor;
+            exponent = 1;
+        }
+
+        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfPolynomial(base, varInCharPolynomial);
+        ExpressionCollection zeros;
+
+        if (deg.equals(BigInteger.ONE)) {
+            try {
+                zeros = SolveGeneralEquationMethods.solveEquation(base, ZERO, varAbsc);
+                if (!zeros.isEmpty()) {
+                    for (int i = 0; i < exponent; i++) {
+                        solutionBase.add(Variable.create(varAbsc).pow(i).mult(zeros.get(0).mult(Variable.create(varAbsc)).exp()));
+                    }
+                }
+            } catch (EvaluationException ex) {
+            }
+        } else if (deg.equals(BigInteger.valueOf(2))) {
+            try {
+                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(base, varInCharPolynomial);
+                if (coefficients.getBound() < 3){
+                    return solutionBase;
+                }
+                Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(0)).mult(coefficients.get(2))).simplify();
+                if (discriminant.isAlwaysNegative()) {
+                    Expression factorForExp = MINUS_ONE.mult(coefficients.get(1)).div(TWO.mult(coefficients.get(2))).simplify();
+                    Expression factorForSinCos = MINUS_ONE.mult(discriminant).pow(1, 2).simplify();
+                    for (int i = 0; i < exponent; i++) {
+                        solutionBase.add(Variable.create(varAbsc).pow(i).mult(factorForExp.mult(Variable.create(varAbsc)).exp()).mult(
+                                factorForSinCos.mult(Variable.create(varAbsc)).sin()));
+                        solutionBase.add(Variable.create(varAbsc).pow(i).mult(factorForExp.mult(Variable.create(varAbsc)).exp()).mult(
+                                factorForSinCos.mult(Variable.create(varAbsc)).cos()));
+                    }
+                }
+            } catch (EvaluationException ex) {
+            }
+        }
+
+        return solutionBase;
 
     }
 
