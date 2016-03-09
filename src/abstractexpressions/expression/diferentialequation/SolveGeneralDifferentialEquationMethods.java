@@ -15,6 +15,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeSimplify;
+import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -75,8 +76,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     public static String getFreeIntegrationConstantVariable(ExpressionCollection exprs) {
         String var = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_";
         int j = 1;
-        boolean someTermContainsTheCurrentFreeIntegrationConstant = false;
+        boolean someTermContainsTheCurrentFreeIntegrationConstant;
         do {
+            someTermContainsTheCurrentFreeIntegrationConstant = false;
             for (Expression expr : exprs) {
                 someTermContainsTheCurrentFreeIntegrationConstant = someTermContainsTheCurrentFreeIntegrationConstant || expr.contains(var + j);
             }
@@ -136,12 +138,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // Fall: f hat Quotientgestalt.
         if (f.isQuotient()) {
-            return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+//            return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
 
         // Fall: f hat Potenzgestalt.
         if (f.isPower()) {
-            return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+//            return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
 
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
@@ -213,7 +215,16 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         ExpressionCollection solutions;
 
-        // Typ: trennbare Veränderliche.
+        try {
+            // Typ: y^(n) = f(x).
+            solutions = solveDifferentialEquationWithOnlyHighestDerivatives(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        }
+
+        // Typ: Homogene lineare DGL mit konstanten Koeffizienten.
         solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
         if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
             return solutions;
@@ -309,11 +320,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /*
-     Algorithmen zum Lösen spezieller Differentialgleichungstypen der Ordnung 1.
+     Algorithmen zum Lösen spezieller Differentialgleichungstypen allgemeiner Ordnung.
      */
- /*
-    Typ: Homogene lineare DGLen mit konstanten Koeffizienten.
-     */
+    //Typ: Homogene lineare DGLen mit konstanten Koeffizienten.
     /**
      * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
      * varOrd eine lineare DGL mit konstanten Koeffizienten ist.
@@ -334,7 +343,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException e) {
             return false;
         }
-        
+
     }
 
     /**
@@ -485,6 +494,165 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         return solutionBase;
+
+    }
+
+    /**
+     * Hilfsmethode. Liefert, ob in f nur bestimmte Ableitungen von y = varOrd
+     * auftauchen. Diese Ordnungen sind in orders übergeben.
+     */
+    private static boolean doesExpressionContainOnlyDerivativesOfGivenOrder(Expression f, String varOrd, int orderOfDiffEq, int... orders) {
+
+        HashSet<String> forbiddenDerivatives = new HashSet<>();
+
+        String varOrdWithPrimes = varOrd;
+        boolean found;
+
+        // Blacklist aller verbotenen Ableitungen erstellen.
+        for (int i = 0; i <= orderOfDiffEq; i++) {
+            found = false;
+            for (int ord : orders) {
+                if (ord == i) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                forbiddenDerivatives.add(varOrdWithPrimes);
+            }
+            varOrdWithPrimes += "'";
+        }
+
+        // Prüfen.
+        for (String derivative : forbiddenDerivatives) {
+            if (f.contains(derivative)) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    //Typ: y^(n) = f(x).
+    /**
+     * Liefert Lösungen von Differentialgleichungen vom Typ y^(n + 2) =
+     * g(y^(n)). Die eingegebene DGL hat die Form f = 0;
+     */
+    private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        String varOrdWithPrimes = varOrd;
+        for (int i = 0; i < ord; i++) {
+            varOrdWithPrimes += "'";
+        }
+
+        ExpressionCollection solutionsForHighestDerivative;
+        try {
+            solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrdWithPrimes);
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (solutionsForHighestDerivative.isEmpty()) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // Zunächst: Typprüfung.
+        boolean isEquationOfProperType;
+        for (Expression solutionForHighestDerivative : solutionsForHighestDerivative) {
+            // Zunächst: Typprüfung.
+            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, ord);
+            if (isEquationOfProperType) {
+                solutions = SimplifyUtilities.union(solutions,
+                        solveDifferentialEquationWithOnlyHighestDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd, solutions));
+            }
+        }
+
+        solutions.removeMultipleTerms();
+        return solutions;
+
+    }
+
+    private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, int ord, String varAbsc, String varOrd, ExpressionCollection solutionsAlreadyFound) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        Expression solution = f;
+
+        // Rechte Seite f ord-mal integrieren.
+        for (int i = 0; i < ord; i++) {
+            solution = new Operator(TypeOperator.integral, new Object[]{solution, varAbsc});
+        }
+
+        for (int i = 0; i < ord; i++) {
+            String intConstant = getFreeIntegrationConstantVariable(solution);
+            solution = solution.add(Variable.create(intConstant).mult(Variable.create(varAbsc).pow(i)));
+        }
+
+        try {
+            return new ExpressionCollection(solution.simplify());
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+    }
+
+    //Typ: y^(n + 2) = f(y^(n)).
+    /**
+     * Liefert Lösungen von Differentialgleichungen vom Typ y^(n + 2) =
+     * g(y^(n)). Die eingegebene DGL hat die Form f = 0;
+     */
+    private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        String varOrdWithPrimes = varOrd;
+        for (int i = 0; i < ord; i++) {
+            varOrdWithPrimes += "'";
+        }
+
+        ExpressionCollection solutionsForHighestDerivative;
+        try {
+            solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrdWithPrimes);
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (solutionsForHighestDerivative.isEmpty()) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // Zunächst: Typprüfung.
+        boolean isEquationOfProperType;
+        for (Expression solutionForHighestDerivative : solutionsForHighestDerivative) {
+            // Zunächst: Typprüfung.
+            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(f, varOrd, ord, ord - 2) && !f.contains(varAbsc);
+            if (isEquationOfProperType) {
+                solutions = SimplifyUtilities.union(solutions,
+                        solveDifferentialEquationWithOnlyTwoDifferentDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd, solutions));
+            }
+        }
+
+        solutions.removeMultipleTerms();
+        return solutions;
+
+    }
+
+    private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression rightSide, int ord, String varAbsc, String varOrd, ExpressionCollection solutionsAlreadyFound) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        /*
+        Lösungsalgorithmus: Sei y^(n + 2) = f(y^(n)).
+        Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1), g = int(f(t), t).
+        2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t)), t).
+        3. y = h^(-1)_(C_1)(+-(x + C_2)) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1).
+         */
+        return solutions;
 
     }
 
