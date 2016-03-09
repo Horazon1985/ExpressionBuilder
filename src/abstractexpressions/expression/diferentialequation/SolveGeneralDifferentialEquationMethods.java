@@ -32,7 +32,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     public static final ExpressionCollection ALL_FUNCTIONS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
-    public static int indexForNextIntegrationConstant = 1;
+    private static int indexForNextIntegrationConstant = 1;
 
     private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
 
@@ -67,10 +67,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         return integrationConstant;
     }
 
-    public static void resetIndexForIntegrationConstantVariable(){
+    public static void resetIndexForIntegrationConstantVariable() {
         indexForNextIntegrationConstant = 1;
     }
-    
+
     /**
      * Hauptprozedur zum algebraischen Lösen von Differntialgleichungen f(x, y,
      * y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
@@ -112,6 +112,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         f = f.simplify(simplifyTypesDifferentialEquation);
 
+        if (f.equals(ZERO)) {
+            return ALL_FUNCTIONS;
+        }
+
         // Zunächst: Zerlegen in einfachere DGLen, wenn möglich.
         // Fall: f hat Produktgestalt.
         if (f.isProduct()) {
@@ -121,12 +125,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // Fall: f hat Quotientgestalt.
         if (f.isQuotient()) {
-//            return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+            return solveZeroDifferentialEquationIfQuotient(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
 
         // Fall: f hat Potenzgestalt.
         if (f.isPower()) {
-//            return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
+            return solveZeroDifferentialEquationIfPower(((BinaryOperation) f).getLeft(), ((BinaryOperation) f).getRight(), varAbsc, varOrd);
         }
 
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
@@ -136,6 +140,29 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             return solveDifferentialEquationOfDegOne(f, varAbsc, varOrd);
         }
         return solveDifferentialEquationOfHigherDeg(f, varAbsc, varOrd);
+
+    }
+
+    /**
+     * Setzt die Lösung solution in die Differentialgleichung
+     * differentialEquation ein und gibt dies in vereinfachter Form aus.
+     *
+     * @throws EvaluationException
+     */
+    private static Expression evaluateDifferentialEquation(Expression differentialEquation, Expression solution, String varAbsc, String varOrd) throws EvaluationException {
+
+        Expression value = differentialEquation;
+        Expression derivative = solution;
+        
+        int ord = getOrderOfDifferentialEquation(differentialEquation, varAbsc, varOrd);
+        String varOrdWithPrimes = varOrd;
+        for (int i = 0; i <= ord; i++){
+            value = value.replaceVariable(varOrdWithPrimes, derivative);
+            derivative = derivative.diff(varAbsc).simplify();
+            varOrdWithPrimes += "'";
+        }
+        
+        return value.simplify();
 
     }
 
@@ -149,19 +176,36 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
-        ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
-        ExpressionCollection solutionsRight = solveZeroDifferentialEquation(denominator, varAbsc, varOrd);
-        ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
-        solutions.removeMultipleTerms();
+        
+        ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
+        solutionsNumerator.removeMultipleTerms();
+        ExpressionCollection solutions = new ExpressionCollection();
+        
+        // Nun diejenigen Lösungen aussortieren, welche im Nenner = 0 liefern.
+        for (Expression solution : solutionsNumerator){
+            if (!evaluateDifferentialEquation(denominator, solution, varAbsc, varOrd).equals(ZERO)){
+                solutions.add(solution);
+            }
+        }
+        
         return solutions;
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException {
-        ExpressionCollection solutionsLeft = solveZeroDifferentialEquation(base, varAbsc, varOrd);
-        ExpressionCollection solutionsRight = solveZeroDifferentialEquation(exponent, varAbsc, varOrd);
-        ExpressionCollection solutions = SimplifyUtilities.union(solutionsLeft, solutionsRight);
-        solutions.removeMultipleTerms();
+
+        ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(base, varAbsc, varOrd);
+        solutionsNumerator.removeMultipleTerms();
+        ExpressionCollection solutions = new ExpressionCollection();
+        
+        // Nun diejenigen Lösungen aufnehmen, welche im Exponenten einen Ausdruck liefern, welcher stets > 0 ist.
+        for (Expression solution : solutionsNumerator){
+            if (evaluateDifferentialEquation(exponent, solution, varAbsc, varOrd).isAlwaysPositive()){
+                solutions.add(solution);
+            }
+        }
+        
         return solutions;
+        
     }
 
     /**
@@ -196,7 +240,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     protected static ExpressionCollection solveDifferentialEquationOfHigherDeg(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions;
+        ExpressionCollection solutions = new ExpressionCollection();
 
         try {
             // Typ: y^(n) = f(x).
@@ -207,10 +251,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
 
-        // Typ: Homogene lineare DGL mit konstanten Koeffizienten.
-        solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
-        if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
-            return solutions;
+        try {
+            // Typ: Homogene lineare DGL mit konstanten Koeffizienten.
+            solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
 
         return solutions;
@@ -373,12 +420,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     /**
      * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
      */
-    private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+    private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
         ExpressionCollection solutionBase = new ExpressionCollection();
 
         if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)) {
-            return solutionBase;
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
         // 1. Ermittlung der Koeffizienten.
