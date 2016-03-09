@@ -32,7 +32,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     public static final ExpressionCollection ALL_FUNCTIONS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
-    public static int indexForNextIntegrationConstant = 0;
+    public static int indexForNextIntegrationConstant = 1;
 
     private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
 
@@ -62,9 +62,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * nicht vorgekommen ist.
      */
     public static Expression getFreeIntegrationConstantVariable() {
-        return Variable.create(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + indexForNextIntegrationConstant);
+        Expression integrationConstant = Variable.create(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + indexForNextIntegrationConstant);
+        indexForNextIntegrationConstant++;
+        return integrationConstant;
     }
 
+    public static void resetIndexForIntegrationConstantVariable(){
+        indexForNextIntegrationConstant = 1;
+    }
+    
     /**
      * Hauptprozedur zum algebraischen Lösen von Differntialgleichungen f(x, y,
      * y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
@@ -72,7 +78,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection solveDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
-        indexForNextIntegrationConstant = 1;
+        resetIndexForIntegrationConstantVariable();
         if (g.equals(ZERO)) {
             return solveZeroDifferentialEquation(f, varAbsc, varOrd);
         }
@@ -284,7 +290,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc}).add(
                 getFreeIntegrationConstantVariable());
-        indexForNextIntegrationConstant++;
         Expression integralOfReciprocalOfFactorWithVarOrd = new Operator(TypeOperator.integral, new Object[]{ONE.div(factorWithVarOrd), varOrd});
 
         try {
@@ -411,7 +416,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         Expression solution = ZERO;
         for (int i = 0; i < solutionBase.getBound(); i++) {
             solution = solution.add(getFreeIntegrationConstantVariable().mult(solutionBase.get(i)));
-            indexForNextIntegrationConstant++;
         }
 
         return new ExpressionCollection(solution.simplify());
@@ -567,7 +571,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         for (int i = 0; i < ord; i++) {
             solution = solution.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
-            indexForNextIntegrationConstant++;
         }
 
         try {
