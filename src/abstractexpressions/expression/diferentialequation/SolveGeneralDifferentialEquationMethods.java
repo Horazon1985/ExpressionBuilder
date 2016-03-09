@@ -32,6 +32,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     public static final ExpressionCollection ALL_FUNCTIONS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
+    public static int indexForNextIntegrationConstant = 0;
+
     private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
 
     private static HashSet<TypeSimplify> getSimplifyTypesDifferentialEquation() {
@@ -55,38 +57,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /**
-     * In f sind Variablen enthalten, unter anderem möglicherweise auch
-     * "Parametervariablen" C_1, C_2, .... Diese Funktion liefert dasjenige C_i
-     * mit dem kleinsten Index i, welches in f noch nicht vorkommt.
+     * In in diversen Lösungen Integrationskonstanten enthalten sind, wird hier
+     * diejenige Integrationskonstante (als Variable) zurückgegeben, welche noch
+     * nicht vorgekommen ist.
      */
-    public static String getFreeIntegrationConstantVariable(Expression f) {
-        String var = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_";
-        int j = 1;
-        while (f.contains(var + String.valueOf(j))) {
-            j++;
-        }
-        return var + j;
-    }
-
-    /**
-     * In f sind Variablen enthalten, unter anderem möglicherweise auch
-     * "Parametervariablen" C_1, C_2, .... Diese Funktion liefert dasjenige C_i
-     * mit dem kleinsten Index i, welches in f noch nicht vorkommt.
-     */
-    public static String getFreeIntegrationConstantVariable(ExpressionCollection exprs) {
-        String var = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_";
-        int j = 1;
-        boolean someTermContainsTheCurrentFreeIntegrationConstant;
-        do {
-            someTermContainsTheCurrentFreeIntegrationConstant = false;
-            for (Expression expr : exprs) {
-                someTermContainsTheCurrentFreeIntegrationConstant = someTermContainsTheCurrentFreeIntegrationConstant || expr.contains(var + j);
-            }
-            if (someTermContainsTheCurrentFreeIntegrationConstant) {
-                j++;
-            }
-        } while (someTermContainsTheCurrentFreeIntegrationConstant);
-        return var + j;
+    public static Expression getFreeIntegrationConstantVariable() {
+        return Variable.create(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + indexForNextIntegrationConstant);
     }
 
     /**
@@ -96,6 +72,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection solveDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
+        indexForNextIntegrationConstant = 1;
         if (g.equals(ZERO)) {
             return solveZeroDifferentialEquation(f, varAbsc, varOrd);
         }
@@ -249,7 +226,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         for (Expression singleSolutionForDerivative : solutionsForDerivative) {
             if (isRightSideOfDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd)) {
                 Expression[] separatedFactors = getSeparationForDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd);
-                solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd, solutions));
+                solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd));
             }
         }
 
@@ -291,7 +268,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd, ExpressionCollection solutionsOfDiffEqAlreadyFound) {
+    private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd) {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -306,7 +283,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc}).add(
-                Variable.create(getFreeIntegrationConstantVariable(solutionsOfDiffEqAlreadyFound)));
+                getFreeIntegrationConstantVariable());
+        indexForNextIntegrationConstant++;
         Expression integralOfReciprocalOfFactorWithVarOrd = new Operator(TypeOperator.integral, new Object[]{ONE.div(factorWithVarOrd), varOrd});
 
         try {
@@ -426,20 +404,21 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
 
         for (Expression factor : factors) {
-            solutionBase.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR, solutionBase));
+            solutionBase.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
 
         // Aus den Basisvektoren nun die allgemeine Lösung basteln.
         Expression solution = ZERO;
         for (int i = 0; i < solutionBase.getBound(); i++) {
-            solution = solution.add(Variable.create(getFreeIntegrationConstantVariable(solution)).mult(solutionBase.get(i)));
+            solution = solution.add(getFreeIntegrationConstantVariable().mult(solutionBase.get(i)));
+            indexForNextIntegrationConstant++;
         }
 
         return new ExpressionCollection(solution.simplify());
 
     }
 
-    private static ExpressionCollection getSolutionForParticularIrredicibleFactor(Expression factor, String varAbsc, String varInCharPolynomial, ExpressionCollection solutionsAlreadyFound) {
+    private static ExpressionCollection getSolutionForParticularIrredicibleFactor(Expression factor, String varAbsc, String varInCharPolynomial) {
 
         ExpressionCollection solutionBase = new ExpressionCollection();
 
@@ -568,7 +547,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, ord);
             if (isEquationOfProperType) {
                 solutions = SimplifyUtilities.union(solutions,
-                        solveDifferentialEquationWithOnlyHighestDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd, solutions));
+                        solveDifferentialEquationWithOnlyHighestDerivatives(solutionForHighestDerivative, ord, varAbsc));
             }
         }
 
@@ -577,7 +556,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, int ord, String varAbsc, String varOrd, ExpressionCollection solutionsAlreadyFound) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, int ord, String varAbsc) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         Expression solution = f;
 
@@ -587,8 +566,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         for (int i = 0; i < ord; i++) {
-            String intConstant = getFreeIntegrationConstantVariable(solution);
-            solution = solution.add(Variable.create(intConstant).mult(Variable.create(varAbsc).pow(i)));
+            solution = solution.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
+            indexForNextIntegrationConstant++;
         }
 
         try {
