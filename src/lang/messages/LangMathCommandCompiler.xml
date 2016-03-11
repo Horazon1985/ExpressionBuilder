@@ -280,10 +280,10 @@
         <Russian>Правая часть содержит переменную, которая не является параметром функции.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVALUES_NOT_QUADRATIC">
-        <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'eigenvalues' must be a valid matrix expression, which represents a quadratic matrix. Reported Error: </English>
-        <Ukrainian>Параметр команди 'eigenvalues' має бути діючим матричним виразом, що представляє квадратну матрицю. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'eigenvalues' должен быть действительным матричным выражением, который представляет квадратную матрицу. Сообщение об ошибке: </Russian>
+        <German>Der Parameter im Befehl 'eigenvalues' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt.</German>
+        <English>The parameter in command 'eigenvalues' must be a valid matrix expression, which represents a quadratic matrix.</English>
+        <Ukrainian>Параметр команди 'eigenvalues' має бути діючим матричним виразом, що представляє квадратну матрицю.</Ukrainian>
+        <Russian>Параметр команды 'eigenvalues' должен быть действительным матричным выражением, который представляет квадратную матрицу.</Russian>
     </object>
     <object id = "MCC_EIGENVALUES_OF_MATRIX_1">
         <German>Es konnten folgende Eigenwerte der Matrix </German>
@@ -310,10 +310,10 @@
         <Russian> не было найдено.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_EIGENVECTORS_NOT_QUADRATIC">
-        <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt. Gemeldeter Fehler: </German>
-        <English>The parameter in command 'eigenvectors' must be a valid matrix expression, which represents a quadratic matrix. Reported Error: </English>
-        <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом, що представляє квадратну матрицю. Повідомлення про помилку: </Ukrainian>
-        <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением, который представляет квадратную матрицу. Сообщение об ошибке: </Russian>
+        <German>Der Parameter im Befehl 'eigenvectors' muss ein gültiger Matrizenausdruck sein, der eine quadratische Matrix darstellt.</German>
+        <English>The parameter in command 'eigenvectors' must be a valid matrix expression, which represents a quadratic matrix.</English>
+        <Ukrainian>Параметр команди 'eigenvectors' має бути діючим матричним виразом, що представляє квадратну матрицю.</Ukrainian>
+        <Russian>Параметр команды 'eigenvectors' должен быть действительным матричным выражением, который представляет квадратную матрицу.</Russian>
     </object>
     <object id = "MCC_EIGENVECTORS_FOR_EIGENVALUE_1">
         <German>Eigenvektoren zum Eigenwert </German>

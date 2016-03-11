@@ -1752,7 +1752,7 @@ public abstract class SolveGeneralEquationMethods {
     private static void getSuitableSubstitutionForEquation(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
 
         /*
-         Es wird Folgendes als potentielle Substitution angesehen: (1)
+         Es wird Folgendes als potentielle Substitution angesehen: (1) Argumente
          innerhalb von Funktionsklammern (2) Basen von Potenzen mit konstantem
          Exponenten (3) Exponenten von Potenzen mit konstanter Basis. Ferner
          darf eine Substitution nicht konstant bzgl. var und keine Variable
