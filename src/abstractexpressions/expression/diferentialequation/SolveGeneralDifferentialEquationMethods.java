@@ -20,8 +20,6 @@ import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import notations.NotationLoader;
 
 public abstract class SolveGeneralDifferentialEquationMethods {
@@ -33,11 +31,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     public static final ExpressionCollection ALL_FUNCTIONS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
-    
+
     private static int indexForNextIntegrationConstant = 1;
-    
+
     private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
-    
+
     private static HashSet<TypeSimplify> getSimplifyTypesDifferentialEquation() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.simplify_trivial);
@@ -68,9 +66,20 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         indexForNextIntegrationConstant++;
         return integrationConstant;
     }
-    
+
     public static void resetIndexForIntegrationConstantVariable() {
         indexForNextIntegrationConstant = 1;
+    }
+
+    /**
+     * Liefert (als String) die Variable var'...', wobei die Anzahl der
+     * Apostrophs gleich k ist.
+     */
+    private static String getVarWithPrimes(String var, int k) {
+        for (int i = 0; i < k; i++) {
+            var += "'";
+        }
+        return var;
     }
 
     /**
@@ -94,14 +103,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * @throws EvaluationException
      */
     protected static ExpressionCollection solveGeneralDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         f = f.simplify(simplifyTypesDifferentialEquation);
         g = g.simplify(simplifyTypesDifferentialEquation);
 
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
         return solveZeroDifferentialEquation(f.sub(g), varAbsc, varOrd);
-        
+
     }
 
     /**
@@ -111,9 +120,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * @throws EvaluationException
      */
     protected static ExpressionCollection solveZeroDifferentialEquation(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         f = f.simplify(simplifyTypesDifferentialEquation);
-        
+
         if (f.equals(ZERO)) {
             return ALL_FUNCTIONS;
         }
@@ -137,12 +146,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
-        
+
         if (ord == 1) {
             return solveDifferentialEquationOfDegOne(f, varAbsc, varOrd);
         }
         return solveDifferentialEquationOfHigherDeg(f, varAbsc, varOrd);
-        
+
     }
 
     /**
@@ -152,10 +161,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * @throws EvaluationException
      */
     private static Expression evaluateDifferentialEquation(Expression differentialEquation, Expression solution, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         Expression value = differentialEquation;
         Expression derivative = solution;
-        
+
         int ord = getOrderOfDifferentialEquation(differentialEquation, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
         for (int i = 0; i <= ord; i++) {
@@ -163,11 +172,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             derivative = derivative.diff(varAbsc).simplify();
             varOrdWithPrimes += "'";
         }
-        
+
         return value.simplify();
-        
+
     }
-    
+
     private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException {
         ExpressionCollection solutions = new ExpressionCollection();
         for (Expression factor : factors) {
@@ -176,9 +185,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         solutions.removeMultipleTerms();
         return solutions;
     }
-    
+
     private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
         solutionsNumerator.removeMultipleTerms();
         ExpressionCollection solutions = new ExpressionCollection();
@@ -189,12 +198,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 solutions.add(solution);
             }
         }
-        
+
         return solutions;
     }
-    
+
     private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(base, varAbsc, varOrd);
         solutionsNumerator.removeMultipleTerms();
         ExpressionCollection solutions = new ExpressionCollection();
@@ -205,9 +214,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 solutions.add(solution);
             }
         }
-        
+
         return solutions;
-        
+
     }
 
     /**
@@ -224,9 +233,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
         return ord;
     }
-    
+
     protected static ExpressionCollection solveDifferentialEquationOfDegOne(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutions;
 
         // Typ: trennbare Veränderliche.
@@ -237,13 +246,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // TO DO.
         return solutions;
-        
+
     }
-    
+
     protected static ExpressionCollection solveDifferentialEquationOfHigherDeg(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
-        
+
         try {
             // Typ: y^(n) = f(x).
             solutions = solveDifferentialEquationWithOnlyHighestDerivatives(f, varAbsc, varOrd);
@@ -252,7 +261,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
-        
+
         try {
             // Typ: Homogene lineare DGL mit konstanten Koeffizienten.
             solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
@@ -261,9 +270,18 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
+
+        try {
+            // Typ: y^(n+2) = f(y^(n)).
+            solutions = solveDifferentialEquationWithOnlyTwoDifferentDerivatives(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        }
         
         return solutions;
-        
+
     }
 
     /*
@@ -273,25 +291,25 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     Typ: trennbare Veränderliche.
      */
     private static ExpressionCollection solveDifferentialEquationWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
-        
+
         ExpressionCollection solutionsForDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrd + "'");
-        
+
         for (Expression singleSolutionForDerivative : solutionsForDerivative) {
             if (isRightSideOfDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd)) {
                 Expression[] separatedFactors = getSeparationForDifferentialEquationInSeparableForm(singleSolutionForDerivative, varAbsc, varOrd);
                 solutions = SimplifyUtilities.union(solutions, getSolutionForDifferentialEquationWithSeparableVariables(separatedFactors[0], separatedFactors[1], varAbsc, varOrd));
             }
         }
-        
+
         solutions.removeMultipleTerms();
         return solutions;
-        
+
     }
-    
+
     private static boolean isRightSideOfDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
-        
+
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {
             /*
@@ -304,11 +322,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         }
         return true;
-        
+
     }
-    
+
     private static Expression[] getSeparationForDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
-        
+
         Expression factorWithVarAbsc = ONE, factorWithVarOrd = ONE;
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {
@@ -320,11 +338,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         }
         return new Expression[]{factorWithVarAbsc, factorWithVarOrd};
-        
+
     }
-    
+
     private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd) {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
 
         /*
@@ -336,19 +354,19 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             solutions.addAll(constantZeros);
         } catch (EvaluationException ex) {
         }
-        
+
         Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc}).add(
                 getFreeIntegrationConstantVariable());
         Expression integralOfReciprocalOfFactorWithVarOrd = new Operator(TypeOperator.integral, new Object[]{ONE.div(factorWithVarOrd), varOrd});
-        
+
         try {
             ExpressionCollection solutionOfDiffEq = SolveGeneralEquationMethods.solveEquation(integralOfFactorWithVarAbsc, integralOfReciprocalOfFactorWithVarOrd, varOrd);
             solutions.addAll(solutionOfDiffEq);
         } catch (EvaluationException ex) {
         }
-        
+
         return solutions;
-        
+
     }
 
     /*
@@ -360,7 +378,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * varOrd eine lineare DGL mit konstanten Koeffizienten ist.
      */
     private static boolean isDifferentialEquationLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
-        
+
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
         Expression restCoefficient = f;
@@ -368,14 +386,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             restCoefficient = restCoefficient.replaceVariable(varOrdWithPrimes, ZERO);
             varOrdWithPrimes += "'";
         }
-        
+
         try {
             f = f.sub(restCoefficient).simplify();
             return isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
         } catch (EvaluationException e) {
             return false;
         }
-        
+
     }
 
     /**
@@ -383,7 +401,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * varOrd eine lineare homogene DGL mit konstanten Koeffizienten ist.
      */
     private static boolean isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
-        
+
         if (f.contains(varAbsc)) {
             return false;
         }
@@ -400,7 +418,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
             varOrdWithPrimes += "'";
         }
-        
+
         BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
         if (!(deg.compareTo(BigInteger.ZERO) >= 0 && deg.compareTo(BigInteger.ONE) <= 0)) {
             return false;
@@ -416,16 +434,16 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException e) {
             return false;
         }
-        
+
     }
 
     /**
      * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
      */
     private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
-        
+
         ExpressionCollection solutionBase = new ExpressionCollection();
-        
+
         if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -435,7 +453,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection coefficients = new ExpressionCollection();
         String varOrdWithPrimes = varOrd;
         HashSet<String> vars = f.getContainedIndeterminates();
-        
+
         Expression coefficient;
         for (int i = 0; i <= n; i++) {
             coefficient = f;
@@ -450,13 +468,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             coefficients.add(coefficient);
             varOrdWithPrimes = varOrdWithPrimes + "'";
         }
-        
+
         Expression charPolynomial = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, NotationLoader.SUBSTITUTION_VAR);
 
         // Charakteristisches Polynom versuchen, vollständig zu faktorisieren.
         charPolynomial = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(charPolynomial, NotationLoader.SUBSTITUTION_VAR);
         ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
-        
+
         for (Expression factor : factors) {
             solutionBase.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
@@ -466,15 +484,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         for (int i = 0; i < solutionBase.getBound(); i++) {
             solution = solution.add(getFreeIntegrationConstantVariable().mult(solutionBase.get(i)));
         }
-        
+
         return new ExpressionCollection(solution.simplify());
-        
+
     }
-    
+
     private static ExpressionCollection getSolutionForParticularIrredicibleFactor(Expression factor, String varAbsc, String varInCharPolynomial) {
-        
+
         ExpressionCollection solutionBase = new ExpressionCollection();
-        
+
         Expression base;
         int exponent;
         if (factor.isIntegerPower()) {
@@ -488,10 +506,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             base = factor;
             exponent = 1;
         }
-        
+
         BigInteger deg = SimplifyPolynomialMethods.getDegreeOfPolynomial(base, varInCharPolynomial);
         ExpressionCollection zeros;
-        
+
         if (deg.equals(BigInteger.ONE)) {
             // Fall: Linearfaktor.
             try {
@@ -524,9 +542,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             } catch (EvaluationException ex) {
             }
         }
-        
+
         return solutionBase;
-        
+
     }
 
     /**
@@ -534,9 +552,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * auftauchen. Diese Ordnungen sind in orders übergeben.
      */
     private static boolean doesExpressionContainOnlyDerivativesOfGivenOrder(Expression f, String varOrd, int orderOfDiffEq, int... orders) {
-        
+
         HashSet<String> forbiddenDerivatives = new HashSet<>();
-        
+
         String varOrdWithPrimes = varOrd;
         boolean found;
 
@@ -561,9 +579,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 return false;
             }
         }
-        
+
         return true;
-        
+
     }
 
     //Typ: y^(n) = f(x).
@@ -572,23 +590,20 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * g(y^(n)). Die eingegebene DGL hat die Form f = 0;
      */
     private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
-        
+
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
-        
-        String varOrdWithPrimes = varOrd;
-        for (int i = 0; i < ord; i++) {
-            varOrdWithPrimes += "'";
-        }
-        
+
+        String varOrdWithPrimes = getVarWithPrimes(varOrd, ord);
+
         ExpressionCollection solutionsForHighestDerivative;
         try {
             solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrdWithPrimes);
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         if (solutionsForHighestDerivative.isEmpty()) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -603,31 +618,31 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                         solveDifferentialEquationWithOnlyHighestDerivatives(solutionForHighestDerivative, ord, varAbsc));
             }
         }
-        
+
         solutions.removeMultipleTerms();
         return solutions;
-        
+
     }
-    
+
     private static ExpressionCollection solveDifferentialEquationWithOnlyHighestDerivatives(Expression f, int ord, String varAbsc) throws DifferentialEquationNotAlgebraicallyIntegrableException {
-        
+
         Expression solution = f;
 
         // Rechte Seite f ord-mal integrieren.
         for (int i = 0; i < ord; i++) {
             solution = new Operator(TypeOperator.integral, new Object[]{solution, varAbsc});
         }
-        
+
         for (int i = 0; i < ord; i++) {
             solution = solution.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
         }
-        
+
         try {
             return new ExpressionCollection(solution.simplify());
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
     }
 
     //Typ: y^(n + 2) = f(y^(n)).
@@ -636,23 +651,20 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * g(y^(n)). Die eingegebene DGL hat die Form f = 0;
      */
     private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
-        
+
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
-        
-        String varOrdWithPrimes = varOrd;
-        for (int i = 0; i < ord; i++) {
-            varOrdWithPrimes += "'";
-        }
-        
+
+        String varOrdWithPrimes = getVarWithPrimes(varOrd, ord);
+
         ExpressionCollection solutionsForHighestDerivative;
         try {
             solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrdWithPrimes);
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         if (solutionsForHighestDerivative.isEmpty()) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -661,20 +673,20 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         boolean isEquationOfProperType;
         for (Expression solutionForHighestDerivative : solutionsForHighestDerivative) {
             // Zunächst: Typprüfung.
-            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(f, varOrd, ord, ord - 2) && !f.contains(varAbsc);
+            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, ord, ord - 2) && !solutionForHighestDerivative.contains(varAbsc);
             if (isEquationOfProperType) {
                 solutions = SimplifyUtilities.union(solutions,
-                        solveDifferentialEquationWithOnlyTwoDifferentDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd, solutions));
+                        solveDifferentialEquationWithOnlyTwoDifferentDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd));
             }
         }
-        
+
         solutions.removeMultipleTerms();
         return solutions;
-        
+
     }
-    
-    private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression rightSide, int ord, String varAbsc, String varOrd, ExpressionCollection solutionsAlreadyFound) throws DifferentialEquationNotAlgebraicallyIntegrableException {
-        
+
+    private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression rightSide, int ord, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
         try {
             ExpressionCollection solutions = new ExpressionCollection();
 
@@ -689,21 +701,27 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             Expression g = new Operator(TypeOperator.integral, new Object[]{rightSide, varOrdWithPrimes}).simplify();
             // Schritt 2: Bilden von h_(C_1).
             Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes}).simplify();
-//            ExpressionCollection solutionsForIntermediateDerivative = 
-            
-            
+            ExpressionCollection solutionsForIntermediateDerivative = SolveGeneralEquationMethods.solveEquation(h, Variable.create(varAbsc).add(getFreeIntegrationConstantVariable()), varOrdWithPrimes);
+            solutionsForIntermediateDerivative = SimplifyUtilities.union(solutionsForIntermediateDerivative, SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes));
+
+            // Schritt 3: y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1) bilden.
+            Expression particularSolution;
+            for (Expression solutionForIntermediateDerivative : solutionsForIntermediateDerivative) {
+                particularSolution = solutionForIntermediateDerivative;
+                for (int i = 0; i < ord - 2; i++) {
+                    particularSolution = new Operator(TypeOperator.integral, new Object[]{particularSolution, varAbsc});
+                }
+                for (int i = 0; i < ord - 2; i++) {
+                    particularSolution = particularSolution.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
+                }
+                solutions.add(particularSolution);
+            }
+
             return solutions;
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
     }
-    
-    private static String getVarWithPrimes(String var, int k) {
-        for (int i = 0; i < k; i++) {
-            var += "'";
-        }
-        return var;
-    }
-    
+
 }

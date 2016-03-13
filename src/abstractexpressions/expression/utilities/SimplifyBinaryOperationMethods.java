@@ -308,8 +308,7 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
-     * Macht auch numerator/denominator einen (gekürzten) Bruch (als
-     * Expression)
+     * Macht auch numerator/denominator einen (gekürzten) Bruch (als Expression)
      */
     public static Expression constantToQuotient(BigDecimal numerator, BigDecimal denominator) {
         BigInteger[] reducedFraction = reduceFraction(numerator, denominator);
@@ -2864,7 +2863,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).add(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -2891,7 +2890,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).add(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(SimplifyUtilities.produceProduct(commonDenominators));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -2954,7 +2953,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -2968,7 +2967,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
                             SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)).div(
-                                    SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceProduct(commonDenominators));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -2982,8 +2981,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(
-                                    SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(
+                            SimplifyUtilities.produceProduct(commonDenominators));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3019,7 +3018,27 @@ public abstract class SimplifyBinaryOperationMethods {
             }
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
         } else if (f.isQuotient()) {
-            return ((BinaryOperation) f).getLeft().simplifyExpand(type).div(((BinaryOperation) f).getRight().simplifyExpand(type));
+
+            /* 
+            Hier wird Folgendes gemacht: der Zähler wird ausmultipliziert, der Nenner ebenfalls.
+            Dann wird die Summe / Differenz aller Summanden im Zähler, dividiert durch den Nenner, gebildet.
+            Beispiel: expand((a+b)*(c+d)/(x*(y+z))) wird zu a*c/(x*y+x*z) + a*d/(x*y+x*z) + b*c/(x*y+x*z) + b*d/(x*y+x*z) 
+            vereinfacht. 
+             */
+            Expression expandedNumerator = ((BinaryOperation) f).getLeft().simplifyExpand(type);
+            Expression expandedDenominator = ((BinaryOperation) f).getRight().simplifyExpand(type);
+            ExpressionCollection summandsLeftInNumerator = SimplifyUtilities.getSummandsLeftInExpression(expandedNumerator);
+            ExpressionCollection summandsRightInNumerator = SimplifyUtilities.getSummandsRightInExpression(expandedNumerator);
+            Expression expandedExprLeft = ZERO, expandedExprRight = ZERO;
+            for (Expression summandLeft : summandsLeftInNumerator) {
+                expandedExprLeft = expandedExprLeft.add(summandLeft.div(expandedDenominator));
+            }
+            for (Expression summandRight : summandsRightInNumerator) {
+                expandedExprRight = expandedExprRight.add(summandRight.div(expandedDenominator));
+            }
+
+            return expandedExprLeft.sub(expandedExprRight);
+
         } else if (f.isPower()) {
             Expression powerExpanded = ((BinaryOperation) f).getLeft().simplifyExpand(type).pow(((BinaryOperation) f).getRight().simplifyExpand(type));
             if (!(powerExpanded instanceof BinaryOperation)) {
@@ -3231,8 +3250,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).add(
                             SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
-                                    SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
-                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                            SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
+                            SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3338,8 +3357,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).sub(
                             SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
-                                    SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
-                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                            SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
+                            SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
