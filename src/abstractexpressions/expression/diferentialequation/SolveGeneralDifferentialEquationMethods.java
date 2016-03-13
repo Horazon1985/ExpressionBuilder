@@ -20,6 +20,8 @@ import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import notations.NotationLoader;
 
 public abstract class SolveGeneralDifferentialEquationMethods {
@@ -148,9 +150,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
 
         if (ord == 1) {
-            return solveDifferentialEquationOfDegOne(f, varAbsc, varOrd);
+            return solveDifferentialEquationOfOrderOne(f, varAbsc, varOrd);
         }
-        return solveDifferentialEquationOfHigherDeg(f, varAbsc, varOrd);
+        return solveDifferentialEquationOfHigherOrder(f, varAbsc, varOrd);
 
     }
 
@@ -234,22 +236,33 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         return ord;
     }
 
-    protected static ExpressionCollection solveDifferentialEquationOfDegOne(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+    protected static ExpressionCollection solveDifferentialEquationOfOrderOne(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
-        ExpressionCollection solutions;
+        ExpressionCollection solutions = new ExpressionCollection();
 
         // Typ: trennbare Veränderliche.
-        solutions = solveDifferentialEquationWithSeparableVariables(f, varAbsc, varOrd);
-        if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
-            return solutions;
+        try {
+            solutions = solveDifferentialEquationWithSeparableVariables(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
 
-        // TO DO.
+        // Typ: y' + a(x)*y + b(x) = 0.
+        try {
+            solutions = solveDifferentialEquationLinearOfOrderOne(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        }
+
         return solutions;
 
     }
 
-    protected static ExpressionCollection solveDifferentialEquationOfHigherDeg(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+    protected static ExpressionCollection solveDifferentialEquationOfHigherOrder(Expression f, String varAbsc, String varOrd) throws EvaluationException {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -279,7 +292,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
-        
+
         return solutions;
 
     }
@@ -290,7 +303,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
  /*
     Typ: trennbare Veränderliche.
      */
-    private static ExpressionCollection solveDifferentialEquationWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException {
+    private static ExpressionCollection solveDifferentialEquationWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -304,6 +317,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         solutions.removeMultipleTerms();
+
+        if (solutions.isEmpty()) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
         return solutions;
 
     }
@@ -369,6 +386,72 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    /**
+     * Liefert die Lösung der Differentialgleichung a(x)*y' + b(x)*y + c(x) = 0.
+     */
+    private static ExpressionCollection solveDifferentialEquationLinearOfOrderOne(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        // 1. Typprüfung
+        Expression a, b, c = f;
+        c = c.replaceVariable(varOrd, ZERO);
+        c = c.replaceVariable(varOrd + "'", ZERO);
+        try {
+            c = c.simplify();
+            // Homogenisierung. Neues f ist a(x)*y' + b(x)*y.
+            f = f.sub(c).simplify();
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        Expression fSubstituted = f;
+        fSubstituted = fSubstituted.replaceVariable(varOrd, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_0"));
+        fSubstituted = fSubstituted.replaceVariable(varOrd + "'", Variable.create(NotationLoader.SUBSTITUTION_VAR + "_1"));
+        if (SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(fSubstituted, NotationLoader.SUBSTITUTION_VAR + "_0", NotationLoader.SUBSTITUTION_VAR + "_1").compareTo(BigInteger.ONE) != 0){
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        b = fSubstituted.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_0", ONE);
+        b = b.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_1", ZERO);
+        try {
+            b = b.simplify();
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        a = fSubstituted.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_0", ZERO);
+        a = a.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_1", ONE);
+        try {
+            a = a.simplify();
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        // Division durch den Leitkoeffizienten a.
+        try {
+            // a wird nicht mehr benötigt (und müsste eigentlich auf 1 gesetzt werden).
+            c = c.div(a).simplify();
+            b = b.div(a).simplify();
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        // Die DGL hat nun die Form y'' + b(x)*y + c(x) = 0; 
+        Expression expOfIntegralOfB = new Operator(TypeOperator.integral, new Object[]{b, varAbsc});
+        Expression solution;
+        try {
+            expOfIntegralOfB = expOfIntegralOfB.exp().simplify();
+            solution = getFreeIntegrationConstantVariable().sub(new Operator(TypeOperator.integral, new Object[]{c.mult(expOfIntegralOfB), varAbsc})).div(expOfIntegralOfB).simplify();
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        solutions.add(solution);
+        return solutions;
+
+    }
+
     /*
      Algorithmen zum Lösen spezieller Differentialgleichungstypen allgemeiner Ordnung.
      */
@@ -420,7 +503,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
-        if (!(deg.compareTo(BigInteger.ZERO) >= 0 && deg.compareTo(BigInteger.ONE) <= 0)) {
+        if (!(deg.compareTo(BigInteger.ONE) == 0)) {
             return false;
         }
 

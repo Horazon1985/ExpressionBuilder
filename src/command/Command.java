@@ -5,9 +5,6 @@ public class Command {
     private TypeCommand type;
     private Object[] params;
     
-    public Command(){
-    }
-    
     public Command(TypeCommand type, Object[] params){
         this.type = type;
         this.params = params;

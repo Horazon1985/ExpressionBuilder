@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
+import java.util.Arrays;
 import lang.translator.Translator;
 
 public abstract class SimplifyPolynomialMethods {
@@ -189,6 +190,17 @@ public abstract class SimplifyPolynomialMethods {
         return BigInteger.valueOf(-1);
     }
 
+    /**
+     * Liefert (eine OBERE SCHRANKE für) den Grad des Multipolynoms bzgl. der
+     * Variablen vars, welches von f repräsentiert wird. Falls f kein Polynom
+     * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
+     */
+    public static BigInteger getDegreeOfMultiPolynomial(Expression f, String... vars) {
+        HashSet<String> varsAsHashSet = new HashSet();
+        varsAsHashSet.addAll(Arrays.asList(vars));
+        return getDegreeOfMultiPolynomial(f, varsAsHashSet);
+    }
+    
     /**
      * Liefert (eine UNTERE SCHRANKE für) die Ordnung des Polynoms, welches von
      * f repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1

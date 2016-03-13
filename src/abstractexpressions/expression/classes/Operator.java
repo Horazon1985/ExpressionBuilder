@@ -49,9 +49,6 @@ public class Operator extends Expression {
     public static final String PATTERN_TAYLOR = "taylor(expr,var(!2),expr,integer(0,2147483647))";
     public static final String PATTERN_VAR = "var(expr+)";
 
-    public Operator() {
-    }
-
     public Operator(TypeOperator type, Object[] params) {
         this.type = type;
         this.params = params;
