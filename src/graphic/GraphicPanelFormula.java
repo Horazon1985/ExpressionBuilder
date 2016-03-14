@@ -1,5 +1,6 @@
 package graphic;
 
+import abstractexpressions.expression.classes.MultiIndexVariable;
 import command.Command;
 import command.TypeCommand;
 import abstractexpressions.expression.classes.BinaryOperation;
@@ -1349,6 +1350,12 @@ public class GraphicPanelFormula extends JPanel {
 
     private int getLengthOfVariable(Graphics g, Variable expr, int fontSize) {
         setFont(g, fontSize);
+        
+        if (expr instanceof MultiIndexVariable){
+            return getLengthOfMultiIndexVariable(g, (MultiIndexVariable) expr, fontSize);        
+        }
+        
+        
         if (!expr.getName().contains("_")) {
             String s = expr.writeExpression();
             return g.getFontMetrics().stringWidth(s);
@@ -1841,8 +1848,6 @@ public class GraphicPanelFormula extends JPanel {
             } else if (out instanceof String) {
                 setFont(g, fontSize);
                 length = length + g.getFontMetrics().stringWidth((String) out);
-            } else if (out instanceof MultiIndexVariable) {
-                length = length + getLengthOfMultiIndexVariable(g, (MultiIndexVariable) out, fontSize);
             } else if (out instanceof TypeBracket) {
                 length = length + 2 * getWidthOfBracket(fontSize);
             }
@@ -2236,6 +2241,11 @@ public class GraphicPanelFormula extends JPanel {
 
         setFont(g, fontSize);
 
+        if (expr instanceof MultiIndexVariable){
+            drawMultiIndexVariable(g, (MultiIndexVariable) expr, x_0, y_0, fontSize);
+            return;
+        }
+        
         if (expr.getName().equals("pi")) {
             // Unicode: pi = \u03C0
             g.drawString("\u03C0", x_0, y_0);

@@ -9,7 +9,7 @@ import lang.translator.Translator;
 public class Variable extends Expression {
 
     private static HashMap<String, Variable> variables = new HashMap<>();
-    private final String name;
+    protected String name;
     private double value;
     private Expression preciseExpression;
     /*
@@ -24,6 +24,9 @@ public class Variable extends Expression {
      */
     private boolean precise;
 
+    protected Variable(){
+    }
+    
     private Variable(String name, double value) {
         this.name = name;
         this.value = value;

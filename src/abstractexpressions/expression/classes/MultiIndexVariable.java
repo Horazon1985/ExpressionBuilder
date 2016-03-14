@@ -1,6 +1,5 @@
-package graphic;
+package abstractexpressions.expression.classes;
 
-import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -8,9 +7,8 @@ import java.util.ArrayList;
  * Klasse, die eine Variable mit einem Multiindex darstellt. Zulässige Namen
  * sind NUR Buchstaben, eventuell gefolgt von einem oder mehreren Apostrophs.
  */
-public class MultiIndexVariable {
+public class MultiIndexVariable extends Variable {
 
-    private String name;
     private ArrayList<BigInteger> indices;
 
     public MultiIndexVariable(String name, ArrayList<BigInteger> indices) {
@@ -63,7 +61,10 @@ public class MultiIndexVariable {
     }
 
     @Override
-    public String toString() {
+    public String writeExpression() {
+        if (this.indices.isEmpty()){
+            return this.name;
+        }
         if (this.indices.size() == 1) {
             // Falls es nur ein Index ist.
             return this.name + "_" + this.indices.get(0).toString();
@@ -77,6 +78,11 @@ public class MultiIndexVariable {
             }
         }
         return result + "}";
+    }
+    
+    @Override
+    public String toString() {
+        return writeExpression();
     }
 
 }
