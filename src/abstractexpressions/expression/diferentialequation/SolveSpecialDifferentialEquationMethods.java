@@ -176,7 +176,7 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
      */
     public static ExpressionCollection solveExactDifferentialEquationWithIngeratingFactor(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException, EvaluationException {
 
-        if (!isDifferentialEquationExact(f, varAbsc, varOrd)) {
+        if (!isDifferentialEquationLinearInFirstDerivative(f, varAbsc, varOrd)) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
@@ -191,7 +191,7 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
             h = coefficients[0].diff(varOrd).sub(coefficients[1].diff(varAbsc)).div(coefficients[1]).simplify();
             if (!h.contains(varOrd)){
                 // Hier ist m = m(x) = int(exp(h(x)),x)
-                m = new Operator(TypeOperator.integral, new Object[]{h.exp(), varAbsc}).simplify();
+                m = new Operator(TypeOperator.integral, new Object[]{h, varAbsc}).exp().simplify();
                 return solveExactDifferentialEquation(m.mult(f).simplify(simplifyTypesDifferentialEquation), varAbsc, varOrd);
             }
         } catch (EvaluationException e){
@@ -202,7 +202,7 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
             h = coefficients[1].diff(varAbsc).sub(coefficients[0].diff(varOrd)).div(coefficients[0]).simplify();
             if (!h.contains(varAbsc)){
                 // Hier ist m = m(x) = int(exp(h(x)),x)
-                m = new Operator(TypeOperator.integral, new Object[]{h.exp(), varOrd}).simplify();
+                m = new Operator(TypeOperator.integral, new Object[]{h, varOrd}).exp().simplify();
                 return solveExactDifferentialEquation(m.mult(f).simplify(simplifyTypesDifferentialEquation), varAbsc, varOrd);
             }
         } catch (EvaluationException e){

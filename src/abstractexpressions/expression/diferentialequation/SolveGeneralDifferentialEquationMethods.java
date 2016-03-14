@@ -319,6 +319,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
+        
+        // Typ: m*a(x, y) + m*b(x, y)*y' = 0 ist exakt für einen integrierenden Faktor m.
+        try {
+            solutions = SolveSpecialDifferentialEquationMethods.solveExactDifferentialEquationWithIngeratingFactor(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        }
 
         return solutions;
 
