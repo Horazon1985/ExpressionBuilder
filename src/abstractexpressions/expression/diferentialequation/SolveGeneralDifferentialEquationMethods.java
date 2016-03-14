@@ -125,8 +125,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         f = f.simplify(simplifyTypesDifferentialEquation);
 
+        // Triviale Fälle:
+        // 1. f = 0.
         if (f.equals(ZERO)) {
             return ALL_FUNCTIONS;
+        }
+        
+        // 1. f > 0 oder f < 0.
+        if (f.isAlwaysPositive() || f.isAlwaysNegative()){
+            return NO_SOLUTIONS;
         }
 
         // Zunächst: Zerlegen in einfachere DGLen, wenn möglich.
@@ -252,6 +259,15 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         // Typ: y' + a(x)*y + b(x) = 0.
         try {
             solutions = solveDifferentialEquationLinearOfOrderOne(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        }
+
+        // Typ: a(x, y) + b(x, y)*y' = 0.
+        try {
+            solutions = SolveSpecialDifferentialEquationMethods.solveExactDifferentialEquation(f, varAbsc, varOrd);
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
