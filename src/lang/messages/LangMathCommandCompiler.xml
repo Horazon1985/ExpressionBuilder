@@ -1188,6 +1188,18 @@
         <Ukrainian>???</Ukrainian>
         <Russian>???</Russian>
     </object>
+    <object id = "MCC_DIFFEQ_IS_FREE_CONSTANT">
+        <German> ist eine freie Konstante.</German>
+        <English> is a free constant.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_DIFFEQ_ARE_FREE_CONSTANTS">
+        <German> sind freie Konstante.</German>
+        <English> are free constant.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_SOLUTION_OF_DIFFEQ">
         <German>Lösung der Differentialgleichung </German>
         <English>Solution of the differential equation </English>

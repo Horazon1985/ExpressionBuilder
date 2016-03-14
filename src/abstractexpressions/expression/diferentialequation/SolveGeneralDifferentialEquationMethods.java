@@ -19,9 +19,8 @@ import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import notations.NotationLoader;
 
 public abstract class SolveGeneralDifferentialEquationMethods {
@@ -36,7 +35,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     private static int indexForNextIntegrationConstant = 1;
 
-    private static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
+    protected static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
 
     private static HashSet<TypeSimplify> getSimplifyTypesDifferentialEquation() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -71,6 +70,27 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     public static void resetIndexForIntegrationConstantVariable() {
         indexForNextIntegrationConstant = 1;
+    }
+
+    public static ArrayList<Variable> getListOfFreeIntegrationConstants(ExpressionCollection solutions) {
+
+        HashSet<String> vars = new HashSet<>();
+
+        // Alle Unbestimmten in den Lösungen bestimmen.
+        for (Expression solution : solutions) {
+            solution.addContainedIndeterminates(vars);
+        }
+
+        // Filtern.
+        ArrayList<Variable> integrationConstants = new ArrayList<>();
+        for (String var : vars) {
+            if (var.startsWith(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR)) {
+                integrationConstants.add(Variable.create(var));
+            }
+        }
+
+        return integrationConstants;
+
     }
 
     /**
@@ -130,9 +150,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         if (f.equals(ZERO)) {
             return ALL_FUNCTIONS;
         }
-        
+
         // 1. f > 0 oder f < 0.
-        if (f.isAlwaysPositive() || f.isAlwaysNegative()){
+        if (f.isAlwaysPositive() || f.isAlwaysNegative()) {
             return NO_SOLUTIONS;
         }
 
@@ -187,12 +207,38 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException {
+        
         ExpressionCollection solutions = new ExpressionCollection();
+        ArrayList<ExpressionCollection> solutionsForParticularFactors = new ArrayList<>();
         for (Expression factor : factors) {
-            solutions = SimplifyUtilities.union(solutions, solveZeroDifferentialEquation(factor, varAbsc, varOrd));
+            solutionsForParticularFactors.add(solveZeroDifferentialEquation(factor, varAbsc, varOrd));
+        }
+        
+        // Prüfung, ob irgendwo ALL_FUNCTIONS vorkommt.
+        boolean allFunctionsOccurs = false;
+        for (ExpressionCollection solutionsForParticularFactor : solutionsForParticularFactors) {
+            allFunctionsOccurs = allFunctionsOccurs || solutionsForParticularFactor == ALL_FUNCTIONS;
+        }
+        if (allFunctionsOccurs){
+            return ALL_FUNCTIONS;
+        }
+        
+        // Prüfung, ob überall NO_SOLUTIONS vorkommt.
+        boolean allSolutionsAreNoSolution = true;
+        for (ExpressionCollection solutionsForParticularFactor : solutionsForParticularFactors) {
+            allSolutionsAreNoSolution = allSolutionsAreNoSolution && solutionsForParticularFactor == NO_SOLUTIONS;
+        }
+        if (allSolutionsAreNoSolution){
+            return NO_SOLUTIONS;
+        }
+                
+        // Sonstiger Fall: Vereinigung aller Lösungen bilden.
+        for (int i = 0; i < solutionsForParticularFactors.size(); i++) {
+            solutions = SimplifyUtilities.union(solutions, solutionsForParticularFactors.get(i));
         }
         solutions.removeMultipleTerms();
         return solutions;
+        
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
@@ -413,21 +459,22 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         Expression a, b, c = f;
         c = c.replaceVariable(varOrd, ZERO);
         c = c.replaceVariable(varOrd + "'", ZERO);
+        Expression fMinusC;
         try {
             c = c.simplify();
             // Homogenisierung. Neues f ist a(x)*y' + b(x)*y.
-            f = f.sub(c).simplify();
+            fMinusC = f.sub(c).simplify();
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
-        Expression fSubstituted = f;
+
+        Expression fSubstituted = fMinusC;
         fSubstituted = fSubstituted.replaceVariable(varOrd, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_0"));
         fSubstituted = fSubstituted.replaceVariable(varOrd + "'", Variable.create(NotationLoader.SUBSTITUTION_VAR + "_1"));
-        if (SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(fSubstituted, NotationLoader.SUBSTITUTION_VAR + "_0", NotationLoader.SUBSTITUTION_VAR + "_1").compareTo(BigInteger.ONE) != 0){
+        if (SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(fSubstituted, NotationLoader.SUBSTITUTION_VAR + "_0", NotationLoader.SUBSTITUTION_VAR + "_1").compareTo(BigInteger.ONE) != 0) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         b = fSubstituted.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_0", ONE);
         b = b.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_1", ZERO);
         try {
@@ -435,7 +482,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         a = fSubstituted.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_0", ZERO);
         a = a.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_1", ONE);
         try {
@@ -443,7 +490,17 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
+        // Prüfung, ob f - (a*y' + b*y + c) = 0.
+        try {
+            Expression difference = f.sub(a.mult(Variable.create(varOrd + "'")).add(b.mult(Variable.create(varOrd))).add(c)).simplify();
+            if (!difference.equals(ZERO)) {
+                throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+            }
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
         // Division durch den Leitkoeffizienten a.
         try {
             // a wird nicht mehr benötigt (und müsste eigentlich auf 1 gesetzt werden).
@@ -452,7 +509,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         // Die DGL hat nun die Form y'' + b(x)*y + c(x) = 0; 
         Expression expOfIntegralOfB = new Operator(TypeOperator.integral, new Object[]{b, varAbsc});
         Expression solution;
@@ -462,7 +519,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException ex) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
         solutions.add(solution);
         return solutions;
 
