@@ -706,22 +706,34 @@
         <Russian>4. параметр команды 'solve' должна быть положительным целым числом.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVEDIFFEQ">
-        <German>Zu wenig Parameter im Befehl 'solvedeq'.</German>
-        <English>Not enough parameters in command 'solvedeq'.</English>
-        <Ukrainian>Недостатньо параметрів у команди 'solvedeq'.</Ukrainian>
-        <Russian>Недостаточно параметров у команды 'solvedeq'.</Russian>
+        <German>Zu wenig Parameter im Befehl 'solvediffeq'.</German>
+        <English>Not enough parameters in command 'solvediffeq'.</English>
+        <Ukrainian>Недостатньо параметрів у команди 'solvediffeq'.</Ukrainian>
+        <Russian>Недостаточно параметров у команды 'solvediffeq'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der 3. Parameter im Befehl 'solvedeq' muss eine positive ganze Zahl sein.</German>
-        <English>The 3. parameter in command 'solvedeq' must be a positive integer.</English>
-        <Ukrainian>3. параметр команди 'solvedeq' має бути додатним цілим числом.</Ukrainian>
-        <Russian>3. параметр команды 'solvedeq' должна быть положительным целым числом.</Russian>
+        <German>Der 3. Parameter im Befehl 'solvediffeq' muss eine positive ganze Zahl sein.</German>
+        <English>The 3. parameter in command 'solvediffeq' must be a positive integer.</English>
+        <Ukrainian>3. параметр команди 'solvediffeq' має бути додатним цілим числом.</Ukrainian>
+        <Russian>3. параметр команды 'solvediffeq' должен быть положительным целым числом.</Russian>
+    </object>
+    <object id = "MCC_1_PARAMETER_IN_SOLVEDIFFEQ_MUST_CONTAIN_EQUALITY_SIGN">
+        <German>Der 1. Parameter im Befehl 'solvediffeq' muss ein '='-Zeichen enthalten.</German>
+        <English>The 1. parameter in command 'solvediffeq' must contain the equality sign '='.</English>
+        <Ukrainian>1. параметр команди 'solvediffeq' має ???.</Ukrainian>
+        <Russian>1. параметр команды 'solvediffeq' ???.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der 1. Parameter im Befehl 'solvedeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>The 1. parameter in command 'solvedeq' must be a valid expression. Reported error: </English>
-        <Ukrainian>1. параметр команди 'solvedeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>1. Параматр команды 'solvedeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+        <German>Der 1. Parameter im Befehl 'solvediffeq' muss eine gültige Differentialgleichung sein. Gemeldeter Fehler: </German>
+        <English>The 1. parameter in command 'solvediffeq' must be a valid differential equation. Reported error: </English>
+        <Ukrainian>1. параметр команди 'solvediffeq' має бути ???. Повідомлення про помилку: </Ukrainian>
+        <Russian>1. Параматр команды 'solvediffeq' должен быть действительным ???. Сообщение об ошибке: </Russian>
+    </object>
+    <object id = "MCC_NO_DERIVATIVE_IN_1_PARAMETER_IN_SOLVEDIFFEQ">
+        <German>Der 1. Parameter im Befehl 'solvediffeq' muss eine Ableitung enthalten.</German>
+        <English>The 1. parameter in command 'solvediffeq' must contain a derivative.</English>
+        <Ukrainian>1. параметр команди 'solvediffeq' має ???.</Ukrainian>
+        <Russian>1. Параматр команды 'solvediffeq' должен ???.</Russian>
     </object>
     <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDIFFEQ">
         <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
@@ -741,23 +753,29 @@
         <Ukrainian>Змінна [0] має бути присутня у диференціальному рівнянні.</Ukrainian>
         <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
     </object>
+    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_SOLVEDIFFEQ">
+        <German>Im Befehl 'solvediffeq' müss entweder drei oder mindestens sechs Parameter stehen.</German>
+        <English>The command 'solvediffeq' must contain either three or at leat six parameters.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der 2. Parameter im Befehl 'solvedeq' muss eine gültige Veränderliche sein.</German>
-        <English>The 2. parameter in command 'solvedeq' must be a valid variable.</English>
-        <Ukrainian>2. параметр команди 'solvedeq' має бути діючою змінною.</Ukrainian>
-        <Russian>2. параматр команды 'solvedeq' должен быть действительной переменной.</Russian>
+        <German>Der 2. Parameter im Befehl 'solvediffeq' muss eine gültige Veränderliche sein.</German>
+        <English>The 2. parameter in command 'solvediffeq' must be a valid variable.</English>
+        <Ukrainian>2. параметр команди 'solvediffeq' має бути діючою змінною.</Ukrainian>
+        <Russian>2. параматр команды 'solvediffeq' должен быть действительной переменной.</Russian>
     </object>
     <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVEDIFFEQ">
-        <German>Zu viele Parameter im Befehl 'solvedeq'.</German>
-        <English>Too many parameters in command 'solvedeq'.</English>
-        <Ukrainian>Забагато параметрів у команди 'solvedeq'.</Ukrainian>
-        <Russian>Слишком много параметров у команды 'solvedeq'.</Russian>
+        <German>Zu viele Parameter im Befehl 'solvediffeq'.</German>
+        <English>Too many parameters in command 'solvediffeq'.</English>
+        <Ukrainian>Забагато параметрів у команди 'solvediffeq'.</Ukrainian>
+        <Russian>Слишком много параметров у команды 'solvediffeq'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der [0]. Parameter im Befehl 'solvedeq' muss eine reelle Zahl sein, deren Betrag höchstens 1.7E308 beträgt.</German>
-        <English>The [0]. parameter in command 'solvedeq' must be a real number with absolute value of at most 1.7E308.</English>
-        <Ukrainian>[0]. параметр команди 'solvedeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
-        <Russian>[0]. параметр команды 'solvedeq' должен быть вещественным числом, модуль которого не превышает 1.7E308.</Russian>
+        <German>Der [0]. Parameter im Befehl 'solvediffeq' muss eine reelle Zahl sein, deren Betrag höchstens 1.7E308 beträgt.</German>
+        <English>The [0]. parameter in command 'solvediffeq' must be a real number with absolute value of at most 1.7E308.</English>
+        <Ukrainian>[0]. параметр команди 'solvediffeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
+        <Russian>[0]. параметр команды 'solvediffeq' должен быть вещественным числом, модуль которого не превышает 1.7E308.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVESYSTEM">
         <German>Zu wenig Parameter im Befehl 'solvesystem'.</German>
@@ -1120,11 +1138,55 @@
         <Ukrainian>[0]. параметр команди 'solve' має бути меншим ніж [1]. параметр.</Ukrainian>
         <Russian>[0]. параметр команды 'solve' должен быть меньше чем [1]. параметр.</Russian>
     </object>
+    
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVE">
+        <German>Der [0]. Parameter im Befehl 'solve' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'solve' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'solve' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'solve' должен быть меньше чем [1]. параметр.</Russian>
+    </object>
+    
     <object id = "MCC_SOLUTION_OF_DIFFEQ_NOT_DEFINED_IN_POINT">
         <German>Die Lösung der Differentialgleichung ist nicht definiert an der Stelle [0]</German>
         <English>The solution of the differential equation is not defined in [0]</English>
         <Ukrainian>Розв'язок рівняння не визначено в точці [0]</Ukrainian>
         <Russian>Решение уравнения не определено в точке [0]</Russian>
+    </object>
+    <object id = "MCC_ALL_FUNCTIONS">
+        <German>Alle Funktionen sind Lösungen der vorliegenden Differentialgleichung.</German>
+        <English>All functions are solutions of the underlying differential equation.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_NO_SOLUTIONS">
+        <German>Die vorliegende Differentialgleichung besitzt keine Lösungen.</German>
+        <English>The underlying differential equation has no solutions.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_NO_EXACT_SOLUTIONS_OF_DIFFERENTIAL_EQUATION_FOUND">
+        <German>Es konnten keine Lösungen der vorliegenden Differentialgleichung ermittelt werden.</German>
+        <English>No solutions of the underlying differential equation found.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_ALGEBRAIC_SOLUTION_OF_DIFFEQ">
+        <German>Lösungen der Differentialgleichung </German>
+        <English>Solutions of the differential equation </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_IMPLICIT_OF_DIFFEQ">
+        <German>Implizit gegebene Lösungen: </German>
+        <English>Implicit solutions: </English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_EXPLICIT_OF_DIFFEQ">
+        <German>Explizite Lösungen: </German>
+        <English>Explicit solutions</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_SOLUTION_OF_DIFFEQ">
         <German>Lösung der Differentialgleichung </German>
