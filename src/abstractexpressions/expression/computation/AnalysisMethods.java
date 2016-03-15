@@ -234,7 +234,7 @@ public abstract class AnalysisMethods {
                 functionVarWithPrimes = functionVarWithPrimes + "'";
             }
             if (i < degree) {
-                df[i - ord + 1] = df[i - ord].diffDifferentialEquation(argumentVar).simplify();
+                df[i - ord + 1] = df[i - ord].diff(argumentVar).simplify();
             }
             coefficient[i] = coefficient[i].simplify();
         }

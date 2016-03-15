@@ -465,6 +465,18 @@ public abstract class Expression implements AbstractExpression {
 
     }
 
+    public HashSet<String> getContainedVariablesDependingOnGivenVariable(String varName){
+        HashSet<String> vars = new HashSet<>();
+        HashSet<String> allVarsDependingOnGivenVariable = Variable.getVariablesDependingOnGivenVariable(varName);
+        for (String var : allVarsDependingOnGivenVariable) {
+            if (Variable.create(var).getDependingVariable().equals(varName)) {
+                vars.add(var);
+            }
+        }
+        return vars;
+        
+    }
+    
     /**
      * Legt eine neue Kopie von this an.
      */
@@ -508,6 +520,18 @@ public abstract class Expression implements AbstractExpression {
      */
     @Override
     public abstract boolean contains(String var);
+
+    /**
+     * Gibt zurück, ob this mindestens eine der Variable aus vars enthält.
+     */
+    public boolean containsAtLeastOne(HashSet<String> vars){
+        for (String var : vars){
+            if (this.contains(var)){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Gibt zurück, ob this nichtexakte Konstanten enthält.
@@ -579,13 +603,6 @@ public abstract class Expression implements AbstractExpression {
      * @throws EvaluationException
      */
     public abstract Expression diff(String var) throws EvaluationException;
-
-    /**
-     * Differenziert eine Differentialgleichung nach der Variablen var
-     *
-     * @throws EvaluationException
-     */
-    public abstract Expression diffDifferentialEquation(String var) throws EvaluationException;
 
     /**
      * Methode, die liefert, ob ein Ausdruck konstant ist

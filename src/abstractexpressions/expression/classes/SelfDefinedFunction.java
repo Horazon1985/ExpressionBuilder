@@ -277,22 +277,11 @@ public class SelfDefinedFunction extends Expression {
     @Override
     public Expression diff(String var) throws EvaluationException {
 
-        if (!this.contains(var)) {
+        if (!this.contains(var) && !this.containsAtLeastOne(this.getContainedVariablesDependingOnGivenVariable(var))) {
             return Expression.ZERO;
         }
         // Die Funktion muss zunächst vereinfacht werden, denn in den Parametern können weitere Ausdrücke stehen.
         return this.simplifyTrivial().diff(var);
-
-    }
-
-    @Override
-    public Expression diffDifferentialEquation(String var) throws EvaluationException {
-
-        if (!this.contains(var)) {
-            return Expression.ZERO;
-        }
-        // Die Funktion muss zunächst vereinfacht werden, denn in den Parametern können weitere Ausdrücke stehen.
-        return this.simplifyTrivial().diffDifferentialEquation(var);
 
     }
 

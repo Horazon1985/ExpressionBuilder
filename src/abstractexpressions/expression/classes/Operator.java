@@ -488,7 +488,7 @@ public class Operator extends Expression {
     @Override
     public Expression diff(String var) throws EvaluationException {
 
-        if (!this.contains(var)) {
+        if (!this.contains(var) && !this.containsAtLeastOne(this.getContainedVariablesDependingOnGivenVariable(var))) {
             return Expression.ZERO;
         }
 
@@ -582,115 +582,6 @@ public class Operator extends Expression {
              */
             Object[] resultParams = new Object[4];
             resultParams[0] = ((Expression) this.params[0]).diff(var).simplify();
-            resultParams[1] = this.params[1];
-            resultParams[2] = this.params[2];
-            resultParams[3] = this.params[3];
-            return new Operator(TypeOperator.sum, resultParams, this.precise);
-
-        }
-
-        // Falls man die Ableitung nicht exakt angeben kann (etwa (x!)' etc.)
-        throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE", this, var));
-
-    }
-
-    @Override
-    public Expression diffDifferentialEquation(String var) throws EvaluationException {
-
-        if (!this.contains(var)) {
-            return Expression.ZERO;
-        }
-
-        if (this.type.equals(TypeOperator.integral)) {
-            if (this.params.length == 2) {
-
-                // Unbestimmte Integration.
-                if (var.equals((String) this.params[1])) {
-                    return (Expression) this.params[0];
-                }
-
-                Object[] resultParams = new Object[2];
-                resultParams[0] = ((Expression) this.params[0]).diffDifferentialEquation(var);
-                resultParams[1] = this.params[1];
-                return new Operator(TypeOperator.integral, resultParams, this.precise);
-
-            } else {
-
-                /*
-                 Bestimmte Integration. Hier Leibnis-Regel: (d/dt)
-                 int_a(t)^b(t) f(x, t) dt = int_a(t)^b(t) (d/dt)f(x, t) dt +
-                 f(b(t), t)*(d/dt)b(t) - f(a(t), t)*(d/dt)a(t).
-                 */
-                if (var.equals((String) this.params[1])) {
-                    return Expression.ZERO;
-                }
-
-                Expression f = ((Expression) this.params[0]);
-                Expression differentiatedIntegral;
-                String integrationVar = (String) this.params[1];
-                Expression lowerLimit = (Expression) this.params[2];
-                Expression upperLimit = (Expression) this.params[3];
-
-                Object[] resultParams = new Object[4];
-                resultParams[0] = f.diffDifferentialEquation(var);
-                resultParams[1] = this.params[1];
-                resultParams[2] = this.params[2];
-                resultParams[3] = this.params[3];
-                differentiatedIntegral = new Operator(TypeOperator.integral, resultParams, this.precise);
-
-                return differentiatedIntegral.add(f.replaceVariable(integrationVar, upperLimit).mult(upperLimit.diffDifferentialEquation(var))).sub(f.replaceVariable(integrationVar, lowerLimit).mult(lowerLimit.diffDifferentialEquation(var)));
-
-            }
-        }
-
-        if (this.type.equals(TypeOperator.fac)) {
-            if (!((Expression) this.params[0]).contains(var)) {
-                return Expression.ZERO;
-            }
-        }
-
-        if (this.type.equals(TypeOperator.prod)) {
-
-            /*
-             Zunächst wird die Summationsvariable für die äußere Summe
-             ermittelt. Dies ist entweder k (falls k nicht schon vorher
-             auftaucht), oder k_0, k_1, k_2, ...
-             */
-            String indexVarForSum = "k";
-            int index = 0;
-            while (((Expression) this.params[0]).contains(indexVarForSum + "_" + index)) {
-                index++;
-            }
-            if (index == 0) {
-                if (((Expression) this.params[0]).contains("k")) {
-                    indexVarForSum = indexVarForSum + "_0";
-                } else {
-                    indexVarForSum = "k";
-                }
-            } else {
-                indexVarForSum = indexVarForSum + "_" + index;
-            }
-
-            /*
-             Nun: diff(prod(f(k, x), k, m, n), x) = sum(diff(f(var_for_sum,
-             x), x)*prod(f(k, x)/f(var_for_sum, x), k, m, n), var_for_sum, m, n).
-             */
-            Expression f = (Expression) this.params[0];
-            Object[] resultParams = new Object[4];
-            resultParams[0] = f.replaceVariable((String) this.params[1], Variable.create(indexVarForSum)).diffDifferentialEquation(var).simplify().mult(
-                    this).div(f.replaceVariable((String) this.params[1], Variable.create(indexVarForSum))).simplify();
-            resultParams[1] = indexVarForSum;
-            resultParams[2] = this.params[2];
-            resultParams[3] = this.params[3];
-            return new Operator(TypeOperator.sum, resultParams, this.precise);
-
-        }
-
-        if (this.type.equals(TypeOperator.sum)) {
-
-            // Nun: diff(sum(f(k, x), k, m, n), x) = sum(diff(f(k, x), x), k, m, n).
-            Object[] resultParams = new Object[4];
-            resultParams[0] = ((Expression) this.params[0]).diffDifferentialEquation(var).simplify();
             resultParams[1] = this.params[1];
             resultParams[2] = this.params[2];
             resultParams[3] = this.params[3];

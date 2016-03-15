@@ -214,7 +214,7 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression diff(String var) throws EvaluationException {
 
-        if (!this.contains(var)) {
+        if (!this.contains(var) && !this.containsAtLeastOne(this.getContainedVariablesDependingOnGivenVariable(var))) {
             return Expression.ZERO;
         }
 
@@ -242,44 +242,6 @@ public class BinaryOperation extends Expression {
             } else {
                 //Regel: (f^g)' = f^g*(gf'/f + ln(f)*g')
                 Expression rightBracket = this.left.diff(var).mult(this.right).div(this.left).add(new Function(this.left, TypeFunction.ln).mult(this.right.diff(var)));
-                return this.mult(rightBracket);
-            }
-        }
-
-    }
-
-    @Override
-    public Expression diffDifferentialEquation(String var) throws EvaluationException {
-
-        if (this.isConstant()) {
-            return Expression.ZERO;
-        }
-
-        if (this.isSum()) {
-            return this.left.diffDifferentialEquation(var).add(this.right.diffDifferentialEquation(var));
-        } else if (this.isDifference()) {
-            return this.left.diffDifferentialEquation(var).sub(this.right.diffDifferentialEquation(var));
-        } else if (this.isProduct()) {
-            return this.left.diffDifferentialEquation(var).mult(this.right).add(this.left.mult(this.right.diffDifferentialEquation(var)));
-        } else if (this.isQuotient()) {
-            Expression enumerator = this.left.diffDifferentialEquation(var).mult(this.right).sub(this.left.mult(this.right.diffDifferentialEquation(var)));
-            Expression denominator = this.right.pow(2);
-            return enumerator.div(denominator);
-        } else {
-            if (!this.right.contains(var)) {
-                //Regel: (f^n)' = n*f^(n - 1)*f'
-                return this.right.mult(this.left.pow(this.right.sub(1))).mult(this.left.diffDifferentialEquation(var));
-            } else if (!this.left.contains(var)) {
-                //Regel: (a^g)' = ln(a)*a^g*g')
-                //Fehlerbehandlung: a muss > 0 sein!
-                if (this.left.isConstant() && this.left.isNonPositive()) {
-                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
-                }
-                return new Function(this.left, TypeFunction.ln).mult(this).mult(this.right.diffDifferentialEquation(var));
-            } else {
-                //Regel: (f^g)' = f^g*(gf'/f + ln(f)*g')
-                Expression rightBracket = this.left.diffDifferentialEquation(var).mult(this.right).div(this.left).add(
-                        new Function(this.left, TypeFunction.ln).mult(this.right.diffDifferentialEquation(var)));
                 return this.mult(rightBracket);
             }
         }

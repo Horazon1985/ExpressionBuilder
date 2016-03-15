@@ -343,7 +343,7 @@ public class Function extends Expression {
     @Override
     public Expression diff(String var) throws EvaluationException {
 
-        if (!this.contains(var)) {
+        if (!this.contains(var) && !this.containsAtLeastOne(this.getContainedVariablesDependingOnGivenVariable(var))) {
             return Expression.ZERO;
         }
 
@@ -408,78 +408,6 @@ public class Function extends Expression {
         } else {
             // Hier ist type == arcosech.
             return MINUS_ONE.mult(this.left.diff(var)).div(this.left.mult(ONE.add(this.left.pow(2)).pow(1, 2)));
-        }
-
-    }
-
-    @Override
-    public Expression diffDifferentialEquation(String var) throws EvaluationException {
-
-        if (!this.contains(var)) {
-            return Expression.ZERO;
-        }
-
-        if (this.type == TypeFunction.id) {
-            return this.left.diffDifferentialEquation(var);
-        } else if (this.type == TypeFunction.abs) {
-            return Expression.ONE.div(new Function(this.left, TypeFunction.sgn)).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.sgn) {
-            return Expression.ZERO;
-        } else if (this.type == TypeFunction.exp) {
-            return this.mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.lg) {
-            return this.left.diffDifferentialEquation(var).div(new Function(new Constant(BigDecimal.TEN), TypeFunction.ln).mult(this.left));
-        } else if (this.type == TypeFunction.ln) {
-            return this.left.diffDifferentialEquation(var).div(this.left);
-        } else if (this.type == TypeFunction.sin) {
-            return (new Function(this.left, TypeFunction.cos)).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.cos) {
-            return (Expression.MINUS_ONE).mult(new Function(this.left, TypeFunction.sin).mult(this.left.diffDifferentialEquation(var)));
-        } else if (this.type == TypeFunction.tan) {
-            return new Function(this.left, TypeFunction.sec).pow(2).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.cot) {
-            return Expression.MINUS_ONE.mult(new Function(this.left, TypeFunction.cosec).pow(2).mult(this.left.diffDifferentialEquation(var)));
-        } else if (this.type == TypeFunction.sec) {
-            return this.mult(new Function(this.left, TypeFunction.tan)).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.cosec) {
-            return Expression.MINUS_ONE.mult(this.mult(new Function(this.left, TypeFunction.cot)).mult(this.left.diffDifferentialEquation(var)));
-        } else if (this.type == TypeFunction.sinh) {
-            return (new Function(this.left, TypeFunction.cosh)).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.cosh) {
-            return (new Function(this.left, TypeFunction.sinh)).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.tanh) {
-            return new Function(this.left, TypeFunction.sech).pow(2).mult(this.left.diffDifferentialEquation(var));
-        } else if (this.type == TypeFunction.coth) {
-            return MINUS_ONE.mult(new Function(this.left, TypeFunction.cosech).pow(2).mult(this.left.diffDifferentialEquation(var)));
-        } else if (this.type == TypeFunction.sech) {
-            return MINUS_ONE.mult(this.mult(new Function(this.left, TypeFunction.tanh).mult(this.left.diffDifferentialEquation(var))));
-        } else if (this.type == TypeFunction.cosech) {
-            return MINUS_ONE.mult(this.mult(new Function(this.left, TypeFunction.coth).mult(this.left.diffDifferentialEquation(var))));
-        } else if (this.type == TypeFunction.arcsin) {
-            return this.left.diffDifferentialEquation(var).div(ONE.sub(this.left.pow(2)).pow(1, 2));
-        } else if (this.type == TypeFunction.arccos) {
-            return MINUS_ONE.mult(this.left.diffDifferentialEquation(var)).div(ONE.sub(this.left.pow(2)).pow(1, 2));
-        } else if (this.type == TypeFunction.arctan) {
-            return this.left.diffDifferentialEquation(var).div(ONE.add(this.left.pow(2)));
-        } else if (this.type == TypeFunction.arccot) {
-            return MINUS_ONE.mult(this.left.diffDifferentialEquation(var)).div(ONE.add(this.left.pow(2)));
-        } else if (this.type == TypeFunction.arcsec) {
-            return this.left.diffDifferentialEquation(var).mult(this.left.pow(2).sub(1).pow(1, 2)).div(this.left);
-        } else if (this.type == TypeFunction.arccosec) {
-            return MINUS_ONE.mult(this.left.mult(this.left.diffDifferentialEquation(var))).div(this.left.pow(2).sub(1).pow(1, 2));
-        } else if (this.type == TypeFunction.arsinh) {
-            return this.left.diffDifferentialEquation(var).div(ONE.add(this.left.pow(2)).pow(1, 2));
-        } else if (this.type == TypeFunction.arcosh) {
-            return this.left.diffDifferentialEquation(var).div(this.left.pow(2).sub(1).pow(1, 2));
-        } else if (this.type == TypeFunction.artanh) {
-            return this.left.diffDifferentialEquation(var).div(ONE.sub(this.left.pow(2)));
-        } else if (this.type == TypeFunction.arcoth) {
-            return this.left.diffDifferentialEquation(var).div(ONE.sub(this.left.pow(2)));
-        } else if (this.type == TypeFunction.arsech) {
-            return MINUS_ONE.mult(this.left.diffDifferentialEquation(var)).div(this.left.mult(ONE.sub(this.left.pow(2)).pow(1, 2)));
-        } else {
-            // Hier ist type == arcosech.
-            return MINUS_ONE.mult(this.left.diffDifferentialEquation(var)).div(this.left.mult(ONE.add(this.left.pow(2)).pow(1, 2)));
         }
 
     }

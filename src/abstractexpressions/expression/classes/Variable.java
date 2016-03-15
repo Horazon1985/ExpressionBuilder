@@ -8,10 +8,16 @@ import lang.translator.Translator;
 
 public class Variable extends Expression {
 
-    private static HashMap<String, Variable> variables = new HashMap<>();
+    protected static HashMap<String, Variable> variables = new HashMap<>();
     protected String name;
     private double value;
     private Expression preciseExpression;
+    /*
+    dependingVariable gibt den Namen der Variablen an, von dem die vorliegende 
+    Variable abhängt. Ist dieser null, so hängt die vorliegende Variable von
+    keiner weiteren variablen ab.
+     */
+    private String dependingOnVariable;
     /*
      Sinn vom Attribut "precise": Die Variablen gelten zunächst alle als
      Präzise, d. h. sie können exakte Werte annehmen wie 3/7 oder pi. Im
@@ -24,13 +30,14 @@ public class Variable extends Expression {
      */
     private boolean precise;
 
-    protected Variable(){
+    protected Variable() {
     }
-    
+
     private Variable(String name, double value) {
         this.name = name;
         this.value = value;
         this.preciseExpression = null;
+        this.dependingOnVariable = null;
         this.precise = true;
     }
 
@@ -42,6 +49,7 @@ public class Variable extends Expression {
             this.value = Double.NaN;
         }
         this.preciseExpression = preciseExpression;
+        this.dependingOnVariable = null;
         this.precise = true;
     }
 
@@ -57,6 +65,10 @@ public class Variable extends Expression {
         return this.preciseExpression;
     }
 
+    public String getDependingVariable() {
+        return this.dependingOnVariable;
+    }
+
     public boolean getPrecise() {
         return this.precise;
     }
@@ -68,16 +80,15 @@ public class Variable extends Expression {
     public static Variable create(String name) {
         if (variables.containsKey(name)) {
             return variables.get(name);
+        } else if (name.equals("pi")) {
+            Variable result = new Variable("pi", Math.PI);
+            variables.put(name, result);
+            return result;
         } else {
-            if (name.equals("pi")) {
-                Variable result = new Variable("pi", Math.PI);
-                variables.put(name, result);
-                return result;
-            } else {
-                Variable result = new Variable(name, 0);
-                variables.put(name, result);
-                return result;
-            }
+            Variable result = new Variable(name, 0);
+            variables.put(name, result);
+            setDependenceIfDependenceAlreadyExists(name);
+            return result;
         }
     }
 
@@ -88,16 +99,15 @@ public class Variable extends Expression {
         if (variables.containsKey(name)) {
             variables.get(name).value = value;
             return variables.get(name);
+        } else if (name.equals("pi")) {
+            Variable result = new Variable("pi", Math.PI);
+            variables.put(name, result);
+            return result;
         } else {
-            if (name.equals("pi")) {
-                Variable result = new Variable("pi", Math.PI);
-                variables.put(name, result);
-                return result;
-            } else {
-                Variable result = new Variable(name, value);
-                variables.put(name, result);
-                return result;
-            }
+            Variable result = new Variable(name, value);
+            variables.put(name, result);
+            setDependenceIfDependenceAlreadyExists(name);
+            return result;
         }
     }
 
@@ -108,16 +118,15 @@ public class Variable extends Expression {
         if (variables.containsKey(name)) {
             variables.get(name).preciseExpression = preciseExpression;
             return variables.get(name);
+        } else if (name.equals("pi")) {
+            Variable result = new Variable("pi", Math.PI);
+            variables.put(name, result);
+            return result;
         } else {
-            if (name.equals("pi")) {
-                Variable result = new Variable("pi", Math.PI);
-                variables.put(name, result);
-                return result;
-            } else {
-                Variable result = new Variable(name, preciseExpression);
-                variables.put(name, result);
-                return result;
-            }
+            Variable result = new Variable(name, preciseExpression);
+            variables.put(name, result);
+            setDependenceIfDependenceAlreadyExists(name);
+            return result;
         }
     }
 
@@ -150,6 +159,47 @@ public class Variable extends Expression {
         }
     }
 
+    public static void setDependingOnVariable(String name, String dependingVariable) {
+        // PI darf nicht von irgendeiner Variablen abhängig sein.
+        if (!name.equals("pi")) {
+            Variable var = Variable.create(name);
+            var.dependingOnVariable = dependingVariable;
+            setDependingOnVariableForFurtherVariables(name, dependingVariable);
+        }
+    }
+
+    private static void setDependingOnVariableForFurtherVariables(String name, String dependingVariable) {
+        // Falls beispielsweise name == y und y von x abhängt, so sollen auch y', y'', ... von x abhängen.
+        for (String var : variables.keySet()) {
+            if (var.startsWith(name)) {
+                variables.get(var).dependingOnVariable = dependingVariable;
+            }
+        }
+    }
+    
+    private static void setDependenceIfDependenceAlreadyExists(String name){
+        // Falls beispielsweise name == y'' und y' von x abhängt, so soll auch y'' von x abhängen.
+        for (String var : variables.keySet()) {
+            if (name.startsWith(var)) {
+                variables.get(name).dependingOnVariable = variables.get(var).dependingOnVariable;
+            }
+        }
+    }
+
+    /**
+     * Gibt eine Liste mit den Namen der Variablen zurück, die von der Variablen
+     * mit dem Namen name abhängen.
+     */
+    public static HashSet<String> getVariablesDependingOnGivenVariable(String name) {
+        HashSet<String> vars = new HashSet<>();
+        for (String var : variables.keySet()) {
+            if (name.equals(variables.get(var).dependingOnVariable)) {
+                vars.add(var);
+            }
+        }
+        return vars;
+    }
+    
     public static void setPrecise(String name, boolean precise) {
         if (variables.containsKey(name)) {
             variables.get(name).precise = precise;
@@ -222,7 +272,7 @@ public class Variable extends Expression {
             vars.add(this.name);
         }
     }
-    
+
     @Override
     public boolean contains(String var) {
         return this.name.equals(var);
@@ -291,42 +341,24 @@ public class Variable extends Expression {
     @Override
     public Expression diff(String var) {
 
-        //Partielles Differenzieren nach der Variablen var
+        // Partielles Differenzieren nach der Variablen var
         if (this.name.equals(var)) {
             if (this.precise) {
                 return Expression.ONE;
             }
             return Expression.ONE.turnToApproximate();
-        } else {
-            if (this.precise) {
-                return Expression.ZERO;
-            }
-            return Expression.ZERO.turnToApproximate();
         }
-
-    }
-
-    @Override
-    public Expression diffDifferentialEquation(String var) {
-
-        /*
-         Differenzieren einer Differentialgleichung nach Variable var. Alle
-         anderen Variablen außer var werden als Funktionen von var aufgefasst.
-         -> Ableitung einer Variablen y (!= var) wird dann zu y', die von y'
-         zu y'' etc.
-         */
-        if (this.name.equals(var)) {
-            if (this.precise) {
-                return Expression.ONE;
-            }
-            return Expression.ONE.turnToApproximate();
-        } else {
-            String varName = this.getName();
-            if (this.precise) {
-                return Variable.create(varName + "'");
-            }
-            return Variable.create(varName + "'").turnToApproximate();
+        if (this.dependingOnVariable != null && this.dependingOnVariable.equals(var)) {
+            /* 
+            Falls beispielsweise this.name == x'' und dependingVariable == u ist, 
+            so soll x''' zurückgegeben werden.
+             */
+            return Variable.create(this.name + "'");
         }
+        if (this.precise) {
+            return Expression.ZERO;
+        }
+        return Expression.ZERO.turnToApproximate();
 
     }
 

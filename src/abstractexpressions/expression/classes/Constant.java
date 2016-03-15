@@ -182,14 +182,6 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression diffDifferentialEquation(String var) {
-        if (this.precise) {
-            return Expression.ZERO;
-        }
-        return Expression.ZERO.turnToApproximate();
-    }
-
-    @Override
     public String writeExpression() {
 
         if (this.precise) {
