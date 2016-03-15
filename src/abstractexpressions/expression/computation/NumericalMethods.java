@@ -105,7 +105,7 @@ public abstract class NumericalMethods {
      * Dies wird im Vorfeld beim Kompilieren in MathCommandCompiler
      * sichergestellt.
      */
-    public static double[][] solveDifferentialEquation(Expression f, String argumentVar, String functionVar,
+    public static double[][] solveDifferentialEquationByRungeKutta(Expression f, String argumentVar, String functionVar,
             int ord, double x_0, double x_1, double[] y_0, int n) {
 
         /**
