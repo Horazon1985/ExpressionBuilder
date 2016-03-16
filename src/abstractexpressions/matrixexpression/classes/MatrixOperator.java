@@ -33,16 +33,16 @@ public class MatrixOperator extends MatrixExpression {
     // Patterns für die einzelnen Matrizenoperatoren.
     public static final String PATTERN_COV = "cov(matexpr+)";
     public static final String PATTERN_CROSS = "cross(matexpr+)";
-    public static final String PATTERN_DIFF = "diff(matexpr,var+)";
-    public static final String PATTERN_DIFF_WITHOUT_ORDER = "diff(matexpr,var,integer(0,2147483647))";
-    public static final String PATTERN_DIV = "div(matexpr,uniquevar+)";
-    public static final String PATTERN_GRAD = "grad(matexpr,uniquevar+)";
-    public static final String PATTERN_INT_INDEF = "int(matexpr,var)";
-    public static final String PATTERN_INT_DEF = "int(matexpr,var(!2,!3),expr,expr)";
-    public static final String PATTERN_LAPLACE = "laplace(matexpr,uniquevar+)";
-    public static final String PATTERN_PROD = "prod(matexpr,var(!2,!3),expr,expr)";
-    public static final String PATTERN_ROT = "rot(matexpr,uniquevar,uniquevar,uniquevar)";
-    public static final String PATTERN_SUM = "sum(matexpr,var(!2,!3),expr,expr)";
+    public static final String PATTERN_DIFF = "diff(matexpr,indet+)";
+    public static final String PATTERN_DIFF_WITHOUT_ORDER = "diff(matexpr,indet,integer(0,2147483647))";
+    public static final String PATTERN_DIV = "div(matexpr,uniqueindet+)";
+    public static final String PATTERN_GRAD = "grad(matexpr,uniqueindet+)";
+    public static final String PATTERN_INT_INDEF = "int(matexpr,indet)";
+    public static final String PATTERN_INT_DEF = "int(matexpr,indet(!2,!3),expr,expr)";
+    public static final String PATTERN_LAPLACE = "laplace(matexpr,uniqueindet+)";
+    public static final String PATTERN_PROD = "prod(matexpr,indet(!2,!3),expr,expr)";
+    public static final String PATTERN_ROT = "rot(matexpr,uniqueindet,uniqueindet,uniqueindet)";
+    public static final String PATTERN_SUM = "sum(matexpr,indet(!2,!3),expr,expr)";
 
     public MatrixOperator() {
     }

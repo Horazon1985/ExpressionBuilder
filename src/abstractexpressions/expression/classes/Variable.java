@@ -171,10 +171,23 @@ public class Variable extends Expression {
     private static void setDependingOnVariableForFurtherVariables(String name, String dependingVariable) {
         // Falls beispielsweise name == y und y von x abhängt, so sollen auch y', y'', ... von x abhängen.
         for (String var : variables.keySet()) {
-            if (var.startsWith(name)) {
+            if (isVariableDerivativeOfGivenVariable(var, name)) {
                 variables.get(var).dependingOnVariable = dependingVariable;
             }
         }
+    }
+    
+    /**
+     * Gibt zurück, ob var eine echte Ableitung von givenVar ist.<br>
+     * BEISPIELE: (1) var = y''', givenVar = y'. Hier wird true zurückgegeben.<br>
+     * (1) var = y'', givenVar = y''. Hier wird false zurückgegeben.<br>
+     * (1) var = y, givenVar = x. Hier wird false zurückgegeben.<br>
+     */
+    private static boolean isVariableDerivativeOfGivenVariable(String var, String givenVar){
+        while (var.startsWith(givenVar) && !var.equals(givenVar)){
+            givenVar += "'";
+        }
+        return var.equals(givenVar);
     }
     
     private static void setDependenceIfDependenceAlreadyExists(String name){

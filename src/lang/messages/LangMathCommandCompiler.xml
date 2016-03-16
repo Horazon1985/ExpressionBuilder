@@ -158,6 +158,12 @@
         <Ukrainian>. параметр команди </Ukrainian>
         <Russian>. параметр команды </Russian>
     </object>
+    <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
+        <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English> must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian> має бути діючою змінною, ???.</Ukrainian>
+        <Russian> должен быть действительной переменной, ???.</Russian>
+    </object>
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
         <German> muss eine gültige Veränderliche sein.</German>
         <English> must be a valid variable.</English>
@@ -922,7 +928,7 @@
         <Russian>Слишком много параметров у команды 'taylordeq'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der [0]. Parameter im Befehl 'taylordeq' muss gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
+        <German>Der [0]. Parameter im Befehl 'taylordeq' muss ein gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
         <English>The [0]. parameter in command 'taylordeq' must be a valid expression, which does not contain any variable occurring in the differential equation.</English>
         <Ukrainian>[0]. параметр в команді 'taylordeq' має бути діючим виразом, що не містить змінних, що задіяні у диференціальному рівнянні.</Ukrainian>
         <Russian>[0]. параметр в команде 'taylordeq' должен быть действительным выражением, не содержащим переменных, учавствующих в дифференциальном уравнении.</Russian>
@@ -932,6 +938,18 @@
         <English>The last parameter in command 'taylordeq' must be a nonnegative integer.</English>
         <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
         <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
+    </object>
+    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_UNDEFFUNCS">
+        <German>Zu wenig Parameter im Befehl 'undeffuncs'.</German>
+        <English>Not enough parameters in command 'undeffuncs'.</English>
+        <Ukrainian>Недостатньо параметрів у команди 'undeffuncs'.</Ukrainian>
+        <Russian>Недостаточно параметров у команды 'undeffuncs'.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNCS">
+        <German>Der [0]. Parameter im Befehl 'undeffuncs' muss ein gültiger Funktionsname sein.</German>
+        <English>The [0]. parameter in command 'undeffuncs' must be a valid function name.</English>
+        <Ukrainian>[0]. параметр в команді 'undeffuncs' має бути ???.</Ukrainian>
+        <Russian>[0]. параметр в команде 'undeffuncs' должен быть действительным ???.</Russian>
     </object>
     <object id = "MCC_INVALID_COMMAND">
         <German>Ungültiger Befehl.</German>

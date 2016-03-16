@@ -29,24 +29,24 @@ public class Operator extends Expression {
     private boolean precise;
 
     // Patterns für die einzelnen Operatoren.
-    public static final String PATTERN_DIFF = "diff(expr,var+)";
-    public static final String PATTERN_DIFF_WITH_ORDER = "diff(expr,var,integer(0,2147483647))";
-    public static final String PATTERN_DIV = "div(expr,uniquevar+)";
+    public static final String PATTERN_DIFF = "diff(expr,indet+)";
+    public static final String PATTERN_DIFF_WITH_ORDER = "diff(expr,indet,integer(0,2147483647))";
+    public static final String PATTERN_DIV = "div(expr,uniqueindet+)";
     public static final String PATTERN_FAC = "fac(expr)";
-    public static final String PATTERN_FOURIER = "fourier(expr,var(!2,!3),expr,expr,integer(0,2147483647))";
+    public static final String PATTERN_FOURIER = "fourier(expr,indet(!2,!3),expr,expr,integer(0,2147483647))";
     public static final String PATTERN_GCD = "gcd(expr+)";
-    public static final String PATTERN_INT_INDEF = "int(expr,var)";
-    public static final String PATTERN_INT_DEF = "int(expr,var(!2,!3),expr,expr)";
+    public static final String PATTERN_INT_INDEF = "int(expr,indet)";
+    public static final String PATTERN_INT_DEF = "int(expr,indet(!2,!3),expr,expr)";
     public static final String PATTERN_LCM = "lcm(expr+)";
-    public static final String PATTERN_LAPLACE = "laplace(expr,uniquevar+)";
+    public static final String PATTERN_LAPLACE = "laplace(expr,uniqueindet+)";
     public static final String PATTERN_MAX = "max(expr,expr+)";
     public static final String PATTERN_MIN = "min(expr,expr+)";
     public static final String PATTERN_MOD = "mod(expr,expr)";
     public static final String PATTERN_MU = "mu(expr+)";
-    public static final String PATTERN_PROD = "prod(expr,var(!2,!3),expr,expr)";
+    public static final String PATTERN_PROD = "prod(expr,indet(!2,!3),expr,expr)";
     public static final String PATTERN_SIGMA = "sigma(expr+)";
-    public static final String PATTERN_SUM = "sum(expr,var(!2,!3),expr,expr)";
-    public static final String PATTERN_TAYLOR = "taylor(expr,var(!2),expr,integer(0,2147483647))";
+    public static final String PATTERN_SUM = "sum(expr,indet(!2,!3),expr,expr)";
+    public static final String PATTERN_TAYLOR = "taylor(expr,indet(!2),expr,integer(0,2147483647))";
     public static final String PATTERN_VAR = "var(expr+)";
 
     public Operator(TypeOperator type, Object[] params) {

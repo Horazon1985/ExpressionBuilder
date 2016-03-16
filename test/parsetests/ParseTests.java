@@ -48,8 +48,8 @@ public class ParseTests {
     @Test
     public void parseTest1() throws ExpressionException {
 
-        // Parsen von "op(expr, var, integer, expr)".
-        resultPattern = OperationParser.getResultPattern("op(expr, var, integer, expr)");
+        // Parsen von "op(expr, indet, integer, expr)".
+        resultPattern = OperationParser.getResultPattern("op(expr, indet, integer, expr)");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 4);
@@ -62,7 +62,7 @@ public class ParseTests {
 
         p = resultPattern.getParameterPattern(1);
         restrictions = p.getRestrictions();
-        Assert.assertTrue(p.getParamType().equals(ParamType.var));
+        Assert.assertTrue(p.getParamType().equals(ParamType.indet));
         Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
         Assert.assertTrue(restrictions.isEmpty());
 
@@ -91,8 +91,8 @@ public class ParseTests {
     @Test
     public void parseTest3() throws ExpressionException {
 
-        // Parsen von "op(expr(none, 2), var(0), integer(3,5), expr(3,none))".
-        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(0), integer(3,5), expr(3,none))");
+        // Parsen von "op(expr(none, 2), indet(0), integer(3,5), expr(3,none))".
+        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet(0), integer(3,5), expr(3,none))");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 4);
@@ -107,7 +107,7 @@ public class ParseTests {
 
         p = resultPattern.getParameterPattern(1);
         restrictions = p.getRestrictions();
-        Assert.assertTrue(p.getParamType().equals(ParamType.var));
+        Assert.assertTrue(p.getParamType().equals(ParamType.indet));
         Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
         Assert.assertTrue(restrictions.size() == 1);
         Assert.assertTrue(restrictions.get(0).equals("0"));
@@ -132,8 +132,8 @@ public class ParseTests {
 
     @Test
     public void parseTest4() throws ExpressionException {
-        // Parsen von "op(expr(none, 2), var(!0))".
-        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var+(!0))");
+        // Parsen von "op(expr(none, 2), indet(!0))".
+        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet+(!0))");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 2);
@@ -148,7 +148,7 @@ public class ParseTests {
 
         p = resultPattern.getParameterPattern(1);
         restrictions = p.getRestrictions();
-        Assert.assertTrue(p.getParamType().equals(ParamType.var));
+        Assert.assertTrue(p.getParamType().equals(ParamType.indet));
         Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.plus));
         Assert.assertTrue(restrictions.size() == 1);
         Assert.assertTrue(restrictions.get(0).equals("!0"));
@@ -156,8 +156,8 @@ public class ParseTests {
 
     @Test
     public void parseTest5() throws ExpressionException {
-        // Parsen von "op(expr, expr, var(0,!1, 4), expr, expr, expr)".
-        resultPattern = OperationParser.getResultPattern("op(expr, expr, var(0,!1, 4), expr, expr, expr)");
+        // Parsen von "op(expr, expr, indet(0,!1, 4), expr, expr, expr)".
+        resultPattern = OperationParser.getResultPattern("op(expr, expr, indet(0,!1, 4), expr, expr, expr)");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 6);
@@ -172,7 +172,7 @@ public class ParseTests {
 
         p = resultPattern.getParameterPattern(2);
         restrictions = p.getRestrictions();
-        Assert.assertTrue(p.getParamType().equals(ParamType.var));
+        Assert.assertTrue(p.getParamType().equals(ParamType.indet));
         Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
         Assert.assertTrue(restrictions.size() == 3);
         Assert.assertTrue(restrictions.get(0).equals("0"));
@@ -182,8 +182,8 @@ public class ParseTests {
 
     @Test
     public void parseTest6() throws ExpressionException {
-        // Parsen von "op(expr+(none, 2), var+(0,0,2), expr)".
-        resultPattern = OperationParser.getResultPattern("op(expr+(none, 2), var+(0,0,2), expr)");
+        // Parsen von "op(expr+(none, 2), indet+(0,0,2), expr)".
+        resultPattern = OperationParser.getResultPattern("op(expr+(none, 2), indet+(0,0,2), expr)");
         Assert.assertTrue(resultPattern.getOperationName().equals("op"));
 
         Assert.assertTrue(resultPattern.size() == 3);
@@ -198,7 +198,7 @@ public class ParseTests {
 
         p = resultPattern.getParameterPattern(1);
         restrictions = p.getRestrictions();
-        Assert.assertTrue(p.getParamType().equals(ParamType.var));
+        Assert.assertTrue(p.getParamType().equals(ParamType.indet));
         Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.plus));
         Assert.assertTrue(restrictions.size() == 3);
         Assert.assertTrue(restrictions.get(0).equals("0"));
@@ -225,9 +225,9 @@ public class ParseTests {
 
     @Test
     public void parseTest8() throws ExpressionException {
-        // Parsen von "op(expr(none, 2), var(!2), integer)".
+        // Parsen von "op(expr(none, 2), indet(!2), integer)".
         try {
-            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(!2), integer)");
+            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet(!2), integer)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -236,9 +236,9 @@ public class ParseTests {
 
     @Test
     public void parseTest9() throws ExpressionException {
-        // Parsen von "op(expr(none, 2), var(1), integer)".
+        // Parsen von "op(expr(none, 2), indet(1), integer)".
         try {
-            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), var(1), integer)");
+            resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet(1), integer)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -269,9 +269,9 @@ public class ParseTests {
 
     @Test
     public void parseTest12() throws ExpressionException {
-        // Parsen von "op(expres(1,2),var)".
+        // Parsen von "op(expres(1,2),indet)".
         try {
-            resultPattern = OperationParser.getResultPattern("op(expres(1,2),var)");
+            resultPattern = OperationParser.getResultPattern("op(expres(1,2),indet)");
             // Es darf nicht erfolgreich geparst werden!
             fail();
         } catch (ParseException e) {
@@ -281,9 +281,9 @@ public class ParseTests {
     // Teil 2: Tests für das Parsen eines Operators.
     @Test
     public void parseOperatorSuccesfullyParsedTest1() {
-        // Parsen von "diff(x^2+y,x,y,x)" gegen das Pattern "diff(expr,var+)".
+        // Parsen von "diff(x^2+y,x,y,x)" gegen das Pattern "diff(expr,indet+)".
         try {
-            patternForOperator = "diff(expr,var+)";
+            patternForOperator = "diff(expr,indet+)";
             operator = OperationParser.parseDefaultOperator("diff", new String[]{"x^2+y", "x", "y", "x"}, null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
@@ -304,9 +304,9 @@ public class ParseTests {
 
     @Test
     public void parseOperatorSuccesfullyParsedTest2() {
-        // Parsen von "diff(x^2+y,x,3)" gegen das Pattern "diff(expr,var,integer)".
+        // Parsen von "diff(x^2+y,x,3)" gegen das Pattern "diff(expr,indet,integer)".
         try {
-            patternForOperator = "diff(expr,var,integer)";
+            patternForOperator = "diff(expr,indet,integer)";
             operator = OperationParser.parseDefaultOperator("diff", new String[]{"x^2+y", "x", "3"}, null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
@@ -326,7 +326,7 @@ public class ParseTests {
 
     @Test
     public void parseOperatorSuccesfullyParsedTest3() {
-        // Parsen von "var(x^2,3,t,sin(u),a+b)" gegen das Pattern "var(expr+)".
+        // Parsen von "var(x^2,3,t,sin(u),a+b)" gegen das Pattern "indet(expr+)".
         try {
             patternForOperator = "var(expr+)";
             operator = OperationParser.parseDefaultOperator("var", new String[]{"x^2", "3", "t", "sin(u)", "a+b"}, null, patternForOperator);
@@ -352,9 +352,9 @@ public class ParseTests {
 
     @Test
     public void parseIntegralOperatorSuccesfullyParsedTest() {
-        // Parsen von "int(x^2,x,2,sin(1))" gegen das Pattern "int(expr,var(!2,!3),expr,expr)".
+        // Parsen von "int(x^2,x,2,sin(1))" gegen das Pattern "int(expr,indet(!2,!3),expr,expr)".
         try {
-            patternForOperator = "int(expr,var(!2,!3),expr,expr)";
+            patternForOperator = "int(expr,indet(!2,!3),expr,expr)";
             operator = OperationParser.parseDefaultOperator("int", new String[]{"x^2", "x", "2", "sin(1)"}, null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
@@ -376,9 +376,9 @@ public class ParseTests {
 
     @Test
     public void parseLaplaceOperatorSuccesfullyParsedTest() {
-        // Parsen von "laplace(x^2+y,x,y,z)" gegen das Pattern "laplace(expr,uniquevar+)".
+        // Parsen von "laplace(x^2+y,x,y,z)" gegen das Pattern "laplace(expr,uniqueindet+)".
         try {
-            patternForOperator = "laplace(expr,uniquevar+)";
+            patternForOperator = "laplace(expr,uniqueindet+)";
             operator = OperationParser.parseDefaultOperator("laplace", new String[]{"x^2+y", "x", "y", "z"}, null, patternForOperator);
 
             // Ausgabe der Ergebnisse.
@@ -417,9 +417,9 @@ public class ParseTests {
 
     @Test
     public void parseOperatorNotSuccesfullyParsedTest2() {
-        // Parsen von "int(x^2,x,2,x)" gegen das Pattern "int(expr,var(!2,!3),expr,expr)".
+        // Parsen von "int(x^2,x,2,x)" gegen das Pattern "int(expr,indet(!2,!3),expr,expr)".
         try {
-            patternForOperator = "int(expr,var(!2,!3),expr,expr)";
+            patternForOperator = "int(expr,indet(!2,!3),expr,expr)";
             operator = OperationParser.parseDefaultOperator("int", new String[]{"x^2", "x", "2", "x"}, null, patternForOperator);
             fail();
         } catch (ParseException e) {
@@ -434,9 +434,9 @@ public class ParseTests {
 
     @Test
     public void parseOperatorNotSuccesfullyParsedTest3() {
-        // Parsen von "div(x^2+y-z,x,y,x)" gegen das Pattern "div(expr,uniquevar,uniquevar,uniquevar)".
+        // Parsen von "div(x^2+y-z,x,y,x)" gegen das Pattern "div(expr,uniqueindet,uniqueindet,uniqueindet)".
         try {
-            patternForOperator = "div(expr,uniquevar,uniquevar,uniquevar)";
+            patternForOperator = "div(expr,uniqueindet,uniqueindet,uniqueindet)";
             operator = OperationParser.parseDefaultOperator("div", new String[]{"x^2+y-z", "x", "y", "x"}, null, patternForOperator);
             fail();
         } catch (ParseException e) {

@@ -8,7 +8,6 @@ import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
-import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
@@ -504,17 +503,17 @@ public abstract class OperationParser {
         }
 
         /* 
-         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         Schließlich muss noch überprüft werden, ob uniqueindets und uniquevars nur einmal 
          vorkommen.
          */
         for (int i = 0; i < resultPattern.size(); i++) {
 
             p = resultPattern.getParameterPattern(i);
-            if (!p.getParamType().equals(ParamType.uniquevar)) {
+            if (!p.getParamType().equals(ParamType.uniqueindet) && !p.getParamType().equals(ParamType.uniquevar)) {
                 continue;
             }
 
-            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : params.length - 1;
             for (int j = indices.get(i); j <= maxIndexForControl; j++) {
                 // Jeweilige Unique-Variable für die Kontrolle.
                 var = (String) params[j];
@@ -699,17 +698,17 @@ public abstract class OperationParser {
         }
 
         /* 
-         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         Schließlich muss noch überprüft werden, ob uniquevars und uniqueindets nur einmal 
          vorkommen.
          */
         for (int i = 0; i < resultPattern.size(); i++) {
 
             p = resultPattern.getParameterPattern(i);
-            if (!p.getParamType().equals(ParamType.uniquevar)) {
+            if (!p.getParamType().equals(ParamType.uniqueindet) && !p.getParamType().equals(ParamType.uniquevar)) {
                 continue;
             }
 
-            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : params.length - 1;
             for (int j = indices.get(i); j <= maxIndexForControl; j++) {
                 // Jeweilige Unique-Variable für die Kontrolle.
                 var = (String) params[j];
@@ -889,17 +888,17 @@ public abstract class OperationParser {
         }
 
         /* 
-         Schließlich muss noch überprüft werden, ob uniquevars nur einmal 
+         Schließlich muss noch überprüft werden, ob uniquevars und uniqueindets nur einmal 
          vorkommen.
          */
         for (int i = 0; i < resultPattern.size(); i++) {
 
             p = resultPattern.getParameterPattern(i);
-            if (!p.getParamType().equals(ParamType.uniquevar)) {
+            if (!p.getParamType().equals(ParamType.uniqueindet) && !p.getParamType().equals(ParamType.uniquevar)) {
                 continue;
             }
 
-            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : resultPattern.size() - 1;
+            maxIndexForControl = i < resultPattern.size() - 1 ? indices.get(i + 1) - 1 : params.length - 1;
             for (int j = indices.get(i); j <= maxIndexForControl; j++) {
                 // Jeweilige Unique-Variable für die Kontrolle.
                 var = (String) params[j];
@@ -935,7 +934,11 @@ public abstract class OperationParser {
 
         if (type.getRole().equals(ParamRole.VARIABLE)) {
 
-            if (Expression.isValidDerivateOfVariable(parameter) && Variable.create(parameter).getPreciseExpression() == null) {
+            if (type.equals(ParamType.uniquevar) || type.equals(ParamType.var)) {
+                if (Expression.isValidDerivativeOfVariable(parameter)) {
+                    return parameter;
+                }
+            } else if (Expression.isValidDerivativeOfIndeterminate(parameter)) {
                 return parameter;
             }
 
@@ -1145,6 +1148,10 @@ public abstract class OperationParser {
                 + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                 + opName;
         switch (type) {
+            case uniqueindet:
+            case indet:
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET");
+                break;
             case uniquevar:
             case var:
                 failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR");

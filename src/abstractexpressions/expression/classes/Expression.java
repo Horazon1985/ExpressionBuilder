@@ -195,11 +195,30 @@ public abstract class Expression implements AbstractExpression {
      * Apostrophs. Beispielsweise wird bei y, x_2, z_4''', t'' true
      * zurückgegeben, bei t'_3' dagegen wird false zurückgegeben.
      */
-    public static boolean isValidDerivateOfVariable(String var) {
+    public static boolean isValidDerivativeOfVariable(String var) {
         while (var.length() > 0 && var.substring(var.length() - 1).equals("'")) {
             var = var.substring(0, var.length() - 1);
         }
         return isValidVariable(var);
+    }
+
+    /**
+     * Prüft, ob es sich bei var um einen zulässigen Variablennamen handelt, und
+     * ob zusätzlich der entsprechenden Variable kein fester Wert zugewiesen
+     * wurde.
+     */
+    public static boolean isValidIndeterminate(String var) {
+        return isValidVariable(var) && Variable.create(var).getPreciseExpression() == null;
+    }
+
+    /**
+     * Prüft, ob es sich bei var um einen zulässigen Variablennamen oder um die
+     * formale Ableitung einer zulässigen Variable handelt, und ob zusätzlich
+     * der entsprechenden Variable kein fester Wert zugewiesen wurde.
+     */
+    
+    public static boolean isValidDerivativeOfIndeterminate(String var) {
+        return isValidVariable(var) && Variable.create(var).getPreciseExpression() == null;
     }
 
     public static boolean isPI(String formula) {
@@ -379,7 +398,7 @@ public abstract class Expression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist.
         if (priority == 5) {
-            if (isValidDerivateOfVariable(formula)) {
+            if (isValidDerivativeOfVariable(formula)) {
                 if (vars != null) {
                     vars.add(formula);
                 }
@@ -465,7 +484,7 @@ public abstract class Expression implements AbstractExpression {
 
     }
 
-    public HashSet<String> getContainedVariablesDependingOnGivenVariable(String varName){
+    public HashSet<String> getContainedVariablesDependingOnGivenVariable(String varName) {
         HashSet<String> vars = new HashSet<>();
         HashSet<String> allVarsDependingOnGivenVariable = Variable.getVariablesDependingOnGivenVariable(varName);
         for (String var : allVarsDependingOnGivenVariable) {
@@ -474,9 +493,9 @@ public abstract class Expression implements AbstractExpression {
             }
         }
         return vars;
-        
+
     }
-    
+
     /**
      * Legt eine neue Kopie von this an.
      */
@@ -524,9 +543,9 @@ public abstract class Expression implements AbstractExpression {
     /**
      * Gibt zurück, ob this mindestens eine der Variable aus vars enthält.
      */
-    public boolean containsAtLeastOne(HashSet<String> vars){
-        for (String var : vars){
-            if (this.contains(var)){
+    public boolean containsAtLeastOne(HashSet<String> vars) {
+        for (String var : vars) {
+            if (this.contains(var)) {
                 return true;
             }
         }
