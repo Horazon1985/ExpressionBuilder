@@ -423,11 +423,17 @@
         <Ukrainian>[0]. параметр команди 'plot2d' має бути діючим виразом однієї змінної.</Ukrainian>
         <Russian>[0]. параметр команды 'plot2d' должен быть действительным выражением одной переменной.</Russian>
     </object>
-    <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT2D">
-        <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens eine Veränderliche enthalten. Diese enthalten jedoch [0] Veränderliche.</German>
-        <English>The expressions in command 'plot2d' must contain at most one variable. They contain [0] variables.</English>
-        <Ukrainian>Вирази у команді 'plot2d' мають містити не більше однієї змінної. Вони містять [0] змінних.</Ukrainian>
-        <Russian>Выражения в команде 'plot2d' должны содержать не более одной переменной. Они содержат [0] переменных.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_INDETERMINATE_PARAMETER_IN_PLOT2D">
+        <German>Der [0]. Parameter im Befehl 'plot2d' muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English>The [0]. parameter of the command 'plot2d' must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian>[0]. параметр команди 'plot2d' має бути діючою змінною, ???.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot2d' должен быть действительной переменной, ???.</Russian>
+    </object>
+    <object id = "MCC_WRONG_NUMBER_OF_INDETERMINATES_IN_PLOT2D">
+        <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens die Veränderliche [0] enthalten. Diese enthalten jedoch weitere Veränderliche.</German>
+        <English>The expressions in command 'plot2d' must contain at most the variable [0]. But they contain further variables.</English>
+        <Ukrainian>Вирази у команді 'plot2d' мають містити ???. Вони містять ???.</Ukrainian>
+        <Russian>Выражения в команде 'plot2d' должны содержать максимум переменную [0]. Они содержат кроме неё ещё переменных.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D">
         <German>Der [0]. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
