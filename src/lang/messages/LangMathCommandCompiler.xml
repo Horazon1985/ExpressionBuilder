@@ -477,6 +477,24 @@
         <Ukrainian>[0]. параметр команди 'plot3d' має бути діючим виразом. Повідомлення про помилку: [1]</Ukrainian>
         <Russian>[0]. параматр команды 'plot3d' должен быть действительным выражением. Сообщение об ошибке: [1]</Russian>
     </object>
+    <object id = "MCC_WRONG_FORM_OF_INDETERMINATE_PARAMETER_IN_PLOT3D">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English>The [0]. parameter of the command 'plot3d' must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot3d' должен быть действительной переменной, которой не присвоено значение.</Russian>
+    </object>
+    <object id = "MCC_INDETERMINATES_MUST_BE_PAIRWISE_DIFFERENT_IN_PLOT3D">
+        <German>Die Veränderlichen im Befehl 'plot3d' müssen paarweise verschieden sein.</German>
+        <English>The variables in command 'plot3d' must be pairwise different.</English>
+        <Ukrainian>Змінні у команді 'plot3d' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'plot3d' должны попарно отличаться.</Russian>
+    </object>
+    <object id = "MCC_WRONG_NUMBER_OF_INDETERMINATES_IN_PLOT3D">
+        <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens die Veränderlichen [0] und [1] enthalten. Diese enthalten jedoch weitere Veränderliche.</German>
+        <English>The expressions in command 'plot2d' must contain at most the variables [0] and [1]. But they contain further variables.</English>
+        <Ukrainian>Вирази у команді 'plot2d' мають містити максимум зміннуі [0] та [1]. Але вони містять крым неъ ще змінні.</Ukrainian>
+        <Russian>Выражения в команде 'plot2d' должны содержать максимум переменные [0] и [1]. Но они содержат кроме неё ещё переменные.</Russian>
+    </object>
     <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOT3D">
         <German>Der Ausdruck im Befehl 'plot3d' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch [0] Veränderliche.</German>
         <English>The expression in command 'plot3d' must contain at most two variables. It contains [0] variables.</English>
@@ -494,6 +512,42 @@
         <English>The [0]. parameter in command 'plot3d' must be smaller than the [1]. parameter.</English>
         <Ukrainian>[0]. параметр команди 'plot3d' має бути меншим ніж [1]. параметр.</Ukrainian>
         <Russian>[0]. параметр команды 'plot3d' должен быть меньше чем [1]. параметр.</Russian>
+    </object>
+    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTIMPLICIT2D">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plot3d' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot3d' должен быть меньше чем [1]. параметр.</Russian>
+    </object>
+    <object id = "MCC_FIRST_PARAMETER_IN_PLOTIMPLICIT2D_MUST_BE_A_VALID_EQUATION">
+        <German>Der [0]. Parameter im Befehl 'plot3d' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'plot3d' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'plot3d' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot3d' должен быть меньше чем [1]. параметр.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_INDETERMINATE_PARAMETER_IN_PLOTIMPLICIT2D">
+        <German>Der [0]. Parameter im Befehl 'plotimplicit' muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English>The [0]. parameter of the command 'plotimplicit' must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian>[0]. параметр команди 'plotimplicit' має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian>[0]. параметр команды 'plotimplicit' должен быть действительной переменной, которой не присвоено значение.</Russian>
+    </object>
+    <object id = "MCC_INDETERMINATES_MUST_BE_PAIRWISE_DIFFERENT_IN_PLOTIMPLICIT2D">
+        <German>Die Veränderlichen im Befehl 'plotimplicit' müssen paarweise verschieden sein.</German>
+        <English>The variables in command 'plotimplicit' must be pairwise different.</English>
+        <Ukrainian>Змінні у команді 'plotimplicit' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'plotimplicit' должны попарно отличаться.</Russian>
+    </object>
+    <object id = "MCC_WRONG_NUMBER_OF_INDETERMINATES_IN_PLOTIMPLICIT2D">
+        <German>Die Ausdrücke im Befehl 'plotimplicit' dürfen höchstens die Veränderlichen [0] und [1] enthalten. Diese enthalten jedoch weitere Veränderliche.</German>
+        <English>The expressions in command 'plotimplicit' must contain at most the variables [0] and [1]. But they contain further variables.</English>
+        <Ukrainian>Вирази у команді 'plotimplicit' мають містити максимум зміннуі [0] та [1]. Але вони містять крым неъ ще змінні.</Ukrainian>
+        <Russian>Выражения в команде 'plotimplicit' должны содержать максимум переменные [0] и [1]. Но они содержат кроме неё ещё переменные.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTIMPLICIT2D">
+        <German>Der [0]. Parameter im Befehl 'plotimplicit' muss eine reelle Zahl sein.</German>
+        <English>The [0]. parameter in command 'plotimplicit' must be a real number.</English>
+        <Ukrainian>[0]. параметр команди 'plotimplicit' має бути дійсним числом.</Ukrainian>
+        <Russian>[0]. параметр команды 'plotimplicit' должен быть действительным числом.</Russian>
     </object>
     <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_PLOTIMPLICIT2D">
         <German>Der [0]. Parameter im Befehl 'plotimplicit' muss kleiner sein als der [1]. Parameter.</German>
