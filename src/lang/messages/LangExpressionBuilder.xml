@@ -317,8 +317,8 @@
     <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
         <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
         <English> must be a valid variable, which was not assigned a fixed value.</English>
-        <Ukrainian> має бути діючою змінною, ???.</Ukrainian>
-        <Russian> должен быть действительной переменной, ???.</Russian>
+        <Ukrainian> має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian> должен быть действительной переменной, которой не присвоено значение.</Russian>
     </object>
     <object id = "EB_Operator_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
         <German> muss eine gültige Veränderliche sein.</German>

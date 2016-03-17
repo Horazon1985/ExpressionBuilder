@@ -161,8 +161,8 @@
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
         <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
         <English> must be a valid variable, which was not assigned a fixed value.</English>
-        <Ukrainian> має бути діючою змінною, ???.</Ukrainian>
-        <Russian> должен быть действительной переменной, ???.</Russian>
+        <Ukrainian> має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian> должен быть действительной переменной, которой не присвоено значення.</Russian>
     </object>
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
         <German> muss eine gültige Veränderliche sein.</German>
@@ -426,14 +426,14 @@
     <object id = "MCC_WRONG_FORM_OF_INDETERMINATE_PARAMETER_IN_PLOT2D">
         <German>Der [0]. Parameter im Befehl 'plot2d' muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
         <English>The [0]. parameter of the command 'plot2d' must be a valid variable, which was not assigned a fixed value.</English>
-        <Ukrainian>[0]. параметр команди 'plot2d' має бути діючою змінною, ???.</Ukrainian>
-        <Russian>[0]. параметр команды 'plot2d' должен быть действительной переменной, ???.</Russian>
+        <Ukrainian>[0]. параметр команди 'plot2d' має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian>[0]. параметр команды 'plot2d' должен быть действительной переменной, которой не присвоено значение.</Russian>
     </object>
     <object id = "MCC_WRONG_NUMBER_OF_INDETERMINATES_IN_PLOT2D">
         <German>Die Ausdrücke im Befehl 'plot2d' dürfen höchstens die Veränderliche [0] enthalten. Diese enthalten jedoch weitere Veränderliche.</German>
         <English>The expressions in command 'plot2d' must contain at most the variable [0]. But they contain further variables.</English>
-        <Ukrainian>Вирази у команді 'plot2d' мають містити ???. Вони містять ???.</Ukrainian>
-        <Russian>Выражения в команде 'plot2d' должны содержать максимум переменную [0]. Они содержат кроме неё ещё переменных.</Russian>
+        <Ukrainian>Вирази у команді 'plot2d' мають містити максимум змінну [0]. Але вони містять крым неъ ще змінні.</Ukrainian>
+        <Russian>Выражения в команде 'plot2d' должны содержать максимум переменную [0]. Но они содержат кроме неё ещё переменные.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETERS_IN_PLOT2D">
         <German>Der [0]. Parameter im Befehl 'plot2d' muss eine reelle Zahl sein.</German>
@@ -732,20 +732,21 @@
     <object id = "MCC_1_PARAMETER_IN_SOLVEDIFFEQ_MUST_CONTAIN_EQUALITY_SIGN">
         <German>Der 1. Parameter im Befehl 'solvediffeq' muss ein '='-Zeichen enthalten.</German>
         <English>The 1. parameter in command 'solvediffeq' must contain the equality sign '='.</English>
-        <Ukrainian>1. параметр команди 'solvediffeq' має ???.</Ukrainian>
-        <Russian>1. параметр команды 'solvediffeq' ???.</Russian>
+        <Ukrainian>1. параметр команди 'solvediffeq' має містити рівність sign '='.</Ukrainian>
+        <Russian>1. параметр команды 'solvediffeq' должен содержать равнство sign '='.</Russian>
+        <Russian>1. параметр команды 'solvediffeq' должен содержать равнство sign '='.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 1. Parameter im Befehl 'solvediffeq' muss eine gültige Differentialgleichung sein. Gemeldeter Fehler: </German>
         <English>The 1. parameter in command 'solvediffeq' must be a valid differential equation. Reported error: </English>
-        <Ukrainian>1. параметр команди 'solvediffeq' має бути ???. Повідомлення про помилку: </Ukrainian>
-        <Russian>1. Параматр команды 'solvediffeq' должен быть действительным ???. Сообщение об ошибке: </Russian>
+        <Ukrainian>1. параметр команди 'solvediffeq' має бути діючим диференцівальним рівнянням. Повідомлення про помилку: </Ukrainian>
+        <Russian>1. Параматр команды 'solvediffeq' должен быть действительным уравнением. Сообщение об ошибке: </Russian>
     </object>
     <object id = "MCC_NO_DERIVATIVE_IN_1_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 1. Parameter im Befehl 'solvediffeq' muss eine Ableitung enthalten.</German>
         <English>The 1. parameter in command 'solvediffeq' must contain a derivative.</English>
-        <Ukrainian>1. параметр команди 'solvediffeq' має ???.</Ukrainian>
-        <Russian>1. Параматр команды 'solvediffeq' должен ???.</Russian>
+        <Ukrainian>1. параметр команди 'solvediffeq' має містити похідну.</Ukrainian>
+        <Russian>1. Параматр команды 'solvediffeq' должен содержать переменную.</Russian>
     </object>
     <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_SOLVEDIFFEQ">
         <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
@@ -768,8 +769,8 @@
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_SOLVEDIFFEQ">
         <German>Im Befehl 'solvediffeq' müss entweder drei oder mindestens sechs Parameter stehen.</German>
         <English>The command 'solvediffeq' must contain either three or at leat six parameters.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>У команди 'solvediffeq' має бути або три або щонайменше шість параметрів.</Ukrainian>
+        <Russian>У команды 'solvediffeq' должно быть три или как минимум шесть параметров.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der 2. Parameter im Befehl 'solvediffeq' muss eine gültige Veränderliche sein.</German>
@@ -954,8 +955,8 @@
     <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_UNDEFFUNCS">
         <German>Der [0]. Parameter im Befehl 'undeffuncs' muss ein gültiger Funktionsname sein.</German>
         <English>The [0]. parameter in command 'undeffuncs' must be a valid function name.</English>
-        <Ukrainian>[0]. параметр в команді 'undeffuncs' має бути ???.</Ukrainian>
-        <Russian>[0]. параметр в команде 'undeffuncs' должен быть действительным ???.</Russian>
+        <Ukrainian>[0]. параметр в команді 'undeffuncs' має бути іменем функції.</Ukrainian>
+        <Russian>[0]. параметр в команде 'undeffuncs' должен быть действительным именем функции.</Russian>
     </object>
     <object id = "MCC_INVALID_COMMAND">
         <German>Ungültiger Befehl.</German>
@@ -1179,50 +1180,50 @@
     <object id = "MCC_ALL_FUNCTIONS">
         <German>Alle Funktionen sind Lösungen der vorliegenden Differentialgleichung.</German>
         <English>All functions are solutions of the underlying differential equation.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Усі функції є розв'язками даного диференціального рівняння.</Ukrainian>
+        <Russian>Все функции являются решениями данного дифференциального уравнения.</Russian>
     </object>
     <object id = "MCC_NO_SOLUTIONS">
         <German>Die vorliegende Differentialgleichung besitzt keine Lösungen.</German>
         <English>The underlying differential equation has no solutions.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Дане диференціальне рівняння не має розв'язків.</Ukrainian>
+        <Russian>Данное дифференциальное уравнение не имеет решений.</Russian>
     </object>
     <object id = "MCC_NO_EXACT_SOLUTIONS_OF_DIFFERENTIAL_EQUATION_FOUND">
         <German>Es konnten keine Lösungen der vorliegenden Differentialgleichung ermittelt werden.</German>
         <English>No solutions of the underlying differential equation found.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не вдалося знайти жодного розв'язку даного диференціального рівняння.</Ukrainian>
+        <Russian>Не удалось найти ни одного решения данного дифференциального уравнения.</Russian>
     </object>
     <object id = "MCC_ALGEBRAIC_SOLUTION_OF_DIFFEQ">
         <German>Lösungen der Differentialgleichung </German>
         <English>Solutions of the differential equation </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Розв'язки диференціального рівняння </Ukrainian>
+        <Russian>Решения дифференциального уравнения </Russian>
     </object>
     <object id = "MCC_IMPLICIT_OF_DIFFEQ">
         <German>Implizit gegebene Lösungen: </German>
         <English>Implicit solutions: </English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Розв'язки у неявному вигляді: </Ukrainian>
+        <Russian>Решения в неявном виде: </Russian>
     </object>
     <object id = "MCC_EXPLICIT_OF_DIFFEQ">
         <German>Explizite Lösungen: </German>
-        <English>Explicit solutions</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <English>Explicit solutions: </English>
+        <Ukrainian>Розв'язок у явному вигляді: </Ukrainian>
+        <Russian>Решение в явном виде: </Russian>
     </object>
     <object id = "MCC_DIFFEQ_IS_FREE_CONSTANT">
         <German> ist eine freie Konstante.</German>
         <English> is a free constant.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> вільна константа.</Ukrainian>
+        <Russian> свободная константа.</Russian>
     </object>
     <object id = "MCC_DIFFEQ_ARE_FREE_CONSTANTS">
         <German> sind freie Konstante.</German>
         <English> are free constant.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian> вільні константи.</Ukrainian>
+        <Russian> свободные константы.</Russian>
     </object>
     <object id = "MCC_SOLUTION_OF_DIFFEQ">
         <German>Lösung der Differentialgleichung </German>
