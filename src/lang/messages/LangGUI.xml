@@ -19,176 +19,176 @@
     <Russian> экивалентно </Russian>
   </object>
 <!-- MathToolGUI -->    
-  <object id = "GUI_MathToolForm_INPUT">
+  <object id = "GUI_INPUT">
     <German>Eingabe</German>
     <English>Input</English>
     <Ukrainian>Пуск</Ukrainian>
     <Russian>Ввод</Russian>
   </object>
-  <object id = "GUI_MathToolForm_APPROX">
+  <object id = "GUI_APPROX">
     <German>Approx</German>
     <English>Approx</English>
     <Ukrainian>Наблизити</Ukrainian>
     <Russian>Приблизить</Russian>
   </object>
-  <object id = "GUI_MathToolForm_CLEAR">
+  <object id = "GUI_CLEAR">
     <German>Leeren</German>
     <English>Clear</English>
     <Ukrainian>Очистити</Ukrainian>
     <Russian>Очистить</Russian>
   </object>
-  <object id = "GUI_MathToolForm_CANCEL">
+  <object id = "GUI_CANCEL">
     <German>Abbruch</German>
     <English>Cancel</English>
     <Ukrainian>Відміна</Ukrainian>
     <Russian>Отмена</Russian>
   </object>
-  <object id = "GUI_MathToolForm_LATEX_CODE">
+  <object id = "GUI_LATEX_CODE">
     <German>LaTex-Code</German>
     <English>LaTex code</English>
     <Ukrainian>Код LaTex</Ukrainian>
     <Russian>Код LaTex</Russian>
   </object>
-  <object id = "GUI_MathToolForm_OPERATOR">
+  <object id = "GUI_OPERATOR">
     <German>Operator</German>
     <English>Operator</English>
     <Ukrainian>Оператор</Ukrainian>
     <Russian>Оператор</Russian>
   </object>
-  <object id = "GUI_MathToolForm_COMMAND">
+  <object id = "GUI_COMMAND">
     <German>Befehl</German>
     <English>Command</English>
     <Ukrainian>Команда</Ukrainian>
     <Russian>Команда</Russian>
   </object>
-  <object id = "GUI_MathToolForm_ROTATE_GRAPH">
+  <object id = "GUI_ROTATE_GRAPH">
     <German>Graphen rotieren lassen</German>
     <English>Rotate graph</English>
     <Ukrainian>Обертати график</Ukrainian>
     <Russian>Вращать график</Russian>
   </object>
-  <object id = "GUI_MathToolForm_STOP_ROTATION">
+  <object id = "GUI_STOP_ROTATION">
     <German>Rotation stoppen</German>
     <English>Stop rotation</English>
     <Ukrainian>Припинити обертання</Ukrainian>
     <Russian>Прекратить вращение</Russian>
   </object>
-  <object id = "GUI_MathToolForm_LEGEND">
+  <object id = "GUI_LEGEND">
     <German>Legende</German>
     <English>Legend</English>
     <Ukrainian>Легенда</Ukrainian>
     <Russian>Легенда</Russian>
   </object>
-  <object id = "GUI_MathToolForm_SAVE">
+  <object id = "GUI_SAVE">
     <German>Grafik speichern</German>
     <English>Save graphic</English>
     <Ukrainian>Зберегти графік</Ukrainian>
     <Russian>Сохранить график</Russian>
   </object>
 <!-- MathToolmenü -->
-  <object id = "GUI_MathToolForm_MENU_FILE">
+  <object id = "GUI_MENU_FILE">
     <German>Datei</German>
     <English>File</English>
     <Russian>Файл</Russian>
     <Ukrainian>Файл</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_OPEN">
+  <object id = "GUI_MENU_OPEN">
     <German>Öffnen</German>
     <English>Open</English>
     <Russian>Открыть</Russian>
     <Ukrainian>Відкрити</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_SAVE">
+  <object id = "GUI_MENU_SAVE">
     <German>Speichern</German>
     <English>Save</English>
     <Russian>Сохранить</Russian>
     <Ukrainian>Зберегти</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_QUIT">
+  <object id = "GUI_MENU_QUIT">
     <German>Verlassen</German>
     <English>Quit</English>
     <Russian>Выход</Russian>
     <Ukrainian>Вихід</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_MATHTOOL">
+  <object id = "GUI_MENU_MATHTOOL">
     <German>MathTool</German>
     <English>MathTool</English>
     <Russian>MathTool</Russian>
     <Ukrainian>MathTool</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_HELP">
+  <object id = "GUI_MENU_HELP">
     <German>Hilfe</German>
     <English>Help</English>
     <Russian>Помощь</Russian>
     <Ukrainian>Допомога</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_LANGUAGES">
+  <object id = "GUI_MENU_LANGUAGES">
     <German>Sprachen</German>
     <English>Languages</English>
     <Russian>Языки</Russian>
     <Ukrainian>Мови</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_REPRESENTATION_MODE">
+  <object id = "GUI_MENU_REPRESENTATION_MODE">
     <German>Darstellungsmodus</German>
     <English>Representation Mode</English>
     <Russian>Режим представления</Russian>
     <Ukrainian>Режим зображення</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_OPTIONS">
+  <object id = "GUI_MENU_OPTIONS">
     <German>Optionen</German>
     <English>Options</English>
     <Ukrainian>Опції</Ukrainian>
     <Russian>Опции</Russian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_ABOUT">
+  <object id = "GUI_MENU_ABOUT">
     <German>Über MathTool</German>
     <English>About MathTool</English>
     <Russian>О MathTool</Russian>
     <Ukrainian>Про MathTool</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_ENGLISH">
+  <object id = "GUI_MENU_ENGLISH">
     <German>Englisch</German>
     <English>English</English>
     <Russian>Английский</Russian>
     <Ukrainian>Англійська</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_GERMAN">
+  <object id = "GUI_MENU_GERMAN">
     <German>Deutsch</German>
     <English>German</English>
     <Russian>Немецкий</Russian>
     <Ukrainian>Німецька</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_RUSSIAN">
+  <object id = "GUI_MENU_RUSSIAN">
     <German>Russisch</German>
     <English>Russian</English>
     <Russian>Русский</Russian>
     <Ukrainian>Російська</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_UKRAINIAN">
+  <object id = "GUI_MENU_UKRAINIAN">
     <German>Ukrainisch</German>
     <English>Ukrainian</English>
     <Russian>Украинский</Russian>
     <Ukrainian>Українська</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_TEXT_MODE">
+  <object id = "GUI_MENU_TEXT_MODE">
     <German>Textmodus</German>
     <English>Text mode</English>
     <Russian>Текстовый режим</Russian>
     <Ukrainian>Текстовий режим</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_FORMULA_MODE">
+  <object id = "GUI_FORMULA_MODE">
     <German>Formelmodus</German>
     <English>Formula mode</English>
     <Russian>Формульный режим</Russian>
     <Ukrainian>Формульний режим</Ukrainian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_OUTPUT_OPTIONS">
+  <object id = "GUI_MENU_OUTPUT_OPTIONS">
     <German>Ausgabeoptionen</German>
     <English>Output options</English>
     <Ukrainian>Опції виводу</Ukrainian>
     <Russian>Опции вывода</Russian>
   </object>
-  <object id = "GUI_MathToolForm_MENU_GRAPHIC_OPTIONS">
+  <object id = "GUI_MENU_GRAPHIC_OPTIONS">
     <German>Grafikoptionen</German>
     <English>Graphic options</English>
     <Ukrainian>Опції графіки</Ukrainian>
