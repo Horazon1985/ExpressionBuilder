@@ -44,7 +44,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         return simplifyTypes;
     }
-    
+
     public BinaryOperation(Expression left, Expression right, TypeBinary type) {
         this.left = left;
         this.right = right;
@@ -141,7 +141,7 @@ public class BinaryOperation extends Expression {
         this.left.addContainedIndeterminates(vars);
         this.right.addContainedIndeterminates(vars);
     }
-    
+
     @Override
     public boolean contains(String var) {
         return this.left.contains(var) || this.right.contains(var);
@@ -228,22 +228,20 @@ public class BinaryOperation extends Expression {
             Expression enumerator = this.left.diff(var).mult(this.right).sub(this.left.mult(this.right.diff(var)));
             Expression denominator = this.right.pow(2);
             return enumerator.div(denominator);
-        } else {
-            if (!this.right.contains(var)) {
-                //Regel: (f^n)' = n*f^(n - 1)*f'
-                return this.right.mult(this.left.pow(this.right.sub(1))).mult(this.left.diff(var));
-            } else if (!this.left.contains(var)) {
-                //Regel: (a^g)' = ln(a)*a^g*g')
-                //Fehlerbehandlung: a muss > 0 sein!
-                if (this.left.isConstant() && this.left.isNonPositive()) {
-                    throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
-                }
-                return new Function(this.left, TypeFunction.ln).mult(this).mult(this.right.diff(var));
-            } else {
-                //Regel: (f^g)' = f^g*(gf'/f + ln(f)*g')
-                Expression rightBracket = this.left.diff(var).mult(this.right).div(this.left).add(new Function(this.left, TypeFunction.ln).mult(this.right.diff(var)));
-                return this.mult(rightBracket);
+        } else if (!this.right.contains(var)) {
+            //Regel: (f^n)' = n*f^(n - 1)*f'
+            return this.right.mult(this.left.pow(this.right.sub(1))).mult(this.left.diff(var));
+        } else if (!this.left.contains(var)) {
+            //Regel: (a^g)' = ln(a)*a^g*g')
+            //Fehlerbehandlung: a muss > 0 sein!
+            if (this.left.isConstant() && this.left.isNonPositive()) {
+                throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_FUNCTION_NOT_DIFFERENTIABLE"));
             }
+            return new Function(this.left, TypeFunction.ln).mult(this).mult(this.right.diff(var));
+        } else {
+            //Regel: (f^g)' = f^g*(gf'/f + ln(f)*g')
+            Expression rightBracket = this.left.diff(var).mult(this.right).div(this.left).add(new Function(this.left, TypeFunction.ln).mult(this.right.diff(var)));
+            return this.mult(rightBracket);
         }
 
     }
@@ -294,12 +292,10 @@ public class BinaryOperation extends Expression {
                         return "-(" + this.right.writeExpression() + ")";
                     }
                     return "-" + this.right.writeExpression();
+                } else if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
+                    rightAsText = "(" + this.right.writeExpression() + ")";
                 } else {
-                    if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                        rightAsText = "(" + this.right.writeExpression() + ")";
-                    } else {
-                        rightAsText = this.right.writeExpression();
-                    }
+                    rightAsText = this.right.writeExpression();
                 }
 
             }
@@ -422,12 +418,8 @@ public class BinaryOperation extends Expression {
                     return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
                 }
 
-            } else {
-
-                if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
-                    return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex();
-                }
-
+            } else if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
+                return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex();
             }
 
             return "{" + leftAsLatexCode + "}^{" + this.right.expressionToLatex() + "}";
@@ -596,6 +588,61 @@ public class BinaryOperation extends Expression {
                     ExpressionCollection factorsOfExpr = SimplifyUtilities.getFactors(expr);
                     return factorsOfThis.getBound() == factorsOfExpr.getBound()
                             && SimplifyUtilities.difference(factorsOfThis, factorsOfExpr).isEmpty();
+
+                }
+                if (this.isPower() && expr.isPower() && this.right.equivalent(((BinaryOperation) expr).right)
+                        && ((BinaryOperation) expr).right.isEvenIntegerConstant()) {
+
+                    // Bei geraden Potenzen sollen die Ausdrücke äquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
+                    ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this.left);
+                    ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this.left);
+                    ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(((BinaryOperation) expr).left);
+                    ExpressionCollection summandsRightOfExpr = SimplifyUtilities.getSummandsRightInExpression(((BinaryOperation) expr).left);
+
+                    ExpressionCollection summandsLeftOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsLeftOfExprWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfExprWithSign = new ExpressionCollection();
+
+                    try {
+                        for (int i = 0; i < summandsLeftOfThis.getBound(); i++) {
+                            if (summandsLeftOfThis.get(i).hasPositiveSign()) {
+                                summandsLeftOfThisWithSign.add(summandsLeftOfThis.get(i));
+                            } else {
+                                summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfThis.getBound(); i++) {
+                            if (summandsRightOfThis.get(i).hasPositiveSign()) {
+                                summandsRightOfThisWithSign.add(summandsRightOfThis.get(i));
+                            } else {
+                                summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsLeftOfExpr.getBound(); i++) {
+                            if (summandsLeftOfExpr.get(i).hasPositiveSign()) {
+                                summandsLeftOfExprWithSign.add(summandsLeftOfExpr.get(i));
+                            } else {
+                                summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfExpr.getBound(); i++) {
+                            if (summandsRightOfExpr.get(i).hasPositiveSign()) {
+                                summandsRightOfExprWithSign.add(summandsRightOfExpr.get(i));
+                            } else {
+                                summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        return summandsLeftOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsLeftOfExprWithSign).isEmpty()
+                                && summandsRightOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                                || summandsLeftOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                                && summandsRightOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsLeftOfExprWithSign).isEmpty();
+                    } catch (EvaluationException e) {
+                    }
 
                 }
                 return this.getLeft().equivalent(((BinaryOperation) expr).getLeft())
@@ -1406,13 +1453,13 @@ public class BinaryOperation extends Expression {
         } else if (this.isDifference()) {
 
             Expression expr = this.left.simplifyFactorizeAllButRationals().sub(this.right.simplifyFactorizeAllButRationals());
-            
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-            
+
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln faktorisieren.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
@@ -1421,10 +1468,10 @@ public class BinaryOperation extends Expression {
             }
             return SimplifyUtilities.produceProduct(factors);
         }
-        
+
         // Hier ist type == DIV oder type == POW.
         return new BinaryOperation(this.left.simplifyFactorizeAllButRationals(), this.right.simplifyFactorizeAllButRationals(), this.type);
-        
+
     }
 
     @Override
@@ -2458,7 +2505,7 @@ public class BinaryOperation extends Expression {
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-        
+
         // Sammelt mehrere Wurzeln zu einer zusammen.
         exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRoot(expr);
         if (!exprSimplified.equals(expr)) {

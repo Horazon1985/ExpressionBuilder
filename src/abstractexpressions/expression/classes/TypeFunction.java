@@ -16,5 +16,20 @@ public enum TypeFunction {
     public boolean isLogarithmic(){
         return this.equals(lg) || this.equals(ln);
     }   
+    
+    public boolean isEvenFunction(){
+        return this.equals(cosh) || this.equals(cos) 
+                || this.equals(sech) || this.equals(sec) 
+                || this.equals(abs);
+    }
+        
+    public boolean isOddFunction(){
+        return this.equals(sinh) || this.equals(sin) 
+                || this.equals(tanh) || this.equals(tan) 
+                || this.equals(arsinh) || this.equals(arcsin) 
+                || this.equals(cosech) || this.equals(cosec) 
+                || this.equals(arcosech) || this.equals(arccosec) 
+                || this.equals(sgn);
+    }
         
 }

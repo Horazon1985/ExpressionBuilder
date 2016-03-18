@@ -1,11 +1,13 @@
 package abstractexpressions.expression.classes;
 
+import abstractexpressions.expression.utilities.ExpressionCollection;
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.utilities.SimplifyExpLog;
 import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyTrigonometry;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeSimplify;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -579,14 +581,71 @@ public class Function extends Expression {
 
     @Override
     public boolean equals(Expression expr) {
-        return expr instanceof Function && this.getType().equals(((Function) expr).getType())
+        return expr instanceof Function && this.type.equals(((Function) expr).getType())
                 && this.getLeft().equals(((Function) expr).getLeft());
     }
 
     @Override
     public boolean equivalent(Expression expr) {
+
+        // Sonderfall: Bei geraden Funktionen sind die Ausdrücke äquivalent, wenn sich die Argumente um ein Vorzeichen unterscheiden.
+        if (expr instanceof Function && this.type.equals(((Function) expr).getType()) && this.type.isEvenFunction()) {
+
+            ExpressionCollection summandsLeftoFThis = SimplifyUtilities.getSummandsLeftInExpression(this.left);
+            ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this.left);
+            ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(((Function) expr).getLeft());
+            ExpressionCollection summandsRightOfExpr = SimplifyUtilities.getSummandsRightInExpression(((Function) expr).getLeft());
+
+            ExpressionCollection summandsLeftOfThisWithSign = new ExpressionCollection();
+            ExpressionCollection summandsRightOfThisWithSign = new ExpressionCollection();
+            ExpressionCollection summandsLeftOfExprWithSign = new ExpressionCollection();
+            ExpressionCollection summandsRightOfExprWithSign = new ExpressionCollection();
+
+            try {
+                for (int i = 0; i < summandsLeftoFThis.getBound(); i++) {
+                    if (summandsLeftoFThis.get(i).hasPositiveSign()) {
+                        summandsLeftOfThisWithSign.add(summandsLeftoFThis.get(i));
+                    } else {
+                        summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftoFThis.get(i)).orderSumsAndProducts());
+                    }
+                }
+                for (int i = 0; i < summandsRightOfThis.getBound(); i++) {
+                    if (summandsRightOfThis.get(i).hasPositiveSign()) {
+                        summandsRightOfThisWithSign.add(summandsRightOfThis.get(i));
+                    } else {
+                        summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).orderSumsAndProducts());
+                    }
+                }
+                for (int i = 0; i < summandsLeftOfExpr.getBound(); i++) {
+                    if (summandsLeftOfExpr.get(i).hasPositiveSign()) {
+                        summandsLeftOfExprWithSign.add(summandsLeftOfExpr.get(i));
+                    } else {
+                        summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).orderSumsAndProducts());
+                    }
+                }
+                for (int i = 0; i < summandsRightOfExpr.getBound(); i++) {
+                    if (summandsRightOfExpr.get(i).hasPositiveSign()) {
+                        summandsRightOfExprWithSign.add(summandsRightOfExpr.get(i));
+                    } else {
+                        summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).orderSumsAndProducts());
+                    }
+                }
+                return summandsLeftOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                        && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsLeftOfExprWithSign).isEmpty()
+                        && summandsRightOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                        && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                        || summandsLeftOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                        && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                        && summandsRightOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                        && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsLeftOfExprWithSign).isEmpty();
+            } catch (EvaluationException e) {
+            }
+            
+        }
+        
         return expr instanceof Function && this.getType().equals(((Function) expr).getType())
                 && this.getLeft().equivalent(((Function) expr).getLeft());
+        
     }
 
     @Override
@@ -953,7 +1012,6 @@ public class Function extends Expression {
 //                }
 //            } catch (EvaluationException e) {
 //            }
-
         }
 
         return new Function(this.left.simplifyExpandAndCollectEquivalentsIfShorter(), this.type);

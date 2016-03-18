@@ -373,4 +373,60 @@ public class GeneralSimplifyExpressionTest {
         }
     }
 
+    @Test
+    public void equivalentIfFunctionIsEvenTest() {
+        // cos((x+y)-z) äquivalent zu cos(z-(x+y))
+        try {
+            Expression f = Expression.build("cos((x+y)-z)", null);
+            Expression g = Expression.build("cos(z-(x+y))", null);
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void notEquivalentIfFunctionIsNotEvenTest() {
+        // tan((x+y)-z) nicht äquivalent zu tan(z-(x+y))
+        // exp((x+y)-z) nicht äquivalent zu exp(z-(x+y))
+        try {
+            Expression f = Expression.build("tan((x+y)-z)", null);
+            Expression g = Expression.build("tan(z-(x+y))", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("exp((x+y)-z)", null);
+            g = Expression.build("exp(z-(x+y))", null);
+            Assert.assertFalse(f.equivalent(g));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void equivalentIfPowerIsEvenTest() {
+        // ((x+y)-z)^6 äquivalent zu (z-(x+y))^6
+        // ((x+y)-z)^(-3) nicht äquivalent zu (z-(x+y))^(-3)
+        // ((x+y)-z)^(1/4) nicht äquivalent zu (z-(x+y))^(1/4)
+        // ((x+y)-z)^(1/7) nicht äquivalent zu (z-(x+y))^(1/4)
+        // ((x+y)-z)^a nicht äquivalent zu (z-(x+y))^a
+        try {
+            Expression f = Expression.build("((x+y)-z)^6", null);
+            Expression g = Expression.build("(z-(x+y))^6", null);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("((x+y)-z)^(-3)", null);
+            g = Expression.build("(z-(x+y))^(-3)", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)^(1/4)", null);
+            g = Expression.build("(z-(x+y))^(1/4)", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)^(1/7)", null);
+            g = Expression.build("(z-(x+y))^(1/4)", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)^a", null);
+            g = Expression.build("(z-(x+y))^a", null);
+            Assert.assertFalse(f.equivalent(g));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

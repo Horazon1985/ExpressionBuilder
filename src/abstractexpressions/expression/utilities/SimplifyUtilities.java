@@ -1,11 +1,9 @@
 package abstractexpressions.expression.utilities;
 
-import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import java.math.BigInteger;
-import lang.translator.Translator;
 
 public abstract class SimplifyUtilities {
 

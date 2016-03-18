@@ -57,11 +57,13 @@ public class TestRunner {
             try {
                 constructor = cls.getConstructor();
             } catch (NoSuchMethodException | SecurityException ex) {
+                System.err.println("Cound not find a constructor of the class " + cls.toString());
                 continue;
             }
             try {
                 obj = constructor.newInstance(new Object[]{});
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                System.err.println("Cound not create an object of the class " + cls.toString());
                 continue;
             }
             Method[] methods = cls.getDeclaredMethods();
