@@ -232,7 +232,7 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         double varOrdEnd = exprOrdEnd.evaluate();
 
         this.vectorField2D.clear();
-        double[] vectorFieldArrow = new double[4];
+        double[] vectorFieldArrow;
 
         /*
          Falls this.expr.get(i) konstant ist -> den Funktionswert nur
@@ -249,10 +249,11 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
                 constAbscValue = Double.NaN;
                 constOrdValue = Double.NaN;
             }
-            for (int i = 0; i <= 50; i++) {
-                for (int j = 0; j <= 50; j++) {
-                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / 50;
-                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 50;
+            for (int i = 0; i <= 20; i++) {
+                for (int j = 0; j <= 20; j++) {
+                    vectorFieldArrow = new double[4];
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / 20;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 20;
                     vectorFieldArrow[2] = vectorFieldArrow[0] + constAbscValue;
                     vectorFieldArrow[3] = vectorFieldArrow[1] + constOrdValue;
                 }
@@ -260,12 +261,13 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         } else {
             Variable.setValue(this.varAbsc, varAbscStart);
             Variable.setValue(this.varOrd, varOrdStart);
-            for (int i = 0; i <= 50; i++) {
-                for (int j = 0; j <= 50; j++) {
-                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 50;
-                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 50;
-                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * i / 50);
-                    Variable.setValue(this.varOrd, varOrdStart + (varOrdEnd - varOrdStart) * j / 50);
+            for (int i = 0; i <= 20; i++) {
+                for (int j = 0; j <= 20; j++) {
+                    vectorFieldArrow = new double[4];
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 20;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 20;
+                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * i / 20);
+                    Variable.setValue(this.varOrd, varOrdStart + (varOrdEnd - varOrdStart) * j / 20);
                     try {
                         vectorFieldArrow[2] = this.vectorFieldExpr.getEntry(0, 0).evaluate();
                         vectorFieldArrow[3] = this.vectorFieldExpr.getEntry(1, 0).evaluate();
@@ -287,9 +289,10 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
     private ArrayList<int[]> convertVectorFieldToGraphicalVectorField() {
 
         ArrayList<int[]> graphicalVectorField = new ArrayList<>();
-        int[] graphicalVectorFieldArrow = new int[4];
+        int[] graphicalVectorFieldArrow;
 
         for (int i = 0; i < this.vectorField2D.size(); i++) {
+            graphicalVectorFieldArrow = new int[4];
             graphicalVectorFieldArrow[0] = (int) Math.round(250 + 250 * (this.vectorField2D.get(i)[0] - this.axeCenterX) / this.maxX);
             graphicalVectorFieldArrow[1] = (int) Math.round(250 - 250 * (this.vectorField2D.get(i)[1] - this.axeCenterY) / this.maxY);
             graphicalVectorFieldArrow[2] = (int) Math.round(250 + 250 * (this.vectorField2D.get(i)[2] - this.axeCenterX) / this.maxX);
