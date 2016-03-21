@@ -1027,6 +1027,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 for (int i = 0; i < params.length; i++) {
 
+                    setFont(g, fontSize);
                     if (params[i] instanceof Expression) {
                         result = result + getLengthOfExpression(g, (Expression) matOperator.getParams()[i], fontSize);
                     } else if (params[i] instanceof MatrixExpression) {
@@ -1724,6 +1725,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 for (int i = 0; i < params.length; i++) {
 
+                    setFont(g, fontSize);
                     if (params[i] instanceof Expression) {
                         result = result + getLengthOfExpression(g, (Expression) expr.getParams()[i], fontSize);
                     } else if (params[i] instanceof String) {
@@ -2962,69 +2964,65 @@ public class GraphicPanelFormula extends JPanel {
         Object[] left = ((Operator) operator).getParams();
         String name = Operator.getNameFromType(((Operator) operator).getType());
 
-        int distanceFromOpeningBracket = 0;
+        int distanceFromBeginningOfOperator = 0;
 
         switch (operator.getType()) {
             case laplace:
                 drawSignDelta(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-                distanceFromOpeningBracket += getWidthOfSignDelta(g, fontSize);
+                distanceFromBeginningOfOperator += getWidthOfSignDelta(g, fontSize);
                 break;
             case mu:
                 drawSignSmallMu(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-                distanceFromOpeningBracket += getWidthOfSignSmallMu(g, fontSize);
+                distanceFromBeginningOfOperator += getWidthOfSignSmallMu(g, fontSize);
                 break;
             case sigma:
                 drawSignSmallSigma(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-                distanceFromOpeningBracket += getWidthOfSignSmallSigma(g, fontSize);
+                distanceFromBeginningOfOperator += getWidthOfSignSmallSigma(g, fontSize);
                 break;
             case taylor:
                 drawSignTaylor(g, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5), fontSize);
-                distanceFromOpeningBracket += getWidthOfSignTaylor(g, fontSize);
+                distanceFromBeginningOfOperator += getWidthOfSignTaylor(g, fontSize);
                 break;
             default:
                 g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket += g.getFontMetrics().stringWidth(name);
+                distanceFromBeginningOfOperator += g.getFontMetrics().stringWidth(name);
                 break;
         }
 
-        drawOpeningBracket(g, x_0 + distanceFromOpeningBracket, y_0, fontSize, heightOperator);
+        drawOpeningBracket(g, x_0 + distanceFromBeginningOfOperator, y_0, fontSize, heightOperator);
+        distanceFromBeginningOfOperator += getWidthOfBracket(fontSize);
 
         for (int i = 0; i < left.length; i++) {
 
             if (left[i] instanceof Expression) {
                 drawExpression(g, (Expression) left[i],
-                        x_0
-                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                        x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
-                distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + getLengthOfExpression(g, (Expression) left[i], fontSize);
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
-                g.drawString((String) left[i], x_0
-                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                g.drawString((String) left[i], x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth((String) left[i]);
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth((String) left[i]);
             } else if (left[i] instanceof Integer) {
                 setFont(g, fontSize);
-                g.drawString(String.valueOf((Integer) left[i]), x_0
-                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                g.drawString(String.valueOf((Integer) left[i]), x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(String.valueOf((Integer) left[i]));
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth(String.valueOf((Integer) left[i]));
             }
 
             if (i < left.length - 1) {
                 setFont(g, fontSize);
-                g.drawString(", ", x_0
-                        + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                g.drawString(", ", x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth(", ");
             }
 
         }
 
         setFont(g, fontSize);
         drawClosingBracket(g,
-                x_0
-                + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+                x_0 + distanceFromBeginningOfOperator,
                 y_0, fontSize, heightOperator);
 
     }

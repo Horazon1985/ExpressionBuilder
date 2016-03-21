@@ -17,14 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import lang.translator.Translator;
 
-public class GraphicPanel2D extends JPanel implements Exportable {
+public class GraphicPanelVectorField2D extends JPanel implements Exportable {
 
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
@@ -34,11 +32,10 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      Graphen kann dann jeweils über die Keys 0, 1, 2, ..., this.graph.size() -
      1 zugegriffen werden.
      */
-    private ArrayList<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> graphs2D = new ArrayList<>();
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private Matrix vectorFieldExpr;
+    private final ArrayList<double[]> vectorField2D = new ArrayList<>();
 
-    final static Color[] fixedColors = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
+    final static Color[] fixedColors = {Color.blue};
 
     private double axeCenterX, axeCenterY;
     private double maxX, maxY;
@@ -46,11 +43,9 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     private boolean movable = false;
 
-    private double[][] specialPoints;
-
     private Point lastMousePosition;
 
-    public GraphicPanel2D() {
+    public GraphicPanelVectorField2D() {
 
         addMouseListener(new MouseListener() {
             @Override
@@ -127,8 +122,8 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         });
     }
 
-    public ArrayList<double[][]> getGraphs() {
-        return this.graphs2D;
+    public ArrayList<double[]> getvectorField() {
+        return this.vectorField2D;
     }
 
     public double getAxeCenterX() {
@@ -139,12 +134,8 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return this.axeCenterY;
     }
 
-    public ArrayList<Color> getColors() {
-        return this.colors;
-    }
-
-    public ArrayList<Expression> getExpressions() {
-        return this.exprs;
+    public Matrix getVectorFieldExpression() {
+        return this.vectorFieldExpr;
     }
 
     public ArrayList<String> getInstructions() {
@@ -164,185 +155,13 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         this.varOrd = varOrd;
     }
 
-    public void setSpecialPoints(double[][] specialPoints) {
-        this.specialPoints = specialPoints;
+    public void setVectorFieldExpression(Matrix vectorFieldExpr) {
+        this.vectorFieldExpr = vectorFieldExpr;
+        this.vectorField2D.clear();
     }
 
     /**
-     * VORAUSSETZUNG: specialPoints sind allesamt (2x1)-Matrizen.
-     */
-    public void setSpecialPoints(Matrix[] specialPoints) throws EvaluationException {
-        this.specialPoints = new double[specialPoints.length][2];
-        for (int i = 0; i < specialPoints.length; i++) {
-            this.specialPoints[i][0] = specialPoints[i].getEntry(0, 0).evaluate();
-            this.specialPoints[i][1] = specialPoints[i].getEntry(1, 0).evaluate();
-        }
-    }
-
-    /**
-     * Ist specialPointsExist == true, so werden die speziellen Punkte gleich
-     * belassen, andernfalls auf null gesetzt.
-     */
-    public void setSpecialPoints(boolean specialPointsExist) {
-        if (!specialPointsExist) {
-            this.specialPoints = null;
-        }
-    }
-
-    public void setExpressions(ArrayList<Expression> exprs) {
-        this.exprs = exprs;
-        this.graphs2D.clear();
-        this.colors.clear();
-        setColors();
-    }
-
-    public void setExpressions(Expression... exprs) {
-        this.exprs = new ArrayList<>();
-        this.exprs.addAll(Arrays.asList(exprs));
-        this.graphs2D.clear();
-        this.colors.clear();
-        this.specialPoints = null;
-        setColors();
-    }
-
-    public void addExpression(Expression expr) {
-        this.exprs.add(expr);
-        setColors();
-    }
-
-    public void setGraph(double[][] graph) {
-        this.exprs.clear();
-        this.graphs2D.clear();
-        this.graphs2D.add(graph);
-        this.specialPoints = null;
-        setColors();
-    }
-
-    private void setColors() {
-        int numberOfColors = Math.max(this.exprs.size(), this.graphs2D.size());
-        this.colors.clear();
-        for (int i = 0; i < numberOfColors; i++) {
-            if (i < fixedColors.length) {
-                this.colors.add(fixedColors[i]);
-            } else {
-                this.colors.add(generateColor());
-            }
-        }
-    }
-
-    /**
-     * Erzeugt eine neue Zufallsfarbe.
-     */
-    private Color generateColor() {
-        return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
-    }
-
-    /**
-     * Voraussetzung: graph2D ist bereits initialisiert (bzw. mit
-     * Funktionswerten gefüllt). Voraussetzung: alle Graphen werden über
-     * demselben x-Bereich gezeichnet.
-     *
-     * @throws EvaluationException
-     */
-    private void computeScreenSizes() {
-
-        this.axeCenterX = 0;
-        this.axeCenterY = 0;
-
-        double globalMinY = Double.NaN;
-        double globalMaxY = Double.NaN;
-
-        if (!this.graphs2D.isEmpty()) {
-            this.axeCenterX = (this.graphs2D.get(0)[this.graphs2D.get(0).length - 1][0] + this.graphs2D.get(0)[0][0]) / 2;
-            this.maxX = (this.graphs2D.get(0)[this.graphs2D.get(0).length - 1][0] - this.graphs2D.get(0)[0][0]) / 2;
-        }
-
-        for (double[][] graph2D : this.graphs2D) {
-            if (graph2D.length > 0) {
-                for (double[] graph : graph2D) {
-                    if (!(Double.isNaN(graph[1])) && !(Double.isInfinite(graph[1]))) {
-                        if (Double.isNaN(globalMinY)) {
-                            globalMinY = graph[1];
-                            globalMaxY = graph[1];
-                        } else {
-                            globalMinY = Math.min(globalMinY, graph[1]);
-                            globalMaxY = Math.max(globalMaxY, graph[1]);
-                        }
-                    }
-                }
-            }
-        }
-
-        if (Double.isNaN(globalMinY) || Double.isNaN(globalMaxY) || Double.isInfinite(globalMinY) || Double.isInfinite(globalMaxY)) {
-            this.axeCenterX = 0;
-            this.axeCenterY = 0;
-            this.maxX = 1;
-            this.maxY = 1;
-        } else {
-            this.axeCenterY = (globalMaxY + globalMinY) / 2;
-            this.maxY = globalMaxY - this.axeCenterY;
-            // 20 % Rand lassen!
-            this.maxY = this.maxY * 1.2;
-        }
-
-    }
-
-    /**
-     * Voraussetzung: expr und var sind bereits gesetzt.
-     *
-     * @throws EvaluationException
-     */
-    private void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
-
-        double varAbscStart = exprAbscStart.evaluate();
-        double varAbscEnd = exprAbscEnd.evaluate();
-
-        this.axeCenterX = (varAbscStart + varAbscEnd) / 2;
-        this.maxX = varAbscEnd - this.axeCenterX;
-        double globalMinY = Double.NaN;
-        double globalMaxY = Double.NaN;
-
-        double y;
-        for (Expression expr : exprs) {
-            for (int j = 0; j < 100; j++) {
-                Variable.setValue(this.varAbsc, varAbscStart + j * (varAbscEnd - varAbscStart) / 100);
-                try {
-                    y = expr.evaluate();
-                } catch (EvaluationException e) {
-                    y = Double.NaN;
-                }
-                if (!Double.isNaN(y) && !Double.isInfinite(y)) {
-                    if (Double.isNaN(globalMinY)) {
-                        globalMinY = y;
-                        globalMaxY = y;
-                    } else {
-                        globalMinY = Math.min(globalMinY, y);
-                        globalMaxY = Math.max(globalMaxY, y);
-                    }
-                }
-            }
-        }
-
-        if (Double.isNaN(globalMinY) || Double.isNaN(globalMaxY) || Double.isInfinite(globalMinY) || Double.isInfinite(globalMaxY)) {
-            this.axeCenterY = 0;
-            this.maxY = 1;
-        } else {
-            this.axeCenterY = (globalMaxY + globalMinY) / 2;
-            this.maxY = (globalMaxY - globalMinY) / 2;
-
-            // Falls alle exprs.get(i) konstant sind.
-            if (this.maxY < 0.000000001) {
-                this.maxY = 1;
-            }
-
-            // 20 % Rand lassen!
-            this.maxY = this.maxY * 1.2;
-        }
-
-    }
-
-    /**
-     * Voraussetzung: expr und var sind bereits gesetzt.
+     * Voraussetzung: vectorFieldExpr, varAbsc und varOrd sind bereits gesetzt.
      *
      * @throws EvaluationException
      */
@@ -404,73 +223,81 @@ public class GraphicPanel2D extends JPanel implements Exportable {
      *
      * @throws EvaluationException
      */
-    private void expressionToGraph(Expression exprAbscStart, Expression exprAbscEnd) throws EvaluationException {
+    private void expressionToVectorField(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
 
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
+        double varOrdStart = exprOrdStart.evaluate();
+        double varOrdEnd = exprOrdEnd.evaluate();
 
-        this.graphs2D.clear();
-        double[][] pointsOnGraphs;
+        this.vectorField2D.clear();
+        double[] vectorFieldArrow = new double[4];
 
-        for (int i = 0; i < this.exprs.size(); i++) {
-
-            pointsOnGraphs = new double[1001][2];
-
-            /*
-             Falls this.expr.get(i) konstant ist -> den Funktionswert nur
-             einmal berechnen!
-             */
-            if (this.exprs.get(i).isConstant()) {
-                Variable.setValue(this.varAbsc, varAbscStart);
-                double constOrdValue;
-                try {
-                    constOrdValue = this.exprs.get(i).evaluate();
-                } catch (EvaluationException e) {
-                    constOrdValue = Double.NaN;
+        /*
+         Falls this.expr.get(i) konstant ist -> den Funktionswert nur
+         einmal berechnen!
+         */
+        if (this.vectorFieldExpr.isConstant()) {
+            Variable.setValue(this.varAbsc, varAbscStart);
+            Variable.setValue(this.varOrd, varOrdStart);
+            double constAbscValue, constOrdValue;
+            try {
+                constAbscValue = this.vectorFieldExpr.getEntry(0, 0).evaluate();
+                constOrdValue = this.vectorFieldExpr.getEntry(1, 0).evaluate();
+            } catch (EvaluationException e) {
+                constAbscValue = Double.NaN;
+                constOrdValue = Double.NaN;
+            }
+            for (int i = 0; i <= 50; i++) {
+                for (int j = 0; j <= 50; j++) {
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / 50;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 50;
+                    vectorFieldArrow[2] = vectorFieldArrow[0] + constAbscValue;
+                    vectorFieldArrow[3] = vectorFieldArrow[1] + constOrdValue;
                 }
-                for (int j = 0; j <= 1000; j++) {
-                    pointsOnGraphs[j][0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 1000;
-                    pointsOnGraphs[j][1] = constOrdValue;
-                }
-            } else {
-                Variable.setValue(this.varAbsc, varAbscStart);
-                for (int j = 0; j <= 1000; j++) {
-                    pointsOnGraphs[j][0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 1000;
-                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * j / 1000);
+            }
+        } else {
+            Variable.setValue(this.varAbsc, varAbscStart);
+            Variable.setValue(this.varOrd, varOrdStart);
+            for (int i = 0; i <= 50; i++) {
+                for (int j = 0; j <= 50; j++) {
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * j / 50;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 50;
+                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * i / 50);
+                    Variable.setValue(this.varOrd, varOrdStart + (varOrdEnd - varOrdStart) * j / 50);
                     try {
-                        pointsOnGraphs[j][1] = this.exprs.get(i).evaluate();
+                        vectorFieldArrow[2] = this.vectorFieldExpr.getEntry(0, 0).evaluate();
+                        vectorFieldArrow[3] = this.vectorFieldExpr.getEntry(1, 0).evaluate();
                     } catch (EvaluationException e) {
-                        pointsOnGraphs[j][1] = Double.NaN;
+                        vectorFieldArrow[2] = Double.NaN;
+                        vectorFieldArrow[3] = Double.NaN;
                     }
                 }
             }
-
-            this.graphs2D.add(i, pointsOnGraphs);
-
         }
+
+        this.vectorField2D.add(vectorFieldArrow);
 
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Graphen. Voraussetzung:
-     * maxX, maxY sind bekannt!
+     * Berechnet die Pixelkoordinaten des (gröberen) Vektorfeldes.
+     * Voraussetzung: maxX, maxY sind bekannt!
      */
-    private HashMap<Integer, int[][]> convertGraphToGraphicalGraph() {
+    private ArrayList<int[]> convertVectorFieldToGraphicalVectorField() {
 
-        HashMap<Integer, int[][]> result = new HashMap<>();
+        ArrayList<int[]> graphicalVectorField = new ArrayList<>();
+        int[] graphicalVectorFieldArrow = new int[4];
 
-        for (int i = 0; i < this.graphs2D.size(); i++) {
-
-            int[][] graphicalGraph = new int[this.graphs2D.get(i).length][2];
-            for (int j = 0; j < this.graphs2D.get(i).length; j++) {
-                graphicalGraph[j][0] = (int) Math.round(250 + 250 * (this.graphs2D.get(i)[j][0] - this.axeCenterX) / this.maxX);
-                graphicalGraph[j][1] = (int) Math.round(250 - 250 * (this.graphs2D.get(i)[j][1] - this.axeCenterY) / this.maxY);
-            }
-            result.put(i, graphicalGraph);
-
+        for (int i = 0; i < this.vectorField2D.size(); i++) {
+            graphicalVectorFieldArrow[0] = (int) Math.round(250 + 250 * (this.vectorField2D.get(i)[0] - this.axeCenterX) / this.maxX);
+            graphicalVectorFieldArrow[1] = (int) Math.round(250 - 250 * (this.vectorField2D.get(i)[1] - this.axeCenterY) / this.maxY);
+            graphicalVectorFieldArrow[2] = (int) Math.round(250 + 250 * (this.vectorField2D.get(i)[2] - this.axeCenterX) / this.maxX);
+            graphicalVectorFieldArrow[3] = (int) Math.round(250 - 250 * (this.vectorField2D.get(i)[3] - this.axeCenterY) / this.maxY);
+            graphicalVectorField.add(graphicalVectorFieldArrow);
         }
 
-        return result;
+        return graphicalVectorField;
 
     }
 
@@ -617,22 +444,123 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     }
 
     /**
-     * Zeichnet rote Punkte an wichtigen Stellen (etwa Markierung von
-     * Nullstellen etc.)
+     * Zeichnet die Achsen und die grauen Niveaulinien. Die erste Koordinate
+     * heißt varAbsc, die zweite varOrd.
      */
-    private void drawSpecialPoints(Graphics g, double[][] specialPoints) {
-        g.setColor(Color.red);
-        if (specialPoints == null) {
-            return;
+    private void drawAxesAndLines(Graphics g, String varAbsc, String varOrd) {
+        g.setColor(Color.lightGray);
+
+        int linePosition;
+        int k = (int) (axeCenterX * Math.pow(10, -expX));
+
+        //x-Niveaulinien zeichnen
+        linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+
+        while (linePosition <= 500) {
+
+            if (k != 0) {
+                linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+                g.drawLine(linePosition, 0, linePosition, 500);
+
+                if ((250 * axeCenterY / maxY - 3 <= 248) && (250 * axeCenterY / maxY - 3 >= -230)) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * axeCenterY / maxY) - 3);
+                } else if (250 * axeCenterY / maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 495);
+                } else {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 20);
+                }
+
+            }
+
+            k++;
+
         }
-        int[][] specialPointsCoordinates = new int[specialPoints.length][2];
-        for (int i = 0; i < specialPoints.length; i++) {
-            specialPointsCoordinates[i] = convertToPixel(specialPoints[i][0], specialPoints[i][1]);
-            g.fillOval(specialPointsCoordinates[i][0] - 3, specialPointsCoordinates[i][1] - 3, 7, 7);
+
+        k = (int) (axeCenterX * Math.pow(10, -expX)) - 1;
+        linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+
+        while (linePosition >= 0) {
+
+            if (k != 0) {
+                linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+                g.drawLine(linePosition, 0, linePosition, 500);
+
+                if ((250 * axeCenterY / maxY - 3 <= 248) && (250 * axeCenterY / maxY - 3 >= -230)) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * axeCenterY / maxY) - 3);
+                } else if (250 * axeCenterY / maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 495);
+                } else {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 20);
+                }
+
+            }
+
+            k--;
+
         }
+
+        //y-Niveaulinien zeichnen
+        k = (int) (axeCenterY * Math.pow(10, -expY));
+        linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+
+        while (linePosition >= 0) {
+            linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+            g.drawLine(0, linePosition, 500, linePosition);
+
+            if ((250 * axeCenterX / maxX - 3 >= -225) && (250 * axeCenterX / maxX - 3 <= 245)) {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * axeCenterX / maxX) + 3, linePosition - 3);
+            } else if (250 * axeCenterX / maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 5, linePosition - 3);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 475, linePosition - 3);
+            }
+
+            k++;
+
+        }
+
+        k = (int) (axeCenterY * Math.pow(10, -expY)) - 1;
+        linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+
+        while (linePosition <= 500) {
+            linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+            g.drawLine(0, linePosition, 500, linePosition);
+
+            if ((250 * axeCenterX / maxX - 3 >= -225) && (250 * axeCenterX / maxX - 3 <= 245)) {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * axeCenterX / maxX) + 3, linePosition - 3);
+            } else if (250 * axeCenterX / maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 5, linePosition - 3);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 475, linePosition - 3);
+            }
+
+            k--;
+
+        }
+
+        //Achsen inkl. Achsenbezeichnungen eintragen
+        //Achsen
+        g.setColor(Color.black);
+        g.drawLine(0, 250 + (int) (250 * axeCenterY / maxY), 500, 250 + (int) (250 * axeCenterY / maxY));
+        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX), 500);
+        //Achsenpfeile
+        g.drawLine(500, 250 + (int) (250 * axeCenterY / maxY), 494, 250 + (int) (250 * axeCenterY / maxY) - 3);
+        g.drawLine(500, 250 + (int) (250 * axeCenterY / maxY), 494, 250 + (int) (250 * axeCenterY / maxY) + 3);
+        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX) + 3, 6);
+        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX) - 3, 6);
+        /**
+         * Achsenbeschriftung WICHTIG: In der Prozedur drawString werden die
+         * Achsenbeschriftung derart eingetragen, dass (1) Die Beschriftung der
+         * Variablen var innerhalb des Bildschirms liegt (5 px) (2) Die
+         * Beschriftung f(var) links von der vertikalen Achse liegt (5 px)
+         * Hierzu müssen die Pixellängen der gezeichneten Strings ausgerechnet
+         * werden (mittels g.getFontMetrics().stringWidth()).
+         */
+        g.drawString(varAbsc, 500 - 5 - g.getFontMetrics().stringWidth(varAbsc), 250 + (int) (250 * axeCenterY / maxY) + 15);
+        g.drawString(varOrd, 250 - (int) (250 * axeCenterX / maxX) - 5 - g.getFontMetrics().stringWidth(varOrd), 20);
     }
 
-    private void drawGraphs2D(Graphics g) {
+    private void drawVectorField2D(Graphics g) {
 
         // Weißen Hintergrund zeichnen.
         g.setColor(Color.white);
@@ -645,32 +573,21 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         drawAxesAndLines(g, this.varAbsc);
 
         //Graphen zeichnen
-        if (this.graphs2D.isEmpty()) {
+        if (this.vectorField2D.isEmpty()) {
             return;
         }
 
-        for (int i = 0; i < this.graphs2D.size(); i++) {
+        ArrayList<int[]> graphicalGraph = convertVectorFieldToGraphicalVectorField();
+        g.setColor(fixedColors[0]);
 
-            g.setColor(this.colors.get(i));
+        for (int[] vectorArrow : graphicalGraph) {
 
-            if (this.graphs2D.get(i).length > 1) {
+            if (!Double.isNaN(vectorArrow[0]) && !Double.isInfinite(vectorArrow[0])
+                    && !Double.isNaN(vectorArrow[1]) && !Double.isInfinite(vectorArrow[1])
+                    && !Double.isNaN(vectorArrow[2]) && !Double.isInfinite(vectorArrow[2])
+                    && !Double.isNaN(vectorArrow[3]) && !Double.isInfinite(vectorArrow[3])) {
 
-                HashMap<Integer, int[][]> graphicalGraph = convertGraphToGraphicalGraph();
-                for (int j = 0; j < graphicalGraph.get(i).length - 1; j++) {
-                    if (!Double.isNaN(graphs2D.get(i)[j][1]) && !Double.isInfinite(graphs2D.get(i)[j][1])
-                            && !Double.isNaN(graphs2D.get(i)[j + 1][1]) && !Double.isInfinite(graphs2D.get(i)[j + 1][1])) {
-
-                        if ((axeCenterY + maxY < graphs2D.get(i)[j][1]) && (axeCenterY - maxY > graphs2D.get(i)[j + 1][1])) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], 0, graphicalGraph.get(i)[j + 1][0], 500);
-                        } else if ((axeCenterY - maxY > graphs2D.get(i)[j][1]) && (axeCenterY + maxY < graphs2D.get(i)[j + 1][1])) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], 500, graphicalGraph.get(i)[j + 1][0], 0);
-                        } else if ((axeCenterY + 2 * maxY >= graphs2D.get(i)[j][1]) && (axeCenterY - 2 * maxY <= graphs2D.get(i)[j][1])
-                                && (axeCenterY + 2 * maxY >= graphs2D.get(i)[j + 1][1]) && (axeCenterY - 2 * maxY <= graphs2D.get(i)[j + 1][1])) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], graphicalGraph.get(i)[j][1], graphicalGraph.get(i)[j + 1][0], graphicalGraph.get(i)[j + 1][1]);
-                        }
-
-                    }
-                }
+                g.drawLine(vectorArrow[0], vectorArrow[1], vectorArrow[2], vectorArrow[3]);
 
             }
 
@@ -680,27 +597,14 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
     }
 
-    public void drawGraphs2D(Expression x_0, Expression x_1, ArrayList<Expression> exprs) throws EvaluationException {
-        setExpressions(exprs);
-        computeScreenSizes(x_0, x_1);
-        expressionToGraph(x_0, x_1);
-        drawGraphs2D();
-    }
-
-    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
-        setExpressions(exprs);
+    public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Matrix vectorFieldExpr) throws EvaluationException {
+        setVectorFieldExpression(vectorFieldExpr);
         computeScreenSizes(x_0, x_1, y_0, y_1);
-        expressionToGraph(x_0, x_1);
-        drawGraphs2D();
+        expressionToVectorField(x_0, x_1, y_0, y_1);
+        drawVectorField2D();
     }
 
-    public void drawGraphs2D(double[][] graph) throws EvaluationException {
-        setGraph(graph);
-        computeScreenSizes();
-        drawGraphs2D();
-    }
-
-    public void drawGraphs2D() {
+    public void drawVectorField2D() {
         repaint();
     }
 
@@ -708,24 +612,24 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void paintComponent(Graphics g) {
 
         super.paintComponent(g);
-        drawGraphs2D(g);
+        drawVectorField2D(g);
 
         /**
-         * Im Folgenden wird der Graph in einem größeren/kleineren Bereich
+         * Im Folgenden wird das Vektorfeld in einem größeren/kleineren Bereich
          * gezeichnet, falls der aktuelle Zoomfaktor derart berechnet wurde,
-         * dass der Graph zu grob oder zu klein ist.
+         * dass das Vektorfeld zu grob oder zu klein ist.
          */
         try {
             Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
             Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
-            if (this.exprs.size() > 0) {
-                expressionToGraph(varAbscStart, varAbscEnd);
+            Constant varOrdStart = new Constant(this.axeCenterY - 2 * this.maxY);
+            Constant varOrdEnd = new Constant(this.axeCenterY + 2 * this.maxY);
+            if (this.vectorFieldExpr != null) {
+                expressionToVectorField(varAbscStart, varAbscEnd, varOrdStart, varOrdEnd);
             }
         } catch (EvaluationException e) {
         }
-        convertGraphToGraphicalGraph();
-
-        drawSpecialPoints(g, this.specialPoints);
+        convertVectorFieldToGraphicalVectorField();
 
     }
 
