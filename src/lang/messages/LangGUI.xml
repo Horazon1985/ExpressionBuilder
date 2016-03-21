@@ -275,6 +275,12 @@
     <Ukrainian>Графік </Ukrainian>
     <Russian>График </Russian>
   </object>
+  <object id = "GUI_LegendGUI_VECTORFIELD">
+    <German>Vektorfeld </German>
+    <English>Vector field </English>
+    <Ukrainian>??? </Ukrainian>
+    <Russian>??? </Russian>
+  </object>
   <object id = "GUI_LegendGUI_EQUATION_OF_IMPLICIT_FUNCTION">
     <German>Gleichung der implizit gegebenen Funktion: </German>
     <English>Equation of the implicitly given function: </English>

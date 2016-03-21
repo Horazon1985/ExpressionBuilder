@@ -35,7 +35,7 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
     private Matrix vectorFieldExpr;
     private final ArrayList<double[]> vectorField2D = new ArrayList<>();
 
-    final static Color[] fixedColors = {Color.blue};
+    private final Color color = Color.blue;
 
     private double axeCenterX, axeCenterY;
     private double maxX, maxY;
@@ -122,6 +122,10 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         });
     }
 
+    public Color getColor() {
+        return this.color;
+    }
+
     public ArrayList<double[]> getvectorField() {
         return this.vectorField2D;
     }
@@ -146,17 +150,14 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         return instructions;
     }
 
-    public void setVarAbsc(String varAbsc) {
-        this.varAbsc = varAbsc;
-    }
-
     public void setVars(String varAbsc, String varOrd) {
         this.varAbsc = varAbsc;
         this.varOrd = varOrd;
     }
 
-    public void setVectorFieldExpression(Matrix vectorFieldExpr) {
-        this.vectorFieldExpr = vectorFieldExpr;
+    public void setVectorFieldExpression(Expression[] vectorFieldComponents) {
+        Matrix vectorField = new Matrix(vectorFieldComponents);
+        this.vectorFieldExpr = vectorField;
         this.vectorField2D.clear();
     }
 
@@ -272,11 +273,10 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
                         vectorFieldArrow[2] = Double.NaN;
                         vectorFieldArrow[3] = Double.NaN;
                     }
+                    this.vectorField2D.add(vectorFieldArrow);
                 }
             }
         }
-
-        this.vectorField2D.add(vectorFieldArrow);
 
     }
 
@@ -578,7 +578,7 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         }
 
         ArrayList<int[]> graphicalGraph = convertVectorFieldToGraphicalVectorField();
-        g.setColor(fixedColors[0]);
+        g.setColor(this.color);
 
         for (int[] vectorArrow : graphicalGraph) {
 
@@ -597,8 +597,8 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
 
     }
 
-    public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Matrix vectorFieldExpr) throws EvaluationException {
-        setVectorFieldExpression(vectorFieldExpr);
+    public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression[] vectorFieldComponents) throws EvaluationException {
+        setVectorFieldExpression(vectorFieldComponents);
         computeScreenSizes(x_0, x_1, y_0, y_1);
         expressionToVectorField(x_0, x_1, y_0, y_1);
         drawVectorField2D();
