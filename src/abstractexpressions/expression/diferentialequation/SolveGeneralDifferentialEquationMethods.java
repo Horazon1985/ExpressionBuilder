@@ -894,18 +894,32 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
             /*
             Lösungsalgorithmus: Sei y^(n + 2) = f(y^(n)). Hier ist ord = n + 2.
-            Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1), g = int(f(t), t).
-            2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1), t).
+            Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1)^(1/2), g = int(f(t), t).
+            2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1)^(1/2), t).
             3. y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1).
              */
             // Schritt 1: Bilden von g.
             String varOrdWithPrimes = getVarWithPrimes(varOrd, ord - 2);
             Expression g = new Operator(TypeOperator.integral, new Object[]{rightSide, varOrdWithPrimes}).simplify();
             // Schritt 2: Bilden von h_(C_1).
-            Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes}).simplify();
+            Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())).pow(1, 2), varOrdWithPrimes}).simplify();
             ExpressionCollection solutionsForIntermediateDerivative = SolveGeneralEquationMethods.solveEquation(h, Variable.create(varAbsc).add(getFreeIntegrationConstantVariable()), varOrdWithPrimes);
             solutionsForIntermediateDerivative = SimplifyUtilities.union(solutionsForIntermediateDerivative, SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes));
 
+            /* 
+            Sonderfall: Wenn n = 0 ist und die Gleichung h_(C_1)(y) = +-(x + C_2)
+            nicht explizit nach y aufgelöst werden kann, so werden die Ausdrücke
+            h_(C_1)(y) -+(x + C_2) in die Lösungen mitaufgenommen und hinterher
+            als implizite Lösungen interpretiert.<br>
+            BEISPIEL: y'' = y^2 besitzt die implizite Lösung
+            int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
+             */
+            if (ord == 2 && solutionsForIntermediateDerivative.isEmpty() && solutionsForIntermediateDerivative != SolveGeneralEquationMethods.NO_SOLUTIONS){
+                solutions.add(h.add(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
+                solutions.add(h.sub(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
+                return solutions;
+            }
+            
             // Schritt 3: y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1) bilden.
             Expression particularSolution;
             for (Expression solutionForIntermediateDerivative : solutionsForIntermediateDerivative) {
