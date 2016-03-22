@@ -207,38 +207,38 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException {
-        
+
         ExpressionCollection solutions = new ExpressionCollection();
         ArrayList<ExpressionCollection> solutionsForParticularFactors = new ArrayList<>();
         for (Expression factor : factors) {
             solutionsForParticularFactors.add(solveZeroDifferentialEquation(factor, varAbsc, varOrd));
         }
-        
+
         // Prüfung, ob irgendwo ALL_FUNCTIONS vorkommt.
         boolean allFunctionsOccurs = false;
         for (ExpressionCollection solutionsForParticularFactor : solutionsForParticularFactors) {
             allFunctionsOccurs = allFunctionsOccurs || solutionsForParticularFactor == ALL_FUNCTIONS;
         }
-        if (allFunctionsOccurs){
+        if (allFunctionsOccurs) {
             return ALL_FUNCTIONS;
         }
-        
+
         // Prüfung, ob überall NO_SOLUTIONS vorkommt.
         boolean allSolutionsAreNoSolution = true;
         for (ExpressionCollection solutionsForParticularFactor : solutionsForParticularFactors) {
             allSolutionsAreNoSolution = allSolutionsAreNoSolution && solutionsForParticularFactor == NO_SOLUTIONS;
         }
-        if (allSolutionsAreNoSolution){
+        if (allSolutionsAreNoSolution) {
             return NO_SOLUTIONS;
         }
-                
+
         // Sonstiger Fall: Vereinigung aller Lösungen bilden.
         for (int i = 0; i < solutionsForParticularFactors.size(); i++) {
             solutions = SimplifyUtilities.union(solutions, solutionsForParticularFactors.get(i));
         }
         solutions.removeMultipleTerms();
         return solutions;
-        
+
     }
 
     private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
@@ -319,7 +319,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             }
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
         }
-        
+
         // Typ: m*a(x, y) + m*b(x, y)*y' = 0 ist exakt für einen integrierenden Faktor m.
         try {
             solutions = SolveSpecialDifferentialEquationMethods.solveExactDifferentialEquationWithIngeratingFactor(f, varAbsc, varOrd);
@@ -368,11 +368,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    /*
-     Algorithmen zum Lösen spezieller Differentialgleichungstypen der Ordnung 1.
-     */
- /*
-    Typ: trennbare Veränderliche.
+    // Algorithmen zum Lösen spezieller Differentialgleichungstypen der Ordnung 1.
+    // Typ: trennbare Veränderliche.
+    /**
+     * Gibt die Lösung (entweder in expliziter oder in impliziter Form) einer
+     * Differentialgleichung mit trennbaren Veränderlichen zurück, wenn möglich.
+     *
+     * @throws EvaluationException
+     * @throws DifferentialEquationNotAlgebraicallyIntegrableException
      */
     private static ExpressionCollection solveDifferentialEquationWithSeparableVariables(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
@@ -396,15 +399,26 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    /**
+     * Gibt zurück, ob f(x, y) sich in der Form F(x) * G(y) schreiben lässt,
+     * wobei x = varAbsc, y = varOrd ist.<br>
+     * VORAUSSETZUNG: f enthält die Variablen y', y'', ... nicht.
+     */
     private static boolean isRightSideOfDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
 
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        for (Expression factor : factors) {
-            /*
-            Wichtig: Da die DGL die Ordnung 1 besitzt und im Vorfeld bereits y'
-            aufgelöst wurdde, kann die rechte Seite der DGL y' = f die Variablen
-            y', y'', y''' nicht enthalten.
-             */
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+        /*
+         Wichtig: Da die DGL die Ordnung 1 besitzt und im Vorfeld bereits y'
+         aufgelöst wurde, kann die rechte Seite der DGL y' = f die Variablen
+         y', y'', y''' nicht enthalten.
+         */
+        for (Expression factor : factorsNumerator) {
+            if (factor.contains(varAbsc) && factor.contains(varOrd)) {
+                return false;
+            }
+        }
+        for (Expression factor : factorsDenominator) {
             if (factor.contains(varAbsc) && factor.contains(varOrd)) {
                 return false;
             }
@@ -415,32 +429,50 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     private static Expression[] getSeparationForDifferentialEquationInSeparableForm(Expression f, String varAbsc, String varOrd) {
 
-        Expression factorWithVarAbsc = ONE, factorWithVarOrd = ONE;
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        for (Expression factor : factors) {
+        Expression numeratorOfFactorWithVarAbsc = ONE, denominatorOfFactorWithVarAbsc = ONE,
+                numeratorOfFactorWithVarOrd = ONE, denominatorOfFactorWithVarOrd = ONE;
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+        for (Expression factor : factorsNumerator) {
             if (factor.contains(varOrd)) {
-                factorWithVarOrd = factorWithVarOrd.mult(factor);
+                numeratorOfFactorWithVarOrd = numeratorOfFactorWithVarOrd.mult(factor);
             } else {
-                // Konstante Faktoren kommen in den Faktor für x (ist an sich völlig egal, wohin).
-                factorWithVarAbsc = factorWithVarAbsc.mult(factor);
+                // Konstante Faktoren werden im Faktor für x aufgenommen (ist an sich völlig egal, wohin).
+                numeratorOfFactorWithVarAbsc = numeratorOfFactorWithVarAbsc.mult(factor);
             }
         }
-        return new Expression[]{factorWithVarAbsc, factorWithVarOrd};
+        for (Expression factor : factorsDenominator) {
+            if (factor.contains(varOrd)) {
+                denominatorOfFactorWithVarOrd = denominatorOfFactorWithVarOrd.mult(factor);
+            } else {
+                // Konstante Faktoren werden im Faktor für x aufgenommen (ist an sich völlig egal, wohin).
+                denominatorOfFactorWithVarAbsc = denominatorOfFactorWithVarAbsc.mult(factor);
+            }
+        }
+        return new Expression[]{numeratorOfFactorWithVarAbsc.div(denominatorOfFactorWithVarAbsc),
+            numeratorOfFactorWithVarOrd.div(denominatorOfFactorWithVarOrd)};
 
     }
 
+    /**
+     * Gibt die Lösung einer Differentialgleichung mit trennbaren Veränderlichen
+     * wieder, wenn die Zerlegung y' = F(x) * G(y) bereits bekannt ist. Hier ist
+     * F = factorWithVarAbsc, G = factorWithVarOrd.
+     */
     private static ExpressionCollection getSolutionForDifferentialEquationWithSeparableVariables(Expression factorWithVarAbsc, Expression factorWithVarOrd, String varAbsc, String varOrd) {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
-        /*
-            Seien x = varAbsc, y = varOrd, factorWithVarAbsc = f(x), factorWithVarOrd = g(y).
-         */
+        // Seien x = varAbsc, y = varOrd, factorWithVarAbsc = f(x), factorWithVarOrd = g(y).
         try {
             // 1. Alle Nullstellen von g(y) zu den Lösungen hinzufügen.
             ExpressionCollection constantZeros = SolveGeneralEquationMethods.solveEquation(factorWithVarOrd, ZERO, varOrd);
             solutions.addAll(constantZeros);
-        } catch (EvaluationException ex) {
+            if (constantZeros.isEmpty() && constantZeros != SolveGeneralEquationMethods.NO_SOLUTIONS) {
+                // Implizit gegebene (konstante) Lösungen hinzufügen.
+                solutions.add(factorWithVarOrd);
+            }
+        } catch (EvaluationException e) {
         }
 
         Expression integralOfFactorWithVarAbsc = new Operator(TypeOperator.integral, new Object[]{factorWithVarAbsc, varAbsc}).add(
@@ -450,6 +482,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         try {
             ExpressionCollection solutionOfDiffEq = SolveGeneralEquationMethods.solveEquation(integralOfFactorWithVarAbsc, integralOfReciprocalOfFactorWithVarOrd, varOrd);
             solutions.addAll(solutionOfDiffEq);
+            if (solutionOfDiffEq.isEmpty() && solutionOfDiffEq != SolveGeneralEquationMethods.NO_SOLUTIONS) {
+                // Implizit gegebene Lösungen hinzufügen.
+                Expression implicitSolution = integralOfReciprocalOfFactorWithVarOrd.sub(integralOfFactorWithVarAbsc).simplify();
+                solutions.add(implicitSolution);
+            }
         } catch (EvaluationException ex) {
         }
 

@@ -466,21 +466,62 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         ArrayList<int[]> graphicalGraph = convertVectorFieldToGraphicalVectorField();
         g.setColor(this.color);
 
+        double angle;
         for (int[] vectorArrow : graphicalGraph) {
-
             if (!Double.isNaN(vectorArrow[0]) && !Double.isInfinite(vectorArrow[0])
                     && !Double.isNaN(vectorArrow[1]) && !Double.isInfinite(vectorArrow[1])
                     && !Double.isNaN(vectorArrow[2]) && !Double.isInfinite(vectorArrow[2])
                     && !Double.isNaN(vectorArrow[3]) && !Double.isInfinite(vectorArrow[3])) {
 
                 g.drawLine(vectorArrow[0], vectorArrow[1], vectorArrow[2], vectorArrow[3]);
+                // Pfeilspitze zeichnen.
+                angle = getAngleOfVector(vectorArrow[0], vectorArrow[1], vectorArrow[2], vectorArrow[3]);
+                drawArrow(g, vectorArrow[2], vectorArrow[3], 5, angle);
 
             }
-
         }
 
         g.setColor(Color.black);
 
+    }
+
+    private double getAngleOfVector(int xStart, int yStart, int xEnd, int yEnd) {
+
+        int x = xEnd - xStart, y = yEnd - yStart;
+        if (x == 0 && y == 0) {
+            return -1;
+        }
+
+        if (y == 0) {
+            if (x > 0) {
+                return 0;
+            }
+            return Math.PI;
+        }
+        if (x == 0) {
+            if (y > 0) {
+                return Math.PI / 2;
+            }
+            return 3 * Math.PI / 2;
+        }
+
+        if (x > 0) {
+            if (y > 0) {
+                return Math.atan(y / x);
+            }
+            return Math.atan(y / x) + 2 * Math.PI;
+        }
+        return Math.atan(y / x) + Math.PI;
+
+    }
+
+    private void drawArrow(Graphics g, int x, int y, int length, double angleOfArrow) {
+        if (angleOfArrow == -1) {
+            return;
+        }
+        double angleForLeftArrowPart = angleOfArrow - Math.PI / 4, angleForRightArrowPart = angleOfArrow + Math.PI / 4;
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
     }
 
     public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression[] vectorFieldComponents) throws EvaluationException {
