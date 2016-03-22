@@ -547,10 +547,10 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
          * dass das Vektorfeld zu grob oder zu klein ist.
          */
         try {
-            Constant varAbscStart = new Constant(this.axeCenterX - 2 * this.maxX);
-            Constant varAbscEnd = new Constant(this.axeCenterX + 2 * this.maxX);
-            Constant varOrdStart = new Constant(this.axeCenterY - 2 * this.maxY);
-            Constant varOrdEnd = new Constant(this.axeCenterY + 2 * this.maxY);
+            Constant varAbscStart = new Constant(this.axeCenterX - this.maxX);
+            Constant varAbscEnd = new Constant(this.axeCenterX + this.maxX);
+            Constant varOrdStart = new Constant(this.axeCenterY - this.maxY);
+            Constant varOrdEnd = new Constant(this.axeCenterY + this.maxY);
             if (this.vectorFieldExpr != null) {
                 expressionToVectorField(varAbscStart, varAbscEnd, varOrdStart, varOrdEnd);
             }
