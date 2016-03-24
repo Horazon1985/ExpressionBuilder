@@ -32,7 +32,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
     private final ArrayList<Expression> exprs = new ArrayList<>();
-    //Array, indem die Punkte am Graphen gespeichert sind
+    // Array, indem die Punkte am Graphen gespeichert sind
     private ArrayList<double[][][]> graphs3D = new ArrayList<>();
     /*
      "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
@@ -40,7 +40,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      werden).
      */
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
-    //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
+    // Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
     // Grundfarben für die einzelnen Graphen.
     private final ArrayList<Color> colors = new ArrayList<>();

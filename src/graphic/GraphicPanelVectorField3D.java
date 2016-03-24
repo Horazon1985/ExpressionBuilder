@@ -31,6 +31,7 @@ public class GraphicPanelVectorField3D extends JPanel implements Runnable, Expor
     //Array, indem die Punkte am Graphen gespeichert sind
     private Matrix vectorFieldExpr;
     private final ArrayList<double[]> vectorField3D = new ArrayList<>();
+    private final ArrayList<double[]> vectorField3DArrows = new ArrayList<>();
 
     private final Color color = Color.blue;
 
@@ -427,7 +428,7 @@ public class GraphicPanelVectorField3D extends JPanel implements Runnable, Expor
 
     /**
      * Berechnet die Pixelkoordinaten des (gröberen) Graphen. Voraussetzung:
-     * max_x, max_y sind bekannt!
+     * maxX, maxY, maxZ sind bekannt!
      */
     private int[][] convertVectorFieldToGraphicalVectorField(Graphics g) {
 
@@ -927,10 +928,10 @@ public class GraphicPanelVectorField3D extends JPanel implements Runnable, Expor
         if (this.vectorField3D.isEmpty()) {
             return;
         }
-        
+
         g.setColor(Color.blue);
         int[][] graphicalVectorField = convertVectorFieldToGraphicalVectorField(g);
-        
+
         for (int[] vectorArrow : graphicalVectorField) {
             if (!Double.isNaN(vectorArrow[0]) && !Double.isInfinite(vectorArrow[0])
                     && !Double.isNaN(vectorArrow[1]) && !Double.isInfinite(vectorArrow[1])
@@ -947,7 +948,19 @@ public class GraphicPanelVectorField3D extends JPanel implements Runnable, Expor
 
     }
 
-    public void drawVectorField3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, 
+    private void drawArrow(Graphics g, int i, int length) {
+//        if (angleOfArrow == -1) {
+//            return;
+//        }
+        int[] pointStart = convertToPixel(this.vectorField3DArrows.get(i)[0], this.vectorField3DArrows.get(i)[1], this.vectorField3DArrows.get(i)[2], bigRadius, smallRadius, height, angle);
+        int[] pointEnd = convertToPixel(this.vectorField3DArrows.get(i)[3], this.vectorField3DArrows.get(i)[4], this.vectorField3DArrows.get(i)[5], bigRadius, smallRadius, height, angle);
+        g.drawLine(pointStart[0], pointStart[1], pointEnd[0], pointEnd[1]);
+        pointStart = convertToPixel(this.vectorField3DArrows.get(i)[6], this.vectorField3DArrows.get(i)[7], this.vectorField3DArrows.get(i)[8], bigRadius, smallRadius, height, angle);
+        pointEnd = convertToPixel(this.vectorField3DArrows.get(i)[9], this.vectorField3DArrows.get(i)[10], this.vectorField3DArrows.get(i)[11], bigRadius, smallRadius, height, angle);
+        g.drawLine(pointStart[0], pointStart[1], pointEnd[0], pointEnd[1]);
+    }
+
+    public void drawVectorField3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1,
             Expression z_0, Expression z_1, Expression[] vectorFieldComponents) throws EvaluationException {
         this.zoomfactor = 1;
         setVectorFieldExpression(vectorFieldComponents);
