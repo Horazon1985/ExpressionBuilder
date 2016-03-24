@@ -27,11 +27,6 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
 
-    /*
-     Es können sich mehrere Graphen jn graph2D befinden. Auf dje einzelnen
-     Graphen kann dann jeweils über die Keys 0, 1, 2, ..., this.graph.size() -
-     1 zugegriffen werden.
-     */
     private Matrix vectorFieldExpr;
     private final ArrayList<double[]> vectorField2D = new ArrayList<>();
 
@@ -455,19 +450,19 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         // Markierungen an den Achsen berechnen.
         computeExpXExpY();
 
-        //Niveaulinien und Achsen zeichnen
+        // Niveaulinien und Achsen zeichnen
         drawAxesAndLines(g, this.varAbsc, this.varOrd);
 
-        //Graphen zeichnen
+        // Vektorfeld zeichnen
         if (this.vectorField2D.isEmpty()) {
             return;
         }
 
-        ArrayList<int[]> graphicalGraph = convertVectorFieldToGraphicalVectorField();
+        ArrayList<int[]> graphicalVectorField = convertVectorFieldToGraphicalVectorField();
         g.setColor(this.color);
 
         double angle;
-        for (int[] vectorArrow : graphicalGraph) {
+        for (int[] vectorArrow : graphicalVectorField) {
             if (!Double.isNaN(vectorArrow[0]) && !Double.isInfinite(vectorArrow[0])
                     && !Double.isNaN(vectorArrow[1]) && !Double.isInfinite(vectorArrow[1])
                     && !Double.isNaN(vectorArrow[2]) && !Double.isInfinite(vectorArrow[2])
