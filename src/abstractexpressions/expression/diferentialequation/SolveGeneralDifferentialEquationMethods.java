@@ -487,7 +487,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 Expression implicitSolution = integralOfReciprocalOfFactorWithVarOrd.sub(integralOfFactorWithVarAbsc).simplify();
                 solutions.add(implicitSolution);
             }
-        } catch (EvaluationException ex) {
+        } catch (EvaluationException e) {
         }
 
         return solutions;
@@ -562,7 +562,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         try {
             expOfIntegralOfB = expOfIntegralOfB.exp().simplify();
             solution = getFreeIntegrationConstantVariable().sub(new Operator(TypeOperator.integral, new Object[]{c.mult(expOfIntegralOfB), varAbsc})).div(expOfIntegralOfB).simplify();
-        } catch (EvaluationException ex) {
+        } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
@@ -571,15 +571,75 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    /**
+     * Liefert die Lösung der Differentialgleichung a_n*y^(n) + ... + a_0*y +
+     * b(x) = 0 mittels Variation der Konstanten.
+     */
+    private static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        /*
+         Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
+         */
+        if (ord < 2) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // 1. Typprüfung
+        if (!isDifferentialEquationLinear(f, varAbsc, varOrd)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        Expression b = getRestCoefficientInLinearDifferentialEquation(f, varAbsc, varOrd);
+        ArrayList<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
+
+        Expression fHomogeneous;
+        try {
+            fHomogeneous = f.sub(b).simplify();
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // 2. Homogene lineare Gleichung lösen.
+        ExpressionCollection solutionsOfHomogeneousDiffEq;
+        try {
+            solutionsOfHomogeneousDiffEq = solveDifferentialEquationOfHigherOrder(fHomogeneous, varAbsc, varOrd);
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (solutionsOfHomogeneousDiffEq.getBound() != ord) {
+            /* 
+             In diesem Fall wurde keine Basis, sondern höchstens eine linear 
+             unabhängige Teilmenge des Lösungsraumes ermittelt.
+             */
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        ExpressionCollection constants = new ExpressionCollection();
+        
+        
+        
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+
+    }
+
+    /*
+     Algorithmen zum Lösen spezieller Differentialgleichungstypen allgemeiner Ordnung.
+     */
+    //Typ: Homogene lineare DGLen mit konstanten Koeffizienten.
     /*
      Algorithmen zum Lösen spezieller Differentialgleichungstypen allgemeiner Ordnung.
      */
     //Typ: Homogene lineare DGLen mit konstanten Koeffizienten.
     /**
      * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
-     * varOrd eine lineare DGL mit konstanten Koeffizienten ist.
+     * varOrd eine lineare DGL ist.
      */
-    private static boolean isDifferentialEquationLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
+    private static boolean isDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) {
 
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
@@ -591,7 +651,44 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         try {
             f = f.sub(restCoefficient).simplify();
-            return isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+            return isDifferentialEquationHomogeneousAndLinear(f, varAbsc, varOrd);
+        } catch (EvaluationException e) {
+            return false;
+        }
+
+    }
+
+    /**
+     * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
+     * varOrd eine lineare homogene DGL ist.
+     */
+    private static boolean isDifferentialEquationHomogeneousAndLinear(Expression f, String varAbsc, String varOrd) {
+
+        /*
+        Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
+        geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
+         */
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        String varOrdWithPrimes = varOrd;
+        HashSet<String> vars = new HashSet<>();
+        for (int i = 0; i <= n; i++) {
+            f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
+            vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
+            varOrdWithPrimes += "'";
+        }
+
+        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
+        if (!(deg.compareTo(BigInteger.ONE) == 0)) {
+            return false;
+        }
+
+        // Jetzt wird auf Homogenität überprüft.
+        for (int i = 0; i <= n; i++) {
+            f = f.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ZERO);
+        }
+        try {
+            f = f.simplify();
+            return f.equals(ZERO);
         } catch (EvaluationException e) {
             return false;
         }
@@ -636,6 +733,69 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         } catch (EvaluationException e) {
             return false;
         }
+
+    }
+
+    private static Expression getRestCoefficientInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        String varOrdWithPrimes = varOrd;
+        for (int i = 0; i <= ord; i++) {
+            f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
+            varOrdWithPrimes += "'";
+        }
+
+        for (int i = 0; i <= ord; i++) {
+            f = f.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ZERO);
+        }
+
+        try {
+            return f.simplify();
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+    }
+
+    private static ArrayList<Expression> getLinearCoefficientsInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        String varOrdWithPrimes = varOrd;
+
+        try {
+            f = f.sub(getRestCoefficientInLinearDifferentialEquation(f, varAbsc, varOrd)).simplify();
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        for (int i = 0; i <= ord; i++) {
+            f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
+            varOrdWithPrimes += "'";
+        }
+
+        ArrayList<Expression> coefficients = new ArrayList<>();
+
+        Expression fCopy;
+        for (int i = 0; i <= ord; i++) {
+            fCopy = f;
+            for (int j = 0; j <= ord; j++) {
+                if (i == j) {
+                    fCopy = fCopy.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ONE);
+                } else {
+                    fCopy = fCopy.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ZERO);
+                }
+            }
+            try {
+                fCopy = fCopy.simplify();
+            } catch (EvaluationException e) {
+                throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+            }
+            coefficients.add(fCopy);
+        }
+
+        return coefficients;
 
     }
 
@@ -914,12 +1074,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             BEISPIEL: y'' = y^2 besitzt die implizite Lösung
             int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
              */
-            if (ord == 2 && solutionsForIntermediateDerivative.isEmpty() && solutionsForIntermediateDerivative != SolveGeneralEquationMethods.NO_SOLUTIONS){
+            if (ord == 2 && solutionsForIntermediateDerivative.isEmpty() && solutionsForIntermediateDerivative != SolveGeneralEquationMethods.NO_SOLUTIONS) {
                 solutions.add(h.add(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
                 solutions.add(h.sub(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
                 return solutions;
             }
-            
+
             // Schritt 3: y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1) bilden.
             Expression particularSolution;
             for (Expression solutionForIntermediateDerivative : solutionsForIntermediateDerivative) {
