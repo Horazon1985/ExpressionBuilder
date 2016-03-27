@@ -613,10 +613,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         // Wenn b == 0, dann einfach die (allgemeine) homogene Lösung ausgeben.
         if (b.equals(ZERO)) {
             Expression generalSolution = ZERO;
-            for (Expression solution : solutionsOfHomogeneousDiffEq){
+            for (Expression solution : solutionsOfHomogeneousDiffEq) {
                 generalSolution = generalSolution.add(getFreeIntegrationConstantVariable().mult(solution));
             }
-            return new ExpressionCollection(generalSolution);
+            try {
+                return new ExpressionCollection(generalSolution.simplify());
+            } catch (EvaluationException e) {
+                throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+            }
         }
 
         // Ab hier ist b != 0.
@@ -731,8 +735,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /**
-     * Liefert ein linear unabhängiges Erzeugendensystem des Lösungsraumes der Differentialgleichung a_n*y^(n)
-     * + ... + a_0*y = 0, wenn möglich.
+     * Liefert ein linear unabhängiges Erzeugendensystem des Lösungsraumes der
+     * Differentialgleichung a_n*y^(n) + ... + a_0*y = 0, wenn möglich.
      */
     private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException, EvaluationException {
 
@@ -753,6 +757,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         // Fall: a_n*x^n*y^(n) + ... + a_1*x*y' + a_0*y = 0.
+        if (isDifferentialEquationHomogeneousAndLinearWithQuasiHomogeneousCoefficients(f, varAbsc, varOrd)) {
+            return getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinearWithQuasiHomogeneousCoefficients(f, varAbsc, varOrd);
+        }
+
         // Sonst: keine exakte Lösung gefunden.
         throw new DifferentialEquationNotAlgebraicallyIntegrableException();
 
@@ -827,7 +835,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /**
-     * Liefert, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
+     * Gibt zurück, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
      * varOrd eine lineare homogene DGL mit konstanten Koeffizienten ist.
      */
     private static boolean isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) {
@@ -867,6 +875,76 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    /**
+     * Gibt zurück, ob die DGL f(x, y, y', ..., y^(n)) = 0 mit x = varAbsc, y =
+     * varOrd eine lineare DGL der Form a_n*x^n*y^(n) + ... + a_1*x*y' + a_0*y =
+     * 0 ist.
+     */
+    private static boolean isDifferentialEquationHomogeneousAndLinearWithQuasiHomogeneousCoefficients(Expression f, String varAbsc, String varOrd) {
+
+        // Zunächst generell auf Linearität prüfen.
+        if (!isDifferentialEquationLinear(f, varAbsc, varOrd)) {
+            return false;
+        }
+
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        // Jetzt wird auf Homogenität überprüft.
+        Expression fCopy = f;
+        for (int i = 0; i <= n; i++) {
+            fCopy = fCopy.replaceVariable(getVarWithPrimes(varOrd, i), ZERO);
+        }
+        try {
+            fCopy = fCopy.simplify();
+            if (!fCopy.equals(ZERO)) {
+                return false;
+            }
+        } catch (EvaluationException e) {
+            return false;
+        }
+
+        // Nun einzelnen Koeffizienten betrachten.
+        ExpressionCollection coefficients = new ExpressionCollection();
+        for (int i = 0; i <= n; i++) {
+            fCopy = f;
+            for (int j = 0; j <= n; j++) {
+                if (i == j) {
+                    fCopy = fCopy.replaceVariable(getVarWithPrimes(varOrd, j), ONE);
+                } else {
+                    fCopy = fCopy.replaceVariable(getVarWithPrimes(varOrd, j), ZERO);
+                }
+            }
+            try {
+                coefficients.add(fCopy.simplify());
+            } catch (EvaluationException e) {
+                return false;
+            }
+        }
+
+        // Jetzt wird auf Quasihomogenität der Koeffizienten überprüft.
+        Expression quotient;
+        for (int i = 0; i <= n; i++) {
+            try {
+                quotient = coefficients.get(i).div(Variable.create(varAbsc).pow(i)).simplify();
+                if (quotient.contains(varAbsc)) {
+                    return false;
+                }
+            } catch (EvaluationException e) {
+                return false;
+            }
+        }
+
+        return true;
+
+    }
+
+    /**
+     * Gibt den Koeffizienten b(x) zurück, wenn die DGL f = 0 die Form
+     * a_n(x)*y^(n) + ... + a_0(x)*y + b(x) = 0 besitzt. Eine Prüfung auf
+     * Linearität findet NICHT statt.
+     *
+     * @throws DifferentialEquationNotAlgebraicallyIntegrableException
+     */
     private static Expression getRestCoefficientInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
@@ -889,21 +967,21 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
+    /**
+     * Gibt die Koeffizienten a_0(x), ..., a_n(x) zurück, wenn die DGL f = 0 die
+     * Form a_n(x)*y^(n) + ... + a_0(x)*y + b(x) = 0 besitzt. Eine Prüfung auf
+     * Linearität findet NICHT statt.
+     *
+     * @throws DifferentialEquationNotAlgebraicallyIntegrableException
+     */
     private static ArrayList<Expression> getLinearCoefficientsInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
-
-        String varOrdWithPrimes = varOrd;
 
         try {
             f = f.sub(getRestCoefficientInLinearDifferentialEquation(f, varAbsc, varOrd)).simplify();
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-        }
-
-        for (int i = 0; i <= ord; i++) {
-            f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
-            varOrdWithPrimes += "'";
         }
 
         ArrayList<Expression> coefficients = new ArrayList<>();
@@ -913,9 +991,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             fCopy = f;
             for (int j = 0; j <= ord; j++) {
                 if (i == j) {
-                    fCopy = fCopy.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ONE);
+                    fCopy = fCopy.replaceVariable(getVarWithPrimes(varOrd, j), ONE);
                 } else {
-                    fCopy = fCopy.replaceVariable(NotationLoader.SUBSTITUTION_VAR + "_" + i, ZERO);
+                    fCopy = fCopy.replaceVariable(getVarWithPrimes(varOrd, j), ZERO);
                 }
             }
             try {
@@ -931,7 +1009,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /**
-     * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
+     * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung mit
+     * konstanten Koeffizienten.
      */
     private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
@@ -969,14 +1048,20 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
 
         for (Expression factor : factors) {
-            linearIndependentSolutions.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
+            linearIndependentSolutions.addAll(getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreConstant(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
 
         return new ExpressionCollection(linearIndependentSolutions.simplify());
 
     }
 
-    private static ExpressionCollection getSolutionForParticularIrredicibleFactor(Expression factor, String varAbsc, String varInCharPolynomial) {
+    /**
+     * Gibt für einen Faktor (konkret: (x - a)^k oder (x^2+a*x+b)^k mit
+     * x^2+a*x+b irreduzibel) des charakteristischen Polynoms Basiselemente des
+     * Lösungsraumes zurück, wenn die DGL linear und homogen ist mit konstanten
+     * Koeffizienten.
+     */
+    private static ExpressionCollection getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreConstant(Expression factor, String varAbsc, String varInCharPolynomial) {
 
         ExpressionCollection solutionBase = new ExpressionCollection();
 
@@ -998,7 +1083,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection zeros;
 
         if (deg.equals(BigInteger.ONE)) {
-            // Fall: Linearfaktor.
+            // Fall: Potenz eines Linearfaktors.
             try {
                 zeros = SolveGeneralEquationMethods.solveEquation(base, ZERO, varInCharPolynomial);
                 if (!zeros.isEmpty()) {
@@ -1006,13 +1091,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                         solutionBase.add(Variable.create(varAbsc).pow(i).mult(zeros.get(0).mult(Variable.create(varAbsc)).exp()));
                     }
                 }
-            } catch (EvaluationException ex) {
+            } catch (EvaluationException e) {
             }
         } else if (deg.equals(BigInteger.valueOf(2))) {
-            // Fall: Irreduzibler quadratischer Faktor.
+            // Fall: Potenz eines irreduziblen quadratischen Faktors.
             try {
                 ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(base, varInCharPolynomial);
-                if (coefficients.getBound() < 3) {
+                if (coefficients.getBound() != 3) {
+                    // Sollte bei korrekter vorheriger Prüfung eigentlich nie eintreten.
                     return solutionBase;
                 }
                 Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(0)).mult(coefficients.get(2))).simplify();
@@ -1026,11 +1112,130 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                                 factorForSinCos.mult(Variable.create(varAbsc)).cos()));
                     }
                 }
-            } catch (EvaluationException ex) {
+            } catch (EvaluationException e) {
             }
         }
 
         return solutionBase;
+
+    }
+
+    /**
+     * Gibt für einen Faktor (konkret: (x - a)^k oder (x^2+a*x+b)^k mit
+     * x^2+a*x+b irreduzibel) des charakteristischen Polynoms Basiselemente des
+     * Lösungsraumes zurück, wenn die DGL linear und homogen ist mit
+     * quasihomogenen Koeffizienten.
+     */
+    private static ExpressionCollection getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreQuasiHomogeneous(Expression factor, String varAbsc, String varInCharPolynomial) {
+
+        ExpressionCollection solutionBase = new ExpressionCollection();
+
+        Expression base;
+        int exponent;
+        if (factor.isIntegerPower()) {
+            base = ((BinaryOperation) factor).getLeft();
+            if (((Constant) ((BinaryOperation) factor).getRight()).getValue().compareTo(BigDecimal.valueOf(Integer.MAX_VALUE)) > 0) {
+                // Sollte eigentlich nie vorkommen.
+                return solutionBase;
+            }
+            exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
+        } else {
+            base = factor;
+            exponent = 1;
+        }
+
+        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfPolynomial(base, varInCharPolynomial);
+        ExpressionCollection zeros;
+
+        if (deg.equals(BigInteger.ONE)) {
+            // Fall: Potenz eines Linearfaktors.
+            try {
+                zeros = SolveGeneralEquationMethods.solveEquation(base, ZERO, varInCharPolynomial);
+                if (!zeros.isEmpty()) {
+                    for (int i = 0; i < exponent; i++) {
+                        solutionBase.add(Variable.create(varAbsc).ln().pow(i).mult(Variable.create(varAbsc).pow(zeros.get(0))));
+                    }
+                }
+            } catch (EvaluationException e) {
+            }
+        } else if (deg.equals(BigInteger.valueOf(2))) {
+            // Fall: Potenz eines irreduziblen quadratischen Faktors.
+            try {
+                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(base, varInCharPolynomial);
+                if (coefficients.getBound() != 3) {
+                    // Sollte bei korrekter vorheriger Prüfung eigentlich nie eintreten.
+                    return solutionBase;
+                }
+                Expression discriminant = coefficients.get(1).pow(2).sub(new Constant(4).mult(coefficients.get(0)).mult(coefficients.get(2))).simplify();
+                if (discriminant.isAlwaysNegative()) {
+                    /* 
+                     Wenn die Nullstellen des quadratischen Faktors a +- i*b lauten,
+                     so sind die Lösungen wie folgt gegeben:
+                     ln(x)^k*x^a*cos(b*ln(x)) und ln(x)^k*x^a*sin(b*ln(x)), 
+                     k = 0, 1, 2, ..., exponent - 1.
+                     */
+                    Expression realPartOfZero = MINUS_ONE.mult(coefficients.get(1).div(TWO.mult(coefficients.get(2)))).simplify();
+                    Expression imaginaryPartOfZero = MINUS_ONE.mult(discriminant).pow(1, 2).div(TWO.mult(coefficients.get(2))).simplify();
+                    for (int i = 0; i < exponent; i++) {
+                        solutionBase.add(Variable.create(varAbsc).ln().pow(i).mult(Variable.create(varAbsc).pow(realPartOfZero)).mult(
+                                imaginaryPartOfZero.mult(Variable.create(varAbsc).ln()).cos()));
+                        solutionBase.add(Variable.create(varAbsc).ln().pow(i).mult(Variable.create(varAbsc).pow(realPartOfZero)).mult(
+                                imaginaryPartOfZero.mult(Variable.create(varAbsc).ln()).sin()));
+                    }
+                }
+            } catch (EvaluationException e) {
+            }
+        }
+
+        return solutionBase;
+
+    }
+
+    /**
+     * Liefert Lösungen einer DGL vom folgenden Typ: a_n*x^n*y^(n) + ... +
+     * a_1*x*y' + a_0*y = 0.
+     */
+    private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinearWithQuasiHomogeneousCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection linearIndependentSolutions = new ExpressionCollection();
+
+        if (!isDifferentialEquationHomogeneousAndLinearWithQuasiHomogeneousCoefficients(f, varAbsc, varOrd)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // 1. Ermittlung der Koeffizienten.
+        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        ArrayList<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
+
+        Expression charPolynomial = ZERO;
+        Expression quotient, summand;
+        for (int i = 0; i < coefficients.size(); i++) {
+            try {
+                quotient = coefficients.get(i).div(Variable.create(varAbsc).pow(i)).simplify();
+                if (quotient.contains(varAbsc)) {
+                    throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+                }
+            } catch (EvaluationException e) {
+                throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+            }
+            summand = quotient;
+            for (int j = 0; j < i; j++) {
+                summand = summand.mult(Variable.create(NotationLoader.SUBSTITUTION_VAR).sub(j));
+            }
+            charPolynomial = charPolynomial.add(summand);
+        }
+
+        charPolynomial = charPolynomial.simplify();
+
+        // Charakteristisches Polynom versuchen, vollständig zu faktorisieren.
+        charPolynomial = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(charPolynomial, NotationLoader.SUBSTITUTION_VAR);
+        ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
+
+        for (Expression factor : factors) {
+            linearIndependentSolutions.addAll(getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreQuasiHomogeneous(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
+        }
+
+        return new ExpressionCollection(linearIndependentSolutions.simplify());
 
     }
 
