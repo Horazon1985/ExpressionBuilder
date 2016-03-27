@@ -14,6 +14,10 @@ import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.matrixexpression.classes.Matrix;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import abstractexpressions.matrixexpression.classes.MatrixFunction;
+import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
 import enums.TypeSimplify;
 import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
@@ -347,8 +351,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         try {
-            // Typ: Homogene lineare DGL mit konstanten Koeffizienten.
-            solutions = solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+            // Typ: Lineare DGL (darin wird in weitere Untertypen aufgeteilt).
+            solutions = solveDifferentialEquationLinear(f, varAbsc, varOrd);
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
@@ -579,9 +583,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
 
-        /*
-         Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
-         */
+        // Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
         if (ord < 2) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -592,7 +594,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         Expression b = getRestCoefficientInLinearDifferentialEquation(f, varAbsc, varOrd);
-        ArrayList<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
 
         Expression fHomogeneous;
         try {
@@ -604,11 +605,21 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         // 2. Homogene lineare Gleichung lösen.
         ExpressionCollection solutionsOfHomogeneousDiffEq;
         try {
-            solutionsOfHomogeneousDiffEq = solveDifferentialEquationOfHigherOrder(fHomogeneous, varAbsc, varOrd);
+            solutionsOfHomogeneousDiffEq = getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinear(fHomogeneous, varAbsc, varOrd);
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
+        // Wenn b == 0, dann einfach die (allgemeine) homogene Lösung ausgeben.
+        if (b.equals(ZERO)) {
+            Expression generalSolution = ZERO;
+            for (Expression solution : solutionsOfHomogeneousDiffEq){
+                generalSolution = generalSolution.add(getFreeIntegrationConstantVariable().mult(solution));
+            }
+            return new ExpressionCollection(generalSolution);
+        }
+
+        // Ab hier ist b != 0.
         if (solutionsOfHomogeneousDiffEq.getBound() != ord) {
             /* 
              In diesem Fall wurde keine Basis, sondern höchstens eine linear 
@@ -617,12 +628,132 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
+        // Konstanten C_1(x), ..., C_n(x).
         ExpressionCollection constants = new ExpressionCollection();
-        
-        
-        
-        ExpressionCollection solutions = new ExpressionCollection();
 
+        // 3. Methode der Variation der Konstanten anwenden.
+        Expression[][] wronskiEntries = new Expression[solutionsOfHomogeneousDiffEq.getBound()][solutionsOfHomogeneousDiffEq.getBound()];
+
+        for (int i = 0; i < solutionsOfHomogeneousDiffEq.getBound(); i++) {
+            for (int j = 0; j < solutionsOfHomogeneousDiffEq.getBound(); j++) {
+                try {
+                    wronskiEntries[i][j] = new Operator(TypeOperator.diff, new Object[]{solutionsOfHomogeneousDiffEq.get(j), varAbsc, i}).simplify();
+                } catch (EvaluationException e) {
+                    throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+                }
+            }
+        }
+
+        // Wronskideterminante (= Nenner aller Konstanten) bilden.
+        Expression wronskiDet = getWronskiDet(wronskiEntries, varAbsc);
+        Expression numeratorOfConstant;
+        for (int i = 0; i < solutionsOfHomogeneousDiffEq.getBound(); i++) {
+            // Zähler der einzelnen Konstanten bilden.
+            numeratorOfConstant = getNumeratorDet(wronskiEntries, varAbsc, i, b);
+            // Jeweilige Konstante C_i'(x) bilden.
+            constants.add(numeratorOfConstant.div(wronskiDet));
+        }
+
+        // Nun alle C_i'(x) integrieren.
+        for (int i = 0; i < constants.getBound(); i++) {
+            try {
+                constants.put(i, new Operator(TypeOperator.integral, new Object[]{constants.get(i), varAbsc}).simplify());
+            } catch (EvaluationException e) {
+                throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+            }
+        }
+
+        // Nun y(x) = (C_1(x) + K_1)*y_1(x) + ... + (C_n(x) + K_n)*y_n(x) bilden und zurückgeben.
+        Expression solution = ZERO;
+        for (int i = 0; i < solutionsOfHomogeneousDiffEq.getBound(); i++) {
+            solution = solution.add(constants.get(i).add(getFreeIntegrationConstantVariable()).mult(solutionsOfHomogeneousDiffEq.get(i)));
+        }
+
+        try {
+            return new ExpressionCollection(solution.simplify());
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+    }
+
+    private static Expression getWronskiDet(Expression[][] wronskiEntries, String varAbsc) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        MatrixExpression wronskiDet;
+        try {
+            wronskiDet = new MatrixFunction(new Matrix(wronskiEntries), TypeMatrixFunction.det).simplify();
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        Object wronskiDetAsObject = wronskiDet.convertOneTimesOneMatrixToExpression();
+
+        if (wronskiDetAsObject instanceof Expression) {
+            return (Expression) wronskiDetAsObject;
+        }
+
+        throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+
+    }
+
+    private static Expression getNumeratorDet(Expression[][] wronskiEntries, String varAbsc, int k, Expression restCoefficient) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        Expression[][] matrixEntries = new Expression[wronskiEntries.length][wronskiEntries.length];
+        for (int i = 0; i < wronskiEntries.length; i++) {
+            for (int j = 0; j < wronskiEntries.length; j++) {
+                if (j == k) {
+                    if (i < wronskiEntries.length - 1) {
+                        matrixEntries[i][j] = ZERO;
+                    } else {
+                        matrixEntries[wronskiEntries.length - 1][j] = MINUS_ONE.mult(restCoefficient);
+                    }
+                } else {
+                    matrixEntries[i][j] = wronskiEntries[i][j];
+                }
+            }
+        }
+
+        MatrixExpression numeratorDet;
+        try {
+            numeratorDet = new MatrixFunction(new Matrix(matrixEntries), TypeMatrixFunction.det).simplify();
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        Object numeratorDetAsObject = numeratorDet.convertOneTimesOneMatrixToExpression();
+
+        if (numeratorDetAsObject instanceof Expression) {
+            return (Expression) numeratorDetAsObject;
+        }
+
+        throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Liefert ein linear unabhängiges Erzeugendensystem des Lösungsraumes der Differentialgleichung a_n*y^(n)
+     * + ... + a_0*y = 0, wenn möglich.
+     */
+    private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException, EvaluationException {
+
+        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+
+        // Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
+        if (ord < 2) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (!isDifferentialEquationHomogeneousAndLinear(f, varAbsc, varOrd)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // Fall: lineare und homogene DGL mit konstanten Koeffizienten.
+        if (isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)) {
+            return getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd);
+        }
+
+        // Fall: a_n*x^n*y^(n) + ... + a_1*x*y' + a_0*y = 0.
+        // Sonst: keine exakte Lösung gefunden.
         throw new DifferentialEquationNotAlgebraicallyIntegrableException();
 
     }
@@ -665,8 +796,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     private static boolean isDifferentialEquationHomogeneousAndLinear(Expression f, String varAbsc, String varOrd) {
 
         /*
-        Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
-        geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
+         Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
+         geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
          */
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
@@ -706,8 +837,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         /*
-        Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
-        geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
+         Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
+         geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
          */
         int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
         String varOrdWithPrimes = varOrd;
@@ -802,9 +933,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     /**
      * Liefert Lösungen einer homogenen linearen DGL beliebiger Ordnung.
      */
-    private static ExpressionCollection solveDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
+    private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(Expression f, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
-        ExpressionCollection solutionBase = new ExpressionCollection();
+        ExpressionCollection linearIndependentSolutions = new ExpressionCollection();
 
         if (!isDifferentialEquationHomogeneousAndLinearWithConstantCoefficients(f, varAbsc, varOrd)) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
@@ -838,16 +969,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         ExpressionCollection factors = SimplifyUtilities.getFactors(charPolynomial);
 
         for (Expression factor : factors) {
-            solutionBase.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
+            linearIndependentSolutions.addAll(getSolutionForParticularIrredicibleFactor(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
 
-        // Aus den Basisvektoren nun die allgemeine Lösung basteln.
-        Expression solution = ZERO;
-        for (int i = 0; i < solutionBase.getBound(); i++) {
-            solution = solution.add(getFreeIntegrationConstantVariable().mult(solutionBase.get(i)));
-        }
-
-        return new ExpressionCollection(solution.simplify());
+        return new ExpressionCollection(linearIndependentSolutions.simplify());
 
     }
 
@@ -1053,10 +1178,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             ExpressionCollection solutions = new ExpressionCollection();
 
             /*
-            Lösungsalgorithmus: Sei y^(n + 2) = f(y^(n)). Hier ist ord = n + 2.
-            Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1)^(1/2), g = int(f(t), t).
-            2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1)^(1/2), t).
-            3. y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1).
+             Lösungsalgorithmus: Sei y^(n + 2) = f(y^(n)). Hier ist ord = n + 2.
+             Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1)^(1/2), g = int(f(t), t).
+             2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1)^(1/2), t).
+             3. y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1).
              */
             // Schritt 1: Bilden von g.
             String varOrdWithPrimes = getVarWithPrimes(varOrd, ord - 2);
@@ -1067,12 +1192,12 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             solutionsForIntermediateDerivative = SimplifyUtilities.union(solutionsForIntermediateDerivative, SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes));
 
             /* 
-            Sonderfall: Wenn n = 0 ist und die Gleichung h_(C_1)(y) = +-(x + C_2)
-            nicht explizit nach y aufgelöst werden kann, so werden die Ausdrücke
-            h_(C_1)(y) -+(x + C_2) in die Lösungen mitaufgenommen und hinterher
-            als implizite Lösungen interpretiert.<br>
-            BEISPIEL: y'' = y^2 besitzt die implizite Lösung
-            int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
+             Sonderfall: Wenn n = 0 ist und die Gleichung h_(C_1)(y) = +-(x + C_2)
+             nicht explizit nach y aufgelöst werden kann, so werden die Ausdrücke
+             h_(C_1)(y) -+(x + C_2) in die Lösungen mitaufgenommen und hinterher
+             als implizite Lösungen interpretiert.<br>
+             BEISPIEL: y'' = y^2 besitzt die implizite Lösung
+             int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
              */
             if (ord == 2 && solutionsForIntermediateDerivative.isEmpty() && solutionsForIntermediateDerivative != SolveGeneralEquationMethods.NO_SOLUTIONS) {
                 solutions.add(h.add(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
