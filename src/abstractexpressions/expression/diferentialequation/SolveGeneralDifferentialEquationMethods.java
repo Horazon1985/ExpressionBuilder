@@ -40,12 +40,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     private static int indexForNextIntegrationConstant = 1;
 
     protected static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = getSimplifyTypesDifferentialEquation();
+    protected static final HashSet<TypeSimplify> simplifyTypesSolutionOfDifferentialEquation = getSimplifyTypesSolutionOfDifferentialEquation();
 
     private static HashSet<TypeSimplify> getSimplifyTypesDifferentialEquation() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
@@ -57,7 +59,26 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesSolutionOfDifferentialEquation() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
     }
 
@@ -170,7 +191,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                     integratedSolution = new Operator(TypeOperator.integral, new Object[]{solution, varAbsc});
                 }
                 try {
-                    solutions.add(integratedSolution.add(getArbitraryPolynomial(varAbsc, subOrd - 1)).simplify());
+                    solutions.add(integratedSolution.add(getArbitraryPolynomial(varAbsc, subOrd - 1)).simplify(simplifyTypesSolutionOfDifferentialEquation));
                 } catch (EvaluationException e) {
                     // Nichts tun, weiter iterieren.
                 }
@@ -180,10 +201,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         return solutions;
 
     }
-    
-    private static Expression getArbitraryPolynomial(String varAbsc, int degree){
+
+    private static Expression getArbitraryPolynomial(String varAbsc, int degree) {
         Expression polynomial = ZERO;
-        for (int i = 0; i <= degree; i++){
+        for (int i = 0; i <= degree; i++) {
             polynomial = polynomial.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
         }
         return polynomial;
@@ -201,9 +222,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     public static ExpressionCollection solveDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
         resetIndexForIntegrationConstantVariable();
-//        if (g.equals(ZERO)) {
-//            return solveZeroDifferentialEquation(f, varAbsc, varOrd);
-//        }
         return solveGeneralDifferentialEquation(f, g, varAbsc, varOrd);
     }
 
@@ -220,7 +238,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
-        
         Expression diffEq = f.sub(g);
         // Zunächst: DGL im Folgenden Sinne reduzieren.
         Object[] reductionOfDifferentialEquation = reduceDifferentialEquation(diffEq, varOrd);
@@ -278,7 +295,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             return solveDifferentialEquationOfOrderOne(f, varAbsc, varOrd);
         }
         return solveDifferentialEquationOfHigherOrder(f, varAbsc, varOrd);
-        
+
     }
 
     /**
@@ -550,10 +567,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         try {
             // 1. Alle Nullstellen von g(y) zu den Lösungen hinzufügen.
             ExpressionCollection constantZeros = SolveGeneralEquationMethods.solveEquation(factorWithVarOrd, ZERO, varOrd);
-            solutions.addAll(constantZeros);
+            solutions.addAll(constantZeros.simplify(simplifyTypesSolutionOfDifferentialEquation));
             if (constantZeros.isEmpty() && constantZeros != SolveGeneralEquationMethods.NO_SOLUTIONS) {
                 // Implizit gegebene (konstante) Lösungen hinzufügen.
-                solutions.add(factorWithVarOrd);
+                solutions.add(factorWithVarOrd.simplify(simplifyTypesSolutionOfDifferentialEquation));
             }
         } catch (EvaluationException e) {
         }
@@ -564,10 +581,10 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         try {
             ExpressionCollection solutionOfDiffEq = SolveGeneralEquationMethods.solveEquation(integralOfFactorWithVarAbsc, integralOfReciprocalOfFactorWithVarOrd, varOrd);
-            solutions.addAll(solutionOfDiffEq);
+            solutions.addAll(solutionOfDiffEq.simplify(simplifyTypesSolutionOfDifferentialEquation));
             if (solutionOfDiffEq.isEmpty() && solutionOfDiffEq != SolveGeneralEquationMethods.NO_SOLUTIONS) {
                 // Implizit gegebene Lösungen hinzufügen.
-                Expression implicitSolution = integralOfReciprocalOfFactorWithVarOrd.sub(integralOfFactorWithVarAbsc).simplify();
+                Expression implicitSolution = integralOfReciprocalOfFactorWithVarOrd.sub(integralOfFactorWithVarAbsc).simplify(simplifyTypesSolutionOfDifferentialEquation);
                 solutions.add(implicitSolution);
             }
         } catch (EvaluationException e) {
@@ -644,7 +661,8 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         Expression solution;
         try {
             expOfIntegralOfB = expOfIntegralOfB.exp().simplify();
-            solution = getFreeIntegrationConstantVariable().sub(new Operator(TypeOperator.integral, new Object[]{c.mult(expOfIntegralOfB), varAbsc})).div(expOfIntegralOfB).simplify();
+            solution = getFreeIntegrationConstantVariable().sub(
+                    new Operator(TypeOperator.integral, new Object[]{c.mult(expOfIntegralOfB), varAbsc})).div(expOfIntegralOfB).simplify(simplifyTypesSolutionOfDifferentialEquation);
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -696,7 +714,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
                 generalSolution = generalSolution.add(getFreeIntegrationConstantVariable().mult(solution));
             }
             try {
-                return new ExpressionCollection(generalSolution.simplify());
+                return new ExpressionCollection(generalSolution.simplify(simplifyTypesSolutionOfDifferentialEquation));
             } catch (EvaluationException e) {
                 throw new DifferentialEquationNotAlgebraicallyIntegrableException();
             }
@@ -753,7 +771,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         try {
-            return new ExpressionCollection(solution.simplify());
+            return new ExpressionCollection(solution.simplify(simplifyTypesSolutionOfDifferentialEquation));
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -1130,7 +1148,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             linearIndependentSolutions.addAll(getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreConstant(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
 
-        return new ExpressionCollection(linearIndependentSolutions.simplify());
+        return new ExpressionCollection(linearIndependentSolutions.simplify(simplifyTypesSolutionOfDifferentialEquation));
 
     }
 
@@ -1314,7 +1332,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             linearIndependentSolutions.addAll(getSolutionForPowerOfIrredicibleFactorIfCoefficientsAreQuasiHomogeneous(factor, varAbsc, NotationLoader.SUBSTITUTION_VAR));
         }
 
-        return new ExpressionCollection(linearIndependentSolutions.simplify());
+        return new ExpressionCollection(linearIndependentSolutions.simplify(simplifyTypesSolutionOfDifferentialEquation));
 
     }
 
@@ -1409,17 +1427,17 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         try {
-            return new ExpressionCollection(solution.simplify());
+            return new ExpressionCollection(solution.simplify(simplifyTypesSolutionOfDifferentialEquation));
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
     }
 
-    //Typ: y^(n + 2) = f(y^(n)).
+    //Typ: y^'' = f(y).
     /**
-     * Liefert Lösungen von Differentialgleichungen vom Typ y^(n + 2) =
-     * g(y^(n)). Die eingegebene DGL hat die Form f = 0;
+     * Liefert Lösungen von Differentialgleichungen vom Typ y'' = g(y). Die
+     * eingegebene DGL hat die Form f = 0;
      */
     private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
@@ -1427,11 +1445,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         int ord = getOrderOfDifferentialEquation(f, varOrd);
 
-        String varOrdWithPrimes = getVarWithPrimes(varOrd, ord);
+        if (ord != 2) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
 
         ExpressionCollection solutionsForHighestDerivative;
         try {
-            solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrdWithPrimes);
+            solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrd + "''");
         } catch (EvaluationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -1444,10 +1464,11 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         boolean isEquationOfProperType;
         for (Expression solutionForHighestDerivative : solutionsForHighestDerivative) {
             // Zunächst: Typprüfung.
-            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, ord, ord - 2) && !solutionForHighestDerivative.contains(varAbsc);
+            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, 2, 0)
+                    && !solutionForHighestDerivative.contains(varAbsc);
             if (isEquationOfProperType) {
                 solutions = SimplifyUtilities.union(solutions,
-                        solveDifferentialEquationWithOnlyTwoDifferentDerivatives(solutionForHighestDerivative, ord, varAbsc, varOrd));
+                        solveDifferentialEquationWithOnlySecondDerivative(solutionForHighestDerivative, varAbsc, varOrd));
             }
         }
 
@@ -1456,50 +1477,54 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression rightSide, int ord, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    private static ExpressionCollection solveDifferentialEquationWithOnlySecondDerivative(Expression rightSide, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         try {
             ExpressionCollection solutions = new ExpressionCollection();
 
             /*
-             Lösungsalgorithmus: Sei y^(n + 2) = f(y^(n)). Hier ist ord = n + 2.
-             Dann: 1. y^(n + 1) = +-(2*g(y^(n)) + C_1)^(1/2), g = int(f(t), t).
+             Lösungsalgorithmus: Sei y'' = f(y).
+             Dann: 1. y' = +-(2*g(y) + C_1)^(1/2), g = int(f(t), t).
              2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1)^(1/2), t).
-             3. y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1).
+             3. y = h^(-1)_(C_1)(+-(x + C_2)).
              */
             // Schritt 1: Bilden von g.
-            String varOrdWithPrimes = getVarWithPrimes(varOrd, ord - 2);
-            Expression g = new Operator(TypeOperator.integral, new Object[]{rightSide, varOrdWithPrimes}).simplify();
+            Expression g = new Operator(TypeOperator.integral, new Object[]{rightSide, varOrd}).simplify();
             // Schritt 2: Bilden von h_(C_1).
-            Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())).pow(1, 2), varOrdWithPrimes}).simplify();
-            ExpressionCollection solutionsForIntermediateDerivative = SolveGeneralEquationMethods.solveEquation(h, Variable.create(varAbsc).add(getFreeIntegrationConstantVariable()), varOrdWithPrimes);
-            solutionsForIntermediateDerivative = SimplifyUtilities.union(solutionsForIntermediateDerivative, SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrdWithPrimes));
+            Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())).pow(1, 2), varOrd}).simplify();
+            try {
+                solutions = SolveGeneralEquationMethods.solveEquation(h, Variable.create(varAbsc).add(getFreeIntegrationConstantVariable()), varOrd).simplify(simplifyTypesSolutionOfDifferentialEquation);
+            } catch (EvaluationException e) {
+                // Nichts tun, Lösung ignorieren.
+            }
+            try {
+                solutions = SimplifyUtilities.union(solutions, 
+                        SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrd).simplify(simplifyTypesSolutionOfDifferentialEquation));
+            } catch (EvaluationException e) {
+                // Nichts tun, Lösung ignorieren.
+            }
 
             /* 
-             Sonderfall: Wenn n = 0 ist und die Gleichung h_(C_1)(y) = +-(x + C_2)
+             Sonderfall: Wenn die Gleichung h_(C_1)(y) = +-(x + C_2)
              nicht explizit nach y aufgelöst werden kann, so werden die Ausdrücke
              h_(C_1)(y) -+(x + C_2) in die Lösungen mitaufgenommen und hinterher
              als implizite Lösungen interpretiert.<br>
              BEISPIEL: y'' = y^2 besitzt die implizite Lösung
              int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
              */
-            if (ord == 2 && solutionsForIntermediateDerivative.isEmpty() && solutionsForIntermediateDerivative != SolveGeneralEquationMethods.NO_SOLUTIONS) {
+            if (solutions.isEmpty() && solutions != SolveGeneralEquationMethods.NO_SOLUTIONS) {
                 solutions.add(h.add(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
                 solutions.add(h.sub(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
                 return solutions;
             }
 
             // Schritt 3: y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1) bilden.
-            Expression particularSolution;
-            for (Expression solutionForIntermediateDerivative : solutionsForIntermediateDerivative) {
-                particularSolution = solutionForIntermediateDerivative;
-                for (int i = 0; i < ord - 2; i++) {
-                    particularSolution = new Operator(TypeOperator.integral, new Object[]{particularSolution, varAbsc});
+            for (Expression solution : solutions) {
+                try {
+                    solutions.add(solution.simplify(simplifyTypesSolutionOfDifferentialEquation));
+                } catch (EvaluationException e) {
+                    // Nichts tun, Lösung ignorieren.
                 }
-                for (int i = 0; i < ord - 2; i++) {
-                    particularSolution = particularSolution.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
-                }
-                solutions.add(particularSolution);
             }
 
             return solutions;
