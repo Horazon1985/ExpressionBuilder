@@ -131,7 +131,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         int subOrd = getOrderOfDifferentialEquation(f, varOrd);
         HashSet<String> vars = f.getContainedIndeterminates();
         for (String var : vars) {
-            if (var.startsWith(varOrd) && var.contains("'") && var.replaceAll("'", "").equals(varOrd)) {
+            if (var.startsWith(varOrd) && var.replaceAll("'", "").equals(varOrd)) {
                 subOrd = Math.min(subOrd, var.length() - var.replaceAll("'", "").length());
             }
         }
@@ -156,7 +156,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
     }
 
-    private static ExpressionCollection getSolutionFromReducedDifferentialEquation(int subOrd, String varAbsc, String varOrd,
+    private static ExpressionCollection getSolutionsFromSolutionsOfReducedDifferentialEquation(int subOrd, String varAbsc, String varOrd,
             ExpressionCollection solutionsOfReducedDifferentialEquation) {
 
         ExpressionCollection solutions = new ExpressionCollection();
@@ -164,13 +164,13 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         for (Expression solution : solutionsOfReducedDifferentialEquation) {
             // Implizite Lösungen können nicht weiter nach x = varAbsc integriert werden, nur explizite.
-            if (isSolutionExplicit(solution, varAbsc, varOrd)) {
+            if (isSolutionExplicit(solution, varOrd) || !isSolutionExplicit(solution, varOrd) && subOrd == 0) {
                 integratedSolution = solution;
                 for (int j = 0; j < subOrd; j++) {
                     integratedSolution = new Operator(TypeOperator.integral, new Object[]{solution, varAbsc});
                 }
                 try {
-                    solutions.add(integratedSolution.simplify());
+                    solutions.add(integratedSolution.add(getArbitraryPolynomial(varAbsc, subOrd - 1)).simplify());
                 } catch (EvaluationException e) {
                     // Nichts tun, weiter iterieren.
                 }
@@ -180,8 +180,16 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         return solutions;
 
     }
+    
+    private static Expression getArbitraryPolynomial(String varAbsc, int degree){
+        Expression polynomial = ZERO;
+        for (int i = 0; i <= degree; i++){
+            polynomial = polynomial.add(getFreeIntegrationConstantVariable().mult(Variable.create(varAbsc).pow(i)));
+        }
+        return polynomial;
+    }
 
-    private static boolean isSolutionExplicit(Expression solution, String varAbsc, String varOrd) {
+    private static boolean isSolutionExplicit(Expression solution, String varOrd) {
         return !solution.contains(varOrd);
     }
 
@@ -193,9 +201,9 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     public static ExpressionCollection solveDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
         resetIndexForIntegrationConstantVariable();
-        if (g.equals(ZERO)) {
-            return solveZeroDifferentialEquation(f, varAbsc, varOrd);
-        }
+//        if (g.equals(ZERO)) {
+//            return solveZeroDifferentialEquation(f, varAbsc, varOrd);
+//        }
         return solveGeneralDifferentialEquation(f, g, varAbsc, varOrd);
     }
 
@@ -212,7 +220,16 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
-        return solveZeroDifferentialEquation(f.sub(g), varAbsc, varOrd);
+        
+        Expression diffEq = f.sub(g);
+        // Zunächst: DGL im Folgenden Sinne reduzieren.
+        Object[] reductionOfDifferentialEquation = reduceDifferentialEquation(diffEq, varOrd);
+
+        // Reduzierte DGL lösen.
+        ExpressionCollection solutionsOfReducedDifferentialEquation = solveZeroDifferentialEquation((Expression) reductionOfDifferentialEquation[1], varAbsc, varOrd);
+
+        // Lösungen aus den Lösungen der reduzierten DGL extrahieren.
+        return getSolutionsFromSolutionsOfReducedDifferentialEquation((int) reductionOfDifferentialEquation[0], varAbsc, varOrd, solutionsOfReducedDifferentialEquation);
 
     }
 
@@ -261,7 +278,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             return solveDifferentialEquationOfOrderOne(f, varAbsc, varOrd);
         }
         return solveDifferentialEquationOfHigherOrder(f, varAbsc, varOrd);
-
+        
     }
 
     /**
