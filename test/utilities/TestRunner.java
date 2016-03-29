@@ -46,6 +46,7 @@ public class TestRunner {
         testClasses.add(MatrixFunctionTest.class);
         testClasses.add(GeneralMatrixTest.class);
         testClasses.add(ParseTests.class);
+        testClasses.add(GeneralDifferentialEquationTests.class);
     }
 
     @Test

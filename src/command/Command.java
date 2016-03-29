@@ -1,15 +1,17 @@
 package command;
 
+import abstractexpressions.expression.classes.Expression;
+
 public class Command {
 
     private TypeCommand type;
     private Object[] params;
-    
-    public Command(TypeCommand type, Object[] params){
+
+    public Command(TypeCommand type, Object[] params) {
         this.type = type;
         this.params = params;
     }
-    
+
     public TypeCommand getTypeCommand() {
         return this.type;
     }
@@ -25,7 +27,7 @@ public class Command {
     public String getName() {
         return type.toString();
     }
-    
+
     public void setType(TypeCommand type) {
         this.type = type;
     }
@@ -41,5 +43,19 @@ public class Command {
     public static TypeCommand getTypeFromName(String command) {
         return TypeCommand.valueOf(command);
     }
-    
+
+    @Override
+    public String toString() {
+        String result = this.type.name() + "(";
+        for (Object param : this.params) {
+            if (param instanceof Expression[]) {
+                // Dann ist der Parameter eine Gleichung.
+                result = result + ((Expression[]) param)[0].writeExpression() + "=" + ((Expression[]) param)[1].writeExpression() + ",";
+            } else {
+                result = result + param.toString() + ",";
+            }
+        }
+        return result.substring(0, result.length() - 1) + ")";
+    }
+
 }

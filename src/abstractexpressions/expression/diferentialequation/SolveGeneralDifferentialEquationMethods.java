@@ -109,6 +109,83 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     }
 
     /**
+     * Berechnet die Ordnung der Differentialgleichung f(x, y, y', ..., y^(n)) =
+     * 0 mit x = varAbsc, y = varOrd.
+     */
+    public static int getOrderOfDifferentialEquation(Expression f, String varOrd) {
+        int ord = 0;
+        HashSet<String> vars = f.getContainedIndeterminates();
+        for (String var : vars) {
+            if (var.startsWith(varOrd) && var.contains("'") && var.replaceAll("'", "").equals(varOrd)) {
+                ord = Math.max(ord, var.length() - var.replaceAll("'", "").length());
+            }
+        }
+        return ord;
+    }
+
+    /**
+     * Berechnet die Ordnung der Differentialgleichung f(x, y, y', ..., y^(n)) =
+     * 0 mit x = varAbsc, y = varOrd.
+     */
+    public static int getSubOrderOfDifferentialEquation(Expression f, String varOrd) {
+        int subOrd = getOrderOfDifferentialEquation(f, varOrd);
+        HashSet<String> vars = f.getContainedIndeterminates();
+        for (String var : vars) {
+            if (var.startsWith(varOrd) && var.contains("'") && var.replaceAll("'", "").equals(varOrd)) {
+                subOrd = Math.min(subOrd, var.length() - var.replaceAll("'", "").length());
+            }
+        }
+        return subOrd;
+    }
+
+    private static Object[] reduceDifferentialEquation(Expression f, String varOrd) {
+
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
+        int subOrd = getSubOrderOfDifferentialEquation(f, varOrd);
+        Expression fReduced = f;
+
+        for (int i = subOrd; i <= ord; i++) {
+            fReduced = fReduced.replaceVariable(getVarWithPrimes(varOrd, i), Variable.create(getVarWithPrimes(varOrd, i - subOrd)));
+        }
+
+        Object[] reduction = new Object[2];
+        reduction[0] = subOrd;
+        reduction[1] = fReduced;
+
+        return reduction;
+
+    }
+
+    private static ExpressionCollection getSolutionFromReducedDifferentialEquation(int subOrd, String varAbsc, String varOrd,
+            ExpressionCollection solutionsOfReducedDifferentialEquation) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        Expression integratedSolution;
+
+        for (Expression solution : solutionsOfReducedDifferentialEquation) {
+            // Implizite Lösungen können nicht weiter nach x = varAbsc integriert werden, nur explizite.
+            if (isSolutionExplicit(solution, varAbsc, varOrd)) {
+                integratedSolution = solution;
+                for (int j = 0; j < subOrd; j++) {
+                    integratedSolution = new Operator(TypeOperator.integral, new Object[]{solution, varAbsc});
+                }
+                try {
+                    solutions.add(integratedSolution.simplify());
+                } catch (EvaluationException e) {
+                    // Nichts tun, weiter iterieren.
+                }
+            }
+        }
+
+        return solutions;
+
+    }
+
+    private static boolean isSolutionExplicit(Expression solution, String varAbsc, String varOrd) {
+        return !solution.contains(varOrd);
+    }
+
+    /**
      * Hauptprozedur zum algebraischen Lösen von Differntialgleichungen f(x, y,
      * y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
      *
@@ -178,7 +255,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         // Grundlegendes Kriterium: Ordnung der Differentialgleichung.
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         if (ord == 1) {
             return solveDifferentialEquationOfOrderOne(f, varAbsc, varOrd);
@@ -198,7 +275,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         Expression value = differentialEquation;
         Expression derivative = solution;
 
-        int ord = getOrderOfDifferentialEquation(differentialEquation, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(differentialEquation, varOrd);
         String varOrdWithPrimes = varOrd;
         for (int i = 0; i <= ord; i++) {
             value = value.replaceVariable(varOrdWithPrimes, derivative);
@@ -276,21 +353,6 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         return solutions;
 
-    }
-
-    /**
-     * Berechnet die Ordnung der Differentialgleichung f(x, y, y', ..., y^(n)) =
-     * 0 mit x = varAbsc, y = varOrd.
-     */
-    private static int getOrderOfDifferentialEquation(Expression f, String varAbsc, String varOrd) {
-        int ord = 0;
-        HashSet<String> vars = f.getContainedIndeterminates();
-        for (String var : vars) {
-            if (var.startsWith(varOrd) && var.contains("'")) {
-                ord = Math.max(ord, var.length() - var.replaceAll("'", "").length());
-            }
-        }
-        return ord;
     }
 
     protected static ExpressionCollection solveDifferentialEquationOfOrderOne(Expression f, String varAbsc, String varOrd) throws EvaluationException {
@@ -581,7 +643,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         // Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
         if (ord < 2) {
@@ -740,7 +802,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static ExpressionCollection getLinearlyIndependentSolutionsOfDifferentialEquationHomogeneousAndLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException, EvaluationException {
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         // Es sollen nur lineare Differentialgleichungen höherer Ordnung betrachtet werden.
         if (ord < 2) {
@@ -780,7 +842,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static boolean isDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) {
 
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
         Expression restCoefficient = f;
         for (int i = 0; i <= n; i++) {
@@ -807,7 +869,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
          Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
          geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
          */
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
         HashSet<String> vars = new HashSet<>();
         for (int i = 0; i <= n; i++) {
@@ -848,7 +910,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
          Idee: Die i-te Ableitung y^(i) wird durch die Variable X_i ersetzt. Danach wird 
          geprüft, ob f als Multipolynom in den Variablen X_0, ..., X_n Grad <= 1 besitzt.
          */
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
         HashSet<String> vars = new HashSet<>();
         for (int i = 0; i <= n; i++) {
@@ -887,7 +949,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             return false;
         }
 
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
 
         // Jetzt wird auf Homogenität überprüft.
         Expression fCopy = f;
@@ -947,7 +1009,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static Expression getRestCoefficientInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         String varOrdWithPrimes = varOrd;
         for (int i = 0; i <= ord; i++) {
@@ -976,7 +1038,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     private static ArrayList<Expression> getLinearCoefficientsInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         try {
             f = f.sub(getRestCoefficientInLinearDifferentialEquation(f, varAbsc, varOrd)).simplify();
@@ -1021,7 +1083,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         // 1. Ermittlung der Koeffizienten.
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
         ExpressionCollection coefficients = new ExpressionCollection();
         String varOrdWithPrimes = varOrd;
         HashSet<String> vars = f.getContainedIndeterminates();
@@ -1204,7 +1266,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         }
 
         // 1. Ermittlung der Koeffizienten.
-        int n = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int n = getOrderOfDifferentialEquation(f, varOrd);
         ArrayList<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
 
         Expression charPolynomial = ZERO;
@@ -1285,7 +1347,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         String varOrdWithPrimes = getVarWithPrimes(varOrd, ord);
 
@@ -1346,7 +1408,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
-        int ord = getOrderOfDifferentialEquation(f, varAbsc, varOrd);
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
 
         String varOrdWithPrimes = getVarWithPrimes(varOrd, ord);
 
