@@ -121,9 +121,12 @@ public abstract class SimplifyUtilities {
         boolean termIsContainedInTermsLeft;
 
         for (int i = 0; i < termsRight.getBound(); i++) {
+            if (termsRight.get(i) == null){
+                continue;
+            }
             termIsContainedInTermsLeft = false;
             for (int j = 0; j < termsLeft.getBound(); j++) {
-                if (termsLeftCopy.get(j).equivalent(termsRight.get(i))) {
+                if (termsLeftCopy.get(j) != null && termsLeftCopy.get(j).equivalent(termsRight.get(i))) {
                     termIsContainedInTermsLeft = true;
                     break;
                 }

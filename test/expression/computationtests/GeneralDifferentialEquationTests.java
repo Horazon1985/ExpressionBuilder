@@ -57,6 +57,16 @@ public class GeneralDifferentialEquationTests {
 
     @Test
     public void solveDiffEqWithSeparableVariablesTest1() {
+        try {
+            // DGL: f = y_1'''''+x^2*y''''-sin(x)*y'''-x^5/7. Dann ist ord = 4, subOrd = 3. 
+            Expression f = Expression.build("y_1'''''+x^2*y''''-sin(x)*y'''-x^5/7", null);
+            int ord = SolveGeneralDifferentialEquationMethods.getOrderOfDifferentialEquation(f, "y");
+            int subOrd = SolveGeneralDifferentialEquationMethods.getSubOrderOfDifferentialEquation(f, "y");
+            assertTrue(ord == 4);
+            assertTrue(subOrd == 3);
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
         
     }
     

@@ -1523,7 +1523,10 @@ public abstract class SolveGeneralEquationMethods {
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
         if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
-            return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            zeros = SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            if (!zeros.isEmpty() || zeros == NO_SOLUTIONS){
+                return zeros;
+            }
         }
 
         /*
@@ -1544,6 +1547,7 @@ public abstract class SolveGeneralEquationMethods {
          */
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
         getSuitableSubstitutionForEquation(f, var, setOfSubstitutions, true);
+        setOfSubstitutions.removeMultipleTerms();
         Expression fSubstituted;
 
         for (int i = 0; i < setOfSubstitutions.getBound(); i++) {
