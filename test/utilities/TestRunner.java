@@ -34,7 +34,7 @@ public class TestRunner {
         testClasses.add(GeneralEquationMethodsTest.class);
         testClasses.add(IntegrationTests.class);
         testClasses.add(PolynomialTests.class);
-        testClasses.add(SimplifyExpLog.class);
+        testClasses.add(SimplifyExpLogTests.class);
         testClasses.add(SimplifyOperatorTests.class);
         testClasses.add(SpecialEquationMethodsTest.class);
         testClasses.add(ExpressionCollectionTest.class);

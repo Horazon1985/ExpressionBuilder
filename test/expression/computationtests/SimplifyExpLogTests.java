@@ -9,12 +9,12 @@ import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.fail;
 
-public class SimplifyExpLogTest {
+public class SimplifyExpLogTests {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

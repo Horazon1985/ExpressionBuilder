@@ -56,6 +56,8 @@ public class SimplifyUtilitiesTest {
         g = g.turnToApproximate();
         ExpressionCollection factors = SimplifyUtilities.getFactors(g);
         assertTrue(factors.getBound() == 2);
+        // Notwendig für weitere Tests!
+        g = g.turnToPrecise();
     }
 
     @Test
