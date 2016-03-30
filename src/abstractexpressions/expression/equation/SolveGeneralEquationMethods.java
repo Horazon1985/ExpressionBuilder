@@ -61,7 +61,7 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         return simplifyTypes;
     }
-    
+
     /**
      * Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) = g(x).
      *
@@ -69,21 +69,21 @@ public abstract class SolveGeneralEquationMethods {
      */
     public static ExpressionCollection solveEquation(Expression f, Expression g, String var) throws EvaluationException {
         solveTries = 100;
-        if (g.equals(ZERO)){
+        if (g.equals(ZERO)) {
             return solveZeroEquation(f, var);
         }
         return solveGeneralEquation(f, g, var);
     }
-    
+
     /**
-     * Interne Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) = g(x).
+     * Interne Hauptprozedur zum algebraischen Lösen von Gleichungen f(x) =
+     * g(x).
      *
      * @throws EvaluationException
      */
     protected static ExpressionCollection solveGeneralEquation(Expression f, Expression g, String var) throws EvaluationException {
 
 //        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
-
         if (solveTries <= 0) {
             return new ExpressionCollection();
         }
@@ -1455,7 +1455,6 @@ public abstract class SolveGeneralEquationMethods {
     protected static ExpressionCollection solveZeroEquation(Expression f, String var) throws EvaluationException {
 
 //        System.out.println(solveTries + ": Löse Nullgl. " + f.writeExpression() + " = 0");
-
         if (solveTries <= 0) {
             return new ExpressionCollection();
         }
@@ -1524,7 +1523,7 @@ public abstract class SolveGeneralEquationMethods {
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
         if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
             zeros = SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
-            if (!zeros.isEmpty() || zeros == NO_SOLUTIONS){
+            if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
                 return zeros;
             }
         }
@@ -1625,6 +1624,13 @@ public abstract class SolveGeneralEquationMethods {
          g(x) bei den Lösungen nicht verschwindet.
          */
         if (f.isQuotient()) {
+            
+            // Sonderfall: wenn der Zähler bzgl. var konstant und != 0 ist, so besitzt die Gleichung keine Lösungen.
+            Expression numerator = ((BinaryOperation) f).getLeft();
+            if (!numerator.contains(var) && !numerator.equals(ZERO)) {
+                return NO_SOLUTIONS;
+            }
+
             ExpressionCollection zerosLeft = solveGeneralEquation(((BinaryOperation) f).getLeft(), ZERO, var);
             Expression valueOfDenominatorAtZero;
             boolean validZero;
@@ -1639,7 +1645,9 @@ public abstract class SolveGeneralEquationMethods {
                     zeros.add(zerosLeft.get(i));
                 }
             }
+            
         }
+        
         return zeros;
 
     }
