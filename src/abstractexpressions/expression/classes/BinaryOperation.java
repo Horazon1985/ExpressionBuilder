@@ -1875,6 +1875,40 @@ public class BinaryOperation extends Expression {
 
         try {
             // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
+            if (this.isSum() || this.isDifference()) {
+                
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+                Expression summandSimplified;
+                for (int i = 0; i < summandsLeft.getBound(); i++){
+                    summandSimplified = summandsLeft.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                    if (summandSimplified.length() < summandsLeft.get(i).length()){
+                        summandsLeft.put(i, summandSimplified);
+                    }
+                }
+                for (int i = 0; i < summandsRight.getBound(); i++){
+                    summandSimplified = summandsRight.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                    if (summandSimplified.length() < summandsRight.get(i).length()){
+                        summandsRight.put(i, summandSimplified);
+                    }
+                }
+                
+                expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+                
+            } else if (this.isProduct()){
+                
+                ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+                Expression factorSimplified;
+                for (int i = 0; i < factors.getBound(); i++){
+                    factorSimplified = factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                    if (factorSimplified.length() < factors.get(i).length()){
+                        factors.put(i, factorSimplified);
+                    }
+                }
+                expr = SimplifyUtilities.produceProduct(factors);
+            
+            }
+            
             if (this.isQuotient()) {
                 /* 
                  Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
@@ -1894,7 +1928,7 @@ public class BinaryOperation extends Expression {
             return expr;
         }
 
-        return this;
+        return expr;
 
     }
 

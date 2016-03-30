@@ -10,8 +10,8 @@ import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.diferentialequation.SolveGeneralDifferentialEquationMethods;
-import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import org.junit.AfterClass;
@@ -82,6 +82,7 @@ public class GeneralDifferentialEquationTests {
 
     @Test
     public void solveDiffEqWithSeparableVariablesTest2() {
+        
     }
 
     @Test
@@ -116,7 +117,17 @@ public class GeneralDifferentialEquationTests {
 
     @Test
     public void solveDiffEqLinearAndHomogeneousWithConstantCoefficientsTest1() {
-
+        try {
+            // DGL: y''' - 3*y' - 2*y = 0. Lösungen sind: exp(-x)*(C_1+C_2*x)+C_3*exp(2*x).
+            Expression leftSide = Expression.build("y''' - 3*y' - 2*y", null);
+            ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(leftSide, ZERO, "x", "y");
+            assertTrue(solutions.getBound() == 1);
+            Expression solution = MINUS_ONE.mult(Variable.create("x")).exp().mult(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Object[]{"C_1", "C_2"})).add(
+                    Variable.create("C_3").mult(TWO.mult(Variable.create("x")).exp()));
+            assertTrue(solutions.containsExquivalent(solution));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
     }
 
     @Test
@@ -131,7 +142,17 @@ public class GeneralDifferentialEquationTests {
 
     @Test
     public void solveDiffEqLinearWithConstantCoefficientsTest() {
-
+        try {
+            // DGL: y'' - 2*y' + y = x^2*exp(x). Lösungen sind: exp(-x)*(C_1+C_2*x)+C_3*exp(2*x).
+            Expression leftSide = Expression.build("y'' - 2*y' + y", null);
+            Expression rightSide = Expression.build("x^2*exp(x)", null);
+            ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(leftSide, rightSide, "x", "y");
+            assertTrue(solutions.getBound() == 1);
+            Expression solution = Variable.create("x").exp().mult(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Object[]{"C_1", "C_2", null, null, ONE.div(12)}));
+            assertTrue(solutions.containsExquivalent(solution));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
     }
 
 }

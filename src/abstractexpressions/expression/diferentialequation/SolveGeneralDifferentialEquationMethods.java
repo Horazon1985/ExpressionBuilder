@@ -59,6 +59,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         return simplifyTypes;
     }
 
@@ -79,6 +80,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         return simplifyTypes;
     }
 

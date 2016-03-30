@@ -1,6 +1,5 @@
 package utilities;
 
-import abstractexpressions.expression.utilities.SimplifyExpLog;
 import expression.computationtests.*;
 import expression.generaltests.*;
 import logicalexpression.computationtests.*;

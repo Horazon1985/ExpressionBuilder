@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import lang.translator.Translator;
 
@@ -200,7 +201,7 @@ public abstract class SimplifyPolynomialMethods {
         varsAsHashSet.addAll(Arrays.asList(vars));
         return getDegreeOfMultiPolynomial(f, varsAsHashSet);
     }
-    
+
     /**
      * Liefert (eine UNTERE SCHRANKE für) die Ordnung des Polynoms, welches von
      * f repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1
@@ -344,12 +345,48 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Gibt das Polynom bzgl. der Veränderlichen var zurück, wenn coefficients
+     * die Koeffizienten darstellen. null-Koeffizienten werden ignoriert.
+     */
     public static Expression getPolynomialFromCoefficients(ExpressionCollection coefficients, String var) {
-        Expression result = Expression.ZERO;
+        Expression polynomial = Expression.ZERO;
         for (int i = 0; i < coefficients.getBound(); i++) {
-            result = result.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
+            if (coefficients.get(i) != null) {
+                polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
+            }
         }
-        return result;
+        return polynomial;
+    }
+
+    /**
+     * Gibt das Polynom bzgl. der Veränderlichen var zurück, wenn coefficients
+     * die Koeffizienten darstellen. null-Koeffizienten werden ignoriert.
+     */
+    public static Expression getPolynomialFromCoefficients(String var, Object... coefficients) {
+        Expression polynomial = Expression.ZERO;
+        for (int i = 0; i < coefficients.length; i++) {
+            if (coefficients[i] == null) {
+                continue;
+            }
+            if (coefficients[i] instanceof Expression) {
+                if (((Expression) coefficients[i]).isQuotient() && ((BinaryOperation) coefficients[i]).getLeft().equals(ONE)) {
+                    // Ist der Koeffizient von der Form 1/a, so wird var^i/a hinzuaddiert.
+                    polynomial = polynomial.add(Variable.create(var).pow(i).div(((BinaryOperation) coefficients[i]).getRight()));
+                } else {
+                    polynomial = polynomial.add(((Expression) coefficients[i]).mult(Variable.create(var).pow(i)));
+                }
+            } else if (coefficients[i] instanceof Integer) {
+                polynomial = polynomial.add(new Constant((Integer) coefficients[i]).mult(Variable.create(var).pow(i)));
+            } else if (coefficients[i] instanceof BigInteger) {
+                polynomial = polynomial.add(new Constant((BigInteger) coefficients[i]).mult(Variable.create(var).pow(i)));
+            } else if (coefficients[i] instanceof BigDecimal) {
+                polynomial = polynomial.add(new Constant((BigDecimal) coefficients[i]).mult(Variable.create(var).pow(i)));
+            } else if (coefficients[i] instanceof String) {
+                polynomial = polynomial.add(Variable.create((String) coefficients[i]).mult(Variable.create(var).pow(i)));
+            }
+        }
+        return polynomial;
     }
 
     /**
