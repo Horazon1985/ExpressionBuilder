@@ -6,8 +6,11 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.FOUR;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.PI;
+import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
@@ -193,27 +196,27 @@ public abstract class PolynomialRootsMethods {
             }
 
             // Versuchen, rationale Polynome zu faktorisieren.
-            if (SimplifyPolynomialMethods.isPolynomialRational(coefficients)){
-                try{
+            if (SimplifyPolynomialMethods.isPolynomialRational(coefficients)) {
+                try {
                     Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(coefficients, var);
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
-                    if (factorizedPolynomial.isProduct() 
+                    if (factorizedPolynomial.isProduct()
                             && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
-                            && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0){
-                        return SimplifyUtilities.union(SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var), 
+                            && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getRight(), var).compareTo(BigInteger.ZERO) > 0) {
+                        return SimplifyUtilities.union(SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var),
                                 SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
                     }
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
                     if (factorizedPolynomial.isIntegerPower()
-                            && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0){
+                            && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0) {
                         return SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
                     }
-                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e){
+                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
                     // Nichts tun.
                 }
             }
-            
-            // Nullstellen von Polynomen vom Grad 1 - 3 können direkt ermittelt werden.
+
+            // Nullstellen von Polynomen vom Grad 1 - 4 können direkt ermittelt werden.
             if (degree == 1) {
                 return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveLinearEquation(coefficients));
             }
@@ -222,6 +225,9 @@ public abstract class PolynomialRootsMethods {
             }
             if (degree == 3) {
                 return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveCubicEquation(coefficients));
+            }
+            if (degree == 4) {
+                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveQuarticEquation(coefficients));
             }
 
         }
@@ -429,18 +435,18 @@ public abstract class PolynomialRootsMethods {
     public static ExpressionCollection solveCubicEquation(ExpressionCollection coefficients) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        Expression A = coefficients.get(2).div(coefficients.get(3)).simplify();
-        Expression B = coefficients.get(1).div(coefficients.get(3)).simplify();
-        Expression C = coefficients.get(0).div(coefficients.get(3)).simplify();
+        Expression a = coefficients.get(2).div(coefficients.get(3)).simplify();
+        Expression b = coefficients.get(1).div(coefficients.get(3)).simplify();
+        Expression c = coefficients.get(0).div(coefficients.get(3)).simplify();
 
-        // Gelöst wird nun die Gleichung x^3 + Ax^2 + Bx + C = 0
+        // Gelöst wird nun die Gleichung x^3 + ax^2 + bx + c = 0
         /*
-         Substitution x = z - A/3 (später muss zurücksubstituiert werden): p =
-         B - A^2/3, q = 2A^3/27 - AB/3 + C. Gelöst wird nun die Gleichung z^3
+         Substitution: x = z - a/3 (später muss zurücksubstituiert werden): p =
+         b - a^2/3, q = 2a^3/27 - ab/3 + c. Gelöst wird nun die Gleichung z^3
          + pz + q = 0
          */
-        Expression p = B.sub(A.pow(2).div(3)).simplify();
-        Expression q = TWO.mult(A.pow(3).div(27)).sub(A.mult(B).div(3)).add(C).simplify();
+        Expression p = b.sub(a.pow(2).div(3)).simplify();
+        Expression q = TWO.mult(a.pow(3).div(27)).sub(a.mult(b).div(3)).add(c).simplify();
 
         // Diskriminante discriminant = (p/3)^3 + (q/2)^2 = p^3/27 + q^2/4.
         Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
@@ -452,9 +458,9 @@ public abstract class PolynomialRootsMethods {
              */
             Expression arg = MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
             Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2).simplify();
-            zeros.put(0, factor.mult(arg.cos()).sub(A.div(3)).simplify());
-            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(PI.div(3)).cos()).sub(A.div(3)).simplify());
-            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(0, factor.mult(arg.cos()).sub(a.div(3)).simplify());
+            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(PI.div(3)).cos()).sub(a.div(3)).simplify());
+            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(PI.div(3)).cos()).sub(a.div(3)).simplify());
             return zeros;
         }
 
@@ -462,16 +468,16 @@ public abstract class PolynomialRootsMethods {
             // Casus irreduzibilis.
             Expression arg = MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
             Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2);
-            zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(A.div(3)).simplify());
-            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
-            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(A.div(3)).simplify());
+            zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(a.div(3)).simplify());
+            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(a.div(3)).simplify());
+            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(a.div(3)).simplify());
             return zeros;
         } else if (discriminant.equals(ZERO)) {
             // Auflösung nach Cardano-Formel: 
             // Doppellösung z = (q/2)^(1/3)
-            zeros.put(0, (q.div(2).pow(1, 3)).sub(A.div(3)).simplify());
+            zeros.put(0, (q.div(2).pow(1, 3)).sub(a.div(3)).simplify());
             // Einfache Lösung z = (-4q)^(1/3)
-            zeros.put(1, new Constant(-4).mult(q).pow(1, 3).sub(A.div(3)).simplify());
+            zeros.put(1, new Constant(-4).mult(q).pow(1, 3).sub(a.div(3)).simplify());
             return zeros;
         }
 
@@ -482,7 +488,99 @@ public abstract class PolynomialRootsMethods {
          */
         Expression u = (discriminant.pow(1, 2).sub(q.div(2)).simplify()).pow(1, 3);
         Expression v = MINUS_ONE.mult(discriminant.pow(1, 2)).sub(q.div(2)).simplify().pow(1, 3);
-        zeros.put(0, u.add(v).sub(A.div(3)).simplify());
+        zeros.put(0, u.add(v).sub(a.div(3)).simplify());
+        return zeros;
+
+    }
+
+    /**
+     * Ermittelt die Lösungen von coefficients.get(4)*x^4 +
+     * coefficients.get(3)*x^3 + coefficients.get(2)*x^2 + coefficients.get(1)*x
+     * + coefficients.get(0) = 0; Voraussetzung: coefficients.get(4) != 0.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection solveQuarticEquation(ExpressionCollection coefficients) throws EvaluationException {
+
+        ExpressionCollection zeros = new ExpressionCollection();
+        Expression a = coefficients.get(3).div(coefficients.get(4)).simplify();
+        Expression b = coefficients.get(2).div(coefficients.get(4)).simplify();
+        Expression c = coefficients.get(1).div(coefficients.get(4)).simplify();
+        Expression d = coefficients.get(0).div(coefficients.get(4)).simplify();
+
+        // Gelöst wird nun die Gleichung x^4 + ax^3 + bx^2 + cx + d = 0
+        /*
+        Substitution: x = y - a/4 (später muss zurücksubstituiert werden): p =
+         b - 3a^2/8, q = a^3/8 + C - ab/2, r = a^2b/16 + d - (ac/4 + 3a^4/256). Gelöst wird nun die Gleichung z^3
+         + pz + q = 0. Gelöst wird nun die Gleichung y^4 + py^2 + qy + r = 0.
+         */
+        Expression p = b.sub(THREE.mult(a.pow(2)).div(8)).simplify();
+        Expression q = a.pow(3).div(8).add(c).sub(a.mult(b).div(2)).simplify();
+        Expression r = a.pow(2).mult(b).div(16).add(d).sub(a.mult(c).div(4).add(THREE.mult(a.pow(4)).div(256))).simplify();
+
+        // Koeffizienten für die Gleichung der Resultante 8z^3 + 20pz^2 + (16p^2-8r)z + (4p^3-4pr-q^2) = 0 werden gebildet:
+        ExpressionCollection coefficientsResultant = new ExpressionCollection();
+        coefficientsResultant.add(FOUR.mult(p.pow(3)).sub(FOUR.mult(p).mult(r).add(q.pow(2))));
+        coefficientsResultant.add(new Constant(16).mult(p.pow(2)).sub(new Constant(8).mult(r)));
+        coefficientsResultant.add(new Constant(20).mult(p));
+        coefficientsResultant.add(new Constant(8));
+
+        ExpressionCollection zerosResultant = solveCubicEquation(coefficientsResultant);
+
+        if (zerosResultant.isEmpty()) {
+            // Sollte eigentlich NIE vorkommen. Trotzdem sicherheitshalber.
+            return zeros;
+        }
+
+        /* 
+         Jetzt wird eine Nullstelle z der Resultante gesucht, so dass p + 2z > 0 gilt.
+         Falls dies trotzdem nicht der Fall sein sollte, einfach leere Menge als Lösung zurückgeben.
+         */
+        Expression specialZeroResultant = null;
+        double difference;
+        for (Expression zeroResultant : zerosResultant) {
+            try {
+                difference = p.add(TWO.mult(zeroResultant)).evaluate();
+                if (difference > 0) {
+                    specialZeroResultant = zeroResultant;
+                    break;
+                }
+            } catch (EvaluationException e) {
+            }
+        }
+
+        if (specialZeroResultant == null) {
+            return zeros;
+        }
+
+        /* 
+         Zwei quadratische Gleichungen werden nun gelöst:
+         (1) y^2 - (p+2z)^(1/2)y + q/(2(p+2z)^(1/2)) + p + z = 0.
+         (2) y^2 + (p+2z)^(1/2)y - q/(2(p+2z)^(1/2)) + p + z = 0.
+         */
+        ExpressionCollection coefficientsQuadraticEquationOne = new ExpressionCollection();
+        ExpressionCollection coefficientsQuadraticEquationTwo = new ExpressionCollection();
+        Expression sum = p.add(TWO.mult(specialZeroResultant));
+        coefficientsQuadraticEquationOne.add(q.div(TWO.mult(sum.pow(1, 2))).add(p).add(specialZeroResultant));
+        coefficientsQuadraticEquationOne.add(MINUS_ONE.mult(sum.pow(1, 2)));
+        coefficientsQuadraticEquationOne.add(ONE);
+        coefficientsQuadraticEquationTwo.add(p.add(specialZeroResultant).sub(q.div(TWO.mult(sum.pow(1, 2)))));
+        coefficientsQuadraticEquationTwo.add(sum.pow(1, 2));
+        coefficientsQuadraticEquationTwo.add(ONE);
+
+        ExpressionCollection zerosForSubst = SimplifyUtilities.union(solveQuadraticEquation(coefficientsQuadraticEquationOne), 
+                solveQuadraticEquation(coefficientsQuadraticEquationTwo));
+        // Mehrfachlösungen werden beseitigt.
+        zerosForSubst.removeMultipleTerms();
+        
+        // Rücksubstitution und Zurückgeben der Nullstellen.
+        for (Expression zeroForSubst : zerosForSubst){
+            try{
+                zeros.add(zeroForSubst.sub(a.div(4)).simplify());
+            } catch (EvaluationException e) {
+                // Nullstellen mit diversen Fehlern werden ignoriert.
+            }
+        }
         return zeros;
 
     }
