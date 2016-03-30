@@ -227,7 +227,7 @@ public abstract class PolynomialRootsMethods {
                 return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveCubicEquation(coefficients));
             }
             if (degree == 4) {
-                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveQuarticEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveQuarticEquation(coefficients, var));
             }
 
         }
@@ -500,7 +500,7 @@ public abstract class PolynomialRootsMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveQuarticEquation(ExpressionCollection coefficients) throws EvaluationException {
+    public static ExpressionCollection solveQuarticEquation(ExpressionCollection coefficients, String var) throws EvaluationException {
 
         ExpressionCollection zeros = new ExpressionCollection();
         Expression a = coefficients.get(3).div(coefficients.get(4)).simplify();
@@ -520,12 +520,16 @@ public abstract class PolynomialRootsMethods {
 
         // Koeffizienten für die Gleichung der Resultante 8z^3 + 20pz^2 + (16p^2-8r)z + (4p^3-4pr-q^2) = 0 werden gebildet:
         ExpressionCollection coefficientsResultant = new ExpressionCollection();
-        coefficientsResultant.add(FOUR.mult(p.pow(3)).sub(FOUR.mult(p).mult(r).add(q.pow(2))));
-        coefficientsResultant.add(new Constant(16).mult(p.pow(2)).sub(new Constant(8).mult(r)));
-        coefficientsResultant.add(new Constant(20).mult(p));
-        coefficientsResultant.add(new Constant(8));
+        try {
+            coefficientsResultant.add(FOUR.mult(p.pow(3)).sub(FOUR.mult(p).mult(r).add(q.pow(2))).simplify());
+            coefficientsResultant.add(new Constant(16).mult(p.pow(2)).sub(new Constant(8).mult(r)).simplify());
+            coefficientsResultant.add(new Constant(20).mult(p).simplify());
+            coefficientsResultant.add(new Constant(8));
+        } catch (EvaluationException e) {
+            return zeros;
+        }
 
-        ExpressionCollection zerosResultant = solveCubicEquation(coefficientsResultant);
+        ExpressionCollection zerosResultant = solvePolynomialEquation(coefficientsResultant, var);
 
         if (zerosResultant.isEmpty()) {
             // Sollte eigentlich NIE vorkommen. Trotzdem sicherheitshalber.
@@ -568,14 +572,14 @@ public abstract class PolynomialRootsMethods {
         coefficientsQuadraticEquationTwo.add(sum.pow(1, 2));
         coefficientsQuadraticEquationTwo.add(ONE);
 
-        ExpressionCollection zerosForSubst = SimplifyUtilities.union(solveQuadraticEquation(coefficientsQuadraticEquationOne), 
+        ExpressionCollection zerosForSubst = SimplifyUtilities.union(solveQuadraticEquation(coefficientsQuadraticEquationOne),
                 solveQuadraticEquation(coefficientsQuadraticEquationTwo));
         // Mehrfachlösungen werden beseitigt.
         zerosForSubst.removeMultipleTerms();
-        
+
         // Rücksubstitution und Zurückgeben der Nullstellen.
-        for (Expression zeroForSubst : zerosForSubst){
-            try{
+        for (Expression zeroForSubst : zerosForSubst) {
+            try {
                 zeros.add(zeroForSubst.sub(a.div(4)).simplify());
             } catch (EvaluationException e) {
                 // Nullstellen mit diversen Fehlern werden ignoriert.
