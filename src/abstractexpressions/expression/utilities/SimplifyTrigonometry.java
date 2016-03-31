@@ -10,6 +10,7 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import lang.translator.Translator;
+import notations.NotationLoader;
 
 public abstract class SimplifyTrigonometry {
 
@@ -34,38 +35,102 @@ public abstract class SimplifyTrigonometry {
     public static final Expression THREE = new Constant(3);
     public final static Variable PI = Variable.create("pi");
 
+    /**
+     * Hilfsmethode. Gibt zurück, ob der Ausdruck expr eine Variable mit
+     * ganzzahligen Werten (also eine Variable der Form K_1, K_2, ...) ist.
+     */
+    private static boolean isIntegerVariable(Expression expr) {
+        if (!(expr instanceof Variable)) {
+            return false;
+        }
+        String varName = ((Variable) expr).getName();
+        return varName.startsWith(NotationLoader.FREE_INTEGER_PARAMETER_VAR + "_") && !varName.contains("'");
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob der Ausdruck expr stets ganzzahlig ist.
+     * Dies soll genau dann der Fall sein, wenn expr ein Produkt aus ganzen
+     * Zahlen und Variablen mit ganzzahligen Werten (also Variablen der Form
+     * K_1, K_2, ...) ist.
+     */
+    private static boolean isExpressionIntegerValued(Expression expr) {
+        ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+        for (Expression factor : factors) {
+            if (!factor.isIntegerConstant() && !isIntegerVariable(factor)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private static Expression[] getRationalFactorOfPi(Expression expr) throws NotRationalMultipleOfPiException {
 
-        Expression[] factor = new Expression[2];
+        Expression[] factorOfPi = new Expression[2];
 
-        if (expr.isNotQuotient()) {
-            factor[1] = ONE;
-        }
-        if (expr.equals(PI)) {
-            factor[0] = ONE;
-            return factor;
-        } else if (expr.isProduct()) {
-            if (((BinaryOperation) expr).getLeft().isIntegerConstant() && ((BinaryOperation) expr).getRight().equals(PI)) {
-                factor[0] = ((BinaryOperation) expr).getLeft();
-                return factor;
-            }
-        } else if (expr.isQuotient()) {
-            if (((BinaryOperation) expr).getRight().isIntegerConstant()) {
-                factor[1] = ((BinaryOperation) expr).getRight();
-            }
-            if (((BinaryOperation) expr).getLeft().equals(PI)) {
-                factor[0] = ONE;
-                return factor;
-            } else if (((BinaryOperation) expr).getLeft().isProduct()) {
-                if (((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().equals(PI)) {
-                    factor[0] = ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft();
-                    return factor;
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(expr);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
+
+        ExpressionCollection resultFactorsNumerator = new ExpressionCollection();
+        ExpressionCollection resultFactorsDenominator = new ExpressionCollection();
+
+        boolean numeratorContainsPi = false;
+
+        for (Expression factor : factorsNumerator) {
+            if (factor.equals(PI)) {
+                if (!numeratorContainsPi) {
+                    numeratorContainsPi = true;
+                    continue;
                 }
+                throw new NotRationalMultipleOfPiException();
+            }
+            if (isExpressionIntegerValued(factor)) {
+                resultFactorsNumerator.add(factor);
+            } else {
+                throw new NotRationalMultipleOfPiException();
             }
         }
 
-        throw new NotRationalMultipleOfPiException();
+        // Pi muss genau einmal vorkommen.
+        if (!numeratorContainsPi) {
+            throw new NotRationalMultipleOfPiException();
+        }
 
+        for (Expression factor : factorsDenominator) {
+            if (isExpressionIntegerValued(factor)) {
+                resultFactorsDenominator.add(factor);
+            } else {
+                throw new NotRationalMultipleOfPiException();
+            }
+        }
+
+        try {
+            // Ganyyahlige Factoren werden sofort verrechnet!
+            factorOfPi[0] = SimplifyUtilities.produceProduct(resultFactorsNumerator).orderSumsAndProducts();
+            factorOfPi[1] = SimplifyUtilities.produceProduct(resultFactorsDenominator).orderSumsAndProducts();
+        } catch (EvaluationException e) {
+            throw new NotRationalMultipleOfPiException();
+        }
+        return factorOfPi;
+
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob der Ausdruck expr stets ganzzahlig und
+     * gerade ist. Dies soll genau dann der Fall sein, wenn expr ein Produkt aus
+     * ganzen Zahlen und Variablen mit ganzzahligen Werten (also Variablen der
+     * Form K_1, K_2, ...) ist und mindestens eine der Zahlen gerade ist.
+     */
+    private static boolean isExpressionEvenIntegerValued(Expression expr) {
+        if (!isExpressionIntegerValued(expr)) {
+            return false;
+        }
+        ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+        for (Expression factor : factors) {
+            if (factor.isEvenIntegerConstant()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Expression reduceSineCosineSecansCosecansIfArgumentContainsSummandOfMultipleOfPi(Function f) {
@@ -84,13 +149,26 @@ public abstract class SimplifyTrigonometry {
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
 
+            /*
+             Zwei Kriterien:
+             (1) Ganzzahlige Vielfache von pi werden (mit entsprechendem Vorzeichen) beseitigt.
+             (2) Ganzzahlige Vielfache von pi werden (mit entsprechendem Vorzeichen) beseitigt, 
+             wenn ganzzahlige Variablen (K_1, K_2, ...) auftauchen.
+             */
             try {
                 factorOfPi = getRationalFactorOfPi(summandsLeft.get(i));
-                quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
-                factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
-                summandsLeft.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
-                if (quotient.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
-                    sign = !sign;
+                // Kriterium (1)
+                if (factorOfPi[0].isIntegerConstant() && factorOfPi[1].isIntegerConstant()) {
+                    quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
+                    factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
+                    summandsLeft.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
+                    if (quotient.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
+                        sign = !sign;
+                    }
+                }
+                // Kriterium (2)
+                if (isExpressionEvenIntegerValued(factorOfPi[0]) && factorOfPi[1].equals(ONE)) {
+                    summandsLeft.remove(i);
                 }
             } catch (NotRationalMultipleOfPiException e) {
             }
@@ -101,11 +179,18 @@ public abstract class SimplifyTrigonometry {
 
             try {
                 factorOfPi = getRationalFactorOfPi(summandsRight.get(i));
-                quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
-                factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
-                summandsRight.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
-                if (quotient.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
-                    sign = !sign;
+                // Kriterium (1)
+                if (factorOfPi[0].isIntegerConstant() && factorOfPi[1].isIntegerConstant()) {
+                    quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
+                    factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
+                    summandsRight.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
+                    if (quotient.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
+                        sign = !sign;
+                    }
+                }
+                // Kriterium (2)
+                if (isExpressionEvenIntegerValued(factorOfPi[0]) && factorOfPi[1].equals(ONE)) {
+                    summandsRight.remove(i);
                 }
             } catch (NotRationalMultipleOfPiException e) {
             }
@@ -140,7 +225,7 @@ public abstract class SimplifyTrigonometry {
 
             try {
                 factorOfPi = getRationalFactorOfPi(summandsLeft.get(i));
-                if (factorOfPi[1].equals(TWO)) {
+                if (factorOfPi[0].isIntegerConstant() && factorOfPi[1].equals(TWO)) {
                     numerator = ((Constant) factorOfPi[0]).getValue().toBigInteger();
 
                     if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
@@ -170,7 +255,7 @@ public abstract class SimplifyTrigonometry {
 
             try {
                 factorOfPi = getRationalFactorOfPi(summandsRight.get(i));
-                if (factorOfPi[1].equals(TWO)) {
+                if (factorOfPi[0].isIntegerConstant() && factorOfPi[1].equals(TWO)) {
                     numerator = ((Constant) factorOfPi[0]).getValue().toBigInteger();
 
                     if (numerator.mod(BigInteger.valueOf(4)).equals(BigInteger.ONE)) {
@@ -239,8 +324,15 @@ public abstract class SimplifyTrigonometry {
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
 
+            /*
+             Zwei Kriterien:
+             (1) Ganzzahlige Vielfache von pi werden (mit entsprechendem Vorzeichen) beseitigt.
+             (2) Ganzzahlige Vielfache von pi werden (mit entsprechendem Vorzeichen) beseitigt, 
+             wenn ganzzahlige Variablen (K_1, K_2, ...) auftauchen.
+             */
             try {
                 factorOfPi = getRationalFactorOfPi(summandsLeft.get(i));
+                // Kriterium (1)
                 if (factorOfPi[0].isOddIntegerConstant() && factorOfPi[1].equals(TWO)) {
                     summandsLeft.remove(i);
                     interchangeFunctionTypes = !interchangeFunctionTypes;
@@ -248,6 +340,10 @@ public abstract class SimplifyTrigonometry {
                     quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
                     factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
                     summandsLeft.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
+                }
+                // Kriterium (2)
+                if (isExpressionIntegerValued(factorOfPi[0]) && factorOfPi[1].equals(ONE)) {
+                    summandsLeft.remove(i);
                 }
             } catch (NotRationalMultipleOfPiException e) {
             }
@@ -258,6 +354,7 @@ public abstract class SimplifyTrigonometry {
 
             try {
                 factorOfPi = getRationalFactorOfPi(summandsRight.get(i));
+                // Kriterium (1)
                 if (factorOfPi[0].isOddIntegerConstant() && factorOfPi[1].equals(TWO)) {
                     summandsRight.remove(i);
                     interchangeFunctionTypes = !interchangeFunctionTypes;
@@ -265,6 +362,10 @@ public abstract class SimplifyTrigonometry {
                     quotient = ((Constant) factorOfPi[0]).getValue().toBigInteger().divide(((Constant) factorOfPi[1]).getValue().toBigInteger());
                     factorOfPi[0] = factorOfPi[0].sub(factorOfPi[1].mult(quotient));
                     summandsRight.put(i, factorOfPi[0].mult(PI).div(factorOfPi[1]));
+                }
+                // Kriterium (2)
+                if (isExpressionIntegerValued(factorOfPi[0]) && factorOfPi[1].equals(ONE)) {
+                    summandsRight.remove(i);
                 }
             } catch (NotRationalMultipleOfPiException e) {
             }

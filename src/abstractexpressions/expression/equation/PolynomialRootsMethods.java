@@ -377,7 +377,8 @@ public abstract class PolynomialRootsMethods {
 
     /**
      * Ermittelt die Lösungen von coefficients.get(1)*x + coefficients.get(0) =
-     * 0; Voraussetzung: coefficients.get(1) != 0.
+     * 0.<br>
+     * VORAUSSETZUNG: coefficients.get(1) != 0.
      *
      * @throws EvaluationException
      */
@@ -389,8 +390,8 @@ public abstract class PolynomialRootsMethods {
 
     /**
      * Ermittelt die Lösungen von coefficients.get(2)*x^2 +
-     * coefficients.get(1)*x + coefficients.get(0) = 0; Voraussetzung:
-     * coefficients.get(2) != 0.
+     * coefficients.get(1)*x + coefficients.get(0) = 0.<br>
+     * VORAUSSETZUNG: coefficients.get(2) != 0.
      *
      * @throws EvaluationException
      */
@@ -428,7 +429,8 @@ public abstract class PolynomialRootsMethods {
     /**
      * Ermittelt die Lösungen von coefficients.get(3)*x^3 +
      * coefficients.get(2)*x^2 + coefficients.get(1)*x + coefficients.get(0) =
-     * 0; Voraussetzung: coefficients.get(3) != 0.
+     * 0.<br>
+     * VORAUSSETZUNG: coefficients.get(3) != 0.
      *
      * @throws EvaluationException
      */
@@ -496,7 +498,8 @@ public abstract class PolynomialRootsMethods {
     /**
      * Ermittelt die Lösungen von coefficients.get(4)*x^4 +
      * coefficients.get(3)*x^3 + coefficients.get(2)*x^2 + coefficients.get(1)*x
-     * + coefficients.get(0) = 0; Voraussetzung: coefficients.get(4) != 0.
+     * + coefficients.get(0) = 0.<br>
+     * VORAUSSETZUNG: coefficients.get(4) != 0.
      *
      * @throws EvaluationException
      */
