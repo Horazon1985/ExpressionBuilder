@@ -33,6 +33,9 @@
   <object id = "BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT">
     <value>100</value>
   </object>
+  <object id = "BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS">
+    <value>5</value>
+  </object>
   <object id = "BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_POWERFUL_EXPANSION">
     <value>1000</value>
   </object>

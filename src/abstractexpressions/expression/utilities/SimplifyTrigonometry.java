@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
+import computationbounds.ComputationBounds;
 import java.math.BigInteger;
 import lang.translator.Translator;
 import notations.NotationLoader;
@@ -383,6 +384,32 @@ public abstract class SimplifyTrigonometry {
 
     }
 
+    private static int getMaxPowerOfTwoInPrimeDecomposition(BigInteger a) {
+        int maxExponentOfTwo = 0;
+        while (a.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
+            a = a.divide(BigInteger.valueOf(2));
+            maxExponentOfTwo++;
+        }
+        return maxExponentOfTwo;
+    }
+
+    /**
+     * Sei n = exponentOfTwo. Dies ist eine n-fache Iteration der
+     * Halbwinkelformel für den Kosinus: cos(x/2) = (1/2 + cos(x)/2)^(1/2).
+     * Zurückgegeben wird der explizit ausgeschriebene Ausdruck für cos(x/2^n),
+     * wo x = argument ist.<br>
+     * VORAUSSETZUNG: 0 <= argument <= pi (Sonst gibt es Vorzeichenfehler).
+     */
+    private static Expression getCosineByIteratingHalfAngleFormula(Expression argument, int exponentOfTwo) {
+        if (exponentOfTwo <= 0) {
+            return argument.cos();
+        }
+        if (exponentOfTwo > 1) {
+            return ONE.div(TWO).add(getCosineByIteratingHalfAngleFormula(argument, exponentOfTwo - 1).div(TWO)).pow(1, 2);
+        }
+        return ONE.div(TWO).add(argument.cos().div(TWO)).pow(1, 2);
+    }
+
     public static Expression reduceSine(Function f) {
 
         //sin(0) = 0
@@ -528,6 +555,26 @@ public abstract class SimplifyTrigonometry {
                     if ((m.compareTo(BigInteger.valueOf(4)) == 0) && (n.compareTo(BigInteger.valueOf(5)) == 0)) {
                         return MINUS_ONE.div(4).sub((new Constant(5).pow(1, 2)).div(4));
                     }
+                    //cos(2pi/17) = (-1+17^(1/2)+(2*(17-17^(1/2))^(1/2)+2(17+3*17^(1/2)-(2*(17-17^(1/2))^(1/2)-2(2*(17+17^(1/2))^(1/2))^(1/2))^(1/2))/16
+                    if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(17)) == 0)) {
+                        Constant seventeen = new Constant(17);
+                        Expression intermediateSqrtOfSum = (TWO.mult(seventeen.add(seventeen.pow(1, 2)))).pow(1, 2);
+                        Expression intermediateSqrtOfDifference = (TWO.mult(seventeen.sub(seventeen.pow(1, 2)))).pow(1, 2);
+                        return seventeen.pow(1, 2).add(intermediateSqrtOfDifference).add(
+                                TWO.mult(seventeen.add(THREE.mult(seventeen.pow(1, 2))).sub(TWO.mult(intermediateSqrtOfSum).add(intermediateSqrtOfDifference)).pow(1, 2))).sub(1).div(16);
+                    }
+                    // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Kosinus.
+                    int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+
+                        BigInteger quotientOfNByTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
+                        BigInteger numerator = quotientOfNByTwo.divide(quotientOfNByTwo.gcd(m));
+                        BigInteger denominator = m.divide(quotientOfNByTwo.gcd(m));
+
+                        if (denominator.compareTo(BigInteger.valueOf(7)) < 0 || denominator.compareTo(BigInteger.valueOf(17)) == 0 && numerator.compareTo(BigInteger.ONE) == 0) {
+                            return getCosineByIteratingHalfAngleFormula(new Constant(numerator).mult(PI).div(denominator), exponentOfTwo);
+                        }
+                    }
 
                 }
             }
@@ -558,6 +605,17 @@ public abstract class SimplifyTrigonometry {
                 //cos(pi/2) = 0
                 if (n.compareTo(BigInteger.valueOf(2)) == 0) {
                     return ZERO;
+                }
+                // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Kosinus.
+                int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
+                if (exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+
+                    BigInteger quotientOfNByTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
+
+                    if (quotientOfNByTwo.compareTo(BigInteger.valueOf(7)) < 0 || quotientOfNByTwo.compareTo(BigInteger.valueOf(17)) == 0 && quotientOfNByTwo.compareTo(BigInteger.ONE) == 0) {
+                        return getCosineByIteratingHalfAngleFormula(PI.div(quotientOfNByTwo), exponentOfTwo);
+                    }
+
                 }
 
             }
@@ -744,13 +802,21 @@ public abstract class SimplifyTrigonometry {
                     if ((m.compareTo(BigInteger.valueOf(5)) == 0) && (n.compareTo(BigInteger.valueOf(6)) == 0)) {
                         return TWO;
                     }
+                    //cosec(2pi/5) = (2-2/5^(1/2))^(1/2)
+                    if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(5)) == 0)) {
+                        return TWO.sub(TWO.div(new Constant(5).pow(1, 2))).pow(1, 2);
+                    }
+                    //cosec(4pi/5) = (2+2/5^(1/2))^(1/2)
+                    if ((m.compareTo(BigInteger.valueOf(4)) == 0) && (n.compareTo(BigInteger.valueOf(5)) == 0)) {
+                        return TWO.add(TWO.div(new Constant(5).pow(1, 2))).pow(1, 2);
+                    }
 
                 }
             }
         }
 
         //cosec(pi/n) = (Kosecanstabelle)
-        if (f.getType().equals(TypeFunction.cos) && f.getLeft().isQuotient()) {
+        if (f.getType().equals(TypeFunction.cosec) && f.getLeft().isQuotient()) {
             if (((BinaryOperation) f.getLeft()).getLeft().equals(PI) && ((BinaryOperation) f.getLeft()).getRight().isIntegerConstant()) {
 
                 BigInteger n = ((Constant) ((BinaryOperation) f.getLeft()).getRight()).getValue().toBigInteger();
@@ -758,6 +824,10 @@ public abstract class SimplifyTrigonometry {
                 //cosec(pi/6) = 2
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
                     return TWO;
+                }
+                //cosec(pi/5) = (2+2/5^(1/2))^(1/2)
+                if (n.compareTo(BigInteger.valueOf(5)) == 0) {
+                    return TWO.add(TWO.div(new Constant(5).pow(1, 2))).pow(1, 2);
                 }
                 //cosec(pi/4) = 2^(1/2)
                 if (n.compareTo(BigInteger.valueOf(4)) == 0) {
@@ -822,6 +892,14 @@ public abstract class SimplifyTrigonometry {
                     if ((m.compareTo(BigInteger.valueOf(5)) == 0) && (n.compareTo(BigInteger.valueOf(6)) == 0)) {
                         return (new Constant(-2)).div(THREE.pow(1, 2));
                     }
+                    //sec(2pi/5) = 4/(5^(1/2)-1) = 1 + 5^(1/2)
+                    if ((m.compareTo(BigInteger.valueOf(2)) == 0) && (n.compareTo(BigInteger.valueOf(5)) == 0)) {
+                        return ONE.add(new Constant(5).pow(1, 2));
+                    }
+                    //sec(4pi/5) = -4/(1+5^(1/2)) = 1 - 5^(1/2)
+                    if ((m.compareTo(BigInteger.valueOf(4)) == 0) && (n.compareTo(BigInteger.valueOf(5)) == 0)) {
+                        return ONE.sub(new Constant(5).pow(1, 2));
+                    }
 
                 }
             }
@@ -836,6 +914,10 @@ public abstract class SimplifyTrigonometry {
                 //sec(pi/6) = 2/3^(1/2)
                 if (n.compareTo(BigInteger.valueOf(6)) == 0) {
                     return TWO.div(THREE.pow(1, 2));
+                }
+                //sec(pi/5) = 5^(1/2) - 1!
+                if (n.compareTo(BigInteger.valueOf(5)) == 0) {
+                    return new Constant(5).pow(1, 2).sub(ONE);
                 }
                 //sec(pi/4) = 2^(1/2)
                 if (n.compareTo(BigInteger.valueOf(4)) == 0) {
