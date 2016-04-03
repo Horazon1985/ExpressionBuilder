@@ -6,6 +6,10 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.TWO;
+import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
 import flowcontroller.FlowController;
 import java.math.BigInteger;
@@ -20,10 +24,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * zu müssen.
      */
     public static boolean isAdmissibleExponent(Expression expr) {
-
-        return expr.isIntegerConstant() || (expr.isRationalConstant()
-                && ((BinaryOperation) expr).getLeft().isIntegerConstant() && ((BinaryOperation) expr).getRight().isOddIntegerConstant());
-
+        return expr.isIntegerConstant() || (expr.isRationalConstant() && ((BinaryOperation) expr).getRight().isOddIntegerConstant());
     }
 
     /**
@@ -54,11 +55,11 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         int p = m.intValue();
         int q = n.intValue();
-        
+
         BigInteger divisor;
         BigInteger factorOutside = BigInteger.ONE;
         int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS) + 1);
-        
+
         if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
             HashMap<Integer, BigInteger> divisorsOfA = ArithmeticMethods.getDivisors(a);
@@ -144,7 +145,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         // Im Zähler faktorisieren.
         HashMap<Integer, BigInteger> setOfDivisors;
         int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS) + 1);
-        
+
         if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
             setOfDivisors = ArithmeticMethods.getDivisors(a);
@@ -621,7 +622,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         Expression candidateLeft, candidateRight;
 
         for (int i = 0; i < factors.getBound(); i++) {
-            
+
             if (factors.get(i) != null && factors.get(i) instanceof BinaryOperation && isSuitableCandidateForThirdBinomial((BinaryOperation) factors.get(i))) {
                 candidate = (BinaryOperation) factors.get(i);
                 candidateLeft = ((BinaryOperation) factors.get(i)).getLeft();
@@ -629,7 +630,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             } else {
                 continue;
             }
-            
+
             for (int j = i + 1; j < factors.getBound(); j++) {
                 if (factors.get(j) != null) {
                     if (candidate.isSum() && factors.get(j).isDifference()) {
@@ -656,10 +657,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     }
                 }
             }
-            
+
             // Zwischendurch kontrollieren, ob die Berechnung abgebrochen wurde.
             FlowController.interruptComputationIfNeeded();
-            
+
         }
 
         // Ergebnis bilden.
@@ -796,6 +797,102 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         return SimplifyUtilities.produceProduct(resultFactors);
+
+    }
+
+    /*
+     Methoden zum Auffinden von Quadratwureln in Q[sqrt(a)], a rational.
+     */
+    private static boolean isSqrtOfRational(Expression expr) {
+        return expr.isPower() && ((BinaryOperation) expr).getRight().equals(ONE.div(TWO)) && ((BinaryOperation) expr).getLeft().isIntegerConstantOrRationalConstant();
+    }
+
+    public static Expression computeSqrtFromDegreeTwoElementsOverRationals(Expression expr) {
+
+        if (!expr.isConstant() || !expr.isPower() || !((BinaryOperation) expr).getRight().equals(ONE.div(TWO))
+                || !((BinaryOperation) expr).getLeft().isSum() && !((BinaryOperation) expr).getLeft().isDifference()) {
+            return expr;
+        }
+
+        Expression a = ZERO, b = ZERO, c = ZERO;
+        boolean rationalSummandFound = false, sqrtSummandFound = false;
+
+        Expression summandLeft = ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft(), summandRight = ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight();
+
+        if (((BinaryOperation) expr).getLeft().isSum()) {
+
+            if (summandLeft.isIntegerConstantOrRationalConstant()) {
+                rationalSummandFound = true;
+                a = summandLeft;
+
+                if (isSqrtOfRational(summandRight)) {
+                    sqrtSummandFound = true;
+                    b = ONE;
+                    c = ((BinaryOperation) summandRight).getLeft();
+                } else if (summandRight.isProduct() && ((BinaryOperation) summandRight).getLeft().isIntegerConstant() && isSqrtOfRational(((BinaryOperation) summandRight).getRight())) {
+                    sqrtSummandFound = true;
+                    b = ((BinaryOperation) summandRight).getLeft();
+                    c = ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getLeft();
+                } else if (summandRight.isQuotient() && ((BinaryOperation) summandRight).getRight().isIntegerConstant()) {
+                    if (isSqrtOfRational(((BinaryOperation) summandRight).getLeft())) {
+                        sqrtSummandFound = true;
+                        b = ONE.div(((BinaryOperation) summandRight).getRight());
+                        c = ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft();
+                    } else if (((BinaryOperation) summandRight).getLeft().isProduct() && ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft().isIntegerConstant()
+                            && isSqrtOfRational(((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight())) {
+                        sqrtSummandFound = true;
+                        b = ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft().div(((BinaryOperation) summandRight).getRight());
+                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight();
+                    }
+                }
+
+            } else if (summandRight.isIntegerConstantOrRationalConstant()) {
+                rationalSummandFound = true;
+
+            }
+
+        } else {
+
+        }
+
+        if (rationalSummandFound && sqrtSummandFound) {
+            return computeSqrtFromDegreeTwoElementsOverRationals(a, b, c);
+        }
+
+        return expr;
+
+    }
+
+    private static Expression computeSqrtFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) {
+
+        Expression resultIfNotComputable = a.add(b.mult(c.pow(1, 2))).pow(1, 2);
+
+        Expression rationalPart, rationalCoefficientOfSqrtPart;
+        try {
+            rationalPart = (TWO.mult(a).sub(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).div(2).simplify();
+        } catch (EvaluationException e) {
+            return resultIfNotComputable;
+        }
+
+        if (!rationalPart.isIntegerConstantOrRationalConstant()) {
+            return resultIfNotComputable;
+        }
+
+        if (a.isAlwaysNegative()) {
+            try {
+                rationalPart = MINUS_ONE.mult(rationalPart).simplify();
+            } catch (EvaluationException e) {
+                return resultIfNotComputable;
+            }
+        }
+
+        try {
+            rationalCoefficientOfSqrtPart = b.div(TWO.mult(rationalPart)).simplify();
+        } catch (EvaluationException e) {
+            return resultIfNotComputable;
+        }
+
+        return rationalPart.add(rationalCoefficientOfSqrtPart.mult(c.pow(1, 2)));
 
     }
 

@@ -480,11 +480,11 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Sinus.
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
-                        BigInteger numerator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
-                        BigInteger denominator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger denominator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger numerator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
 
                         if (denominator.compareTo(BigInteger.valueOf(7)) < 0 || denominator.compareTo(BigInteger.valueOf(17)) == 0 && numerator.compareTo(BigInteger.ONE) == 0) {
                             return getSineByIteratingHalfAngleFormula(new Constant(numerator).mult(PI).div(denominator), exponentOfTwo);
@@ -606,11 +606,11 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Kosinus.
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
-                        BigInteger numerator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
-                        BigInteger denominator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger denominator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger numerator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
 
                         if (denominator.compareTo(BigInteger.valueOf(7)) < 0 || denominator.compareTo(BigInteger.valueOf(17)) == 0 && numerator.compareTo(BigInteger.ONE) == 0) {
                             // Vorzeichen beachten!
@@ -721,7 +721,7 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Tangens: tan(x/2) = (1 - cos(x))/sin(x).
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
 
@@ -826,7 +826,7 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Kotangens: cot(x/2) = sin(x)/(1 - cos(x)).
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
 
@@ -931,11 +931,11 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Kosecans.
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
-                        BigInteger numerator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
-                        BigInteger denominator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger denominator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger numerator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
 
                         if (denominator.compareTo(BigInteger.valueOf(7)) < 0 || denominator.compareTo(BigInteger.valueOf(17)) == 0 && numerator.compareTo(BigInteger.ONE) == 0) {
                             return ONE.div(getSineByIteratingHalfAngleFormula(new Constant(numerator).mult(PI).div(denominator), exponentOfTwo));
@@ -1045,11 +1045,11 @@ public abstract class SimplifyTrigonometry {
                     }
                     // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Secans.
                     int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
-                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
+                    if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) != 0 && exponentOfTwo > 0 && exponentOfTwo <= ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_TWO_FOR_COMPUTING_VALUES_OF_TRIGONOMETRICAL_FUNCTIONS) {
 
                         BigInteger quotientOfNByPowerOfTwo = n.divide(BigInteger.valueOf(2).pow(exponentOfTwo));
-                        BigInteger numerator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
-                        BigInteger denominator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger denominator = quotientOfNByPowerOfTwo.divide(quotientOfNByPowerOfTwo.gcd(m));
+                        BigInteger numerator = m.divide(quotientOfNByPowerOfTwo.gcd(m));
 
                         if (denominator.compareTo(BigInteger.valueOf(7)) < 0 || denominator.compareTo(BigInteger.valueOf(17)) == 0 && numerator.compareTo(BigInteger.ONE) == 0) {
                             // Vorzeichen beachten!

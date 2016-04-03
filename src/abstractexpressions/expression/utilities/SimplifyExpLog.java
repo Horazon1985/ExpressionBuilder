@@ -434,7 +434,7 @@ public abstract class SimplifyExpLog {
         Expression exponent = ((BinaryOperation) expr).getRight();
 
         if (SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(exponent)) {
-            // Falls Exponent entweder ganzzahlig ist oder ein Bruch mit ungeradem Nenner.
+            // Falls Exponent entweder ganzzahlig oder ein Bruch mit ungeradem Nenner ist.
             for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, factors.get(i).pow(exponent));
             }
@@ -477,7 +477,7 @@ public abstract class SimplifyExpLog {
 
         // Falls die Basis rational ist, soll NICHT aufgeteilt werden.
         if (((BinaryOperation) expr).getLeft().isRationalConstant()) {
-            return expr;
+//            return expr;
         }
 
         Expression exponent = ((BinaryOperation) expr).getRight();
@@ -497,8 +497,33 @@ public abstract class SimplifyExpLog {
                     ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().pow(((BinaryOperation) expr).getRight()));
         }
 
-        return expr;
+        /*
+         Ebenso werden Faktoren aus Zähler oder Nenner herausgezogen, wenn sie nichtbegativ sind.
+         */
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(((BinaryOperation) expr).getLeft());
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(((BinaryOperation) expr).getLeft());
+        ExpressionCollection resultFactorsNumeratorOutsideOfBracket = new ExpressionCollection();
+        ExpressionCollection resultFactorsDenominatorOutsideOfBracket = new ExpressionCollection();
 
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (factorsNumerator.get(i).isNonNegative()) {
+                resultFactorsNumeratorOutsideOfBracket.add(factorsNumerator.get(i).pow(exponent));
+                factorsNumerator.remove(i);
+            }
+        }
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            if (factorsDenominator.get(i).isNonNegative()) {
+                resultFactorsDenominatorOutsideOfBracket.add(factorsDenominator.get(i).pow(exponent));
+                factorsDenominator.remove(i);
+            }
+        }
+
+        return SimplifyUtilities.produceProduct(resultFactorsNumeratorOutsideOfBracket).mult(
+                SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).pow(exponent)).div(
+                        SimplifyUtilities.produceProduct(resultFactorsDenominatorOutsideOfBracket));
+
+//        return expr;
+        
     }
 
     /**
