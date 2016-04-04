@@ -822,58 +822,6 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         BigInteger a, b, c, d;
         BigInteger m, n, p, q, commonRootDegree;
 
-        // Im Zähler sammeln.
-        for (int i = 0; i < factorsNumerator.getBound(); i++) {
-            if (factorsNumerator.get(i) != null && factorsNumerator.get(i).isPower()
-                    && ((BinaryOperation) factorsNumerator.get(i)).getLeft().isIntegerConstantOrRationalConstant()
-                    && ((BinaryOperation) factorsNumerator.get(i)).getRight().isRationalConstant()) {
-
-                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getLeft()).getValue().toBigInteger();
-                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getRight()).getValue().toBigInteger();
-                for (int j = i + 1; j < factorsNumerator.getBound(); j++) {
-
-                    if (factorsNumerator.get(j) != null && factorsNumerator.get(j).isPower()
-                            && ((BinaryOperation) factorsNumerator.get(j)).getLeft().isIntegerConstantOrRationalConstant()
-                            && ((BinaryOperation) factorsNumerator.get(j)).getRight().isRationalConstant()) {
-
-                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getLeft()).getValue().toBigInteger();
-                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getRight()).getValue().toBigInteger();
-                        commonRootDegree = ArithmeticMethods.lcm(m, n);
-
-                        // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
-                        if (ArithmeticMethods.lcm(m, n).divide(m).multiply(p).add(ArithmeticMethods.lcm(m, n).divide(n).multiply(q)).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT)) > 0) {
-                            continue;
-                        }
-
-                        if (((BinaryOperation) factorsNumerator.get(i)).getLeft().isRationalConstant()) {
-                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
-                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getRight()).getValue().toBigInteger();
-                        } else {
-                            a = ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getValue().toBigInteger();
-                            b = BigInteger.ONE;
-                        }
-                        if (((BinaryOperation) factorsNumerator.get(j)).getLeft().isRationalConstant()) {
-                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
-                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getRight()).getValue().toBigInteger();
-                        } else {
-                            c = ((Constant) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getValue().toBigInteger();
-                            d = BigInteger.ONE;
-                        }
-
-                        resultFactorsNumerator.add(new Constant(a.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
-                                d.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue()))).div(
-                                        new Constant(b.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
-                                                        c.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue())))).pow(BigInteger.ONE, commonRootDegree));
-                        factorsNumerator.remove(i);
-                        factorsNumerator.remove(j);
-                        break;
-
-                    }
-                }
-
-            }
-        }
-
         // Jetzt im Zähler UND Nenner sammeln.
         for (int i = 0; i < factorsNumerator.getBound(); i++) {
 
@@ -914,12 +862,12 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                             d = BigInteger.ONE;
                         }
 
-                        resultFactorsNumerator.add(new Constant(a.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
-                                c.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue()))).div(
-                                        new Constant(b.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
-                                                        d.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue())))).pow(BigInteger.ONE, commonRootDegree));
+                        resultFactorsNumerator.add(new Constant(a.pow(commonRootDegree.divide(m).multiply(p).intValue()).multiply(
+                                d.pow(commonRootDegree.divide(n).multiply(q).intValue()))).div(
+                                        new Constant(b.pow(commonRootDegree.divide(m).multiply(p).intValue()).multiply(
+                                                        c.pow(commonRootDegree.divide(n).multiply(q).intValue())))).pow(BigInteger.ONE, commonRootDegree));
                         factorsNumerator.remove(i);
-                        factorsNumerator.remove(j);
+                        factorsDenominator.remove(j);
                         break;
                         
                     }

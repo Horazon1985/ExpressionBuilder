@@ -2541,8 +2541,14 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        // Sammelt mehrere Wurzeln zu einer zusammen.
+        // Sammelt mehrere Wurzeln im Produkt zu einer Wurzel zusammen.
         exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRootInProducts(expr);
+        if (!exprSimplified.equals(expr)) {
+            return exprSimplified;
+        }
+
+        // Sammelt mehrere Wurzeln im Quotienten zu einer Wurzel zusammen.
+        exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRootInQuotients(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
