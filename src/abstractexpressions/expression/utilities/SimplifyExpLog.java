@@ -477,7 +477,7 @@ public abstract class SimplifyExpLog {
 
         // Falls die Basis rational ist, soll NICHT aufgeteilt werden.
         if (((BinaryOperation) expr).getLeft().isRationalConstant()) {
-//            return expr;
+            return expr;
         }
 
         Expression exponent = ((BinaryOperation) expr).getRight();

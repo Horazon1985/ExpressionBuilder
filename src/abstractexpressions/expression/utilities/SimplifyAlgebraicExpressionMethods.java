@@ -717,7 +717,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
     /**
      * Sammelt in einem Produkt verschiedene Wurzeln zu einer großen Wurzel.
      */
-    public static Expression collectVariousRootsToOneCommonRoot(BinaryOperation expr) {
+    public static Expression collectVariousRootsToOneCommonRootInProducts(BinaryOperation expr) {
 
         if (expr.isNotProduct()) {
             return expr;
@@ -800,9 +800,159 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
     }
 
+    /**
+     * Sammelt in einem Produkt verschiedene Wurzeln zu einer großen Wurzel.
+     */
+    public static Expression collectVariousRootsToOneCommonRootInQuotients(BinaryOperation expr) {
+
+        if (expr.isNotQuotient()) {
+            return expr;
+        }
+
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(expr);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
+        ExpressionCollection resultFactorsNumerator = new ExpressionCollection();
+        ExpressionCollection resultFactorsDenominator = new ExpressionCollection();
+
+        /*
+         Die Bezeichnungen sind wie folgt: der Term (a/b)^(p/m)/(c/d)^(q/n)
+         wird zu einer einzigen großen Wurzel (u/v)^(1/commonRootDegree)
+         zusammengefasst.
+         */
+        BigInteger a, b, c, d;
+        BigInteger m, n, p, q, commonRootDegree;
+
+        // Im Zähler sammeln.
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (factorsNumerator.get(i) != null && factorsNumerator.get(i).isPower()
+                    && ((BinaryOperation) factorsNumerator.get(i)).getLeft().isIntegerConstantOrRationalConstant()
+                    && ((BinaryOperation) factorsNumerator.get(i)).getRight().isRationalConstant()) {
+
+                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getLeft()).getValue().toBigInteger();
+                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getRight()).getValue().toBigInteger();
+                for (int j = i + 1; j < factorsNumerator.getBound(); j++) {
+
+                    if (factorsNumerator.get(j) != null && factorsNumerator.get(j).isPower()
+                            && ((BinaryOperation) factorsNumerator.get(j)).getLeft().isIntegerConstantOrRationalConstant()
+                            && ((BinaryOperation) factorsNumerator.get(j)).getRight().isRationalConstant()) {
+
+                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getLeft()).getValue().toBigInteger();
+                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getRight()).getRight()).getValue().toBigInteger();
+                        commonRootDegree = ArithmeticMethods.lcm(m, n);
+
+                        // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
+                        if (ArithmeticMethods.lcm(m, n).divide(m).multiply(p).add(ArithmeticMethods.lcm(m, n).divide(n).multiply(q)).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT)) > 0) {
+                            continue;
+                        }
+
+                        if (((BinaryOperation) factorsNumerator.get(i)).getLeft().isRationalConstant()) {
+                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
+                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getRight()).getValue().toBigInteger();
+                        } else {
+                            a = ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getValue().toBigInteger();
+                            b = BigInteger.ONE;
+                        }
+                        if (((BinaryOperation) factorsNumerator.get(j)).getLeft().isRationalConstant()) {
+                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
+                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getRight()).getValue().toBigInteger();
+                        } else {
+                            c = ((Constant) ((BinaryOperation) factorsNumerator.get(j)).getLeft()).getValue().toBigInteger();
+                            d = BigInteger.ONE;
+                        }
+
+                        resultFactorsNumerator.add(new Constant(a.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
+                                d.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue()))).div(
+                                        new Constant(b.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
+                                                        c.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue())))).pow(BigInteger.ONE, commonRootDegree));
+                        factorsNumerator.remove(i);
+                        factorsNumerator.remove(j);
+                        break;
+
+                    }
+                }
+
+            }
+        }
+
+        // Jetzt im Zähler UND Nenner sammeln.
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) != null && factorsNumerator.get(i).isPower()
+                    && ((BinaryOperation) factorsNumerator.get(i)).getLeft().isIntegerConstantOrRationalConstant()
+                    && ((BinaryOperation) factorsNumerator.get(i)).getRight().isRationalConstant()) {
+
+                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getLeft()).getValue().toBigInteger();
+                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getRight()).getValue().toBigInteger();
+
+                for (int j = 0; j < factorsDenominator.getBound(); j++) {
+
+                    if (factorsDenominator.get(j) != null && factorsDenominator.get(j).isPower()
+                            && ((BinaryOperation) factorsDenominator.get(j)).getLeft().isIntegerConstantOrRationalConstant()
+                            && ((BinaryOperation) factorsDenominator.get(j)).getRight().isRationalConstant()) {
+
+                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getLeft()).getValue().toBigInteger();
+                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getRight()).getValue().toBigInteger();
+                        commonRootDegree = ArithmeticMethods.lcm(m, n);
+
+                        // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
+                        if (ArithmeticMethods.lcm(m, n).divide(m).multiply(p).add(ArithmeticMethods.lcm(m, n).divide(n).multiply(q)).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_COMMON_ROOT)) > 0) {
+                            continue;
+                        }
+
+                        if (((BinaryOperation) factorsNumerator.get(i)).getLeft().isRationalConstant()) {
+                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
+                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getRight()).getValue().toBigInteger();
+                        } else {
+                            a = ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getValue().toBigInteger();
+                            b = BigInteger.ONE;
+                        }
+                        if (((BinaryOperation) factorsDenominator.get(j)).getLeft().isRationalConstant()) {
+                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
+                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getRight()).getValue().toBigInteger();
+                        } else {
+                            c = ((Constant) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getValue().toBigInteger();
+                            d = BigInteger.ONE;
+                        }
+
+                        resultFactorsNumerator.add(new Constant(a.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
+                                c.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue()))).div(
+                                        new Constant(b.pow(ArithmeticMethods.lcm(m, n).divide(m).multiply(p).intValue()).multiply(
+                                                        d.pow(ArithmeticMethods.lcm(m, n).divide(n).multiply(q).intValue())))).pow(BigInteger.ONE, commonRootDegree));
+                        factorsNumerator.remove(i);
+                        factorsNumerator.remove(j);
+                        break;
+                        
+                    }
+                }
+
+            }
+
+        }
+
+        // Ergebnis bilden.
+        if (resultFactorsNumerator.isEmpty() && resultFactorsDenominator.isEmpty()) {
+            return expr;
+        }
+
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (factorsNumerator.get(i) != null) {
+                resultFactorsNumerator.add(factorsNumerator.get(i));
+            }
+        }
+
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            if (factorsDenominator.get(i) != null) {
+                resultFactorsNumerator.add(factorsDenominator.get(i));
+            }
+        }
+
+        return SimplifyUtilities.produceQuotient(resultFactorsNumerator, resultFactorsDenominator);
+
+    }
     /*
      Methoden zum Auffinden von Quadratwureln in Q[sqrt(a)], a rational.
      */
+
     private static boolean isSqrtOfRational(Expression expr) {
         return expr.isPower() && ((BinaryOperation) expr).getRight().equals(ONE.div(TWO)) && ((BinaryOperation) expr).getLeft().isIntegerConstantOrRationalConstant();
     }
@@ -854,7 +1004,6 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 rationalSummandFound = true;
                 a = summandLeft;
 
-                
             } else if (summandRight.isIntegerConstantOrRationalConstant()) {
                 rationalSummandFound = true;
                 a = summandRight;
@@ -877,14 +1026,14 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         Expression rationalPart, rationalCoefficientOfSqrtPart;
         try {
-            rationalPart = (TWO.mult(a).sub(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).div(2).simplify();
+            rationalPart = (TWO.mult(a).sub(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).simplify().div(2).simplify();
         } catch (EvaluationException e) {
             return resultIfNotComputable;
         }
 
         if (!rationalPart.isIntegerConstantOrRationalConstant()) {
             try {
-                rationalPart = (TWO.mult(a).add(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).div(2).simplify();
+                rationalPart = (TWO.mult(a).add(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).simplify().div(2).simplify();
             } catch (EvaluationException e) {
                 return resultIfNotComputable;
             }
