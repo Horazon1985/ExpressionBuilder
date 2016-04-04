@@ -846,12 +846,20 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     }
                 }
 
-            } else if (summandRight.isIntegerConstantOrRationalConstant()) {
-                rationalSummandFound = true;
-
             }
 
         } else {
+
+            if (summandLeft.isIntegerConstantOrRationalConstant()) {
+                rationalSummandFound = true;
+                a = summandLeft;
+
+                
+            } else if (summandRight.isIntegerConstantOrRationalConstant()) {
+                rationalSummandFound = true;
+                a = summandRight;
+
+            }
 
         }
 
@@ -875,7 +883,14 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         if (!rationalPart.isIntegerConstantOrRationalConstant()) {
-            return resultIfNotComputable;
+            try {
+                rationalPart = (TWO.mult(a).add(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).div(2).simplify();
+            } catch (EvaluationException e) {
+                return resultIfNotComputable;
+            }
+            if (!rationalPart.isIntegerConstantOrRationalConstant()) {
+                return resultIfNotComputable;
+            }
         }
 
         if (a.isAlwaysNegative()) {
