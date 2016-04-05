@@ -869,7 +869,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                         factorsNumerator.remove(i);
                         factorsDenominator.remove(j);
                         break;
-                        
+
                     }
                 }
 
@@ -919,6 +919,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         if (((BinaryOperation) expr).getLeft().isSum()) {
 
+            // Fall: expr = a + b*c^(1/2)
             if (summandLeft.isIntegerConstantOrRationalConstant()) {
                 rationalSummandFound = true;
                 a = summandLeft;
@@ -949,15 +950,60 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         } else {
 
             if (summandLeft.isIntegerConstantOrRationalConstant()) {
+                // Fall: expr = a - b*c^(1/2)
                 rationalSummandFound = true;
                 a = summandLeft;
 
-            } else if (summandRight.isIntegerConstantOrRationalConstant()) {
-                rationalSummandFound = true;
-                a = summandRight;
+                if (isSqrtOfRational(summandRight)) {
+                    sqrtSummandFound = true;
+                    b = MINUS_ONE;
+                    c = ((BinaryOperation) summandRight).getLeft();
+                } else if (summandRight.isProduct() && ((BinaryOperation) summandRight).getLeft().isIntegerConstant() && isSqrtOfRational(((BinaryOperation) summandRight).getRight())) {
+                    sqrtSummandFound = true;
+                    b = MINUS_ONE.mult(((BinaryOperation) summandRight).getLeft());
+                    c = ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getLeft();
+                } else if (summandRight.isQuotient() && ((BinaryOperation) summandRight).getRight().isIntegerConstant()) {
+                    if (isSqrtOfRational(((BinaryOperation) summandRight).getLeft())) {
+                        sqrtSummandFound = true;
+                        b = MINUS_ONE.div(((BinaryOperation) summandRight).getRight());
+                        c = ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft();
+                    } else if (((BinaryOperation) summandRight).getLeft().isProduct() && ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft().isIntegerConstant()
+                            && isSqrtOfRational(((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight())) {
+                        sqrtSummandFound = true;
+                        b = MINUS_ONE.mult(((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft()).div(((BinaryOperation) summandRight).getRight());
+                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight();
+                    }
+                }
 
             }
+            // Der Fall expr = b*c^(1/2) - a mit a > 0 ist unmöglich.
 
+//            else if (summandRight.isIntegerConstantOrRationalConstant()) {
+//                // Fall: expr = b*c^(1/2) - a
+//                rationalSummandFound = true;
+//                a = MINUS_ONE.mult(summandRight);
+//
+//                if (isSqrtOfRational(summandLeft)) {
+//                    sqrtSummandFound = true;
+//                    b = ONE;
+//                    c = ((BinaryOperation) summandLeft).getLeft();
+//                } else if (summandLeft.isProduct() && ((BinaryOperation) summandLeft).getLeft().isIntegerConstant() && isSqrtOfRational(((BinaryOperation) summandLeft).getRight())) {
+//                    sqrtSummandFound = true;
+//                    b = ((BinaryOperation) summandLeft).getLeft();
+//                    c = ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getLeft();
+//                } else if (summandLeft.isQuotient() && ((BinaryOperation) summandLeft).getRight().isIntegerConstant()) {
+//                    if (isSqrtOfRational(((BinaryOperation) summandLeft).getLeft())) {
+//                        sqrtSummandFound = true;
+//                        b = ONE.div(((BinaryOperation) summandLeft).getRight());
+//                        c = ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft();
+//                    } else if (((BinaryOperation) summandLeft).getLeft().isProduct() && ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft().isIntegerConstant()
+//                            && isSqrtOfRational(((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight())) {
+//                        sqrtSummandFound = true;
+//                        b = ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft().div(((BinaryOperation) summandLeft).getRight());
+//                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight();
+//                    }
+//                }
+//            }
         }
 
         if (rationalSummandFound && sqrtSummandFound) {
