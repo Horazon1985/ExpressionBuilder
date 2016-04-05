@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ExpressionCollectionTest {
+public class ExpressionCollectionTests {
 
     Expression f, g, h;
 

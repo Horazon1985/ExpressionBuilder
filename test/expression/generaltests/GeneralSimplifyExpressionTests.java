@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GeneralSimplifyExpressionTest {
+public class GeneralSimplifyExpressionTests {
 
     Expression a, b, c, d, x, y, z;
 

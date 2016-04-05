@@ -15,7 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 
-public class SubstitutionTest {
+public class SubstitutionTests {
 
     Expression f, subst, expectedResult, substVar;
     String var;

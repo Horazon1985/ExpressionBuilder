@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 
-public class SpecialEquationMethodsTest {
+public class SpecialEquationMethodsTests {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MatrixFunctionTest {
+public class MatrixFunctionTests {
 
     MatrixExpression a;
 

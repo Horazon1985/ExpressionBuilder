@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SimplifyUtilitiesTest {
+public class SimplifyUtilitiesTests {
 
     Expression f, g, h;
     Expression exprWithMultipleVariables;

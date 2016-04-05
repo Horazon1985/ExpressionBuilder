@@ -11,7 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class GeneralMatrixTest {
+public class GeneralMatrixTests {
 
     MatrixExpression matExpr;
     MatrixExpression expectedResult;

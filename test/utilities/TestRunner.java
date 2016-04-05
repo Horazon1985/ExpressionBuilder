@@ -30,20 +30,21 @@ public class TestRunner {
 
     @Before
     public void initTestClasses() throws Exception {
-        testClasses.add(GeneralEquationMethodsTest.class);
+        testClasses.add(AlgebraicMethodsTests.class);
+        testClasses.add(GeneralEquationMethodsTests.class);
         testClasses.add(IntegrationTests.class);
         testClasses.add(PolynomialTests.class);
         testClasses.add(SimplifyExpLogTests.class);
         testClasses.add(SimplifyOperatorTests.class);
-        testClasses.add(SpecialEquationMethodsTest.class);
-        testClasses.add(ExpressionCollectionTest.class);
-        testClasses.add(GeneralSimplifyExpressionTest.class);
-        testClasses.add(SimplifyUtilitiesTest.class);
+        testClasses.add(SpecialEquationMethodsTests.class);
+        testClasses.add(ExpressionCollectionTests.class);
+        testClasses.add(GeneralSimplifyExpressionTests.class);
+        testClasses.add(SimplifyUtilitiesTests.class);
         testClasses.add(GeneralLogicalTests.class);
-        testClasses.add(GeneralSimplifyLogicalExpressionTest.class);
+        testClasses.add(GeneralSimplifyLogicalExpressionTests.class);
         testClasses.add(LinearAlgebraTests.class);
-        testClasses.add(MatrixFunctionTest.class);
-        testClasses.add(GeneralMatrixTest.class);
+        testClasses.add(MatrixFunctionTests.class);
+        testClasses.add(GeneralMatrixTests.class);
         testClasses.add(ParseTests.class);
         testClasses.add(GeneralDifferentialEquationTests.class);
     }
