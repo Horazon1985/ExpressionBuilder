@@ -470,7 +470,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         // Form des rechten Summanden untersuchen.
-        if (summandRight.isPower()
+        if (summandRight.isIntegerConstantOrRationalConstant()) {
+            // Falls summandRight = a oder = a/b
+            rightSummandSuitable = true;
+        } else if (summandRight.isPower()
                 && ((BinaryOperation) summandRight).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) summandRight).getRight().isRationalConstant()) {
             // Falls summandRight = a^(k/m) oder = (a/b)^(k/m)

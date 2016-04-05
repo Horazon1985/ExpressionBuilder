@@ -522,8 +522,6 @@ public abstract class SimplifyExpLog {
                 SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).pow(exponent)).div(
                         SimplifyUtilities.produceProduct(resultFactorsDenominatorOutsideOfBracket));
 
-//        return expr;
-        
     }
 
     /**
