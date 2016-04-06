@@ -11,11 +11,26 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
+import exceptions.MathToolException;
 import flowcontroller.FlowController;
 import java.math.BigInteger;
 import java.util.HashMap;
 
 public abstract class SimplifyAlgebraicExpressionMethods {
+
+    /**
+     * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
+     * Quadratwurzel besitzt.
+     */
+    private static class SqrtNotRationalException extends MathToolException {
+
+        private static final String SQRT_NOT_RATIONAL = "Square root is not rational.";
+
+        public SqrtNotRationalException() {
+            super(SQRT_NOT_RATIONAL);
+        }
+
+    }
 
     /**
      * Gibt zurück, ob expr eine ganze Zahl oder ein Bruch mit ungeradem
@@ -979,81 +994,101 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 }
 
             }
-            // Der Fall expr = b*c^(1/2) - a mit a > 0 ist unmöglich.
 
-//            else if (summandRight.isIntegerConstantOrRationalConstant()) {
-//                // Fall: expr = b*c^(1/2) - a
-//                rationalSummandFound = true;
-//                a = MINUS_ONE.mult(summandRight);
-//
-//                if (isSqrtOfRational(summandLeft)) {
-//                    sqrtSummandFound = true;
-//                    b = ONE;
-//                    c = ((BinaryOperation) summandLeft).getLeft();
-//                } else if (summandLeft.isProduct() && ((BinaryOperation) summandLeft).getLeft().isIntegerConstant() && isSqrtOfRational(((BinaryOperation) summandLeft).getRight())) {
-//                    sqrtSummandFound = true;
-//                    b = ((BinaryOperation) summandLeft).getLeft();
-//                    c = ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getLeft();
-//                } else if (summandLeft.isQuotient() && ((BinaryOperation) summandLeft).getRight().isIntegerConstant()) {
-//                    if (isSqrtOfRational(((BinaryOperation) summandLeft).getLeft())) {
-//                        sqrtSummandFound = true;
-//                        b = ONE.div(((BinaryOperation) summandLeft).getRight());
-//                        c = ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft();
-//                    } else if (((BinaryOperation) summandLeft).getLeft().isProduct() && ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft().isIntegerConstant()
-//                            && isSqrtOfRational(((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight())) {
-//                        sqrtSummandFound = true;
-//                        b = ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft().div(((BinaryOperation) summandLeft).getRight());
-//                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight();
-//                    }
-//                }
-//            }
+            // Der Fall expr = b*c^(1/2) - a mit a > 0 ist unmöglich!
         }
 
         if (rationalSummandFound && sqrtSummandFound) {
-            return computeSqrtFromDegreeTwoElementsOverRationals(a, b, c);
+            try {
+                return computeSqrtFromDegreeTwoElementsOverRationals(a, b, c);
+            } catch (SqrtNotRationalException e) {
+            }
         }
 
         return expr;
 
     }
 
-    private static Expression computeSqrtFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) {
+    /**
+     * Hilfsmethode. Direktes Quadratwurzelziehen, wenn der Radikand rational
+     * ist.
+     *
+     * @throws SqrtNotRationalException
+     */
+    private static Expression sqrt(Expression radicand, int n) throws SqrtNotRationalException {
 
-        Expression resultIfNotComputable = a.add(b.mult(c.pow(1, 2))).pow(1, 2);
-
-        Expression rationalPart, rationalCoefficientOfSqrtPart;
-        try {
-            rationalPart = (TWO.mult(a).sub(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).simplify().div(2).simplify();
-        } catch (EvaluationException e) {
-            return resultIfNotComputable;
-        }
-
-        if (!rationalPart.isIntegerConstantOrRationalConstant()) {
+        if (radicand.isIntegerConstant()) {
+            BigInteger a = ((Constant) radicand).getValue().toBigInteger();
+            BigInteger sqrt;
             try {
-                rationalPart = (TWO.mult(a).add(TWO.mult(a.pow(2).sub(c.mult(b.pow(2))).pow(1, 2)))).pow(1, 2).simplify().div(2).simplify();
+                sqrt = ArithmeticMethods.sqrt(a, n);
             } catch (EvaluationException e) {
-                return resultIfNotComputable;
+                throw new SqrtNotRationalException();
             }
-            if (!rationalPart.isIntegerConstantOrRationalConstant()) {
-                return resultIfNotComputable;
+            if (sqrt.pow(2).compareTo(a) == 0) {
+                return new Constant(sqrt);
+            }
+        } else if (radicand.isRationalConstant()) {
+            BigInteger numerator = ((Constant) ((BinaryOperation) radicand).getLeft()).getValue().toBigInteger();
+            BigInteger denominator = ((Constant) ((BinaryOperation) radicand).getRight()).getValue().toBigInteger();
+            BigInteger sqrtOfNumerator, sqrtOfDenominator;
+            try {
+                sqrtOfNumerator = ArithmeticMethods.sqrt(numerator, n);
+                sqrtOfDenominator = ArithmeticMethods.sqrt(denominator, n);
+            } catch (EvaluationException e) {
+                throw new SqrtNotRationalException();
+            }
+            if (sqrtOfNumerator.pow(2).compareTo(numerator) == 0 && sqrtOfDenominator.pow(2).compareTo(denominator) == 0) {
+                return new Constant(sqrtOfNumerator).div(sqrtOfDenominator);
             }
         }
+
+        throw new SqrtNotRationalException();
+
+    }
+
+    private static Expression computeSqrtFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws SqrtNotRationalException {
 
         if (a.isAlwaysNegative()) {
-            try {
-                rationalPart = MINUS_ONE.mult(rationalPart).simplify();
-            } catch (EvaluationException e) {
-                return resultIfNotComputable;
-            }
+            // In diesem Fall kann die Wurzel nicht vereinfacht werden.
+            throw new SqrtNotRationalException();
         }
 
+        Expression rationalPart, rationalCoefficientOfSqrtPart;
+
+        /*
+         Falls (a+b*c^(1/2))^(1/2) = u+v*c^(1/2) mit rationalen u, v, so ist
+         u = (2*a + 2*(a^2-c*b^2)^(1/2))^(1/2)/2 oder u = (2*a - 2*(a^2-c*b^2)^(1/2))^(1/2)/2.
+         Hier werden beide Möglichkeiten ausprobiert.
+         */
+        Expression radical;
         try {
-            rationalCoefficientOfSqrtPart = b.div(TWO.mult(rationalPart)).simplify();
-        } catch (EvaluationException e) {
-            return resultIfNotComputable;
+            radical = a.pow(2).sub(c.mult(b.pow(2))).simplify();
+            radical = sqrt(radical, 2);
+        } catch (EvaluationException | SqrtNotRationalException e) {
+            throw new SqrtNotRationalException();
         }
+        try {
 
-        return rationalPart.add(rationalCoefficientOfSqrtPart.mult(c.pow(1, 2)));
+            rationalPart = TWO.mult(a).sub(TWO.mult(radical)).simplify();
+            rationalPart = sqrt(rationalPart, 2).div(2).simplify();
+            rationalCoefficientOfSqrtPart = b.div(TWO.mult(rationalPart)).simplify();
+            return rationalPart.add(rationalCoefficientOfSqrtPart.mult(c.pow(1, 2)));
+
+        } catch (EvaluationException e) {
+            throw new SqrtNotRationalException();
+        } catch (SqrtNotRationalException e) {
+
+            try {
+                rationalPart = TWO.mult(a).add(TWO.mult(radical)).simplify();
+                rationalPart = sqrt(rationalPart, 2).div(2).simplify();
+                rationalCoefficientOfSqrtPart = b.div(TWO.mult(rationalPart)).simplify();
+                return rationalPart.add(rationalCoefficientOfSqrtPart.mult(c.pow(1, 2)));
+            } catch (EvaluationException | SqrtNotRationalException ex) {
+                throw new SqrtNotRationalException();
+            }
+
+        }
 
     }
 

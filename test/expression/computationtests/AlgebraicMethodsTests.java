@@ -97,4 +97,60 @@ public class AlgebraicMethodsTests {
         }
     }
     
+    @Test
+    public void sqrtFromDegreeTwoElementsOverRationalsTest1() {
+        try {
+            // (49+12*5^(1/2))^(1/2) = 2+3*5^(1/2). 
+            Expression f = Expression.build("(49+12*5^(1/2))^(1/2)", null);
+            Expression fSimplified = f.simplify();
+            Expression expectedResult = Expression.build("2+3*5^(1/2)", null);
+            TestUtilities.printResult(expectedResult, f);
+            Assert.assertTrue(fSimplified.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void sqrtFromDegreeTwoElementsOverRationalsTest2() {
+        try {
+            // (49-12*5^(1/2))^(1/2) = 2-3*5^(1/2). 
+            Expression f = Expression.build("(49-12*5^(1/2))^(1/2)", null);
+            Expression fSimplified = f.simplify();
+            Expression expectedResult = Expression.build("2-3*5^(1/2)", null);
+            TestUtilities.printResult(expectedResult, f);
+            Assert.assertTrue(fSimplified.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void sqrtFromDegreeTwoElementsOverRationalsTest3() {
+        try {
+            // (203/1200+(2/3)^(1/2)/5)^(1/2) = 1/4+(2*(2/3)^(1/2))/5. 
+            Expression f = Expression.build("(203/1200+(2/3)^(1/2)/5)^(1/2)", null);
+            Expression fSimplified = f.simplify();
+            Expression expectedResult = Expression.build("1/4+(2*(2/3)^(1/2))/5", null);
+            TestUtilities.printResult(expectedResult, f);
+            Assert.assertTrue(fSimplified.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void sqrtFromDegreeTwoElementsOverRationalsNotSimplifiedTest() {
+        try {
+            // (5+5^(1/2))^(1/2) wird nicht vereinfacht. 
+            Expression f = Expression.build("(5+5^(1/2))^(1/2)", null);
+            Expression fSimplified = f.simplify();
+            Expression expectedResult = Expression.build("(5+5^(1/2))^(1/2)", null);
+            TestUtilities.printResult(expectedResult, f);
+            Assert.assertTrue(fSimplified.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
 }
