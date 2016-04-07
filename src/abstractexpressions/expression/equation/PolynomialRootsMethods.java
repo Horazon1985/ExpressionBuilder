@@ -21,6 +21,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public abstract class PolynomialRootsMethods {
@@ -260,17 +261,11 @@ public abstract class PolynomialRootsMethods {
          coefficients.get(coefficients.getBound() - 1)).
          */
         BigInteger polynomValue;
-        HashMap<Integer, BigInteger> pDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getValue().toBigInteger());
-        HashMap<Integer, BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getValue().toBigInteger());
-
-        // WICHTIG: 0 muss zum testen ebenfalls aufgenommen werden.
-        HashMap<Integer, BigInteger> pDivisorsWithZero = new HashMap();
-        pDivisorsWithZero.put(0, BigInteger.ZERO);
-        for (int i = 0; i < pDivisors.size(); i++) {
-            pDivisorsWithZero.put(pDivisorsWithZero.size(), pDivisors.get(i));
-        }
-        pDivisors = pDivisorsWithZero;
-        // Jetzt enthält pDivisors auch die 0.
+        ArrayList<BigInteger> pDivisors = new ArrayList<>();
+        // Wichtig: pDivisors muss auch die 0 enthalten.
+        pDivisors.add(BigInteger.ZERO);
+        pDivisors.addAll(ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getValue().toBigInteger()));
+        ArrayList<BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getValue().toBigInteger());
 
         for (int i = 0; i < pDivisors.size(); i++) {
             for (int j = 0; j < qDivisors.size(); j++) {
@@ -314,13 +309,28 @@ public abstract class PolynomialRootsMethods {
     }
 
     /**
-     * Falls die Koeffizienten a[i] des Polynoms alle rational sind, so liefert
-     * diese Methode alle rationalen Nullstellen des Polynoms mit |Zähler|,
-     * |Nenner| <= eine gewisse Schranke. Diese werden der ExpressionCollection
-     * rationalZeros hinzugefügt. Der Rückgabewert ist das normierte .Ergebnis
-     * der Polynomdivision durch alle ermittelten Linearfaktoren. Sind die
-     * Koeffizienten a nicht allesamt rational, so wird die ExpressionCollection
-     * a zurückgegeben.
+     * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
+     * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
+     * |Zähler|, |Nenner| <= eine gewisse Schranke.
+     */
+    public static ExpressionCollection getRationalZerosOfRationalPolynomial(ExpressionCollection a) {
+        ExpressionCollection zeros = new ExpressionCollection();
+        try {
+            findAllRationalZerosOfRationalPolynomial(a, zeros);
+            return zeros;
+        } catch (EvaluationException e) {
+            return new ExpressionCollection();
+        }
+    }
+
+    /**
+     * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
+     * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
+     * |Zähler|, |Nenner| <= eine gewisse Schranke. Diese werden der
+     * ExpressionCollection rationalZeros hinzugefügt. Der Rückgabewert ist das
+     * normierte Ergebnis der Polynomdivision durch alle ermittelten
+     * Linearfaktoren. Sind die Koeffizienten a nicht allesamt rational, so wird
+     * die ExpressionCollection a zurückgegeben.
      *
      * @throws EvaluationException
      */
@@ -349,6 +359,23 @@ public abstract class PolynomialRootsMethods {
 
         multipleOfCoefficients.multExpression(new Constant(commonDenominator));
         multipleOfCoefficients = multipleOfCoefficients.simplify();
+
+        /*
+         Alle Polynomkoeffizienten werden nun durch ihren ggT dividiert.
+         */
+        BigInteger gcd = BigInteger.ZERO;
+        for (int i = 0; i < a.getBound(); i++) {
+            if (gcd.equals(BigInteger.ZERO)) {
+                gcd = ((Constant) a.get(i)).getValue().toBigInteger();
+            } else {
+                gcd = ArithmeticMethods.gcd(new BigInteger[]{gcd, ((Constant) a.get(i)).getValue().toBigInteger()});
+            }
+        }
+        if (gcd.compareTo(BigInteger.ONE) > 0) {
+            multipleOfCoefficients.divByExpression(new Constant(gcd));
+            multipleOfCoefficients = multipleOfCoefficients.simplify();
+        }
+
         coefficientsOfDivisionQuotient = ExpressionCollection.copy(multipleOfCoefficients);
 
         // Eigentliche Polynomdivision.
@@ -513,7 +540,7 @@ public abstract class PolynomialRootsMethods {
 
         // Gelöst wird nun die Gleichung x^4 + ax^3 + bx^2 + cx + d = 0
         /*
-        Substitution: x = y - a/4 (später muss zurücksubstituiert werden): p =
+         Substitution: x = y - a/4 (später muss zurücksubstituiert werden): p =
          b - 3a^2/8, q = a^3/8 + C - ab/2, r = a^2b/16 + d - (ac/4 + 3a^4/256). Gelöst wird nun die Gleichung z^3
          + pz + q = 0. Gelöst wird nun die Gleichung y^4 + py^2 + qy + r = 0.
          */

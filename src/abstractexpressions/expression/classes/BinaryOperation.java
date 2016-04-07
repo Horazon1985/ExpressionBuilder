@@ -2569,8 +2569,8 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
         
-        // Versucht, Ausdrücke der Form (a+b*c^(1/2))^(1/2) als d+e*c^(1/2) darzustellen, wenn möglich (a, b, c, d, e rational).
-        exprSimplified = SimplifyAlgebraicExpressionMethods.computeSqrtFromDegreeTwoElementsOverRationals(expr);
+        // Versucht, Ausdrücke der Form (a+b*c^(1/2))^(1/n), n >= 2, als d+e*c^(1/2) darzustellen, wenn möglich (a, b, c, d, e rational).
+        exprSimplified = SimplifyAlgebraicExpressionMethods.computeRootFromDegreeTwoElementsOverRationals(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }

@@ -1027,23 +1027,23 @@ public abstract class SimplifyPolynomialMethods {
         }
 
         int l = coefficients.getBound();
-        HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
+        ArrayList<BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
         ExpressionCollection currentPeriod;
 
         boolean periodFound;
-        for (int i = 0; i < cycleLengths.size(); i++) {
-            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLengths.get(i).intValue());
+        for (BigInteger cycleLength : cycleLengths) {
+            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLength.intValue());
             periodFound = true;
-            for (int j = 1; j < coefficients.getBound() / cycleLengths.get(i).intValue(); j++) {
-                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLengths.get(i).intValue(), (j + 1) * cycleLengths.get(i).intValue());
+            for (int j = 1; j < coefficients.getBound() / cycleLength.intValue(); j++) {
+                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
                 if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
                     periodFound = false;
                     break;
                 }
             }
             if (periodFound) {
-                return cycleLengths.get(i).intValue();
+                return cycleLength.intValue();
             }
         }
         return coefficients.getBound();
@@ -1063,17 +1063,17 @@ public abstract class SimplifyPolynomialMethods {
         }
 
         int l = coefficients.getBound();
-        HashMap<Integer, BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
+        ArrayList<BigInteger> cycleLengths = ArithmeticMethods.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
         ExpressionCollection currentPeriod;
         Expression sum;
 
         boolean periodFound;
-        for (int i = 0; i < cycleLengths.size(); i++) {
-            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLengths.get(i).intValue());
+        for (BigInteger cycleLength : cycleLengths) {
+            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLength.intValue());
             periodFound = true;
-            for (int j = 1; j < coefficients.getBound() / cycleLengths.get(i).intValue(); j++) {
-                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLengths.get(i).intValue(), (j + 1) * cycleLengths.get(i).intValue());
+            for (int j = 1; j < coefficients.getBound() / cycleLength.intValue(); j++) {
+                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
                 if (j % 2 == 1) {
                     for (int k = 0; k < periodForCompare.getBound(); k++) {
                         try {
@@ -1096,7 +1096,7 @@ public abstract class SimplifyPolynomialMethods {
                 }
             }
             if (periodFound) {
-                return cycleLengths.get(i).intValue();
+                return cycleLength.intValue();
             }
         }
         return coefficients.getBound();

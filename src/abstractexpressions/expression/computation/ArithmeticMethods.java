@@ -10,19 +10,9 @@ public abstract class ArithmeticMethods {
 
     /**
      * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls
-     * a <= 1000000. Sonst: leere Menge.
+     * a <= 1000000. Sonst: nur Teiler <= 1000 sowie ihre Komplementärteiler ermitteln.
      */
-    public static HashMap<Integer, BigInteger> getDivisors(BigInteger a) {
-
-        HashMap<Integer, BigInteger> result = new HashMap<>();
-        if (a.abs().compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) > 0) {
-            return result;
-        }
-
-        if (a.compareTo(BigInteger.ZERO) == 0) {
-            result.put(0, BigInteger.ONE);
-            return result;
-        }
+    public static ArrayList<BigInteger> getDivisors(BigInteger a) {
 
         BigInteger sqrt;
         try {
@@ -30,10 +20,20 @@ public abstract class ArithmeticMethods {
         } catch (EvaluationException e) {
             sqrt = a.abs();
         }
+        
+        ArrayList<BigInteger> result = new ArrayList<>();
+        if (a.abs().compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) > 0) {
+            sqrt = BigInteger.valueOf(1000);
+        }
+
+        if (a.compareTo(BigInteger.ZERO) == 0) {
+            result.add(BigInteger.ONE);
+            return result;
+        }
 
         for (int i = 1; i <= sqrt.intValue(); i++) {
-            if (a.mod(new BigInteger(String.valueOf(i))).compareTo(BigInteger.ZERO) == 0) {
-                result.put(result.size(), new BigInteger(String.valueOf(i)));
+            if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
+                result.add(BigInteger.valueOf(i));
             }
         }
 
@@ -41,11 +41,11 @@ public abstract class ArithmeticMethods {
 
         if (sqrt.pow(2).compareTo(a) == 0) {
             for (int i = numberOfDivisorsBelowSqrt - 2; i >= 0; i--) {
-                result.put(result.size(), a.divide((BigInteger) result.get(i)));
+                result.add(a.divide((BigInteger) result.get(i)));
             }
         } else {
             for (int i = numberOfDivisorsBelowSqrt - 1; i >= 0; i--) {
-                result.put(result.size(), a.divide((BigInteger) result.get(i)));
+                result.add(a.divide((BigInteger) result.get(i)));
             }
         }
 
