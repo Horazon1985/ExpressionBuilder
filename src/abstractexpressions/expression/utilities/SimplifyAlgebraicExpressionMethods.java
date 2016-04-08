@@ -1156,9 +1156,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new SqrtNotRationalException();
         }
 
-        rationalPart = rationalZeros.get(0);
+        rationalCoefficientOfSqrtPart = rationalZeros.get(0);
         try {
-            rationalCoefficientOfSqrtPart = THREE.mult(a).mult(rationalPart).div(new Constant(8).mult(c).mult(rationalPart.pow(3)).add(b)).simplify();
+            rationalPart = THREE.mult(a).mult(rationalCoefficientOfSqrtPart).div(new Constant(8).mult(c).mult(rationalCoefficientOfSqrtPart.pow(3)).add(b)).simplify();
             return rationalPart.add(rationalCoefficientOfSqrtPart.mult(c.pow(1, 2)));
         } catch (EvaluationException e) {
             throw new SqrtNotRationalException();
