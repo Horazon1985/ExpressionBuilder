@@ -366,9 +366,9 @@ public abstract class PolynomialRootsMethods {
         BigInteger gcd = BigInteger.ZERO;
         for (int i = 0; i < a.getBound(); i++) {
             if (gcd.equals(BigInteger.ZERO)) {
-                gcd = ((Constant) a.get(i)).getValue().toBigInteger();
+                gcd = ((Constant) multipleOfCoefficients.get(i)).getValue().toBigInteger();
             } else {
-                gcd = ArithmeticMethods.gcd(new BigInteger[]{gcd, ((Constant) a.get(i)).getValue().toBigInteger()});
+                gcd = ArithmeticMethods.gcd(new BigInteger[]{gcd, ((Constant) multipleOfCoefficients.get(i)).getValue().toBigInteger()});
             }
         }
         if (gcd.compareTo(BigInteger.ONE) > 0) {

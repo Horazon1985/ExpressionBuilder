@@ -1023,7 +1023,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                             && isSqrtOfRational(((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight())) {
                         sqrtSummandFound = true;
                         b = ONE.mult(((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft()).div(((BinaryOperation) summandLeft).getRight());
-                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight();
+                        c = ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getLeft();
                     }
                 }
 
@@ -1135,16 +1135,16 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         ExpressionCollection coefficients = new ExpressionCollection();
         try {
-            coefficients.add(MINUS_ONE.mult(a).mult(b.pow(3)).simplify());
+            coefficients.add(MINUS_ONE.mult(b.pow(3)).simplify());
             coefficients.add(ZERO);
             coefficients.add(ZERO);
-            coefficients.add(new Constant(27).mult(a.pow(3)).sub(new Constant(15).mult(a).mult(b.pow(2)).mult(c)).simplify());
+            coefficients.add(new Constant(27).mult(a.pow(2)).sub(new Constant(15).mult(b.pow(2)).mult(c)).simplify());
             coefficients.add(ZERO);
             coefficients.add(ZERO);
-            coefficients.add(new Constant(-48).mult(a).mult(b).mult(c.pow(2)).simplify());
+            coefficients.add(new Constant(-48).mult(b).mult(c.pow(2)).simplify());
             coefficients.add(ZERO);
             coefficients.add(ZERO);
-            coefficients.add(new Constant(64).mult(a).mult(c.pow(3)).simplify());
+            coefficients.add(new Constant(64).mult(c.pow(3)).simplify());
         } catch (EvaluationException e) {
             throw new SqrtNotRationalException();
         }
