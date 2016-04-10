@@ -1,55 +1,92 @@
 package abstractexpressions.expression.computation;
 
+import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import lang.translator.Translator;
 
 public abstract class ArithmeticMethods {
 
     /**
+     * Liefert die Primfaktorzerlegung von a, falls a <= 1000000. Sonst: alle
+     * Primfaktoren (mit Vielfachheiten) von a, die <= 1000 sind.<br>
+     * VORAUSSETZUNG: a >= 0.
+     */
+    public static ArrayList<BigInteger> getPrimeDecomposition(BigInteger a) {
+
+        BigInteger bound;
+        try {
+            bound = ArithmeticMethods.sqrt(a.abs(), 2);
+        } catch (EvaluationException e) {
+            bound = a.abs();
+        }
+        
+        bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
+
+        ArrayList<BigInteger> primeDivisors = new ArrayList<>();
+
+        if (a.compareTo(BigInteger.ONE) <= 0) {
+            return primeDivisors;
+        }
+
+        for (int i = 1; i <= bound.intValue(); i++) {
+            if (a.compareTo(BigInteger.valueOf(i)) < 0){
+                break;
+            }
+            if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
+                primeDivisors.add(BigInteger.valueOf(i));
+                a = a.divide(BigInteger.valueOf(i));
+                i--;
+            }
+        }
+
+        return primeDivisors;
+
+    }
+
+    /**
      * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls
-     * a <= 1000000. Sonst: nur Teiler <= 1000 sowie ihre Komplementärteiler ermitteln.
+     * a <= 1000000. Sonst: nur Teiler <= 1000 sowie ihre Komplementärteiler
+     * ermitteln.
      */
     public static ArrayList<BigInteger> getDivisors(BigInteger a) {
 
-        BigInteger sqrt;
+        BigInteger bound;
         try {
-            sqrt = ArithmeticMethods.sqrt(a.abs(), 2);
+            bound = ArithmeticMethods.sqrt(a.abs(), 2);
         } catch (EvaluationException e) {
-            sqrt = a.abs();
+            bound = a.abs();
         }
         
-        ArrayList<BigInteger> result = new ArrayList<>();
-        if (a.abs().compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) > 0) {
-            sqrt = BigInteger.valueOf(1000);
-        }
+        bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
+
+        ArrayList<BigInteger> divisors = new ArrayList<>();
 
         if (a.compareTo(BigInteger.ZERO) == 0) {
-            result.add(BigInteger.ONE);
-            return result;
+            divisors.add(BigInteger.ONE);
+            return divisors;
         }
 
-        for (int i = 1; i <= sqrt.intValue(); i++) {
+        for (int i = 1; i <= bound.intValue(); i++) {
             if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
-                result.add(BigInteger.valueOf(i));
+                divisors.add(BigInteger.valueOf(i));
             }
         }
 
-        int numberOfDivisorsBelowSqrt = result.size();
+        int numberOfDivisorsBelowSqrt = divisors.size();
 
-        if (sqrt.pow(2).compareTo(a) == 0) {
+        if (bound.pow(2).compareTo(a) == 0) {
             for (int i = numberOfDivisorsBelowSqrt - 2; i >= 0; i--) {
-                result.add(a.divide((BigInteger) result.get(i)));
+                divisors.add(a.divide((BigInteger) divisors.get(i)));
             }
         } else {
             for (int i = numberOfDivisorsBelowSqrt - 1; i >= 0; i--) {
-                result.add(a.divide((BigInteger) result.get(i)));
+                divisors.add(a.divide((BigInteger) divisors.get(i)));
             }
         }
 
-        return result;
+        return divisors;
 
     }
 
@@ -99,7 +136,7 @@ public abstract class ArithmeticMethods {
         BigInteger[] result = new BigInteger[a.size()];
         return gcd(a.toArray(result));
     }
-    
+
     /**
      * Gibt den kgV von a und b zurück.
      */
