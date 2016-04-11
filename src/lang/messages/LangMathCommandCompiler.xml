@@ -275,9 +275,15 @@
     </object>
     <object id = "MCC_FUNC_NAME_CONTAINS_SPECIAL_CHARS">
         <German>Der Funktionsname '[0]' enthält Sonderzeichen. Bitte wählen Sie einen anderen Namen, welcher nur aus Buchstaben und Ziffern besteht.</German>
-        <English>The function name '[0]' contains special characters. Please, choose another function name, which consists only of letters and digits..</English>
+        <English>The function name '[0]' contains special characters. Please, choose another function name, which consists only of letters and numbers.</English>
         <Ukrainian>Ім'я функції '[0]' містить спеціальні символи. Оберіть, будь ласка, інше ім'я функції, що складається лише з літер та цифр.</Ukrainian>
         <Russian>Имя функции '[0]' содержит специальные символы. Выберите, пожалуйста, другое имя функции, которое состоит только из букв и цифр.</Russian>
+    </object>
+    <object id = "MCC_FUNC_NAME_CONTAINS_ONLY_DIGITS">
+        <German>Der Funktionsname '[0]' besteht nur aus Ziffern. Bitte wählen Sie einen anderen Namen, welcher mindestens einen Buchstaben enthält.</German>
+        <English>The function name '[0]' consists only of numbers. Please, choose another function name, which contains at least one letter.</English>
+        <Ukrainian>Ім'я функції '[0]' . Оберіть, будь ласка, інше ім'я функції, що складається лише з літер та цифр.</Ukrainian>
+        <Russian>Имя функции '[0]' складається лише з цифр. Выберите, пожалуйста, другое имя функции, що містить мінімум одну літеру.</Russian>
     </object>
     <object id = "MCC_RIGHT_SIDE_OF_DEF_CONTAINS_WRONG_VAR">
         <German>Auf der rechten Seite taucht eine Veränderliche auf, die nicht als Funktionsparameter vorkommt.</German>
