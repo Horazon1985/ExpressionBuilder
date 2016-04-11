@@ -599,7 +599,7 @@ public abstract class SimplifyBinaryOperationMethods {
                             // Es darf nicht versucht werden, Wurzeln gerader Ordnung aus negativen Zahlen zu ziehen.
                             continue;
                         }
-                        BigInteger resultBase = ArithmeticMethods.sqrt(base, root);
+                        BigInteger resultBase = ArithmeticMethods.root(base, root);
                         if (resultBase.pow(root).compareTo(base) == 0) {
                             factorsInExponentDenominator.put(0, new Constant(rootDegree.divide(divisorOfRootDegree)));
                             return new Constant(resultBase).pow(((BinaryOperation) expr.getRight()).getLeft().div(SimplifyUtilities.produceProduct(factorsInExponentDenominator)));
@@ -629,7 +629,7 @@ public abstract class SimplifyBinaryOperationMethods {
                                 */
                                 continue;
                             }
-                            BigInteger resultBaseNumerator = ArithmeticMethods.sqrt(baseNumerator, root);
+                            BigInteger resultBaseNumerator = ArithmeticMethods.root(baseNumerator, root);
                             if (resultBaseNumerator.pow(root).compareTo(baseNumerator) == 0) {
                                 factorsInExponentDenominator.put(0, new Constant(rootDegree.divide(divisorOfN)));
                                 return new Constant(resultBaseNumerator).pow(((BinaryOperation) expr.getRight()).getLeft().div(SimplifyUtilities.produceProduct(factorsInExponentDenominator))).div(
@@ -658,7 +658,7 @@ public abstract class SimplifyBinaryOperationMethods {
                                 */
                                 continue;
                             }
-                            BigInteger resultBaseDenominator = ArithmeticMethods.sqrt(baseDenominator, root);
+                            BigInteger resultBaseDenominator = ArithmeticMethods.root(baseDenominator, root);
                             if (resultBaseDenominator.pow(root).compareTo(baseDenominator) == 0) {
                                 factorsInExponentDenominator.put(0, new Constant(rootDegree.divide(divisorOfN)));
                                 return (((BinaryOperation) expr.getLeft()).getLeft()).pow(expr.getRight()).div(new Constant(resultBaseDenominator).pow(((BinaryOperation) expr.getRight()).getLeft().div(

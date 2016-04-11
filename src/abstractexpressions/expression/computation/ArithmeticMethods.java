@@ -17,7 +17,7 @@ public abstract class ArithmeticMethods {
 
         BigInteger bound;
         try {
-            bound = ArithmeticMethods.sqrt(a.abs(), 2);
+            bound = ArithmeticMethods.root(a.abs(), 2);
         } catch (EvaluationException e) {
             bound = a.abs();
         }
@@ -54,7 +54,7 @@ public abstract class ArithmeticMethods {
 
         BigInteger bound;
         try {
-            bound = ArithmeticMethods.sqrt(a.abs(), 2);
+            bound = ArithmeticMethods.root(a.abs(), 2);
         } catch (EvaluationException e) {
             bound = a.abs();
         }
@@ -216,7 +216,7 @@ public abstract class ArithmeticMethods {
      *
      * @throws EvaluationException
      */
-    public static BigInteger sqrt(BigInteger a, int n) throws EvaluationException {
+    public static BigInteger root(BigInteger a, int n) throws EvaluationException {
 
         if (a.compareTo(BigInteger.ZERO) < 0 && (n / 2) * 2 == n) {
             throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST", a));
@@ -246,7 +246,7 @@ public abstract class ArithmeticMethods {
             }
             return result;
         } else {
-            return BigInteger.ONE.negate().multiply(sqrt(a.multiply(BigInteger.ONE.negate()), n));
+            return BigInteger.ONE.negate().multiply(root(a.multiply(BigInteger.ONE.negate()), n));
         }
 
     }

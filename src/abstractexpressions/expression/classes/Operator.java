@@ -407,6 +407,18 @@ public class Operator extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        boolean containsAlgebraicOperation = false;
+        for (Object param : this.params) {
+            if (param instanceof Expression) {
+                containsAlgebraicOperation = containsAlgebraicOperation || ((Expression) param).containsAlgebraicOperation();
+            } else {
+            }
+        }
+        return containsAlgebraicOperation;
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {

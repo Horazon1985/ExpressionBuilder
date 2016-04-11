@@ -216,7 +216,6 @@ public abstract class Expression implements AbstractExpression {
      * formale Ableitung einer zulässigen Variable handelt, und ob zusätzlich
      * der entsprechenden Variable kein fester Wert zugewiesen wurde.
      */
-    
     public static boolean isValidDerivativeOfIndeterminate(String var) {
         return isValidVariable(var) && Variable.create(var).getPreciseExpression() == null;
     }
@@ -586,6 +585,12 @@ public abstract class Expression implements AbstractExpression {
      * Gibt zurück, ob this einen Operator vom Type type enthält.
      */
     public abstract boolean containsOperator(TypeOperator type);
+
+    /**
+     * Gibt zurück, ob this einealgebraische Operation enthält (d.h. Exponenten
+     * von der Form p/q mit ganzen p und q und |q| >= 2).
+     */
+    public abstract boolean containsAlgebraicOperation();
 
     /**
      * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
@@ -1613,7 +1618,9 @@ public abstract class Expression implements AbstractExpression {
                 exprSimplified = exprSimplified.simplifyFactorize();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-                exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                if (exprSimplified.containsAlgebraicOperation()) {
+                    exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                }
                 exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                 if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
                     exprSimplified = exprSimplified.simplifyFunctionalRelations();
@@ -1670,8 +1677,10 @@ public abstract class Expression implements AbstractExpression {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                         exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
-                        exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                    } else if (exprSimplified.containsAlgebraicOperation()) {
+                        if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
+                            exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                        }
                     } else if (simplifyType.equals(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                         exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();
                     } else if (exprSimplified.containsFunction() || exprSimplified.containsOperator(TypeOperator.fac)) {
@@ -1752,6 +1761,11 @@ public abstract class Expression implements AbstractExpression {
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                     exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
+                }
+                if (exprSimplified.containsAlgebraicOperation()) {
+                    if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
+                        exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                    }
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
                     exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
@@ -1849,8 +1863,10 @@ public abstract class Expression implements AbstractExpression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_leadings_coefficients)) {
                     exprSimplified = exprSimplified.simplifyReduceLeadingsCoefficients();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
-                    exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                if (exprSimplified.containsAlgebraicOperation()) {
+                    if (simplifyTypes.contains(TypeSimplify.simplify_algebraic_expressions)) {
+                        exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
+                    }
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter)) {
                     exprSimplified = exprSimplified.simplifyExpandAndCollectEquivalentsIfShorter();

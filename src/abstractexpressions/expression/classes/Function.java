@@ -318,6 +318,17 @@ public class Function extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        /*
+         Ausdrücke wie exp(ln(x)/2) (= x^(1/2)) zählen hier noch nicht zu algebraischen 
+         Operationen. Sobald diese aber entsprechend vereinfacht werden, dagegen schon!
+         Sinn dahinter: algebraische Umformungen müssen erst vorgenommen werden, sobald
+         der Ausdruck auf dieser Form gebracht wird, nicht vorher.
+        */
+        return this.left.containsAlgebraicOperation();
+    }
+    
+    @Override
     public boolean containsOperator(TypeOperator type) {
         return this.left.containsOperator(type);
     }

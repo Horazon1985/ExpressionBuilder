@@ -217,6 +217,15 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        boolean containsAlgebraicOperation = false;
+        for (int i = 0; i < this.left.length; i++) {
+            containsAlgebraicOperation = containsAlgebraicOperation || this.left[i].containsAlgebraicOperation();
+        }
+        return containsAlgebraicOperation || this.abstractExpression.containsOperator();
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {

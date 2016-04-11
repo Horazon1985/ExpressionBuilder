@@ -327,6 +327,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        return false;
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         Variable.setPrecise(this.name, false);
         return this;

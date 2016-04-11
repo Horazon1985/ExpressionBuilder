@@ -154,6 +154,11 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        return false;
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         return new Constant(this.getValue(), false);
     }

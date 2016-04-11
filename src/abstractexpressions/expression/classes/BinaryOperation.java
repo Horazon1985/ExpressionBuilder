@@ -192,6 +192,12 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public boolean containsAlgebraicOperation(){
+        return this.left.containsAlgebraicOperation() || this.right.containsAlgebraicOperation()
+                || this.right.isRationalConstant() && ((Constant) ((BinaryOperation) this.right).right).getValue().abs().compareTo(BigDecimal.ONE) > 0;
+    }
+    
+    @Override
     public Expression turnToApproximate() {
         return new BinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
     }
