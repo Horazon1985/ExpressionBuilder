@@ -25,12 +25,12 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
      * Quadratwurzel besitzt.
      */
-    private static class SqrtNotRationalException extends MathToolException {
+    private static class RootNotRationalException extends MathToolException {
 
-        private static final String SQRT_NOT_RATIONAL = "Square root is not rational.";
+        private static final String ROOT_NOT_RATIONAL = "Root is not of degree 2 over the rationals.";
 
-        public SqrtNotRationalException() {
-            super(SQRT_NOT_RATIONAL);
+        public RootNotRationalException() {
+            super(ROOT_NOT_RATIONAL);
         }
 
     }
@@ -918,14 +918,22 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         return SimplifyUtilities.produceQuotient(resultFactorsNumerator, resultFactorsDenominator);
 
     }
+
     /*
      Methoden zum Auffinden von Quadratwureln in Q[root(a)], a rational.
      */
-
+    /**
+     * Hilfsmethode. Gibt zurück, ob der Ausdruck expr eine Quadratwurzel aus
+     * einer rationalen Zahl ist.
+     */
     private static boolean isSqrtOfRational(Expression expr) {
         return expr.isPower() && ((BinaryOperation) expr).getRight().equals(ONE.div(TWO)) && ((BinaryOperation) expr).getLeft().isIntegerConstantOrRationalConstant();
     }
 
+    /**
+     * Vereinfacht einen Ausdruck der Form (a + b*c^(1/2))^(1/n) in die Form x +
+     * y*c^(1/2), wenn möglich (a, b, c, x, y rationale Zahlen).
+     */
     public static Expression computeRootFromDegreeTwoElementsOverRationals(Expression expr) {
 
         if (!expr.isConstant() || !expr.isPower() || !((BinaryOperation) expr).getRight().isRationalConstant()
@@ -1032,7 +1040,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         }
 
         if (rationalSummandFound && sqrtSummandFound) {
-            
+
             Expression[] coefficients = new Expression[3];
             coefficients[0] = a;
             coefficients[1] = b;
@@ -1042,7 +1050,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 try {
                     coefficients = computeSqrtFromDegreeTwoElementsOverRationals(coefficients[0], coefficients[1], coefficients[2]);
                     rootdegree = rootdegree.divide(BigInteger.valueOf(2));
-                } catch (SqrtNotRationalException e) {
+                } catch (RootNotRationalException e) {
                     break;
                 }
             }
@@ -1051,24 +1059,24 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 try {
                     coefficients = computeCubicRootFromDegreeTwoElementsOverRationals(coefficients[0], coefficients[1], coefficients[2]);
                     rootdegree = rootdegree.divide(BigInteger.valueOf(3));
-                } catch (SqrtNotRationalException e) {
+                } catch (RootNotRationalException e) {
                     break;
                 }
             }
-            
-            if (!a.equals(coefficients[0]) || !b.equals(coefficients[1])){
+            divisor = BigInteger.valueOf(5);
+            while (rootdegree.mod(divisor).compareTo(BigInteger.ZERO) == 0) {
+                try {
+                    coefficients = computeFifthRootFromDegreeTwoElementsOverRationals(coefficients[0], coefficients[1], coefficients[2]);
+                    rootdegree = rootdegree.divide(BigInteger.valueOf(5));
+                } catch (RootNotRationalException e) {
+                    break;
+                }
+            }
+
+            if (!a.equals(coefficients[0]) || !b.equals(coefficients[1])) {
                 return coefficients[0].add(coefficients[1].mult(c.pow(1, 2)));
             }
 
-//            try {
-//                if (rootdegree.equals(BigInteger.valueOf(2))) {
-//                    return computeSqrtFromDegreeTwoElementsOverRationals(a, b, c);
-//                } else if (rootdegree.equals(BigInteger.valueOf(3))) {
-//                    return computeCubicRootFromDegreeTwoElementsOverRationals(a, b, c);
-//                }
-//            } catch (SqrtNotRationalException e) {
-//            }
-            
         }
 
         return expr;
@@ -1079,9 +1087,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * Hilfsmethode. Direktes Quadratwurzelziehen, wenn der Radikand rational
      * ist.
      *
-     * @throws SqrtNotRationalException
+     * @throws RootNotRationalException
      */
-    private static Expression root(Expression radicand, int n) throws SqrtNotRationalException {
+    private static Expression root(Expression radicand, int n) throws RootNotRationalException {
 
         if (radicand.isIntegerConstant()) {
             BigInteger a = ((Constant) radicand).getValue().toBigInteger();
@@ -1089,7 +1097,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             try {
                 sqrt = ArithmeticMethods.root(a, n);
             } catch (EvaluationException e) {
-                throw new SqrtNotRationalException();
+                throw new RootNotRationalException();
             }
             if (sqrt.pow(2).compareTo(a) == 0) {
                 return new Constant(sqrt);
@@ -1102,22 +1110,22 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 sqrtOfNumerator = ArithmeticMethods.root(numerator, n);
                 sqrtOfDenominator = ArithmeticMethods.root(denominator, n);
             } catch (EvaluationException e) {
-                throw new SqrtNotRationalException();
+                throw new RootNotRationalException();
             }
             if (sqrtOfNumerator.pow(2).compareTo(numerator) == 0 && sqrtOfDenominator.pow(2).compareTo(denominator) == 0) {
                 return new Constant(sqrtOfNumerator).div(sqrtOfDenominator);
             }
         }
 
-        throw new SqrtNotRationalException();
+        throw new RootNotRationalException();
 
     }
 
-    private static Expression[] computeSqrtFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws SqrtNotRationalException {
+    private static Expression[] computeSqrtFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws RootNotRationalException {
 
         if (a.isAlwaysNegative()) {
             // In diesem Fall kann die Wurzel nicht vereinfacht werden.
-            throw new SqrtNotRationalException();
+            throw new RootNotRationalException();
         }
 
         Expression rationalPart, rationalCoefficientOfSqrtPart;
@@ -1131,8 +1139,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         try {
             radical = a.pow(2).sub(c.mult(b.pow(2))).simplify();
             radical = root(radical, 2);
-        } catch (EvaluationException | SqrtNotRationalException e) {
-            throw new SqrtNotRationalException();
+        } catch (EvaluationException | RootNotRationalException e) {
+            throw new RootNotRationalException();
         }
         try {
 
@@ -1142,23 +1150,23 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return new Expression[]{rationalPart, rationalCoefficientOfSqrtPart, c};
 
         } catch (EvaluationException e) {
-            throw new SqrtNotRationalException();
-        } catch (SqrtNotRationalException e) {
+            throw new RootNotRationalException();
+        } catch (RootNotRationalException e) {
 
             try {
                 rationalPart = TWO.mult(a).add(TWO.mult(radical)).simplify();
                 rationalPart = root(rationalPart, 2).div(2).simplify();
                 rationalCoefficientOfSqrtPart = b.div(TWO.mult(rationalPart)).simplify();
                 return new Expression[]{rationalPart, rationalCoefficientOfSqrtPart, c};
-            } catch (EvaluationException | SqrtNotRationalException ex) {
-                throw new SqrtNotRationalException();
+            } catch (EvaluationException | RootNotRationalException ex) {
+                throw new RootNotRationalException();
             }
 
         }
 
     }
 
-    private static Expression[] computeCubicRootFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws SqrtNotRationalException {
+    private static Expression[] computeCubicRootFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws RootNotRationalException {
 
         Expression rationalPart, rationalCoefficientOfSqrtPart;
 
@@ -1175,14 +1183,14 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             coefficients.add(ZERO);
             coefficients.add(new Constant(64).mult(c.pow(3)).simplify());
         } catch (EvaluationException e) {
-            throw new SqrtNotRationalException();
+            throw new RootNotRationalException();
         }
 
         ExpressionCollection rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
-            throw new SqrtNotRationalException();
+            throw new RootNotRationalException();
         }
 
         rationalCoefficientOfSqrtPart = rationalZeros.get(0);
@@ -1190,8 +1198,76 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             rationalPart = THREE.mult(a).mult(rationalCoefficientOfSqrtPart).div(new Constant(8).mult(c).mult(rationalCoefficientOfSqrtPart.pow(3)).add(b)).simplify();
             return new Expression[]{rationalPart, rationalCoefficientOfSqrtPart, c};
         } catch (EvaluationException e) {
-            throw new SqrtNotRationalException();
+            throw new RootNotRationalException();
         }
+
+    }
+
+    private static Expression[] computeFifthRootFromDegreeTwoElementsOverRationals(Expression a, Expression b, Expression c) throws RootNotRationalException {
+
+        Expression rationalPart, rationalCoefficientOfSqrtPart;
+
+        ExpressionCollection coefficients = new ExpressionCollection();
+        try {
+            coefficients.add(MINUS_ONE.mult(b.pow(5)).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(3125).mult(a.pow(4)).add(new Constant(705).mult(b.pow(4)).mult(c.pow(2))).sub(new Constant(3750).mult(a.pow(2)).mult(b.pow(2)).mult(c)).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(120000).mult(a.pow(2)).mult(b).mult(c.pow(3)).sub(new Constant(122560).mult(b.pow(3)).mult(c.pow(4))).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(640000).mult(a.pow(2)).mult(c.pow(5)).sub(new Constant(599040).mult(b.pow(2)).mult(c.pow(6))).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(-327680).mult(b).mult(c.pow(8)).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(1048576).mult(c.pow(10)).simplify());
+        } catch (EvaluationException e) {
+            throw new RootNotRationalException();
+        }
+
+        ExpressionCollection rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
+
+        // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
+        if (rationalZeros.isEmpty()) {
+            throw new RootNotRationalException();
+        }
+
+        rationalCoefficientOfSqrtPart = rationalZeros.get(0);
+
+        coefficients.clear();
+        try {
+            coefficients.add(MINUS_ONE.mult(a).simplify());
+            coefficients.add(new Constant(5).mult(c.pow(2)).mult(rationalCoefficientOfSqrtPart.pow(4)).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(new Constant(10).mult(c).mult(rationalCoefficientOfSqrtPart.pow(2)).simplify());
+            coefficients.add(ZERO);
+            coefficients.add(ONE);
+        } catch (EvaluationException e) {
+            throw new RootNotRationalException();
+        }
+
+        rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
+        if (rationalZeros.isEmpty()) {
+            throw new RootNotRationalException();
+        }
+
+        rationalPart = rationalZeros.get(0);
+        return new Expression[]{rationalPart, rationalCoefficientOfSqrtPart, c};
 
     }
 
