@@ -229,12 +229,14 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
     }
 
     /**
-     * Gibt zurück, ob die Differentialgleichung f = 0 eine Benoulli-DGL ist,
-     * d.h. also die Gestalt a(x)*y' + b(x)*y + c(x)*y^n = 0, a != 0, 1
+     * Gibt die Koeffizienten a, b, c einer Bernoulli-Differentialgleichung f = 0 zurück,
+     * wenn diese die Gestalt a(x)*y' + b(x)*y + c(x)*y^n = 0, a != 0, 1
      * besitzt.<br>
      * VORAUSSETZUNG: f ist bereits weitestgehend vereinfacht.
+     * 
+     * @throws NotBernoulliDifferentialEquationException
      */
-    private static Expression[] isDifferentialEquationBernoulli(Expression f, String varAbsc, String varOrd) throws NotBernoulliDifferentialEquationException {
+    private static Expression[] getCoefficientsForBernoulliDifferentialEquation(Expression f, String varAbsc, String varOrd) throws NotBernoulliDifferentialEquationException {
 
         Expression[] coefficients = new Expression[3];
 
