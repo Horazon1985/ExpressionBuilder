@@ -937,12 +937,13 @@ public abstract class SimplifyAlgebraicExpressionMethods {
     public static Expression computeRootFromDegreeTwoElementsOverRationals(Expression expr) {
 
         if (!expr.isConstant() || !expr.isPower() || !((BinaryOperation) expr).getRight().isRationalConstant()
-                || !((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().equals(ONE)
+                || !((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isPositiveIntegerConstant()
                 || !((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight().isPositiveIntegerConstant()
                 || !((BinaryOperation) expr).getLeft().isSum() && !((BinaryOperation) expr).getLeft().isDifference()) {
             return expr;
         }
 
+        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getValue().toBigInteger();
         BigInteger rootdegree = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
         Expression a = ZERO, b = ZERO, c = ZERO;
         boolean rationalSummandFound = false, sqrtSummandFound = false;
@@ -1074,7 +1075,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             }
 
             if (!a.equals(coefficients[0]) || !b.equals(coefficients[1])) {
-                return coefficients[0].add(coefficients[1].mult(c.pow(1, 2)));
+                return coefficients[0].add(coefficients[1].mult(c.pow(1, 2))).pow(exponent);
             }
 
         }
