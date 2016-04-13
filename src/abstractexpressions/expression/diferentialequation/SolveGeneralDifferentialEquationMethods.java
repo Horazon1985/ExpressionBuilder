@@ -401,7 +401,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         // Typ: y' + a(x)*y + b(x) = 0.
@@ -410,7 +410,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         // Typ: a(x, y) + b(x, y)*y' = 0.
@@ -419,7 +419,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         // Typ: m*a(x, y) + m*b(x, y)*y' = 0 ist exakt für einen integrierenden Faktor m.
@@ -428,7 +428,16 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+        }
+
+        // Typ: Bernoulli-DGL a(x)*y' + b(x)*y + c(x)*y^n = 0, n != 0, 1.
+        try {
+            solutions = SolveSpecialDifferentialEquationMethods.solveBernoulliDifferentialEquation(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         return solutions;
@@ -445,7 +454,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         try {
@@ -454,7 +463,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         try {
@@ -463,7 +472,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }
-        } catch (DifferentialEquationNotAlgebraicallyIntegrableException ex) {
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         return solutions;

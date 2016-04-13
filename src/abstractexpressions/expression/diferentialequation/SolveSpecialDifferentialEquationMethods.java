@@ -449,33 +449,56 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
             if (b.contains(varOrd)) {
 
                 try {
-                    b = right.div(Variable.create(varOrd)).simplify();
+                    b = MINUS_ONE.mult(right.div(Variable.create(varOrd))).simplify();
                 } catch (EvaluationException e) {
                     throw new NotBernoulliDifferentialEquationException();
                 }
                 if (b.contains(varOrd)) {
                     throw new NotBernoulliDifferentialEquationException();
                 }
+
                 ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(left);
                 ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(left);
+
                 boolean powerOfVarOrdFound = false;
-                for (int i = 0; i < factorsNumerator.getBound(); i++) {
-                    if (factorsNumerator.get(i).isPower()
-                            && ((BinaryOperation) factorsNumerator.get(i)).getLeft().equals(Variable.create(varOrd))
-                            && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varAbsc)
-                            && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varOrd)
-                            && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varOrd + "'")) {
-                        powerOfVarOrdFound = true;
-                        exponent = ((BinaryOperation) factorsNumerator.get(i)).getRight();
-                        factorsNumerator.remove(i);
+
+                try {
+                    // Im Zähler suchen.
+                    for (int i = 0; i < factorsNumerator.getBound(); i++) {
+                        if (factorsNumerator.get(i).isPower()
+                                && ((BinaryOperation) factorsNumerator.get(i)).getLeft().equals(Variable.create(varOrd))
+                                && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varAbsc)
+                                && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varOrd)
+                                && !((BinaryOperation) factorsNumerator.get(i)).getRight().contains(varOrd + "'")) {
+                            powerOfVarOrdFound = true;
+                            exponent = ((BinaryOperation) factorsNumerator.get(i)).getRight();
+                            factorsNumerator.remove(i);
+                        }
                     }
-                }
-                if (powerOfVarOrdFound) {
-                    c = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-                    if (c.contains(varOrd)) {
+                    // Im Nenner suchen.
+                    if (!powerOfVarOrdFound) {
+                        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+                            if (factorsDenominator.get(i).isPower()
+                                    && ((BinaryOperation) factorsDenominator.get(i)).getLeft().equals(Variable.create(varOrd))
+                                    && !((BinaryOperation) factorsDenominator.get(i)).getRight().contains(varAbsc)
+                                    && !((BinaryOperation) factorsDenominator.get(i)).getRight().contains(varOrd)
+                                    && !((BinaryOperation) factorsDenominator.get(i)).getRight().contains(varOrd + "'")) {
+                                powerOfVarOrdFound = true;
+                                exponent = MINUS_ONE.mult(((BinaryOperation) factorsDenominator.get(i)).getRight()).simplify();
+                                factorsDenominator.remove(i);
+                            }
+                        }
+                    }
+
+                    if (powerOfVarOrdFound) {
+                        c = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+                        if (c.contains(varOrd)) {
+                            throw new NotBernoulliDifferentialEquationException();
+                        }
+                    } else {
                         throw new NotBernoulliDifferentialEquationException();
                     }
-                } else {
+                } catch (EvaluationException e) {
                     throw new NotBernoulliDifferentialEquationException();
                 }
 
@@ -539,7 +562,7 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
         Expression difference;
         try {
             difference = f.sub(a.mult(Variable.create(varOrd + "'")).add(b.mult(Variable.create(varOrd))).add(
-                    c.mult(Variable.create(varOrd + "'").pow(exponent)))).simplify();
+                    c.mult(Variable.create(varOrd).pow(exponent)))).simplify();
             if (!difference.equals(ZERO)) {
                 throw new NotBernoulliDifferentialEquationException();
             }
@@ -552,6 +575,30 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
         bernoulliData[2] = c;
         bernoulliData[3] = exponent;
         return bernoulliData;
+
+    }
+
+    /**
+     * Gibt Lösungen für die Differentialgleichung f = 0 zurück, wenn diese eine
+     * Bernoullische DGL ist. Ansonsten wird eine
+     * DifferentialEquationNotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws DifferentialEquationNotAlgebraicallyIntegrableException
+     */
+    public static ExpressionCollection solveBernoulliDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException, EvaluationException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        Expression[] bernoulliData;
+        try {
+            bernoulliData = getCoefficientsAndExponentForBernoulliDifferentialEquation(f, varAbsc, varOrd);
+        } catch (NotBernoulliDifferentialEquationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+        
+        // TO DO.
+
+        return solutions;
 
     }
 
