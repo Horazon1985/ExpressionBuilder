@@ -687,7 +687,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * Liefert die Lösung der Differentialgleichung a_n*y^(n) + ... + a_0*y +
      * b(x) = 0 mittels Variation der Konstanten.
      */
-    private static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    protected static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         int ord = getOrderOfDifferentialEquation(f, varOrd);
 

@@ -3,6 +3,7 @@ package abstractexpressions.expression.diferentialequation;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
@@ -595,7 +596,26 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
         } catch (NotBernoulliDifferentialEquationException e) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
-        
+
+        Expression[] coefficients = new Expression[]{bernoulliData[1].mult(bernoulliData[3].sub(1)).div(bernoulliData[0]).simplify(),
+            bernoulliData[2].mult(bernoulliData[3].sub(1)).div(bernoulliData[0]).simplify()};
+        String varOrdInSubstitutedDiffEq = notations.NotationLoader.SUBSTITUTION_VAR;
+        /* 
+         Ursprüngliche Differentialgleichung: a(x)*y' + b(x)*y + c(x)*y^n = 0.
+         Substitutierte Differentialgleichung: z' + (n - 1)*(b(x)/a(x))*z + (n - 1)*(c(x)/a(x)) = 0, z = y^(1 - n).
+         */
+        Expression substitutedDifferentialEquation = Variable.create(varOrdInSubstitutedDiffEq + "'").add(coefficients[0].mult(Variable.create(varOrdInSubstitutedDiffEq))).add(coefficients[1]);
+        ExpressionCollection solutionsOfSubstitutedDiffEq = SolveGeneralDifferentialEquationMethods.solveDifferentialEquationLinear(substitutedDifferentialEquation, varAbsc, varOrd);
+
+        for (Expression solution : solutionsOfSubstitutedDiffEq) {
+            if (!solution.contains(varOrd)) {
+                try {
+                    solutions.add(solution.pow(ONE).div(ONE.sub(bernoulliData[3])).simplify());
+                } catch (EvaluationException e) {
+                    // Nichts tun.
+                }
+            }
+        }
         // TO DO.
 
         return solutions;
