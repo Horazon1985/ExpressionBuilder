@@ -10,7 +10,7 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.diferentialequation.SolveGeneralDifferentialEquationMethods;
+import abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import exceptions.EvaluationException;

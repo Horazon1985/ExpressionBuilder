@@ -1,4 +1,4 @@
-package abstractexpressions.expression.diferentialequation;
+package abstractexpressions.expression.differentialequation;
 
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
@@ -608,7 +608,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
     /**
      * Liefert die Lösung der Differentialgleichung a(x)*y' + b(x)*y + c(x) = 0.
      */
-    private static ExpressionCollection solveDifferentialEquationLinearOfOrderOne(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    protected static ExpressionCollection solveDifferentialEquationLinearOfOrderOne(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -687,7 +687,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      * Liefert die Lösung der Differentialgleichung a_n*y^(n) + ... + a_0*y +
      * b(x) = 0 mittels Variation der Konstanten.
      */
-    protected static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    private static ExpressionCollection solveDifferentialEquationLinear(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         int ord = getOrderOfDifferentialEquation(f, varOrd);
 

@@ -1,4 +1,4 @@
-package abstractexpressions.expression.diferentialequation;
+package abstractexpressions.expression.differentialequation;
 
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Expression;
@@ -240,7 +240,7 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
      */
     private static Expression[] getCoefficientsAndExponentForBernoulliDifferentialEquation(Expression f, String varAbsc, String varOrd) throws NotBernoulliDifferentialEquationException {
 
-        Expression[] bernoulliData = new Expression[3];
+        Expression[] bernoulliData = new Expression[4];
 
         // Prüfung auf die formale Gestalt.
         Expression a = f;
@@ -604,13 +604,13 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
          Ursprüngliche Differentialgleichung: a(x)*y' + b(x)*y + c(x)*y^n = 0.
          Substitutierte Differentialgleichung: z' + (n - 1)*(b(x)/a(x))*z + (n - 1)*(c(x)/a(x)) = 0, z = y^(1 - n).
          */
-        Expression substitutedDifferentialEquation = Variable.create(varOrdInSubstitutedDiffEq + "'").add(coefficients[0].mult(Variable.create(varOrdInSubstitutedDiffEq))).add(coefficients[1]);
-        ExpressionCollection solutionsOfSubstitutedDiffEq = SolveGeneralDifferentialEquationMethods.solveDifferentialEquationLinear(substitutedDifferentialEquation, varAbsc, varOrd);
+        Expression substitutedDifferentialEquation = Variable.create(varOrdInSubstitutedDiffEq + "'").sub(coefficients[0].mult(Variable.create(varOrdInSubstitutedDiffEq))).sub(coefficients[1]).simplify(simplifyTypesDifferentialEquation);
+        ExpressionCollection solutionsOfSubstitutedDiffEq = SolveGeneralDifferentialEquationMethods.solveDifferentialEquationLinearOfOrderOne(substitutedDifferentialEquation, varAbsc, varOrdInSubstitutedDiffEq);
 
         for (Expression solution : solutionsOfSubstitutedDiffEq) {
-            if (!solution.contains(varOrd)) {
+            if (!solution.contains(varOrdInSubstitutedDiffEq)) {
                 try {
-                    solutions.add(solution.pow(ONE).div(ONE.sub(bernoulliData[3])).simplify());
+                    solutions.add(solution.pow(ONE.div(ONE.sub(bernoulliData[3]))).simplify());
                 } catch (EvaluationException e) {
                     // Nichts tun.
                 }
