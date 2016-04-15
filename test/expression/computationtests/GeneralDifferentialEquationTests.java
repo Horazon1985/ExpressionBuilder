@@ -7,8 +7,6 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
-import abstractexpressions.expression.classes.Operator;
-import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
@@ -90,36 +88,6 @@ public class GeneralDifferentialEquationTests {
             assertTrue(solutions.getBound() == 1);
             Expression solution = Variable.create("y").mult(Variable.create("y").ln().sub(1)).sub(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", "C_1", null, null, ONE.div(3)));
             assertTrue(solutions.containsExquivalent(solution));
-        } catch (ExpressionException | EvaluationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void solveDiffEqWithOnlySecondDerivativeAndFunctionTest() {
-        try {
-            // DGL: y'' = y^2. Implizite Lösungen sind: int(1/((2*y^3)/3+C_1)^(1/2),y)+x+C_4 = 0, int(1/((2*y^3)/3+C_1)^(1/2),y)-(x+C_4) = 0.
-            Expression leftSide = Expression.build("y''", null);
-            Expression rightSide = Expression.build("y^2", null);
-            ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(leftSide, rightSide, "x", "y");
-            assertTrue(solutions.getBound() == 2);
-            Expression solutionOne = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).add(Variable.create("x")).add(Variable.create("C_4"));
-            Expression solutionTwo = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).sub(Variable.create("x").add(Variable.create("C_5")));
-            assertTrue(solutions.containsExquivalent(solutionOne));
-            assertTrue(solutions.containsExquivalent(solutionTwo));
-        } catch (ExpressionException | EvaluationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void solveDiffEqWithOnlythirdAndFirstDerivativeTest() {
-        try {
-            // DGL: y''' = y'^2. Keine algebraischen Lösungen.
-            Expression leftSide = Expression.build("y'''", null);
-            Expression rightSide = Expression.build("y'^2", null);
-            ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(leftSide, rightSide, "x", "y");
-            assertTrue(solutions.isEmpty());
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

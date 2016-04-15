@@ -4,10 +4,14 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
+import static abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationMethods.getFreeIntegrationConstantVariable;
+import static abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationMethods.getOrderOfDifferentialEquation;
+import static abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationMethods.simplifyTypesSolutionOfDifferentialEquation;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
@@ -35,6 +39,106 @@ public abstract class SolveSpecialDifferentialEquationMethods extends SolveGener
 
     }
 
+    //Typ: y^'' = f(y).
+    /**
+     * Liefert Lösungen von Differentialgleichungen vom Typ y'' = g(y). Die
+     * eingegebene DGL hat die Form f = 0;
+     */
+    public static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
+
+        if (ord != 2) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        ExpressionCollection solutionsForHighestDerivative;
+        try {
+            solutionsForHighestDerivative = SolveGeneralEquationMethods.solveEquation(f, ZERO, varOrd + "''");
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (solutionsForHighestDerivative.isEmpty()) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        // Zunächst: Typprüfung.
+        boolean isEquationOfProperType;
+        for (Expression solutionForHighestDerivative : solutionsForHighestDerivative) {
+            // Zunächst: Typprüfung.
+            isEquationOfProperType = doesExpressionContainOnlyDerivativesOfGivenOrder(solutionForHighestDerivative, varOrd, 2, 0)
+                    && !solutionForHighestDerivative.contains(varAbsc);
+            if (isEquationOfProperType) {
+                solutions = SimplifyUtilities.union(solutions,
+                        solveDifferentialEquationWithOnlySecondDerivative(solutionForHighestDerivative, varAbsc, varOrd));
+            }
+        }
+
+        solutions.removeMultipleTerms();
+        return solutions;
+
+    }
+
+    private static ExpressionCollection solveDifferentialEquationWithOnlySecondDerivative(Expression rightSide, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        try {
+            ExpressionCollection solutions = new ExpressionCollection();
+
+            /*
+             Lösungsalgorithmus: Sei y'' = f(y).
+             Dann: 1. y' = +-(2*g(y) + C_1)^(1/2), g = int(f(t), t).
+             2. h_(C_1)(y^(n)) = +-(x + C_2), h(t) = int(1/(2 * g(t) + C_1)^(1/2), t).
+             3. y = h^(-1)_(C_1)(+-(x + C_2)).
+             */
+            // Schritt 1: Bilden von g.
+            Expression g = new Operator(TypeOperator.integral, new Object[]{rightSide, varOrd}).simplify();
+            // Schritt 2: Bilden von h_(C_1).
+            Expression h = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(g).add(getFreeIntegrationConstantVariable())).pow(1, 2), varOrd}).simplify();
+            try {
+                solutions = SolveGeneralEquationMethods.solveEquation(h, Variable.create(varAbsc).add(getFreeIntegrationConstantVariable()), varOrd).simplify(simplifyTypesSolutionOfDifferentialEquation);
+            } catch (EvaluationException e) {
+                // Nichts tun, Lösung ignorieren.
+            }
+            try {
+                solutions = SimplifyUtilities.union(solutions, 
+                        SolveGeneralEquationMethods.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrd).simplify(simplifyTypesSolutionOfDifferentialEquation));
+            } catch (EvaluationException e) {
+                // Nichts tun, Lösung ignorieren.
+            }
+
+            /* 
+             Sonderfall: Wenn die Gleichung h_(C_1)(y) = +-(x + C_2)
+             nicht explizit nach y aufgelöst werden kann, so werden die Ausdrücke
+             h_(C_1)(y) -+(x + C_2) in die Lösungen mitaufgenommen und hinterher
+             als implizite Lösungen interpretiert.<br>
+             BEISPIEL: y'' = y^2 besitzt die implizite Lösung
+             int(1/(2*y^3/3 + C_1)^(1/2),y) +- (x + C_2) = 0.
+             */
+            if (solutions.isEmpty() && solutions != SolveGeneralEquationMethods.NO_SOLUTIONS) {
+                solutions.add(h.add(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
+                solutions.add(h.sub(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())));
+                return solutions;
+            }
+
+            // Schritt 3: y = int(h^(-1)_(C_1)(+-(x + C_2)), x, n) + C_3 + C_4 * x + ... + C_(n + 2) * x^(n - 1) bilden.
+            for (Expression solution : solutions) {
+                try {
+                    solutions.add(solution.simplify(simplifyTypesSolutionOfDifferentialEquation));
+                } catch (EvaluationException e) {
+                    // Nichts tun, Lösung ignorieren.
+                }
+            }
+
+            return solutions;
+        } catch (EvaluationException ex) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+    }
+    
     /**
      * Gibt zurück, ob die Differentialgleichung f = 0 die Gestalt a(x, y) +
      * b(x, y)*y' = 0 besitzt.
