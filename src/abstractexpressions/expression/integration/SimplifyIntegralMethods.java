@@ -1823,21 +1823,19 @@ public abstract class SimplifyIntegralMethods {
             }
 
             if (SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(100)) <= 0) {
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0) {
                 continue;
             }
 
             if (factors.get(i) instanceof Function) {
-                if (((Function) factors.get(i)).getType().equals(TypeFunction.exp)
-                        || ((Function) factors.get(i)).getType().equals(TypeFunction.sin)
-                        || ((Function) factors.get(i)).getType().equals(TypeFunction.cos)) {
-                    Expression interior_derivative = ((Function) factors.get(i)).getLeft().diff(var).simplify();
-                    if (!interior_derivative.contains(var)) {
+                if (factors.get(i).isFunction(TypeFunction.exp) || factors.get(i).isFunction(TypeFunction.sin) || factors.get(i).isFunction(TypeFunction.cos)) {
+                    Expression interiorDerivative = ((Function) factors.get(i)).getLeft().diff(var).simplify();
+                    if (!interiorDerivative.contains(var)) {
                         containsExpSinCos = true;
                         continue;
                     }
                 }
-                if (((Function) factors.get(i)).getType().equals(TypeFunction.ln) && !containsExpSinCos) {
+                if (factors.get(i).isFunction(TypeFunction.ln) && !containsExpSinCos) {
                     if (SimplifyPolynomialMethods.isPolynomial(((Function) factors.get(i)).getLeft(), var)) {
                         continue;
                     }
@@ -1860,38 +1858,36 @@ public abstract class SimplifyIntegralMethods {
         }
 
         if (factors.getBound() == 2 && factors.get(0) != null && factors.get(1) != null) {
-            // Typ: ln*x^a oder lg(x)*x^a
-            if (factors.get(0) instanceof Function && (((Function) factors.get(0)).getType().equals(TypeFunction.lg)
-                    || ((Function) factors.get(0)).getType().equals(TypeFunction.ln))
+            // Typ: ln(x)*x^a oder lg(x)*x^a
+            if ((factors.get(0).isFunction(TypeFunction.lg) || factors.get(0).isFunction(TypeFunction.ln))
                     && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
                     && factors.get(1).isPower()
                     && ((BinaryOperation) factors.get(1)).getLeft().equals(Variable.create(var))
                     && !((BinaryOperation) factors.get(1)).getRight().contains(var)) {
                 allowPartialIntegration = true;
-            } else if (factors.get(1) instanceof Function && (((Function) factors.get(1)).getType().equals(TypeFunction.lg)
-                    || ((Function) factors.get(1)).getType().equals(TypeFunction.ln))
+            } else if ((factors.get(1).isFunction(TypeFunction.lg) || factors.get(1).isFunction(TypeFunction.ln))
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && factors.get(0).isPower()
                     && ((BinaryOperation) factors.get(0)).getLeft().equals(Variable.create(var))
                     && !((BinaryOperation) factors.get(0)).getRight().contains(var)) {
                 allowPartialIntegration = true;
             }
-            // Typ Polynom*arctan(x)
-            if (factors.get(0) instanceof Function && ((Function) factors.get(0)).getType().equals(TypeFunction.arctan)
+            // Typ P(x)*arctan(x), P = Polynom
+            if (factors.get(0).isFunction(TypeFunction.arctan)
                     && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
                 allowPartialIntegration = true;
-            } else if (factors.get(1) instanceof Function && ((Function) factors.get(1)).getType().equals(TypeFunction.arctan)
+            } else if (factors.get(1).isFunction(TypeFunction.arctan)
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
                 allowPartialIntegration = true;
             }
-            // Typ Polynom*artanh(x)
-            if (factors.get(0) instanceof Function && ((Function) factors.get(0)).getType().equals(TypeFunction.artanh)
+            // Typ P(x)*artanh(x), P = Polynom
+            if (factors.get(0).isFunction(TypeFunction.artanh)
                     && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
                 allowPartialIntegration = true;
-            } else if (factors.get(1) instanceof Function && ((Function) factors.get(1)).getType().equals(TypeFunction.artanh)
+            } else if (factors.get(1).isFunction(TypeFunction.artanh)
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
                 allowPartialIntegration = true;

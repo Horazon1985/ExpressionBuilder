@@ -20,11 +20,8 @@ public abstract class SimplifyRationalFunctionMethods {
      * in terms rational sind.
      */
     private static boolean areQuotientsOfTermsRational(HashSet<Expression> terms) {
-        Iterator iter = terms.iterator();
-        Expression expr;
-        while (iter.hasNext()) {
-            expr = (Expression) iter.next();
-            if (!expr.equals(Expression.ZERO)) {
+        for (Expression expr : terms){
+            if (!expr.equals(Expression.ZERO)){
                 return areQuotientsRational(expr, terms);
             }
         }

@@ -3,6 +3,7 @@ package abstractexpressions.expression.commutativealgebra;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
+import exceptions.EvaluationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -63,25 +64,34 @@ public class GroebnerBasisMethods {
             return degree;
         }
 
-        public Expression toExpression(){
+        public Expression toExpression() {
             Expression monomialAsExpression = coefficient;
-            for (int i = 0; i < this.term.length; i++){
+            for (int i = 0; i < this.term.length; i++) {
                 monomialAsExpression = monomialAsExpression.mult(Variable.create(monomialVars[i]).pow(this.term[i]));
             }
             return monomialAsExpression;
         }
-        
-        public boolean isZero(){
+
+        public boolean isZero() {
             return this.coefficient.equals(ZERO);
         }
-        
-        public Monomial multiplyWithMonomial(Monomial m){
-            Expression resultCoefficient = this.coefficient.mult(m.coefficient);
+
+        public Monomial multiplyWithMonomial(Monomial m) throws EvaluationException {
+            Expression resultCoefficient = this.coefficient.mult(m.coefficient).simplify();
             int[] resultTerm = new int[this.term.length];
-            for (int i = 0; i < this.term.length; i++){
+            for (int i = 0; i < this.term.length; i++) {
                 resultTerm[i] = this.term[i] + m.term[i];
             }
             return new Monomial(resultCoefficient, resultTerm);
+        }
+
+        private boolean isDivisibleByMonomial(Monomial m){
+            for (int i = 0; i < this.term.length; i++){
+                if (this.term[i] < m.term[i]){
+                    return false;
+                }
+            }
+            return true;
         }
         
         @Override
@@ -153,7 +163,7 @@ public class GroebnerBasisMethods {
 
         public MultiPolynomial() {
         }
-        
+
         public MultiPolynomial(ArrayList<Monomial> monomials) {
             this.monomials.addAll(monomials);
         }
@@ -166,34 +176,38 @@ public class GroebnerBasisMethods {
             return this.monomials;
         }
 
-        public void addMonomial(Monomial m){
+        public void addMonomial(Monomial m) {
             this.monomials.add(m);
         }
-        
-        public Expression toExpression(){
+
+        public Expression toExpression() {
             Expression multiPloynomialAsExpression = ZERO;
-            for (Monomial m : this.monomials){
+            for (Monomial m : this.monomials) {
                 multiPloynomialAsExpression = multiPloynomialAsExpression.add(m.toExpression());
             }
             return multiPloynomialAsExpression;
         }
 
-        public void clearZeroMonomials(){
-            // TO DO.
+        public void clearZeroMonomials() {
+            for (int i = 0; i < this.monomials.size(); i++){
+                if (this.monomials.get(i) != null && this.monomials.get(i).getCoefficient().equals(ZERO)){
+                    this.monomials.remove(i);
+                }
+            }
         }
-        
-        public boolean isZero(){
+
+        public boolean isZero() {
             return this.monomials.isEmpty();
         }
-        
-        public MultiPolynomial multiplyWithMonomial(Monomial m){
+
+        public MultiPolynomial multiplyWithMonomial(Monomial m) throws EvaluationException {
             MultiPolynomial resultPolynomial = new MultiPolynomial();
-            for (Monomial monomial : this.monomials){
+            for (Monomial monomial : this.monomials) {
                 resultPolynomial.addMonomial(monomial.multiplyWithMonomial(m));
             }
             return resultPolynomial;
         }
-        
+
     }
 
     public String[] getMonomialVars() {
@@ -206,23 +220,19 @@ public class GroebnerBasisMethods {
 
     private static Monomial getMaximalMonomial(ArrayList<Monomial> monomials) {
         Monomial maxMonomial = null;
-        for (Monomial m : monomials){
-            if (maxMonomial == null){
+        for (Monomial m : monomials) {
+            if (maxMonomial == null) {
                 maxMonomial = m;
-            } else if (maxMonomial.compareTo(m) < 0){
+            } else if (maxMonomial.compareTo(m) < 0) {
                 maxMonomial = m;
             }
         }
         return maxMonomial;
     }
 
-    private static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g){
+    private static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) {
 
-        
-        
         return null;
     }
-    
-    
 
 }
