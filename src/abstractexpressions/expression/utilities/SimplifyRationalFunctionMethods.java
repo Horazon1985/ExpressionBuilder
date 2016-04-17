@@ -204,7 +204,31 @@ public abstract class SimplifyRationalFunctionMethods {
     }
 
     /**
-     * Hilfsmethode. Gibt zurück, ob g ein Polynom in f ist.
+     * Hilfsmethode. Gibt zurück, ob f eine rationale Funktion in var ist.
+     */
+    public static boolean isRationalFunction(Expression f, String var) {
+        if (!f.contains(var)) {
+            return true;
+        }
+        if (f.equals(Variable.create(var))) {
+            return true;
+        }
+        if (f instanceof BinaryOperation) {
+            if (f.isNotPower()) {
+                return isRationalFunction(f, var) && isRationalFunction(f, var);
+            } else if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()) {
+                return isRationalFunction(((BinaryOperation) f).getLeft(), var);
+            }
+        }
+        /*
+         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
+         welchem var vorkommt, dann false zurückgeben.
+         */
+        return false;
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist.
      */
     public static boolean isRationalFunctionIn(Expression f, Expression g, String var) {
         if (!g.contains(var)) {

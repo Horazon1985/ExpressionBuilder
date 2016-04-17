@@ -23,6 +23,7 @@ import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.HashSet;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 
 public abstract class SimplifyIntegralMethods {
 
@@ -90,7 +91,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression prepareIntegrand(Expression f, String var) throws EvaluationException {
+    private static Expression prepareIntegrand(Expression f, String var) throws EvaluationException {
 
         if (f.isQuotient()) {
             f = prepareIntegrand(((BinaryOperation) f).getLeft(), var).div(prepareDominatorOfIntegrand(((BinaryOperation) f).getRight(), var));
@@ -147,7 +148,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression prepareDominatorOfIntegrand(Expression f, String var) throws EvaluationException {
+    private static Expression prepareDominatorOfIntegrand(Expression f, String var) throws EvaluationException {
 
         if (f.isQuotient()) {
             return prepareIntegrand(((BinaryOperation) f).getLeft(), var).div(prepareIntegrand(((BinaryOperation) f).getRight(), var));
@@ -187,7 +188,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression multiplyOutIntegrand(Expression f, String var) throws EvaluationException {
+    private static Expression multiplyOutIntegrand(Expression f, String var) throws EvaluationException {
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
 
@@ -223,7 +224,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression substituteBoundsInIntegral(Expression integralFunction, String var, Expression lowerLimit, Expression upperLimit) throws EvaluationException {
+    private static Expression substituteBoundsInIntegral(Expression integralFunction, String var, Expression lowerLimit, Expression upperLimit) throws EvaluationException {
 
         if (integralFunction instanceof Constant) {
             return Expression.ZERO;
@@ -635,7 +636,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression integrateSumsAndDifferences(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateSumsAndDifferences(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -680,7 +681,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression takeConstantFactorsOutOfIntegral(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression takeConstantFactorsOutOfIntegral(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -760,7 +761,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateMonomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateMonomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -845,7 +846,7 @@ public abstract class SimplifyIntegralMethods {
      * Funktion an und var die Variable im Argument. Ist beispielsweise type =
      * TypeFunction.cos und var = "x", so wird sin(x) zurückgegeben.
      */
-    public static Expression integrateElementaryFunction(TypeFunction type, String var) {
+    private static Expression integrateElementaryFunction(TypeFunction type, String var) {
 
         if (type.equals(TypeFunction.abs)) {
             //F = x*|x|/2
@@ -996,7 +997,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfElementaryFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfElementaryFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1060,7 +1061,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfLn(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfLn(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             return Variable.create(var).mult(new Function(Variable.create(var), TypeFunction.ln).sub(1));
@@ -1074,62 +1075,13 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Rekursionsformel: int(sin(x)^n, x) = -(cos(x)*sin(x)^(n - 1))/n + (n -
-     * 1)/n*int(sin(x)^(n - 2), x)
-     *
-     * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
-     */
-    public static Expression integratePowerOfSin(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
-
-        if (n == 1) {
-            return Expression.MINUS_ONE.mult(new Function(Variable.create(var), TypeFunction.cos));
-        } else if (n == 2) {
-            return Variable.create(var).div(2).sub((new Function(new Constant(2).mult(Variable.create(var)), TypeFunction.sin)).div(4));
-        }
-        Object[] params = new Object[2];
-        params[0] = new Function(Variable.create(var), TypeFunction.sin).pow(n - 2);
-        params[1] = var;
-        Expression integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
-        return new Constant(n - 1).mult(integralOfLowerPower).div(n).sub(
-                Variable.create(var).cos().mult(Variable.create(var).sin().pow(n - 1)).div(n));
-
-    }
-
-    /**
-     * Rekursionsformel: int(cos(x)^n, x) = (sin(x)*cos(x)^(n - 1))/n + (n -
-     * 1)/n*int(cos(x)^(n - 2), x)
-     *
-     * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
-     */
-    public static Object integratePowerOfCos(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
-
-        if (n == 1) {
-            return new Function(Variable.create(var), TypeFunction.sin);
-        } else if (n == 2) {
-            return Variable.create(var).div(2).add((new Function(new Constant(2).mult(Variable.create(var)), TypeFunction.sin)).div(4));
-        }
-        Object[] params = new Object[2];
-        params[0] = new Function(Variable.create(var), TypeFunction.cos).pow(n - 2);
-        params[1] = var;
-        Object integralOfLowerPower = indefiniteIntegration(new Operator(TypeOperator.integral, params), true);
-        if (integralOfLowerPower instanceof Expression) {
-            return new Constant(n - 1).mult((Expression) integralOfLowerPower).div(n).add(
-                    new Function(Variable.create(var), TypeFunction.sin).mult(new Function(Variable.create(var), TypeFunction.cos).pow(n - 1)).div(n));
-        }
-        throw new NotPreciseIntegrableException();
-
-    }
-
-    /**
      * Rekursionsformel: int(tan(x)^n, x) = tan(x)^(n - 1)/(n - 1) -
      * int(tan(x)^(n - 2), x)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfTan(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfTan(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             return Expression.MINUS_ONE.mult(Variable.create(var).cos().abs().ln());
@@ -1152,9 +1104,9 @@ public abstract class SimplifyIntegralMethods {
      * int(cot(x)^(n - 2), x)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfCot(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfCot(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             return new Function(new Function(new Function(Variable.create(var), TypeFunction.sin), TypeFunction.abs), TypeFunction.ln);
@@ -1174,9 +1126,9 @@ public abstract class SimplifyIntegralMethods {
      * 2)*int(sec(x)^(n - 2), x)/(n - 1)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfSec(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfSec(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = ln(|(1 + tan(x/2))/(1 - tan(x/2))|)
@@ -1199,9 +1151,9 @@ public abstract class SimplifyIntegralMethods {
      * (n - 2)*int(cosec(x)^(n - 2), x)/(n - 1)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfCosec(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfCosec(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = ln(|tan(x/2)|)
@@ -1224,9 +1176,9 @@ public abstract class SimplifyIntegralMethods {
      * 1)/n*int(sinh(x)^(n - 2), x)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfSinh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfSinh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             return Variable.create(var).cosh();
@@ -1249,7 +1201,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfCosh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfCosh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = sinh(x)
@@ -1273,9 +1225,9 @@ public abstract class SimplifyIntegralMethods {
      * int(tanh(x)^(n - 2), x)
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfTanh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfTanh(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             return Variable.create(var).cosh().ln();
@@ -1297,7 +1249,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfCoth(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfCoth(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = ln(|sinh(x)|)
@@ -1321,7 +1273,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfSech(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfSech(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = 2*arctan(tanh(x/2))
@@ -1347,7 +1299,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integratePowerOfCosech(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integratePowerOfCosech(int n, String var) throws EvaluationException, NotPreciseIntegrableException {
 
         if (n == 1) {
             //F = ln(|tanh(x/2)|)
@@ -1366,34 +1318,6 @@ public abstract class SimplifyIntegralMethods {
     }
 
     /**
-     * Gibt die Stammfunktion von a^x zurück, falls expr ein unbestimmtes
-     * Integral ist und der Integrand die Form a^x besitzt. Ansonsten wird false
-     * zurückgegeben.
-     *
-     * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
-     */
-    public static Expression integrateGeneralExponentialFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
-
-        Expression f = (Expression) expr.getParams()[0];
-        String var = (String) expr.getParams()[1];
-
-        if (f.isNotPower() || ((BinaryOperation) f).getLeft().contains(var)) {
-            throw new NotPreciseIntegrableException();
-        }
-
-        Expression derivativeOfExponent = ((BinaryOperation) f).getRight().diff(var).simplify();
-
-        if (derivativeOfExponent.contains(var) || derivativeOfExponent.equals(Expression.ZERO)) {
-            throw new NotPreciseIntegrableException();
-        }
-
-        // Ab hier ist der Exponent linear in var.
-        return f.div(derivativeOfExponent.mult(new Function(((BinaryOperation) f).getLeft(), TypeFunction.ln)));
-
-    }
-
-    /**
      * Gibt die Stammfunktion von c * f'/f zurück, falls expr ein unbestimmtes
      * Integral ist und der Integrand die Form c * f'/f mit einer Konstante (von
      * var unabhängigen Funktion) besitzt. Ansonsten wird false
@@ -1403,7 +1327,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateLogarithmicDerivative(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateLogarithmicDerivative(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1521,7 +1445,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateByStandardSubstitution(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateByStandardSubstitution(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1723,12 +1647,12 @@ public abstract class SimplifyIntegralMethods {
      * Hilfsmethode für partielle Integration. Versucht, bei der partiellen
      * Integration int(u'*v) = u*v - int(u*v') eine clevere Wahl für v zu
      * treffen. Die HashMap factors enthält dabei alle Faktoren des Integranden
-     * u'v. Falls eine Zahl zurückgegeben wird, so ist dies der index in
-     * factors, der v entspricht. Das Produkt über alle übrigen Faktoren ist
+     * u'v. Falls eine ganze Zahl >= 0 zurückgegeben wird, so ist dies der index
+     * in factors, der v entspricht. Das Produkt über alle übrigen Faktoren ist
      * dann eine gute Wahl für u'. Falls keine clevere Wahl für v gefunden
-     * wurde, so wird false zurückgegeben.
+     * wurde, so wird -1 zurückgegeben.
      */
-    public static Object cleverChoiceForPartialIntegration(ExpressionCollection factors, String var) {
+    private static int cleverChoiceForFactorForPartialIntegration(ExpressionCollection factors, String var) {
 
         boolean factorsContainPolynomial = false;
         int indexOfPolynomial = -1;
@@ -1745,8 +1669,7 @@ public abstract class SimplifyIntegralMethods {
             if (factors.get(i) == null) {
                 continue;
             }
-            if (!(factors.get(i) instanceof Function) || !(((Function) factors.get(i)).getType().equals(TypeFunction.sin)
-                    || ((Function) factors.get(i)).getType().equals(TypeFunction.cos) || ((Function) factors.get(i)).getType().equals(TypeFunction.exp))
+            if (!factors.get(i).isFunction(TypeFunction.exp) && !factors.get(i).isFunction(TypeFunction.sin) && !factors.get(i).isFunction(TypeFunction.cos)
                     || !factors.get(i).contains(var)) {
                 factorsContainOnlyTrigonometricalAndExponentialFunctions = false;
             }
@@ -1761,21 +1684,18 @@ public abstract class SimplifyIntegralMethods {
                  */
                 indexOfExponentialFunction = i;
             }
-            if (!(factors.get(i) instanceof Function) || !(((Function) factors.get(i)).getType().equals(TypeFunction.sin)
-                    || ((Function) factors.get(i)).getType().equals(TypeFunction.cos)) || !factors.get(i).contains(var)) {
+            if (!factors.get(i).isFunction(TypeFunction.sin) && !factors.get(i).isFunction(TypeFunction.cos) || !factors.get(i).contains(var)) {
                 factorsContainOnlyTrigonometricalFunctions = false;
             }
             if (factors.get(i).contains(var) && SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)) {
                 factorsContainPolynomial = true;
                 indexOfPolynomial = i;
             }
-            if (factors.get(i) instanceof Function && (((Function) factors.get(i)).getType().equals(TypeFunction.lg)
-                    || ((Function) factors.get(i)).getType().equals(TypeFunction.ln)) && factors.get(i).contains(var)) {
+            if ((factors.get(i).isFunction(TypeFunction.lg) || factors.get(i).isFunction(TypeFunction.ln)) && factors.get(i).contains(var)) {
                 factorsContainLogarithm = true;
                 indexOfLogarithm = i;
             }
-            if (factors.get(i) instanceof Function && (((Function) factors.get(i)).getType().equals(TypeFunction.arctan)
-                    || ((Function) factors.get(i)).getType().equals(TypeFunction.artanh)) && factors.get(i).contains(var)) {
+            if ((factors.get(i).isFunction(TypeFunction.arctan) || factors.get(i).isFunction(TypeFunction.artanh)) && factors.get(i).contains(var)) {
                 factorsContainArctanOrArtanh = true;
                 indexOfArctanOrArtanh = i;
             }
@@ -1800,7 +1720,7 @@ public abstract class SimplifyIntegralMethods {
             return indexOfExponentialFunction;
         }
 
-        return false;
+        return -1;
 
     }
 
@@ -1854,7 +1774,7 @@ public abstract class SimplifyIntegralMethods {
         }
 
         if (allowPartialIntegration) {
-            return allowPartialIntegration;
+            return true;
         }
 
         if (factors.getBound() == 2 && factors.get(0) != null && factors.get(1) != null) {
@@ -1864,39 +1784,35 @@ public abstract class SimplifyIntegralMethods {
                     && factors.get(1).isPower()
                     && ((BinaryOperation) factors.get(1)).getLeft().equals(Variable.create(var))
                     && !((BinaryOperation) factors.get(1)).getRight().contains(var)) {
-                allowPartialIntegration = true;
+                return true;
             } else if ((factors.get(1).isFunction(TypeFunction.lg) || factors.get(1).isFunction(TypeFunction.ln))
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && factors.get(0).isPower()
                     && ((BinaryOperation) factors.get(0)).getLeft().equals(Variable.create(var))
                     && !((BinaryOperation) factors.get(0)).getRight().contains(var)) {
-                allowPartialIntegration = true;
+                return true;
             }
             // Typ P(x)*arctan(x), P = Polynom
             if (factors.get(0).isFunction(TypeFunction.arctan)
                     && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
-                allowPartialIntegration = true;
+                return true;
             } else if (factors.get(1).isFunction(TypeFunction.arctan)
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
-                allowPartialIntegration = true;
+                return true;
             }
             // Typ P(x)*artanh(x), P = Polynom
             if (factors.get(0).isFunction(TypeFunction.artanh)
                     && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
-                allowPartialIntegration = true;
+                return true;
             } else if (factors.get(1).isFunction(TypeFunction.artanh)
                     && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
                     && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
-                allowPartialIntegration = true;
+                return true;
             }
 
-        }
-
-        if (allowPartialIntegration) {
-            return allowPartialIntegration;
         }
 
         if (f.isQuotient()) {
@@ -1907,12 +1823,46 @@ public abstract class SimplifyIntegralMethods {
                     && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().equals(Variable.create(var))
                     && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().contains(var)
                     && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
-                allowPartialIntegration = true;
+                return true;
+            }
+
+            // Typ: ln(x)/(a*x+b)^n, n ganz >= 2.
+            if (((BinaryOperation) f).getLeft().equals(new Function(Variable.create(var), TypeFunction.ln))
+                    && ((BinaryOperation) f).getRight() instanceof BinaryOperation
+                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getType().equals(TypeBinary.POW)
+                    && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var).compareTo(BigInteger.ONE) == 0
+                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositiveIntegerConstant()
+                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
+                return true;
             }
 
         }
 
-        return allowPartialIntegration;
+        // Typ: Q(x)*ln(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+
+        int numberOfLogarithmicFunctionsWithRationalArgumentInNumerator = 0;
+        boolean otherFactorsAreRational = true;
+
+        // Zähler prüfen.
+        for (Expression factor : factorsNumerator) {
+            if (factor.isFunction(TypeFunction.ln) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)){
+                numberOfLogarithmicFunctionsWithRationalArgumentInNumerator++;
+            } else if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)){
+                otherFactorsAreRational = false;
+                break;
+            }
+        }
+        // Nenner prüfen.
+        for (Expression factor : factorsDenominator) {
+            if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)){
+                otherFactorsAreRational = false;
+            }
+        }
+
+        return numberOfLogarithmicFunctionsWithRationalArgumentInNumerator <= 1 && otherFactorsAreRational;
 
     }
 
@@ -1924,7 +1874,7 @@ public abstract class SimplifyIntegralMethods {
      * @throws exceptions.EvaluationException
      * @throws exceptions.NotPreciseIntegrableException
      */
-    public static Expression integrateByPartialIntegration(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateByPartialIntegration(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1935,45 +1885,30 @@ public abstract class SimplifyIntegralMethods {
 
         ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-        Expression uPrime, v;
-        Operator integralOfUPrime;
-        Object u;
+        Expression u, uPrime, v;
 
         // Zunächst wird versucht, eine geschickte Wahl für u' zu treffen.
-        Object indexOfUPrime = cleverChoiceForPartialIntegration(factorsNumerator, var);
+        int indexOfUPrime = cleverChoiceForFactorForPartialIntegration(factorsNumerator, var);
 
         // Falls eine "clevere" Wahl für u' vorliegt.
-        if (indexOfUPrime instanceof Integer) {
+        if (indexOfUPrime >= 0) {
 
-            v = factorsNumerator.get((int) indexOfUPrime);
-            factorsNumerator.remove((int) indexOfUPrime);
+            v = factorsNumerator.get(indexOfUPrime);
+            factorsNumerator.remove(indexOfUPrime);
             uPrime = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
 
             Object[] paramsIntegralOfUPrime = new Object[2];
             paramsIntegralOfUPrime[0] = uPrime;
             paramsIntegralOfUPrime[1] = var;
-            integralOfUPrime = new Operator(TypeOperator.integral, paramsIntegralOfUPrime);
-            u = indefiniteIntegration(integralOfUPrime, true);
+            u = indefiniteIntegration(new Operator(TypeOperator.integral, paramsIntegralOfUPrime), true);
 
-            if (u instanceof Expression) {
+            Operator integralOfUTimesVPrime;
+            Object[] paramsIntegralOfUTimesVPrime = new Object[2];
+            paramsIntegralOfUTimesVPrime[0] = u.mult(v.diff(var)).simplify();
+            paramsIntegralOfUTimesVPrime[1] = var;
+            integralOfUTimesVPrime = new Operator(TypeOperator.integral, paramsIntegralOfUTimesVPrime);
 
-                Operator integralOfUTimesVPrime;
-                Object[] paramsIntegralOfUTimesVPrime = new Object[2];
-                paramsIntegralOfUTimesVPrime[0] = ((Expression) u).mult(v.diff(var)).simplify();
-                paramsIntegralOfUTimesVPrime[1] = var;
-                integralOfUTimesVPrime = new Operator(TypeOperator.integral, paramsIntegralOfUTimesVPrime);
-
-                Object restOfPartialIntegral = indefiniteIntegration(integralOfUTimesVPrime, true);
-
-                if (restOfPartialIntegral instanceof Expression) {
-                    return ((Expression) u).mult(v).sub((Expression) restOfPartialIntegral);
-                } else {
-                    factorsNumerator.put((int) indexOfUPrime, v);
-                }
-
-            } else {
-                factorsNumerator.put((int) indexOfUPrime, v);
-            }
+            return u.mult(v).sub(indefiniteIntegration(integralOfUTimesVPrime, true));
 
         }
 

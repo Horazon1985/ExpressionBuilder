@@ -12,7 +12,7 @@ public class GroebnerBasisMethods {
     /**
      * Konstanten, welche Standardtermordnungen repräsentieren.
      */
-    private enum TermOrderings {
+    public enum TermOrderings {
 
         LEX, DEGLEX, REVLEX, DEGREVLEX;
     }
@@ -155,6 +155,11 @@ public class GroebnerBasisMethods {
             return compateToWithRespectToRevLex(m);
         }
 
+        @Override
+        public String toString(){
+            return this.toExpression().toString();
+        }
+        
     }
 
     public class MultiPolynomial {
@@ -208,8 +213,17 @@ public class GroebnerBasisMethods {
             return resultPolynomial;
         }
 
+        @Override
+        public String toString(){
+            return this.toExpression().toString();
+        }
+        
     }
 
+    public static void setTermOrdering(TermOrderings termOrdering){
+        GroebnerBasisMethods.termOrdering = termOrdering;
+    }
+    
     public String[] getMonomialVars() {
         return monomialVars;
     }
@@ -218,7 +232,7 @@ public class GroebnerBasisMethods {
         GroebnerBasisMethods.monomialVars = monomialVars;
     }
 
-    private static Monomial getMaximalMonomial(ArrayList<Monomial> monomials) {
+    private static Monomial getLeadingMonomial(ArrayList<Monomial> monomials) {
         Monomial maxMonomial = null;
         for (Monomial m : monomials) {
             if (maxMonomial == null) {

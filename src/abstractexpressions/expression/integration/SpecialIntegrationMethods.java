@@ -91,7 +91,7 @@ public abstract class SpecialIntegrationMethods {
          Im Folgenden sind nur rationale Funktionen zugelassen: der Nenner
          enthält keine Parameter, der Zähler darf welche enthalten.
          */
-        HashSet varsInDenominator = new HashSet();
+        HashSet<String> varsInDenominator = new HashSet<>();
         ((BinaryOperation) f).getRight().addContainedVars(varsInDenominator);
         if (!varsInDenominator.contains(var) || varsInDenominator.size() > 1) {
             /*
