@@ -22,7 +22,7 @@ public class GroebnerBasisMethods {
     private static String[] monomialVars;
     private static TermOrderings termOrdering;
 
-    public class Monomial implements Comparable<Monomial> {
+    public static class Monomial implements Comparable<Monomial> {
 
         private Expression coefficient;
         private int[] term;
@@ -201,7 +201,7 @@ public class GroebnerBasisMethods {
 
     }
 
-    public class MultiPolynomial {
+    public static class MultiPolynomial {
 
         private final ArrayList<Monomial> monomials = new ArrayList<>();
 
@@ -331,7 +331,7 @@ public class GroebnerBasisMethods {
         return monomialVars;
     }
 
-    public void setMonomialVars(String[] monomialVars) {
+    public static void setMonomialVars(String[] monomialVars) {
         GroebnerBasisMethods.monomialVars = monomialVars;
     }
 

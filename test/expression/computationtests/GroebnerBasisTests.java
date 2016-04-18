@@ -1,15 +1,15 @@
 package expression.computationtests;
 
-import abstractexpressions.expression.classes.Expression;
-import exceptions.EvaluationException;
-import exceptions.ExpressionException;
-import junit.framework.Assert;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.THREE;
+import static abstractexpressions.expression.classes.Expression.TWO;
+import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods;
+import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.Monomial;
 import org.junit.AfterClass;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import utilities.TestUtilities;
 
 public class GroebnerBasisTests {
 
@@ -26,7 +26,22 @@ public class GroebnerBasisTests {
     }
 
     @Test
-    public void expandAlgebraicExpressionTest1() {
+    public void getLeadingMonomialWithRespectToLexTest1() {
+        GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
+        GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
+        GroebnerBasisMethods.MultiPolynomial f = new GroebnerBasisMethods.MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(TWO.div(THREE), new int[]{3, 1}), new Monomial(ONE, new int[]{1, 0}));
+        Monomial leadingMonomial = f.getLeadingMonomial();
+        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(TWO.div(THREE), new int[]{3, 1})));
     }
 
+    @Test
+    public void getLeadingMonomialWithRespectToLexTest2() {
+        GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.REVLEX);
+        GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
+        GroebnerBasisMethods.MultiPolynomial f = new GroebnerBasisMethods.MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(TWO.div(THREE), new int[]{3, 1}), new Monomial(ONE, new int[]{1, 0}));
+        Monomial leadingMonomial = f.getLeadingMonomial();
+        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(ONE, new int[]{1, 0})));
+    }
+
+    
 }
