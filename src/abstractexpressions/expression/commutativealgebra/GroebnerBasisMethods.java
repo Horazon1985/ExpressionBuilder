@@ -316,8 +316,12 @@ public class GroebnerBasisMethods {
 
         public void normalize() throws EvaluationException {
             Expression leadingCoefficient = getLeadingMonomial().getCoefficient();
-            for (Monomial m : monomials) {
-                m.divideByExpression(leadingCoefficient);
+            Monomial m;
+            for (int i = 0; i < this.monomials.size(); i++) {
+                m = this.monomials.get(i);
+                this.monomials.remove(i);
+                m = m.divideByExpression(leadingCoefficient);
+                this.monomials.add(i, m);
             }
         }
 
@@ -335,17 +339,19 @@ public class GroebnerBasisMethods {
         GroebnerBasisMethods.monomialVars = monomialVars;
     }
 
-    private static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) throws EvaluationException {
+    public static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) throws EvaluationException {
         f.normalize();
         g.normalize();
         Monomial leadingMonomialOfF = f.getLeadingMonomial();
         Monomial leadingMonomialOfG = g.getLeadingMonomial();
         Monomial lcmOfLeadingMonomials = leadingMonomialOfF.lcm(leadingMonomialOfG);
-        return f.multiplyWithMonomial(lcmOfLeadingMonomials.divideByMonomial(leadingMonomialOfF)).sub(
+        MultiPolynomial syzygyPolynomial = f.multiplyWithMonomial(lcmOfLeadingMonomials.divideByMonomial(leadingMonomialOfF)).sub(
                 g.multiplyWithMonomial(lcmOfLeadingMonomials.divideByMonomial(leadingMonomialOfG)));
+        syzygyPolynomial.clearZeroMonomials();
+        return syzygyPolynomial;
     }
 
-    private static MultiPolynomial reduce(MultiPolynomial f, MultiPolynomial reductionPolynomial) throws EvaluationException {
+    public static MultiPolynomial reduce(MultiPolynomial f, MultiPolynomial reductionPolynomial) throws EvaluationException {
         
         Monomial leadingMonomial = reductionPolynomial.getLeadingMonomial();
         MultiPolynomial reducedPolynomial = f;
