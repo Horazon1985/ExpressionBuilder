@@ -15,6 +15,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import substitutiontests.SubstitutionTests;
 
 public class TestRunner {
 
@@ -31,11 +32,14 @@ public class TestRunner {
     @Before
     public void initTestClasses() throws Exception {
         testClasses.add(AlgebraicMethodsTests.class);
+        testClasses.add(GroebnerBasisTests.class);
+        testClasses.add(SpecialDifferentialEquationTests.class);
         testClasses.add(GeneralEquationMethodsTests.class);
         testClasses.add(IntegrationTests.class);
         testClasses.add(PolynomialTests.class);
         testClasses.add(SimplifyExpLogTests.class);
         testClasses.add(SimplifyOperatorTests.class);
+        testClasses.add(GeneralDifferentialEquationTests.class);
         testClasses.add(SpecialEquationMethodsTests.class);
         testClasses.add(ExpressionCollectionTests.class);
         testClasses.add(GeneralSimplifyExpressionTests.class);
@@ -46,8 +50,7 @@ public class TestRunner {
         testClasses.add(MatrixFunctionTests.class);
         testClasses.add(GeneralMatrixTests.class);
         testClasses.add(ParseTests.class);
-        testClasses.add(GeneralDifferentialEquationTests.class);
-        testClasses.add(SpecialDifferentialEquationTests.class);
+        testClasses.add(SubstitutionTests.class);
     }
 
     @Test

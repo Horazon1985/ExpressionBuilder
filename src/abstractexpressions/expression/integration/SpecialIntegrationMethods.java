@@ -1376,7 +1376,7 @@ public abstract class SpecialIntegrationMethods {
      * Integriert Funktionen vom Typ R(exp(a*x)), R = rationale Funktion.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
-     * @throws exceptions.EvaluationException
+     * @throws EvaluationException
      * @throws NotAlgebraicallyIntegrableException
      */
     public static Expression integrateRationalFunctionInExp(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
@@ -1459,7 +1459,7 @@ public abstract class SpecialIntegrationMethods {
      * Funktion.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
-     * @throws exceptions.EvaluationException
+     * @throws EvaluationException
      * @throws NotAlgebraicallyIntegrableException
      */
     public static Expression integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
@@ -1597,6 +1597,21 @@ public abstract class SpecialIntegrationMethods {
 
         return f;
 
+    }
+    
+    /**
+     * Integriert Funktionen vom Typ R(x, (ax^2 + bx + c)^(1/2)), R = rationale
+     * Funktion.<br>
+     * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
+     *
+     * @throws EvaluationException
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    public static Expression integrateRationalFunctionInVarAndSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
+
+
+        throw new NotAlgebraicallyIntegrableException();
+        
     }
 
 }

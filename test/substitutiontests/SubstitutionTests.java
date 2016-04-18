@@ -1,4 +1,4 @@
-package simplifymethodstest.substitutiontests;
+package substitutiontests;
 
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;

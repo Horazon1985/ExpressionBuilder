@@ -2005,8 +2005,10 @@ public abstract class SimplifyIntegralMethods {
              dann darf nur DANN integriert werden, wenn u = int(Q(x),x) eine wieder rationale
              Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
              */
-            if (!SimplifyRationalFunctionMethods.isRationalFunction(u, var) || !v.isFunction(TypeFunction.ln)
-                    || !SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)) {
+            if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var) 
+                    && v.isFunction(TypeFunction.ln)
+                    && SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)
+                    && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
                 throw new NotAlgebraicallyIntegrableException();
             }
 

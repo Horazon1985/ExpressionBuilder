@@ -1,6 +1,8 @@
 package abstractexpressions.expression.commutativealgebra;
 
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
 import exceptions.EvaluationException;
@@ -72,8 +74,17 @@ public class GroebnerBasisMethods {
             return monomialAsExpression;
         }
 
+        @Override
+        public String toString() {
+            return this.toExpression().toString();
+        }
+
         public boolean isZero() {
             return this.coefficient.equals(ZERO);
+        }
+
+        public Monomial multipliWithExpression(Expression expr) throws EvaluationException {
+            return new Monomial(this.coefficient.mult(expr).simplify(), this.term);
         }
 
         public Monomial multiplyWithMonomial(Monomial m) throws EvaluationException {
@@ -85,15 +96,48 @@ public class GroebnerBasisMethods {
             return new Monomial(resultCoefficient, resultTerm);
         }
 
-        private boolean isDivisibleByMonomial(Monomial m){
-            for (int i = 0; i < this.term.length; i++){
-                if (this.term[i] < m.term[i]){
+        public boolean isDivisibleByMonomial(Monomial m) {
+            for (int i = 0; i < this.term.length; i++) {
+                if (this.term[i] < m.term[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public Monomial divideByExpression(Expression expr) throws EvaluationException {
+            return new Monomial(this.coefficient.div(expr).simplify(), this.term);
+        }
+
+        public Monomial divideByMonomial(Monomial m) throws EvaluationException {
+            int[] termOfQuotient = new int[this.term.length];
+            for (int i = 0; i < this.term.length; i++) {
+                termOfQuotient[i] = this.term[i] - m.term[i];
+            }
+            return new Monomial(this.coefficient.div(m.coefficient).simplify(), termOfQuotient);
+        }
+
+        public Monomial lcm(Monomial m) {
+            int[] termOfLCM = new int[this.term.length];
+            for (int i = 0; i < this.term.length; i++) {
+                termOfLCM[i] = Math.max(this.term[i], m.term[i]);
+            }
+            return new Monomial(ONE, termOfLCM);
+        }
+
+        public boolean equalsInTerm(Monomial m) {
+            for (int i = 0; i < this.term.length; i++) {
+                if (this.term[i] != m.term[i]) {
                     return false;
                 }
             }
             return true;
         }
         
+        public boolean equalsToMonomial(Monomial m){
+            return this.coefficient.equals(m.coefficient) && this.equalsInTerm(m);
+        }
+
         @Override
         public int compareTo(Monomial m) {
             if (termOrdering == TermOrderings.LEX) {
@@ -155,11 +199,6 @@ public class GroebnerBasisMethods {
             return compateToWithRespectToRevLex(m);
         }
 
-        @Override
-        public String toString(){
-            return this.toExpression().toString();
-        }
-        
     }
 
     public class MultiPolynomial {
@@ -184,6 +223,10 @@ public class GroebnerBasisMethods {
         public void addMonomial(Monomial m) {
             this.monomials.add(m);
         }
+        
+        public MultiPolynomial copy(){
+            return new MultiPolynomial(this.monomials);
+        }
 
         public Expression toExpression() {
             Expression multiPloynomialAsExpression = ZERO;
@@ -193,10 +236,16 @@ public class GroebnerBasisMethods {
             return multiPloynomialAsExpression;
         }
 
+        @Override
+        public String toString() {
+            return this.toExpression().toString();
+        }
+
         public void clearZeroMonomials() {
-            for (int i = 0; i < this.monomials.size(); i++){
-                if (this.monomials.get(i) != null && this.monomials.get(i).getCoefficient().equals(ZERO)){
+            for (int i = 0; i < this.monomials.size(); i++) {
+                if (this.monomials.get(i) != null && this.monomials.get(i).getCoefficient().equals(ZERO)) {
                     this.monomials.remove(i);
+                    i--;
                 }
             }
         }
@@ -205,6 +254,18 @@ public class GroebnerBasisMethods {
             return this.monomials.isEmpty();
         }
 
+        public boolean equalsToMultiPolynomial(MultiPolynomial f){
+            if (this.monomials.size() != f.monomials.size()){
+                return false;
+            }
+            for (int i = 0; i < this.monomials.size(); i++){
+                if (!this.monomials.get(i).equalsToMonomial(f.monomials.get(i))){
+                    return false;
+                }
+            }
+            return true;
+        }
+        
         public MultiPolynomial multiplyWithMonomial(Monomial m) throws EvaluationException {
             MultiPolynomial resultPolynomial = new MultiPolynomial();
             for (Monomial monomial : this.monomials) {
@@ -213,17 +274,59 @@ public class GroebnerBasisMethods {
             return resultPolynomial;
         }
 
-        @Override
-        public String toString(){
-            return this.toExpression().toString();
+        public MultiPolynomial add(MultiPolynomial f) throws EvaluationException {
+            MultiPolynomial resultPolynomial = new MultiPolynomial(this.monomials);
+            for (Monomial m : f.monomials) {
+                for (int i = 0; i < this.monomials.size(); i++) {
+                    if (this.monomials.get(i).equalsInTerm(m)) {
+                        this.monomials.get(i).setCoefficient(this.monomials.get(i).getCoefficient().add(m.getCoefficient()).simplify());
+                    } else {
+                        this.monomials.add(m);
+                    }
+                }
+            }
+            return resultPolynomial;
         }
-        
+
+        public MultiPolynomial sub(MultiPolynomial f) throws EvaluationException {
+            MultiPolynomial resultPolynomial = new MultiPolynomial(this.monomials);
+            for (Monomial m : f.monomials) {
+                for (int i = 0; i < this.monomials.size(); i++) {
+                    if (this.monomials.get(i).equalsInTerm(m)) {
+                        this.monomials.get(i).setCoefficient(this.monomials.get(i).getCoefficient().sub(m.getCoefficient()).simplify());
+                    } else {
+                        this.monomials.add(m.multipliWithExpression(MINUS_ONE));
+                    }
+                }
+            }
+            return resultPolynomial;
+        }
+
+        public Monomial getLeadingMonomial() {
+            Monomial maxMonomial = null;
+            for (Monomial m : this.monomials) {
+                if (maxMonomial == null) {
+                    maxMonomial = m;
+                } else if (maxMonomial.compareTo(m) < 0) {
+                    maxMonomial = m;
+                }
+            }
+            return maxMonomial;
+        }
+
+        public void normalize() throws EvaluationException {
+            Expression leadingCoefficient = getLeadingMonomial().getCoefficient();
+            for (Monomial m : monomials) {
+                m.divideByExpression(leadingCoefficient);
+            }
+        }
+
     }
 
-    public static void setTermOrdering(TermOrderings termOrdering){
+    public static void setTermOrdering(TermOrderings termOrdering) {
         GroebnerBasisMethods.termOrdering = termOrdering;
     }
-    
+
     public String[] getMonomialVars() {
         return monomialVars;
     }
@@ -232,21 +335,35 @@ public class GroebnerBasisMethods {
         GroebnerBasisMethods.monomialVars = monomialVars;
     }
 
-    private static Monomial getLeadingMonomial(ArrayList<Monomial> monomials) {
-        Monomial maxMonomial = null;
-        for (Monomial m : monomials) {
-            if (maxMonomial == null) {
-                maxMonomial = m;
-            } else if (maxMonomial.compareTo(m) < 0) {
-                maxMonomial = m;
-            }
-        }
-        return maxMonomial;
+    private static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) throws EvaluationException {
+        f.normalize();
+        g.normalize();
+        Monomial leadingMonomialOfF = f.getLeadingMonomial();
+        Monomial leadingMonomialOfG = g.getLeadingMonomial();
+        Monomial lcmOfLeadingMonomials = leadingMonomialOfF.lcm(leadingMonomialOfG);
+        return f.multiplyWithMonomial(lcmOfLeadingMonomials.divideByMonomial(leadingMonomialOfF)).sub(
+                g.multiplyWithMonomial(lcmOfLeadingMonomials.divideByMonomial(leadingMonomialOfG)));
     }
 
-    private static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) {
-
-        return null;
+    private static MultiPolynomial reduce(MultiPolynomial f, MultiPolynomial reductionPolynomial) throws EvaluationException {
+        
+        Monomial leadingMonomial = reductionPolynomial.getLeadingMonomial();
+        MultiPolynomial reducedPolynomial = f;
+        
+        boolean reductionPerformed;
+        do {
+            reductionPerformed = false;
+            ArrayList<Monomial> monomialsOfF = f.getMonomials();
+            for (Monomial m : monomialsOfF){
+                if (m.isDivisibleByMonomial(leadingMonomial)){
+                    reducedPolynomial = reducedPolynomial.sub(reductionPolynomial.multiplyWithMonomial(m.divideByMonomial(leadingMonomial)));
+                    reductionPerformed = true;
+                }
+            }
+        } while (reductionPerformed);
+        
+        return reducedPolynomial;
+        
     }
 
 }
