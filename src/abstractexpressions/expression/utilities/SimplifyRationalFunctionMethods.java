@@ -215,7 +215,7 @@ public abstract class SimplifyRationalFunctionMethods {
         }
         if (f instanceof BinaryOperation) {
             if (f.isNotPower()) {
-                return isRationalFunction(f, var) && isRationalFunction(f, var);
+                return isRationalFunction(((BinaryOperation) f).getLeft(), var) && isRationalFunction(((BinaryOperation) f).getRight(), var);
             } else if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()) {
                 return isRationalFunction(((BinaryOperation) f).getLeft(), var);
             }

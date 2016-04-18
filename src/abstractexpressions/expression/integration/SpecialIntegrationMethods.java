@@ -3,7 +3,7 @@ package abstractexpressions.expression.integration;
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
-import exceptions.NotPreciseIntegrableException;
+import exceptions.NotAlgebraicallyIntegrableException;
 import exceptions.NotSubstitutableException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
@@ -75,16 +75,16 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateRationalFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateRationalFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         // Falls f keine rationale Function ist -> abbrechen.
         if (!PartialFractionDecompositionMethods.isRationalFunctionInCanonicalForm(f, var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -101,7 +101,7 @@ public abstract class SpecialIntegrationMethods {
              SimplifyIntegralMethods.takeConstantsOutOfIntegral() geschieht.
              Daher -> beenden.
              */
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degNnumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -110,14 +110,14 @@ public abstract class SpecialIntegrationMethods {
         // Nur bei Graden <= gewisse Schranke fortfahren.
         if (degNnumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression partialFractionDecompositionOfF = PartialFractionDecompositionMethods.getPartialFractionDecomposition(f, var);
 
         if (f.equals(partialFractionDecompositionOfF)) {
             // Dann konnte f nicht in Partialbrüche zerlegt werden.
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection summands = SimplifyUtilities.getSummands(partialFractionDecompositionOfF);
@@ -136,10 +136,10 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
     public static Expression integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(Operator expr)
-            throws EvaluationException, NotPreciseIntegrableException {
+            throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -148,7 +148,7 @@ public abstract class SpecialIntegrationMethods {
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositiveIntegerConstant()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -156,7 +156,7 @@ public abstract class SpecialIntegrationMethods {
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
@@ -164,13 +164,13 @@ public abstract class SpecialIntegrationMethods {
         BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
 
         if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int n = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().intValue();
 
         if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
@@ -178,7 +178,7 @@ public abstract class SpecialIntegrationMethods {
 
         // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
@@ -201,7 +201,7 @@ public abstract class SpecialIntegrationMethods {
         // discriminant = 4*a*c*-b^2.
         Expression discriminant = new Constant(4).mult(a).mult(c).sub(b.pow(2)).simplify();
         if (!discriminant.isAlwaysPositive()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -231,9 +231,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -241,7 +241,7 @@ public abstract class SpecialIntegrationMethods {
         if (f.isNotQuotient()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getRight(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -249,20 +249,20 @@ public abstract class SpecialIntegrationMethods {
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getRight(), var);
 
         if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
         // Falls in den Leitkoeffizienten des Nenners Parameter auftreten, die das Vorzeichen nicht eindeutig machen -> Fehler werfen.
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Falls bei a irgendwelche Koeffizienten fehlen -> mit Nullen auffüllen.
@@ -279,7 +279,7 @@ public abstract class SpecialIntegrationMethods {
         // discriminant = b^2 - 4*a*c =: D.
         Expression discriminant = coefficientsDenominator.get(1).pow(2).sub(new Constant(4).mult(coefficientsDenominator.get(0)).mult(coefficientsDenominator.get(2))).simplify();
         if (!discriminant.isAlwaysNegative() || discriminant.equals(Expression.ZERO)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -370,21 +370,21 @@ public abstract class SpecialIntegrationMethods {
      * liegt.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateProductOfPolynomialAndPowerOfTrigonometricFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfPolynomialAndPowerOfTrigonometricFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (f.isNotProduct()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
 
         if (factors.getBound() != 2) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         if (SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
@@ -415,7 +415,7 @@ public abstract class SpecialIntegrationMethods {
             if (degPolynomial.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                     || exponentOfTrigonometricFunction.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                     || degArgument.compareTo(BigInteger.ONE) > 0) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
 
             f = expandProductsOfComplexExponentialFunctions(f, var);
@@ -425,7 +425,7 @@ public abstract class SpecialIntegrationMethods {
 
         }
 
-        throw new NotPreciseIntegrableException();
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -435,15 +435,15 @@ public abstract class SpecialIntegrationMethods {
      * geeigneten Schranke liegt.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integratePolynomialInComplexExponentialFunctions(Operator expr) throws NotPreciseIntegrableException {
+    public static Expression integratePolynomialInComplexExponentialFunctions(Operator expr) throws NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (!BinaryOperation.isPolynomialInVariousExponentialAndTrigonometricalFunctions(f, var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         try {
@@ -463,11 +463,11 @@ public abstract class SpecialIntegrationMethods {
         } catch (EvaluationException e) {
         }
 
-        throw new NotPreciseIntegrableException();
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
-    private static Expression integrateSummandOfPolynomialInExponentialAndTrigonometricalFunctions(Expression f, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateSummandOfPolynomialInExponentialAndTrigonometricalFunctions(Expression f, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         // Zuerst: Fall eines konstanten Summanden:
         if (!f.contains(var)) {
@@ -493,7 +493,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         if (!factorsDenominator.isEmpty() || factorsNumerator.getSize() > 2) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Jetzt wird die Stammfunktion, abhängig von der Gestalt des Summanden, explizit bestimmt.
@@ -537,7 +537,7 @@ public abstract class SpecialIntegrationMethods {
             return constantNumerator.mult((Expression) integral).div(constantDenominator);
         }
 
-        throw new NotPreciseIntegrableException();
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -546,10 +546,10 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    private static Expression integrateExpOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateExpOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
                 || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return expArgument.exp().div(coefficients.get(1));
@@ -560,10 +560,10 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    private static Expression integrateCosOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateCosOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
                 || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return expArgument.sin().div(coefficients.get(1));
@@ -574,10 +574,10 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    private static Expression integrateSinOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateSinOfLinearFunction(Expression expArgument, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         if (!SimplifyPolynomialMethods.isPolynomial(expArgument, var)
                 || SimplifyPolynomialMethods.getDegreeOfPolynomial(expArgument, var).compareTo(BigInteger.ONE) != 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         return MINUS_ONE.mult(expArgument.cos()).div(coefficients.get(1));
@@ -588,12 +588,12 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression integrateProductOfExpSin(Expression expArgument, Expression sinArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfExpSin(Expression expArgument, Expression sinArgument, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         ExpressionCollection coefficientsInExp = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         ExpressionCollection coefficientsInSin = SimplifyPolynomialMethods.getPolynomialCoefficients(sinArgument, var);
         if (coefficientsInExp.getBound() != 2 || coefficientsInSin.getBound() != 2) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -610,12 +610,12 @@ public abstract class SpecialIntegrationMethods {
      *
      * @throws EvaluationException
      */
-    public static Expression integrateProductOfExpCos(Expression expArgument, Expression cosArgument, String var) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfExpCos(Expression expArgument, Expression cosArgument, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         ExpressionCollection coefficientsInExp = SimplifyPolynomialMethods.getPolynomialCoefficients(expArgument, var);
         ExpressionCollection coefficientsInCos = SimplifyPolynomialMethods.getPolynomialCoefficients(cosArgument, var);
         if (coefficientsInExp.getBound() != 2 || coefficientsInCos.getBound() != 2) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -632,28 +632,28 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression integrateSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (f.isNotPower() || !((BinaryOperation) f).getRight().equals(Expression.ONE.div(Expression.TWO))
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
         for (int i = 0; i < 2; i++) {
             if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
         }
 
@@ -711,7 +711,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Übrige, nicht eindeutig entscheidbare Fälle.
-        throw new NotPreciseIntegrableException();
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -720,9 +720,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -733,19 +733,19 @@ public abstract class SpecialIntegrationMethods {
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isPositive()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(TWO)
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Falls in den Koeffizienten Parameter auftreten, die das Vorzeichen ändern können -> false zurückgeben.
         for (int i = 0; i < 2; i++) {
             if (!coefficients.get(i).isConstant() && !coefficients.get(i).isAlwaysNonNegative() && !(Expression.MINUS_ONE).mult(coefficients.get(i)).simplify().isAlwaysNonNegative()) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
         }
 
@@ -758,7 +758,7 @@ public abstract class SpecialIntegrationMethods {
         BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int n = (((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().intValue() - 1) / 2;
@@ -789,15 +789,15 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (!isProductOfPolynomialAndOddPowerOfSqrtOfQuadraticFunction(f, var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsPolynomial, coefficientsQuadraticPolynomial;
@@ -822,7 +822,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         if (coefficientsPolynomial.getBound() > 2 || coefficientsQuadraticPolynomial.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // coefficientsPolynomial bis zum Grad 1 mit Nullen auffüllen.
@@ -856,15 +856,15 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws exceptions.NotPreciseIntegrableException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateProductOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         if (!isProductOfPolynomialAndOddPowerOfSqrtOfQuadraticFunction(f, var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsPolynomial, coefficientsQuadraticPolynomial;
@@ -889,7 +889,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         if (coefficientsQuadraticPolynomial.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int maxExponent = (coefficientsPolynomial.getBound() - 1) / 2;
@@ -1022,9 +1022,9 @@ public abstract class SpecialIntegrationMethods {
      * nicht vom angegebenen Typ ist, so wird false zurückgegeben.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression integrateReciprocalOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateReciprocalOfSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1033,19 +1033,19 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE.div(Expression.TWO))
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), diskr = D = b^2 - 4*a*c.
@@ -1056,7 +1056,7 @@ public abstract class SpecialIntegrationMethods {
         // Falls Uneindeutigkeiten im Vorzeichen der Diskriminante oder im Leitkoeffizienten bestehen, dann Fehler werfen.
         if (!a.isAlwaysPositive() && !a.isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         if (discriminant.equals(Expression.ZERO) && a.isAlwaysNonNegative() && !a.equals(Expression.ZERO)) {
@@ -1092,7 +1092,7 @@ public abstract class SpecialIntegrationMethods {
         }
 
         // Übrige, nicht eindeutig entscheidbare Fälle.
-        throw new NotPreciseIntegrableException();
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -1101,9 +1101,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    private static Expression integrateReciprocalOfOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1112,20 +1112,20 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isRationalConstant()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int n;
 
         if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
                 || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         n = (exponentNumerator.intValue() - 1) / 2;
@@ -1137,7 +1137,7 @@ public abstract class SpecialIntegrationMethods {
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficients.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Im Folgenden sei a = a.get(2), b = a.get(1), c = a.get(0), diskr = D = 4*a*c - b^2, x = var.
@@ -1149,7 +1149,7 @@ public abstract class SpecialIntegrationMethods {
         // Falls Uneindeutigkeiten im Vorzeichen der Diskriminante oder im Leitkoeffizienten bestehen, dann Fehler werfen.
         if (!a.isAlwaysPositive() && !a.isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
@@ -1176,9 +1176,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfLinearPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1188,7 +1188,7 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isRationalConstant()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -1196,14 +1196,14 @@ public abstract class SpecialIntegrationMethods {
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficientsNumerator.getBound() > 2 || coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // Fehlende Koeffizienten im Zählen mit Nullen auffüllen.
@@ -1217,19 +1217,19 @@ public abstract class SpecialIntegrationMethods {
 
         if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
                 || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         n = (exponentNumerator.intValue() - 1) / 2;
 
         if (coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // In den folgenden Kommentaren sei a = coefficientsNumerator, b = coefficientsDenominator.
@@ -1244,7 +1244,7 @@ public abstract class SpecialIntegrationMethods {
         Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         // radicand = a*x^2 + b*x + c
@@ -1271,9 +1271,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateQuotientOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateQuotientOfPolynomialAndOddPowerOfSqrtOfQuadraticPolynomial(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1283,7 +1283,7 @@ public abstract class SpecialIntegrationMethods {
                 || ((BinaryOperation) f).getRight().isNotPower()
                 || !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isRationalConstant()
                 || !SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
@@ -1291,33 +1291,33 @@ public abstract class SpecialIntegrationMethods {
 
         if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
                 || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
 
         if (coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int n;
 
         if (!((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getRight().equals(TWO)
                 || !((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft().isPositiveOddIntegerConstant()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         n = (exponentNumerator.intValue() - 1) / 2;
 
         if (coefficientsDenominator.getBound() != 3) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         int maxExponent = (coefficientsNumerator.getBound() - 1) / 2;
@@ -1334,7 +1334,7 @@ public abstract class SpecialIntegrationMethods {
         Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
         if (!coefficientsDenominator.get(2).isAlwaysPositive() && !coefficientsDenominator.get(2).isAlwaysNegative()
                 || !discriminant.isAlwaysPositive() && !discriminant.isAlwaysNegative()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         /*
@@ -1377,9 +1377,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws exceptions.EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateRationalFunctionInExp(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateRationalFunctionInExp(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1390,7 +1390,7 @@ public abstract class SpecialIntegrationMethods {
         f = SimplifyExponentialRelations.separateConstantPartsInRationalExponentialEquations(f, var);
 
         if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, argumentsInExp) || argumentsInExp.isEmpty()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger gcdOfNumerators = BigInteger.ONE;
@@ -1403,10 +1403,10 @@ public abstract class SpecialIntegrationMethods {
         try {
             derivativeOfFirstArgument = firstArgument.diff(var).simplify();
             if (derivativeOfFirstArgument.contains(var)) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
         } catch (EvaluationException e) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression currentQuotient;
@@ -1440,7 +1440,7 @@ public abstract class SpecialIntegrationMethods {
              müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
              */
             if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable((Expression) fSubstituted, substVar)) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
 
             Expression substitutedIntegrand = ((Expression) fSubstituted).div(factorOfExpArgument.mult(Variable.create(substVar)));
@@ -1449,7 +1449,7 @@ public abstract class SpecialIntegrationMethods {
             Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
             return resultFunction.replaceVariable(substVar, factorOfExpArgument.mult(Variable.create(var)).exp());
         } catch (NotSubstitutableException e) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
     }
@@ -1460,9 +1460,9 @@ public abstract class SpecialIntegrationMethods {
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
      * @throws exceptions.EvaluationException
-     * @throws NotPreciseIntegrableException
+     * @throws NotAlgebraicallyIntegrableException
      */
-    public static Expression integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException, NotPreciseIntegrableException {
+    public static Expression integrateRationalFunctionInTrigonometricFunctions(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -1473,7 +1473,7 @@ public abstract class SpecialIntegrationMethods {
         f = SimplifyTrigonometricalRelations.separateConstantPartsInRationalTrigonometricalEquations(f, var);
 
         if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricalFunctions) || argumentsInTrigonometricalFunctions.isEmpty()) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         BigInteger gcdOfNumerators = BigInteger.ONE;
@@ -1486,10 +1486,10 @@ public abstract class SpecialIntegrationMethods {
         try {
             derivativeOfFirstArgument = firstArgument.diff(var).simplify();
             if (derivativeOfFirstArgument.contains(var)) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
         } catch (EvaluationException e) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression currentQuotient;
@@ -1525,7 +1525,7 @@ public abstract class SpecialIntegrationMethods {
              müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
              */
             if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
 
             /*
@@ -1551,7 +1551,7 @@ public abstract class SpecialIntegrationMethods {
 
             if (!substitutedIntegrand.contains(substVarForIntegral)) {
                 // Dann konnte weder sin, noch cos substitutiert werden. Dies sollte hier eigentlich nicht passieren.
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
 
             substitutedIntegrand = substitutedIntegrand.mult(substForDX).div(factorOfTrigonometricalArgument);
@@ -1559,14 +1559,14 @@ public abstract class SpecialIntegrationMethods {
             Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
             // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
             if (resultFunction.containsIndefiniteIntegral()) {
-                throw new NotPreciseIntegrableException();
+                throw new NotAlgebraicallyIntegrableException();
             }
             // Rücksubstitution!
             return resultFunction.replaceVariable(substVarForIntegral,
                     factorOfTrigonometricalArgument.mult(Variable.create(var)).div(2).tan());
 
         } catch (NotSubstitutableException e) {
-            throw new NotPreciseIntegrableException();
+            throw new NotAlgebraicallyIntegrableException();
         }
 
     }
