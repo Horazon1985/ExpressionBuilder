@@ -209,7 +209,9 @@ public class GroebnerBasisMethods {
         }
 
         public MultiPolynomial(ArrayList<Monomial> monomials) {
-            this.monomials.addAll(monomials);
+            for (Monomial m : monomials){
+                this.monomials.add(new Monomial(m.getCoefficient(), m.getTerm()));
+            }
         }
 
         public MultiPolynomial(Monomial... monomials) {
@@ -275,31 +277,45 @@ public class GroebnerBasisMethods {
         }
 
         public MultiPolynomial add(MultiPolynomial f) throws EvaluationException {
-            MultiPolynomial resultPolynomial = new MultiPolynomial(this.monomials);
-            for (Monomial m : f.monomials) {
-                for (int i = 0; i < this.monomials.size(); i++) {
-                    if (this.monomials.get(i).equalsInTerm(m)) {
-                        this.monomials.get(i).setCoefficient(this.monomials.get(i).getCoefficient().add(m.getCoefficient()).simplify());
-                    } else {
-                        this.monomials.add(m);
+            MultiPolynomial thisCopy = new MultiPolynomial(this.monomials);
+            MultiPolynomial fCopy = new MultiPolynomial(f.monomials);
+            for (int i = 0; i < thisCopy.monomials.size(); i++) {
+                for (int j = 0; j < fCopy.monomials.size(); j++) {
+                    if (thisCopy.monomials.get(i).equalsInTerm(fCopy.monomials.get(j))) {
+                        thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().add(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        thisCopy.monomials.remove(i);
+                        fCopy.monomials.remove(j);
+                        i--;
+                        break;
                     }
                 }
             }
-            return resultPolynomial;
+            for (Monomial m : fCopy.monomials){
+                thisCopy.monomials.add(m);
+            }
+            thisCopy.clearZeroMonomials();
+            return thisCopy;
         }
 
         public MultiPolynomial sub(MultiPolynomial f) throws EvaluationException {
-            MultiPolynomial resultPolynomial = new MultiPolynomial(this.monomials);
-            for (Monomial m : f.monomials) {
-                for (int i = 0; i < this.monomials.size(); i++) {
-                    if (this.monomials.get(i).equalsInTerm(m)) {
-                        this.monomials.get(i).setCoefficient(this.monomials.get(i).getCoefficient().sub(m.getCoefficient()).simplify());
-                    } else {
-                        this.monomials.add(m.multipliWithExpression(MINUS_ONE));
+            MultiPolynomial thisCopy = new MultiPolynomial(this.monomials);
+            MultiPolynomial fCopy = new MultiPolynomial(f.monomials);
+            for (int i = 0; i < thisCopy.monomials.size(); i++) {
+                for (int j = 0; j < fCopy.monomials.size(); j++) {
+                    if (thisCopy.monomials.get(i).equalsInTerm(fCopy.monomials.get(j))) {
+                        thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().sub(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        thisCopy.monomials.remove(i);
+                        fCopy.monomials.remove(j);
+                        i--;
+                        break;
                     }
                 }
             }
-            return resultPolynomial;
+            for (Monomial m : fCopy.monomials){
+                thisCopy.monomials.add(m.multipliWithExpression(MINUS_ONE));
+            }
+            thisCopy.clearZeroMonomials();
+            return thisCopy;
         }
 
         public Monomial getLeadingMonomial() {
@@ -359,7 +375,10 @@ public class GroebnerBasisMethods {
         boolean reductionPerformed;
         do {
             reductionPerformed = false;
-            ArrayList<Monomial> monomialsOfF = f.getMonomials();
+            ArrayList<Monomial> monomialsOfF = new ArrayList<>();
+            for (Monomial m : reducedPolynomial.getMonomials()){
+                monomialsOfF.add(m);
+            }
             for (Monomial m : monomialsOfF){
                 if (m.isDivisibleByMonomial(leadingMonomial)){
                     reducedPolynomial = reducedPolynomial.sub(reductionPolynomial.multiplyWithMonomial(m.divideByMonomial(leadingMonomial)));

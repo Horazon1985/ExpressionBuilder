@@ -83,4 +83,20 @@ public class GroebnerBasisTests {
         }
     }
 
+    @Test
+    public void reducePolynomialTest() {
+        GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
+        GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{3, 2}), new Monomial(new Constant(-5), new int[]{2, 1}), new Monomial(ONE, new int[]{1, 1}), new Monomial(ONE, new int[]{1, 0}));
+        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(ONE.div(TWO), new int[]{2, 1}), new Monomial(ONE, new int[]{0, 1}));
+        try {
+            MultiPolynomial reducedPolynomial = GroebnerBasisMethods.reduce(f, reductionPolynomial);
+            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE, new int[]{1, 1}), new Monomial(ONE, new int[]{1, 0}), 
+                    new Monomial(new Constant(-4), new int[]{1, 2}), new Monomial(new Constant(10), new int[]{0, 1}));
+            assertTrue(reducedPolynomial.equalsToMultiPolynomial(expectedResult));
+        } catch (EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }
