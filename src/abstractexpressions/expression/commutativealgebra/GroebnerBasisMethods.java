@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Variable;
 import exceptions.EvaluationException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class GroebnerBasisMethods {
 
@@ -37,6 +38,23 @@ public class GroebnerBasisMethods {
              Nullen aufgefüllt.
              */
             System.arraycopy(term, 0, this.term, 0, Math.min(monomialVars.length, term.length));
+            for (int i = Math.min(monomialVars.length, term.length); i < this.term.length; i++) {
+                this.term[i] = 0;
+            }
+        }
+
+        public Monomial(Expression coefficient, Integer... term) {
+            this.coefficient = coefficient;
+            this.term = new int[monomialVars.length];
+            /*
+             Damit es keine Dimensionsfehler gibt: wenn term und this.term in den
+             Dimensionen nicht übereinstimmen (warum auch immer), wird nur bis
+             zur gemeinsamen Schranke kopiert und der Rest (falls notwendig) mit 
+             Nullen aufgefüllt.
+             */
+            for (int i = 0; i < Math.min(monomialVars.length, term.length); i++) {
+                this.term[i] = term[i];
+            }
             for (int i = Math.min(monomialVars.length, term.length); i < this.term.length; i++) {
                 this.term[i] = 0;
             }
@@ -278,7 +296,7 @@ public class GroebnerBasisMethods {
             }
             for (int i = 0; i < this.monomials.size(); i++) {
                 for (int j = 0; j < f.monomials.size(); j++) {
-                    if (this.monomials.get(i).equivalentToMonomial(f.monomials.get(j))){
+                    if (this.monomials.get(i).equivalentToMonomial(f.monomials.get(j))) {
                         this.monomials.remove(i);
                         f.monomials.remove(j);
                         i--;
@@ -446,7 +464,7 @@ public class GroebnerBasisMethods {
         } while (groebnerBasis.size() != groebnerBasisAfterBuchbergerAlgorithmStep.size());
 
         // Reduzieren.
-        groebnerBasis = reduceSystem(groebnerBasis);
+        groebnerBasis = reduceGroebnerBasisSystem(groebnerBasis);
 
         // Normieren.
         normalizeSystem(groebnerBasis);
@@ -483,17 +501,31 @@ public class GroebnerBasisMethods {
 
     }
 
-    private static ArrayList<MultiPolynomial> reduceSystem(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    private static ArrayList<MultiPolynomial> reduceGroebnerBasisSystem(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
 
         ArrayList<MultiPolynomial> polynomialsAfterReduction = new ArrayList<>();
         MultiPolynomial polynomial;
+        Monomial leadingMonomial;
+        HashSet<Integer> ignoreList = new HashSet<>();
+        
         for (int i = 0; i < polynomials.size(); i++) {
+            if (ignoreList.contains(i)){
+                continue;
+            }
             polynomial = polynomials.get(i);
+            leadingMonomial = polynomial.getLeadingMonomial();
             for (int j = 0; j < polynomials.size(); j++) {
-                if (i == j) {
+                if (ignoreList.contains(j) || i == j) {
                     continue;
                 }
-                polynomial = reduce(polynomial, polynomials.get(j));
+                if (leadingMonomial.isDivisibleByMonomial(polynomials.get(j).getLeadingMonomial())) {
+                    // In diesem Fall kann polynomial zu 0 reduziert werden.
+                    polynomial = new MultiPolynomial();
+                    ignoreList.add(i);
+                    break;
+                } else {
+                    polynomial = reduce(polynomial, polynomials.get(j));
+                }
             }
             if (!polynomial.isZero()) {
                 polynomialsAfterReduction.add(polynomial);

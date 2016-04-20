@@ -37,47 +37,47 @@ public class GroebnerBasisTests {
     public void getLeadingMonomialWithRespectToLexTest1() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(TWO.div(THREE), new int[]{3, 1}), new Monomial(ONE, new int[]{1, 0}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 5), new Monomial(TWO.div(THREE), 3, 1), new Monomial(ONE, 1, 0));
         Monomial leadingMonomial = f.getLeadingMonomial();
-        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(TWO.div(THREE), new int[]{3, 1})));
+        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(TWO.div(THREE), 3, 1)));
     }
 
     @Test
     public void getLeadingMonomialWithRespectToLexTest2() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.REVLEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(TWO.div(THREE), new int[]{3, 1}), new Monomial(ONE, new int[]{1, 0}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 5), new Monomial(TWO.div(THREE), 3, 1), new Monomial(ONE, 1, 0));
         Monomial leadingMonomial = f.getLeadingMonomial();
-        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(ONE, new int[]{1, 0})));
+        assertTrue(leadingMonomial.equalsToMonomial(new Monomial(ONE, 1, 0)));
     }
 
     @Test
     public void clearZeroMonomialsTest1() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(ZERO, new int[]{3, 1}), new Monomial(ONE, new int[]{1, 0}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 5), new Monomial(ZERO, 3, 1), new Monomial(ONE, 1, 0));
         f.clearZeroMonomials();
-        assertTrue(f.equalsToMultiPolynomial(new MultiPolynomial(new Monomial(TWO, new int[]{2, 5}), new Monomial(ONE, new int[]{1, 0}))));
+        assertTrue(f.equalsToMultiPolynomial(new MultiPolynomial(new Monomial(TWO, 2, 5), new Monomial(ONE, 1, 0))));
     }
 
     @Test
     public void clearZeroMonomialsTest2() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(ZERO, new int[]{2, 5}), new Monomial(ZERO, new int[]{3, 1}), new Monomial(ZERO, new int[]{1, 0}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(ZERO, 2, 5), new Monomial(ZERO, 3, 1), new Monomial(ZERO, 1, 0));
         f.clearZeroMonomials();
-        assertTrue(f.equalsToMultiPolynomial(new MultiPolynomial()));
+        assertTrue(f.isZero());
     }
 
     @Test
     public void syzygyPolynomialTest() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(THREE, new int[]{2, 1}), new Monomial(ONE, new int[]{1, 1}), new Monomial(MINUS_ONE.div(TWO), new int[]{1, 0}));
-        MultiPolynomial g = new MultiPolynomial(new Monomial(ONE.div(TWO), new int[]{1, 2}), new Monomial(MINUS_ONE, new int[]{0, 1}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(THREE, 2, 1), new Monomial(ONE, 1, 1), new Monomial(MINUS_ONE.div(TWO), 1, 0));
+        MultiPolynomial g = new MultiPolynomial(new Monomial(ONE.div(TWO), 1, 2), new Monomial(MINUS_ONE, 0, 1));
         try {
             MultiPolynomial syzygyPolynomial = GroebnerBasisMethods.getSyzygyPolynomial(f, g);
-            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE.div(THREE), new int[]{1, 2}), new Monomial(new Constant(11).div(6), new int[]{1, 1}));
+            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE.div(THREE), 1, 2), new Monomial(new Constant(11).div(6), 1, 1));
             assertTrue(syzygyPolynomial.equalsToMultiPolynomial(expectedResult));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -89,13 +89,13 @@ public class GroebnerBasisTests {
         // f = 2x^3y^2 - 5x^2y + xy + x, g = 1/2*x^2y + y. Reduziertes Polynom f mittels g = xy + x - 4xy^2 + 10y
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{3, 2}), new Monomial(new Constant(-5), new int[]{2, 1}),
-                new Monomial(ONE, new int[]{1, 1}), new Monomial(ONE, new int[]{1, 0}));
-        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(ONE.div(TWO), new int[]{2, 1}), new Monomial(ONE, new int[]{0, 1}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 3, 2), new Monomial(new Constant(-5), 2, 1),
+                new Monomial(ONE, 1, 1), new Monomial(ONE, 1, 0));
+        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(ONE.div(TWO), 2, 1), new Monomial(ONE, 0, 1));
         try {
             MultiPolynomial reducedPolynomial = GroebnerBasisMethods.reduce(f, reductionPolynomial);
-            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE, new int[]{1, 1}), new Monomial(ONE, new int[]{1, 0}),
-                    new Monomial(new Constant(-4), new int[]{1, 2}), new Monomial(new Constant(10), new int[]{0, 1}));
+            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE, 1, 1), new Monomial(ONE, 1, 0),
+                    new Monomial(new Constant(-4), 1, 2), new Monomial(new Constant(10), 0, 1));
             assertTrue(reducedPolynomial.equalsToMultiPolynomial(expectedResult));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -107,13 +107,13 @@ public class GroebnerBasisTests {
         // f = 2x^2y^3+xy^2+6x^3y+3x^2-(y^3+2xy), g = 2x^2y + x - y. Reduziertes Polynom f mittels g = xy
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 3}), new Monomial(ONE, new int[]{1, 2}),
-                new Monomial(new Constant(6), new int[]{3, 1}), new Monomial(THREE, new int[]{2, 0}),
-                new Monomial(MINUS_ONE, new int[]{0, 3}), new Monomial(new Constant(-2), new int[]{1, 1}));
-        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(TWO, new int[]{2, 1}), new Monomial(ONE, new int[]{1, 0}), new Monomial(MINUS_ONE, new int[]{0, 1}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 3), new Monomial(ONE, 1, 2),
+                new Monomial(new Constant(6), 3, 1), new Monomial(THREE, 2, 0),
+                new Monomial(MINUS_ONE, 0, 3), new Monomial(new Constant(-2), 1, 1));
+        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(TWO, 2, 1), new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 1));
         try {
             MultiPolynomial reducedPolynomial = GroebnerBasisMethods.reduce(f, reductionPolynomial);
-            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE, new int[]{1, 1}));
+            MultiPolynomial expectedResult = new MultiPolynomial(new Monomial(ONE, 1, 1));
             assertTrue(reducedPolynomial.equalsToMultiPolynomial(expectedResult));
         } catch (EvaluationException e) {
             fail(e.getMessage());
@@ -125,14 +125,13 @@ public class GroebnerBasisTests {
         // f = 2x^2y^3+xy^2+6x^3y+3x^2-(y^3+3xy), g = 2x^2y + x - y. Reduziertes Polynom f mittels g = 0
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 3}), new Monomial(ONE, new int[]{1, 2}),
-                new Monomial(new Constant(6), new int[]{3, 1}), new Monomial(THREE, new int[]{2, 0}),
-                new Monomial(MINUS_ONE, new int[]{0, 3}), new Monomial(new Constant(-3), new int[]{1, 1}));
-        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(TWO, new int[]{2, 1}), new Monomial(ONE, new int[]{1, 0}), new Monomial(MINUS_ONE, new int[]{0, 1}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 3), new Monomial(ONE, 1, 2),
+                new Monomial(new Constant(6), 3, 1), new Monomial(THREE, 2, 0),
+                new Monomial(MINUS_ONE, 0, 3), new Monomial(new Constant(-3), 1, 1));
+        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(TWO, 2, 1), new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 1));
         try {
             MultiPolynomial reducedPolynomial = GroebnerBasisMethods.reduce(f, reductionPolynomial);
-            MultiPolynomial expectedResult = new MultiPolynomial();
-            assertTrue(reducedPolynomial.equalsToMultiPolynomial(expectedResult));
+            assertTrue(reducedPolynomial.isZero());
         } catch (EvaluationException e) {
             fail(e.getMessage());
         }
@@ -143,10 +142,10 @@ public class GroebnerBasisTests {
         // f = 2x^2y^3+xy^2+6x^3y+3x^2-(y^3+3xy), g = 2x^4y + y. Reduziertes Polynom f mittels g = 0
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{2, 3}), new Monomial(ONE, new int[]{1, 2}),
-                new Monomial(new Constant(6), new int[]{3, 1}), new Monomial(new Constant(-3), new int[]{2, 0}),
-                new Monomial(MINUS_ONE, new int[]{0, 3}), new Monomial(THREE, new int[]{1, 1}));
-        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(ONE, new int[]{4, 1}), new Monomial(ONE, new int[]{0, 1}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 3), new Monomial(ONE, 1, 2),
+                new Monomial(new Constant(6), 3, 1), new Monomial(new Constant(-3), 2, 0),
+                new Monomial(MINUS_ONE, 0, 3), new Monomial(THREE, 1, 1));
+        MultiPolynomial reductionPolynomial = new MultiPolynomial(new Monomial(ONE, 4, 1), new Monomial(ONE, 0, 1));
         try {
             MultiPolynomial reducedPolynomial = GroebnerBasisMethods.reduce(f, reductionPolynomial);
             MultiPolynomial expectedResult = f;
@@ -161,16 +160,16 @@ public class GroebnerBasisTests {
         // f = 2xy + 3x + 1, g = x - y^2 + 2 bzgl. LEX. Gröbnerbasis = {y^3 + 3/2*y^2 - 2y - 5/2, x - y^2 + 2}
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
-        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, new int[]{1, 1}), new Monomial(THREE, new int[]{1, 0}),
-                new Monomial(ONE, new int[]{0, 0}));
-        MultiPolynomial g = new MultiPolynomial(new Monomial(ONE, new int[]{1, 0}), new Monomial(MINUS_ONE, new int[]{0, 2}),
-                new Monomial(TWO, new int[]{0, 0}));
+        MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 1, 1), new Monomial(THREE, 1, 0),
+                new Monomial(ONE, 0, 0));
+        MultiPolynomial g = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 2),
+                new Monomial(TWO, 0, 0));
         try {
             ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisMethods.getNormalizedReducedGroebnerBasis(f, g);
-            MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, new int[]{1, 0}), new Monomial(MINUS_ONE, new int[]{0, 2}),
-                new Monomial(TWO, new int[]{0, 0}));
-            MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(ONE, new int[]{0, 3}), new Monomial(THREE.div(TWO), new int[]{0, 2}),
-                new Monomial(new Constant(-2), new int[]{0, 1}), new Monomial(new Constant(-5).div(2), new int[]{0, 0}));
+            MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 2),
+                new Monomial(TWO, 0, 0));
+            MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(ONE, 0, 3), new Monomial(THREE.div(TWO), 0, 2),
+                new Monomial(new Constant(-2), 0, 1), new Monomial(new Constant(-5).div(2), 0, 0));
             assertTrue(groebnerBasis.size() == 2);
             assertTrue(groebnerBasis.get(0).equivalentToMultiPolynomial(groebnerBasisElementOne));
             assertTrue(groebnerBasis.get(1).equivalentToMultiPolynomial(groebnerBasisElementTwo));
