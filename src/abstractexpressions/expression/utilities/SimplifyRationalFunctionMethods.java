@@ -228,27 +228,62 @@ public abstract class SimplifyRationalFunctionMethods {
     }
 
     /**
-     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist, d.h. g
-     * = F(f), wobei F(x) eine rationale Funktion in x ist.
+     * Hilfsmethode. Gibt zurück, ob f eine rationale Funktion in g ist, d.h. f
+     * = F(g), wobei F(x) eine rationale Funktion in x ist.
      */
-    public static boolean isRationalFunctionIn(Expression f, Expression g, String var) {
-        if (!g.contains(var)) {
+    public static boolean isRationalFunctionIn(Expression g, Expression f, String var) {
+        if (!f.contains(var)) {
             return true;
         }
-        if (g.equivalent(f)) {
+        if (f.equivalent(g)) {
             return true;
         }
-        if (g instanceof BinaryOperation) {
-            if (g.isNotPower()) {
-                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var) && isRationalFunctionIn(f, ((BinaryOperation) g).getRight(), var);
-            } else if (g.isPower() && ((BinaryOperation) g).getRight().isPositiveIntegerConstant()) {
-                return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var);
+        if (f instanceof BinaryOperation) {
+            if (f.isNotPower()) {
+                return isRationalFunctionIn(g, ((BinaryOperation) f).getLeft(), var) && isRationalFunctionIn(g, ((BinaryOperation) f).getRight(), var);
+            } else if (f.isPower() && ((BinaryOperation) f).getRight().isPositiveIntegerConstant()) {
+                return isRationalFunctionIn(g, ((BinaryOperation) f).getLeft(), var);
             } else if (f.isPower() && g.isPower() && ((BinaryOperation) f).getLeft().equivalent(((BinaryOperation) g).getLeft())) {
                 try {
-                    Expression exponent = ((BinaryOperation) g).getRight().div(((BinaryOperation) f).getRight()).simplify();
+                    Expression exponent = ((BinaryOperation) f).getRight().div(((BinaryOperation) g).getRight()).simplify();
                     return exponent.isPositiveIntegerConstant();
                 } catch (EvaluationException e) {
                     return false;
+                }
+            }
+        }
+        /*
+         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
+         welchem var vorkommt, dann false zurückgeben.
+         */
+        return false;
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist, d.h. g
+     * = F(f), wobei F(x) eine rationale Funktion in x ist.
+     */
+    public static boolean isRationalFunctionInFunctions(Expression f, String var, Expression... functions) {
+        if (!f.contains(var)) {
+            return true;
+        }
+        for (Expression function : functions) {
+            if (f.equivalent(function)) {
+                return true;
+            }
+            if (f instanceof BinaryOperation) {
+                if (f.isNotPower()) {
+                    return isRationalFunctionInFunctions(((BinaryOperation) f).getLeft(), var, functions) 
+                            && isRationalFunctionInFunctions(((BinaryOperation) f).getRight(), var, functions);
+                } else if (f.isPower() && ((BinaryOperation) f).getRight().isPositiveIntegerConstant()) {
+                    return isRationalFunctionInFunctions(((BinaryOperation) f).getLeft(), var, functions);
+                } else if (function.isPower() && f.isPower() && ((BinaryOperation) function).getLeft().equivalent(((BinaryOperation) f).getLeft())) {
+                    try {
+                        Expression exponent = ((BinaryOperation) f).getRight().div(((BinaryOperation) function).getRight()).simplify();
+                        return exponent.isIntegerConstant();
+                    } catch (EvaluationException e) {
+                        return false;
+                    }
                 }
             }
         }
