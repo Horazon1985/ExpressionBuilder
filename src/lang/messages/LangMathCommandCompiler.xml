@@ -158,6 +158,12 @@
         <Ukrainian>. параметр команди </Ukrainian>
         <Russian>. параметр команды </Russian>
     </object>
+    <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE">
+        <German> muss ein gültiger Typ sein. Zugelassene Typen sind: </German>
+        <English> must be a valid type. Admissible types are: .</English>
+        <Ukrainian> має бути ???</Ukrainian>
+        <Russian> должен быть ???</Russian>
+    </object>
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
         <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
         <English> must be a valid variable, which was not assigned a fixed value.</English>

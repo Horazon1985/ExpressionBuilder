@@ -6,7 +6,7 @@ public class ParameterPattern {
 
     public static enum ParamType {
 
-        equation, expr, integer, logexpr, matexpr, uniqueindet, indet, uniquevar, var;
+        equation, expr, integer, logexpr, matexpr, uniqueindet, indet, uniquevar, var, type;
 
         /** 
          * Liefert die Rolle des zugehörigen Parametertyps.
@@ -14,6 +14,9 @@ public class ParameterPattern {
         public ParamRole getRole() {
             if (this.equals(integer)){
                 return ParamRole.INTEGER;
+            }
+            if (this.equals(type)) {
+                return ParamRole.TYPE;
             }
             if (this.equals(uniqueindet) || this.equals(indet) || this.equals(uniquevar) || this.equals(var)) {
                 return ParamRole.VARIABLE;
@@ -25,7 +28,7 @@ public class ParameterPattern {
 
     public static enum ParamRole {
 
-        EXPRESSION, INTEGER, VARIABLE;
+        EXPRESSION, INTEGER, TYPE, VARIABLE;
     }
 
     public static enum Multiplicity {

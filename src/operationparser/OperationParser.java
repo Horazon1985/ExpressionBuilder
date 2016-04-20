@@ -271,6 +271,37 @@ public abstract class OperationParser {
                         break;
                     }
 
+                } else if (role.equals(ParamRole.TYPE)) {
+
+                    if (args[i].indexOf(type.name()) == 0) {
+                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
+                        paramType = paramTypeAndRestrictions[0];
+                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+
+                        // Multiplizität bestimmen.
+                        if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
+                            // "+" herausschneiden.
+                            paramType = paramType.substring(0, paramType.length() - 1);
+                            m = Multiplicity.plus;
+                        } else {
+                            m = Multiplicity.one;
+                        }
+
+                        if (!paramType.equals(type.name())) {
+                            throw new ParseException(i);
+                        }
+                        // Optionale Parameter einlesen (es müssen genau zwei sein).
+                        restrictionsAsList = getRestrictionList(restrictions, i);
+                        if (restrictionsAsList.isEmpty()) {
+                            // Restriktionen MÜSSEN vorhanden sein.
+                            throw new ParseException(i);
+                        }
+                        paramPattern[i] = new ParameterPattern(type, m, restrictionsAsList);
+                        break;
+                    }
+                    // Restriktionen MÜSSEN vorhanden sein.
+                    throw new ParseException(i);
+
                 } else if (args[i].equals(type.name())) {
                     paramPattern[i] = new ParameterPattern(type, Multiplicity.one, restrictionsAsList);
                     break;
@@ -942,6 +973,24 @@ public abstract class OperationParser {
                 return parameter;
             }
 
+        } else if (type.getRole().equals(ParamRole.TYPE)) {
+
+            if (type.equals(ParamType.type)) {
+                if (!restrictions.contains(parameter)) {
+                    String failureMessage = Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1")
+                            + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
+                            + opName
+                            + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE");
+                    for (int i = 0; i < restrictions.size(); i++){
+                        failureMessage += restrictions.get(i);
+                        if (i < restrictions.size() - 1){
+                            failureMessage += ", ";
+                        } 
+                    }
+                    throw new ExpressionException(failureMessage);
+                }
+            }
+
         } else if (type.equals(ParamType.equation)) {
 
             Expression exprLeft, exprRight;
@@ -1148,6 +1197,9 @@ public abstract class OperationParser {
                 + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                 + opName;
         switch (type) {
+            case type:
+                failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE");
+                break;
             case uniqueindet:
             case indet:
                 failureMessage += Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET");

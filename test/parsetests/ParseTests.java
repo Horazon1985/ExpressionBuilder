@@ -4,6 +4,8 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
+import command.Command;
+import command.TypeCommand;
 import java.util.ArrayList;
 import operationparser.OperationParser;
 import operationparser.ParameterPattern;
@@ -399,6 +401,31 @@ public class ParseTests {
     }
 
     @Test
+    public void parseGroebnerBasisCommandSuccesfullyParsedTest() {
+        // Parsen von "groebnerbasis(x^2+y,x,lex,x,y,z)" gegen das Pattern "groebnerbasis(expr+,type(lex,deglex,revlex,degrevlex),uniqueindet+)".
+//        try {
+//            String patternForCommand = "groebnerbasis(expr+,type(lex,deglex,revlex,degrevlex),uniqueindet+)";
+//            Command command = OperationParser.parseDefaultCommand("groebnerbasis", new String[]{"x^2+y", "x", "lex", "y", "z"}, patternForCommand);
+//
+//            // Ausgabe der Ergebnisse.
+//            Command expectedCommand = new Command(TypeOperator.groebnerbasis, new Object[]{Expression.build("x^2+y", null),
+//                "lex", "x", "y", "z"});
+//            TestUtilities.printResult(expectedCommand, command);
+//
+//            Assert.assertTrue(command.getTypeCommand().equals(TypeCommand.groebnerbasis));
+//            Assert.assertTrue(command.getParams().length == 4);
+//            Assert.assertTrue(((Expression) command.getParams()[0]).equals(Expression.build("x^2+y", null)));
+//            Assert.assertTrue(((String) command.getParams()[1]).equals("lex"));
+//            Assert.assertTrue(((String) command.getParams()[2]).equals("x"));
+//            Assert.assertTrue(((String) command.getParams()[3]).equals("y"));
+//            Assert.assertTrue(((String) command.getParams()[4]).equals("z"));
+//
+//        } catch (ExpressionException e) {
+//            fail(e.getMessage());
+//        }
+    }
+
+    @Test
     public void parseOperatorNotSuccesfullyParsedTest1() {
         // Parsen von "gcd(5,7,3)" gegen das Pattern "var(expr+)".
         try {
@@ -462,11 +489,6 @@ public class ParseTests {
             fail(e.getMessage());
         } catch (ExpressionException e) {
         }
-    }
-
-    @Test
-    public void parseOperatorNotSuccesfullyParsedTest5() {
-
     }
 
 }
