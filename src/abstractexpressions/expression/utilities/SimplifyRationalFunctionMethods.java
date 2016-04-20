@@ -20,8 +20,8 @@ public abstract class SimplifyRationalFunctionMethods {
      * in terms rational sind.
      */
     private static boolean areQuotientsOfTermsRational(HashSet<Expression> terms) {
-        for (Expression expr : terms){
-            if (!expr.equals(Expression.ZERO)){
+        for (Expression expr : terms) {
+            if (!expr.equals(Expression.ZERO)) {
                 return areQuotientsRational(expr, terms);
             }
         }
@@ -119,7 +119,7 @@ public abstract class SimplifyRationalFunctionMethods {
      */
     public static Expression expandRationalFunctionInTrigonometricalFunctions(Expression f, TypeExpansion type) {
         if (f instanceof BinaryOperation) {
-            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), type), 
+            return new BinaryOperation(expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getLeft(), type),
                     expandRationalFunctionInTrigonometricalFunctions(((BinaryOperation) f).getRight(), type), ((BinaryOperation) f).getType());
         }
         if (f.isFunction()) {
@@ -228,7 +228,8 @@ public abstract class SimplifyRationalFunctionMethods {
     }
 
     /**
-     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist.
+     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist, d.h. g
+     * = F(f), wobei F(x) eine rationale Funktion in x ist.
      */
     public static boolean isRationalFunctionIn(Expression f, Expression g, String var) {
         if (!g.contains(var)) {
@@ -240,8 +241,15 @@ public abstract class SimplifyRationalFunctionMethods {
         if (g instanceof BinaryOperation) {
             if (g.isNotPower()) {
                 return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var) && isRationalFunctionIn(f, ((BinaryOperation) g).getRight(), var);
-            } else if (g.isPower() && ((BinaryOperation) g).getRight().isIntegerConstant() && ((BinaryOperation) g).getRight().isNonNegative()) {
+            } else if (g.isPower() && ((BinaryOperation) g).getRight().isPositiveIntegerConstant()) {
                 return isRationalFunctionIn(f, ((BinaryOperation) g).getLeft(), var);
+            } else if (f.isPower() && g.isPower() && ((BinaryOperation) f).getLeft().equivalent(((BinaryOperation) g).getLeft())) {
+                try {
+                    Expression exponent = ((BinaryOperation) g).getRight().div(((BinaryOperation) f).getRight()).simplify();
+                    return exponent.isPositiveIntegerConstant();
+                } catch (EvaluationException e) {
+                    return false;
+                }
             }
         }
         /*

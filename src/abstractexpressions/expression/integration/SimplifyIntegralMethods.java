@@ -1353,8 +1353,7 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection getSuitableSubstitutionForIntegration(Expression factor, String var, boolean beginning)
-            throws EvaluationException {
+    public static ExpressionCollection getSuitableSubstitutionForIntegration(Expression factor, String var, boolean beginning) {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
 

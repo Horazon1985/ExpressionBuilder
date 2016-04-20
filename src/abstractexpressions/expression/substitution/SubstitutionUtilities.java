@@ -682,4 +682,42 @@ public abstract class SubstitutionUtilities {
 
     }
 
+    /**
+     * Substituiert, falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind
+     * zu exprToSubstitute, durch subst. Andernfalls wird eine
+     * NotSubstitutableException geworfen.
+     *
+     * @throws NotSubstitutableException
+     */
+    public static Expression substituteExpressionByAnotherExpression(Expression f, Expression exprToSubstitute, Expression subst)
+            throws NotSubstitutableException {
+
+        if (f.equivalent(exprToSubstitute)) {
+            return subst;
+        }
+        if (f instanceof BinaryOperation) {
+
+            if (f.isPower() && exprToSubstitute.isPower() && ((BinaryOperation) f).getLeft().equivalent(((BinaryOperation) exprToSubstitute).getLeft())) {
+                try {
+                    Expression exponent = ((BinaryOperation) f).getRight().div(((BinaryOperation) exprToSubstitute).getRight()).simplify();
+                    if (exponent.isIntegerConstant()) {
+                        return subst.pow(exponent);
+                    }
+                } catch (EvaluationException e) {
+                }
+            }
+
+            return new BinaryOperation(substituteExpressionByAnotherExpression(((BinaryOperation) f).getLeft(), exprToSubstitute, subst),
+                    substituteExpressionByAnotherExpression(((BinaryOperation) f).getRight(), exprToSubstitute, subst),
+                    ((BinaryOperation) f).getType());
+
+        }
+        if (f.isFunction()) {
+            return new Function(substituteExpressionByAnotherExpression(((Function) f).getLeft(), exprToSubstitute, subst), ((Function) f).getType());
+        }
+
+        return f;
+
+    }
+
 }

@@ -29,8 +29,24 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import exceptions.MathToolException;
 
 public abstract class SpecialIntegrationMethods {
+
+    /**
+     * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
+     * Funktion in x und einer Quadratwurzel aus einer quadratischen Funktion in
+     * x (x = var) ist.
+     */
+    private static class NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException extends MathToolException {
+
+        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION = "Expression is not a rational function in variable and the square root of a quadratic function.";
+
+        public NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException() {
+            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION);
+        }
+
+    }
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunctions = getSimplifyTypesRationalTrigonometricalFunctions();
     private static final HashSet<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunctions = getSimplifyTypesExpandProductOfComplexExponentialFunctions();
@@ -211,7 +227,7 @@ public abstract class SpecialIntegrationMethods {
         // firstSummand = ((2*a*e-b*d)*x + (e*b-2*c*d))/((n - 1)*D*(a*x^2 + b*x + c)^(n - 1))
         Expression firstSummand = TWO.mult(a).mult(e).sub(b.mult(d)).mult(Variable.create(var)).add(
                 e.mult(b).sub(TWO.mult(c).mult(d))).div(
-                        new Constant(n - 1).mult(discriminant).mult(denominator.pow(n - 1))).simplify();
+                new Constant(n - 1).mult(discriminant).mult(denominator.pow(n - 1))).simplify();
 
         // factor = (2*n - 3)*(2*a*e - b*d)/((n - 1)*D)
         Expression factor = new Constant(2 * n - 3).mult(TWO.mult(a).mult(e).sub(b.mult(d))).div(new Constant(n - 1).mult(discriminant)).simplify();
@@ -677,8 +693,8 @@ public abstract class SpecialIntegrationMethods {
                  */
                 return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                         ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
-                                diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh()).div(
-                                        new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+                        diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh()).div(
+                        new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
             }
             if ((coefficients.get(2).isNonPositive() || Expression.MINUS_ONE.mult(coefficients.get(2)).simplify().isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
@@ -690,8 +706,8 @@ public abstract class SpecialIntegrationMethods {
                  */
                 return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                         ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).add(
-                                diskriminant.mult((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin()).div(
-                                        new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
+                        diskriminant.mult((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin()).div(
+                        new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
 
             }
         }
@@ -705,8 +721,8 @@ public abstract class SpecialIntegrationMethods {
              */
             return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                     ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
-                            diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh()).div(
-                                    new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+                    diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh()).div(
+                    new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
         }
 
@@ -1544,9 +1560,9 @@ public abstract class SpecialIntegrationMethods {
             Expression substForSin = TWO.mult(Variable.create(substVarForIntegral)).div(ONE.add(Variable.create(substVarForIntegral).pow(2)));
             Expression substForDX = TWO.div(ONE.add(Variable.create(substVarForIntegral).pow(2)));
 
-            Expression substitutedIntegrand = substituteExpressionByAnotherExpression(fSubstituted,
+            Expression substitutedIntegrand = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted,
                     Variable.create(substVar).cos(), substForCos);
-            substitutedIntegrand = substituteExpressionByAnotherExpression(substitutedIntegrand,
+            substitutedIntegrand = SubstitutionUtilities.substituteExpressionByAnotherExpression(substitutedIntegrand,
                     Variable.create(substVar).sin(), substForSin);
 
             if (!substitutedIntegrand.contains(substVarForIntegral)) {
@@ -1572,34 +1588,6 @@ public abstract class SpecialIntegrationMethods {
     }
 
     /**
-     * Elementare Hilfsmethode für
-     * integrateRationalFunctionInTrigonometricalFunctions(). Substituiert,
-     * falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind zu
-     * exprToSubstitute, durch subst. Andernfalls wird eine
-     * NotSubstitutableException geworfen.
-     *
-     * @throws NotSubstitutableException
-     */
-    private static Expression substituteExpressionByAnotherExpression(Expression f, Expression exprToSubstitute, Expression subst)
-            throws EvaluationException {
-
-        if (f.equivalent(exprToSubstitute)) {
-            return subst;
-        }
-        if (f instanceof BinaryOperation) {
-            return new BinaryOperation(substituteExpressionByAnotherExpression(((BinaryOperation) f).getLeft(), exprToSubstitute, subst),
-                    substituteExpressionByAnotherExpression(((BinaryOperation) f).getRight(), exprToSubstitute, subst),
-                    ((BinaryOperation) f).getType());
-        }
-        if (f.isFunction()) {
-            return new Function(substituteExpressionByAnotherExpression(((Function) f).getLeft(), exprToSubstitute, subst), ((Function) f).getType());
-        }
-
-        return f;
-
-    }
-    
-    /**
      * Integriert Funktionen vom Typ R(x, (ax^2 + bx + c)^(1/2)), R = rationale
      * Funktion.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
@@ -1609,9 +1597,111 @@ public abstract class SpecialIntegrationMethods {
      */
     public static Expression integrateRationalFunctionInVarAndSqrtOfQuadraticFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
 
+        Expression radicand;
+        try {
+            radicand = getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(f, var);
+        } catch (NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(radicand, var);
+        if (coefficients.getBound() != 3) {
+            // Sollte eigentlich nicht eintreten.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression a = coefficients.get(2);
+        Expression b = coefficients.get(1);
+        Expression c = coefficients.get(0);
+        Expression discriminant;
+        try {
+            discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression p, q;
+        String substVarForIntegral = SubstitutionUtilities.getSubstitutionVariable(f);
+        if (discriminant.isAlwaysPositive()) {
+
+            try {
+                p = b.div(TWO.mult(a)).simplify();
+                q = discriminant.div(TWO.mult(a)).simplify();
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
+            if (a.isAlwaysPositive()) {
+                // x wird durch q*(exp(t)-exp(-t))/2 - p ersetzt, t = substVarForIntegral.
+                Expression fSubstituted = f.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2).sub(p).div(2));
+                // (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
+                try {
+                    SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                            q.mult(a.pow(1, 2)).mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2));
+                    fSubstituted = q.div(2).mult(fSubstituted.mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())));
+                    Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
+                    Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+                    // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+                    if (resultFunction.containsIndefiniteIntegral()) {
+                        throw new NotAlgebraicallyIntegrableException();
+                    }
+                    // Rücksubstitution: t = ln(u + (1 + u^2)^(1/2)) mit u = (x + p)/q.
+                    Expression u = Variable.create(var).add(p).div(q);
+                    return resultFunction.replaceVariable(substVarForIntegral, u.add(ONE.add(u.pow(2)).pow(1, 2)).ln());
+
+                } catch (NotSubstitutableException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+            }
+
+        } else if (discriminant.isAlwaysNegative()) {
+
+            try {
+                p = b.div(TWO.mult(a)).simplify();
+                q = MINUS_ONE.mult(discriminant).div(TWO.mult(a)).simplify();
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+        }
+
+        // Fall: discriminant = 0. Schwierig zu integrieren!
         throw new NotAlgebraicallyIntegrableException();
-        
+
+    }
+
+    private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
+
+        ExpressionCollection substitutions = SimplifyIntegralMethods.getSuitableSubstitutionForIntegration(f, var, true);
+
+        Expression radicand = null;
+        for (Expression subst : substitutions) {
+            if (!subst.isPower() || !((BinaryOperation) subst).getRight().isRationalConstant()
+                    || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getLeft().isOddIntegerConstant()
+                    || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight().equals(TWO)) {
+                throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+            }
+            if (radicand == null) {
+                radicand = ((BinaryOperation) subst).getLeft();
+                if (!SimplifyPolynomialMethods.isPolynomial(radicand, var)
+                        || SimplifyPolynomialMethods.getDegreeOfPolynomial(radicand, var).compareTo(BigInteger.valueOf(2)) != 0) {
+                    throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+                }
+            } else if (!radicand.equivalent(((BinaryOperation) subst).getLeft())) {
+                throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+            }
+        }
+
+        if (radicand == null) {
+            // Dann ist die Funktion eine rationale Funktion (andere Methoden sind dann dafür zuständig). 
+            throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+        }
+        return radicand;
+
     }
 
 }
