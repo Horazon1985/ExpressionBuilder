@@ -1637,6 +1637,7 @@ public abstract class SpecialIntegrationMethods {
 
             // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
             if (a.isAlwaysPositive()) {
+                
                 Expression fSubstituted = f;
 
                 // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
@@ -1645,28 +1646,28 @@ public abstract class SpecialIntegrationMethods {
                 // DANACH: x wird durch q*(exp(t)-exp(-t))/2 - p ersetzt, t = substVarForIntegral.
                 fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2).sub(p));
 
-                if (fSubstituted.contains(var)){
+                if (fSubstituted.contains(var)) {
                     // Sollte eigentlich nicht passieren.
                     throw new NotAlgebraicallyIntegrableException();
                 }
-                
+
                 fSubstituted = q.div(2).mult(fSubstituted.mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())));
-                
+
                 try {
                     // Vor dem Integrieren den Integranden vereinfachen.
                     fSubstituted = fSubstituted.simplify();
-                } catch (EvaluationException e){
+                } catch (EvaluationException e) {
                     // Sollte bei einem gültigen Integranden nicht passieren.
                     throw new NotAlgebraicallyIntegrableException();
                 }
-                
+
                 Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
                 Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
-                
+
                 try {
                     // Vor der Rücksubstitution vereinfachen.
                     resultFunction = resultFunction.simplify();
-                } catch (EvaluationException e){
+                } catch (EvaluationException e) {
                     // Sollte bei einer gültigen Stammfunktion nicht passieren.
                     throw new NotAlgebraicallyIntegrableException();
                 }
@@ -1684,12 +1685,99 @@ public abstract class SpecialIntegrationMethods {
 
             try {
                 p = b.div(TWO.mult(a)).simplify();
-                q = discriminant.div(TWO.mult(a)).simplify();
+                q = discriminant.pow(1, 2).div(TWO.mult(a)).simplify();
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-            // TO DO.
+            if (a.isAlwaysPositive()) {
+                
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)-exp(-t))/2 ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(a.pow(1, 2)).mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2));
+                // DANACH: x wird durch q*(exp(t)+exp(-t))/2 - p ersetzt, t = substVarForIntegral.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2).sub(p));
+
+                if (fSubstituted.contains(var)) {
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                fSubstituted = q.div(2).mult(fSubstituted.mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())));
+
+                try {
+                    // Vor dem Integrieren den Integranden vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einem gültigen Integranden nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
+                Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+
+                try {
+                    // Vor der Rücksubstitution vereinfachen.
+                    resultFunction = resultFunction.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einer gültigen Stammfunktion nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+                if (resultFunction.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Rücksubstitution: t = ln(u + (u^2 - 1)^(1/2)) mit u = (x + p)/q.
+                Expression u = Variable.create(var).add(p).div(q);
+                return resultFunction.replaceVariable(substVarForIntegral, u.add(u.pow(2).sub(ONE).pow(1, 2)).ln());
+
+            } else if (a.isAlwaysNegative()) {
+
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*(-a)^(1/2)*cos(t) ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(MINUS_ONE.mult(a).pow(1, 2)).mult(Variable.create(substVarForIntegral).cos()));
+                // DANACH: x wird durch q*sin(t) - p ersetzt, t = substVarForIntegral.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).sin().sub(p)));
+
+                if (fSubstituted.contains(var)) {
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                fSubstituted = q.mult(fSubstituted.mult(Variable.create(substVarForIntegral).cos()));
+
+                try {
+                    // Vor dem Integrieren den Integranden vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einem gültigen Integranden nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
+                Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+
+                try {
+                    // Vor der Rücksubstitution vereinfachen.
+                    resultFunction = resultFunction.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einer gültigen Stammfunktion nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+                if (resultFunction.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Rücksubstitution: t = ln(u + (u^2 - 1)^(1/2)) mit u = (x + p)/q.
+                Expression u = Variable.create(var).add(p).div(q);
+                return resultFunction.replaceVariable(substVarForIntegral, u.arcsin());
+                
+            }
+
         }
 
         // Fall: discriminant = 0. Schwierig zu integrieren!
