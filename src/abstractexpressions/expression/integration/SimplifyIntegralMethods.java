@@ -565,6 +565,12 @@ public abstract class SimplifyIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
+        // Integration von Q(x, (a*x^2 + b*x + c)^(1/2)), Q(s, t) rationale Funktion in s, t.
+        try {
+            return SpecialIntegrationMethods.integrateRationalFunctionInVarAndSqrtOfQuadraticFunction(expr);
+        } catch (NotAlgebraicallyIntegrableException e) {
+        }
+        
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();

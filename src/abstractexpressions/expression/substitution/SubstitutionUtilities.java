@@ -684,13 +684,9 @@ public abstract class SubstitutionUtilities {
 
     /**
      * Substituiert, falls möglich, im Ausdruck f Ausdrücke, die äquivalent sind
-     * zu exprToSubstitute, durch subst. Andernfalls wird eine
-     * NotSubstitutableException geworfen.
-     *
-     * @throws NotSubstitutableException
+     * zu exprToSubstitute, durch subst.
      */
-    public static Expression substituteExpressionByAnotherExpression(Expression f, Expression exprToSubstitute, Expression subst)
-            throws NotSubstitutableException {
+    public static Expression substituteExpressionByAnotherExpression(Expression f, Expression exprToSubstitute, Expression subst) {
 
         if (f.equivalent(exprToSubstitute)) {
             return subst;

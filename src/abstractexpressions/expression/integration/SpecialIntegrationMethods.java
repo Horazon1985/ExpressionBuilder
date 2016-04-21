@@ -18,6 +18,7 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyExponentialRelations;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
@@ -1625,7 +1626,61 @@ public abstract class SpecialIntegrationMethods {
 
         Expression p, q;
         String substVarForIntegral = SubstitutionUtilities.getSubstitutionVariable(f);
-        if (discriminant.isAlwaysPositive()) {
+        if (discriminant.isAlwaysNegative()) {
+
+            try {
+                p = b.div(TWO.mult(a)).simplify();
+                q = MINUS_ONE.mult(discriminant).pow(1, 2).div(TWO.mult(a)).simplify();
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
+            if (a.isAlwaysPositive()) {
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(a.pow(1, 2)).mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2));
+                // DANACH: x wird durch q*(exp(t)-exp(-t))/2 - p ersetzt, t = substVarForIntegral.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2).sub(p));
+
+                if (fSubstituted.contains(var)){
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                
+                fSubstituted = q.div(2).mult(fSubstituted.mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())));
+                
+                try {
+                    // Vor dem Integrieren den Integranden vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e){
+                    // Sollte bei einem gültigen Integranden nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                
+                Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
+                Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
+                
+                try {
+                    // Vor der Rücksubstitution vereinfachen.
+                    resultFunction = resultFunction.simplify();
+                } catch (EvaluationException e){
+                    // Sollte bei einer gültigen Stammfunktion nicht passieren.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+                if (resultFunction.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                // Rücksubstitution: t = ln(u + (1 + u^2)^(1/2)) mit u = (x + p)/q.
+                Expression u = Variable.create(var).add(p).div(q);
+                return resultFunction.replaceVariable(substVarForIntegral, u.add(ONE.add(u.pow(2)).pow(1, 2)).ln());
+
+            }
+
+        } else if (discriminant.isAlwaysPositive()) {
 
             try {
                 p = b.div(TWO.mult(a)).simplify();
@@ -1634,39 +1689,7 @@ public abstract class SpecialIntegrationMethods {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-            // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
-            if (a.isAlwaysPositive()) {
-                // x wird durch q*(exp(t)-exp(-t))/2 - p ersetzt, t = substVarForIntegral.
-                Expression fSubstituted = f.replaceVariable(var, q.mult(Variable.create(substVarForIntegral).exp().sub(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2).sub(p).div(2));
-                // (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
-                try {
-                    SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
-                            q.mult(a.pow(1, 2)).mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())).div(2));
-                    fSubstituted = q.div(2).mult(fSubstituted.mult(Variable.create(substVarForIntegral).exp().add(MINUS_ONE.mult(Variable.create(substVarForIntegral)).exp())));
-                    Operator substitutedIntegral = new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVarForIntegral});
-                    Expression resultFunction = indefiniteIntegration(substitutedIntegral, true);
-                    // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
-                    if (resultFunction.containsIndefiniteIntegral()) {
-                        throw new NotAlgebraicallyIntegrableException();
-                    }
-                    // Rücksubstitution: t = ln(u + (1 + u^2)^(1/2)) mit u = (x + p)/q.
-                    Expression u = Variable.create(var).add(p).div(q);
-                    return resultFunction.replaceVariable(substVarForIntegral, u.add(ONE.add(u.pow(2)).pow(1, 2)).ln());
-
-                } catch (NotSubstitutableException e) {
-                    throw new NotAlgebraicallyIntegrableException();
-                }
-            }
-
-        } else if (discriminant.isAlwaysNegative()) {
-
-            try {
-                p = b.div(TWO.mult(a)).simplify();
-                q = MINUS_ONE.mult(discriminant).div(TWO.mult(a)).simplify();
-            } catch (EvaluationException e) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
+            // TO DO.
         }
 
         // Fall: discriminant = 0. Schwierig zu integrieren!
@@ -1676,10 +1699,11 @@ public abstract class SpecialIntegrationMethods {
 
     private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
 
-        ExpressionCollection substitutions = SimplifyIntegralMethods.getSuitableSubstitutionForIntegration(f, var, true);
+        ExpressionCollection setOfSubstitutions = new ExpressionCollection();
+        getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions, true);
 
         Expression radicand = null;
-        for (Expression subst : substitutions) {
+        for (Expression subst : setOfSubstitutions) {
             if (!subst.isPower() || !((BinaryOperation) subst).getRight().isRationalConstant()
                     || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getLeft().isOddIntegerConstant()
                     || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight().equals(TWO)) {
@@ -1700,8 +1724,29 @@ public abstract class SpecialIntegrationMethods {
             // Dann ist die Funktion eine rationale Funktion (andere Methoden sind dann dafür zuständig). 
             throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
         }
+
+        // Schließlich: PRüfung, ob f eine rationale Funktion in x und g(x) = radicand^(1/2) ist.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(f, var, Variable.create(var), radicand.pow(1, 2))) {
+            throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+        }
+
         return radicand;
 
+    }
+
+    /**
+     * Ermittelt potenzielle Substitutionen für eine Gleichung. Der boolsche
+     * Parameter beginning sagt aus, ob f den ganzen Ausdruck darstellt, oder
+     * nur einen Teil eines größeren Ausdrucks bildet. Dies ist wichtig, damit
+     * es keine Endlosschleifen gibt!
+     */
+    private static void getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
+        if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
+        } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
+            setOfSubstitutions.add(f);
+        }
     }
 
 }

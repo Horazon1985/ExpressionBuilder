@@ -598,11 +598,11 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
     /**
      * Hilfsfunktion: Liefert, ob expr von der Form b^(1/2) oder a*b^(1/2) mit
-     * ganzem a und rationalem b ist. Für die Rationalisierung des Nenners
+     * ganzem a ist. Für die Rationalisierung des Nenners
      * müssen im Wesentlichen nur solche Terme betrachtet werden, da
      * allgemeinere Terme während des simplify() auf diese Form gebracht werden.
      */
-    public static boolean isProductOfIntegerAndSqrtOfRational(Expression expr) {
+    public static boolean isProductOfIntegerAndSqrtOfExpression(Expression expr) {
         if (expr.isPower()
                 && ((BinaryOperation) expr).getRight().isRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isIntegerConstant()
@@ -623,7 +623,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      */
     public static boolean isSuitableCandidateForMakingDenominatorRational(BinaryOperation expr) {
         return (expr.isSum() || expr.isDifference())
-                && (isProductOfIntegerAndSqrtOfRational(expr.getLeft()) || isProductOfIntegerAndSqrtOfRational(expr.getRight()));
+                && (isProductOfIntegerAndSqrtOfExpression(expr.getLeft()) || isProductOfIntegerAndSqrtOfExpression(expr.getRight()));
     }
 
     /**
