@@ -570,7 +570,7 @@ public abstract class SimplifyIntegralMethods {
             return SpecialIntegrationMethods.integrateRationalFunctionInVarAndSqrtOfQuadraticFunction(expr);
         } catch (NotAlgebraicallyIntegrableException e) {
         }
-        
+
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();
@@ -1647,87 +1647,6 @@ public abstract class SimplifyIntegralMethods {
     /**
      * Hilfsmethode für partielle Integration. Versucht, bei der partiellen
      * Integration int(u'*v) = u*v - int(u*v') eine clevere Wahl für v zu
-     * treffen. Die HashMap factors enthält dabei alle Faktoren des Integranden
-     * u'v. Falls eine ganze Zahl >= 0 zurückgegeben wird, so ist dies der index
-     * in factors, der v entspricht. Das Produkt über alle übrigen Faktoren ist
-     * dann eine gute Wahl für u'. Falls keine clevere Wahl für v gefunden
-     * wurde, so wird -1 zurückgegeben.
-     */
-    private static int cleverChoiceForFactorForPartialIntegration(ExpressionCollection factors, String var) {
-
-        boolean factorsContainPolynomial = false;
-        int indexOfPolynomial = -1;
-        boolean factorsContainLogarithm = false;
-        int indexOfLogarithm = -1;
-        boolean factorsContainArctanOrArtanh = false;
-        int indexOfArctanOrArtanh = -1;
-        boolean factorsContainOnlyTrigonometricalFunctions = true;
-        boolean factorsContainOnlyTrigonometricalAndExponentialFunctions = true;
-        int indexOfExponentialFunction = -1;
-
-        for (int i = 0; i < factors.getBound(); i++) {
-
-            if (factors.get(i) == null) {
-                continue;
-            }
-            if (!factors.get(i).isFunction(TypeFunction.exp) && !factors.get(i).isFunction(TypeFunction.sin) && !factors.get(i).isFunction(TypeFunction.cos)
-                    || !factors.get(i).contains(var)) {
-                factorsContainOnlyTrigonometricalAndExponentialFunctions = false;
-            }
-            if (factorsContainOnlyTrigonometricalAndExponentialFunctions
-                    && ((Function) factors.get(i)).getType().equals(TypeFunction.exp)
-                    && indexOfExponentialFunction == -1) {
-                /*
-                 Falls der Integrand nur Faktoren enthält, welche aus
-                 Exponentialfunktionen und trig. Funktionen bestehen -> Index
-                 der (letzten) Exponentialfunktion ausgeben (diese werden
-                 ohnehin zu einer gesammelt).
-                 */
-                indexOfExponentialFunction = i;
-            }
-            if (!factors.get(i).isFunction(TypeFunction.sin) && !factors.get(i).isFunction(TypeFunction.cos) || !factors.get(i).contains(var)) {
-                factorsContainOnlyTrigonometricalFunctions = false;
-            }
-            if (factors.get(i).contains(var) && SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)) {
-                factorsContainPolynomial = true;
-                indexOfPolynomial = i;
-            }
-            if ((factors.get(i).isFunction(TypeFunction.lg) || factors.get(i).isFunction(TypeFunction.ln)) && factors.get(i).contains(var)) {
-                factorsContainLogarithm = true;
-                indexOfLogarithm = i;
-            }
-            if ((factors.get(i).isFunction(TypeFunction.arctan) || factors.get(i).isFunction(TypeFunction.artanh)) && factors.get(i).contains(var)) {
-                factorsContainArctanOrArtanh = true;
-                indexOfArctanOrArtanh = i;
-            }
-
-        }
-
-        if (factorsContainPolynomial && !factorsContainLogarithm && !factorsContainArctanOrArtanh) {
-            return indexOfPolynomial;
-        }
-        if (factorsContainLogarithm) {
-            return indexOfLogarithm;
-        }
-        if (factorsContainArctanOrArtanh) {
-            return indexOfArctanOrArtanh;
-        }
-        if (factorsContainOnlyTrigonometricalFunctions) {
-            // Hier ist die Wahl für u' egal.
-            return 0;
-        }
-        if (factorsContainOnlyTrigonometricalAndExponentialFunctions) {
-            // Hier angelangt, MUSS factors mindestens eine Exponentialfunktion enthalten.
-            return indexOfExponentialFunction;
-        }
-
-        return -1;
-
-    }
-
-    /**
-     * Hilfsmethode für partielle Integration. Versucht, bei der partiellen
-     * Integration int(u'*v) = u*v - int(u*v') eine clevere Wahl für v zu
      * treffen. Die HashMap factors enthält dabei alle Faktoren des Zählers und
      * Nenners des Integranden u'*v. Falls ein Array a der Länge 2 zurückgegeben
      * wird, so liefert dieser die gewünschten Faktoren: a[0] = u', a[1] = v.
@@ -1943,17 +1862,26 @@ public abstract class SimplifyIntegralMethods {
 
         }
 
-        // Typ: Q(x)*ln(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+        /* 
+         Typen: (1) Q(x)*ln(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+         (2) Q(x)*arctan(R(x)) und Q(x)*artanh(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+         */
         ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
 
         int numberOfLogarithmicFunctionsWithRationalArgumentInNumerator = 0;
+        int numberOfArctanFunctionsWithRationalArgumentInNumerator = 0;
+        int numberOfArtanhFunctionsWithRationalArgumentInNumerator = 0;
         boolean otherFactorsAreRational = true;
 
         // Zähler prüfen.
         for (Expression factor : factorsNumerator) {
             if (factor.isFunction(TypeFunction.ln) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
                 numberOfLogarithmicFunctionsWithRationalArgumentInNumerator++;
+            } else if (factor.isFunction(TypeFunction.arctan) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
+                numberOfArctanFunctionsWithRationalArgumentInNumerator++;
+            } else if (factor.isFunction(TypeFunction.artanh) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
+                numberOfArtanhFunctionsWithRationalArgumentInNumerator++;
             } else if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)) {
                 otherFactorsAreRational = false;
                 break;
@@ -1966,7 +1894,9 @@ public abstract class SimplifyIntegralMethods {
             }
         }
 
-        return numberOfLogarithmicFunctionsWithRationalArgumentInNumerator <= 1 && otherFactorsAreRational;
+        return numberOfLogarithmicFunctionsWithRationalArgumentInNumerator 
+                + numberOfArctanFunctionsWithRationalArgumentInNumerator
+                + numberOfArtanhFunctionsWithRationalArgumentInNumerator <= 1 && otherFactorsAreRational;
 
     }
 
@@ -2006,12 +1936,12 @@ public abstract class SimplifyIntegralMethods {
             }
 
             /* 
-             Sonderfall: ist u' = Q(x) und v = ln(R(x)) mit Q und R rationale Funktionen,
-             dann darf nur DANN integriert werden, wenn u = int(Q(x),x) eine wieder rationale
-             Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
+             Sonderfälle: ist u' = Q(x) und v = f(R(x)) mit Q und R rationale Funktionen und
+             f = ln, arctan oder artanh, dann darf nur DANN integriert werden, wenn 
+             u = int(Q(x),x) eine wieder rationale Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
              */
-            if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var) 
-                    && v.isFunction(TypeFunction.ln)
+            if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var)
+                    && (v.isFunction(TypeFunction.ln) || v.isFunction(TypeFunction.arctan) || v.isFunction(TypeFunction.artanh))
                     && SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)
                     && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
                 throw new NotAlgebraicallyIntegrableException();

@@ -1026,7 +1026,7 @@ public abstract class SimplifyExpLog {
     }
 
     /**
-     * Dasselbe wie reduceLgOfProductsOfPowersOf10(), nur für Quotienten
+     * Dasselbe wie reduceLgOfProductsOfPowersOf10(), nur für Quotienten.
      */
     public static Expression reduceLgOfQuotientsOfPowersOf10(Function expr) {
         if (!expr.getType().equals(TypeFunction.lg) || expr.getLeft().isNotQuotient()) {

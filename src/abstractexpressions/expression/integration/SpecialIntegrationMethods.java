@@ -18,7 +18,6 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyExponentialRelations;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
