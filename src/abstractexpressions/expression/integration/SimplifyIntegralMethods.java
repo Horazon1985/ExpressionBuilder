@@ -599,16 +599,16 @@ public abstract class SimplifyIntegralMethods {
         }
 
         // GANZ ZUM SCHLUSS: Partielle Integration, falls erlaubt.
-        if (allowPartialIntegration((Expression) expr.getParams()[0], (String) expr.getParams()[1])) {
-            try {
-                result = integrateByPartialIntegration(expr);
-                if (!result.containsIndefiniteIntegral()) {
-                    // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
-                    return (Expression) result;
-                }
-            } catch (NotAlgebraicallyIntegrableException e) {
+//        if (allowPartialIntegration((Expression) expr.getParams()[0], (String) expr.getParams()[1])) {
+        try {
+            result = integrateByPartialIntegration(expr);
+            if (!result.containsIndefiniteIntegral()) {
+                // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
+                return (Expression) result;
             }
+        } catch (NotAlgebraicallyIntegrableException e) {
         }
+//        }
 
         /*
          Falls nichts geholfen hat: Integranden ausmultiplizieren. Falls sich
@@ -1653,7 +1653,7 @@ public abstract class SimplifyIntegralMethods {
      * Falls keine clevere Wahl für v gefunden wurde, so wird ein Array der
      * Länge 0 zurückgegeben.
      */
-    private static Expression[] getSeparationForPartialIntegration(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator, String var) {
+    private static Expression[] getSeparationForPartialIntegration(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator, String var) throws NotAlgebraicallyIntegrableException {
 
         Expression[] separation = new Expression[2];
 
@@ -1743,7 +1743,119 @@ public abstract class SimplifyIntegralMethods {
             separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
         }
 
-        return new Expression[0];
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Hilfsmethode für partielle Integration. Versucht, bei der partiellen
+     * Integration int(u'*v) = u*v - int(u*v') eine clevere Wahl für v zu
+     * treffen. Die HashMap factors enthält dabei alle Faktoren des Zählers und
+     * Nenners des Integranden u'*v. Falls ein Array a der Länge 2 zurückgegeben
+     * wird, so liefert dieser die gewünschten Faktoren: a[0] = u', a[1] = v.
+     * Falls keine clevere Wahl für v gefunden wurde, so wird ein Array der
+     * Länge 0 zurückgegeben.
+     */
+    private static Expression[] getSeparationForPartialIntegration2(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator, String var) throws NotAlgebraicallyIntegrableException {
+
+        Expression[] separation = new Expression[2];
+
+        int numberOfPolynomialFactorsInNumerator = 0;
+
+        int numberOfRationalFactorsInNumerator = 0;
+        int numberOfRationalFactorsInDenominator = 0;
+
+        int numberOfArctanArccotArtanhArcothFactorsInNumerator = 0;
+        int indexOfArctanArccotArtanhArcothInNumerator = -1;
+
+        int numberOfFactorsWithAlgebraicDerivativeInNumerator = 0;
+        int indexOfFactorWithAlgebraicDerivativeInNumerator = -1;
+
+        int numberOfExponentialFactorsInNumerator = 0;
+        int indexOfExponentialFactorInNumerator = -1;
+
+        int numberOfLogarithmicFactorsInNumerator = 0;
+        int indexOfLogarithmicFactorInNumerator = -1;
+
+        // Zähler prüfen.
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+            if (SimplifyPolynomialMethods.isPolynomial(factorsNumerator.get(i), var)) {
+                numberOfPolynomialFactorsInNumerator++;
+            } else if (SimplifyRationalFunctionMethods.isRationalFunction(factorsNumerator.get(i), var)) {
+                numberOfRationalFactorsInNumerator++;
+            } else if ((factorsNumerator.get(i).isFunction(TypeFunction.arctan) || factorsNumerator.get(i).isFunction(TypeFunction.arccot)
+                    || factorsNumerator.get(i).isFunction(TypeFunction.artanh) || factorsNumerator.get(i).isFunction(TypeFunction.arcoth))
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                numberOfArctanArccotArtanhArcothFactorsInNumerator++;
+                indexOfArctanArccotArtanhArcothInNumerator = i;
+            } else if ((factorsNumerator.get(i).isFunction(TypeFunction.arcsin) || factorsNumerator.get(i).isFunction(TypeFunction.arccos)
+                    || factorsNumerator.get(i).isFunction(TypeFunction.arcsec) || factorsNumerator.get(i).isFunction(TypeFunction.arccosec)
+                    || factorsNumerator.get(i).isFunction(TypeFunction.arsinh) || factorsNumerator.get(i).isFunction(TypeFunction.arcosh)
+                    || factorsNumerator.get(i).isFunction(TypeFunction.arsech) || factorsNumerator.get(i).isFunction(TypeFunction.arcosech))
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                numberOfFactorsWithAlgebraicDerivativeInNumerator++;
+                indexOfFactorWithAlgebraicDerivativeInNumerator = i;
+            } else if (factorsNumerator.get(i).isFunction(TypeFunction.exp)
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                numberOfExponentialFactorsInNumerator++;
+                indexOfExponentialFactorInNumerator++;
+            } else if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln))
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                numberOfArctanArccotArtanhArcothFactorsInNumerator++;
+                indexOfArctanArccotArtanhArcothInNumerator = i;
+            }
+
+        }
+
+        // Nenner prüfen.
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+
+            if (factorsDenominator.get(i) == null) {
+                continue;
+            }
+            if (SimplifyRationalFunctionMethods.isRationalFunction(factorsDenominator.get(i), var)) {
+                numberOfRationalFactorsInDenominator++;
+            }
+
+        }
+
+        // Fall: f = Q(x)*g(R(x)), g = lg, ln, arctan, arccot, artanh, arcoth
+        if (numberOfRationalFactorsInNumerator + numberOfRationalFactorsInDenominator == factorsNumerator.getSize() + factorsDenominator.getSize() - 1
+                && numberOfLogarithmicFactorsInNumerator + numberOfArctanArccotArtanhArcothFactorsInNumerator == 1){
+            int indexOfV = Math.max(indexOfLogarithmicFactorInNumerator, indexOfArctanArccotArtanhArcothInNumerator);
+            separation[0] = factorsNumerator.get(indexOfV);
+            factorsNumerator.remove(indexOfV);
+            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            return separation;
+        }
+        // Fall: f = P(x)*exp(ax+b), P = Polynom.
+        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialFactorsInNumerator == 1){
+            separation[0] = factorsNumerator.get(indexOfExponentialFactorInNumerator);
+            factorsNumerator.remove(indexOfExponentialFactorInNumerator);
+            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            return separation;
+        }
+        // Fall: f = P(x)*ln(ax+b), P = Polynom.
+        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfLogarithmicFactorsInNumerator == 1){
+            separation[0] = factorsNumerator.get(indexOfLogarithmicFactorInNumerator);
+            factorsNumerator.remove(indexOfLogarithmicFactorInNumerator);
+            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            return separation;
+        }
+        // Fall: f = Q(x)*f(ax+b), Q = rationale Funktion, f = arcsin, arccos, arcsec, arccosec, arsinh, arcosh, arsech, arcosech.
+        if (numberOfRationalFactorsInNumerator + numberOfRationalFactorsInDenominator == factorsNumerator.getSize() + factorsDenominator.getSize() - 1
+                && numberOfFactorsWithAlgebraicDerivativeInNumerator == 1){
+            separation[0] = factorsNumerator.get(indexOfFactorWithAlgebraicDerivativeInNumerator);
+            factorsNumerator.remove(indexOfFactorWithAlgebraicDerivativeInNumerator);
+            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            return separation;
+        }
+        
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -1752,154 +1864,172 @@ public abstract class SimplifyIntegralMethods {
      *
      * @throws EvaluationException
      */
-    public static boolean allowPartialIntegration(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-
-        boolean allowPartialIntegration = true;
-        boolean containsExpSinCos = false;
-
-        for (int i = 0; i < factors.getBound(); i++) {
-
-            if (!allowPartialIntegration) {
-                break;
-            }
-
-            if (SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0) {
-                continue;
-            }
-
-            if (factors.get(i) instanceof Function) {
-                if (factors.get(i).isFunction(TypeFunction.exp) || factors.get(i).isFunction(TypeFunction.sin) || factors.get(i).isFunction(TypeFunction.cos)) {
-                    Expression interiorDerivative = ((Function) factors.get(i)).getLeft().diff(var).simplify();
-                    if (!interiorDerivative.contains(var)) {
-                        containsExpSinCos = true;
-                        continue;
-                    }
-                }
-                if (factors.get(i).isFunction(TypeFunction.ln) && !containsExpSinCos) {
-                    if (SimplifyPolynomialMethods.isPolynomial(((Function) factors.get(i)).getLeft(), var)) {
-                        continue;
-                    }
-                }
-            } else if (factors.get(i).isPower() && !((BinaryOperation) factors.get(i)).getLeft().contains(var)) {
-                // Es liegt eine Exponentialfunktion (zu einer eventuell anderen Basis als e) vor.
-                Expression exponentDerivative = ((BinaryOperation) factors.get(i)).getRight().diff(var).simplify();
-                if (!exponentDerivative.contains(var)) {
-                    containsExpSinCos = true;
-                    continue;
-                }
-            }
-
-            allowPartialIntegration = false;
-
-        }
-
-        if (allowPartialIntegration) {
-            return true;
-        }
-
-        if (factors.getBound() == 2 && factors.get(0) != null && factors.get(1) != null) {
-            // Typ: ln(x)*x^a oder lg(x)*x^a
-            if ((factors.get(0).isFunction(TypeFunction.lg) || factors.get(0).isFunction(TypeFunction.ln))
-                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
-                    && factors.get(1).isPower()
-                    && ((BinaryOperation) factors.get(1)).getLeft().equals(Variable.create(var))
-                    && !((BinaryOperation) factors.get(1)).getRight().contains(var)) {
-                return true;
-            } else if ((factors.get(1).isFunction(TypeFunction.lg) || factors.get(1).isFunction(TypeFunction.ln))
-                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
-                    && factors.get(0).isPower()
-                    && ((BinaryOperation) factors.get(0)).getLeft().equals(Variable.create(var))
-                    && !((BinaryOperation) factors.get(0)).getRight().contains(var)) {
-                return true;
-            }
-            // Typ P(x)*arctan(x), P = Polynom
-            if (factors.get(0).isFunction(TypeFunction.arctan)
-                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
-                    && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
-                return true;
-            } else if (factors.get(1).isFunction(TypeFunction.arctan)
-                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
-                    && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
-                return true;
-            }
-            // Typ P(x)*artanh(x), P = Polynom
-            if (factors.get(0).isFunction(TypeFunction.artanh)
-                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
-                    && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
-                return true;
-            } else if (factors.get(1).isFunction(TypeFunction.artanh)
-                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
-                    && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
-                return true;
-            }
-
-        }
-
-        if (f.isQuotient()) {
-            // Typ: ln(x)/x^a
-            if (((BinaryOperation) f).getLeft().equals(new Function(Variable.create(var), TypeFunction.ln))
-                    && ((BinaryOperation) f).getRight() instanceof BinaryOperation
-                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getType().equals(TypeBinary.POW)
-                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().equals(Variable.create(var))
-                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().contains(var)
-                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
-                return true;
-            }
-
-            // Typ: ln(x)/(a*x+b)^n, n ganz >= 2.
-            if (((BinaryOperation) f).getLeft().equals(new Function(Variable.create(var), TypeFunction.ln))
-                    && ((BinaryOperation) f).getRight() instanceof BinaryOperation
-                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getType().equals(TypeBinary.POW)
-                    && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var).compareTo(BigInteger.ONE) == 0
-                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositiveIntegerConstant()
-                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
-                return true;
-            }
-
-        }
-
-        /* 
-         Typen: (1) Q(x)*ln(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
-         (2) Q(x)*arctan(R(x)) und Q(x)*artanh(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
-         */
-        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-
-        int numberOfLogarithmicFunctionsWithRationalArgumentInNumerator = 0;
-        int numberOfArctanFunctionsWithRationalArgumentInNumerator = 0;
-        int numberOfArtanhFunctionsWithRationalArgumentInNumerator = 0;
-        boolean otherFactorsAreRational = true;
-
-        // Zähler prüfen.
-        for (Expression factor : factorsNumerator) {
-            if (factor.isFunction(TypeFunction.ln) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
-                numberOfLogarithmicFunctionsWithRationalArgumentInNumerator++;
-            } else if (factor.isFunction(TypeFunction.arctan) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
-                numberOfArctanFunctionsWithRationalArgumentInNumerator++;
-            } else if (factor.isFunction(TypeFunction.artanh) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
-                numberOfArtanhFunctionsWithRationalArgumentInNumerator++;
-            } else if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)) {
-                otherFactorsAreRational = false;
-                break;
-            }
-        }
-        // Nenner prüfen.
-        for (Expression factor : factorsDenominator) {
-            if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)) {
-                otherFactorsAreRational = false;
-            }
-        }
-
-        return numberOfLogarithmicFunctionsWithRationalArgumentInNumerator 
-                + numberOfArctanFunctionsWithRationalArgumentInNumerator
-                + numberOfArtanhFunctionsWithRationalArgumentInNumerator <= 1 && otherFactorsAreRational;
-
-    }
-
+//    public static boolean allowPartialIntegration(Expression f, String var) throws EvaluationException {
+//
+//        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+//
+//        boolean allowPartialIntegration = true;
+//        boolean containsExpSinCos = false;
+//
+//        for (int i = 0; i < factors.getBound(); i++) {
+//
+//            if (!allowPartialIntegration) {
+//                break;
+//            }
+//
+//            if (SimplifyPolynomialMethods.isPolynomial(factors.get(i), var)
+//                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(i), var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0) {
+//                continue;
+//            }
+//
+//            if (factors.get(i) instanceof Function) {
+//                if (factors.get(i).isFunction(TypeFunction.exp) || factors.get(i).isFunction(TypeFunction.sin) || factors.get(i).isFunction(TypeFunction.cos)) {
+//                    Expression interiorDerivative = ((Function) factors.get(i)).getLeft().diff(var).simplify();
+//                    if (!interiorDerivative.contains(var)) {
+//                        containsExpSinCos = true;
+//                        continue;
+//                    }
+//                }
+//                if (factors.get(i).isFunction(TypeFunction.ln) && !containsExpSinCos) {
+//                    if (SimplifyPolynomialMethods.isPolynomial(((Function) factors.get(i)).getLeft(), var)) {
+//                        continue;
+//                    }
+//                }
+//            } else if (factors.get(i).isPower() && !((BinaryOperation) factors.get(i)).getLeft().contains(var)) {
+//                // Es liegt eine Exponentialfunktion (zu einer eventuell anderen Basis als e) vor.
+//                Expression exponentDerivative = ((BinaryOperation) factors.get(i)).getRight().diff(var).simplify();
+//                if (!exponentDerivative.contains(var)) {
+//                    containsExpSinCos = true;
+//                    continue;
+//                }
+//            }
+//
+//            allowPartialIntegration = false;
+//
+//        }
+//
+//        if (allowPartialIntegration) {
+//            return true;
+//        }
+//
+//        if (factors.getBound() == 2 && factors.get(0) != null && factors.get(1) != null) {
+//            // Typ: ln(x)*x^a oder lg(x)*x^a
+//            if ((factors.get(0).isFunction(TypeFunction.lg) || factors.get(0).isFunction(TypeFunction.ln))
+//                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
+//                    && factors.get(1).isPower()
+//                    && ((BinaryOperation) factors.get(1)).getLeft().equals(Variable.create(var))
+//                    && !((BinaryOperation) factors.get(1)).getRight().contains(var)) {
+//                return true;
+//            } else if ((factors.get(1).isFunction(TypeFunction.lg) || factors.get(1).isFunction(TypeFunction.ln))
+//                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
+//                    && factors.get(0).isPower()
+//                    && ((BinaryOperation) factors.get(0)).getLeft().equals(Variable.create(var))
+//                    && !((BinaryOperation) factors.get(0)).getRight().contains(var)) {
+//                return true;
+//            }
+//            // Typ: P(x)*arctan(x), P = Polynom -> wird auf Integration rationaler Funktionen zurückgeführt.
+//            if (factors.get(0).isFunction(TypeFunction.arctan)
+//                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
+//                return true;
+//            } else if (factors.get(1).isFunction(TypeFunction.arctan)
+//                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
+//                return true;
+//            }
+//            // Typ: P(x)*artanh(x), P = Polynom -> wird auf Integration rationaler Funktionen zurückgeführt.
+//            if (factors.get(0).isFunction(TypeFunction.artanh)
+//                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
+//                return true;
+//            } else if (factors.get(1).isFunction(TypeFunction.artanh)
+//                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
+//                return true;
+//            }
+//            /* 
+//             Typ: P(x)*f(x), P = Polynom, f = arcsin, arccos, arcsec, arccosec
+//             arsinh, arcosh, arsech, arcosech -> wird auf Integration algebraischer Funktionen zurückgeführt.
+//             */
+//            if ((factors.get(0).isFunction(TypeFunction.arcsin) || factors.get(0).isFunction(TypeFunction.arccos)
+//                    || factors.get(0).isFunction(TypeFunction.arcsec) || factors.get(0).isFunction(TypeFunction.arccosec)
+//                    || factors.get(0).isFunction(TypeFunction.arsinh) || factors.get(0).isFunction(TypeFunction.arcosh)
+//                    || factors.get(0).isFunction(TypeFunction.arsech) || factors.get(0).isFunction(TypeFunction.arcosech))
+//                    && ((Function) factors.get(0)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(1), var)) {
+//                return true;
+//            } else if ((factors.get(1).isFunction(TypeFunction.arcsin) || factors.get(1).isFunction(TypeFunction.arccos)
+//                    || factors.get(1).isFunction(TypeFunction.arcsec) || factors.get(1).isFunction(TypeFunction.arccosec)
+//                    || factors.get(1).isFunction(TypeFunction.arsinh) || factors.get(1).isFunction(TypeFunction.arcosh)
+//                    || factors.get(1).isFunction(TypeFunction.arsech) || factors.get(1).isFunction(TypeFunction.arcosech))
+//                    && ((Function) factors.get(1)).getLeft().equals(Variable.create(var))
+//                    && SimplifyPolynomialMethods.isPolynomial(factors.get(0), var)) {
+//                return true;
+//            }
+//
+//        }
+//
+//        if (f.isQuotient()) {
+//            // Typ: ln(x)/x^a
+//            if (((BinaryOperation) f).getLeft().equals(new Function(Variable.create(var), TypeFunction.ln))
+//                    && ((BinaryOperation) f).getRight() instanceof BinaryOperation
+//                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getType().equals(TypeBinary.POW)
+//                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().equals(Variable.create(var))
+//                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().contains(var)
+//                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
+//                return true;
+//            }
+//
+//            // Typ: ln(x)/(a*x+b)^n, n ganz >= 2.
+//            if (((BinaryOperation) f).getLeft().equals(new Function(Variable.create(var), TypeFunction.ln))
+//                    && ((BinaryOperation) f).getRight() instanceof BinaryOperation
+//                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getType().equals(TypeBinary.POW)
+//                    && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var)
+//                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var).compareTo(BigInteger.ONE) == 0
+//                    && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().isPositiveIntegerConstant()
+//                    && !((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(Expression.ONE)) {
+//                return true;
+//            }
+//
+//        }
+//
+//        /* 
+//         Typen: (1) Q(x)*ln(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+//         (2) Q(x)*arctan(R(x)) und Q(x)*artanh(R(x)), Q, R = rationale Funktionen. Q kann dabei über Zähler und Nenner verteilt sein.
+//         */
+//        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+//        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+//
+//        int numberOfLogarithmicFunctionsWithRationalArgumentInNumerator = 0;
+//        int numberOfArctanFunctionsWithRationalArgumentInNumerator = 0;
+//        int numberOfArtanhFunctionsWithRationalArgumentInNumerator = 0;
+//        boolean otherFactorsAreRational = true;
+//
+//        // Zähler prüfen.
+//        for (Expression factor : factorsNumerator) {
+//            if (factor.isFunction(TypeFunction.ln) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
+//                numberOfLogarithmicFunctionsWithRationalArgumentInNumerator++;
+//            } else if (factor.isFunction(TypeFunction.arctan) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
+//                numberOfArctanFunctionsWithRationalArgumentInNumerator++;
+//            } else if (factor.isFunction(TypeFunction.artanh) && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factor).getLeft(), var)) {
+//                numberOfArtanhFunctionsWithRationalArgumentInNumerator++;
+//            } else if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)) {
+//                otherFactorsAreRational = false;
+//                break;
+//            }
+//        }
+//        // Nenner prüfen.
+//        for (Expression factor : factorsDenominator) {
+//            if (!SimplifyRationalFunctionMethods.isRationalFunction(factor, var)) {
+//                otherFactorsAreRational = false;
+//            }
+//        }
+//
+//        return numberOfLogarithmicFunctionsWithRationalArgumentInNumerator
+//                + numberOfArctanFunctionsWithRationalArgumentInNumerator
+//                + numberOfArtanhFunctionsWithRationalArgumentInNumerator <= 1 && otherFactorsAreRational;
+//
+//    }
     /**
      * Versucht mittels partieller Integration int(u'*v) = u*v - int(u*v') zu
      * integrieren.<br>
@@ -1924,45 +2054,35 @@ public abstract class SimplifyIntegralMethods {
         // Zunächst wird versucht, eine geschickte Wahl für u' zu treffen.
         Expression[] separationForPartialIntegration = getSeparationForPartialIntegration(factorsNumerator, factorsDenominator, var);
 
-        // Falls eine "clevere" Wahl für u' vorliegt.
-        if (separationForPartialIntegration.length == 2) {
+        // Ab hier wurde eine geeignete Aufteilung des Integranden f in f = u'*v gefunden.
+        uPrime = separationForPartialIntegration[0];
+        v = separationForPartialIntegration[1];
+        try {
+            u = indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{uPrime, var}), true).simplify();
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
 
-            uPrime = separationForPartialIntegration[0];
-            v = separationForPartialIntegration[1];
-            try {
-                u = indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{uPrime, var}), true).simplify();
-            } catch (EvaluationException e) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
-            /* 
+        /* 
              Sonderfälle: ist u' = Q(x) und v = f(R(x)) mit Q und R rationale Funktionen und
              f = ln, arctan oder artanh, dann darf nur DANN integriert werden, wenn 
              u = int(Q(x),x) eine wieder rationale Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
-             */
-            if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var)
-                    && (v.isFunction(TypeFunction.ln) || v.isFunction(TypeFunction.arctan) || v.isFunction(TypeFunction.artanh))
-                    && SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)
-                    && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
-            Operator integralOfUTimesVPrime;
-            try {
-                integralOfUTimesVPrime = new Operator(TypeOperator.integral, new Object[]{u.mult(v.diff(var)).simplify(), var});
-            } catch (EvaluationException e) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
-            return u.mult(v).sub(indefiniteIntegration(integralOfUTimesVPrime, true));
-
+         */
+        if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var)
+                && (v.isFunction(TypeFunction.ln) || v.isFunction(TypeFunction.arctan) || v.isFunction(TypeFunction.artanh))
+                && SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)
+                && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
+            throw new NotAlgebraicallyIntegrableException();
         }
 
-        /*
-         Sonst, falls keine "clevere" Wahl für u' getroffen werden konnte,
-         dann kann gar nicht partiell integriert werden.
-         */
-        throw new NotAlgebraicallyIntegrableException();
+        Operator integralOfUTimesVPrime;
+        try {
+            integralOfUTimesVPrime = new Operator(TypeOperator.integral, new Object[]{u.mult(v.diff(var)).simplify(), var});
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        return u.mult(v).sub(indefiniteIntegration(integralOfUTimesVPrime, true));
 
     }
 

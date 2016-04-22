@@ -80,7 +80,7 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Gibt zurück, ob expr ein Polynom in derivative Variablen var ist.
+     * Gibt zurück, ob expr ein Polynom in der Variablen var ist.
      * Voraussetzung: expr ist vereinfacht, d.h. Operatoren etc. kommen NICHT
      * vor (außer evtl. Gamma(x), was kein Polynom ist).
      */
@@ -103,6 +103,20 @@ public abstract class SimplifyPolynomialMethods {
         return false;
     }
 
+    /**
+     * Gibt zurück, ob expr ein lineares Polynom in der Variablen var ist.
+     */
+    public static boolean isLinearPolynomial(Expression expr, String var) {
+        return isPolynomial(expr, var) && getDegreeOfPolynomial(expr, var).compareTo(BigInteger.ONE) == 0;
+    }
+    
+    /**
+     * Gibt zurück, ob expr ein quadratisches Polynom in der Variablen var ist.
+     */
+    public static boolean isQuadraticPolynomial(Expression expr, String var) {
+        return isPolynomial(expr, var) && getDegreeOfPolynomial(expr, var).compareTo(BigInteger.valueOf(2)) == 0;
+    }
+    
     /**
      * Liefert (eine OBERE SCHRANKE für) den Grad des Polynoms, welches von f
      * repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1 (als
