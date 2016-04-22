@@ -1655,109 +1655,6 @@ public abstract class SimplifyIntegralMethods {
 
         Expression[] separation = new Expression[2];
 
-        boolean factorsContainPolynomial = false;
-        int indexOfPolynomial = -1;
-        boolean factorsContainLogarithm = false;
-        int indexOfLogarithm = -1;
-        boolean factorsContainArctanOrArtanh = false;
-        int indexOfArctanOrArtanh = -1;
-        boolean factorsContainOnlyTrigonometricalFunctions = true;
-        boolean factorsContainOnlyTrigonometricalAndExponentialFunctions = true;
-        int indexOfExponentialFunction = -1;
-
-        for (int i = 0; i < factorsNumerator.getBound(); i++) {
-
-            if (factorsNumerator.get(i) == null) {
-                continue;
-            }
-            if (!factorsNumerator.get(i).isFunction(TypeFunction.exp) && !factorsNumerator.get(i).isFunction(TypeFunction.sin) && !factorsNumerator.get(i).isFunction(TypeFunction.cos)
-                    || !factorsNumerator.get(i).contains(var)) {
-                factorsContainOnlyTrigonometricalAndExponentialFunctions = false;
-            }
-            if (factorsContainOnlyTrigonometricalAndExponentialFunctions
-                    && ((Function) factorsNumerator.get(i)).getType().equals(TypeFunction.exp)
-                    && indexOfExponentialFunction == -1) {
-                /*
-                 Falls der Integrand nur Faktoren enthält, welche aus
-                 Exponentialfunktionen und trig. Funktionen bestehen -> Index
-                 der (letzten) Exponentialfunktion ausgeben (diese werden
-                 ohnehin zu einer gesammelt).
-                 */
-                indexOfExponentialFunction = i;
-            }
-            if (!factorsNumerator.get(i).isFunction(TypeFunction.sin) && !factorsNumerator.get(i).isFunction(TypeFunction.cos) || !factorsNumerator.get(i).contains(var)) {
-                factorsContainOnlyTrigonometricalFunctions = false;
-            }
-            if (factorsNumerator.get(i).contains(var) && SimplifyPolynomialMethods.isPolynomial(factorsNumerator.get(i), var)) {
-                factorsContainPolynomial = true;
-                indexOfPolynomial = i;
-            }
-            if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln)) && factorsNumerator.get(i).contains(var)) {
-                factorsContainLogarithm = true;
-                indexOfLogarithm = i;
-            }
-            if ((factorsNumerator.get(i).isFunction(TypeFunction.arctan) || factorsNumerator.get(i).isFunction(TypeFunction.artanh)) && factorsNumerator.get(i).contains(var)) {
-                factorsContainArctanOrArtanh = true;
-                indexOfArctanOrArtanh = i;
-            }
-
-        }
-
-        if (factorsContainPolynomial && !factorsContainLogarithm && !factorsContainArctanOrArtanh) {
-            separation[1] = factorsNumerator.get(indexOfPolynomial);
-            factorsNumerator.remove(indexOfPolynomial);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-            return separation;
-        }
-        if (factorsContainLogarithm) {
-            separation[1] = factorsNumerator.get(indexOfLogarithm);
-            factorsNumerator.remove(indexOfLogarithm);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-            return separation;
-        }
-        if (factorsContainArctanOrArtanh) {
-            separation[1] = factorsNumerator.get(indexOfArctanOrArtanh);
-            factorsNumerator.remove(indexOfArctanOrArtanh);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-            return separation;
-        }
-        if (factorsContainOnlyTrigonometricalFunctions) {
-            // Hier ist die Wahl für u' egal.
-            separation[1] = factorsNumerator.get(0);
-            factorsNumerator.remove(0);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-            return separation;
-        }
-        if (factorsContainOnlyTrigonometricalAndExponentialFunctions) {
-            // Hier MUSS factorsNumerator mindestens eine Exponentialfunktion enthalten.
-            separation[1] = factorsNumerator.get(indexOfExponentialFunction);
-            factorsNumerator.remove(indexOfExponentialFunction);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-        }
-        if (factorsContainOnlyTrigonometricalAndExponentialFunctions) {
-            // Hier MUSS factorsNumerator mindestens eine Exponentialfunktion enthalten.
-            separation[1] = factorsNumerator.get(indexOfExponentialFunction);
-            factorsNumerator.remove(indexOfExponentialFunction);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-        }
-
-        throw new NotAlgebraicallyIntegrableException();
-
-    }
-
-    /**
-     * Hilfsmethode für partielle Integration. Versucht, bei der partiellen
-     * Integration int(u'*v) = u*v - int(u*v') eine clevere Wahl für v zu
-     * treffen. Die HashMap factors enthält dabei alle Faktoren des Zählers und
-     * Nenners des Integranden u'*v. Falls ein Array a der Länge 2 zurückgegeben
-     * wird, so liefert dieser die gewünschten Faktoren: a[0] = u', a[1] = v.
-     * Falls keine clevere Wahl für v gefunden wurde, so wird ein Array der
-     * Länge 0 zurückgegeben.
-     */
-    private static Expression[] getSeparationForPartialIntegration2(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator, String var) throws NotAlgebraicallyIntegrableException {
-
-        Expression[] separation = new Expression[2];
-
         int numberOfPolynomialFactorsInNumerator = 0;
 
         int numberOfRationalFactorsInNumerator = 0;
@@ -1769,11 +1666,8 @@ public abstract class SimplifyIntegralMethods {
         int numberOfFactorsWithAlgebraicDerivativeInNumerator = 0;
         int indexOfFactorWithAlgebraicDerivativeInNumerator = -1;
 
-        int numberOfExponentialFactorsInNumerator = 0;
-        int indexOfExponentialFactorInNumerator = -1;
-
-        int numberOfTrigonometricalFactorsInNumerator = 0;
-        int indexOfTrigonometricalFactorInNumerator = -1;
+        int numberOfExponentialOrTrigonometricalFactorsInNumerator = 0;
+        int indexOfExponentialOrTrigonometricalFactorInNumerator = -1;
 
         int numberOfLogarithmicFactorsInNumerator = 0;
         int indexOfLogarithmicFactorInNumerator = -1;
@@ -1801,14 +1695,10 @@ public abstract class SimplifyIntegralMethods {
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfFactorsWithAlgebraicDerivativeInNumerator++;
                 indexOfFactorWithAlgebraicDerivativeInNumerator = i;
-            } else if (factorsNumerator.get(i).isFunction(TypeFunction.exp)
+            } else if ((factorsNumerator.get(i).isFunction(TypeFunction.exp) || factorsNumerator.get(i).isFunction(TypeFunction.cos) || factorsNumerator.get(i).isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
-                numberOfExponentialFactorsInNumerator++;
-                indexOfExponentialFactorInNumerator = i;
-            } else if ((factorsNumerator.get(i).isFunction(TypeFunction.cos) || factorsNumerator.get(i).isFunction(TypeFunction.sin))
-                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
-                numberOfTrigonometricalFactorsInNumerator++;
-                indexOfTrigonometricalFactorInNumerator = i;
+                numberOfExponentialOrTrigonometricalFactorsInNumerator++;
+                indexOfExponentialOrTrigonometricalFactorInNumerator = i;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfLogarithmicFactorsInNumerator++;
@@ -1838,33 +1728,26 @@ public abstract class SimplifyIntegralMethods {
             separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
-        // Fall: f = P(x)*exp(ax+b), P = Polynom.
-        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialFactorsInNumerator == 1){
-            separation[0] = factorsNumerator.get(indexOfExponentialFactorInNumerator);
-            factorsNumerator.remove(indexOfExponentialFactorInNumerator);
-            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-            return separation;
-        }
-        // Fall: f = P(x)*g(ax+b), P = Polynom, g = sin, cos.
-        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfTrigonometricalFactorsInNumerator == 1){
-            separation[0] = factorsNumerator.get(indexOfTrigonometricalFactorInNumerator);
-            factorsNumerator.remove(indexOfTrigonometricalFactorInNumerator);
+        // Fall: f = P(x)*g(ax+b), P = Polynom, g = exp, sin, cos.
+        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialOrTrigonometricalFactorsInNumerator == 1){
+            separation[0] = factorsNumerator.get(indexOfExponentialOrTrigonometricalFactorInNumerator);
+            factorsNumerator.remove(indexOfExponentialOrTrigonometricalFactorInNumerator);
             separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
         // Fall: f = P(x)*ln(ax+b), P = Polynom.
         if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfLogarithmicFactorsInNumerator == 1){
-            separation[0] = factorsNumerator.get(indexOfLogarithmicFactorInNumerator);
+            separation[1] = factorsNumerator.get(indexOfLogarithmicFactorInNumerator);
             factorsNumerator.remove(indexOfLogarithmicFactorInNumerator);
-            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
         // Fall: f = Q(x)*f(ax+b), Q = rationale Funktion, f = arcsin, arccos, arcsec, arccosec, arsinh, arcosh, arsech, arcosech.
         if (numberOfRationalFactorsInNumerator + numberOfRationalFactorsInDenominator == factorsNumerator.getSize() + factorsDenominator.getSize() - 1
                 && numberOfFactorsWithAlgebraicDerivativeInNumerator == 1){
-            separation[0] = factorsNumerator.get(indexOfFactorWithAlgebraicDerivativeInNumerator);
+            separation[1] = factorsNumerator.get(indexOfFactorWithAlgebraicDerivativeInNumerator);
             factorsNumerator.remove(indexOfFactorWithAlgebraicDerivativeInNumerator);
-            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
         
@@ -2065,7 +1948,7 @@ public abstract class SimplifyIntegralMethods {
         Expression u, uPrime, v;
 
         // Zunächst wird versucht, eine geschickte Wahl für u' zu treffen.
-        Expression[] separationForPartialIntegration = getSeparationForPartialIntegration2(factorsNumerator, factorsDenominator, var);
+        Expression[] separationForPartialIntegration = getSeparationForPartialIntegration(factorsNumerator, factorsDenominator, var);
 
         // Ab hier wurde eine geeignete Aufteilung des Integranden f in f = u'*v gefunden.
         uPrime = separationForPartialIntegration[0];

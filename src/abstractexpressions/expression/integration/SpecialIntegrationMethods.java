@@ -1267,7 +1267,7 @@ public abstract class SpecialIntegrationMethods {
         Expression radicand = ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft();
 
         // firstSummand = d/((1-2*n)*a*R^((2*n-1)/2)
-        Expression firstSummand = d.div(new Constant(1 - 2 * n).mult(radicand.pow(2 * n - 1, 2)));
+        Expression firstSummand = d.div(new Constant(1 - 2 * n).mult(a).mult(radicand.pow(2 * n - 1, 2)));
 
         // factor = e - (d*b)/(2*a)
         Expression factor = e.sub(d.mult(b).div(TWO.mult(a)));
