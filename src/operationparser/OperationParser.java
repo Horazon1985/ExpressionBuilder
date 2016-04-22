@@ -290,8 +290,11 @@ public abstract class OperationParser {
                         if (!paramType.equals(type.name())) {
                             throw new ParseException(i);
                         }
-                        // Optionale Parameter einlesen (es müssen genau zwei sein).
-                        restrictionsAsList = getRestrictionList(restrictions, i);
+                        // Optionale Parameter einlesen (es muss mindestens einer sein).
+                        for (int j = 0; j < restrictions.length; j++){
+                            restrictionsAsList.add(restrictions[j]);
+                        }
+
                         if (restrictionsAsList.isEmpty()) {
                             // Restriktionen MÜSSEN vorhanden sein.
                             throw new ParseException(i);

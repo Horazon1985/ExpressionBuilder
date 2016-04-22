@@ -216,6 +216,37 @@ public class ParseTests {
 
     @Test
     public void parseTest7() throws ExpressionException {
+        // Parsen von "op(expr(none, 2), type(lex, deglex), uniquevar)".
+        resultPattern = OperationParser.getResultPattern("op(expr(none, 2), type(lex, deglex), uniquevar)");
+        Assert.assertTrue(resultPattern.getOperationName().equals("op"));
+
+        Assert.assertTrue(resultPattern.size() == 3);
+
+        p = resultPattern.getParameterPattern(0);
+        restrictions = p.getRestrictions();
+        Assert.assertTrue(p.getParamType().equals(ParamType.expr));
+        Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
+        Assert.assertTrue(restrictions.size() == 2);
+        Assert.assertTrue(restrictions.get(0).equals("none"));
+        Assert.assertTrue(restrictions.get(1).equals("2"));
+
+        p = resultPattern.getParameterPattern(1);
+        restrictions = p.getRestrictions();
+        Assert.assertTrue(p.getParamType().equals(ParamType.type));
+        Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
+        Assert.assertTrue(restrictions.size() == 2);
+        Assert.assertTrue(restrictions.get(0).equals("lex"));
+        Assert.assertTrue(restrictions.get(1).equals("deglex"));
+
+        p = resultPattern.getParameterPattern(2);
+        restrictions = p.getRestrictions();
+        Assert.assertTrue(p.getParamType().equals(ParamType.uniquevar));
+        Assert.assertTrue(p.getMultiplicity().equals(Multiplicity.one));
+        Assert.assertTrue(restrictions.isEmpty());
+    }
+
+    @Test
+    public void parseTest8() throws ExpressionException {
         // Parsen von "(expr, integer)".
         try {
             resultPattern = OperationParser.getResultPattern("(expr, integer)");
@@ -226,7 +257,7 @@ public class ParseTests {
     }
 
     @Test
-    public void parseTest8() throws ExpressionException {
+    public void parseTest9() throws ExpressionException {
         // Parsen von "op(expr(none, 2), indet(!2), integer)".
         try {
             resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet(!2), integer)");
@@ -237,7 +268,7 @@ public class ParseTests {
     }
 
     @Test
-    public void parseTest9() throws ExpressionException {
+    public void parseTest10() throws ExpressionException {
         // Parsen von "op(expr(none, 2), indet(1), integer)".
         try {
             resultPattern = OperationParser.getResultPattern("op(expr(none, 2), indet(1), integer)");
@@ -248,7 +279,7 @@ public class ParseTests {
     }
 
     @Test
-    public void parseTest10() {
+    public void parseTest11() {
         // Parsen von "op(expr,)".
         try {
             resultPattern = OperationParser.getResultPattern("op(expr,)");
@@ -259,7 +290,7 @@ public class ParseTests {
     }
 
     @Test
-    public void parseTest11() throws ExpressionException {
+    public void parseTest12() throws ExpressionException {
         // Parsen von "op(expr,)".
         try {
             resultPattern = OperationParser.getResultPattern("op(expr,+)");
@@ -270,7 +301,7 @@ public class ParseTests {
     }
 
     @Test
-    public void parseTest12() throws ExpressionException {
+    public void parseTest13() throws ExpressionException {
         // Parsen von "op(expres(1,2),indet)".
         try {
             resultPattern = OperationParser.getResultPattern("op(expres(1,2),indet)");
