@@ -88,7 +88,7 @@ public abstract class SimplifyPolynomialMethods {
         if (!expr.contains(var)) {
             return true;
         }
-        if (expr instanceof Variable) {
+        if (expr.equals(Variable.create(var))) {
             return true;
         }
         if (expr.isSum() || expr.isDifference() || expr.isProduct()) {

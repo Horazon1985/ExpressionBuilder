@@ -22,35 +22,59 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public abstract class PolynomialRootsMethods {
 
+    public static BigInteger getGCDOfExponentsInPolynomial(Expression f, String var) {
+        
+        if (!f.contains(var)){
+            return BigInteger.ZERO;
+        }
+        if (f.equals(Variable.create(var))){
+            return BigInteger.ONE;
+        }
+        if (f.isSum() || f.isDifference() || f.isProduct()) {
+            return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var).gcd(getGCDOfExponentsInPolynomial(((BinaryOperation) f).getRight(), var));
+        }
+        if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
+            return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var);
+        }
+        if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()) {
+            if (((BinaryOperation) f).getLeft().equals(Variable.create(var))){
+                return ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+            }
+            return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var);
+        }
+        // Dann ist es kein Polynom.
+        return BigInteger.ONE.negate();
+        
+    }
+    
     /**
      * Gibt zurück, ob expr ein Polynom in derivative Variablen x ist, falls die
-     * Variable var durch ein geeignetes var = x^period, period ganzzahlig,
-     * substituiert wird. Voraussetzung: expr ist vereinfacht, d.h. Operatoren
-     * etc. kommen NICHT vor (außer evtl. Gamma(x), was kein Polynom ist).
+     * Variable var durch ein geeignetes var = x^m, m ganzzahlig, substituiert
+     * wird. Voraussetzung: f ist vereinfacht, d.h. Operatoren etc. kommen NICHT
+     * vor (außer evtl. Gamma(x), was kein Polynom ist).
      */
-    public static boolean isPolynomialAfterSubstitutionByRoots(Expression expr, String var) {
+    public static boolean isPolynomialAfterSubstitutionByRoots(Expression f, String var) {
 
-        if (!expr.contains(var)) {
+        if (!f.contains(var)) {
             return true;
         }
-        if (expr instanceof Variable) {
+        if (f.equals(Variable.create(var))) {
             return true;
         }
-        if (expr.isSum() || expr.isDifference() || expr.isProduct()) {
-            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var) && isPolynomialAfterSubstitutionByRoots(((BinaryOperation) expr).getRight(), var);
+        if (f.isSum() || f.isDifference() || f.isProduct()) {
+            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var) && isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getRight(), var);
         }
-        if (expr.isQuotient() && !((BinaryOperation) expr).getRight().contains(var)) {
-            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var);
+        if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
+            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
         }
-        if (expr.isPower()) {
-            if (((BinaryOperation) expr).getRight().isIntegerConstant()) {
-                return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var);
-            } else if (((BinaryOperation) expr).getRight().isRationalConstant()) {
-                return ((BinaryOperation) expr).getLeft() instanceof Variable;
+        if (f.isPower()) {
+            if (((BinaryOperation) f).getRight().isIntegerConstant()) {
+                return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
+            } else if (((BinaryOperation) f).getRight().isRationalConstant()) {
+                return ((BinaryOperation) f).getLeft() instanceof Variable;
             }
         }
 
@@ -64,34 +88,34 @@ public abstract class PolynomialRootsMethods {
      * dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
      * expr muss ein Polynom sein.
      */
-    public static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression expr, String var) {
+    public static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression f, String var) {
 
-        if (expr instanceof Constant) {
+        if (f instanceof Constant) {
             return BigInteger.ONE;
         }
-        if (expr instanceof Variable) {
+        if (f instanceof Variable) {
             return BigInteger.ONE;
         }
-        if (expr instanceof BinaryOperation) {
+        if (f instanceof BinaryOperation) {
 
-            if (((BinaryOperation) expr).getType().equals(TypeBinary.PLUS)
-                    || ((BinaryOperation) expr).getType().equals(TypeBinary.MINUS)
-                    || ((BinaryOperation) expr).getType().equals(TypeBinary.TIMES)) {
-                BigInteger m = findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var);
-                BigInteger n = findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) expr).getRight(), var);
+            if (((BinaryOperation) f).getType().equals(TypeBinary.PLUS)
+                    || ((BinaryOperation) f).getType().equals(TypeBinary.MINUS)
+                    || ((BinaryOperation) f).getType().equals(TypeBinary.TIMES)) {
+                BigInteger m = findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
+                BigInteger n = findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) f).getRight(), var);
                 return m.multiply(n).divide(m.gcd(n));
             }
-            if (((BinaryOperation) expr).getType().equals(TypeBinary.DIV) && ((BinaryOperation) expr).getRight().isConstant()) {
-                return findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var);
+            if (((BinaryOperation) f).getType().equals(TypeBinary.DIV) && ((BinaryOperation) f).getRight().isConstant()) {
+                return findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
             }
-            if (((BinaryOperation) expr).getType().equals(TypeBinary.POW)) {
+            if (((BinaryOperation) f).getType().equals(TypeBinary.POW)) {
 
-                if (((BinaryOperation) expr).getRight().isIntegerConstant()) {
-                    return findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) expr).getLeft(), var);
-                } else if (((BinaryOperation) expr).getRight().isRationalConstant()
-                        && ((BinaryOperation) expr).getLeft() instanceof Variable
-                        && ((Variable) ((BinaryOperation) expr).getLeft()).getName().equals(var)) {
-                    return ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
+                if (((BinaryOperation) f).getRight().isIntegerConstant()) {
+                    return findExponentForPolynomialSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
+                } else if (((BinaryOperation) f).getRight().isRationalConstant()
+                        && ((BinaryOperation) f).getLeft() instanceof Variable
+                        && ((Variable) ((BinaryOperation) f).getLeft()).getName().equals(var)) {
+                    return ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
                 }
 
             }
@@ -146,21 +170,16 @@ public abstract class PolynomialRootsMethods {
             ExpressionCollection coefficientsOfSubstitutedPolynomial = substituteMonomialInPolynomial(coefficients, m, var);
             ExpressionCollection zerosOfSubstitutedPolynomial = solvePolynomialEquation(coefficientsOfSubstitutedPolynomial, var);
             if (m % 2 == 0) {
-                for (int i = 0; i < zerosOfSubstitutedPolynomial.getBound(); i++) {
-
-                    // Es sollen nur konstante nichtnegative oder nichtkonstante Lösungen akzeptiert werden.
-                    if (zerosOfSubstitutedPolynomial.get(i).isConstant() && zerosOfSubstitutedPolynomial.get(i).isNonNegative()) {
-                        zeros.put(zeros.getBound(), zerosOfSubstitutedPolynomial.get(i).pow(1, m).simplify());
-                        zeros.put(zeros.getBound(), Expression.MINUS_ONE.mult(zerosOfSubstitutedPolynomial.get(i).pow(1, m)).simplify());
-                    } else if (!zerosOfSubstitutedPolynomial.get(i).isConstant()) {
-                        zeros.put(zeros.getBound(), zerosOfSubstitutedPolynomial.get(i).pow(1, m).simplify());
-                        zeros.put(zeros.getBound(), Expression.MINUS_ONE.mult(zerosOfSubstitutedPolynomial.get(i).pow(1, m)).simplify());
+                for (Expression zero : zerosOfSubstitutedPolynomial) {
+                    try{
+                        zeros.add(zero.pow(1, m).simplify());
+                        zeros.add(MINUS_ONE.mult(zero.pow(1, m)).simplify());
+                    } catch (EvaluationException e){
                     }
-
                 }
             } else {
-                for (int i = 0; i < zerosOfSubstitutedPolynomial.getBound(); i++) {
-                    zeros.put(zeros.getBound(), zerosOfSubstitutedPolynomial.get(i).pow(1, m).simplify());
+                for (Expression zero : zerosOfSubstitutedPolynomial) {
+                    zeros.add(zero.pow(1, m).simplify());
                 }
             }
         }
@@ -207,7 +226,7 @@ public abstract class PolynomialRootsMethods {
                         return SimplifyUtilities.union(SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var),
                                 SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getRight(), var));
                     }
-                    // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
+                    // Fall: Faktorisiertes Polynom ist eine nichttriviale Potenz.
                     if (factorizedPolynomial.isIntegerPower()
                             && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0) {
                         return SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
@@ -248,8 +267,8 @@ public abstract class PolynomialRootsMethods {
      */
     public static BigInteger[] findRationalZeroOfPolynomial(ExpressionCollection coefficients) {
 
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            if (!coefficients.get(i).isIntegerConstant()) {
+        for (Expression coefficient : coefficients) {
+            if (!coefficient.isIntegerConstant()) {
                 BigInteger[] zero = new BigInteger[0];
                 return zero;
             }
@@ -267,40 +286,38 @@ public abstract class PolynomialRootsMethods {
         pDivisors.addAll(ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getValue().toBigInteger()));
         ArrayList<BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getValue().toBigInteger());
 
-        for (int i = 0; i < pDivisors.size(); i++) {
-            for (int j = 0; j < qDivisors.size(); j++) {
+        for (BigInteger pDivisor : pDivisors) {
+            for (BigInteger qDivisor : qDivisors) {
                 BigInteger pDivisorPower;
                 BigInteger qDivisorPower;
-
                 // Test, ob p/q eine Nullstelle des Polynoms ist.
                 polynomValue = BigInteger.ZERO;
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
-                    pDivisorPower = ((BigInteger) pDivisors.get(i)).pow(k);
-                    qDivisorPower = ((BigInteger) qDivisors.get(j)).pow(coefficients.getBound() - 1 - k);
+                    pDivisorPower = pDivisor.pow(k);
+                    qDivisorPower = qDivisor.pow(coefficients.getBound() - 1 - k);
                     polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
                     BigInteger[] zero = new BigInteger[2];
-                    zero[0] = pDivisors.get(i);
-                    zero[1] = qDivisors.get(j);
+                    zero[0] = pDivisor;
+                    zero[1] = qDivisor;
                     return zero;
                 }
                 // Test, ob -p/q eine Nullstelle des Polynoms ist.
                 polynomValue = BigInteger.ZERO;
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
-                    pDivisorPower = ((BigInteger) pDivisors.get(i)).negate().pow(k);
-                    qDivisorPower = ((BigInteger) qDivisors.get(j)).pow(coefficients.getBound() - 1 - k);
+                    pDivisorPower = pDivisor.negate().pow(k);
+                    qDivisorPower = qDivisor.pow(coefficients.getBound() - 1 - k);
                     polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
                     BigInteger[] zero = new BigInteger[2];
-                    zero[0] = pDivisors.get(i).negate();
-                    zero[1] = qDivisors.get(j);
+                    zero[0] = pDivisor.negate();
+                    zero[1] = qDivisor;
                     return zero;
                 }
-
             }
         }
 
@@ -334,12 +351,12 @@ public abstract class PolynomialRootsMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection findAllRationalZerosOfRationalPolynomial(ExpressionCollection a, ExpressionCollection rationalZeros)
+    public static ExpressionCollection findAllRationalZerosOfRationalPolynomial(ExpressionCollection coefficients, ExpressionCollection rationalZeros)
             throws EvaluationException {
 
-        for (int i = 0; i < a.getBound(); i++) {
-            if (!a.get(i).isIntegerConstantOrRationalConstant()) {
-                return a;
+        for (Expression coefficient : coefficients) {
+            if (!coefficient.isIntegerConstantOrRationalConstant()) {
+                return coefficients;
             }
         }
 
@@ -348,23 +365,21 @@ public abstract class PolynomialRootsMethods {
          multipliziert, damit alle Koeffizienten ganzzahlig werden.
          */
         BigInteger commonDenominator = BigInteger.ONE;
-        for (int i = 0; i < a.getBound(); i++) {
-            if (a.get(i).isQuotient()) {
-                commonDenominator = ArithmeticMethods.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) a.get(i)).getRight()).getValue().toBigInteger()});
+        for (Expression coefficient : coefficients) {
+            if (coefficient.isQuotient()) {
+                commonDenominator = ArithmeticMethods.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) coefficient).getRight()).getValue().toBigInteger()});
             }
         }
 
         ExpressionCollection coefficientsOfDivisionQuotient;
-        ExpressionCollection multipleOfCoefficients = ExpressionCollection.copy(a);
+        ExpressionCollection multipleOfCoefficients = ExpressionCollection.copy(coefficients);
 
         multipleOfCoefficients.multExpression(new Constant(commonDenominator));
         multipleOfCoefficients = multipleOfCoefficients.simplify();
 
-        /*
-         Alle Polynomkoeffizienten werden nun durch ihren ggT dividiert.
-         */
+        // Alle Polynomkoeffizienten werden nun durch ihren ggT dividiert.
         BigInteger gcd = BigInteger.ZERO;
-        for (int i = 0; i < a.getBound(); i++) {
+        for (int i = 0; i < coefficients.getBound(); i++) {
             if (gcd.equals(BigInteger.ZERO)) {
                 gcd = ((Constant) multipleOfCoefficients.get(i)).getValue().toBigInteger();
             } else {
@@ -382,7 +397,7 @@ public abstract class PolynomialRootsMethods {
         BigInteger[] zero;
         ExpressionCollection divisor = new ExpressionCollection();
         // Es kann höchstens soviele (rationale) Nullstellen geben, wie der Grad des Polynoms (= a.getBound() - 1) beträgt.
-        for (int i = 0; i < a.getBound() - 1; i++) {
+        for (int i = 0; i < coefficients.getBound() - 1; i++) {
             zero = findRationalZeroOfPolynomial(coefficientsOfDivisionQuotient);
             if (zero.length > 0) {
                 rationalZeros.add(new Constant(zero[0]).div(zero[1]).simplify());
@@ -411,7 +426,7 @@ public abstract class PolynomialRootsMethods {
      */
     public static ExpressionCollection solveLinearEquation(ExpressionCollection coefficients) throws EvaluationException {
         ExpressionCollection zeros = new ExpressionCollection();
-        zeros.put(0, (Expression.MINUS_ONE).mult(coefficients.get(0)).div(coefficients.get(1)).simplify());
+        zeros.put(0, MINUS_ONE.mult(coefficients.get(0)).div(coefficients.get(1)).simplify());
         return zeros;
     }
 
@@ -433,17 +448,17 @@ public abstract class PolynomialRootsMethods {
 
         if (!discriminant.isAlwaysNonNegative() && !discriminant.isAlwaysNonPositive()) {
             // Rein abstrakt nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
-            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
+            zeros.put(0, MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
+            zeros.put(1, MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
             return zeros;
         }
 
-        if (discriminant.isAlwaysNonNegative() && !discriminant.equals(Expression.ZERO)) {
+        if (discriminant.isAlwaysNonNegative() && !discriminant.equals(ZERO)) {
             // Nach p-q-Formel auflösen: x = (-p +- (p^2 - 4q)^(1/2))/2
-            zeros.put(0, Expression.MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
-            zeros.put(1, Expression.MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
+            zeros.put(0, MINUS_ONE.mult(p).div(2).sub(discriminant.pow(1, 2)).simplify());
+            zeros.put(1, MINUS_ONE.mult(p).div(2).add(discriminant.pow(1, 2)).simplify());
             return zeros;
-        } else if (discriminant.equals(Expression.ZERO)) {
+        } else if (discriminant.equals(ZERO)) {
             zeros.put(0, p.div(-2).simplify());
             return zeros;
         }
@@ -498,8 +513,8 @@ public abstract class PolynomialRootsMethods {
             Expression arg = MINUS_ONE.mult(q.div(2)).mult(new Constant(-27).div(p.pow(3)).pow(1, 2)).arccos().div(3).simplify();
             Expression factor = (new Constant(-4).mult(p).div(3)).pow(1, 2);
             zeros.put(0, factor.mult(new Function(arg, TypeFunction.cos)).sub(a.div(3)).simplify());
-            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(Expression.PI.div(3)).cos()).sub(a.div(3)).simplify());
-            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(Expression.PI.div(3)).cos()).sub(a.div(3)).simplify());
+            zeros.put(1, MINUS_ONE.mult(factor).mult(arg.add(PI.div(3)).cos()).sub(a.div(3)).simplify());
+            zeros.put(2, MINUS_ONE.mult(factor).mult(arg.sub(PI.div(3)).cos()).sub(a.div(3)).simplify());
             return zeros;
         } else if (discriminant.equals(ZERO)) {
             // Auflösung nach Cardano-Formel: 
@@ -633,7 +648,7 @@ public abstract class PolynomialRootsMethods {
 
         if ((period / 2) * 2 != period && (n / 2) * 2 == n) {
             ExpressionCollection specialZero = new ExpressionCollection();
-            specialZero.put(0, Expression.MINUS_ONE);
+            specialZero.put(0, MINUS_ONE);
             return SimplifyUtilities.union(result, specialZero);
         }
         return result;

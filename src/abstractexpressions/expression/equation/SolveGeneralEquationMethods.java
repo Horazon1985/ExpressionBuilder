@@ -6,6 +6,7 @@ import exceptions.NotSubstitutableException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
@@ -22,6 +23,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import notations.NotationLoader;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import exceptions.NotAlgebraicallySolvableException;
 
 public abstract class SolveGeneralEquationMethods {
 
@@ -1506,12 +1508,13 @@ public abstract class SolveGeneralEquationMethods {
         }
 
         // Fall: f ist ein Polynom.
-        if (SimplifyPolynomialMethods.isPolynomial(f, var)) {
+        try {
             return solvePolynomialEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f is ein Polynom in var^(1/m) mit geeignetem m.
-        if (PolynomialRootsMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialRootsMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
             return PolynomialRootsMethods.solvePolynomialEquationWithFractionalExponents(f, var);
         }
 
@@ -1544,8 +1547,7 @@ public abstract class SolveGeneralEquationMethods {
          ausprobiert. Im Folgenden stellt die HashMap setOfSubstitutions eine
          Menge von potiellen (einfachen) Substitutionen zur Verfügung.
          */
-        ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        getSuitableSubstitutionForEquation(f, var, setOfSubstitutions, true);
+        ExpressionCollection setOfSubstitutions = getSuitableSubstitutionForEquation(f, var);
         setOfSubstitutions.removeMultipleTerms();
         Expression fSubstituted;
 
@@ -1624,7 +1626,7 @@ public abstract class SolveGeneralEquationMethods {
          g(x) bei den Lösungen nicht verschwindet.
          */
         if (f.isQuotient()) {
-            
+
             // Sonderfall: wenn der Zähler bzgl. var konstant und != 0 ist, so besitzt die Gleichung keine Lösungen.
             Expression numerator = ((BinaryOperation) f).getLeft();
             if (!numerator.contains(var) && !numerator.equals(ZERO)) {
@@ -1645,9 +1647,9 @@ public abstract class SolveGeneralEquationMethods {
                     zeros.add(zerosLeft.get(i));
                 }
             }
-            
+
         }
-        
+
         return zeros;
 
     }
@@ -1720,13 +1722,13 @@ public abstract class SolveGeneralEquationMethods {
     /**
      * Löst Gleichungen der Form f = 0, wobei f stets >= 0 ist.
      */
-    private static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection zeros = new ExpressionCollection();
+    private static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
-            return zeros;
+            throw new NotAlgebraicallySolvableException();
         }
+
+        ExpressionCollection zeros = new ExpressionCollection();
 
         BigInteger degree = SimplifyPolynomialMethods.getDegreeOfPolynomial(f, var);
         BigInteger order = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
@@ -1736,23 +1738,50 @@ public abstract class SolveGeneralEquationMethods {
          */
         if (order.compareTo(BigInteger.ZERO) > 0) {
             f = PolynomialRootsMethods.divideExpressionByPowerOfVar(f, var, order);
-            zeros.put(0, ZERO);
+            zeros.add(ZERO);
+            return SimplifyUtilities.union(zeros, solvePolynomialEquation(f, var));
+        }
+
+        BigInteger gcdOfExponents = PolynomialRootsMethods.getGCDOfExponentsInPolynomial(f, var);
+        if (gcdOfExponents.compareTo(BigInteger.ONE) > 0) {
+            /* 
+             Falls das Polynom f(x) als f(x) = g(x^m) mit einem ganzen m > 1 geschrieben werden kann,
+             dann soll zunächst g = 0 glöst werden und dann daraus die Nullstellen von f ermittelt werden.
+             */
+            String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+            Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, Variable.create(var).pow(gcdOfExponents), Variable.create(substVar));
+            ExpressionCollection zerosOfFSubstituted = solvePolynomialEquation(fSubstituted, substVar);
+            if (gcdOfExponents.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
+                for (Expression zero : zerosOfFSubstituted) {
+                    try {
+                        zeros.add(zero.pow(BigInteger.ONE, gcdOfExponents).simplify());
+                        zeros.add(MINUS_ONE.mult(zero.pow(BigInteger.ONE, gcdOfExponents)).simplify());
+                    } catch (EvaluationException e) {
+                    }
+                }
+            } else {
+                for (Expression zero : zerosOfFSubstituted) {
+                    zeros.add(zero.pow(BigInteger.ONE, gcdOfExponents).simplify());
+                }
+            }
+            return zeros;
         }
 
         degree = degree.subtract(order);
 
-        /*
-         TO DO: Lösungsmethoden für Polynome hohen Grades mit wenigen
-         nichttrivialen Koeffizienten.
-         */
         if (degree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
-            return zeros;
+            throw new NotAlgebraicallySolvableException();
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
-        zeros = SimplifyUtilities.union(zeros, PolynomialRootsMethods.solvePolynomialEquation(coefficients, var));
-        return zeros;
+        return PolynomialRootsMethods.solvePolynomialEquation(coefficients, var);
 
+    }
+
+    private static ExpressionCollection getSuitableSubstitutionForEquation(Expression f, String var) {
+        ExpressionCollection substitutions = new ExpressionCollection();
+        addSuitableSubstitutionForEquation(f, var, substitutions, true);
+        return substitutions;
     }
 
     /**
@@ -1761,7 +1790,7 @@ public abstract class SolveGeneralEquationMethods {
      * nur einen Teil eines größeren Ausdrucks bildet. Dies ist wichtig, damit
      * es keine Endlosschleifen gibt!
      */
-    private static void getSuitableSubstitutionForEquation(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
+    private static void addSuitableSubstitutionForEquation(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
 
         /*
          Es wird Folgendes als potentielle Substitution angesehen: (1) Argumente
@@ -1771,8 +1800,8 @@ public abstract class SolveGeneralEquationMethods {
          sein.
          */
         if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
-            getSuitableSubstitutionForEquation(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
-            getSuitableSubstitutionForEquation(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
+            addSuitableSubstitutionForEquation(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
+            addSuitableSubstitutionForEquation(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
         }
         if (f.isPower()) {
 
@@ -1781,12 +1810,12 @@ public abstract class SolveGeneralEquationMethods {
                     && ((BinaryOperation) f).getLeft().contains(var)
                     && !(((BinaryOperation) f).getLeft() instanceof Variable)) {
                 setOfSubstitutions.add(((BinaryOperation) f).getLeft());
-                getSuitableSubstitutionForEquation(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
+                addSuitableSubstitutionForEquation(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
             } else if (!((BinaryOperation) f).getLeft().contains(var)
                     && ((BinaryOperation) f).getRight().contains(var)
                     && !(((BinaryOperation) f).getRight() instanceof Variable)) {
                 setOfSubstitutions.add(((BinaryOperation) f).getRight());
-                getSuitableSubstitutionForEquation(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
+                addSuitableSubstitutionForEquation(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
             }
 
         } else if (f.isFunction()) {
@@ -1800,7 +1829,7 @@ public abstract class SolveGeneralEquationMethods {
                 setOfSubstitutions.add(f);
             }
             // Weitere potentielle Substitutionen finden sich möglicherweise im Argument der Funktion.
-            getSuitableSubstitutionForEquation(((Function) f).getLeft(), var, setOfSubstitutions, false);
+            addSuitableSubstitutionForEquation(((Function) f).getLeft(), var, setOfSubstitutions, false);
 
         }
 
