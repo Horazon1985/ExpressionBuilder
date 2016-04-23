@@ -1684,7 +1684,7 @@ public abstract class SpecialIntegrationMethods {
 
             try {
                 p = b.div(TWO.mult(a)).simplify();
-                q = discriminant.pow(1, 2).div(TWO.mult(a)).simplify();
+                q = MINUS_ONE.mult(discriminant.pow(1, 2)).div(TWO.mult(a)).simplify();
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }

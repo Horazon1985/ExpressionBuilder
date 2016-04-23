@@ -10,7 +10,6 @@ import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.Monomial;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.MultiPolynomial;
 import exceptions.EvaluationException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
