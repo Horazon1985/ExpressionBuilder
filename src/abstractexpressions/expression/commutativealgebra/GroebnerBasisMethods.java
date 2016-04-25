@@ -5,6 +5,7 @@ import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.utilities.ExpressionCollection;
 import exceptions.EvaluationException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -260,6 +261,46 @@ public class GroebnerBasisMethods {
             return multiPloynomialAsExpression;
         }
 
+        public ExpressionCollection toPolynomial(String var) {
+
+            ExpressionCollection coefficients = new ExpressionCollection();
+
+            int indexOfVar = -1;
+            for (int i = 0; i < monomialVars.length; i++) {
+                if (monomialVars[i].equals(var)) {
+                    indexOfVar = i;
+                    break;
+                }
+            }
+
+            if (indexOfVar < 0) {
+                coefficients.add(this.toExpression());
+                return coefficients;
+            }
+
+            int exponent;
+            int[] termOfMDividedOutPowerOfVar;
+            for (Monomial m : this.monomials) {
+                exponent = m.getTerm()[indexOfVar];
+                termOfMDividedOutPowerOfVar = new int[m.getTerm().length];
+                for (int i = 0; i < m.getTerm().length; i++) {
+                    if (i != indexOfVar) {
+                        termOfMDividedOutPowerOfVar[i] = m.getTerm()[i];
+                    } else {
+                        termOfMDividedOutPowerOfVar[i] = 0;
+                    }
+                }
+                if (coefficients.get(exponent) == null) {
+                    coefficients.put(exponent, new Monomial(m.getCoefficient(), termOfMDividedOutPowerOfVar).toExpression());
+                } else {
+                    coefficients.put(exponent, coefficients.get(exponent).add(new Monomial(m.getCoefficient(), termOfMDividedOutPowerOfVar).toExpression()));
+                }
+            }
+
+            return coefficients;
+
+        }
+
         @Override
         public String toString() {
             return this.toExpression().toString();
@@ -343,7 +384,6 @@ public class GroebnerBasisMethods {
                 for (int j = 0; j < fCopy.monomials.size(); j++) {
                     if (thisCopy.monomials.get(i).equalsInTerm(fCopy.monomials.get(j))) {
                         thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().sub(fCopy.monomials.get(j).getCoefficient()).simplify());
-//                        thisCopy.monomials.remove(i);
                         fCopy.monomials.remove(j);
                         i--;
                         break;
@@ -507,9 +547,9 @@ public class GroebnerBasisMethods {
         MultiPolynomial polynomial;
         Monomial leadingMonomial;
         HashSet<Integer> ignoreList = new HashSet<>();
-        
+
         for (int i = 0; i < polynomials.size(); i++) {
-            if (ignoreList.contains(i)){
+            if (ignoreList.contains(i)) {
                 continue;
             }
             polynomial = polynomials.get(i);

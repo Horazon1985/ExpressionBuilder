@@ -12,6 +12,7 @@ import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyMultiPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.Matrix;
@@ -628,7 +629,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         Expression fSubstituted = fMinusC;
         fSubstituted = fSubstituted.replaceVariable(varOrd, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_0"));
         fSubstituted = fSubstituted.replaceVariable(varOrd + "'", Variable.create(NotationLoader.SUBSTITUTION_VAR + "_1"));
-        if (SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(fSubstituted, NotationLoader.SUBSTITUTION_VAR + "_0", NotationLoader.SUBSTITUTION_VAR + "_1").compareTo(BigInteger.ONE) != 0) {
+        if (SimplifyMultiPolynomialMethods.getDegreeOfMultiPolynomial(fSubstituted, NotationLoader.SUBSTITUTION_VAR + "_0", NotationLoader.SUBSTITUTION_VAR + "_1").compareTo(BigInteger.ONE) != 0) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
@@ -917,14 +918,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
          */
         int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
-        HashSet<String> vars = new HashSet<>();
+        ArrayList<String> vars = new ArrayList<>();
         for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
             varOrdWithPrimes += "'";
         }
 
-        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
+        BigInteger deg = SimplifyMultiPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
         if (!(deg.compareTo(BigInteger.ONE) == 0)) {
             return false;
         }
@@ -958,14 +959,14 @@ public abstract class SolveGeneralDifferentialEquationMethods {
          */
         int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
-        HashSet<String> vars = new HashSet<>();
+        ArrayList<String> vars = new ArrayList<>();
         for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
             varOrdWithPrimes += "'";
         }
 
-        BigInteger deg = SimplifyPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
+        BigInteger deg = SimplifyMultiPolynomialMethods.getDegreeOfMultiPolynomial(f, vars);
         if (!(deg.compareTo(BigInteger.ONE) == 0)) {
             return false;
         }

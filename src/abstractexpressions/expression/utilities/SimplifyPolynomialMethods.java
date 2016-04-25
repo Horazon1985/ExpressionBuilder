@@ -17,11 +17,9 @@ import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import lang.translator.Translator;
 
 public abstract class SimplifyPolynomialMethods {
@@ -154,66 +152,6 @@ public abstract class SimplifyPolynomialMethods {
         }
         // Dann ist f kein Polynom.
         return BigInteger.valueOf(-1);
-    }
-
-    /**
-     * Liefert (eine OBERE SCHRANKE für) den Grad des Multipolynoms bzgl. der
-     * Variablen vars, welches von f repräsentiert wird. Falls f kein Polynom
-     * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
-     */
-    public static BigInteger getDegreeOfMultiPolynomial(Expression f, HashSet<String> vars) {
-        boolean fContainsVars = false;
-        for (String var : vars) {
-            fContainsVars = fContainsVars || f.contains(var);
-        }
-        if (!fContainsVars) {
-            return BigInteger.ZERO;
-        }
-        if (f instanceof Variable) {
-            if (vars.contains(((Variable) f).getName())) {
-                return BigInteger.ONE;
-            }
-            return BigInteger.ZERO;
-        }
-        if (f instanceof BinaryOperation) {
-            if (f.isSum() || f.isDifference()) {
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).max(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
-            }
-            if (f.isProduct()) {
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).add(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
-            }
-            if (f.isQuotient()) {
-                for (String var : vars) {
-                    if (((BinaryOperation) f).getRight().contains(var)) {
-                        // Dann ist f kein Multipolynom.
-                        return BigInteger.valueOf(-1);
-                    }
-                }
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars);
-            }
-            if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).multiply(exp);
-            }
-        }
-        if (f instanceof Operator) {
-            if (f.isConstant()) {
-                return BigInteger.ZERO;
-            }
-        }
-        // Dann ist f kein Mulitpolynom.
-        return BigInteger.valueOf(-1);
-    }
-
-    /**
-     * Liefert (eine OBERE SCHRANKE für) den Grad des Multipolynoms bzgl. der
-     * Variablen vars, welches von f repräsentiert wird. Falls f kein Polynom
-     * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
-     */
-    public static BigInteger getDegreeOfMultiPolynomial(Expression f, String... vars) {
-        HashSet<String> varsAsHashSet = new HashSet();
-        varsAsHashSet.addAll(Arrays.asList(vars));
-        return getDegreeOfMultiPolynomial(f, varsAsHashSet);
     }
 
     /**
