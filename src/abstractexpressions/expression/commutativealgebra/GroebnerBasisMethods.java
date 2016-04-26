@@ -22,7 +22,8 @@ public class GroebnerBasisMethods {
     }
 
     private static String[] monomialVars;
-    private static TermOrderings termOrdering;
+    // Default-Einstellung soll LEX sein!
+    private static TermOrderings termOrdering = TermOrderings.LEX;
 
     public static class Monomial implements Comparable<Monomial> {
 
@@ -33,13 +34,11 @@ public class GroebnerBasisMethods {
             this.coefficient = coefficient;
             this.term = new int[monomialVars.length];
             /*
-             Damit es keine Dimensionsfehler gibt: wenn term und this.term in den
-             Dimensionen nicht übereinstimmen (warum auch immer), wird nur bis
-             zur gemeinsamen Schranke kopiert und der Rest (falls notwendig) mit 
-             Nullen aufgefüllt.
+             Damit es keine Dimensionsfehler gibt: wenn term größere Länge besitzt als monomialVars, 
+             wird nur bis zur Länge von monomialVars kopiert. Der Rest wird mit Nullen aufgefüllt.
              */
             System.arraycopy(term, 0, this.term, 0, Math.min(monomialVars.length, term.length));
-            for (int i = Math.min(monomialVars.length, term.length); i < this.term.length; i++) {
+            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++){
                 this.term[i] = 0;
             }
         }
@@ -48,15 +47,13 @@ public class GroebnerBasisMethods {
             this.coefficient = coefficient;
             this.term = new int[monomialVars.length];
             /*
-             Damit es keine Dimensionsfehler gibt: wenn term und this.term in den
-             Dimensionen nicht übereinstimmen (warum auch immer), wird nur bis
-             zur gemeinsamen Schranke kopiert und der Rest (falls notwendig) mit 
-             Nullen aufgefüllt.
+             Damit es keine Dimensionsfehler gibt: wenn term größere Länge besitzt als monomialVars, 
+             wird nur bis zur Länge von monomialVars kopiert. Der Rest wird mit Nullen aufgefüllt.
              */
             for (int i = 0; i < Math.min(monomialVars.length, term.length); i++) {
                 this.term[i] = term[i];
             }
-            for (int i = Math.min(monomialVars.length, term.length); i < this.term.length; i++) {
+            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++){
                 this.term[i] = 0;
             }
         }
@@ -144,6 +141,33 @@ public class GroebnerBasisMethods {
             return new Monomial(ONE, termOfLCM);
         }
 
+        public Monomial replaceVarByExpression(String var, Expression expr) {
+
+            int indexOfVarInMonomials = -1;
+            for (int i = 0; i < monomialVars.length; i++) {
+                if (monomialVars[i].equals(var)) {
+                    indexOfVarInMonomials = i;
+                    break;
+                }
+            }
+
+            if (indexOfVarInMonomials < 0) {
+                return this;
+            }
+
+            int[] resultTerm = new int[this.term.length - 1];
+            for (int i = 0; i < this.term.length; i++) {
+                if (i < indexOfVarInMonomials) {
+                    resultTerm[i] = this.term[i];
+                } else if (i > indexOfVarInMonomials) {
+                    resultTerm[i - 1] = this.term[i];
+                }
+            }
+
+            return new Monomial(this.coefficient.mult(expr.pow(this.term[indexOfVarInMonomials])), resultTerm);
+
+        }
+
         public boolean equalsInTerm(Monomial m) {
             for (int i = 0; i < this.term.length; i++) {
                 if (this.term[i] != m.term[i]) {
@@ -159,6 +183,10 @@ public class GroebnerBasisMethods {
 
         public boolean equivalentToMonomial(Monomial m) {
             return this.coefficient.equivalent(m.coefficient) && this.equalsInTerm(m);
+        }
+        
+        public Monomial simplify() throws EvaluationException {
+            return new Monomial(this.coefficient.simplify(), this.term);
         }
 
         @Override
@@ -297,6 +325,13 @@ public class GroebnerBasisMethods {
                 }
             }
 
+            // Restliche Koeffizienten, die bisher null sind, auf 0 setzen.
+            for (int i = 0; i < coefficients.getBound(); i++){
+                if (coefficients.get(i) == null){
+                    coefficients.put(i, ZERO);
+                }
+            }
+            
             return coefficients;
 
         }
@@ -397,6 +432,40 @@ public class GroebnerBasisMethods {
             return thisCopy;
         }
 
+        public MultiPolynomial replaceVarByExpression(String var, Expression expr) {
+
+            MultiPolynomial multiPolynomialReplacedVar = new MultiPolynomial();
+            
+            ArrayList<Monomial> monomialsCopy = new ArrayList<>();
+            for (Monomial m : this.monomials){
+                monomialsCopy.add(m);
+            }
+            
+            for (Monomial m : monomialsCopy) {
+                multiPolynomialReplacedVar.addMonomial(m.replaceVarByExpression(var, expr));
+            }
+
+            MultiPolynomial resultMultiPolynomial = new MultiPolynomial();
+            Monomial m;
+            ArrayList<Monomial> monomialList = multiPolynomialReplacedVar.getMonomials();
+            // Monome mit gleichem Term aufsammeln.
+            while (!monomialList.isEmpty()) {
+                m = monomialList.get(0);
+                monomialList.remove(0);
+                for (int i = 0; i < monomialList.size(); i++) {
+                    if (m.equalsInTerm(monomialList.get(i))){
+                        m.setCoefficient(m.getCoefficient().add(monomialList.get(i).getCoefficient()));
+                        monomialList.remove(i);
+                        i--;
+                    }
+                }
+                resultMultiPolynomial.addMonomial(m);
+            }
+
+            return resultMultiPolynomial;
+            
+        }
+
         public Monomial getLeadingMonomial() {
             Monomial maxMonomial = null;
             for (Monomial m : this.monomials) {
@@ -420,6 +489,15 @@ public class GroebnerBasisMethods {
             }
         }
 
+        public MultiPolynomial simplify() throws EvaluationException {
+            MultiPolynomial f = new MultiPolynomial();
+            for (Monomial m : this.monomials){
+                f.addMonomial(m.simplify());
+            }
+            f.clearZeroMonomials();
+            return f;
+        }
+        
     }
 
     public static void setTermOrdering(TermOrderings termOrdering) {
@@ -432,6 +510,11 @@ public class GroebnerBasisMethods {
 
     public static void setMonomialVars(String[] monomialVars) {
         GroebnerBasisMethods.monomialVars = monomialVars;
+    }
+
+    public static void setMonomialVars(ArrayList<String> monomialVars) {
+        GroebnerBasisMethods.monomialVars = new String[monomialVars.size()];
+        GroebnerBasisMethods.monomialVars = monomialVars.toArray(GroebnerBasisMethods.monomialVars);
     }
 
     public static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) throws EvaluationException {
@@ -509,6 +592,12 @@ public class GroebnerBasisMethods {
         // Normieren.
         normalizeSystem(groebnerBasis);
 
+        // Konsolenausgabe, zur Kontrolle.
+        System.out.println("Gröbnerbasis:");
+        for (MultiPolynomial f : groebnerBasis){
+            System.out.println(f.toString());
+        }
+        
         return groebnerBasis;
 
     }

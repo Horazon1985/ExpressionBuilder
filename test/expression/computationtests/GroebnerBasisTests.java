@@ -38,13 +38,58 @@ public class GroebnerBasisTests {
     }
 
     @Test
+    public void getMultiPolynomialFromExpressionTest1() {
+        try {
+            Expression f = Expression.build("7*x^2*y-z^5/a", null);
+            ArrayList<String> vars = new ArrayList<>();
+            vars.add("x");
+            vars.add("y");
+            vars.add("z");
+            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
+            assertTrue(fAsMultiPolynomial.equalsToMultiPolynomial(new MultiPolynomial(new Monomial(new Constant(7), 2, 1, 0), new Monomial(MINUS_ONE.div(Variable.create("a")), 0, 0, 5))));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getMultiPolynomialFromExpressionTest2() {
+        try {
+            Expression f = Expression.build("0", null);
+            ArrayList<String> vars = new ArrayList<>();
+            vars.add("x");
+            vars.add("y");
+            vars.add("z");
+            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
+            assertTrue(fAsMultiPolynomial.isZero());
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getMultiPolynomialFromExpressionIfNotMultiPolynomialTest() {
+        try {
+            Expression f = Expression.build("x^2*y+sin(z)", null);
+            ArrayList<String> vars = new ArrayList<>();
+            vars.add("x");
+            vars.add("y");
+            vars.add("z");
+            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
+            assertTrue(fAsMultiPolynomial.isZero());
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
     public void multiPolynomialToPolynomialTest1() {
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
         MultiPolynomial f = new MultiPolynomial(new Monomial(TWO, 2, 5), new Monomial(TWO.div(THREE), 3, 1), new Monomial(ONE, 2, 0));
         ExpressionCollection coefficients = f.toPolynomial("x");
         assertTrue(coefficients.getBound() == 4);
-        assertTrue(coefficients.get(0) == null);
-        assertTrue(coefficients.get(1) == null);
+        assertTrue(coefficients.get(0) == ZERO);
+        assertTrue(coefficients.get(1) == ZERO);
         assertTrue(coefficients.get(2).equals(TWO.mult(Variable.create("y").pow(5)).add(ONE)));
         assertTrue(coefficients.get(3).equals(TWO.div(THREE).mult(Variable.create("y"))));
     }
@@ -204,46 +249,24 @@ public class GroebnerBasisTests {
     }
 
     @Test
-    public void getMultiPolynomialFromExpressionTest1() {
+    public void getGroebnerBasisTest2() {
+        // f = x^2 + xy - 10, g = y^2 + 5xy - 39 bzgl. LEX. Gröbnerbasis = {y^4 + 133/4*y^2 - 1521/4, x - 4/195y^3 - 94/195y}
+        GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
+        GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
+        MultiPolynomial f = new MultiPolynomial(new Monomial(ONE, 2, 0), new Monomial(ONE, 1, 1),
+                new Monomial(new Constant(-10), 0, 0));
+        MultiPolynomial g = new MultiPolynomial(new Monomial(ONE, 0, 2), new Monomial(new Constant(5), 1, 1),
+                new Monomial(new Constant(-39), 0, 0));
         try {
-            Expression f = Expression.build("7*x^2*y-z^5/a", null);
-            ArrayList<String> vars = new ArrayList<>();
-            vars.add("x");
-            vars.add("y");
-            vars.add("z");
-            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
-            assertTrue(fAsMultiPolynomial.equalsToMultiPolynomial(new MultiPolynomial(new Monomial(new Constant(7), 2, 1, 0), new Monomial(MINUS_ONE.div(Variable.create("a")), 0, 0, 5))));
-        } catch (ExpressionException | EvaluationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void getMultiPolynomialFromExpressionTest2() {
-        try {
-            Expression f = Expression.build("0", null);
-            ArrayList<String> vars = new ArrayList<>();
-            vars.add("x");
-            vars.add("y");
-            vars.add("z");
-            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
-            assertTrue(fAsMultiPolynomial.isZero());
-        } catch (ExpressionException | EvaluationException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void getMultiPolynomialFromExpressionIfNotMultiPolynomialTest() {
-        try {
-            Expression f = Expression.build("x^2*y+sin(z)", null);
-            ArrayList<String> vars = new ArrayList<>();
-            vars.add("x");
-            vars.add("y");
-            vars.add("z");
-            MultiPolynomial fAsMultiPolynomial = SimplifyMultiPolynomialMethods.getMultiPolynomialFromExpression(f, vars);
-            assertTrue(fAsMultiPolynomial.isZero());
-        } catch (ExpressionException | EvaluationException e) {
+            ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisMethods.getNormalizedReducedGroebnerBasis(f, g);
+            MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(ONE, 0, 4), new Monomial(new Constant(133).div(4), 0, 2),
+                    new Monomial(new Constant(-1521).div(4), 0, 0));
+            MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(new Constant(-4).div(195), 0, 3),
+                    new Monomial(new Constant(-94).div(195), 0, 1));
+            assertTrue(groebnerBasis.size() == 2);
+            assertTrue(groebnerBasis.get(0).equivalentToMultiPolynomial(groebnerBasisElementOne));
+            assertTrue(groebnerBasis.get(1).equivalentToMultiPolynomial(groebnerBasisElementTwo));
+        } catch (EvaluationException e) {
             fail(e.getMessage());
         }
     }

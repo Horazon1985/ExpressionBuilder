@@ -39,6 +39,7 @@ public class TestRunner {
         testClasses.add(PolynomialTests.class);
         testClasses.add(SimplifyExpLogTests.class);
         testClasses.add(SimplifyOperatorTests.class);
+        testClasses.add(SolveGeneralEquationSystemTests.class);
         testClasses.add(GeneralDifferentialEquationTests.class);
         testClasses.add(SpecialEquationMethodsTests.class);
         testClasses.add(ExpressionCollectionTests.class);
