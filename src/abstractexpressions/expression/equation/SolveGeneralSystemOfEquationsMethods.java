@@ -3,23 +3,18 @@ package abstractexpressions.expression.equation;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
-import abstractexpressions.expression.classes.MultiIndexVariable;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.MultiPolynomial;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyMultiPolynomialMethods;
-import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.computation.GaussAlgorithm;
 import exceptions.EvaluationException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import lang.translator.Translator;
-import notations.NotationLoader;
 
 public class SolveGeneralSystemOfEquationsMethods {
 
@@ -79,12 +74,8 @@ public class SolveGeneralSystemOfEquationsMethods {
     public static Expression[] solveLinearSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
         // Prüfung, ob alle Gleichungen linear in den angegebenen Variablen sind.
-        BigInteger degree;
-        for (Expression equation : equations) {
-            degree = SimplifyMultiPolynomialMethods.getDegreeOfMultiPolynomial(equation, vars);
-            if (degree.compareTo(BigInteger.ONE) > 0) {
-                throw new NotAlgebraicallySolvableException();
-            }
+        if (!isSystemLinear(equations, vars)) {
+            throw new NotAlgebraicallySolvableException();
         }
 
         Expression[][] matrixEntries = new Expression[equations.length][vars.size()];
@@ -343,7 +334,6 @@ public class SolveGeneralSystemOfEquationsMethods {
 //            return solutions;
 //        } catch (NotAlgebraicallySolvableException e) {
 //        }
-
         return new ArrayList<>();
 
     }
