@@ -1,11 +1,16 @@
 package abstractexpressions.expression.equation;
 
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.MultiIndexVariable;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.MultiPolynomial;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyMultiPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import abstractexpressions.matrixexpression.classes.Matrix;
+import abstractexpressions.matrixexpression.computation.GaussAlgorithm;
 import exceptions.EvaluationException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
@@ -13,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import lang.translator.Translator;
+import notations.NotationLoader;
 
 public class SolveGeneralSystemOfEquationsMethods {
 
@@ -47,7 +54,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         return varsInEquation;
     }
 
-    public static boolean isSystemPolynomial(Expression[] equations, ArrayList<String> vars) {
+    private static boolean isSystemPolynomial(Expression[] equations, ArrayList<String> vars) {
         for (Expression equation : equations) {
             if (!SimplifyMultiPolynomialMethods.isMultiPolynomial(equation, vars)) {
                 return false;
@@ -56,7 +63,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         return true;
     }
 
-    public static boolean isSystemLinear(Expression[] equations, ArrayList<String> vars) {
+    private static boolean isSystemLinear(Expression[] equations, ArrayList<String> vars) {
         if (!isSystemPolynomial(equations, vars)) {
             return false;
         }
@@ -67,6 +74,47 @@ public class SolveGeneralSystemOfEquationsMethods {
             }
         }
         return true;
+    }
+
+    public static Expression[] solveLinearSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+
+        // Prüfung, ob alle Gleichungen linear in den angegebenen Variablen sind.
+        BigInteger degree;
+        for (Expression equation : equations) {
+            degree = SimplifyMultiPolynomialMethods.getDegreeOfMultiPolynomial(equation, vars);
+            if (degree.compareTo(BigInteger.ONE) > 0) {
+                throw new NotAlgebraicallySolvableException();
+            }
+        }
+
+        Expression[][] matrixEntries = new Expression[equations.length][vars.size()];
+        Expression[] vectorEntries = new Expression[equations.length];
+
+        try {
+            for (int i = 0; i < equations.length; i++) {
+                for (int j = 0; j < vars.size(); j++) {
+                    matrixEntries[i][j] = equations[i].diff(vars.get(j)).simplify();
+                }
+            }
+
+            // Alle Variablen durch 0 ersetzen.
+            for (int i = 0; i < equations.length; i++) {
+                vectorEntries[i] = equations[i];
+                for (String solutionVar : vars) {
+                    vectorEntries[i] = vectorEntries[i].replaceVariable(solutionVar, ZERO);
+                }
+                vectorEntries[i] = MINUS_ONE.mult(vectorEntries[i]).simplify();
+            }
+
+            Matrix m = new Matrix(matrixEntries);
+            Matrix b = new Matrix(vectorEntries);
+
+            Expression[] solutions = GaussAlgorithm.solveLinearSystemOfEquations(m, b);
+            return solutions;
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallySolvableException();
+        }
+
     }
 
     private static boolean isSystemOfMultiPolynomialsInTriangularForm(ArrayList<MultiPolynomial> equations, ArrayList<String> vars) {
@@ -125,7 +173,7 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     }
 
-    public static ArrayList<Expression[]> solveTriangularPolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
         // Prüfung, ob alle Gleichungen Polynome sind.
         for (Expression equation : equations) {
@@ -273,16 +321,30 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     }
 
-    public static ArrayList<ArrayList<Expression>> solveGeneralTriangularSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    public static ArrayList<Expression[]> solveGeneralSystemOfEquations(Expression[] equations, ArrayList<String> vars) {
 
-        if (!isSystemInTriangularForm(new ArrayList<>(Arrays.asList(equations)), vars)) {
-            throw new NotAlgebraicallySolvableException();
+        // Typ: lineares Gleichungssystem.
+        ArrayList<Expression[]> solutions = new ArrayList<>();
+        try {
+            solutions.add(solveLinearSystemOfEquations(equations, vars));
+            return solutions;
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
-        // Das Gleichungssystem ist nun in Dreiecksform. Nun kann es rekursiv gelöst werden.
-        ArrayList<ArrayList<Expression>> solutions = new ArrayList<>();
+        // Typ: lineares Gleichungssystem.
+        try {
+            solutions = solvePolynomialSystemOfEquations(equations, vars);
+            return solutions;
+        } catch (NotAlgebraicallySolvableException e) {
+        }
 
-        return solutions;
+//        try {
+//            solutions = solveTriangularSystemOfEquations(equations, vars);
+//            return solutions;
+//        } catch (NotAlgebraicallySolvableException e) {
+//        }
+
+        return new ArrayList<>();
 
     }
 

@@ -37,7 +37,7 @@ public class SolveGeneralEquationSystemTests {
             vars.add("y");
             ArrayList<Expression[]> solutions;
             try {
-                solutions = SolveGeneralSystemOfEquationsMethods.solveTriangularPolynomialSystemOfEquations(new Expression[]{f, g}, vars);
+                solutions = SolveGeneralSystemOfEquationsMethods.solvePolynomialSystemOfEquations(new Expression[]{f, g}, vars);
                 assertTrue(solutions.size() == 2);
                 assertTrue(solutions.get(0)[0].equals(new Constant(2)));
                 assertTrue(solutions.get(0)[1].equals(new Constant(3)));
