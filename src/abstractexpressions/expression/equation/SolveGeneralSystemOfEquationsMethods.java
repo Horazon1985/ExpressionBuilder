@@ -344,15 +344,20 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         // Jede gefundene Lösung in die restlichen Gleichungen einsetzen und weiter rekursiv auflösen.
         try {
+            ArrayList<String> varsCopy = new ArrayList<>();
             for (Expression solutionOfEquation : solutionsOfEquation) {
 
+                // vars in varsCopy kopieren.
+                varsCopy.clear();
+                varsCopy.addAll(vars);
+                
                 equationsWithVarReplacedBySolution.clear();
 
                 for (Expression f : equations) {
                     equationsWithVarReplacedBySolution.add(f.replaceVariable(var, solutionOfEquation).simplify());
                 }
 
-                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularGeneralSystemOfEquations(equationsWithVarReplacedBySolution, vars);
+                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularGeneralSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy);
 
                 HashMap<String, Expression> singleSolution;
                 for (HashMap<String, Expression> solutionOfReducedPolynomialSystem : solutionsOfReducedPolynomialSystem) {
