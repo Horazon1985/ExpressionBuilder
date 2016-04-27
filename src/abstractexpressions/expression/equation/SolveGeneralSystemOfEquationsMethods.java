@@ -102,6 +102,10 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
+        if (equations.length != vars.size()){
+            throw new NotAlgebraicallySolvableException();
+        }
+        
         // Prüfung, ob alle Gleichungen Polynome sind.
         for (Expression equation : equations) {
             if (!SimplifyMultiPolynomialMethods.isMultiPolynomial(equation, vars)) {
@@ -178,6 +182,9 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         String[] monomialVars = new String[vars.size()];
+        for (int i = 0; i < vars.size(); i++){
+            monomialVars[i] = vars.get(i);
+        }
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
 
         HashSet<String> varsInEquation;
@@ -245,6 +252,10 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solveGeneralSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
+        if (equations.length != vars.size()){
+            throw new NotAlgebraicallySolvableException();
+        }
+        
         ArrayList<String> varsCopy = new ArrayList<>(vars);
         ArrayList<HashMap<String, Expression>> solutions = solveTriangularGeneralSystemOfEquations(new ArrayList<>(Arrays.asList(equations)), varsCopy);
 
@@ -296,6 +307,9 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         String[] monomialVars = new String[vars.size()];
+        for (int i = 0; i < vars.size(); i++){
+            monomialVars[i] = vars.get(i);
+        }
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
 
         HashSet<String> varsInEquation;
@@ -371,16 +385,16 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         // Typ: lineares Gleichungssystem.
         try {
-            solutions = solvePolynomialSystemOfEquations(equations, vars);
-            return solutions;
+            return solvePolynomialSystemOfEquations(equations, vars);
         } catch (NotAlgebraicallySolvableException e) {
         }
 
-//        try {
-//            solutions = solveTriangularSystemOfEquations(equations, vars);
-//            return solutions;
-//        } catch (NotAlgebraicallySolvableException e) {
-//        }
+        // Typ: allgemeines Gleichunggsystem in Dreiecksform.
+        try {
+            return solveGeneralSystemOfEquations(equations, vars);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+        
         return new ArrayList<>();
 
     }
