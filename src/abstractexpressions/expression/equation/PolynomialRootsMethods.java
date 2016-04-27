@@ -20,17 +20,18 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
 public abstract class PolynomialRootsMethods {
 
     public static BigInteger getGCDOfExponentsInPolynomial(Expression f, String var) {
-        
-        if (!f.contains(var)){
+
+        if (!f.contains(var)) {
             return BigInteger.ZERO;
         }
-        if (f.equals(Variable.create(var))){
+        if (f.equals(Variable.create(var))) {
             return BigInteger.ONE;
         }
         if (f.isSum() || f.isDifference() || f.isProduct()) {
@@ -40,16 +41,16 @@ public abstract class PolynomialRootsMethods {
             return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var);
         }
         if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()) {
-            if (((BinaryOperation) f).getLeft().equals(Variable.create(var))){
+            if (((BinaryOperation) f).getLeft().equals(Variable.create(var))) {
                 return ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
             }
             return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var);
         }
         // Dann ist es kein Polynom.
         return BigInteger.ONE.negate();
-        
+
     }
-    
+
     /**
      * Gibt zurück, ob expr ein Polynom in derivative Variablen x ist, falls die
      * Variable var durch ein geeignetes var = x^m, m ganzzahlig, substituiert
@@ -88,7 +89,7 @@ public abstract class PolynomialRootsMethods {
      * dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
      * expr muss ein Polynom sein.
      */
-    public static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression f, String var) {
+    private static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression f, String var) {
 
         if (f instanceof Constant) {
             return BigInteger.ONE;
@@ -127,32 +128,6 @@ public abstract class PolynomialRootsMethods {
     }
 
     /**
-     * Hilfsfunktion: liefert f/x^exponent, wobei x = var.
-     */
-    public static Expression divideExpressionByPowerOfVar(Expression f, String var, BigInteger exponent) throws EvaluationException {
-        if (f.isSum() || f.isDifference()) {
-            return new BinaryOperation(divideExpressionByPowerOfVar(((BinaryOperation) f).getLeft(), var, exponent),
-                    divideExpressionByPowerOfVar(((BinaryOperation) f).getRight(), var, exponent), ((BinaryOperation) f).getType()).simplify();
-        }
-        return f.div(Variable.create(var).pow(exponent)).simplify();
-    }
-
-    /**
-     * Macht aus einem Polynom der Form a_{km}*x^{km} + ... + a_m*x^m + a_0
-     * (welches durch die Koeffizienten coefficients gegeben ist) das Polynom
-     * a_{km}*y^k + ... + a_m*y + a_0.
-     */
-    public static ExpressionCollection substituteMonomialInPolynomial(ExpressionCollection coefficients, int m, String var) {
-        ExpressionCollection resultCoefficient = new ExpressionCollection();
-        for (int i = 0; i < coefficients.getBound(); i++) {
-            if (i % m == 0) {
-                resultCoefficient.put(resultCoefficient.getBound(), coefficients.get(i));
-            }
-        }
-        return resultCoefficient;
-    }
-
-    /**
      * Hauptmethode zum Lösen von Polynomgleichungen.
      */
     public static ExpressionCollection solvePolynomialEquation(ExpressionCollection coefficients, String var) throws EvaluationException {
@@ -171,10 +146,10 @@ public abstract class PolynomialRootsMethods {
             ExpressionCollection zerosOfSubstitutedPolynomial = solvePolynomialEquation(coefficientsOfSubstitutedPolynomial, var);
             if (m % 2 == 0) {
                 for (Expression zero : zerosOfSubstitutedPolynomial) {
-                    try{
+                    try {
                         zeros.add(zero.pow(1, m).simplify());
                         zeros.add(MINUS_ONE.mult(zero.pow(1, m)).simplify());
-                    } catch (EvaluationException e){
+                    } catch (EvaluationException e) {
                     }
                 }
             } else {
@@ -257,6 +232,22 @@ public abstract class PolynomialRootsMethods {
     }
 
     /**
+     * Hilfsmethode. Macht aus einem Polynom der Form a_{km}*x^{km} + ... +
+     * a_m*x^m + a_0 (welches durch die Koeffizienten coefficients gegeben ist)
+     * das Polynom a_{km}*y^k + ... + a_m*y + a_0. Ist schneller als diverse
+     * Substitutionsmethoden.
+     */
+    private static ExpressionCollection substituteMonomialInPolynomial(ExpressionCollection coefficients, int m, String var) {
+        ExpressionCollection resultCoefficient = new ExpressionCollection();
+        for (int i = 0; i < coefficients.getBound(); i++) {
+            if (i % m == 0) {
+                resultCoefficient.put(resultCoefficient.getBound(), coefficients.get(i));
+            }
+        }
+        return resultCoefficient;
+    }
+
+    /**
      * Ermittelt eine rationale Nullstelle eines Polynoms, welches durch
      * coefficients gegeben ist, falls diese existiert. Die Koeffizienten
      * coefficients sind indiziert via 0, 1, ..., degree. Zurückgegeben wird
@@ -265,7 +256,7 @@ public abstract class PolynomialRootsMethods {
      * keine rationale Nullstelle gefunden wurde, oder falls eines der
      * coefficients KEINE ganzzahlige Konstante ist.
      */
-    public static BigInteger[] findRationalZeroOfPolynomial(ExpressionCollection coefficients) {
+    private static BigInteger[] findRationalZeroOfPolynomial(ExpressionCollection coefficients) {
 
         for (Expression coefficient : coefficients) {
             if (!coefficient.isIntegerConstant()) {
@@ -706,13 +697,16 @@ public abstract class PolynomialRootsMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection solvePolynomialEquationWithFractionalExponents(Expression f, String var)
-            throws EvaluationException {
+            throws EvaluationException, NotAlgebraicallySolvableException {
 
-        ExpressionCollection zeros = new ExpressionCollection();
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialRootsMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
+            throw new NotAlgebraicallySolvableException();
+        }
 
         BigInteger m = findExponentForPolynomialSubstitutionByRoots(f, var);
         if (m.compareTo(BigInteger.ONE) > 0) {
 
+            ExpressionCollection zeros = new ExpressionCollection();
             Expression fSubstituted = substituteVariableByPowerOfVariable(f, var, m).simplify();
             zeros = solvePolynomialEquation(SimplifyPolynomialMethods.getPolynomialCoefficients(fSubstituted, var), var);
             if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
@@ -736,7 +730,7 @@ public abstract class PolynomialRootsMethods {
 
         }
 
-        return zeros;
+        throw new NotAlgebraicallySolvableException();
 
     }
 

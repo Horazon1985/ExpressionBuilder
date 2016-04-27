@@ -125,33 +125,33 @@ public abstract class SolveGeneralEquationMethods {
         g = F[1];
 
         // Äquivalenzumformungen vornehmen.
-        ExpressionCollection possibleZeros = elementaryEquivalentTransformation(f, g, var);
-        if (!possibleZeros.isEmpty() || possibleZeros == NO_SOLUTIONS) {
-            return possibleZeros;
+        ExpressionCollection zeros = elementaryEquivalentTransformation(f, g, var);
+        if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
+            return zeros;
         }
 
         // Falls die Gleichung die Form var = a, a unabhängig von var, besitzt.
-        possibleZeros = solveVariableEquation(f, g, var);
-        if (!possibleZeros.isEmpty() || possibleZeros == NO_SOLUTIONS) {
-            return possibleZeros;
+        try {
+            return solveVariableEquation(f, g, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Falls die Gleichung eine Potenzgleichung darstellt.
-        possibleZeros = solvePowerEquation(f, g, var);
-        if (!possibleZeros.isEmpty() || possibleZeros == NO_SOLUTIONS) {
-            return possibleZeros;
+        try {
+            return solvePowerEquation(f, g, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Falls die Gleichung eine Funktionsgleichung darstellt.
-        possibleZeros = solveFunctionEquation(f, g, var);
-        if (!possibleZeros.isEmpty() || possibleZeros == NO_SOLUTIONS) {
-            return possibleZeros;
+        try {
+            return solveFunctionEquation(f, g, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Falls f und g einen gemeinsamen Faktor h im Zähler besitzen.
-        possibleZeros = solveEquationWithCommonFactors(f, g, var);
-        if (!possibleZeros.isEmpty() || possibleZeros == NO_SOLUTIONS) {
-            return possibleZeros;
+        try {
+            return solveEquationWithCommonFactors(f, g, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Letzter Versuch: f - g = 0 lösen.
@@ -210,14 +210,12 @@ public abstract class SolveGeneralEquationMethods {
     /**
      * Liefert die Lösung der Gleichung x = const.
      */
-    private static ExpressionCollection solveVariableEquation(Expression f, Expression g, String var) {
-
-        ExpressionCollection zero = new ExpressionCollection();
+    private static ExpressionCollection solveVariableEquation(Expression f, Expression g, String var) throws NotAlgebraicallySolvableException {
         if (f instanceof Variable && ((Variable) f).getName().equals(var) && !g.contains(var)) {
+            ExpressionCollection zero = new ExpressionCollection();
             zero.put(0, g);
         }
-        return zero;
-
+        throw new NotAlgebraicallySolvableException();
     }
 
     /**
@@ -298,9 +296,11 @@ public abstract class SolveGeneralEquationMethods {
         }
 
         // Falls nichts von all dem funktioniert hat, dann zumindest alle Nenner durch Multiplikation eliminieren.
-        if (doesQuotientOccur(f) || doesQuotientOccur(g)) {
+        try {
             return solveFractionalEquation(f, g, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
+
         return zeros;
 
     }
@@ -329,9 +329,9 @@ public abstract class SolveGeneralEquationMethods {
      *
      * @throws EvaluationException
      */
-    private static ExpressionCollection solveFractionalEquation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection solveFractionalEquation(Expression f, Expression g, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        ExpressionCollection zeros = new ExpressionCollection();
+        ExpressionCollection zeros;
 
         // 1. Alle Nenner in f eliminieren, falls f var enthält.
         if (doesQuotientOccur(f) && f.contains(var)) {
@@ -391,7 +391,7 @@ public abstract class SolveGeneralEquationMethods {
 
         }
 
-        return zeros;
+        throw new NotAlgebraicallySolvableException();
 
     }
 
@@ -401,7 +401,7 @@ public abstract class SolveGeneralEquationMethods {
      *
      * @throws EvaluationException
      */
-    private static ExpressionCollection solvePowerEquation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection solvePowerEquation(Expression f, Expression g, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         if (f.isPower() && g.isPower()) {
 
@@ -516,7 +516,7 @@ public abstract class SolveGeneralEquationMethods {
 
         }
 
-        return new ExpressionCollection();
+        throw new NotAlgebraicallySolvableException();
 
     }
 
@@ -524,10 +524,10 @@ public abstract class SolveGeneralEquationMethods {
      * Prozedur zum Lösen von Gleichungen der Form F(f(x)) = F(g(x)) oder
      * F(f(x)) = const, var == x.
      */
-    private static ExpressionCollection solveFunctionEquation(Expression f, Expression g, String var) throws EvaluationException {
+    private static ExpressionCollection solveFunctionEquation(Expression f, Expression g, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         if (!f.contains(var) || !(f instanceof Function)) {
-            return new ExpressionCollection();
+            throw new NotAlgebraicallySolvableException();
         }
 
         Function functionF = (Function) f;
@@ -1423,7 +1423,7 @@ public abstract class SolveGeneralEquationMethods {
      * Gleichung f = g, falls f und g gemeinsame nichtkonstante Faktoren
      * besitzen.
      */
-    private static ExpressionCollection solveEquationWithCommonFactors(Expression f, Expression g, String var) {
+    private static ExpressionCollection solveEquationWithCommonFactors(Expression f, Expression g, String var) throws NotAlgebraicallySolvableException {
 
         ExpressionCollection possibleZeros = new ExpressionCollection();
         ExpressionCollection zerosOfCancelledFactors = new ExpressionCollection();
@@ -1445,7 +1445,7 @@ public abstract class SolveGeneralEquationMethods {
             }
         }
 
-        return possibleZeros;
+        throw new NotAlgebraicallySolvableException();
 
     }
 
@@ -1474,37 +1474,38 @@ public abstract class SolveGeneralEquationMethods {
         }
 
         // Fall: f ist ein Produkt.
-        ExpressionCollection zeros = solveZeroProduct(f, var);
-        if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-            return zeros;
+        try {
+            return solveZeroProduct(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist ein Quotient.
-        zeros = solveZeroQuotient(f, var);
-        if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-            return zeros;
+        try {
+            return solveZeroQuotient(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist eine Potenz.
-        zeros = solveZeroPower(f, var);
-        if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-            return zeros;
+        try {
+            return solveZeroPower(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist eine Funktion.
-        zeros = solveZeroFunction(f, var);
-        if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-            return zeros;
+        try {
+            return solveZeroFunction(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist nicht-negativ (unabhängig von var und anderen Variablen).
-        if (f.isAlwaysNonNegative() || zeros == NO_SOLUTIONS) {
+        try {
             /*
              Falls f = 0 und f stets nichtnegativ ist, dann wird die Lösung
              entweder in solveAlwaysNonNegativeExpressionEqualsZero()
              gefunden, oder gar nicht.
              */
-            return solveAlwaysNonNegativeExpressionEqualsZero(f, var);
+            return solveAlwaysNonNegativeExpressionEqualsZeroEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist ein Polynom.
@@ -1513,33 +1514,31 @@ public abstract class SolveGeneralEquationMethods {
         } catch (NotAlgebraicallySolvableException e) {
         }
 
-        // Fall: f is ein Polynom in var^(1/m) mit geeignetem m.
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialRootsMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
+        // Fall: f is ein Polynom in x^(1/m) mit geeignetem m, x = var.
+        try {
             return PolynomialRootsMethods.solvePolynomialEquationWithFractionalExponents(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist eine rationale Funktion in einer Exponentialfunktion.
-        if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
+        try {
             return SolveSpecialEquationMethods.solveExponentialEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
-        if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
-            zeros = SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
-            if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-                return zeros;
-            }
+        try {
+            return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         /*
          Fall: f besitzt Brüche. Dann alles mit dem Hauptnenner
          ausmultiplizieren und prüfen, ob es Lösungen gibt.
          */
-        if (doesQuotientOccur(f)) {
-            zeros = solveFractionalEquation(f, ZERO, var);
-            if (!zeros.isEmpty() || zeros == NO_SOLUTIONS) {
-                return zeros;
-            }
+        try {
+            return solveFractionalEquation(f, ZERO, var);
+        } catch (NotAlgebraicallySolvableException e) {
         }
 
         /*
@@ -1551,6 +1550,7 @@ public abstract class SolveGeneralEquationMethods {
         setOfSubstitutions.removeMultipleTerms();
         Expression fSubstituted;
 
+        ExpressionCollection zeros = new ExpressionCollection();
         for (int i = 0; i < setOfSubstitutions.getBound(); i++) {
 
             try {
@@ -1581,16 +1581,21 @@ public abstract class SolveGeneralEquationMethods {
          lösen.
          */
         Expression fByDefinition = f.simplifyReplaceExponentialFunctionsByDefinitions();
-        HashSet<Expression> factorsOfVar = new HashSet<>();
-        if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(fByDefinition, var, factorsOfVar)) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInExp(fByDefinition, var, new HashSet<Expression>())) {
             if (!fByDefinition.equals(f)) {
-                return SolveSpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
+                try {
+                    return SolveSpecialEquationMethods.solveExponentialEquation(fByDefinition, var);
+                } catch (NotAlgebraicallySolvableException e) {
+                }
             }
         }
         fByDefinition = f.simplifyReplaceTrigonometricalFunctionsByDefinitions();
-        if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, factorsOfVar)) {
+        if (SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(fByDefinition, var, new HashSet<Expression>())) {
             if (!fByDefinition.equals(f)) {
-                return solveZeroEquation(fByDefinition, var);
+                try {
+                    return SolveSpecialEquationMethods.solveTrigonometricalEquation(fByDefinition, var);
+                } catch (NotAlgebraicallySolvableException e) {
+                }
             }
         }
 
@@ -1602,9 +1607,8 @@ public abstract class SolveGeneralEquationMethods {
      * Ab hier kommen eine Reihe von Einzelfunktionen, die bestimmte Typen von
      * Gleichungen der Form f(x) = 0 lösen.
      */
-    private static ExpressionCollection solveZeroProduct(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroProduct(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        ExpressionCollection zeros = new ExpressionCollection();
         /**
          * Bei Multiplikation: expr = f(x)*g(x) -> f(x) = 0, g(x) = 0 separat
          * lösen und die Lösungen dann vereinigen.
@@ -1612,15 +1616,15 @@ public abstract class SolveGeneralEquationMethods {
         if (f.isProduct()) {
             ExpressionCollection zerosLeft = solveGeneralEquation(((BinaryOperation) f).getLeft(), ZERO, var);
             ExpressionCollection zerosRight = solveGeneralEquation(((BinaryOperation) f).getRight(), ZERO, var);
-            zeros = SimplifyUtilities.union(zerosLeft, zerosRight);
+            return SimplifyUtilities.union(zerosLeft, zerosRight);
         }
-        return zeros;
+
+        throw new NotAlgebraicallySolvableException();
 
     }
 
-    private static ExpressionCollection solveZeroQuotient(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroQuotient(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        ExpressionCollection zeros = new ExpressionCollection();
         /*
          Bei Division: expr = f(x)/g(x) -> f(x) = 0 lösen und dann prüfen, ob
          g(x) bei den Lösungen nicht verschwindet.
@@ -1640,6 +1644,7 @@ public abstract class SolveGeneralEquationMethods {
              Es müssen nun solche Nullstellen ausgeschlossen werden, welche
              zugleich Nullstellen des Nenners sind.
              */
+            ExpressionCollection zeros = new ExpressionCollection();
             for (int i = 0; i < zerosLeft.getBound(); i++) {
                 valueOfDenominatorAtZero = ((BinaryOperation) f).getRight().replaceVariable(var, zerosLeft.get(i)).simplify();
                 validZero = !valueOfDenominatorAtZero.isConstant() || !valueOfDenominatorAtZero.equals(ZERO);
@@ -1648,26 +1653,28 @@ public abstract class SolveGeneralEquationMethods {
                 }
             }
 
+            return zeros;
+
         }
 
-        return zeros;
+        throw new NotAlgebraicallySolvableException();
 
     }
 
-    private static ExpressionCollection solveZeroPower(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroPower(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        ExpressionCollection zeros = new ExpressionCollection();
-        /*
-         Bei Potenzen: expr = f(x)^g(x) -> f(x) = 0 lösen und dann prüfen, ob
-         g(x) bei den Lösungen nicht <= 0 wird, falls g(x) konstant ist. Falls
-         g(x) an der betreffenden Nullstelle x noch von Parametern abhängt,
-         dann soll dies eine gültige Nullstelle sein.
-         */
         if (f.isPower()) {
+            /*
+            Bei Potenzen: expr = f(x)^g(x) -> f(x) = 0 lösen und dann prüfen, ob
+            g(x) bei den Lösungen nicht <= 0 wird, falls g(x) konstant ist. Falls
+            g(x) an der betreffenden Nullstelle x noch von Parametern abhängt,
+            dann soll dies eine gültige Nullstelle sein.
+             */
             ExpressionCollection zerosLeft = solveGeneralEquation(((BinaryOperation) f).getLeft(), ZERO, var);
             Expression exponentAtZero;
             boolean validZero;
 
+            ExpressionCollection zeros = new ExpressionCollection();
             for (int i = 0; i < zerosLeft.getBound(); i++) {
                 exponentAtZero = ((BinaryOperation) f).getRight().replaceVariable(var, zerosLeft.get(i)).simplify();
                 validZero = !exponentAtZero.isConstant() || (exponentAtZero.isNonNegative() && !exponentAtZero.equals(ZERO));
@@ -1677,23 +1684,22 @@ public abstract class SolveGeneralEquationMethods {
             }
 
         }
-        return zeros;
+
+        throw new NotAlgebraicallySolvableException();
 
     }
 
-    private static ExpressionCollection solveZeroFunction(Expression f, String var) throws EvaluationException {
+    private static ExpressionCollection solveZeroFunction(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
         return solveFunctionEquation(f, ZERO, var);
     }
 
     /**
      * Löst Gleichungen der Form f = 0, wobei f stets >= 0 ist.
      */
-    private static ExpressionCollection solveAlwaysNonNegativeExpressionEqualsZero(Expression f, String var) throws EvaluationException {
-
-        ExpressionCollection zeros = new ExpressionCollection();
+    private static ExpressionCollection solveAlwaysNonNegativeExpressionEqualsZeroEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         if (!f.isAlwaysNonNegative()) {
-            return zeros;
+            throw new NotAlgebraicallySolvableException();
         }
 
         if (f.isAlwaysPositive()) {
@@ -1703,14 +1709,15 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection summands = SimplifyUtilities.getSummands(f);
 
         if (summands.getBound() <= 1) {
-            return zeros;
+            // Hierfür sind dann andere Methoden verantwortlich.
+            throw new NotAlgebraicallySolvableException();
         }
 
         /*
          Jeder Summand muss = 0 sein, da die Summanden ebenfalls alle stets
          nicht-negativ sind (unabhängig vom Wert von var).
          */
-        zeros = solveGeneralEquation(summands.get(0), ZERO, var);
+        ExpressionCollection zeros = solveGeneralEquation(summands.get(0), ZERO, var);
         for (int i = 1; i < summands.getBound(); i++) {
             zeros = SimplifyUtilities.intersection(zeros, solveGeneralEquation(summands.get(i), ZERO, var));
         }
@@ -1731,13 +1738,13 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection zeros = new ExpressionCollection();
 
         BigInteger degree = SimplifyPolynomialMethods.getDegreeOfPolynomial(f, var);
-        BigInteger order = SimplifyPolynomialMethods.orderOfPolynomial(f, var);
+        BigInteger order = SimplifyPolynomialMethods.getOrderOfPolynomial(f, var);
         /*
          Falls k := Ord(f) >= 0 -> 0 ist eine k-fache Nullstelle von f.
          Dividiere diese heraus und fahre fort.
          */
         if (order.compareTo(BigInteger.ZERO) > 0) {
-            f = PolynomialRootsMethods.divideExpressionByPowerOfVar(f, var, order);
+            f = divideExpressionByPowerOfVar(f, var, order);
             zeros.add(ZERO);
             return SimplifyUtilities.union(zeros, solvePolynomialEquation(f, var));
         }
@@ -1776,6 +1783,18 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
         return PolynomialRootsMethods.solvePolynomialEquation(coefficients, var);
 
+    }
+
+    /**
+     * Hilfsmethode für solvePolynomialEquation(). Gibt f/x^exponent zurück,
+     * wobei x = var.
+     */
+    private static Expression divideExpressionByPowerOfVar(Expression f, String var, BigInteger exponent) throws EvaluationException {
+        if (f.isSum() || f.isDifference()) {
+            return new BinaryOperation(divideExpressionByPowerOfVar(((BinaryOperation) f).getLeft(), var, exponent),
+                    divideExpressionByPowerOfVar(((BinaryOperation) f).getRight(), var, exponent), ((BinaryOperation) f).getType()).simplify();
+        }
+        return f.div(Variable.create(var).pow(exponent)).simplify();
     }
 
     private static ExpressionCollection getSuitableSubstitutionForEquation(Expression f, String var) {

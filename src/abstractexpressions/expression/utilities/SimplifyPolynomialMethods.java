@@ -159,7 +159,7 @@ public abstract class SimplifyPolynomialMethods {
      * f repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1
      * (als BigInteger) zurückgegeben.
      */
-    public static BigInteger orderOfPolynomial(Expression f, String var) {
+    public static BigInteger getOrderOfPolynomial(Expression f, String var) {
         if (!f.contains(var)) {
             return BigInteger.ZERO;
         }
@@ -171,26 +171,26 @@ public abstract class SimplifyPolynomialMethods {
         }
         if (f instanceof BinaryOperation) {
             if (f.isSum() || f.isDifference()) {
-                return orderOfPolynomial(((BinaryOperation) f).getLeft(), var).min(orderOfPolynomial(((BinaryOperation) f).getRight(), var));
+                return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var).min(getOrderOfPolynomial(((BinaryOperation) f).getRight(), var));
             }
             if (f.isProduct()) {
                 if (!((BinaryOperation) f).getLeft().contains(var) && !((BinaryOperation) f).getRight().contains(var)) {
                     return BigInteger.ZERO;
                 }
                 if (((BinaryOperation) f).getLeft().contains(var) && !((BinaryOperation) f).getRight().contains(var)) {
-                    return orderOfPolynomial(((BinaryOperation) f).getLeft(), var);
+                    return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var);
                 }
                 if (!((BinaryOperation) f).getLeft().contains(var) && ((BinaryOperation) f).getRight().contains(var)) {
-                    return orderOfPolynomial(((BinaryOperation) f).getRight(), var);
+                    return getOrderOfPolynomial(((BinaryOperation) f).getRight(), var);
                 }
-                return orderOfPolynomial(((BinaryOperation) f).getLeft(), var).add(orderOfPolynomial(((BinaryOperation) f).getRight(), var));
+                return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var).add(getOrderOfPolynomial(((BinaryOperation) f).getRight(), var));
             }
             if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
-                return orderOfPolynomial(((BinaryOperation) f).getLeft(), var);
+                return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
                 BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
-                return orderOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
+                return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
             // Dann ist f kein Polynom
             return BigInteger.valueOf(-1);

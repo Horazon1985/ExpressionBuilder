@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import exceptions.NotAlgebraicallySolvableException;
 
 public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMethods {
 
@@ -69,8 +70,12 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException {
+    public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())){
+            throw new NotAlgebraicallySolvableException();
+        }
+        
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> argumentsInExp = new HashSet();
 
@@ -156,8 +161,13 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection solveTrigonometricalEquation(Expression f, String var) throws EvaluationException {
+    public static ExpressionCollection solveTrigonometricalEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
+            throw new NotAlgebraicallySolvableException();
+        }
+        
+        
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> argumentsInTrigonometricFunctions = new HashSet();
         /*
