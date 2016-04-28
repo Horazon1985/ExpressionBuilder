@@ -814,6 +814,12 @@ public class BinaryOperation extends Expression {
                 return exprSimplified;
             }
 
+            // Negatives Vorzeichen aus dem Nenner in den Zähler bringen.
+            exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfDenominatorInFraction(expr);
+            if (!exprSimplified.equals(expr)) {
+                return exprSimplified;
+            }
+            
             // Rationale Konstanten zu einem Bruch machen (etwa 0.74/0.2 = 37/10)
             exprSimplified = SimplifyBinaryOperationMethods.rationalConstantToQuotient(expr);
             if (!exprSimplified.equals(expr)) {

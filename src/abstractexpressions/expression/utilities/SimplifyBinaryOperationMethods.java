@@ -483,22 +483,13 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Zieht, falls möglich, ein negatives Vorzeichen aus Wurzeln ungerader
      * Ordnung. Ansonsten wird expr zurückgegeben.<br>
-     * BEISPIEL: bei expr = ((-7)*a)^(3/5) wird -(7*a)^(3/5)zurückgegeben, bei
+     * BEISPIEL: Bei expr = ((-7)*a)^(3/5) wird -(7*a)^(3/5) zurückgegeben, bei
      * expr = ((-7)*a)^(4/5) wird (7*a)^(4/5) zurückgegeben.
-     *
-     * @throws EvaluationException
      */
-    public static Expression takeMinusSignOutOfOddRoots(BinaryOperation expr) throws EvaluationException {
+    public static Expression takeMinusSignOutOfOddRoots(BinaryOperation expr) {
 
         if (expr.isPower() && !expr.containsApproximates()) {
 
-            /*
-             In den folgenden Schritten ist die Anwendung von
-             simplifyTrivial() wichtig, damit Koeffizienten sofort vollständig
-             ausgerechnet werden und damit Potenzen später nicht wieder
-             auseinandergezogen werden können (beispielsweise mit
-             simplifyPowers() o. Ä.).
-             */
             if (expr.getRight().isRationalConstant() && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
 
                 ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getLeft());
@@ -560,12 +551,53 @@ public abstract class SimplifyBinaryOperationMethods {
                     if (expr.getRight().isOddIntegerConstant()) {
                         return MINUS_ONE.mult(baseNegated.pow(expr.getRight()));
                     }
-                    
+
                 }
 
             }
 
         }
+
+        return expr;
+
+    }
+
+    /**
+     * Zieht, falls möglich, ein negatives Vorzeichen dem Nenner eines
+     * Bruches.<br>
+     * BEISPIEL: Bei expr = (a+b*c)/(-x-7*y) wird ((-1)*(a+b*c)/(x+7*y))
+     * zurückgegeben.
+     */
+    public static Expression takeMinusSignOutOfDenominatorInFraction(BinaryOperation expr) {
+
+        if (expr.isQuotient()) {
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getRight());
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getRight());
+            boolean allSummandsHaveNegativeCoefficient = true;
+
+            for (Expression summand : summandsLeft) {
+                allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && !summand.hasPositiveSign();
+            }
+            for (Expression summand : summandsRight) {
+                allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && summand.hasPositiveSign();
+            }
+
+            if (allSummandsHaveNegativeCoefficient) {
+
+                Expression denominatorNegated;
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    summandsLeft.put(i, summandsLeft.get(i).negate());
+                }
+
+                denominatorNegated = SimplifyUtilities.produceSum(summandsLeft);
+                denominatorNegated = denominatorNegated.add(SimplifyUtilities.produceSum(summandsRight));
+                return MINUS_ONE.mult(expr.getLeft()).div(denominatorNegated);
+
+            }
+
+        }
+
         return expr;
 
     }
