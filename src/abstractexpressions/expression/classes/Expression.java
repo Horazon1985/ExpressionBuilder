@@ -896,7 +896,8 @@ public abstract class Expression implements AbstractExpression {
      * BEISPIELE: (1) Für expr =2*x*(-3)*y wird false zurückgegeben, da expr,
      * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
      * (2) Für expr = x + 3*y wird true zurückgegeben, da der Koeffizient 1 ist,
-     * wenn man expr als Produkt auffasst.
+     * wenn man expr als Produkt auffasst.<br>
+     * (3) Für expr = (-5)*x*(-3)*y wird true zurückgegeben.
      */
     public abstract boolean hasPositiveSign();
 

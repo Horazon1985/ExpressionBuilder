@@ -490,8 +490,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression takeMinusSignOutOfOddRoots(BinaryOperation expr) throws EvaluationException {
 
-        if (expr.isPower() && expr.isConstant() && !expr.containsApproximates()
-                && !expr.getLeft().hasPositiveSign() && expr.getRight().isRationalConstant()) {
+        if (expr.isPower() && !expr.containsApproximates()) {
 
             /*
              In den folgenden Schritten ist die Anwendung von
@@ -500,13 +499,70 @@ public abstract class SimplifyBinaryOperationMethods {
              auseinandergezogen werden können (beispielsweise mit
              simplifyPowers() o. Ä.).
              */
-            if (((BinaryOperation) expr.getRight()).getLeft().isEvenIntegerConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
-                return expr.getLeft().negate().pow(expr.getRight());
-            }
-            if (((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()
-                    && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
-                return MINUS_ONE.mult(expr.getLeft().negate().pow(expr.getRight()));
+            if (expr.getRight().isRationalConstant() && ((BinaryOperation) expr.getRight()).getRight().isOddIntegerConstant()) {
+
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getLeft());
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getLeft());
+                boolean allSummandsHaveNegativeCoefficient = true;
+
+                for (Expression summand : summandsLeft) {
+                    allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && !summand.hasPositiveSign();
+                }
+                for (Expression summand : summandsRight) {
+                    allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && summand.hasPositiveSign();
+                }
+
+                if (allSummandsHaveNegativeCoefficient) {
+
+                    Expression baseNegated;
+                    for (int i = 0; i < summandsLeft.getBound(); i++) {
+                        summandsLeft.put(i, summandsLeft.get(i).negate());
+                    }
+
+                    baseNegated = SimplifyUtilities.produceSum(summandsLeft);
+                    baseNegated = baseNegated.add(SimplifyUtilities.produceSum(summandsRight));
+
+                    if (((BinaryOperation) expr.getRight()).getLeft().isEvenIntegerConstant()) {
+                        return baseNegated.pow(expr.getRight());
+                    }
+                    if (((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()) {
+                        return MINUS_ONE.mult(baseNegated.pow(expr.getRight()));
+                    }
+
+                }
+
+            } else if (expr.getRight().isIntegerConstant()) {
+
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr.getLeft());
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getLeft());
+                boolean allSummandsHaveNegativeCoefficient = true;
+
+                for (Expression summand : summandsLeft) {
+                    allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && !summand.hasPositiveSign();
+                }
+                for (Expression summand : summandsRight) {
+                    allSummandsHaveNegativeCoefficient = allSummandsHaveNegativeCoefficient && summand.hasPositiveSign();
+                }
+
+                if (allSummandsHaveNegativeCoefficient) {
+
+                    Expression baseNegated;
+                    for (int i = 0; i < summandsLeft.getBound(); i++) {
+                        summandsLeft.put(i, summandsLeft.get(i).negate());
+                    }
+
+                    baseNegated = SimplifyUtilities.produceSum(summandsLeft);
+                    baseNegated = baseNegated.add(SimplifyUtilities.produceSum(summandsRight));
+
+                    if (expr.getRight().isEvenIntegerConstant()) {
+                        return baseNegated.pow(expr.getRight());
+                    }
+                    if (expr.getRight().isOddIntegerConstant()) {
+                        return MINUS_ONE.mult(baseNegated.pow(expr.getRight()));
+                    }
+                    
+                }
+
             }
 
         }
@@ -626,7 +682,7 @@ public abstract class SimplifyBinaryOperationMethods {
                                 Es darf nicht versucht werden, Wurzeln
                                 gerader Ordnung aus negativen Zahlen zu
                                 ziehen.
-                                */
+                                 */
                                 continue;
                             }
                             BigInteger resultBaseNumerator = ArithmeticMethods.root(baseNumerator, root);
@@ -655,7 +711,7 @@ public abstract class SimplifyBinaryOperationMethods {
                                 Es darf nicht versucht werden, Wurzeln
                                 gerader Ordnung aus negativen Zahlen zu
                                 ziehen.
-                                */
+                                 */
                                 continue;
                             }
                             BigInteger resultBaseDenominator = ArithmeticMethods.root(baseDenominator, root);

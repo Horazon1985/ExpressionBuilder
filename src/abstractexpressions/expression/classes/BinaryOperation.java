@@ -192,11 +192,11 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public boolean containsAlgebraicOperation(){
+    public boolean containsAlgebraicOperation() {
         return this.left.containsAlgebraicOperation() || this.right.containsAlgebraicOperation()
                 || this.right.isRationalConstant() && ((Constant) ((BinaryOperation) this.right).right).getValue().abs().compareTo(BigDecimal.ONE) > 0;
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         return new BinaryOperation(this.left.turnToApproximate(), this.right.turnToApproximate(), this.type);
@@ -887,7 +887,10 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        // Minus-Zeichen aus ungeraden Wurzeln herausziehen.
+        /* 
+         Negative Vorzeichen in der Basis eliminieren, wenn Exponent die Form m/n mit m gerade und n ungerade besitzt.
+         Sind m und n beide ungerade, so wird das Vorzeichen herausgezogen. 
+         */
         exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfOddRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
@@ -1882,39 +1885,39 @@ public class BinaryOperation extends Expression {
         try {
             // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
             if (this.isSum() || this.isDifference()) {
-                
+
                 ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
                 Expression summandSimplified;
-                for (int i = 0; i < summandsLeft.getBound(); i++){
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
                     summandSimplified = summandsLeft.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (summandSimplified.length() < summandsLeft.get(i).length()){
+                    if (summandSimplified.length() < summandsLeft.get(i).length()) {
                         summandsLeft.put(i, summandSimplified);
                     }
                 }
-                for (int i = 0; i < summandsRight.getBound(); i++){
+                for (int i = 0; i < summandsRight.getBound(); i++) {
                     summandSimplified = summandsRight.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (summandSimplified.length() < summandsRight.get(i).length()){
+                    if (summandSimplified.length() < summandsRight.get(i).length()) {
                         summandsRight.put(i, summandSimplified);
                     }
                 }
-                
+
                 expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-                
-            } else if (this.isProduct()){
-                
+
+            } else if (this.isProduct()) {
+
                 ExpressionCollection factors = SimplifyUtilities.getFactors(this);
                 Expression factorSimplified;
-                for (int i = 0; i < factors.getBound(); i++){
+                for (int i = 0; i < factors.getBound(); i++) {
                     factorSimplified = factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (factorSimplified.length() < factors.get(i).length()){
+                    if (factorSimplified.length() < factors.get(i).length()) {
                         factors.put(i, factorSimplified);
                     }
                 }
                 expr = SimplifyUtilities.produceProduct(factors);
-            
+
             }
-            
+
             if (this.isQuotient()) {
                 /* 
                  Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
@@ -2574,7 +2577,7 @@ public class BinaryOperation extends Expression {
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
-        
+
         // Versucht, Ausdrücke der Form (a+b*c^(1/2))^(1/n), n >= 2, als d+e*c^(1/2) darzustellen, wenn möglich (a, b, c, d, e rational).
         exprSimplified = SimplifyAlgebraicExpressionMethods.computeRootFromDegreeTwoElementsOverRationals(expr);
         if (!exprSimplified.equals(expr)) {
