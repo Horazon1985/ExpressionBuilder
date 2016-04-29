@@ -71,9 +71,6 @@ public abstract class SolveGeneralEquationMethods {
      */
     public static ExpressionCollection solveEquation(Expression f, Expression g, String var) throws EvaluationException {
         solveTries = 100;
-        if (g.equals(ZERO)) {
-            return solveZeroEquation(f, var);
-        }
         return solveGeneralEquation(f, g, var);
     }
 
@@ -1535,6 +1532,12 @@ public abstract class SolveGeneralEquationMethods {
         // Fall: f = f(x, (ax^2+bx+c)^(1/2)), f = rationale Funktion in zwei Veränderlichen.
         try {
             return SolveSpecialEquationMethods.solveRationalFunctionInVarAndSqrtOfQuadraticFunctionEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+
+        // Fall: f = f(x, g(x)), f = rationale Funktion in zwei Veränderlichen, g derart, für y = g(x) die Auflösung x = h(y) eindeutig und rational in x ist.
+        try {
+            return SolveSpecialEquationMethods.solveRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
 
