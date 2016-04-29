@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
@@ -57,6 +58,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();
+    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicEquation = getSimplifyTypesAlgebraicEquation();
 
     private static HashSet<TypeSimplify> getSimplifyTypesRationalExponentialEquation() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -88,6 +90,26 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesAlgebraicEquation() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
@@ -628,9 +650,14 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      */
     public static ExpressionCollection solveRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        Expression algebraicTerm;
+        Expression algebraicTerm, radicand, exponent;
         try {
-            algebraicTerm = getSubstitutionIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(f, var);
+            algebraicTerm = getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(f, var);
+            if (!algebraicTerm.isRationalPower()) {
+                throw new NotAlgebraicallySolvableException();
+            }
+            radicand = ((BinaryOperation) algebraicTerm).getLeft();
+            exponent = ((BinaryOperation) algebraicTerm).getRight();
         } catch (NotRationalFunctionInVarAndAnotherAlgebraicFunctionException e) {
             throw new NotAlgebraicallySolvableException();
         }
@@ -639,7 +666,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         ExpressionCollection zerosOfAlgebraicTermMinusSubstVar;
 
         try {
-            zerosOfAlgebraicTermMinusSubstVar = solveGeneralEquation(algebraicTerm, Variable.create(substVar), var);
+            zerosOfAlgebraicTermMinusSubstVar = solveGeneralEquation(radicand, Variable.create(substVar).pow(ONE.div(exponent)), var);
         } catch (EvaluationException e) {
             throw new NotAlgebraicallySolvableException();
         }
@@ -653,14 +680,25 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             throw new NotAlgebraicallySolvableException();
         }
 
-        f = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, algebraicTerm, Variable.create(substVar));
-        f = f.replaceVariable(var, zerosOfAlgebraicTermMinusSubstVar.get(0));
+        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, algebraicTerm, Variable.create(substVar));
+        fSubstituted = fSubstituted.replaceVariable(var, zerosOfAlgebraicTermMinusSubstVar.get(0));
 
         ExpressionCollection zerosInSubstitutionVar;
         try {
-            zerosInSubstitutionVar = solveZeroEquation(f, substVar);
+            fSubstituted = fSubstituted.simplify(simplifyTypesAlgebraicEquation);
+            zerosInSubstitutionVar = solveZeroEquation(fSubstituted, substVar);
         } catch (EvaluationException e) {
             throw new NotAlgebraicallySolvableException();
+        }
+
+        // Prüfung auf Gültigkeit!
+        for (int i = 0; i < zerosInSubstitutionVar.getBound(); i++) {
+            try {
+                algebraicTerm.replaceVariable(var, zerosInSubstitutionVar.get(i)).simplify();
+            } catch (EvaluationException e) {
+                // Lösung rauswerfen.
+                zerosInSubstitutionVar.put(i, null);
+            }
         }
 
         ExpressionCollection zeros = new ExpressionCollection();
@@ -677,13 +715,16 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     }
 
-    private static Expression getSubstitutionIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
+    private static Expression getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
         getSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
 
         Expression algebraicTerm = null;
         for (Expression subst : setOfSubstitutions) {
+            if (!subst.isPower() || !((BinaryOperation) subst).getRight().isRationalConstant()) {
+                throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
+            }
             if (algebraicTerm == null) {
                 algebraicTerm = subst;
             } else if (!algebraicTerm.equivalent(subst)) {
@@ -696,7 +737,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
         }
 
-        // Schließlich: PRüfung, ob f eine rationale Funktion in x und g(x) = algebraicTerm ist.
+        // Schließlich: Prüfung, ob f eine rationale Funktion in x und g(x) = radicand ist.
         if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(f, var, Variable.create(var), algebraicTerm)) {
             throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
         }
