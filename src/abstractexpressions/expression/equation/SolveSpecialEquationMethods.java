@@ -6,6 +6,9 @@ import exceptions.NotSubstitutableException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import enums.TypeSimplify;
@@ -17,9 +20,26 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import exceptions.MathToolException;
 import exceptions.NotAlgebraicallySolvableException;
 
 public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMethods {
+
+    /**
+     * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
+     * Funktion in x und einer Quadratwurzel aus einer quadratischen Funktion in
+     * x (x = var) ist.
+     */
+    private static class NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException extends MathToolException {
+
+        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION = "Expression is not a rational function in variable and the square root of a quadratic function.";
+
+        public NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException() {
+            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION);
+        }
+
+    }
 
     private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
     private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();
@@ -63,6 +83,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         return simplifyTypes;
     }
 
+    // Exponentialgleichungen.
     /**
      * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
      * Exponentialgleichung, so wird eine leere ExpressionCollection
@@ -72,10 +93,10 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      */
     public static ExpressionCollection solveExponentialEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())){
+        if (!SimplifyRationalFunctionMethods.isRationalFunktionInExp(f, var, new HashSet())) {
             throw new NotAlgebraicallySolvableException();
         }
-        
+
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> argumentsInExp = new HashSet();
 
@@ -154,6 +175,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     }
 
+    // Trigonometrische Gleichungen.
     /**
      * Hauptmethode zum Lösen von trigonometrischen Gleichungen f = 0. Ist f
      * keine trigonometrische Gleichung, so wird eine leere ExpressionCollection
@@ -166,8 +188,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, new HashSet())) {
             throw new NotAlgebraicallySolvableException();
         }
-        
-        
+
         ExpressionCollection zeros = new ExpressionCollection();
         HashSet<Expression> argumentsInTrigonometricFunctions = new HashSet();
         /*
@@ -264,7 +285,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
                 fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
                 if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
-                    
+
                     Expression trigonometricalSubst = Variable.create(substVar).sin();
                     Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
                     ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(polynomial, polynomVar);
@@ -362,4 +383,236 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     }
 
+    // Algebraische Gleichungen
+    // Typ 1: f(x, (ax^2+bx+c)^(1/2)) = 0, f = rationale Funktion in zwei Veränderlichen. 
+    /**
+     * Hauptmethode zum Lösen von algebraischer Gleichungen der Form f(x,
+     * (ax^2+bx+c)^(1/2)) = 0, f = rationale Funktion in zwei Veränderlichen.
+     * Ist f keine solche Gleichung, so wird eine leere ExpressionCollection
+     * zurückgegeben.
+     *
+     * @throws EvaluationException, NotAlgebraicallySolvableException
+     */
+    public static ExpressionCollection solveRationalFunctionInVarAndSqrtOfQuadraticFunctionEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
+
+        Expression radicand;
+        try {
+            radicand = getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(f, var);
+        } catch (NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException e) {
+            throw new NotAlgebraicallySolvableException();
+        }
+
+        ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(radicand, var);
+        if (coefficients.getBound() != 3) {
+            // Sollte eigentlich nicht eintreten.
+            throw new NotAlgebraicallySolvableException();
+        }
+
+        Expression a = coefficients.get(2);
+        Expression b = coefficients.get(1);
+        Expression c = coefficients.get(0);
+        Expression discriminant;
+        try {
+            discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallySolvableException();
+        }
+
+        ExpressionCollection zeros = new ExpressionCollection();
+
+        Expression p, q;
+        String substVarForEquation = SubstitutionUtilities.getSubstitutionVariable(f);
+        if (discriminant.isAlwaysNegative()) {
+
+            try {
+                p = b.div(TWO.mult(a)).simplify();
+                q = MINUS_ONE.mult(discriminant).pow(1, 2).div(TWO.mult(a)).simplify();
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallySolvableException();
+            }
+
+            // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
+            if (a.isAlwaysPositive()) {
+
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(a.pow(1, 2)).mult(Variable.create(substVarForEquation).exp().add(MINUS_ONE.mult(Variable.create(substVarForEquation)).exp())).div(2));
+                // DANACH: x wird durch q*(exp(t)-exp(-t))/2 - p ersetzt, t = substVarForEquation.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForEquation).exp().sub(MINUS_ONE.mult(Variable.create(substVarForEquation)).exp())).div(2).sub(p));
+
+                if (fSubstituted.contains(var)) {
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                try {
+                    // Vor dem Lösen vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einer gültigen Gleichung nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(fSubstituted, substVarForEquation);
+
+                // Rücksubstitution: u = (exp(t) - exp(-t))/2 und u = (x + p)/q, d.h. x = qu - p = q(exp(t) - exp(-t))/2 - p, t = substVarForEquation.
+                for (Expression zero : zerosOfSubstitutedEquation) {
+                    try {
+                        zeros.add(q.mult(zero.exp().sub(MINUS_ONE.mult(zero).exp()).div(2)).sub(p).simplify());
+                    } catch (EvaluationException e) {
+                        // Nichts tun, ignorieren!
+                    }
+                }
+
+                return zeros;
+
+            }
+
+        } else if (discriminant.isAlwaysPositive()) {
+
+            if (a.isAlwaysPositive()) {
+
+                try {
+                    p = b.div(TWO.mult(a)).simplify();
+                    q = discriminant.pow(1, 2).div(TWO.mult(a)).simplify();
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)-exp(-t))/2 ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(a.pow(1, 2)).mult(Variable.create(substVarForEquation).exp().sub(MINUS_ONE.mult(Variable.create(substVarForEquation)).exp())).div(2));
+                // DANACH: x wird durch q*(exp(t)+exp(-t))/2 - p ersetzt, t = substVarForEquation.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForEquation).exp().add(MINUS_ONE.mult(Variable.create(substVarForEquation)).exp())).div(2).sub(p));
+
+                if (fSubstituted.contains(var)) {
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                try {
+                    // Vor dem Lösen vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einer gültigen Gleichung nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(fSubstituted, substVarForEquation);
+
+                // Rücksubstitution: u = (exp(t) + exp(-t))/2 und u = (x + p)/q, d.h. x = qu - p = q(exp(t) + exp(-t))/2 - p, t = substVarForEquation.
+                for (Expression zero : zerosOfSubstitutedEquation) {
+                    try {
+                        zeros.add(q.mult(zero.exp().add(MINUS_ONE.mult(zero).exp()).div(2)).sub(p).simplify());
+                    } catch (EvaluationException e) {
+                        // Nichts tun, ignorieren!
+                    }
+                }
+
+                return zeros;
+
+            } else if (a.isAlwaysNegative()) {
+
+                try {
+                    p = b.div(TWO.mult(a)).simplify();
+                    q = MINUS_ONE.mult(discriminant.pow(1, 2)).div(TWO.mult(a)).simplify();
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+                Expression fSubstituted = f;
+
+                // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*(-a)^(1/2)*cos(t) ersetzt.
+                fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
+                        q.mult(MINUS_ONE.mult(a).pow(1, 2)).mult(Variable.create(substVarForEquation).cos()));
+                // DANACH: x wird durch q*cos(t) - p ersetzt, t = substVarForEquation.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForEquation).cos().sub(p)));
+
+                if (fSubstituted.contains(var)) {
+                    // Sollte eigentlich nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                try {
+                    // Vor dem Lösen vereinfachen.
+                    fSubstituted = fSubstituted.simplify();
+                } catch (EvaluationException e) {
+                    // Sollte bei einer gültigen Gleichung nicht passieren.
+                    throw new NotAlgebraicallySolvableException();
+                }
+
+                ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(fSubstituted, substVarForEquation);
+
+                // Rücksubstitution: u = cos(t) und u = (x + p)/q, d.h. x = qu - p = q*cos(t) - p, t = substVarForEquation.
+                for (Expression zero : zerosOfSubstitutedEquation) {
+                    try {
+                        zeros.add(q.mult(zero.cos()).sub(p).simplify());
+                    } catch (EvaluationException e) {
+                        // Nichts tun, ignorieren!
+                    }
+                }
+
+                return zeros;
+
+            }
+
+        }
+
+        // Fall: discriminant = 0. Schwierig zu lösen!
+        throw new NotAlgebraicallySolvableException();
+
+    }
+
+    private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
+
+        ExpressionCollection setOfSubstitutions = new ExpressionCollection();
+        getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
+
+        Expression radicand = null;
+        for (Expression subst : setOfSubstitutions) {
+            if (!subst.isPower() || !((BinaryOperation) subst).getRight().isRationalConstant()
+                    || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getLeft().isOddIntegerConstant()
+                    || !((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight().equals(TWO)) {
+                throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+            }
+            if (radicand == null) {
+                radicand = ((BinaryOperation) subst).getLeft();
+                if (!SimplifyPolynomialMethods.isPolynomial(radicand, var)
+                        || SimplifyPolynomialMethods.getDegreeOfPolynomial(radicand, var).compareTo(BigInteger.valueOf(2)) != 0) {
+                    throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+                }
+            } else if (!radicand.equivalent(((BinaryOperation) subst).getLeft())) {
+                throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+            }
+        }
+
+        if (radicand == null) {
+            // Dann ist die Funktion eine rationale Funktion (andere Methoden sind dann dafür zuständig). 
+            throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+        }
+
+        // Schließlich: PRüfung, ob f eine rationale Funktion in x und g(x) = radicand^(1/2) ist.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(f, var, Variable.create(var), radicand.pow(1, 2))) {
+            throw new NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException();
+        }
+
+        return radicand;
+
+    }
+
+    /**
+     * Ermittelt potenzielle Substitutionen für eine algebraische Gleichung.
+     */
+    private static void getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
+        if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
+        } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
+            setOfSubstitutions.add(f);
+        }
+    }
+
+    // Typ 2: f(x, g(x)) = 0 mit der Eigenschaft, dass y = g(x) eine Auflösung der Form x = h(y), h = Polynom besitzt (z.B. y = (1 - x)^(1/3)). 
 }

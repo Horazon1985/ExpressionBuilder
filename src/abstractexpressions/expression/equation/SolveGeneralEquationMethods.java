@@ -1532,6 +1532,12 @@ public abstract class SolveGeneralEquationMethods {
         } catch (NotAlgebraicallySolvableException e) {
         }
 
+        // Fall: f = f(x, (ax^2+bx+c)^(1/2)), f = rationale Funktion in zwei Veränderlichen.
+        try {
+            return SolveSpecialEquationMethods.solveRationalFunctionInVarAndSqrtOfQuadraticFunctionEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+
         /*
          Fall: f besitzt Brüche. Dann alles mit dem Hauptnenner
          ausmultiplizieren und prüfen, ob es Lösungen gibt.

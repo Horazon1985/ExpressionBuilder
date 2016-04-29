@@ -1636,7 +1636,7 @@ public abstract class SpecialIntegrationMethods {
 
             // Nur der Fall a > 0 ist möglich (bei a < 0 wäre die Wurzel für kein x definiert, x = var).
             if (a.isAlwaysPositive()) {
-                
+
                 Expression fSubstituted = f;
 
                 // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)+exp(-t))/2 ersetzt.
@@ -1682,15 +1682,14 @@ public abstract class SpecialIntegrationMethods {
 
         } else if (discriminant.isAlwaysPositive()) {
 
-            try {
-                p = b.div(TWO.mult(a)).simplify();
-                q = MINUS_ONE.mult(discriminant.pow(1, 2)).div(TWO.mult(a)).simplify();
-            } catch (EvaluationException e) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
             if (a.isAlwaysPositive()) {
-                
+
+                try {
+                    p = b.div(TWO.mult(a)).simplify();
+                    q = discriminant.pow(1, 2).div(TWO.mult(a)).simplify();
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
                 Expression fSubstituted = f;
 
                 // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*a^(1/2)*(exp(t)-exp(-t))/2 ersetzt.
@@ -1734,6 +1733,12 @@ public abstract class SpecialIntegrationMethods {
 
             } else if (a.isAlwaysNegative()) {
 
+                try {
+                    p = b.div(TWO.mult(a)).simplify();
+                    q = MINUS_ONE.mult(discriminant.pow(1, 2)).div(TWO.mult(a)).simplify();
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
                 Expression fSubstituted = f;
 
                 // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*(-a)^(1/2)*cos(t) ersetzt.
@@ -1771,10 +1776,10 @@ public abstract class SpecialIntegrationMethods {
                 if (resultFunction.containsIndefiniteIntegral()) {
                     throw new NotAlgebraicallyIntegrableException();
                 }
-                // Rücksubstitution: t = ln(u + (u^2 - 1)^(1/2)) mit u = (x + p)/q.
+                // Rücksubstitution: t = arcsin(u) mit u = (x + p)/q.
                 Expression u = Variable.create(var).add(p).div(q);
-                return resultFunction.replaceVariable(substVarForIntegral, u.arcsin());
-                
+                return resultFunction.replaceVariable(substVarForIntegral, u.arcsin().simplify());
+
             }
 
         }
@@ -1787,7 +1792,7 @@ public abstract class SpecialIntegrationMethods {
     private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions, true);
+        getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
 
         Expression radicand = null;
         for (Expression subst : setOfSubstitutions) {
@@ -1822,15 +1827,13 @@ public abstract class SpecialIntegrationMethods {
     }
 
     /**
-     * Ermittelt potenzielle Substitutionen für eine Gleichung. Der boolsche
-     * Parameter beginning sagt aus, ob f den ganzen Ausdruck darstellt, oder
-     * nur einen Teil eines größeren Ausdrucks bildet. Dies ist wichtig, damit
-     * es keine Endlosschleifen gibt!
+     * Ermittelt potenzielle Substitutionen für die Integration einer
+     * algebraischen Funktion.
      */
-    private static void getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions, boolean beginning) {
+    private static void getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
         if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
-            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions, false);
-            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions, false);
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
+            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
         } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
             setOfSubstitutions.add(f);
         }
