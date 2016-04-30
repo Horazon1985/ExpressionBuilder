@@ -234,7 +234,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
          zuständig).
          */
         if (!SimplifyRationalFunctionMethods.isRationalFunktionInTrigonometricalFunctions(f, var, argumentsInTrigonometricFunctions) || argumentsInTrigonometricFunctions.isEmpty()) {
-            return zeros;
+            throw new NotAlgebraicallySolvableException();
         }
 
         BigInteger gcdOfNumerators = BigInteger.ONE;
@@ -278,7 +278,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
              müssen von der Form n*x sein, wobei n eine ganze Zahl und x eine Variable ist.
              */
             if (!SimplifyRationalFunctionMethods.doArgumentsOfTrigonometricalFunctionsContainOnlyMultiplesOfVariable(fSubstituted, substVar)) {
-                return new ExpressionCollection();
+                throw new NotAlgebraicallySolvableException();
             }
 
             /*
@@ -295,8 +295,8 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
              der so entstandene Ausdruck ein Polynom in einem Cosinus- oder einem Sinusausdruck ist.
              */
             Expression fNew = substituteInTrigonometricalEquationSinByCos(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
-
             String polynomVar = SubstitutionUtilities.getSubstitutionVariable(fNew);
+
             if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).cos(), fNew, substVar)) {
 
                 Expression trigonometricalSubst = Variable.create(substVar).cos();
@@ -317,30 +317,65 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                     }
                 }
 
-            } else {
+            }
 
-                fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
-                if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
+            if (!zeros.isEmpty()) {
+                return zeros;
+            }
 
-                    Expression trigonometricalSubst = Variable.create(substVar).sin();
-                    Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
-                    ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(polynomial, polynomVar);
-                    zeros = new ExpressionCollection();
-                    // Rücksubstitution.
-                    for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
-                        try {
-                            zeros.addAll(SolveGeneralEquationMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
-                        } catch (EvaluationException e) {
-                            /*
-                             Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
-                             Lösung -> zerosOfSubstitutedEquation.get(i) nicht in die
-                             Lösungen mitaufnehmen.
-                             */
-                        }
+            fNew = substituteInTrigonometricalEquationCosBySin(fSubstituted).simplify(simplifyTypesRationalTrigonometricalEquation);
+
+            if (SimplifyRationalFunctionMethods.isRationalFunctionIn(Variable.create(substVar).sin(), fNew, substVar)) {
+
+                Expression trigonometricalSubst = Variable.create(substVar).sin();
+                Expression polynomial = SubstitutionUtilities.substitute(fNew, substVar, trigonometricalSubst);
+                ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(polynomial, polynomVar);
+                zeros = new ExpressionCollection();
+                // Rücksubstitution.
+                for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
+                    try {
+                        zeros.addAll(SolveGeneralEquationMethods.solveGeneralEquation(substitution.sin(), zerosOfSubstitutedEquation.get(i), var));
+                    } catch (EvaluationException e) {
+                        /*
+                         Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
+                         Lösung -> zerosOfSubstitutedEquation.get(i) nicht in die
+                         Lösungen mitaufnehmen.
+                         */
                     }
-
                 }
 
+            }
+
+            if (!zeros.isEmpty()) {
+                return zeros;
+            }
+
+            /* 
+             3. Versuch: Wenn sich weder cos durch sin, noch umgekehrt substituieren lassen, 
+             dann folgende Substitution vornehmen: t = tan(x/2) -> cos(x) = (1-t^2)/(1+t^2)
+             und sin(x) = 2t/(1+t^2).
+             */
+            fNew = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, Variable.create(substVar).cos(),
+                    ONE.sub(Variable.create(polynomVar).pow(2)).div(ONE.add(Variable.create(polynomVar).pow(2))));
+            fNew = SubstitutionUtilities.substituteExpressionByAnotherExpression(fNew, Variable.create(substVar).sin(),
+                    TWO.mult(Variable.create(polynomVar)).div(ONE.add(Variable.create(polynomVar).pow(2))));
+            if (fNew.contains(substVar)) {
+                throw new NotAlgebraicallySolvableException();
+            }
+
+            ExpressionCollection zerosOfSubstitutedEquation = SolveGeneralEquationMethods.solveZeroEquation(fNew, polynomVar);
+            zeros = new ExpressionCollection();
+            // Rücksubstitution.
+            for (int i = 0; i < zerosOfSubstitutedEquation.getBound(); i++) {
+                try {
+                    zeros.addAll(SolveGeneralEquationMethods.solveGeneralEquation(substitution.div(2).tan(), zerosOfSubstitutedEquation.get(i), var));
+                } catch (EvaluationException e) {
+                    /*
+                     Dann ist zerosOfSubstitutedEquation.get(i) eine ungültige
+                     Lösung -> zerosOfSubstitutedEquation.get(i) nicht in die
+                     Lösungen mitaufnehmen.
+                     */
+                }
             }
 
         } catch (NotSubstitutableException e) {

@@ -1197,6 +1197,7 @@ public abstract class SimplifyTrigonometry {
 
         if (f.getType().equals(TypeFunction.arctan) && f.getLeft().isConstant()) {
 
+            // Arctan-Tabelle
             // arctan(0) = 0
             if (f.getLeft().equals(ZERO)) {
                 return ZERO;
@@ -1205,8 +1206,6 @@ public abstract class SimplifyTrigonometry {
             if (f.getLeft().equals(ONE)) {
                 return PI.div(4);
             }
-
-            // Arctan-Tabelle
             //arctan(1/3^(1/2)) = pi/6
             if (f.getLeft().equivalent(ONE.div(THREE.pow(1, 2)))) {
                 return PI.div(6);
@@ -1214,6 +1213,22 @@ public abstract class SimplifyTrigonometry {
             //arctan(3^(1/2)) = pi/3
             if (f.getLeft().equivalent(THREE.pow(1, 2))) {
                 return PI.div(3);
+            }
+            //arctan(2^(1/2)-1) = pi/8
+            if (f.getLeft().equivalent(TWO.pow(1, 2).sub(1))) {
+                return PI.div(8);
+            }
+            //arctan(1+2^(1/2)) = 3*pi/8
+            if (f.getLeft().equivalent(ONE.add(TWO.pow(1, 2)))) {
+                return THREE.mult(PI).div(8);
+            }
+            //arctan(1-2^(1/2)) = -pi/8
+            if (f.getLeft().equivalent(ONE.sub(TWO.pow(1, 2)))) {
+                return MINUS_ONE.mult(PI).div(8);
+            }
+            //arctan(-1-2^(1/2)) = -3*pi/8
+            if (f.getLeft().equivalent(MINUS_ONE.sub(TWO.pow(1, 2)))) {
+                return new Constant(-3).mult(PI).div(8);
             }
 
         }
@@ -1226,6 +1241,7 @@ public abstract class SimplifyTrigonometry {
 
         if (f.getType().equals(TypeFunction.arccot) && f.getLeft().isConstant()) {
 
+            // Arccot-Tabelle
             // arccot(0) = pi/2
             if (f.getLeft().equals(ZERO)) {
                 return PI.div(2);
@@ -1234,8 +1250,6 @@ public abstract class SimplifyTrigonometry {
             if (f.getLeft().equals(ONE)) {
                 return PI.div(4);
             }
-
-            // Arccot-Tabelle
             // arccot(1/3^(1/2)) = pi/3
             if (f.getLeft().equivalent(ONE.div(THREE.pow(1, 2)))) {
                 return PI.div(3);
@@ -1243,6 +1257,22 @@ public abstract class SimplifyTrigonometry {
             // arccot(3^(1/2)) = pi/6
             if (f.getLeft().equivalent(THREE.pow(1, 2))) {
                 return PI.div(6);
+            }
+            //arccot(2^(1/2)-1) = 3*pi/8
+            if (f.getLeft().equivalent(TWO.pow(1, 2).sub(1))) {
+                return THREE.mult(PI).div(8);
+            }
+            //arccot(1+2^(1/2)) = pi/8
+            if (f.getLeft().equivalent(ONE.add(TWO.pow(1, 2)))) {
+                return PI.div(8);
+            }
+            //arccot(1-2^(1/2)) = -3*pi/8
+            if (f.getLeft().equivalent(ONE.sub(TWO.pow(1, 2)))) {
+                return new Constant(-3).mult(PI).div(8);
+            }
+            //arccot(-1-2^(1/2)) = -pi/8
+            if (f.getLeft().equivalent(MINUS_ONE.sub(TWO.pow(1, 2)))) {
+                return MINUS_ONE.mult(PI).div(8);
             }
 
         }
