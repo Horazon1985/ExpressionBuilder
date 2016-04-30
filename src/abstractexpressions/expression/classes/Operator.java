@@ -9,7 +9,7 @@ import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
-import abstractexpressions.expression.integration.SimplifyIntegralMethods;
+import abstractexpressions.expression.integration.GeneralIntegralMethods;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1360,11 +1360,11 @@ public class Operator extends Expression {
     private Expression simplifyTrivialInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-            return SimplifyIntegralMethods.integrateIndefinite(this);
+            return GeneralIntegralMethods.integrateIndefinite(this);
         }
 
         if (this.precise && this.params.length == 4) {
-            return SimplifyIntegralMethods.integrateDefinite(this);
+            return GeneralIntegralMethods.integrateDefinite(this);
         }
 
         if (!this.precise && this.params.length == 4) {

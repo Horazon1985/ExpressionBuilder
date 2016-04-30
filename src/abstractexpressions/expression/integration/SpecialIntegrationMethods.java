@@ -18,20 +18,21 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyExponentialRelations;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyTrigonometricalRelations;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
-import static abstractexpressions.expression.integration.SimplifyIntegralMethods.indefiniteIntegration;
+import static abstractexpressions.expression.integration.GeneralIntegralMethods.indefiniteIntegration;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import exceptions.MathToolException;
 
-public abstract class SpecialIntegrationMethods {
+public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
     /**
      * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
@@ -48,10 +49,26 @@ public abstract class SpecialIntegrationMethods {
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunctions = getSimplifyTypesRationalTrigonometricalFunctions();
-    private static final HashSet<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunctions = getSimplifyTypesExpandProductOfComplexExponentialFunctions();
+    /**
+     * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
+     * Funktion in x und einer weiteren algebraischen Funktion in x (x = var)
+     * ist.
+     */
+    private static class NotRationalFunctionInVarAndAnotherAlgebraicFunctionException extends MathToolException {
 
-    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunctions() {
+        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION = "Expression is not a rational function in variable and another algebraic function.";
+
+        public NotRationalFunctionInVarAndAnotherAlgebraicFunctionException() {
+            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION);
+        }
+
+    }
+
+    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunction = getSimplifyTypesRationalTrigonometricalFunction();
+    private static final HashSet<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunction = getSimplifyTypesExpandProductOfComplexExponentialFunction();
+    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicFunction = getSimplifyTypesAlgebraicFunction();
+
+    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunction() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -71,7 +88,7 @@ public abstract class SpecialIntegrationMethods {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesExpandProductOfComplexExponentialFunctions() {
+    private static HashSet<TypeSimplify> getSimplifyTypesExpandProductOfComplexExponentialFunction() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -83,6 +100,26 @@ public abstract class SpecialIntegrationMethods {
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesAlgebraicFunction() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
         return simplifyTypes;
     }
 
@@ -114,7 +151,7 @@ public abstract class SpecialIntegrationMethods {
              Dies trifft AUCH DANN zu, wenn der Nenner Parameter enthält, aber
              von var nicht abhängt. Dann ist der Nenner bzgl. var konstant und
              kann vor das Integral getragen werden, was NICHT hier, sondern in
-             SimplifyIntegralMethods.takeConstantsOutOfIntegral() geschieht.
+             GeneralIntegralMethods.takeConstantsOutOfIntegral() geschieht.
              Daher -> beenden.
              */
             throw new NotAlgebraicallyIntegrableException();
@@ -227,7 +264,7 @@ public abstract class SpecialIntegrationMethods {
         // firstSummand = ((2*a*e-b*d)*x + (e*b-2*c*d))/((n - 1)*D*(a*x^2 + b*x + c)^(n - 1))
         Expression firstSummand = TWO.mult(a).mult(e).sub(b.mult(d)).mult(Variable.create(var)).add(
                 e.mult(b).sub(TWO.mult(c).mult(d))).div(
-                new Constant(n - 1).mult(discriminant).mult(denominator.pow(n - 1))).simplify();
+                        new Constant(n - 1).mult(discriminant).mult(denominator.pow(n - 1))).simplify();
 
         // factor = (2*n - 3)*(2*a*e - b*d)/((n - 1)*D)
         Expression factor = new Constant(2 * n - 3).mult(TWO.mult(a).mult(e).sub(b.mult(d))).div(new Constant(n - 1).mult(discriminant)).simplify();
@@ -377,7 +414,7 @@ public abstract class SpecialIntegrationMethods {
     }
 
     private static Expression expandProductsOfComplexExponentialFunctions(Expression f, String var) throws EvaluationException {
-        return f.simplify(simplifyTypesExpandProductOfComplexExponentialFunctions, var);
+        return f.simplify(simplifyTypesExpandProductOfComplexExponentialFunction, var);
     }
 
     /**
@@ -693,8 +730,8 @@ public abstract class SpecialIntegrationMethods {
                  */
                 return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                         ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
-                        diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh()).div(
-                        new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+                                diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcosh()).div(
+                                        new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
             }
             if ((coefficients.get(2).isNonPositive() || Expression.MINUS_ONE.mult(coefficients.get(2)).simplify().isAlwaysNonNegative()) && !coefficients.get(2).equals(Expression.ZERO)) {
@@ -706,8 +743,8 @@ public abstract class SpecialIntegrationMethods {
                  */
                 return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                         ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).add(
-                        diskriminant.mult((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin()).div(
-                        new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
+                                diskriminant.mult((new Constant(-2)).mult(coefficients.get(2)).mult(Variable.create(var)).sub(coefficients.get(1)).div(diskriminant.pow(1, 2)).arcsin()).div(
+                                        new Constant(8).mult((Expression.MINUS_ONE).mult(coefficients.get(2)).pow(3, 2))));
 
             }
         }
@@ -721,8 +758,8 @@ public abstract class SpecialIntegrationMethods {
              */
             return Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).mult(
                     ((BinaryOperation) f).getLeft().pow(1, 2)).div(new Constant(4).mult(coefficients.get(2))).sub(
-                    diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh()).div(
-                    new Constant(8).mult(coefficients.get(2).pow(3, 2))));
+                            diskriminant.mult(Expression.TWO.mult(coefficients.get(2)).mult(Variable.create(var)).add(coefficients.get(1)).div(Expression.MINUS_ONE.mult(diskriminant).pow(1, 2)).arsinh()).div(
+                                    new Constant(8).mult(coefficients.get(2).pow(3, 2))));
 
         }
 
@@ -1550,7 +1587,7 @@ public abstract class SpecialIntegrationMethods {
              WICHTIG: Beim Vereinfachen darf hier nicht simplifyFunctionalRelations() verwendet werden,
              da dann beispielsweise sin(x)*cos(x) wieder zu sin(2*x)/2 vereinfacht wird.
              */
-            fSubstituted = SimplifyRationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypesRationalTrigonometricalFunctions);
+            fSubstituted = SimplifyRationalFunctionMethods.expandRationalFunctionInTrigonometricalFunctions(fSubstituted, substVar).simplify(simplifyTypesRationalTrigonometricalFunction);
             /*
              Jetzt erfolgt die eigentliche Substitution: cos(x) = (1-t^2)/(1+t^2),
              sin(x) = 2t/(1+t^2), dx = 2/(1+t^2)*dt.
@@ -1792,7 +1829,7 @@ public abstract class SpecialIntegrationMethods {
     private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
+        addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
 
         Expression radicand = null;
         for (Expression subst : setOfSubstitutions) {
@@ -1826,14 +1863,120 @@ public abstract class SpecialIntegrationMethods {
 
     }
 
+    // Typ 2: f(x, g(x)) = 0, f = rationale Funktion, mit der Eigenschaft, dass y = g(x) eine Auflösung der Form x = h(y), h = rationale Funktion, besitzt (z.B. y = (1 - x)^(1/3)).
+    /**
+     * Hauptmethode zum Integrieren von algebraischen Gleichungen der Form f(x,
+     * g(x)) = 0, f = rationale Funktion in zwei Veränderlichen und g mit der
+     * Eigenschaft, dass die Auflösung x = h(y) eine rationale Funktion in y
+     * ist. Ist f keine solche Gleichung, so wird eine
+     * NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws EvaluationException, NotAlgebraicallyIntegrableException
+     */
+    public static Expression integrateRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        Expression algebraicTerm, radicand, exponent;
+        try {
+            algebraicTerm = getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(f, var);
+            if (!algebraicTerm.isRationalPower()) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+            radicand = ((BinaryOperation) algebraicTerm).getLeft();
+            exponent = ((BinaryOperation) algebraicTerm).getRight();
+        } catch (NotRationalFunctionInVarAndAnotherAlgebraicFunctionException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+        ExpressionCollection zerosOfAlgebraicTermMinusSubstVar;
+
+        try {
+            zerosOfAlgebraicTermMinusSubstVar = SolveGeneralEquationMethods.solveEquation(radicand, Variable.create(substVar).pow(ONE.div(exponent)), var);
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        // Lösung muss eindeutig sein.        
+        if (zerosOfAlgebraicTermMinusSubstVar.getBound() != 1) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        if (!SimplifyRationalFunctionMethods.isRationalFunction(zerosOfAlgebraicTermMinusSubstVar.get(0), substVar)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression inverseTransformation = zerosOfAlgebraicTermMinusSubstVar.get(0);
+        Expression derivativeOfInverseTransformation;
+        try {
+            derivativeOfInverseTransformation = inverseTransformation.diff(substVar).simplify(simplifyTypesAlgebraicFunction);
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression integrandSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, algebraicTerm, Variable.create(substVar));
+        integrandSubstituted = integrandSubstituted.replaceVariable(var, inverseTransformation);
+        integrandSubstituted = integrandSubstituted.mult(derivativeOfInverseTransformation);
+
+        Expression resultFunction = indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{integrandSubstituted, substVar}), true);
+
+        try {
+            // Vor der Rücksubstitution vereinfachen.
+            resultFunction = resultFunction.simplify();
+        } catch (EvaluationException e) {
+            // Sollte bei einer gültigen Stammfunktion nicht passieren.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+        if (resultFunction.containsIndefiniteIntegral()) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        // Rücksubstitution: y = g(x).
+        return resultFunction.replaceVariable(substVar, algebraicTerm);
+
+    }
+
+    private static Expression getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
+
+        ExpressionCollection setOfSubstitutions = new ExpressionCollection();
+        addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
+
+        Expression algebraicTerm = null;
+        for (Expression subst : setOfSubstitutions) {
+            if (!subst.isPower() || !((BinaryOperation) subst).getRight().isRationalConstant()) {
+                throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
+            }
+            if (algebraicTerm == null) {
+                algebraicTerm = subst;
+            } else if (!algebraicTerm.equivalent(subst)) {
+                throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
+            }
+        }
+
+        if (algebraicTerm == null) {
+            // Dann ist die Funktion eine rationale Funktion (andere Methoden sind dann dafür zuständig). 
+            throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
+        }
+
+        // Schließlich: Prüfung, ob f eine rationale Funktion in x und g(x) = radicand ist.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(f, var, Variable.create(var), algebraicTerm)) {
+            throw new NotRationalFunctionInVarAndAnotherAlgebraicFunctionException();
+        }
+
+        return algebraicTerm;
+
+    }
+
     /**
      * Ermittelt potenzielle Substitutionen für die Integration einer
      * algebraischen Funktion.
      */
-    private static void getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
+    private static void addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
         if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
-            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
-            getSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
+            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
+            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
         } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
             setOfSubstitutions.add(f);
         }

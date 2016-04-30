@@ -25,7 +25,7 @@ import java.util.HashSet;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 
-public abstract class SimplifyIntegralMethods {
+public abstract class GeneralIntegralMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = getSimplifyTypesPrepareIntegrand();
     private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = getSimplifyTypesPrepareDominatorOfIntegrand();
@@ -568,6 +568,12 @@ public abstract class SimplifyIntegralMethods {
         // Integration von Q(x, (a*x^2 + b*x + c)^(1/2)), Q(s, t) rationale Funktion in s, t.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInVarAndSqrtOfQuadraticFunction(expr);
+        } catch (NotAlgebraicallyIntegrableException e) {
+        }
+
+        // Integration von Q(x, g(x)), Q(s, t) rationale Funktion in s, t, y = g(x) derart, dass x = g(y) eine rationale Funktion in y ist.
+        try {
+            return SpecialIntegrationMethods.integrateRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(expr);
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 

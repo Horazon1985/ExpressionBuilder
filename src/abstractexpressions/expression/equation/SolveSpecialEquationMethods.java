@@ -639,7 +639,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     private static Expression getRadicandIfFunctionIsRationalFunctionInVarAndSqrtOfQuadraticFunction(Expression f, String var) throws NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        getSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
+        addSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
 
         Expression radicand = null;
         for (Expression subst : setOfSubstitutions) {
@@ -675,7 +675,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     // Typ 2: f(x, g(x)) = 0, f = rationale Funktion, mit der Eigenschaft, dass y = g(x) eine Auflösung der Form x = h(y), h = rationale Funktion, besitzt (z.B. y = (1 - x)^(1/3)).
     /**
-     * Hauptmethode zum Lösen von algebraischer Gleichungen der Form f(x, g(x))
+     * Hauptmethode zum Lösen von algebraischen Gleichungen der Form f(x, g(x))
      * = 0, f = rationale Funktion in zwei Veränderlichen und g mit der
      * Eigenschaft, dass die Auflösung x = h(y) eine rationale Funktion in y
      * ist. Ist f keine solche Gleichung, so wird eine
@@ -711,7 +711,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             throw new NotAlgebraicallySolvableException();
         }
 
-        if (!SimplifyRationalFunctionMethods.isRationalFunction(zerosOfAlgebraicTermMinusSubstVar.get(0), var)) {
+        if (!SimplifyRationalFunctionMethods.isRationalFunction(zerosOfAlgebraicTermMinusSubstVar.get(0), substVar)) {
             throw new NotAlgebraicallySolvableException();
         }
 
@@ -753,7 +753,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     private static Expression getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
-        getSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
+        addSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
 
         Expression algebraicTerm = null;
         for (Expression subst : setOfSubstitutions) {
@@ -784,10 +784,10 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     /**
      * Ermittelt potenzielle Substitutionen für eine algebraische Gleichung.
      */
-    private static void getSuitableSubstitutionForSolvingAlgebraicEquations(Expression f, String var, ExpressionCollection setOfSubstitutions) {
+    private static void addSuitableSubstitutionForSolvingAlgebraicEquations(Expression f, String var, ExpressionCollection setOfSubstitutions) {
         if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
-            getSuitableSubstitutionForSolvingAlgebraicEquations(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
-            getSuitableSubstitutionForSolvingAlgebraicEquations(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
+            addSuitableSubstitutionForSolvingAlgebraicEquations(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
+            addSuitableSubstitutionForSolvingAlgebraicEquations(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
         } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
             setOfSubstitutions.add(f);
         }
