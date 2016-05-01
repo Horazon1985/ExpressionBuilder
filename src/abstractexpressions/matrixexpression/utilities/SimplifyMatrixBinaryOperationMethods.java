@@ -2,7 +2,6 @@ package abstractexpressions.matrixexpression.utilities;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
-import flowcontroller.FlowController;
 import java.awt.Dimension;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixBinaryOperation;
@@ -20,8 +19,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             if (summands.get(i).isZeroMatrix() && !summands.isEmpty()) {
                 summands.remove(i);
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
     }
 
@@ -78,8 +75,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
             if (factors.get(i).isId() && !factors.isEmpty()) {
                 factors.remove(i);
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
     }
 
@@ -93,8 +88,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                 factors.clear();
                 factors.add(MatrixExpression.getZeroMatrix(dim.height, dim.width));
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
     }
 
@@ -137,9 +130,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     summands.remove(j);
                     break;
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -186,9 +176,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     summandsRight.remove(j);
                     break;
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -244,9 +231,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     break;
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
         }
@@ -300,9 +284,6 @@ public abstract class SimplifyMatrixBinaryOperationMethods {
                     summandsRight.remove(j);
                     break;
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 

@@ -10,7 +10,6 @@ import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
-import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -1824,8 +1823,6 @@ public abstract class SimplifyFunctionalRelations {
                 }
 
             }
-
-            FlowController.interruptComputationIfNeeded();
 
         }
 

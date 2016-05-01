@@ -6,7 +6,6 @@ import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
-import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -137,9 +136,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
         }
@@ -176,9 +172,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
                     break;
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -230,9 +223,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
         }
@@ -269,9 +259,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
 
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -316,9 +303,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
 
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 
@@ -366,9 +350,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
                 }
 
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
-
             }
 
         }
@@ -404,9 +385,6 @@ public abstract class SimplifyMatrixFunctionalRelations {
                     }
 
                 }
-
-                // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-                FlowController.interruptComputationIfNeeded();
 
             }
 

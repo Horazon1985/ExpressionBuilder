@@ -9,7 +9,6 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixBinaryOperationMethods;
-import flowcontroller.FlowController;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -140,8 +139,6 @@ public class MatrixPower extends MatrixExpression {
                 
                 for (int i = 1; i < binaryRepresentationOfExponent.length; i++) {
                     squaresOfBaseMatrix[i] = squaresOfBaseMatrix[i - 1].mult(squaresOfBaseMatrix[i - 1]).simplifyComputeMatrixOperations().simplifyMatrixEntries();
-                    // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
-                    FlowController.interruptComputationIfNeeded();
                 }
                 
                 // Nun kommt die eigentliche Berechnung der Potenz.
@@ -149,8 +146,6 @@ public class MatrixPower extends MatrixExpression {
                     if (binaryRepresentationOfExponent[i]) {
                         result = result.mult(squaresOfBaseMatrix[i]).simplifyComputeMatrixOperations().simplifyMatrixEntries();
                     }
-                    // Zwischendurch prüfen, ob die Berechnung abgebrochen wurde.
-                    FlowController.interruptComputationIfNeeded();
                 }
 
                 return result;

@@ -1435,4 +1435,11 @@
         <Ukrainian>Усі функції були видалені.</Ukrainian>
         <Russian>Все функции были удалены.</Russian>
     </object>
+    
+    <object id = "MCC_COMPUTATION_ABORTED">
+        <German>Berechnung abgebrochen.</German>
+        <English>Computation aborted.</English>
+        <Ukrainian>Обчислення припинено.</Ukrainian>
+        <Russian>Вычисление прекращено.</Russian>
+    </object>    
 </objects>

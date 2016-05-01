@@ -1,6 +1,5 @@
 package lang.translator;
 
-import enums.TypeLanguage;
 import abstractexpressions.expression.classes.Expression;
 import java.net.URL;
 import javax.xml.parsers.DocumentBuilder;
@@ -21,8 +20,6 @@ public abstract class Translator {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangComputationalClasses.xml");
             } else if (exceptionId.substring(0, 2).equals("EB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 2).equals("FC")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangFlowController.xml");
             } else if (exceptionId.substring(0, 3).equals("GUI")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangGUI.xml");
             } else if (exceptionId.substring(0, 2).equals("GR")) {

@@ -15,7 +15,6 @@ import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
 import exceptions.MathToolException;
-import flowcontroller.FlowController;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -704,9 +703,6 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     }
                 }
             }
-
-            // Zwischendurch kontrollieren, ob die Berechnung abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 

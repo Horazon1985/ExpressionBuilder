@@ -13,11 +13,9 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
-import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import lang.translator.Translator;
@@ -1569,9 +1567,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
     }
@@ -1703,9 +1698,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
     }
@@ -1786,9 +1778,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         // Zähler absuchen (Subtrahend)
@@ -1824,9 +1813,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 result[1] = denominator;
                 return result;
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -1864,9 +1850,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 return result;
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         // Nenner absuchen (Subtrahend)
@@ -1902,9 +1885,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 result[1] = denominator;
                 return result;
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -1942,9 +1922,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
         for (int i = 0; i < summandsRightInNumerator.getBound(); i++) {
 
@@ -1966,9 +1943,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
         for (int i = 0; i < summandsLeftInDenominator.getBound(); i++) {
@@ -1992,9 +1966,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
         for (int i = 0; i < summandsRightInDenominator.getBound(); i++) {
 
@@ -2016,9 +1987,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -2102,9 +2070,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
@@ -2156,9 +2121,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -2236,9 +2198,6 @@ public abstract class SimplifyBinaryOperationMethods {
                         SimplifyUtilities.getFactorsOfNumeratorInExpression(summandsLeft.get(i)))).simplify());
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
@@ -2298,9 +2257,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 summandsRight.put(i, SimplifyUtilities.produceProduct(complementFactorsForEachSummand).mult(SimplifyUtilities.produceProduct(
                         SimplifyUtilities.getFactorsOfNumeratorInExpression(summandsRight.get(i)))).simplify());
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -2369,9 +2325,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -2522,9 +2475,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         // In summandsRightInNumerator nach passendem Testsummanden suchen.
@@ -2634,9 +2584,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
         Expression[] result = new Expression[2];
@@ -2726,9 +2673,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -2982,9 +2926,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
     }
@@ -3073,9 +3014,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -3343,9 +3281,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
     }
@@ -3450,9 +3385,6 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
 
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
-
         }
 
     }
@@ -3504,9 +3436,6 @@ public abstract class SimplifyBinaryOperationMethods {
             }
 
             factorsNumerator.put(i, base.pow(exponent));
-
-            // Zwischendurch Kontrolle, ob die Berechnung nicht abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -3583,8 +3512,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
             }
-
-            FlowController.interruptComputationIfNeeded();
 
         }
 

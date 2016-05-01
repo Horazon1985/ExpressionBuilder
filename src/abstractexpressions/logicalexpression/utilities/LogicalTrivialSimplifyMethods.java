@@ -1,7 +1,6 @@
 package abstractexpressions.logicalexpression.utilities;
 
 import exceptions.EvaluationException;
-import flowcontroller.FlowController;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
 import abstractexpressions.logicalexpression.classes.LogicalUnaryOperation;
 
@@ -24,8 +23,6 @@ public abstract class LogicalTrivialSimplifyMethods {
                     summands.remove(j);
                 }
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -77,8 +74,6 @@ public abstract class LogicalTrivialSimplifyMethods {
                     factors.remove(j);
                 }
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -133,8 +128,6 @@ public abstract class LogicalTrivialSimplifyMethods {
                     break;
                 }
             }
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
         }
 
     }
@@ -164,9 +157,6 @@ public abstract class LogicalTrivialSimplifyMethods {
                     return;
                 }
             }
-            
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
 
         }
 
@@ -197,9 +187,6 @@ public abstract class LogicalTrivialSimplifyMethods {
                     return;
                 }
             }
-
-            // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-            FlowController.interruptComputationIfNeeded();
             
         }
 

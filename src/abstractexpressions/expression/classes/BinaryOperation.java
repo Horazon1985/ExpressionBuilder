@@ -13,7 +13,6 @@ import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
-import flowcontroller.FlowController;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -705,9 +704,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyTrivial() throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         // Allgemeine Vereinfachungen, falls der zugrundeliegende Ausdruck konstant ist.
         Expression exprLeftAndRightSimplified;
         BinaryOperation expr;
@@ -1052,8 +1048,6 @@ public class BinaryOperation extends Expression {
 
         // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
         while (!expr.equals(exprExpanded)) {
-            // Prüfung, ob zwischendurch abgebrochen wurde.
-            FlowController.interruptComputationIfNeeded();
             expr = exprExpanded.copy();
             exprExpanded = SimplifyBinaryOperationMethods.simplifySingleExpand(expr, type);
         }
@@ -1064,9 +1058,6 @@ public class BinaryOperation extends Expression {
 
     @Override
     public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
@@ -1282,9 +1273,6 @@ public class BinaryOperation extends Expression {
     public Expression orderDifferencesAndQuotients() throws EvaluationException {
 
         Expression result;
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         ExpressionCollection termsLeft = new ExpressionCollection();
         ExpressionCollection termsRight = new ExpressionCollection();
@@ -1625,9 +1613,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyFunctionalRelations() throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         BinaryOperation expr = this;
         Expression exprSimplified;
 
@@ -1884,9 +1869,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         Expression expr = this;
         Expression exprSimplified;
 
@@ -1951,9 +1933,6 @@ public class BinaryOperation extends Expression {
 
     @Override
     public Expression simplifyCollectLogarithms() throws EvaluationException {
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
@@ -2021,9 +2000,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyExpandLogarithms() throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         if (this.isSum() || this.isDifference()) {
 
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
@@ -2059,9 +2035,6 @@ public class BinaryOperation extends Expression {
 
     @Override
     public Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException {
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         if (this.isSum()) {
 
@@ -2099,9 +2072,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -2138,9 +2108,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -2173,9 +2140,6 @@ public class BinaryOperation extends Expression {
 
     @Override
     public Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException {
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         if (this.isSum()) {
 
@@ -2373,9 +2337,6 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException {
 
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
-
         if (this.isSum()) {
 
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
@@ -2485,9 +2446,6 @@ public class BinaryOperation extends Expression {
 
     @Override
     public Expression simplifyAlgebraicExpressions() throws EvaluationException {
-
-        // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
-        FlowController.interruptComputationIfNeeded();
 
         BinaryOperation expr;
 
