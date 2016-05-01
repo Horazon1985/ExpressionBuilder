@@ -41,10 +41,10 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
      */
     private static class NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException extends MathToolException {
 
-        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION = "Expression is not a rational function in variable and the square root of a quadratic function.";
+        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION_MESSAGE = "Expression is not a rational function in variable and the square root of a quadratic function.";
 
         public NotRationalFunctionInVarAndSqrtOfQuadraticFunctionException() {
-            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION);
+            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_SQRT_OF_QUADRATIC_FUNCTION_MESSAGE);
         }
 
     }
@@ -56,10 +56,24 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
      */
     private static class NotRationalFunctionInVarAndAnotherAlgebraicFunctionException extends MathToolException {
 
-        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION = "Expression is not a rational function in variable and another algebraic function.";
+        private static final String NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION_MESSAGE = "Expression is not a rational function in variable and another algebraic function.";
 
         public NotRationalFunctionInVarAndAnotherAlgebraicFunctionException() {
-            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION);
+            super(NOT_RATIONAL_FUNCTION_IN_VAR_AND_ANOTHER_ALGEBRAIC_FUNCTION_MESSAGE);
+        }
+
+    }
+
+    /**
+     * Private Fehlerklasse für den Fall, dass ein Ausdruck keine rationale
+     * Funktion in einer rationalen Potenz von x (x = var) ist.
+     */
+    private static class NotRationalFunctionInRationalPowerOfVarException extends MathToolException {
+
+        private static final String NOT_RATIONAL_FUNCTION_IN_RATIONAL_POWER_OF_VAR_MESSAGE = "Expression is not a rational function in variable and another algebraic function.";
+
+        public NotRationalFunctionInRationalPowerOfVarException() {
+            super(NOT_RATIONAL_FUNCTION_IN_RATIONAL_POWER_OF_VAR_MESSAGE);
         }
 
     }
@@ -1624,6 +1638,21 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
     }
 
+    // Integration algebraischer Funktionen.
+    /**
+     * Ermittelt potenzielle Substitutionen für die Integration einer
+     * algebraischen Funktion.
+     */
+    private static void addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
+        if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
+            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
+            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
+        } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
+            setOfSubstitutions.add(f);
+        }
+    }
+
+    // Typ 1: R(x, (ax^2 + bx + c)^(1/2)), R = rationale Funktion.
     /**
      * Integriert Funktionen vom Typ R(x, (ax^2 + bx + c)^(1/2)), R = rationale
      * Funktion.<br>
@@ -1969,17 +1998,85 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
     }
 
+    // Typ 3: f(x^(1/n)) = 0, f = rationale Funktion.
     /**
-     * Ermittelt potenzielle Substitutionen für die Integration einer
-     * algebraischen Funktion.
+     * Hauptmethode zum Integrieren von algebraischen Gleichungen der Form
+     * f(x^(1/n)) = 0, f = rationale Funktion. Ist f keine solche Gleichung, so
+     * wird eine NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws EvaluationException, NotAlgebraicallyIntegrableException
      */
-    private static void addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(Expression f, String var, ExpressionCollection setOfSubstitutions) {
-        if (f.contains(var) && f instanceof BinaryOperation && f.isNotPower()) {
-            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getLeft(), var, setOfSubstitutions);
-            addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(((BinaryOperation) f).getRight(), var, setOfSubstitutions);
-        } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
-            setOfSubstitutions.add(f);
+    public static Expression integrateRationalFunctionInRationalPowerOfVar(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        BigInteger exponentDenominator;
+        try {
+            exponentDenominator = getExponentIfFunctionIsRationalFunctionInRationalPowerOfVar(f, var);
+        } catch (NotRationalFunctionInRationalPowerOfVarException e) {
+            throw new NotAlgebraicallyIntegrableException();
         }
+
+        String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+        Expression substitution = Variable.create(var).pow(BigInteger.ONE, exponentDenominator);
+        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, substitution, Variable.create(substVar));
+        
+        if (fSubstituted.contains(var) || !SimplifyRationalFunctionMethods.isRationalFunction(fSubstituted, substVar)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression derivativeOfInverseTransformation = new Constant(exponentDenominator).mult(Variable.create(substVar).pow(exponentDenominator.subtract(BigInteger.ONE)));
+
+        Expression integrandSubstituted = fSubstituted.mult(derivativeOfInverseTransformation);
+        Expression resultFunction = indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{integrandSubstituted, substVar}), true);
+
+        try {
+            // Vor der Rücksubstitution vereinfachen.
+            resultFunction = resultFunction.simplify();
+        } catch (EvaluationException e) {
+            // Sollte bei einer gültigen Stammfunktion nicht passieren.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        // Falls noch unbestimmte Integrale auftauchen, dann konnte nicht ordentlich integriert werden.
+        if (resultFunction.containsIndefiniteIntegral()) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        // Rücksubstitution: y = g(x).
+        return resultFunction.replaceVariable(substVar, Variable.create(var).pow(BigInteger.ONE, exponentDenominator));
+
+    }
+
+    private static BigInteger getExponentIfFunctionIsRationalFunctionInRationalPowerOfVar(Expression f, String var) throws NotRationalFunctionInRationalPowerOfVarException {
+
+        ExpressionCollection setOfSubstitutions = new ExpressionCollection();
+        addSuitableSubstitutionForIntegrationOfAlgebraicFunctions(f, var, setOfSubstitutions);
+
+        BigInteger lcmOfExponentDenominator = null;
+        for (Expression subst : setOfSubstitutions) {
+            if (!subst.isPower() || !((BinaryOperation) subst).getLeft().equals(Variable.create(var)) || !((BinaryOperation) subst).getRight().isRationalConstant()) {
+                throw new NotRationalFunctionInRationalPowerOfVarException();
+            }
+            if (lcmOfExponentDenominator == null) {
+                lcmOfExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getValue().toBigInteger().abs();
+            } else {
+                lcmOfExponentDenominator = ArithmeticMethods.lcm(lcmOfExponentDenominator,
+                        ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getValue().toBigInteger().abs());
+            }
+        }
+
+        if (lcmOfExponentDenominator == null || lcmOfExponentDenominator.equals(BigInteger.ONE)) {
+            // Dann ist die Funktion eine rationale Funktion (andere Methoden sind dann dafür zuständig). 
+            throw new NotRationalFunctionInRationalPowerOfVarException();
+        }
+
+        // Schließlich: Prüfung, ob f eine rationale Funktion in x und g(x) = radicand ist.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(f, var, Variable.create(var).pow(BigInteger.ONE, lcmOfExponentDenominator))) {
+            throw new NotRationalFunctionInRationalPowerOfVarException();
+        }
+
+        return lcmOfExponentDenominator;
+
     }
 
 }

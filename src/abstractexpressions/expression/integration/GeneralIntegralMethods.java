@@ -571,9 +571,15 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
-        // Integration von Q(x, g(x)), Q(s, t) rationale Funktion in s, t, y = g(x) derart, dass x = g(y) eine rationale Funktion in y ist.
+        // Integration von Q(x, g(x)), Q(s, t) = rationale Funktion in s, t, y = g(x) derart, dass x = g(y) eine rationale Funktion in y ist.
         try {
             return SpecialIntegrationMethods.integrateRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(expr);
+        } catch (NotAlgebraicallyIntegrableException e) {
+        }
+
+        // Integration von Q(x^(1/n)), Q = rationale Funktion.
+        try {
+            return SpecialIntegrationMethods.integrateRationalFunctionInRationalPowerOfVar(expr);
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 

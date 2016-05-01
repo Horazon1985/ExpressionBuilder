@@ -12,6 +12,7 @@ import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
+import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
 import exceptions.MathToolException;
 import flowcontroller.FlowController;
@@ -33,6 +34,31 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             super(ROOT_NOT_RATIONAL);
         }
 
+    }
+
+    /**
+     * Gibt zurück, ob f eine rationale Funktion in x^(1/n), x = var, für ein
+     * geeignetes n ist.
+     */
+    public static boolean isRationalFunctionInRationalPowerOfVar(Expression f, String var) {
+        if (!f.contains(var)) {
+            return true;
+        }
+        if (f.equals(Variable.create(var))) {
+            return true;
+        }
+        if (f instanceof BinaryOperation) {
+            if (f.isNotPower()) {
+                return isRationalFunctionInRationalPowerOfVar(((BinaryOperation) f).getLeft(), var) && isRationalFunctionInRationalPowerOfVar(((BinaryOperation) f).getRight(), var);
+            } else if (f.isPower() && ((BinaryOperation) f).getRight().isRationalPower() && ((BinaryOperation) f).getLeft().equals(Variable.create(var))) {
+                return true;
+            }
+        }
+        /*
+         Falls f eine Instanz von Operator oder SelfDefinedFunction ist, in
+         welchem var vorkommt, dann false zurückgeben.
+         */
+        return false;
     }
 
     /**
@@ -598,9 +624,9 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
     /**
      * Hilfsfunktion: Liefert, ob expr von der Form b^(1/2) oder a*b^(1/2) mit
-     * ganzem a ist. Für die Rationalisierung des Nenners
-     * müssen im Wesentlichen nur solche Terme betrachtet werden, da
-     * allgemeinere Terme während des simplify() auf diese Form gebracht werden.
+     * ganzem a ist. Für die Rationalisierung des Nenners müssen im Wesentlichen
+     * nur solche Terme betrachtet werden, da allgemeinere Terme während des
+     * simplify() auf diese Form gebracht werden.
      */
     public static boolean isProductOfIntegerAndSqrtOfExpression(Expression expr) {
         if (expr.isPower()

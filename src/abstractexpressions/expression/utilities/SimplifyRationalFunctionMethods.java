@@ -204,7 +204,7 @@ public abstract class SimplifyRationalFunctionMethods {
     }
 
     /**
-     * Hilfsmethode. Gibt zurück, ob f eine rationale Funktion in var ist.
+     * Gibt zurück, ob f eine rationale Funktion in var ist.
      */
     public static boolean isRationalFunction(Expression f, String var) {
         if (!f.contains(var)) {
