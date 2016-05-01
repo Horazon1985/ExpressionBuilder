@@ -490,7 +490,9 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonNegative();
         }
         if (this.isPower()) {
-            return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant();
+            return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant() 
+                    || this.right.isRationalConstant() 
+                    && (((BinaryOperation) this.right).left.isEvenIntegerConstant() || ((BinaryOperation) this.right).right.isEvenIntegerConstant());
         }
         return false;
 
