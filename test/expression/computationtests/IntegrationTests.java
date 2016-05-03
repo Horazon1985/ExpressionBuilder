@@ -38,7 +38,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("((x^(3+1)/(3+1))/7+x^(2+1)/(2+1))-5*x", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -52,7 +52,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("exp(x^3)/3", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -66,7 +66,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("2*sin(x^3+sin(x))", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -82,7 +82,7 @@ public class IntegrationTests {
                     Expression.TWO.mult(Expression.MINUS_ONE.mult(Variable.create("x").cos()).mult(Variable.create("x")).sub(
                                     Expression.MINUS_ONE.mult(Variable.create("x").sin()))));
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -98,22 +98,22 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("x*ln(x)-x", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
             f = Expression.build("int(cot(x),x)", null);
             integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             expectedResult = Expression.build("ln(|sin(x)|)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
             f = Expression.build("int(5^x,x)", null);
             integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             expectedResult = Expression.build("exp(ln(5)*x)/ln(5)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
             expectedResult = expectedResult.simplify();
             // Vereinfacht ist integral = 5^x/ln(5).
             Expression resultSimplified = Expression.build("5^x/ln(5)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(expectedResult.equals(resultSimplified));
+            Assert.assertTrue(expectedResult.equivalent(resultSimplified));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -127,7 +127,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Variable.create("x").tan().pow(2).div(2).add(Variable.create("x").cos().abs().ln());
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -154,7 +154,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -184,7 +184,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("(ln(|x-1|)+2*ln(|3+x|))-ln(|5+x|)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -198,7 +198,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("ln(|1+x|)+ln(|3+2*x|)/2", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -212,7 +212,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Expression.build("(x+ln(1))-ln(1+exp(x))", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -227,9 +227,9 @@ public class IntegrationTests {
             Expression expectedResult = Expression.build("(7*((2/7*x+ln(1))/3-(ln(3+exp(2/7*x)))/3))/2", null);
             Expression expectedResultSimplified = Expression.build("x/3-ln((3+exp((2*x)/7))^(7/6))", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
             integral = integral.simplify();
-            Assert.assertTrue(integral.equals(expectedResultSimplified));
+            Assert.assertTrue(integral.equivalent(expectedResultSimplified));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -244,7 +244,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f).orderDifferencesAndQuotients().orderSumsAndProducts();
             Expression expectedResult = Expression.build("(2*arctan(tan(x/2)/3^(1/2)))/3^(1/2)", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -259,7 +259,7 @@ public class IntegrationTests {
             Expression integral = f.simplify();
             Expression expectedResult = Expression.build("ln(|(2^(1/2)+tan(x/2))-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2)))", null);
             TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equals(expectedResult));
+            Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

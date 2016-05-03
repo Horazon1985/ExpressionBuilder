@@ -1711,7 +1711,7 @@ public abstract class GeneralIntegralMethods {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;
                 indexOfExponentialOrTrigonometricalFactorInNumerator = i;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln))
-                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                    && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfLogarithmicFactorsInNumerator++;
                 indexOfLogarithmicFactorInNumerator = i;
             }
