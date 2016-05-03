@@ -1008,7 +1008,6 @@ public class Function extends Expression {
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
         if (this.type.isTrigonometric()) {
-
 //            try {
 //
 //                Expression expr = this.left;

@@ -598,8 +598,8 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                 // ZUERST: (ax^2+bx+c)^(1/2) wird durch q*(-a)^(1/2)*cos(t) ersetzt.
                 fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(fSubstituted, radicand.pow(1, 2),
                         q.mult(MINUS_ONE.mult(a).pow(1, 2)).mult(Variable.create(substVarForEquation).cos()));
-                // DANACH: x wird durch q*cos(t) - p ersetzt, t = substVarForEquation.
-                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForEquation).cos().sub(p)));
+                // DANACH: x wird durch q*sin(t) - p ersetzt, t = substVarForEquation.
+                fSubstituted = fSubstituted.replaceVariable(var, q.mult(Variable.create(substVarForEquation).sin().sub(p)));
 
                 if (fSubstituted.contains(var)) {
                     // Sollte eigentlich nicht passieren.
@@ -617,9 +617,19 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                 ExpressionCollection zerosOfSubstitutedEquation = solveZeroEquation(fSubstituted, substVarForEquation);
 
                 // Rücksubstitution: u = cos(t) und u = (x + p)/q, d.h. x = qu - p = q*cos(t) - p, t = substVarForEquation.
+                Expression zeroSimplified;
                 for (Expression zero : zerosOfSubstitutedEquation) {
                     try {
-                        zeros.add(q.mult(zero.cos()).sub(p).simplify());
+                        /*
+                         Folgende Lösungen werden ausgeschlossen: diejenigen, bei
+                         denen q*(-a)^(1/2)*cos(t) < 0 (d.h. als cos(t) < 0),
+                         denn die Quadratwurzel muss darf nicht negativ sein.
+                         */
+                        zeroSimplified = q.mult(zero.cos()).sub(p).simplify();
+                        if (!zeroSimplified.isConstant() && !zeroSimplified.isAlwaysNegative()
+                                || zeroSimplified.isConstant() && zeroSimplified.isAlwaysNonNegative()) {
+                            zeros.add(zeroSimplified);
+                        }
                     } catch (EvaluationException e) {
                         // Nichts tun, ignorieren!
                     }
