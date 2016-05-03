@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.matrixexpression.utilities.SimplifyMatrixOperatorMethods;
+import exceptions.CancellationException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -605,8 +606,10 @@ public class MatrixOperator extends MatrixExpression {
                     return (MatrixExpression) method.invoke(operator);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     if (e.getCause() instanceof EvaluationException) {
-                        // Methoden können nur EvaluationExceptions werfen.
                         throw (EvaluationException) e.getCause();
+                    }
+                    if (e.getCause() instanceof CancellationException) {
+                        throw (CancellationException) e.getCause();
                     }
                     throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixOperator_INVALID_MATRIX_OPERATOR"));
                 }

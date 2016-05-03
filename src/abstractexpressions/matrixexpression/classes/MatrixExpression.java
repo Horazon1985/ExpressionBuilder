@@ -8,12 +8,12 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
-import abstractexpressions.expression.classes.Variable;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import lang.translator.Translator;
+import process.Canceller;
 
 public abstract class MatrixExpression implements AbstractExpression {
 
@@ -415,10 +415,8 @@ public abstract class MatrixExpression implements AbstractExpression {
                     if (!((Matrix) this).getEntry(i, j).equals(Expression.ONE)) {
                         return false;
                     }
-                } else {
-                    if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)) {
-                        return false;
-                    }
+                } else if (!((Matrix) this).getEntry(i, j).equals(Expression.ZERO)) {
+                    return false;
                 }
             }
         }
@@ -527,7 +525,7 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     //Multipliziert eine Matrix mit einem Skalar a von links.
     public MatrixExpression mult(Expression a) {
-        if (a.equals(ONE)){
+        if (a.equals(ONE)) {
             return this;
         }
         return new MatrixBinaryOperation(new Matrix(a), this, TypeMatrixBinary.TIMES);
@@ -535,7 +533,7 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(Expression expr) {
-        if (expr.equals(ONE)){
+        if (expr.equals(ONE)) {
             return this;
         }
         return new MatrixPower(this, expr);
@@ -543,7 +541,7 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(int n) {
-        if (n == 1){
+        if (n == 1) {
             return this;
         }
         return new MatrixPower(this, new Constant(n));
@@ -551,7 +549,7 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     //Potenziert eine Matrix.
     public MatrixExpression pow(BigInteger n) {
-        if (n.equals(BigInteger.ONE)){
+        if (n.equals(BigInteger.ONE)) {
             return this;
         }
         return new MatrixPower(this, new Constant(n));
@@ -674,14 +672,14 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     @Override
     public abstract void addContainedIndeterminates(HashSet<String> vars);
-    
+
     @Override
-    public HashSet<String> getContainedIndeterminates(){
+    public HashSet<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;
     }
-    
+
     /**
      * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
      * (precise = false).
@@ -698,7 +696,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      * Gibt zurück, ob this nichtexakte Konstanten enthält.
      */
     public abstract boolean containsApproximates();
-    
+
     /**
      * Legt eine neue Kopie von this an.
      */
@@ -808,15 +806,25 @@ public abstract class MatrixExpression implements AbstractExpression {
             do {
                 matExpr = matExprSimplified.copy();
                 matExprSimplified = matExprSimplified.orderDifferences();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyTrivial();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyByInsertingDefinedVars();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyMatrixEntries();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyCollectProducts();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyFactorize();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
+                Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyComputeMatrixOperations();
+                Canceller.interruptComputationIfNeeded();
             } while (!matExpr.equals(matExprSimplified));
 
             return matExprSimplified;
@@ -840,33 +848,43 @@ public abstract class MatrixExpression implements AbstractExpression {
                 matExpr = matExprSimplified.copy();
                 if (simplifyTypes.contains(TypeSimplify.order_difference)) {
                     matExprSimplified = matExprSimplified.orderDifferences();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.order_sums_and_products)) {
                     matExprSimplified = matExprSimplified.orderSumsAndProducts();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
                     matExprSimplified = matExprSimplified.simplifyTrivial();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {
                     matExprSimplified = matExprSimplified.simplifyByInsertingDefinedVars();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_matrix_entries)) {
                     matExprSimplified = matExprSimplified.simplifyMatrixEntries(simplifyTypes);
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_collect_products)) {
                     matExprSimplified = matExprSimplified.simplifyCollectProducts();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_factorize_scalars)) {
                     matExprSimplified = matExprSimplified.simplifyFactorizeScalars();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_factorize)) {
                     matExprSimplified = matExprSimplified.simplifyFactorize();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_matrix_functional_relations)) {
                     matExprSimplified = matExprSimplified.simplifyMatrixFunctionalRelations();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_compute_matrix_operations)) {
                     matExprSimplified = matExprSimplified.simplifyComputeMatrixOperations();
+                    Canceller.interruptComputationIfNeeded();
                 }
             } while (!matExpr.equals(matExprSimplified));
 

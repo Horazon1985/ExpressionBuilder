@@ -10,6 +10,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
 import abstractexpressions.expression.integration.GeneralIntegralMethods;
+import exceptions.CancellationException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -1126,8 +1127,10 @@ public class Operator extends Expression {
                     return (Expression) method.invoke(operator);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     if (e.getCause() instanceof EvaluationException) {
-                        // Methoden können nur EvaluationExceptions werfen.
                         throw (EvaluationException) e.getCause();
+                    }
+                    if (e.getCause() instanceof CancellationException) {
+                        throw (CancellationException) e.getCause();
                     }
                     throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_INVALID_OPERATOR"));
                 }
