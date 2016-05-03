@@ -24,8 +24,6 @@ public abstract class Translator {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangGUI.xml");
             } else if (exceptionId.substring(0, 2).equals("GR")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangGraphic.xml");
-            } else if (exceptionId.substring(0, 3).equals("LAA")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangLinearAlgebraAlgorithms.xml");
             } else if (exceptionId.substring(0, 3).equals("LEB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangLogicalExpressionBuilder.xml");
             } else if (exceptionId.substring(0, 3).equals("MCC")) {

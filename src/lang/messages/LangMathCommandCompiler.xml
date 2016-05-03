@@ -958,11 +958,17 @@
         <Ukrainian>Змінні у команді 'solvesystem' мають бути попрарно різними.</Ukrainian>
         <Russian>Переменные в команде 'solvesystem' должны попарно отличаться.</Russian>
     </object>
-    <object id = "MCC_GENERAL_EQUATION_NOT_LINEAR_IN_SOLVESYSTEM">
-        <German>Die [0]. Gleichung ist nicht linear in der Veränderlichen [1].</German>
-        <English>The [0]. equation is not linear in the variable [1].</English>
-        <Ukrainian>[0]. рівняння не є лінійним за змінною [1].</Ukrainian>
-        <Russian>[0]. уравнение не является линейным по переменной [1].</Russian>
+    <object id = "MCC_EQUATION_SYSTEM_HAS_ALL_REAL_TUPLES_AS_SOLUTIONS">
+        <German>Alle reellen Zahlentupel sind Lösungen des Gleichungssystems.</German>
+        <English>All real tuples are solutions of the system of equations.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_EQUATION_SYSTEM_HAS_NO_SOLUTIONS">
+        <German>Das Gleichungssystem besitzt keine Lösungen.</German>
+        <English>The system of equations has no solutions.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
         <German>Zu wenig Parameter im Befehl 'tangent'.</German>

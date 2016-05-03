@@ -35,9 +35,8 @@ public abstract class SolveGeneralEquationMethods {
     private static int solveTries;
 
     /**
-     * Konstanten, die aussagen, ob bei einer Gleichung keine Lösungen gefunden
-     * werden konnten oder ob die Gleichung definitiv alle reellen Zahlen als
-     * Lösungen besitzt.
+     * Konstanten, die aussagen, ob eine Gleichung keine Lösungen besitzt oder
+     * ob die Gleichung definitiv alle reellen Zahlen als Lösungen besitzt.
      */
     public static final ExpressionCollection ALL_REALS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();

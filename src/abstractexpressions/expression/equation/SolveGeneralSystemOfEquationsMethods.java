@@ -19,6 +19,13 @@ import java.util.HashSet;
 
 public class SolveGeneralSystemOfEquationsMethods {
 
+    /**
+     * Konstanten, die aussagen, ob ein Gleichungssystem keine Lösungen besitzt
+     * oder ob es definitiv alle reellen Zahlentupel als Lösungen besitzt.
+     */
+    public static final ArrayList<Expression[]> ALL_REALS = new ArrayList<>();
+    public static final ArrayList<Expression[]> NO_SOLUTIONS = new ArrayList<>();
+
     private static HashSet<String> getIndeterminatesInEquation(Expression equation, ArrayList<String> vars) {
         HashSet<String> allVarsInEquation = equation.getContainedIndeterminates();
         HashSet<String> varsInEquation = new HashSet<>();
@@ -102,10 +109,10 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
-        if (equations.length != vars.size()){
+        if (equations.length != vars.size()) {
             throw new NotAlgebraicallySolvableException();
         }
-        
+
         // Prüfung, ob alle Gleichungen Polynome sind.
         for (Expression equation : equations) {
             if (!SimplifyMultiPolynomialMethods.isMultiPolynomial(equation, vars)) {
@@ -182,7 +189,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         String[] monomialVars = new String[vars.size()];
-        for (int i = 0; i < vars.size(); i++){
+        for (int i = 0; i < vars.size(); i++) {
             monomialVars[i] = vars.get(i);
         }
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
@@ -252,10 +259,23 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solveGeneralSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
 
-        if (equations.length != vars.size()){
-            throw new NotAlgebraicallySolvableException();
+        // Triviale Gleichungen beseitigen.
+        try {
+            equations = removeTrivialEquations(equations, vars);
+        } catch (NotAlgebraicallySolvableException e) {
+            return NO_SOLUTIONS;
+        }
+        // Redundante Gleichungen beseitigen.
+        equations = removeRedundantEquations(equations, vars);
+        
+        if (equations.length == 1 && equations[0].equals(ZERO)){
+            return ALL_REALS;
         }
         
+        if (equations.length != vars.size()) {
+            throw new NotAlgebraicallySolvableException();
+        }
+
         ArrayList<String> varsCopy = new ArrayList<>(vars);
         ArrayList<HashMap<String, Expression>> solutions = solveTriangularGeneralSystemOfEquations(new ArrayList<>(Arrays.asList(equations)), varsCopy);
 
@@ -271,6 +291,60 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         return orderedSolutions;
+
+    }
+
+    private static boolean doesExpressionContainSomeVar(Expression f, ArrayList<String> vars) {
+        for (String var : vars) {
+            if (f.contains(var)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Expression[] removeTrivialEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+        ArrayList<Expression> nonTrivialEquations = new ArrayList<>();
+        for (Expression equation : equations) {
+            if (!equation.equals(ZERO)) {
+                nonTrivialEquations.add(equation);
+            } else if (!doesExpressionContainSomeVar(equation, vars) && !equation.equals(ZERO)) {
+                throw new NotAlgebraicallySolvableException();
+            }
+        }
+        Expression[] nonTrivialEquationsAsArray = new Expression[nonTrivialEquations.size()];
+        return nonTrivialEquations.toArray(nonTrivialEquationsAsArray);
+    }
+
+    private static Expression[] removeRedundantEquations(Expression[] equations, ArrayList<String> vars) {
+
+        ArrayList<Expression> nonTrivialEquations = new ArrayList<>();
+        Expression quotient;
+        ArrayList<Integer> indicesWithRedundantEquations = new ArrayList<>();
+        for (int i = 0; i < equations.length; i++) {
+            if (indicesWithRedundantEquations.contains(i)) {
+                continue;
+            }
+            for (int j = i + 1; j < equations.length; j++) {
+                try {
+                    quotient = equations[i].div(equations[j]).simplify();
+                    if (!doesExpressionContainSomeVar(quotient, vars)) {
+                        indicesWithRedundantEquations.add(j);
+                    }
+                } catch (EvaluationException e) {
+                    // Nichts tun.
+                }
+            }
+        }
+
+        for (int i = 0; i < equations.length; i++) {
+            if (!indicesWithRedundantEquations.contains(i)) {
+                nonTrivialEquations.add(equations[i]);
+            }
+        }
+
+        Expression[] nonTrivialEquationsAsArray = new Expression[nonTrivialEquations.size()];
+        return nonTrivialEquations.toArray(nonTrivialEquationsAsArray);
 
     }
 
@@ -307,7 +381,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         String[] monomialVars = new String[vars.size()];
-        for (int i = 0; i < vars.size(); i++){
+        for (int i = 0; i < vars.size(); i++) {
             monomialVars[i] = vars.get(i);
         }
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
@@ -350,7 +424,7 @@ public class SolveGeneralSystemOfEquationsMethods {
                 // vars in varsCopy kopieren.
                 varsCopy.clear();
                 varsCopy.addAll(vars);
-                
+
                 equationsWithVarReplacedBySolution.clear();
 
                 for (Expression f : equations) {
@@ -377,18 +451,22 @@ public class SolveGeneralSystemOfEquationsMethods {
         return solutions;
 
     }
-    
+
     public static ArrayList<Expression[]> solveSystemOfEquations(Expression[] equations, ArrayList<String> vars) {
 
         // Typ: lineares Gleichungssystem.
         ArrayList<Expression[]> solutions = new ArrayList<>();
         try {
-            solutions.add(solveLinearSystemOfEquations(equations, vars));
+            Expression[] solution = solveLinearSystemOfEquations(equations, vars);
+            if (solution == GaussAlgorithm.NO_SOLUTIONS){
+                return NO_SOLUTIONS;
+            }
+            solutions.add(solution);
             return solutions;
         } catch (NotAlgebraicallySolvableException e) {
         }
 
-        // Typ: lineares Gleichungssystem.
+        // Typ: polynomiales Gleichungssystem.
         try {
             return solvePolynomialSystemOfEquations(equations, vars);
         } catch (NotAlgebraicallySolvableException e) {
@@ -399,7 +477,7 @@ public class SolveGeneralSystemOfEquationsMethods {
             return solveGeneralSystemOfEquations(equations, vars);
         } catch (NotAlgebraicallySolvableException e) {
         }
-        
+
         return new ArrayList<>();
 
     }

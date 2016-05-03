@@ -14,6 +14,12 @@ import lang.translator.Translator;
 public abstract class GaussAlgorithm {
 
     /**
+     * Konstante, die aussagt, ob ein lineares Gleichungssystem keine
+     * Lösungenbesitzt.
+     */
+    public static final Expression[] NO_SOLUTIONS = new Expression[0];
+
+    /**
      * Gibt die Zeilenstufenform der Matrix matrix zurück.
      *
      * @throws EvaluationException
@@ -159,25 +165,23 @@ public abstract class GaussAlgorithm {
                     basisVectorEntry[basisVectorCount][k] = Expression.ZERO;
                 } else if (k == j) {
                     basisVectorEntry[basisVectorCount][k] = Expression.ONE;
+                } else if (!listOfIndicesWithJumpings.contains(k)) {
+                    basisVectorEntry[basisVectorCount][k] = Expression.ZERO;
                 } else {
-                    if (!listOfIndicesWithJumpings.contains(k)) {
-                        basisVectorEntry[basisVectorCount][k] = Expression.ZERO;
-                    } else {
 
-                        line = listOfIndicesWithJumpings.indexOf(k);
-                        for (int m = j; m >= k + 1; m--) {
-                            if (componentOfSolutionVector.equals(Expression.ZERO)) {
-                                componentOfSolutionVector = Expression.MINUS_ONE.mult(basisVectorEntry[basisVectorCount][m].mult(
-                                        matrix.getEntry(line, m)));
-                            } else {
-                                componentOfSolutionVector = componentOfSolutionVector.sub(basisVectorEntry[basisVectorCount][m].mult(
-                                        matrix.getEntry(line, m)));
-                            }
+                    line = listOfIndicesWithJumpings.indexOf(k);
+                    for (int m = j; m >= k + 1; m--) {
+                        if (componentOfSolutionVector.equals(Expression.ZERO)) {
+                            componentOfSolutionVector = Expression.MINUS_ONE.mult(basisVectorEntry[basisVectorCount][m].mult(
+                                    matrix.getEntry(line, m)));
+                        } else {
+                            componentOfSolutionVector = componentOfSolutionVector.sub(basisVectorEntry[basisVectorCount][m].mult(
+                                    matrix.getEntry(line, m)));
                         }
-                        componentOfSolutionVector = componentOfSolutionVector.div(matrix.getEntry(line, k));
-                        basisVectorEntry[basisVectorCount][k] = componentOfSolutionVector;
-
                     }
+                    componentOfSolutionVector = componentOfSolutionVector.div(matrix.getEntry(line, k));
+                    basisVectorEntry[basisVectorCount][k] = componentOfSolutionVector;
+
                 }
             }
 
@@ -213,7 +217,7 @@ public abstract class GaussAlgorithm {
 
         if (dimM.height == 0 || dimM.width == 0 || dimB.width != 1 || dimM.height != dimB.height) {
             // Sollte eigentlich nie vorkommen.
-            throw new EvaluationException(Translator.translateOutputMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            return NO_SOLUTIONS;
         }
 
         Expression[][] mExtendedEntries = new Expression[dimM.height][dimM.width + 1];
@@ -231,7 +235,7 @@ public abstract class GaussAlgorithm {
         try {
             mExtended = computeRowEcholonForm(mExtended);
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateOutputMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            return NO_SOLUTIONS;
         }
 
         int maxIndexOfNonZeroRow = dimM.height - 1;
@@ -247,6 +251,11 @@ public abstract class GaussAlgorithm {
         Expression[] solution = new Expression[dimM.width];
         // Sonderfall: mExtended ist die Nullmatrix. Dann ist maxIndexOfNonZeroRow == -1.
         if (maxIndexOfNonZeroRow == -1) {
+            for (int i = 0; i < dimM.height; i++) {
+                if (!mExtended.getEntry(i, dimM.width).equals(ZERO)) {
+                    return NO_SOLUTIONS;
+                }
+            }
             int indexOfParameterVar = 0;
             for (int i = 0; i < solution.length; i++) {
                 solution[i] = Variable.create(NotationLoader.FREE_REAL_PARAMETER_VAR + "_" + indexOfParameterVar);
@@ -261,7 +270,7 @@ public abstract class GaussAlgorithm {
             allCoefficientsAreZero = allCoefficientsAreZero && mExtended.getEntry(maxIndexOfNonZeroRow, i).equals(ZERO);
         }
         if (allCoefficientsAreZero && !mExtended.getEntry(maxIndexOfNonZeroRow, dimM.width).equals(ZERO)) {
-            throw new EvaluationException(Translator.translateOutputMessage("LAA_SYSTEM_NOT_SOLVABLE"));
+            return NO_SOLUTIONS;
         }
 
         // Ab hier existieren Lösungen.
