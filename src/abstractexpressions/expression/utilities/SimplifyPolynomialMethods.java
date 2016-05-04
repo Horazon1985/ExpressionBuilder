@@ -422,10 +422,10 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
             // TO DO: Rationale Polynome durch Lösen polynomieller Gleichungssysteme zerlegen.
-//            try {
-//                return decomposeRationalPolynomialBySolvingPolynomialSystem(a, var);
-//            } catch (PolynomialNotDecomposableException e) {
-//            }
+            try {
+                return decomposeRationalPolynomialBySolvingPolynomialSystem(a, var);
+            } catch (PolynomialNotDecomposableException e) {
+            }
         }
 
         try {
@@ -881,29 +881,47 @@ public abstract class SimplifyPolynomialMethods {
         }
 
         // i ist der Grad eines Faktors in der Zerlegung.
-        Expression[] equations = new Expression[a.getBound()];
+        Expression[] equations = new Expression[a.getBound() - 1];
         ArrayList<String> vars = new ArrayList<>();
         for (int i = 0; i < coefficientsOfNormalizedPolynomial.getBound(); i++) {
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
         }
 
+        Expression[] coefficientVarsOfFirstFactor, coefficientVarsOfSecondFactor;
+
         ArrayList<Expression[]> solutions;
-        for (int i = 2; i < coefficientsOfNormalizedPolynomial.getBound() / 2; i++) {
+        for (int i = 2; i <= coefficientsOfNormalizedPolynomial.getBound() / 2; i++) {
+
+            coefficientVarsOfFirstFactor = new Expression[i + 1];
+            coefficientVarsOfSecondFactor = new Expression[coefficientsOfNormalizedPolynomial.getBound() - i + 1];
+
+            for (int k = 0; k < coefficientVarsOfFirstFactor.length; k++) {
+                if (k < coefficientVarsOfFirstFactor.length - 1) {
+                    coefficientVarsOfFirstFactor[k] = Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + k);
+                } else {
+                    coefficientVarsOfFirstFactor[k] = ONE;
+                }
+            }
+            for (int k = 0; k < coefficientVarsOfSecondFactor.length; k++) {
+                if (k < coefficientVarsOfSecondFactor.length - 1) {
+                    coefficientVarsOfSecondFactor[k] = Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + (i + k));
+                } else {
+                    coefficientVarsOfSecondFactor[k] = ONE;
+                }
+            }
 
             // Gleichungssystem bilden.
             for (int j = 0; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
                 equations[j] = ZERO;
-                int index = Math.max(j, i - 1);
-                while (index >= 0) {
-                    if (i + j - index < coefficientsOfNormalizedPolynomial.getBound()) {
-                        equations[j] = equations[j].add(Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + index).mult(
-                                Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + (i + j - index))));
-                        j--;
-                    } else {
-                        equations[j] = equations[j].add(Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + index));
-                        break;
+                for (int k = j; k >= 0; k--) {
+                    if (k > i || j - k > i || j - k < 0){
+                        continue;
                     }
+                    equations[j] = equations[j].add(coefficientVarsOfFirstFactor[k].mult(coefficientVarsOfSecondFactor[j - k]));
                 }
+            }
+            for (int j = 0; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
+                equations[j] = equations[j].sub(coefficientsOfNormalizedPolynomial.get(j));
             }
 
             // Gleichungssystem lösen.
