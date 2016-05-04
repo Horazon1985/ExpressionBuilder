@@ -241,7 +241,7 @@ public abstract class GaussAlgorithm {
         int maxIndexOfNonZeroRow = dimM.height - 1;
 
         for (int i = dimM.height - 1; i >= 0; i--) {
-            if (isRowZero(m, i)) {
+            if (isRowZero(mExtended, i)) {
                 maxIndexOfNonZeroRow--;
             } else {
                 break;
@@ -281,7 +281,7 @@ public abstract class GaussAlgorithm {
         ArrayList<Integer> jumpings = getIndicesOfJumpings(mExtended);
         for (int i = dimM.width - 1; i >= 0; i--) {
             if (!jumpings.contains(i)) {
-                solution[i] = Variable.create("T_" + indexOfParameterVar);
+                solution[i] = Variable.create(NotationLoader.FREE_REAL_PARAMETER_VAR + "_" + indexOfParameterVar);
                 indexOfParameterVar++;
             }
         }

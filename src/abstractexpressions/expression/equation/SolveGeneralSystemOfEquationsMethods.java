@@ -7,6 +7,7 @@ import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods;
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisMethods.MultiPolynomial;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyMultiPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.computation.GaussAlgorithm;
 import exceptions.EvaluationException;
@@ -18,6 +19,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class SolveGeneralSystemOfEquationsMethods {
+
+    public enum SolutionType {
+        RATIONAL, ALL;
+    }
 
     /**
      * Konstanten, die aussagen, ob ein Gleichungssystem keine Lösungen besitzt
@@ -107,9 +112,10 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     }
 
-    public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
-        if (equations.length != vars.size()) {
+        if (equations.length < vars.size()) {
+            // In diesem Fall kann es (höchst wahrscheinlich) nicht endlich viele (reelle) Lösungen geben.
             throw new NotAlgebraicallySolvableException();
         }
 
@@ -131,6 +137,13 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
+
+        String[] monomialVars = new String[vars.size()];
+        for (int i = 0; i < vars.size(); i++) {
+            monomialVars[i] = vars.get(i);
+        }
+        GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
+
         ArrayList<MultiPolynomial> groebnerBasis;
         try {
             groebnerBasis = GroebnerBasisMethods.getNormalizedReducedGroebnerBasis(polynomials);
@@ -139,7 +152,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         ArrayList<String> varsCopy = new ArrayList<>(vars);
-        ArrayList<HashMap<String, Expression>> solutions = solveTriangularPolynomialSystemOfEquations(groebnerBasis, varsCopy);
+        ArrayList<HashMap<String, Expression>> solutions = solveTriangularPolynomialSystemOfEquations(groebnerBasis, varsCopy, type);
 
         // Die Lösungstupel in Arrays verwandeln und ausgeben.
         ArrayList<Expression[]> orderedSolutions = new ArrayList<>();
@@ -156,7 +169,7 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     }
 
-    private static ArrayList<HashMap<String, Expression>> solveTriangularPolynomialSystemOfEquations(ArrayList<MultiPolynomial> equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    private static ArrayList<HashMap<String, Expression>> solveTriangularPolynomialSystemOfEquations(ArrayList<MultiPolynomial> equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
         // Dann ist es nur eine Gleichung in einer Variablen.
         if (vars.size() == 1) {
@@ -169,9 +182,31 @@ public class SolveGeneralSystemOfEquationsMethods {
                 throw new NotAlgebraicallySolvableException();
             }
 
-            ExpressionCollection solutions;
+            ExpressionCollection solutions = new ExpressionCollection();
             try {
-                solutions = SolveGeneralEquationMethods.solveEquation(equations.get(0).toExpression(), ZERO, var);
+                if (type == SolutionType.RATIONAL) {
+                    for (int i = 0; i < equations.size(); i++) {
+                        if (equations.get(i).isZero()){
+                            continue;
+                        }
+                        if (i == 0) {
+                            solutions = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var);
+                        } else {
+                            solutions = SimplifyUtilities.intersection(solutions, PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var));
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < equations.size(); i++) {
+                        if (equations.get(i).isZero()){
+                            continue;
+                        }
+                        if (i == 0) {
+                            solutions = SolveGeneralEquationMethods.solvePolynomialEquation(equations.get(i).toExpression(), var);
+                        } else {
+                            solutions = SimplifyUtilities.intersection(solutions, SolveGeneralEquationMethods.solvePolynomialEquation(equations.get(i).toExpression(), var));
+                        }
+                    }
+                }
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallySolvableException();
             }
@@ -195,31 +230,50 @@ public class SolveGeneralSystemOfEquationsMethods {
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
 
         HashSet<String> varsInEquation;
-        MultiPolynomial equation = null;
+        ArrayList<MultiPolynomial> equationsWithOneVar = new ArrayList<>();
         String var = null;
-        for (MultiPolynomial f : equations) {
-            varsInEquation = getIndeterminatesInEquation(f, vars);
+        for (int i = 0; i < equations.size(); i++) {
+
+            varsInEquation = getIndeterminatesInEquation(equations.get(i), vars);
             if (varsInEquation.size() == 1) {
-                equation = f;
-                for (String v : varsInEquation) {
-                    var = v;
+                if (var == null) {
+                    for (String v : varsInEquation) {
+                        var = v;
+                    }
+                    equationsWithOneVar.add(equations.get(i));
+                    equations.remove(equations.get(i));
+                    i--;
+                } else if (varsInEquation.contains(var)) {
+                    equationsWithOneVar.add(equations.get(i));
+                    equations.remove(equations.get(i));
+                    i--;
                 }
-                equations.remove(equation);
-                break;
             }
+
         }
 
-        if (equation == null) {
+        if (equationsWithOneVar.isEmpty()) {
             throw new NotAlgebraicallySolvableException();
         }
 
-        ExpressionCollection coefficientsOfEquation = equation.toPolynomial(var);
-
-        ExpressionCollection solutionsOfEquation;
-        try {
-            solutionsOfEquation = PolynomialRootsMethods.solvePolynomialEquation(coefficientsOfEquation, var);
-        } catch (EvaluationException e) {
-            throw new NotAlgebraicallySolvableException();
+        // Jede der gefundenen Gleichungen muss nun gelöst werdebn und es werden nur die gemeinsamen Nullstellen weiterverwendet.
+        ExpressionCollection coefficientsOfEquation;
+        ExpressionCollection solutionsOfEquation = new ExpressionCollection();
+        for (int i = 0; i < equationsWithOneVar.size(); i++) {
+            coefficientsOfEquation = equationsWithOneVar.get(i).toPolynomial(var);
+            if (i == 0) {
+                try {
+                    solutionsOfEquation = PolynomialRootsMethods.solvePolynomialEquation(coefficientsOfEquation, var);
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+            } else {
+                try {
+                    solutionsOfEquation = SimplifyUtilities.intersection(solutionsOfEquation, PolynomialRootsMethods.solvePolynomialEquation(coefficientsOfEquation, var));
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+            }
         }
 
         vars.remove(var);
@@ -236,7 +290,7 @@ public class SolveGeneralSystemOfEquationsMethods {
                     equationsWithVarReplacedBySolution.add(f.replaceVarByExpression(var, solutionOfEquation).simplify());
                 }
 
-                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, vars);
+                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, vars, type);
 
                 HashMap<String, Expression> singleSolution;
                 for (HashMap<String, Expression> solutionOfReducedPolynomialSystem : solutionsOfReducedPolynomialSystem) {
@@ -267,11 +321,11 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
         // Redundante Gleichungen beseitigen.
         equations = removeRedundantEquations(equations, vars);
-        
-        if (equations.length == 1 && equations[0].equals(ZERO)){
+
+        if (equations.length == 1 && equations[0].equals(ZERO)) {
             return ALL_REALS;
         }
-        
+
         if (equations.length != vars.size()) {
             throw new NotAlgebraicallySolvableException();
         }
@@ -380,12 +434,6 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         }
 
-        String[] monomialVars = new String[vars.size()];
-        for (int i = 0; i < vars.size(); i++) {
-            monomialVars[i] = vars.get(i);
-        }
-        GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
-
         HashSet<String> varsInEquation;
         Expression equation = null;
         String var = null;
@@ -458,7 +506,7 @@ public class SolveGeneralSystemOfEquationsMethods {
         ArrayList<Expression[]> solutions = new ArrayList<>();
         try {
             Expression[] solution = solveLinearSystemOfEquations(equations, vars);
-            if (solution == GaussAlgorithm.NO_SOLUTIONS){
+            if (solution == GaussAlgorithm.NO_SOLUTIONS) {
                 return NO_SOLUTIONS;
             }
             solutions.add(solution);
@@ -468,7 +516,7 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         // Typ: polynomiales Gleichungssystem.
         try {
-            return solvePolynomialSystemOfEquations(equations, vars);
+            return solvePolynomialSystemOfEquations(equations, vars, SolutionType.ALL);
         } catch (NotAlgebraicallySolvableException e) {
         }
 

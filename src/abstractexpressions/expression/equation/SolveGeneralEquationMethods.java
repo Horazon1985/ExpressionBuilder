@@ -1735,9 +1735,9 @@ public abstract class SolveGeneralEquationMethods {
     }
 
     /**
-     * Löst Gleichungen der Form f = 0, wobei f stets >= 0 ist.
+     * Löst Gleichungen der Form f = 0, wobei f ein Polynom ist.
      */
-    private static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
+    public static ExpressionCollection solvePolynomialEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
             throw new NotAlgebraicallySolvableException();

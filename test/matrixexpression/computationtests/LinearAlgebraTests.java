@@ -158,14 +158,8 @@ public class LinearAlgebraTests {
             MatrixExpression b = MatrixExpression.build("[-1;-4;4]", null);
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
-            try {
-                GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
-                // Wenn es eine Lösung gäbe, würde der Test durchfallen.
-                fail();
-            } catch (EvaluationException e) {
-                // Keine Lösung!
-            }
-        } catch (ExpressionException e) {
+            Assert.assertTrue(GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b) == GaussAlgorithm.NO_SOLUTIONS);
+        } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }

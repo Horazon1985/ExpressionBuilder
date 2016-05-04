@@ -75,7 +75,7 @@ public abstract class PolynomialRootsMethods {
             if (((BinaryOperation) f).getRight().isIntegerConstant()) {
                 return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
             } else if (((BinaryOperation) f).getRight().isRationalConstant()) {
-                return ((BinaryOperation) f).getLeft() instanceof Variable;
+                return ((BinaryOperation) f).getLeft().equals(Variable.create(var));
             }
         }
 
@@ -321,10 +321,34 @@ public abstract class PolynomialRootsMethods {
      * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
      * |Zähler|, |Nenner| <= eine gewisse Schranke.
      */
-    public static ExpressionCollection getRationalZerosOfRationalPolynomial(ExpressionCollection a) {
+    public static ExpressionCollection getRationalZerosOfRationalPolynomial(Expression f, String var) {
+        
+        ExpressionCollection coefficients;
+        try {
+            coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+        } catch (EvaluationException e) {
+            return new ExpressionCollection();
+        }
+
         ExpressionCollection zeros = new ExpressionCollection();
         try {
-            findAllRationalZerosOfRationalPolynomial(a, zeros);
+            findAllRationalZerosOfRationalPolynomial(coefficients, zeros);
+            return zeros;
+        } catch (EvaluationException e) {
+            return new ExpressionCollection();
+        }
+        
+    }
+
+    /**
+     * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
+     * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
+     * |Zähler|, |Nenner| <= eine gewisse Schranke.
+     */
+    public static ExpressionCollection getRationalZerosOfRationalPolynomial(ExpressionCollection coefficients) {
+        ExpressionCollection zeros = new ExpressionCollection();
+        try {
+            findAllRationalZerosOfRationalPolynomial(coefficients, zeros);
             return zeros;
         } catch (EvaluationException e) {
             return new ExpressionCollection();

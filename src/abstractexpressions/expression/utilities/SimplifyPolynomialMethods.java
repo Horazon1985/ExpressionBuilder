@@ -19,8 +19,11 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomialRootsMethods;
+import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
+import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import lang.translator.Translator;
+import notations.NotationLoader;
 
 public abstract class SimplifyPolynomialMethods {
 
@@ -78,9 +81,9 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Gibt zurück, ob expr ein Polynom in der Variablen var ist.
-     * Voraussetzung: expr ist vereinfacht, d.h. Operatoren etc. kommen NICHT
-     * vor (außer evtl. Gamma(x), was kein Polynom ist).
+     * Gibt zurück, ob expr ein Polynom in der Variablen var ist. Voraussetzung:
+     * expr ist vereinfacht, d.h. Operatoren etc. kommen NICHT vor (außer evtl.
+     * Gamma(x), was kein Polynom ist).
      */
     public static boolean isPolynomial(Expression expr, String var) {
         if (!expr.contains(var)) {
@@ -107,14 +110,14 @@ public abstract class SimplifyPolynomialMethods {
     public static boolean isLinearPolynomial(Expression expr, String var) {
         return isPolynomial(expr, var) && getDegreeOfPolynomial(expr, var).compareTo(BigInteger.ONE) == 0;
     }
-    
+
     /**
      * Gibt zurück, ob expr ein quadratisches Polynom in der Variablen var ist.
      */
     public static boolean isQuadraticPolynomial(Expression expr, String var) {
         return isPolynomial(expr, var) && getDegreeOfPolynomial(expr, var).compareTo(BigInteger.valueOf(2)) == 0;
     }
-    
+
     /**
      * Liefert (eine OBERE SCHRANKE für) den Grad des Polynoms, welches von f
      * repräsentiert wird. Falls f kein Polynom ist in var ist, so wird -1 (als
@@ -418,6 +421,11 @@ public abstract class SimplifyPolynomialMethods {
                 return decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
+            // TO DO: Rationale Polynome durch Lösen polynomieller Gleichungssysteme zerlegen.
+//            try {
+//                return decomposeRationalPolynomialBySolvingPolynomialSystem(a, var);
+//            } catch (PolynomialNotDecomposableException e) {
+//            }
         }
 
         try {
@@ -774,6 +782,7 @@ public abstract class SimplifyPolynomialMethods {
 
         ArrayList<ExpressionCollection> coefficientsOfFactors = new ArrayList<>();
         ExpressionCollection factors = SimplifyUtilities.getFactors(decomposition);
+        ExpressionCollection polynomialCoefficients;
         for (Expression factor : factors) {
             if (factor.isPositiveIntegerPower()) {
                 if (((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger().compareTo(
@@ -781,8 +790,9 @@ public abstract class SimplifyPolynomialMethods {
                     throw new PolynomialNotDecomposableException();
                 }
                 int exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
+                polynomialCoefficients = getPolynomialCoefficients(((BinaryOperation) factor).getLeft(), var);
                 for (int i = 0; i < exponent; i++) {
-                    coefficientsOfFactors.add(getPolynomialCoefficients(((BinaryOperation) factor).getLeft(), var));
+                    coefficientsOfFactors.add(ExpressionCollection.copy(polynomialCoefficients));
                 }
             } else {
                 coefficientsOfFactors.add(getPolynomialCoefficients(factor, var));
@@ -853,6 +863,73 @@ public abstract class SimplifyPolynomialMethods {
             coefficientsOfDerivative.put(i, new Constant(i + 1).mult(a.get(i + 1)).simplify());
         }
         return coefficientsOfDerivative;
+    }
+
+    private static Expression decomposeRationalPolynomialBySolvingPolynomialSystem(ExpressionCollection a, String var) throws PolynomialNotDecomposableException {
+
+        if (a.getBound() > ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL_FOR_DECOMPOSITION) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        ExpressionCollection coefficientsOfNormalizedPolynomial = new ExpressionCollection();
+        try {
+            for (int i = 0; i < a.getBound() - 1; i++) {
+                coefficientsOfNormalizedPolynomial.add(a.get(i).div(a.get(a.getBound() - 1)).simplify());
+            }
+        } catch (EvaluationException e) {
+            throw new PolynomialNotDecomposableException();
+        }
+
+        // i ist der Grad eines Faktors in der Zerlegung.
+        Expression[] equations = new Expression[a.getBound()];
+        ArrayList<String> vars = new ArrayList<>();
+        for (int i = 0; i < coefficientsOfNormalizedPolynomial.getBound(); i++) {
+            vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
+        }
+
+        ArrayList<Expression[]> solutions;
+        for (int i = 2; i < coefficientsOfNormalizedPolynomial.getBound() / 2; i++) {
+
+            // Gleichungssystem bilden.
+            for (int j = 0; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
+                equations[j] = ZERO;
+                int index = Math.max(j, i - 1);
+                while (index >= 0) {
+                    if (i + j - index < coefficientsOfNormalizedPolynomial.getBound()) {
+                        equations[j] = equations[j].add(Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + index).mult(
+                                Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + (i + j - index))));
+                        j--;
+                    } else {
+                        equations[j] = equations[j].add(Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + index));
+                        break;
+                    }
+                }
+            }
+
+            // Gleichungssystem lösen.
+            try {
+                solutions = SolveGeneralSystemOfEquationsMethods.solvePolynomialSystemOfEquations(equations, vars, SolveGeneralSystemOfEquationsMethods.SolutionType.RATIONAL);
+            } catch (NotAlgebraicallySolvableException e) {
+                // Nichts tun, weiter probieren!
+                continue;
+            }
+
+            ExpressionCollection coefficientsOfFirstFactor = new ExpressionCollection();
+            ExpressionCollection coefficientsOfSecondFactor = new ExpressionCollection();
+
+            for (int j = 0; j < i; j++) {
+                coefficientsOfFirstFactor.add(solutions.get(0)[j]);
+            }
+            for (int j = i; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
+                coefficientsOfSecondFactor.add(solutions.get(0)[j]);
+            }
+
+            return getPolynomialFromCoefficients(coefficientsOfFirstFactor, var).mult(getPolynomialFromCoefficients(coefficientsOfSecondFactor, var));
+
+        }
+
+        throw new PolynomialNotDecomposableException();
+
     }
 
     /**

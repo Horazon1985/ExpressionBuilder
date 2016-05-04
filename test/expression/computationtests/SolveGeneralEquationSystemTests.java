@@ -3,6 +3,7 @@ package expression.computationtests;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
+import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods.SolutionType;
 import java.util.ArrayList;
 import exceptions.ExpressionException;
 import exceptions.NotAlgebraicallySolvableException;
@@ -37,7 +38,7 @@ public class SolveGeneralEquationSystemTests {
             vars.add("y");
             ArrayList<Expression[]> solutions;
             try {
-                solutions = SolveGeneralSystemOfEquationsMethods.solvePolynomialSystemOfEquations(new Expression[]{f, g}, vars);
+                solutions = SolveGeneralSystemOfEquationsMethods.solvePolynomialSystemOfEquations(new Expression[]{f, g}, vars, SolutionType.ALL);
                 assertTrue(solutions.size() == 2);
                 assertTrue(solutions.get(0)[0].equals(new Constant(2)));
                 assertTrue(solutions.get(0)[1].equals(new Constant(3)));

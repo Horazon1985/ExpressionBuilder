@@ -45,6 +45,9 @@
   <object id = "BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION">
     <value>10</value>
   </object>
+  <object id = "BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL_FOR_DECOMPOSITION">
+    <value>10</value>
+  </object>
   <object id = "BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM">
     <value>4</value>
   </object>
