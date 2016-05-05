@@ -114,6 +114,8 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
+        // TO DO. Vorarbeit.
+        
         if (equations.length < vars.size()) {
             // In diesem Fall kann es (höchst wahrscheinlich) nicht endlich viele (reelle) Lösungen geben.
             throw new NotAlgebraicallySolvableException();

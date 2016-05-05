@@ -421,7 +421,6 @@ public abstract class SimplifyPolynomialMethods {
                 return decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
-            // TO DO: Rationale Polynome durch Lösen polynomieller Gleichungssysteme zerlegen.
             try {
                 return decomposeRationalPolynomialBySolvingPolynomialSystem(a, var);
             } catch (PolynomialNotDecomposableException e) {
@@ -914,7 +913,7 @@ public abstract class SimplifyPolynomialMethods {
             for (int j = 0; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
                 equations[j] = ZERO;
                 for (int k = j; k >= 0; k--) {
-                    if (k > i || j - k > i || j - k < 0) {
+                    if (k > i || j - k > coefficientsOfNormalizedPolynomial.getBound() - i || j - k < 0) {
                         continue;
                     }
                     equations[j] = equations[j].add(coefficientVarsOfFirstFactor[k].mult(coefficientVarsOfSecondFactor[j - k]));
