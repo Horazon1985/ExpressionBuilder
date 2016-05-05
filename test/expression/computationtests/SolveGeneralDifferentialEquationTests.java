@@ -20,7 +20,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GeneralDifferentialEquationTests {
+public class SolveGeneralDifferentialEquationTests {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

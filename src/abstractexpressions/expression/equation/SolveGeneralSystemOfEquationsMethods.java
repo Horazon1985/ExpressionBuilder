@@ -223,12 +223,6 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         }
 
-        String[] monomialVars = new String[vars.size()];
-        for (int i = 0; i < vars.size(); i++) {
-            monomialVars[i] = vars.get(i);
-        }
-        GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
-
         HashSet<String> varsInEquation;
         ArrayList<MultiPolynomial> equationsWithOneVar = new ArrayList<>();
         String var = null;

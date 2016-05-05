@@ -28,7 +28,7 @@ import org.junit.Test;
  *
  * @author Sergei
  */
-public class SpecialDifferentialEquationTests {
+public class SolveSpecialDifferentialEquationTests {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

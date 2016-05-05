@@ -33,15 +33,15 @@ public class TestRunner {
     public void initTestClasses() throws Exception {
         testClasses.add(AlgebraicMethodsTests.class);
         testClasses.add(GroebnerBasisTests.class);
-        testClasses.add(SpecialDifferentialEquationTests.class);
-        testClasses.add(GeneralEquationMethodsTests.class);
+        testClasses.add(SolveSpecialDifferentialEquationTests.class);
+        testClasses.add(SolveGeneralEquationMethodsTests.class);
         testClasses.add(IntegrationTests.class);
         testClasses.add(PolynomialTests.class);
         testClasses.add(SimplifyExpLogTests.class);
         testClasses.add(SimplifyOperatorTests.class);
         testClasses.add(SolveGeneralEquationSystemTests.class);
-        testClasses.add(GeneralDifferentialEquationTests.class);
-        testClasses.add(SpecialEquationMethodsTests.class);
+        testClasses.add(SolveGeneralDifferentialEquationTests.class);
+        testClasses.add(SolveSpecialEquationMethodsTests.class);
         testClasses.add(ExpressionCollectionTests.class);
         testClasses.add(GeneralSimplifyExpressionTests.class);
         testClasses.add(SimplifyUtilitiesTests.class);

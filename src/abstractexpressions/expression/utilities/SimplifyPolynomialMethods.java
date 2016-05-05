@@ -521,7 +521,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -530,7 +530,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                        Variable.create(var).sub(zeros.get(2)).simplify());
+                                Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -559,7 +559,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -567,7 +567,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -579,7 +579,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -587,7 +587,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -914,7 +914,7 @@ public abstract class SimplifyPolynomialMethods {
             for (int j = 0; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
                 equations[j] = ZERO;
                 for (int k = j; k >= 0; k--) {
-                    if (k > i || j - k > i || j - k < 0){
+                    if (k > i || j - k > i || j - k < 0) {
                         continue;
                     }
                     equations[j] = equations[j].add(coefficientVarsOfFirstFactor[k].mult(coefficientVarsOfSecondFactor[j - k]));
@@ -938,11 +938,16 @@ public abstract class SimplifyPolynomialMethods {
             for (int j = 0; j < i; j++) {
                 coefficientsOfFirstFactor.add(solutions.get(0)[j]);
             }
+            // Leitkoeffizient = 1.
+            coefficientsOfFirstFactor.add(ONE);
+
             for (int j = i; j < coefficientsOfNormalizedPolynomial.getBound(); j++) {
                 coefficientsOfSecondFactor.add(solutions.get(0)[j]);
             }
+            // Leitkoeffizient = 1.
+            coefficientsOfSecondFactor.add(ONE);
 
-            return getPolynomialFromCoefficients(coefficientsOfFirstFactor, var).mult(getPolynomialFromCoefficients(coefficientsOfSecondFactor, var));
+            return a.get(a.getBound() - 1).mult(getPolynomialFromCoefficients(coefficientsOfFirstFactor, var).mult(getPolynomialFromCoefficients(coefficientsOfSecondFactor, var)));
 
         }
 

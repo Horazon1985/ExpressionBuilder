@@ -155,12 +155,12 @@ public class GroebnerBasisMethods {
                 return this;
             }
 
-            int[] resultTerm = new int[this.term.length - 1];
+            int[] resultTerm = new int[this.term.length];
             for (int i = 0; i < this.term.length; i++) {
-                if (i < indexOfVarInMonomials) {
+                if (i != indexOfVarInMonomials) {
                     resultTerm[i] = this.term[i];
-                } else if (i > indexOfVarInMonomials) {
-                    resultTerm[i - 1] = this.term[i];
+                } else {
+                    resultTerm[i] = 0;
                 }
             }
 
