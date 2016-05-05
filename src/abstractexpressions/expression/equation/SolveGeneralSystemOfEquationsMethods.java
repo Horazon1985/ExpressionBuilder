@@ -284,7 +284,10 @@ public class SolveGeneralSystemOfEquationsMethods {
                     equationsWithVarReplacedBySolution.add(f.replaceVarByExpression(var, solutionOfEquation).simplify());
                 }
 
-                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, vars, type);
+                // Kopie von vars machen!
+                ArrayList<String> varsCopy = new ArrayList<>();
+                varsCopy.addAll(vars);
+                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy, type);
 
                 HashMap<String, Expression> singleSolution;
                 for (HashMap<String, Expression> solutionOfReducedPolynomialSystem : solutionsOfReducedPolynomialSystem) {

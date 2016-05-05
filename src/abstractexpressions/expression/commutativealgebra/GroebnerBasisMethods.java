@@ -581,9 +581,11 @@ public class GroebnerBasisMethods {
         }
 
         // Gröbnerbasis berechnen.
+        System.out.println("Anzahl der Polynome = " + polynomials.size());
         do {
             groebnerBasis = groebnerBasisAfterBuchbergerAlgorithmStep;
             groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis);
+            System.out.println("Anzahl der Polynome = " + groebnerBasisAfterBuchbergerAlgorithmStep.size());
         } while (groebnerBasis.size() != groebnerBasisAfterBuchbergerAlgorithmStep.size());
 
         // Reduzieren.

@@ -935,6 +935,7 @@ public abstract class SimplifyPolynomialMethods {
             ExpressionCollection coefficientsOfFirstFactor = new ExpressionCollection();
             ExpressionCollection coefficientsOfSecondFactor = new ExpressionCollection();
 
+            // Aufgrund der Symmetrie der Faktoren gibt es immer mehr als eine Lösung. Welche man nun nimmt, ist völlig egal.
             for (int j = 0; j < i; j++) {
                 coefficientsOfFirstFactor.add(solutions.get(0)[j]);
             }
