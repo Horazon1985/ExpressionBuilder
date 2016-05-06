@@ -29,6 +29,7 @@ public abstract class SubstitutionUtilities {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
@@ -631,7 +632,7 @@ public abstract class SubstitutionUtilities {
             Expression derivativeOfExpArgumentBySubstVar = expArgumentSubstituted.diff(substVar).simplify();
 
             if (derivativeOfExpArgumentBySubstVar.isIntegerConstant() && !derivativeOfExpArgumentBySubstVar.equals(Expression.ZERO)) {
-                Expression constantRest = expArgumentSubstituted.replaceVariable(substVar, ZERO).simplify();
+                Expression constantRest = expArgumentSubstituted.replaceVariable(substVar, ZERO).simplify(simplifyTypesSubstitution);
                 if (constantRest.equals(ZERO)) {
                     return Variable.create(substVar).pow(derivativeOfExpArgumentBySubstVar);
                 }

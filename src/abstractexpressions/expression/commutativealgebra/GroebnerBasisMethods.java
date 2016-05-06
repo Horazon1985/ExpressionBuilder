@@ -14,27 +14,8 @@ import java.util.HashSet;
 
 public class GroebnerBasisMethods {
 
-//    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmGeneralCase = getsimplifyTypesBuchbergerAlgorithmGeneralCase();
     private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = getsimplifyTypesBuchbergerAlgorithmRationalCase();
 
-//    private static HashSet<TypeSimplify> getsimplifyTypesBuchbergerAlgorithmGeneralCase() {
-//        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-//        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-//        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-//        simplifyTypes.add(TypeSimplify.simplify_trivial);
-//        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-//        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-//        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-//        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-//        simplifyTypes.add(TypeSimplify.simplify_factorize);
-//        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-//        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
-//        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-//        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-//        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-//        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-//        return simplifyTypes;
-//    }
     private static HashSet<TypeSimplify> getsimplifyTypesBuchbergerAlgorithmRationalCase() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
@@ -683,11 +664,9 @@ public class GroebnerBasisMethods {
         }
 
         // Gröbnerbasis berechnen.
-        System.out.println("Anzahl der Polynome = " + polynomials.size());
         do {
             groebnerBasis = groebnerBasisAfterBuchbergerAlgorithmStep;
             groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis);
-            System.out.println("Anzahl der Polynome = " + groebnerBasisAfterBuchbergerAlgorithmStep.size());
         } while (groebnerBasis.size() != groebnerBasisAfterBuchbergerAlgorithmStep.size());
 
         // Reduzieren.

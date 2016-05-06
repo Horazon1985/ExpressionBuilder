@@ -1459,7 +1459,7 @@ public abstract class GeneralIntegralMethods {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
-        Expression factor, quotient, substitution, derivative;
+        Expression factor, quotient, derivative;
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
 
@@ -1475,9 +1475,8 @@ public abstract class GeneralIntegralMethods {
                 factors.remove(i);
 
                 // Jede potentielle Substitution ausprobieren.
-                for (int j = 0; j < setOfSubstitutions.getBound(); j++) {
+                for (Expression substitution : setOfSubstitutions) {
 
-                    substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
                     quotient = SimplifyUtilities.produceProduct(factors).div(derivative).simplify();
 
@@ -1540,9 +1539,8 @@ public abstract class GeneralIntegralMethods {
                 factorsNumerator.remove(i);
 
                 // Jede potentielle Substitution ausprobieren.
-                for (int j = 0; j < setOfSubstitutions.getBound(); j++) {
+                for (Expression substitution : setOfSubstitutions) {
 
-                    substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
                     quotient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).div(derivative).simplify();
 
@@ -1598,9 +1596,8 @@ public abstract class GeneralIntegralMethods {
                 factorsDenominator.remove(i);
 
                 // Jede potentielle Substitution ausprobieren.
-                for (int j = 0; j < setOfSubstitutions.getBound(); j++) {
+                for (Expression substitution : setOfSubstitutions) {
 
-                    substitution = setOfSubstitutions.get(j);
                     derivative = substitution.diff(var).simplify();
                     quotient = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).div(derivative).simplify();
 

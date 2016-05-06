@@ -89,7 +89,7 @@ public abstract class RischAlgorithmMethods {
      * wird true zurückgegeben.<br>
      * (2) f = ln(exp(x+2)+x^2)+x^3/7, var = "x", fieldGenerators = {exp(x)}.
      * Hier wird false zurückgegeben.<br>
-     * (2) f = ln(x)+x!, var = "x", fieldGenerators = {ln(x), exp(x)}. Hier wird
+     * (3) f = ln(x)+x!, var = "x", fieldGenerators = {ln(x), exp(x)}. Hier wird
      * false zurückgegeben (aufgrund des Summanden x!, welcher transzendent über
      * der angegebenen Körpererweiterung ist).<br>
      */
@@ -130,7 +130,7 @@ public abstract class RischAlgorithmMethods {
      * wird true zurückgegeben.<br>
      * (2) f = ln(exp(x+2)+x^2)+x^3/7, var = "x", fieldGenerators = {exp(x)}.
      * Hier wird false zurückgegeben.<br>
-     * (2) f = ln(x)+x!, var = "x", fieldGenerators = {ln(x), exp(x)}. Hier wird
+     * (3) f = ln(x)+x!, var = "x", fieldGenerators = {ln(x), exp(x)}. Hier wird
      * false zurückgegeben (aufgrund des Summanden x!, welcher transzendent über
      * der angegebenen Körpererweiterung ist).<br>
      */
