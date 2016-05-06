@@ -13,7 +13,7 @@ import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.equation.PolynomialRootsMethods;
+import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
 import exceptions.MathToolException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1209,7 +1209,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1262,7 +1262,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1283,7 +1283,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        rationalZeros = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
             throw new RootNotRationalException();

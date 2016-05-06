@@ -1512,7 +1512,7 @@ public abstract class SolveGeneralEquationMethods {
 
         // Fall: f is ein Polynom in x^(1/m) mit geeignetem m, x = var.
         try {
-            return PolynomialRootsMethods.solvePolynomialEquationWithFractionalExponents(f, var);
+            return PolynomiaAlgebraMethods.solvePolynomialEquationWithFractionalExponents(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
 
@@ -1757,7 +1757,7 @@ public abstract class SolveGeneralEquationMethods {
             return SimplifyUtilities.union(zeros, solvePolynomialEquation(f, var));
         }
 
-        BigInteger gcdOfExponents = PolynomialRootsMethods.getGCDOfExponentsInPolynomial(f, var);
+        BigInteger gcdOfExponents = PolynomiaAlgebraMethods.getGCDOfExponentsInPolynomial(f, var);
         if (gcdOfExponents.compareTo(BigInteger.ONE) > 0) {
             /* 
              Falls das Polynom f(x) als f(x) = g(x^m) mit einem ganzen m > 1 geschrieben werden kann,
@@ -1789,7 +1789,7 @@ public abstract class SolveGeneralEquationMethods {
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
-        return PolynomialRootsMethods.solvePolynomialEquation(coefficients, var);
+        return PolynomiaAlgebraMethods.solvePolynomialEquation(coefficients, var);
 
     }
 

@@ -18,7 +18,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
-import abstractexpressions.expression.equation.PolynomialRootsMethods;
+import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
@@ -418,7 +418,7 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
-                return decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(a, var);
+                return decomposeRationalPolynomialIntoSquarefreeFactors(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
@@ -515,7 +515,7 @@ public abstract class SimplifyPolynomialMethods {
         Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
 
         if (discriminant.equals(ZERO) || discriminant.isAlwaysPositive() || discriminant.isAlwaysNegative()) {
-            ExpressionCollection zeros = PolynomialRootsMethods.solveCubicEquation(a);
+            ExpressionCollection zeros = PolynomiaAlgebraMethods.solveCubicEquation(a);
             if (discriminant.isAlwaysPositive()) {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
@@ -730,7 +730,7 @@ public abstract class SimplifyPolynomialMethods {
     private static Expression decomposeRationalPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection restCoefficients = PolynomialRootsMethods.findAllRationalZerosOfRationalPolynomial(a, zeros);
+        ExpressionCollection restCoefficients = PolynomiaAlgebraMethods.findAllRationalZerosOfRationalPolynomial(a, zeros);
         if (zeros.isEmpty()) {
             throw new PolynomialNotDecomposableException();
         }
@@ -765,12 +765,27 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    public static Expression decomposeRationalPolynomialIntoSquerefreeFactors(Expression f, String var) throws EvaluationException {
+        if (!isPolynomial(f, var)) {
+            return f;
+        }
+        // Faktorisierung nur für Polynome, wenn degree <= gewisse Schranke ist.
+        if (getDegreeOfPolynomial(f, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+            return f;
+        }
+        try {
+            return decomposeRationalPolynomialIntoSquarefreeFactors(getPolynomialCoefficients(f, var), var);
+        } catch (PolynomialNotDecomposableException e) {
+            return f;
+        }
+    }
+    
     /**
      * Faktorisiert ein rationales Polynom f mittels Berechnung der gemeinsamen
      * Faktoren von f und f'.<br>
      * VORAUSSETZUNG: Alle Elemente von a sind rational.
      */
-    public static Expression decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+    public static Expression decomposeRationalPolynomialIntoSquarefreeFactors(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
 

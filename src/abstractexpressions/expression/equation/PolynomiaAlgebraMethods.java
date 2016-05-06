@@ -24,7 +24,7 @@ import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public abstract class PolynomialRootsMethods {
+public abstract class PolynomiaAlgebraMethods {
 
     public static BigInteger getGCDOfExponentsInPolynomial(Expression f, String var) {
 
@@ -165,7 +165,7 @@ public abstract class PolynomialRootsMethods {
         // Fall: f is ein Polynom mit zyklischen Koeffizienten.
         m = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         if (m < coefficients.getBound()) {
-            return PolynomialRootsMethods.solvePeriodicPolynomialEquation(coefficients, var);
+            return PolynomiaAlgebraMethods.solvePeriodicPolynomialEquation(coefficients, var);
         }
 
         // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= gewisse Schranke ist.
@@ -193,7 +193,7 @@ public abstract class PolynomialRootsMethods {
             // Versuchen, rationale Polynome zu faktorisieren.
             if (SimplifyPolynomialMethods.isPolynomialRational(coefficients)) {
                 try {
-                    Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialByComputingCommonFactorsWithItsDerivative(coefficients, var);
+                    Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficients, var);
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
                     if (factorizedPolynomial.isProduct()
                             && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0
@@ -213,16 +213,16 @@ public abstract class PolynomialRootsMethods {
 
             // Nullstellen von Polynomen vom Grad 1 - 4 können direkt ermittelt werden.
             if (degree == 1) {
-                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveLinearEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveLinearEquation(coefficients));
             }
             if (degree == 2) {
-                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveQuadraticEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveQuadraticEquation(coefficients));
             }
             if (degree == 3) {
-                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveCubicEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveCubicEquation(coefficients));
             }
             if (degree == 4) {
-                return SimplifyUtilities.union(zeros, PolynomialRootsMethods.solveQuarticEquation(coefficients, var));
+                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveQuarticEquation(coefficients, var));
             }
 
         }
@@ -723,7 +723,7 @@ public abstract class PolynomialRootsMethods {
     public static ExpressionCollection solvePolynomialEquationWithFractionalExponents(Expression f, String var)
             throws EvaluationException, NotAlgebraicallySolvableException {
 
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialRootsMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomiaAlgebraMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
             throw new NotAlgebraicallySolvableException();
         }
 

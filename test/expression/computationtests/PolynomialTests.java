@@ -11,7 +11,6 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import static abstractexpressions.expression.utilities.SimplifyTrigonometry.THREE;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
-import enums.TypeSimplify;
 import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -438,5 +437,52 @@ public class PolynomialTests {
             fail(e.getMessage());
         }
     }
-
+    
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest1() {
+        /* 
+         Zerlegung von f = 864+1728*x+2448*x^2+2768*x^3+2240*x^4+1616*x^5+864*x^6+408*x^7+138*x^8+40*x^9+7*x^10+x^11 
+         = (1+x)*(2+x^2)^2*(6+2*x+x^2)^3 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("864+1728*x+2448*x^2+2768*x^3+2240*x^4+1616*x^5+864*x^6+408*x^7+138*x^8+40*x^9+7*x^10+x^11", null);
+            fFactorized = Expression.build("(1+x)*(2+x^2)^2*(6+2*x+x^2)^3", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest2() {
+        /* 
+         Zerlegung von f = 10125+23625*x+26325*x^2+22425*x^3+14990*x^4+7910*x^5+3486*x^6+1254*x^7+357*x^8+81*x^9+13*x^10+x^11 
+         = (1+x)*(5+x^2)^3*(x+3)^4 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("10125+23625*x+26325*x^2+22425*x^3+14990*x^4+7910*x^5+3486*x^6+1254*x^7+357*x^8+81*x^9+13*x^10+x^11", null);
+            fFactorized = Expression.build("(1+x)*(5+x^2)^3*(x+3)^4", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest3() {
+        /* 
+         Zerlegung von f = a^2+2*a*x+x^2 
+         = (a+x)^2 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("a^2+2*a*x+x^2", null);
+            fFactorized = Expression.build("(a+x)^2", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(fFactorized));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
 }
