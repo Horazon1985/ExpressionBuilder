@@ -489,8 +489,8 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonNegative();
         }
         if (this.isPower()) {
-            return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant() 
-                    || this.right.isRationalConstant() 
+            return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant()
+                    || this.right.isRationalConstant()
                     && (((BinaryOperation) this.right).left.isEvenIntegerConstant() || ((BinaryOperation) this.right).right.isEvenIntegerConstant());
         }
         return false;
@@ -817,7 +817,7 @@ public class BinaryOperation extends Expression {
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
-            
+
             // Rationale Konstanten zu einem Bruch machen (etwa 0.74/0.2 = 37/10)
             exprSimplified = SimplifyBinaryOperationMethods.rationalConstantToQuotient(expr);
             if (!exprSimplified.equals(expr)) {
@@ -1137,6 +1137,12 @@ public class BinaryOperation extends Expression {
              -1/4 etc.
              */
             SimplifyBinaryOperationMethods.reduceFactorsInNumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
+
+            /*
+             Prüft, ob sich (ganzzahlige Potenzen von) Ausdrücken aus Brüchen kürzen lassen, d.h. ob z.B. 
+             (x^2*y + z*x^3)/(2*x - x^4) zu (x*y + z*x^2)/(2 - x^3) vereinfacht werden kann.
+             */
+            SimplifyBinaryOperationMethods.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
 
             /*
              Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad)

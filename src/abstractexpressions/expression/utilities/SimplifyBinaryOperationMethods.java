@@ -2293,7 +2293,7 @@ public abstract class SimplifyBinaryOperationMethods {
                         && (factorDenominator.isSum() || factorDenominator.isDifference())) {
 
                     reducedFactor = reduceNumeratorAndDenominatorToConstant(factorNumerator, factorDenominator);
-                    if (!reducedFactor[0].equivalent(factorNumerator)) {
+                    if (reducedFactor.length > 0) {
                         // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
                         if (!reducedFactor[1].equals(ONE)) {
                             factorsNumerator.put(i, reducedFactor[0]);
@@ -2315,7 +2315,7 @@ public abstract class SimplifyBinaryOperationMethods {
                             && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
 
                         reducedFactor = reduceNumeratorAndDenominatorToConstant(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
-                        if (!reducedFactor[0].equivalent(((BinaryOperation) factorNumerator).getLeft())) {
+                        if (reducedFactor.length > 0) {
                             // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
                             factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
                             factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
@@ -2355,9 +2355,7 @@ public abstract class SimplifyBinaryOperationMethods {
                 && (summandsLeftInNumerator.getBound() != summandsRightInDenominator.getBound()
                 || summandsRightInNumerator.getBound() != summandsLeftInDenominator.getBound())) {
             // Dann gibt es keine Chance, dass Zähler und Nenner zu einer Konstante gekürzt werden können.
-            Expression[] result = new Expression[2];
-            result[0] = numerator;
-            result[1] = denominator;
+            Expression[] result = new Expression[0];
             return result;
         }
 
@@ -2586,10 +2584,321 @@ public abstract class SimplifyBinaryOperationMethods {
 
         }
 
-        Expression[] result = new Expression[2];
-        result[0] = numerator;
-        result[1] = denominator;
+        Expression[] result = new Expression[0];
         return result;
+
+    }
+
+    /**
+     * Kürzt (ganzzahlige Potenzen von) Ausdrücken aus Brüchen, z. B. wird
+     * (x^2*y + z*x^3)/(2*x - x^4) zu (x*y + z*x^2)/(2 - x^3) vereinfacht.
+     */
+    public static void reduceSameExpressionInAllSummandsInQuotient(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+
+        Expression factorNumerator, factorDenominator;
+        Expression[] reducedFactor;
+
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+
+            factorNumerator = factorsNumerator.get(i);
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+
+                if (factorsDenominator.get(j) == null) {
+                    continue;
+                }
+
+                factorDenominator = factorsDenominator.get(j);
+                if ((factorNumerator.isSum() || factorNumerator.isDifference())
+                        && (factorDenominator.isSum() || factorDenominator.isDifference())) {
+
+                    reducedFactor = reduceSameExpressionInAllSummandsInQuotient(factorNumerator, factorDenominator);
+                    if (reducedFactor.length > 0) {
+                        // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
+                        if (!reducedFactor[1].equals(ONE)) {
+                            factorsNumerator.put(i, reducedFactor[0]);
+                            factorsDenominator.put(j, reducedFactor[1]);
+                        } else {
+                            factorsNumerator.put(i, reducedFactor[0]);
+                            factorsDenominator.remove(j);
+                        }
+                    }
+
+                }
+                /*
+                 Sonderfall: Zähler und Nenner sind von der Form (a*expr)^k,
+                 (b*expr)^k, mit rationalen a, b. Dann zu (a/b)^k kürzen.
+                 */
+                if (factorNumerator.isPower() && factorDenominator.isPower()
+                        && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
+                    if ((((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference())
+                            && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
+
+                        reducedFactor = reduceSameExpressionInAllSummandsInQuotient(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
+                        if (reducedFactor.length > 0) {
+                            // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
+                            factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                            factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Hilfsmethode für die öffentliche Methode
+     * reduceSameExpressionInAllSummandsInQuotient(). Kürzt (ganzzahlige
+     * Potenzen von) Ausdrücken aus Brüchen, z. B. wird (x^2*y + z*x^3)/(2*x -
+     * x^4) zu (x*y + z*x^2)/(2 - x^3) vereinfacht.
+     */
+    private static Expression[] reduceSameExpressionInAllSummandsInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
+
+        ExpressionCollection summandsLeftInNumerator = SimplifyUtilities.getSummandsLeftInExpression(numerator);
+        ExpressionCollection summandsRightInNumerator = SimplifyUtilities.getSummandsRightInExpression(numerator);
+        ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(denominator);
+        ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(denominator);
+
+        ExpressionCollection factorsToBeCancelled = SimplifyUtilities.getFactors(summandsLeftInNumerator.get(0));
+        Expression factor, factorToCompare;
+        BigInteger exponent, exponentToCompare, commonExponent;
+
+        ExpressionCollection factorsInSummand;
+        boolean factorToCompareFound;
+        for (int i = 0; i < factorsToBeCancelled.getBound(); i++) {
+
+            if (factorsToBeCancelled.get(i).isPositiveIntegerPower()) {
+                factor = ((BinaryOperation) factorsToBeCancelled.get(i)).getLeft();
+                exponent = ((Constant) ((BinaryOperation) factorsToBeCancelled.get(i)).getRight()).getValue().toBigInteger();
+            } else {
+                factor = factorsToBeCancelled.get(i);
+                exponent = BigInteger.ONE;
+            }
+            commonExponent = null;
+
+            for (int j = 0; j < summandsLeftInNumerator.getBound(); j++) {
+
+                factorsInSummand = SimplifyUtilities.getFactors(summandsLeftInNumerator.get(j));
+                factorToCompareFound = false;
+
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+
+                    if (factor.equivalent(factorToCompare)) {
+                        factorToCompareFound = true;
+                        if (commonExponent == null) {
+                            commonExponent = exponent.min(exponentToCompare);
+                            break;
+                        } else {
+                            commonExponent = commonExponent.min(exponentToCompare);
+                            break;
+                        }
+                    }
+
+                }
+
+                if (!factorToCompareFound) {
+                    return new Expression[0];
+                }
+
+            }
+
+            if (commonExponent == null) {
+                return new Expression[0];
+            }
+
+            for (int j = 0; j < summandsRightInNumerator.getBound(); j++) {
+
+                factorsInSummand = SimplifyUtilities.getFactors(summandsRightInNumerator.get(j));
+                factorToCompareFound = false;
+
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+
+                    if (factor.equivalent(factorToCompare)) {
+                        factorToCompareFound = true;
+                        commonExponent = commonExponent.min(exponentToCompare);
+                        break;
+                    }
+
+                }
+
+                if (!factorToCompareFound) {
+                    return new Expression[0];
+                }
+
+            }
+
+            if (commonExponent == null) {
+                return new Expression[0];
+            }
+
+            for (int j = 0; j < summandsLeftInDenominator.getBound(); j++) {
+
+                factorsInSummand = SimplifyUtilities.getFactors(summandsLeftInDenominator.get(j));
+                factorToCompareFound = false;
+
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+
+                    if (factor.equivalent(factorToCompare)) {
+                        factorToCompareFound = true;
+                        commonExponent = commonExponent.min(exponentToCompare);
+                        break;
+                    }
+
+                }
+
+                if (!factorToCompareFound) {
+                    return new Expression[0];
+                }
+
+            }
+
+            if (commonExponent == null) {
+                return new Expression[0];
+            }
+
+            for (int j = 0; j < summandsRightInDenominator.getBound(); j++) {
+
+                factorsInSummand = SimplifyUtilities.getFactors(summandsRightInDenominator.get(j));
+                factorToCompareFound = false;
+
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+
+                    if (factor.equivalent(factorToCompare)) {
+                        factorToCompareFound = true;
+                        commonExponent = commonExponent.min(exponentToCompare);
+                        break;
+                    }
+
+                }
+
+                if (!factorToCompareFound) {
+                    return new Expression[0];
+                }
+
+            }
+
+            if (commonExponent == null) {
+                return new Expression[0];
+            }
+
+            // Ab hier wurde eine gemeinsame Potenz gefunden! Jetzt muss sie überall herausgekürzt werden.
+            for (int j = 0; j < summandsLeftInNumerator.getBound(); j++) {
+                factorsInSummand = SimplifyUtilities.getFactors(summandsLeftInNumerator.get(j));
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+                    if (factor.equivalent(factorToCompare)) {
+                        factorsInSummand.put(k, factor.pow(exponentToCompare.subtract(commonExponent)));
+                        break;
+                    }
+                }
+                summandsLeftInNumerator.put(j, SimplifyUtilities.produceProduct(factorsInSummand));
+            }
+
+            for (int j = 0; j < summandsRightInNumerator.getBound(); j++) {
+                factorsInSummand = SimplifyUtilities.getFactors(summandsRightInNumerator.get(j));
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+                    if (factor.equivalent(factorToCompare)) {
+                        factorsInSummand.put(k, factor.pow(exponentToCompare.subtract(commonExponent)));
+                        break;
+                    }
+                }
+                summandsRightInNumerator.put(j, SimplifyUtilities.produceProduct(factorsInSummand));
+            }
+
+            for (int j = 0; j < summandsLeftInDenominator.getBound(); j++) {
+                factorsInSummand = SimplifyUtilities.getFactors(summandsLeftInDenominator.get(j));
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+                    if (factor.equivalent(factorToCompare)) {
+                        factorsInSummand.put(k, factor.pow(exponentToCompare.subtract(commonExponent)));
+                        break;
+                    }
+                }
+                summandsLeftInDenominator.put(j, SimplifyUtilities.produceProduct(factorsInSummand));
+            }
+
+            for (int j = 0; j < summandsRightInDenominator.getBound(); j++) {
+                factorsInSummand = SimplifyUtilities.getFactors(summandsRightInDenominator.get(j));
+                for (int k = 0; k < factorsInSummand.getBound(); k++) {
+                    if (factorsInSummand.get(k).isPositiveIntegerPower()) {
+                        factorToCompare = ((BinaryOperation) factorsInSummand.get(k)).getLeft();
+                        exponentToCompare = ((Constant) ((BinaryOperation) factorsInSummand.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        factorToCompare = factorsInSummand.get(k);
+                        exponentToCompare = BigInteger.ONE;
+                    }
+                    if (factor.equivalent(factorToCompare)) {
+                        factorsInSummand.put(k, factor.pow(exponentToCompare.subtract(commonExponent)));
+                        break;
+                    }
+                }
+                summandsRightInDenominator.put(j, SimplifyUtilities.produceProduct(factorsInSummand));
+            }
+
+        }
+
+        Expression[] reducedFraction = new Expression[2];
+        reducedFraction[0] = SimplifyUtilities.produceDifference(summandsLeftInNumerator, summandsRightInNumerator);
+        reducedFraction[1] = SimplifyUtilities.produceDifference(summandsLeftInDenominator, summandsRightInDenominator);
+        return reducedFraction;
 
     }
 

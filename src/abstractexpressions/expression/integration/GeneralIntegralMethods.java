@@ -1387,10 +1387,7 @@ public abstract class GeneralIntegralMethods {
             } else if (((BinaryOperation) factor).getLeft().contains(var) && !((BinaryOperation) factor).getRight().contains(var)
                     && !(((BinaryOperation) factor).getLeft() instanceof Variable)) {
                 setOfSubstitutions.add(((BinaryOperation) factor).getLeft());
-                ExpressionCollection substitutionsInsideOfBase = getSuitableSubstitutionForIntegration(((BinaryOperation) factor).getLeft(), var, false);
-                for (int i = 0; i < substitutionsInsideOfBase.getBound(); i++) {
-                    setOfSubstitutions.add(substitutionsInsideOfBase.get(i));
-                }
+                setOfSubstitutions.addAll(getSuitableSubstitutionForIntegration(((BinaryOperation) factor).getLeft(), var, false));
             } else if (factor.contains(var) && !(((BinaryOperation) factor).getLeft().equals(Variable.create(var))
                     && (((BinaryOperation) factor).getRight().equals(Expression.ONE))
                     || (((BinaryOperation) factor).getRight().equals(Expression.ZERO)))
@@ -1405,6 +1402,7 @@ public abstract class GeneralIntegralMethods {
                  Endlosschleifen gibt).
                  */
                 setOfSubstitutions.add(factor);
+                setOfSubstitutions.addAll(getSuitableSubstitutionForIntegration(((BinaryOperation) factor).getLeft(), var, false));
             }
 
         } else if (factor.isFunction()) {
