@@ -866,7 +866,7 @@ public abstract class SimplifyPolynomialMethods {
 
     private static Expression decomposeRationalPolynomialBySolvingPolynomialSystem(ExpressionCollection a, String var) throws PolynomialNotDecomposableException {
 
-        if (a.getBound() > ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL_FOR_DECOMPOSITION) {
+        if (a.getBound() - 1 > ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL_FOR_DECOMPOSITION) {
             throw new PolynomialNotDecomposableException();
         }
 

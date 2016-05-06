@@ -114,8 +114,22 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
-        // TO DO. Vorarbeit.
-        
+        // Vorarbeit.
+        for (Expression equation : equations) {
+            if (!doesExpressionContainSomeVar(equation, vars) && !equation.equals(ZERO)) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        ArrayList<Expression> reducedEquationsAsArrayList = new ArrayList<>();
+        for (Expression equation : equations) {
+            if (!equation.equals(ZERO)) {
+                reducedEquationsAsArrayList.add(equation);
+            }
+        }
+        Expression[] reducedEquations = new Expression[0];
+        equations = reducedEquationsAsArrayList.toArray(reducedEquations);
+
         if (equations.length < vars.size()) {
             // In diesem Fall kann es (höchst wahrscheinlich) nicht endlich viele (reelle) Lösungen geben.
             throw new NotAlgebraicallySolvableException();
@@ -188,22 +202,26 @@ public class SolveGeneralSystemOfEquationsMethods {
             try {
                 if (type == SolutionType.RATIONAL) {
                     for (int i = 0; i < equations.size(); i++) {
-                        if (equations.get(i).isZero()){
+                        if (equations.get(i).isZero()) {
                             continue;
                         }
                         if (i == 0) {
                             solutions = PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var);
+                        } else if (solutions.isEmpty()) {
+                            return new ArrayList<>();
                         } else {
                             solutions = SimplifyUtilities.intersection(solutions, PolynomialRootsMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var));
                         }
                     }
                 } else {
                     for (int i = 0; i < equations.size(); i++) {
-                        if (equations.get(i).isZero()){
+                        if (equations.get(i).isZero()) {
                             continue;
                         }
                         if (i == 0) {
                             solutions = SolveGeneralEquationMethods.solvePolynomialEquation(equations.get(i).toExpression(), var);
+                        } else if (solutions.isEmpty()) {
+                            return new ArrayList<>();
                         } else {
                             solutions = SimplifyUtilities.intersection(solutions, SolveGeneralEquationMethods.solvePolynomialEquation(equations.get(i).toExpression(), var));
                         }
@@ -252,7 +270,7 @@ public class SolveGeneralSystemOfEquationsMethods {
             throw new NotAlgebraicallySolvableException();
         }
 
-        // Jede der gefundenen Gleichungen muss nun gelöst werdebn und es werden nur die gemeinsamen Nullstellen weiterverwendet.
+        // Jede der gefundenen Gleichungen muss nun gelöst werden und es werden nur die gemeinsamen Nullstellen weiterverwendet.
         ExpressionCollection coefficientsOfEquation;
         ExpressionCollection solutionsOfEquation = new ExpressionCollection();
         for (int i = 0; i < equationsWithOneVar.size(); i++) {
@@ -263,6 +281,8 @@ public class SolveGeneralSystemOfEquationsMethods {
                 } catch (EvaluationException e) {
                     throw new NotAlgebraicallySolvableException();
                 }
+            } else if (solutionsOfEquation.isEmpty()) {
+                return new ArrayList<>();
             } else {
                 try {
                     solutionsOfEquation = SimplifyUtilities.intersection(solutionsOfEquation, PolynomialRootsMethods.solvePolynomialEquation(coefficientsOfEquation, var));
@@ -371,7 +391,7 @@ public class SolveGeneralSystemOfEquationsMethods {
 
     private static Expression[] removeRedundantEquations(Expression[] equations, ArrayList<String> vars) {
 
-        ArrayList<Expression> nonTrivialEquations = new ArrayList<>();
+        ArrayList<Expression> nonRedundantEquations = new ArrayList<>();
         Expression quotient;
         ArrayList<Integer> indicesWithRedundantEquations = new ArrayList<>();
         for (int i = 0; i < equations.length; i++) {
@@ -392,12 +412,12 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         for (int i = 0; i < equations.length; i++) {
             if (!indicesWithRedundantEquations.contains(i)) {
-                nonTrivialEquations.add(equations[i]);
+                nonRedundantEquations.add(equations[i]);
             }
         }
 
-        Expression[] nonTrivialEquationsAsArray = new Expression[nonTrivialEquations.size()];
-        return nonTrivialEquations.toArray(nonTrivialEquationsAsArray);
+        Expression[] nonTrivialEquationsAsArray = new Expression[nonRedundantEquations.size()];
+        return nonRedundantEquations.toArray(nonTrivialEquationsAsArray);
 
     }
 

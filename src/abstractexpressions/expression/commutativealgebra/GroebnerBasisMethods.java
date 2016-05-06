@@ -6,6 +6,7 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,15 +14,52 @@ import java.util.HashSet;
 
 public class GroebnerBasisMethods {
 
+//    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmGeneralCase = getsimplifyTypesBuchbergerAlgorithmGeneralCase();
+    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = getsimplifyTypesBuchbergerAlgorithmRationalCase();
+
+//    private static HashSet<TypeSimplify> getsimplifyTypesBuchbergerAlgorithmGeneralCase() {
+//        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+//        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+//        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+//        simplifyTypes.add(TypeSimplify.simplify_trivial);
+//        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+//        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+//        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+//        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+//        simplifyTypes.add(TypeSimplify.simplify_factorize);
+//        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+//        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+//        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+//        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+//        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+//        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+//        return simplifyTypes;
+//    }
+    private static HashSet<TypeSimplify> getsimplifyTypesBuchbergerAlgorithmRationalCase() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        return simplifyTypes;
+    }
+
+    /**
+     * Vereinfachungsmodus für den Buchberger-Algorithmus.
+     */
+    public enum SimplifyCase {
+        GENERAL_CASE, RATIONAL_CASE;
+    }
+
     /**
      * Konstanten, welche Standardtermordnungen repräsentieren.
      */
     public enum TermOrderings {
-
         LEX, DEGLEX, REVLEX, DEGREVLEX;
     }
 
     private static String[] monomialVars;
+    // Default-Einstellung soll GENERAL_CASE sein!
+    private static SimplifyCase simplifyCase = SimplifyCase.GENERAL_CASE;
     // Default-Einstellung soll LEX sein!
     private static TermOrderings termOrdering = TermOrderings.LEX;
 
@@ -38,7 +76,7 @@ public class GroebnerBasisMethods {
              wird nur bis zur Länge von monomialVars kopiert. Der Rest wird mit Nullen aufgefüllt.
              */
             System.arraycopy(term, 0, this.term, 0, Math.min(monomialVars.length, term.length));
-            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++){
+            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++) {
                 this.term[i] = 0;
             }
         }
@@ -53,7 +91,7 @@ public class GroebnerBasisMethods {
             for (int i = 0; i < Math.min(monomialVars.length, term.length); i++) {
                 this.term[i] = term[i];
             }
-            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++){
+            for (int i = Math.min(monomialVars.length, term.length); i < monomialVars.length; i++) {
                 this.term[i] = 0;
             }
         }
@@ -99,12 +137,24 @@ public class GroebnerBasisMethods {
             return this.coefficient.equals(ZERO);
         }
 
+        public boolean isRationalMonomial() {
+            return this.coefficient.isIntegerConstantOrRationalConstant();
+        }
+
         public Monomial multipliWithExpression(Expression expr) throws EvaluationException {
-            return new Monomial(this.coefficient.mult(expr).simplify(), this.term);
+            if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                return new Monomial(this.coefficient.mult(expr).simplify(), this.term);
+            }
+            return new Monomial(this.coefficient.mult(expr).simplify(simplifyTypesBuchbergerAlgorithmRationalCase), this.term);
         }
 
         public Monomial multiplyWithMonomial(Monomial m) throws EvaluationException {
-            Expression resultCoefficient = this.coefficient.mult(m.coefficient).simplify();
+            Expression resultCoefficient;
+            if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                resultCoefficient = this.coefficient.mult(m.coefficient).simplify();
+            } else {
+                resultCoefficient = this.coefficient.mult(m.coefficient).simplify(simplifyTypesBuchbergerAlgorithmRationalCase);
+            }
             int[] resultTerm = new int[this.term.length];
             for (int i = 0; i < this.term.length; i++) {
                 resultTerm[i] = this.term[i] + m.term[i];
@@ -122,7 +172,10 @@ public class GroebnerBasisMethods {
         }
 
         public Monomial divideByExpression(Expression expr) throws EvaluationException {
-            return new Monomial(this.coefficient.div(expr).simplify(), this.term);
+            if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                return new Monomial(this.coefficient.div(expr).simplify(), this.term);
+            }
+            return new Monomial(this.coefficient.div(expr).simplify(simplifyTypesBuchbergerAlgorithmRationalCase), this.term);
         }
 
         public Monomial divideByMonomial(Monomial m) throws EvaluationException {
@@ -130,7 +183,10 @@ public class GroebnerBasisMethods {
             for (int i = 0; i < this.term.length; i++) {
                 termOfQuotient[i] = this.term[i] - m.term[i];
             }
-            return new Monomial(this.coefficient.div(m.coefficient).simplify(), termOfQuotient);
+            if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                return new Monomial(this.coefficient.div(m.coefficient).simplify(), termOfQuotient);
+            }
+            return new Monomial(this.coefficient.div(m.coefficient).simplify(simplifyTypesBuchbergerAlgorithmRationalCase), termOfQuotient);
         }
 
         public Monomial lcm(Monomial m) {
@@ -184,9 +240,13 @@ public class GroebnerBasisMethods {
         public boolean equivalentToMonomial(Monomial m) {
             return this.coefficient.equivalent(m.coefficient) && this.equalsInTerm(m);
         }
-        
+
         public Monomial simplify() throws EvaluationException {
             return new Monomial(this.coefficient.simplify(), this.term);
+        }
+
+        public Monomial simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+            return new Monomial(this.coefficient.simplify(simplifyTypes), this.term);
         }
 
         @Override
@@ -326,12 +386,12 @@ public class GroebnerBasisMethods {
             }
 
             // Restliche Koeffizienten, die bisher null sind, auf 0 setzen.
-            for (int i = 0; i < coefficients.getBound(); i++){
-                if (coefficients.get(i) == null){
+            for (int i = 0; i < coefficients.getBound(); i++) {
+                if (coefficients.get(i) == null) {
                     coefficients.put(i, ZERO);
                 }
             }
-            
+
             return coefficients;
 
         }
@@ -352,6 +412,15 @@ public class GroebnerBasisMethods {
 
         public boolean isZero() {
             return this.monomials.isEmpty();
+        }
+
+        public boolean isRationalPolynomial() {
+            for (Monomial m : this.monomials) {
+                if (!m.isRationalMonomial()) {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public boolean equalsToMultiPolynomial(MultiPolynomial f) {
@@ -397,7 +466,11 @@ public class GroebnerBasisMethods {
             for (int i = 0; i < thisCopy.monomials.size(); i++) {
                 for (int j = 0; j < fCopy.monomials.size(); j++) {
                     if (thisCopy.monomials.get(i).equalsInTerm(fCopy.monomials.get(j))) {
-                        thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().add(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                            thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().add(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        } else {
+                            thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().add(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        }
                         thisCopy.monomials.remove(i);
                         fCopy.monomials.remove(j);
                         i--;
@@ -418,7 +491,11 @@ public class GroebnerBasisMethods {
             for (int i = 0; i < thisCopy.monomials.size(); i++) {
                 for (int j = 0; j < fCopy.monomials.size(); j++) {
                     if (thisCopy.monomials.get(i).equalsInTerm(fCopy.monomials.get(j))) {
-                        thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().sub(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        if (simplifyCase == SimplifyCase.GENERAL_CASE) {
+                            thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().sub(fCopy.monomials.get(j).getCoefficient()).simplify());
+                        } else {
+                            thisCopy.monomials.get(i).setCoefficient(thisCopy.monomials.get(i).getCoefficient().sub(fCopy.monomials.get(j).getCoefficient()).simplify(simplifyTypesBuchbergerAlgorithmRationalCase));
+                        }
                         fCopy.monomials.remove(j);
                         i--;
                         break;
@@ -435,12 +512,12 @@ public class GroebnerBasisMethods {
         public MultiPolynomial replaceVarByExpression(String var, Expression expr) {
 
             MultiPolynomial multiPolynomialReplacedVar = new MultiPolynomial();
-            
+
             ArrayList<Monomial> monomialsCopy = new ArrayList<>();
-            for (Monomial m : this.monomials){
+            for (Monomial m : this.monomials) {
                 monomialsCopy.add(m);
             }
-            
+
             for (Monomial m : monomialsCopy) {
                 multiPolynomialReplacedVar.addMonomial(m.replaceVarByExpression(var, expr));
             }
@@ -453,7 +530,7 @@ public class GroebnerBasisMethods {
                 m = monomialList.get(0);
                 monomialList.remove(0);
                 for (int i = 0; i < monomialList.size(); i++) {
-                    if (m.equalsInTerm(monomialList.get(i))){
+                    if (m.equalsInTerm(monomialList.get(i))) {
                         m.setCoefficient(m.getCoefficient().add(monomialList.get(i).getCoefficient()));
                         monomialList.remove(i);
                         i--;
@@ -463,7 +540,7 @@ public class GroebnerBasisMethods {
             }
 
             return resultMultiPolynomial;
-            
+
         }
 
         public Monomial getLeadingMonomial() {
@@ -491,13 +568,22 @@ public class GroebnerBasisMethods {
 
         public MultiPolynomial simplify() throws EvaluationException {
             MultiPolynomial f = new MultiPolynomial();
-            for (Monomial m : this.monomials){
+            for (Monomial m : this.monomials) {
                 f.addMonomial(m.simplify());
             }
             f.clearZeroMonomials();
             return f;
         }
-        
+
+        public MultiPolynomial simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+            MultiPolynomial f = new MultiPolynomial();
+            for (Monomial m : this.monomials) {
+                f.addMonomial(m.simplify(simplifyTypes));
+            }
+            f.clearZeroMonomials();
+            return f;
+        }
+
     }
 
     public static void setTermOrdering(TermOrderings termOrdering) {
@@ -515,6 +601,15 @@ public class GroebnerBasisMethods {
     public static void setMonomialVars(ArrayList<String> monomialVars) {
         GroebnerBasisMethods.monomialVars = new String[monomialVars.size()];
         GroebnerBasisMethods.monomialVars = monomialVars.toArray(GroebnerBasisMethods.monomialVars);
+    }
+
+    public static boolean isMultiPolynomialFamilyRational(ArrayList<MultiPolynomial> polynomials) {
+        for (MultiPolynomial polynomial : polynomials) {
+            if (!polynomial.isRationalPolynomial()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static MultiPolynomial getSyzygyPolynomial(MultiPolynomial f, MultiPolynomial g) throws EvaluationException {
@@ -573,6 +668,13 @@ public class GroebnerBasisMethods {
      */
     public static ArrayList<MultiPolynomial> getNormalizedReducedGroebnerBasis(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
 
+        // Vereinfachungsmodus setzen.
+        if (isMultiPolynomialFamilyRational(polynomials)){
+            simplifyCase = SimplifyCase.RATIONAL_CASE;
+        } else {
+            simplifyCase = SimplifyCase.GENERAL_CASE;
+        }
+        
         ArrayList<MultiPolynomial> groebnerBasis = new ArrayList<>();
         ArrayList<MultiPolynomial> groebnerBasisAfterBuchbergerAlgorithmStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {
@@ -596,10 +698,10 @@ public class GroebnerBasisMethods {
 
         // Konsolenausgabe, zur Kontrolle.
         System.out.println("Gröbnerbasis:");
-        for (MultiPolynomial f : groebnerBasis){
+        for (MultiPolynomial f : groebnerBasis) {
             System.out.println(f.toString());
         }
-        
+
         return groebnerBasis;
 
     }
@@ -610,7 +712,7 @@ public class GroebnerBasisMethods {
         return getNormalizedReducedGroebnerBasis(polynomialsAsArrayList);
     }
 
-    public static ArrayList<MultiPolynomial> buchbergerAlgorithmSingleStep(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    private static ArrayList<MultiPolynomial> buchbergerAlgorithmSingleStep(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
 
         ArrayList<MultiPolynomial> polynomialsAfterStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {

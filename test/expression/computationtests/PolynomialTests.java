@@ -11,6 +11,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import static abstractexpressions.expression.utilities.SimplifyTrigonometry.THREE;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import enums.TypeSimplify;
 import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -424,7 +425,7 @@ public class PolynomialTests {
     }
 
     @Test
-    public void decomposePolynomialTest12() {
+    public void decomposePolynomialBySolvoingPolynomialSystemTest() {
         /* 
          Zerlegung von f = x^4+5*x^3+21*x^2+35*x+50 = (x^2+2*x+5)*(x^2+3*x+10) in irreduzible Faktoren.
          */
