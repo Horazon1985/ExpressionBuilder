@@ -1008,20 +1008,7 @@ public class Function extends Expression {
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
         if (this.type.isTrigonometric()) {
-//            try {
-//
-//                Expression expr = this.left;
-//                Expression exprSimplified;
-//
-//                // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
-//
-//
-//
-//                if (exprSimplified.length() < expr.length()) {
-//                    return exprSimplified;
-//                }
-//            } catch (EvaluationException e) {
-//            }
+
         }
 
         return new Function(this.left.simplifyExpandAndCollectEquivalentsIfShorter(), this.type);

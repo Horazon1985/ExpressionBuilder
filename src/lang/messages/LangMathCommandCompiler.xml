@@ -970,6 +970,12 @@
         <Ukrainian>???</Ukrainian>
         <Russian>???</Russian>
     </object>
+    <object id = "MCC_EQUATION_SYSTEM_NO_SOLUTIONS_FOUND">
+        <German>Es konnten keine Lösungen des Gleichungssystems gefunden werden.</German>
+        <English>No solutions of the system of equations could be found.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
         <German>Zu wenig Parameter im Befehl 'tangent'.</German>
         <English>Not enough parameters in command 'tangent'.</English>

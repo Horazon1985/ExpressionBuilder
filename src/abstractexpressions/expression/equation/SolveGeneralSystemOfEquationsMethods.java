@@ -21,6 +21,7 @@ import java.util.HashSet;
 public class SolveGeneralSystemOfEquationsMethods {
 
     public enum SolutionType {
+
         RATIONAL, ALL;
     }
 
@@ -345,7 +346,7 @@ public class SolveGeneralSystemOfEquationsMethods {
             return ALL_REALS;
         }
 
-        if (equations.length != vars.size()) {
+        if (equations.length < vars.size()) {
             throw new NotAlgebraicallySolvableException();
         }
 
@@ -434,9 +435,20 @@ public class SolveGeneralSystemOfEquationsMethods {
                 throw new NotAlgebraicallySolvableException();
             }
 
-            ExpressionCollection solutions;
+            ExpressionCollection solutions = new ExpressionCollection();
             try {
-                solutions = SolveGeneralEquationMethods.solveEquation(equations.get(0), ZERO, var);
+                for (int i = 0; i < equations.size(); i++) {
+                    if (equations.get(i).equals(ZERO)) {
+                        continue;
+                    }
+                    if (i == 0) {
+                        solutions = SolveGeneralEquationMethods.solveEquation(equations.get(i), ZERO, var);
+                    } else if (solutions.isEmpty()) {
+                        return new ArrayList<>();
+                    } else {
+                        solutions = SimplifyUtilities.intersection(solutions, PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i), var));
+                    }
+                }
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallySolvableException();
             }
@@ -454,29 +466,51 @@ public class SolveGeneralSystemOfEquationsMethods {
         }
 
         HashSet<String> varsInEquation;
-        Expression equation = null;
+        ArrayList<Expression> equationsWithOneVar = new ArrayList<>();
         String var = null;
-        for (Expression f : equations) {
-            varsInEquation = getIndeterminatesInEquation(f, vars);
+        for (int i = 0; i < equations.size(); i++) {
+            varsInEquation = getIndeterminatesInEquation(equations.get(i), vars);
             if (varsInEquation.size() == 1) {
-                equation = f;
-                for (String v : varsInEquation) {
-                    var = v;
+                if (var == null) {
+                    for (String v : varsInEquation) {
+                        var = v;
+                    }
+                    equationsWithOneVar.add(equations.get(i));
+                    equations.remove(equations.get(i));
+                    i--;
+                } else if (varsInEquation.contains(var)) {
+                    equationsWithOneVar.add(equations.get(i));
+                    equations.remove(equations.get(i));
+                    i--;
                 }
-                equations.remove(equation);
-                break;
             }
         }
 
-        if (equation == null) {
+        if (equationsWithOneVar.isEmpty()) {
             throw new NotAlgebraicallySolvableException();
         }
 
-        ExpressionCollection solutionsOfEquation;
-        try {
-            solutionsOfEquation = SolveGeneralEquationMethods.solveEquation(equation, ZERO, var);
-        } catch (EvaluationException e) {
-            throw new NotAlgebraicallySolvableException();
+        
+        
+        
+        // Jede der gefundenen Gleichungen muss nun gelöst werden und es werden nur die gemeinsamen Nullstellen weiterverwendet.
+        ExpressionCollection solutionsOfEquation = new ExpressionCollection();
+        for (int i = 0; i < equationsWithOneVar.size(); i++) {
+            if (i == 0) {
+                try {
+                    solutionsOfEquation = SolveGeneralEquationMethods.solveEquation(equationsWithOneVar.get(i), ZERO, var);
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+            } else if (solutionsOfEquation.isEmpty()) {
+                return new ArrayList<>();
+            } else {
+                try {
+                    solutionsOfEquation = SimplifyUtilities.intersection(solutionsOfEquation, SolveGeneralEquationMethods.solveEquation(equationsWithOneVar.get(i), ZERO, var));
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallySolvableException();
+                }
+            }
         }
 
         vars.remove(var);
@@ -485,12 +519,7 @@ public class SolveGeneralSystemOfEquationsMethods {
 
         // Jede gefundene Lösung in die restlichen Gleichungen einsetzen und weiter rekursiv auflösen.
         try {
-            ArrayList<String> varsCopy = new ArrayList<>();
             for (Expression solutionOfEquation : solutionsOfEquation) {
-
-                // vars in varsCopy kopieren.
-                varsCopy.clear();
-                varsCopy.addAll(vars);
 
                 equationsWithVarReplacedBySolution.clear();
 
@@ -498,6 +527,9 @@ public class SolveGeneralSystemOfEquationsMethods {
                     equationsWithVarReplacedBySolution.add(f.replaceVariable(var, solutionOfEquation).simplify());
                 }
 
+                // Kopie von vars machen!
+                ArrayList<String> varsCopy = new ArrayList<>();
+                varsCopy.addAll(vars);
                 ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularGeneralSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy);
 
                 HashMap<String, Expression> singleSolution;

@@ -31,8 +31,9 @@ public class BinaryOperation extends Expression {
          simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
          */
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_trivial);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
@@ -41,7 +42,6 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
         return simplifyTypes;
     }
 
