@@ -224,7 +224,7 @@ public abstract class SimplifyPolynomialMethods {
         if (deg.compareTo(BigInteger.ZERO) < 0) {
             return coefficients;
         }
-        if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+        if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
             throw new EvaluationException(Translator.translateOutputMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
 
@@ -542,7 +542,7 @@ public abstract class SimplifyPolynomialMethods {
      */
     private static Expression decomposeCyclicPolynomial(int n, Expression a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
-        if (n <= 2 || n > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION
+        if (n <= 2 || n > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL
                 || !a.isAlwaysPositive() && !a.isAlwaysNegative()) {
             throw new PolynomialNotDecomposableException();
         }
@@ -604,7 +604,7 @@ public abstract class SimplifyPolynomialMethods {
 
         int m = getPeriodOfCoefficients(a);
 
-        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == a.getBound()) {
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL || m == a.getBound()) {
             throw new PolynomialNotDecomposableException();
         }
 
@@ -661,7 +661,7 @@ public abstract class SimplifyPolynomialMethods {
 
         int m = getAntiperiodOfCoefficients(a);
 
-        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m == 1 || m == a.getBound()) {
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL || m == 1 || m == a.getBound()) {
             throw new PolynomialNotDecomposableException();
         }
 
@@ -691,7 +691,7 @@ public abstract class SimplifyPolynomialMethods {
 
         int m = getGGTOfAllExponents(a);
 
-        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION || m <= 1) {
+        if (m > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL || m <= 1) {
             throw new PolynomialNotDecomposableException();
         }
 
@@ -770,7 +770,7 @@ public abstract class SimplifyPolynomialMethods {
             return f;
         }
         // Faktorisierung nur für Polynome, wenn degree <= gewisse Schranke ist.
-        if (getDegreeOfPolynomial(f, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+        if (getDegreeOfPolynomial(f, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
             return f;
         }
         try {
@@ -800,7 +800,7 @@ public abstract class SimplifyPolynomialMethods {
         for (Expression factor : factors) {
             if (factor.isPositiveIntegerPower()) {
                 if (((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger().compareTo(
-                        BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                        BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
                     throw new PolynomialNotDecomposableException();
                 }
                 int exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
@@ -1036,8 +1036,8 @@ public abstract class SimplifyPolynomialMethods {
             BigInteger degG = getDegreeOfPolynomial(g, var);
 
             if (degF.compareTo(BigInteger.ZERO) < 0 || degG.compareTo(BigInteger.ZERO) < 0
-                    || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
-                    || degG.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                    || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0
+                    || degG.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
                 return ONE;
             }
 

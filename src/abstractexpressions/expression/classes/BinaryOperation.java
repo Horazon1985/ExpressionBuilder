@@ -1145,6 +1145,12 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
 
             /*
+             Prüft, ob bei (ganzzahlige Potenzen von) Ausdrücken aus Brüchen prinzipiell gekürzt werden kann, z. B. wird
+             (ab^3+a^2)/(b^3+a) zu a gekürzt.
+             */
+            SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
+
+            /*
              Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad)
              */
             SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);

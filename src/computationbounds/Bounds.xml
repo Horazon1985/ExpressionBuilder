@@ -6,7 +6,7 @@
   <object id = "BOUND_COMMAND_MAX_DIGITS_OF_PI">
     <value>100000</value>
   </object>
-  <object id = "BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION">
+  <object id = "BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL">
     <value>100</value>
   </object>
   <object id = "BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS">

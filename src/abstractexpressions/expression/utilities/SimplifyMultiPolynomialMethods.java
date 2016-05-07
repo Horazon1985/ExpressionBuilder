@@ -253,7 +253,7 @@ public class SimplifyMultiPolynomialMethods {
         GroebnerBasisMethods.setMonomialVars(vars.toArray(monomialVars));
 
         BigInteger deg = getDegreeOfMultiPolynomial(f, vars);
-        if (deg.compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+        if (deg.compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
             throw new EvaluationException(Translator.translateOutputMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
         }
 

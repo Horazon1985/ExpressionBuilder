@@ -1784,7 +1784,7 @@ public abstract class SolveGeneralEquationMethods {
 
         degree = degree.subtract(order);
 
-        if (degree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+        if (degree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
             throw new NotAlgebraicallySolvableException();
         }
 

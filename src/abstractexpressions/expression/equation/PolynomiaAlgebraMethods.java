@@ -57,7 +57,7 @@ public abstract class PolynomiaAlgebraMethods {
      * wird. Voraussetzung: f ist vereinfacht, d.h. Operatoren etc. kommen NICHT
      * vor (außer evtl. Gamma(x), was kein Polynom ist).
      */
-    public static boolean isPolynomialAfterSubstitutionByRoots(Expression f, String var) {
+    public static boolean isPolynomialInRationalPowers(Expression f, String var) {
 
         if (!f.contains(var)) {
             return true;
@@ -66,14 +66,14 @@ public abstract class PolynomiaAlgebraMethods {
             return true;
         }
         if (f.isSum() || f.isDifference() || f.isProduct()) {
-            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var) && isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getRight(), var);
+            return isPolynomialInRationalPowers(((BinaryOperation) f).getLeft(), var) && isPolynomialInRationalPowers(((BinaryOperation) f).getRight(), var);
         }
         if (f.isQuotient() && !((BinaryOperation) f).getRight().contains(var)) {
-            return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
+            return isPolynomialInRationalPowers(((BinaryOperation) f).getLeft(), var);
         }
         if (f.isPower()) {
             if (((BinaryOperation) f).getRight().isIntegerConstant()) {
-                return isPolynomialAfterSubstitutionByRoots(((BinaryOperation) f).getLeft(), var);
+                return isPolynomialInRationalPowers(((BinaryOperation) f).getLeft(), var);
             } else if (((BinaryOperation) f).getRight().isRationalConstant()) {
                 return ((BinaryOperation) f).getLeft().equals(Variable.create(var));
             }
@@ -84,9 +84,9 @@ public abstract class PolynomiaAlgebraMethods {
     }
 
     /**
-     * Falls isPolynomialAfterSubstitutionByRoots() true zurückgibt, gibt es den
-     * kleinsten Exponenten m für eine geeignete Substitution var = y^m aus, so
-     * dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
+     * Falls isPolynomialInRationalPowers() true zurückgibt, gibt es den
+ kleinsten Exponenten m für eine geeignete Substitution var = y^m aus, so
+ dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
      * expr muss ein Polynom sein.
      */
     private static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression f, String var) {
@@ -141,7 +141,7 @@ public abstract class PolynomiaAlgebraMethods {
          = y und dann zuerst nach y auflösen und dann nach x.
          */
         int m = SimplifyPolynomialMethods.getGGTOfAllExponents(coefficients);
-        if (m > 1 && degree / m <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
+        if (m > 1 && degree / m <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
             ExpressionCollection coefficientsOfSubstitutedPolynomial = substituteMonomialInPolynomial(coefficients, m, var);
             ExpressionCollection zerosOfSubstitutedPolynomial = solvePolynomialEquation(coefficientsOfSubstitutedPolynomial, var);
             if (m % 2 == 0) {
@@ -169,7 +169,7 @@ public abstract class PolynomiaAlgebraMethods {
         }
 
         // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= gewisse Schranke ist.
-        if (degree <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION) {
+        if (degree <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
 
             if (degree == 0) {
                 return zeros;
@@ -681,7 +681,7 @@ public abstract class PolynomiaAlgebraMethods {
      */
     private static Expression substituteVariableByPowerOfVariable(Expression f, String var, BigInteger n) {
 
-        if (!isPolynomialAfterSubstitutionByRoots(f, var)) {
+        if (!isPolynomialInRationalPowers(f, var)) {
             return f;
         }
 
@@ -723,7 +723,7 @@ public abstract class PolynomiaAlgebraMethods {
     public static ExpressionCollection solvePolynomialEquationWithFractionalExponents(Expression f, String var)
             throws EvaluationException, NotAlgebraicallySolvableException {
 
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomiaAlgebraMethods.isPolynomialAfterSubstitutionByRoots(f, var)) {
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomiaAlgebraMethods.isPolynomialInRationalPowers(f, var)) {
             throw new NotAlgebraicallySolvableException();
         }
 

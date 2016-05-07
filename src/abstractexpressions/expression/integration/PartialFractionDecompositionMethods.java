@@ -73,9 +73,9 @@ public abstract class PartialFractionDecompositionMethods {
             BigInteger degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getRight(), var);
 
             if (degNumerator.compareTo(BigInteger.ZERO) < 0
-                    || degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0
+                    || degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0
                     || degDenominator.compareTo(BigInteger.ZERO) < 0
-                    || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL_EQUATION)) > 0) {
+                    || degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
 

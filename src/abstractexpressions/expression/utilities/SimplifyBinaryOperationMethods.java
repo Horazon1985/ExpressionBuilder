@@ -13,6 +13,8 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -2317,8 +2319,13 @@ public abstract class SimplifyBinaryOperationMethods {
                         reducedFactor = reduceNumeratorAndDenominatorToConstant(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
                         if (reducedFactor.length > 0) {
                             // Es konnte mindestens ein Faktor im Zähler gegen einen Faktor im Nenner gekürzt werden.
-                            factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
-                            factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                            if (!reducedFactor[1].equals(ONE)) {
+                                factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                                factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                            } else {
+                                factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                                factorsDenominator.remove(j);
+                            }
                         }
 
                     }
@@ -2629,8 +2636,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                 }
                 /*
-                 Sonderfall: Zähler und Nenner sind von der Form (a*expr)^k,
-                 (b*expr)^k, mit rationalen a, b. Dann zu (a/b)^k kürzen.
+                 Sonderfall: Zähler und Nenner sind von der Form a^k,
+                 b^k. Dann zu (a/b)^k kürzen.
                  */
                 if (factorNumerator.isPower() && factorDenominator.isPower()
                         && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
@@ -2640,8 +2647,13 @@ public abstract class SimplifyBinaryOperationMethods {
                         reducedFactor = reduceSameExpressionInAllSummandsInQuotient(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
                         if (reducedFactor.length > 0) {
                             // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
-                            factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
-                            factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                            if (!reducedFactor[1].equals(ONE)) {
+                                factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                                factorsDenominator.put(j, reducedFactor[1].pow(((BinaryOperation) factorNumerator).getRight()));
+                            } else {
+                                factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                                factorsDenominator.remove(j);
+                            }
                         }
 
                     }
@@ -2897,6 +2909,134 @@ public abstract class SimplifyBinaryOperationMethods {
             reducedFraction[0] = SimplifyUtilities.produceDifference(summandsLeftInNumerator, summandsRightInNumerator);
             reducedFraction[1] = SimplifyUtilities.produceDifference(summandsLeftInDenominator, summandsRightInDenominator);
             return reducedFraction;
+
+        }
+
+        return new Expression[0];
+
+    }
+
+    /**
+     * Kürzt (ganzzahlige Potenzen von) Ausdrücken aus Brüchen, z. B. wird
+     * (ab^3+a^2)/(b^3+a) zu a vereinfacht.
+     */
+    public static void reduceGeneralFractionToNonFractionInQuotient(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+
+        Expression factorNumerator, factorDenominator;
+        Expression[] reducedFactor;
+
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+
+            factorNumerator = factorsNumerator.get(i);
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+
+                if (factorsDenominator.get(j) == null) {
+                    continue;
+                }
+
+                factorDenominator = factorsDenominator.get(j);
+                if ((factorNumerator.isSum() || factorNumerator.isDifference())
+                        && (factorDenominator.isSum() || factorDenominator.isDifference())) {
+
+                    reducedFactor = reduceGeneralFractionToNonFractionInQuotient(factorNumerator, factorDenominator);
+                    if (reducedFactor.length > 0) {
+                        // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
+                        factorsNumerator.put(i, reducedFactor[0]);
+                        factorsDenominator.put(j, reducedFactor[1]);
+                    }
+
+                }
+                /*
+                 Sonderfall: Zähler und Nenner sind von der Form a^k, b^k. 
+                 Dann zu (a/b)^k kürzen.
+                 */
+                if (factorNumerator.isPower() && factorDenominator.isPower()
+                        && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
+                    if ((((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference())
+                            && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
+
+                        reducedFactor = reduceGeneralFractionToNonFractionInQuotient(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
+                        if (reducedFactor.length > 0) {
+                            // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
+                            factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
+                            factorsDenominator.put(j, reducedFactor[1]);
+                        }
+
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * Hilfsmethode für die öffentliche Methode
+     * reduceSameExpressionInAllSummandsInQuotient(). Kürzt (ganzzahlige
+     * Potenzen von) Ausdrücken aus Brüchen, z. B. wird (ab^3+a^2)/(b^3+a) zu a
+     * vereinfacht.
+     */
+    private static Expression[] reduceGeneralFractionToNonFractionInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
+
+        ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(denominator);
+        ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(denominator);
+
+        HashSet<Expression> setOfSubstitutions = new HashSet<>();
+
+        for (Expression summand : summandsLeftInDenominator) {
+            if (summand.isConstant()) {
+                continue;
+            }
+            if (summand.isPositiveIntegerPower()) {
+                setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
+            } else {
+                setOfSubstitutions.add(summand);
+            }
+        }
+        for (Expression summand : summandsRightInDenominator) {
+            if (summand.isConstant()) {
+                continue;
+            }
+            if (summand.isPositiveIntegerPower()) {
+                setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
+            } else {
+                setOfSubstitutions.add(summand);
+            }
+        }
+
+        if (setOfSubstitutions.isEmpty()) {
+            return new Expression[0];
+        }
+
+        Expression numeratorSubstituted, denominatorSubstituted;
+        String substVar = SubstitutionUtilities.getSubstitutionVariable(numerator.div(denominator));
+        for (Expression substitution : setOfSubstitutions) {
+
+            numeratorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(numerator, substitution, Variable.create(substVar));
+            denominatorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, substitution, Variable.create(substVar));
+            if (SimplifyPolynomialMethods.isPolynomial(numeratorSubstituted, substVar) && SimplifyPolynomialMethods.isPolynomial(denominatorSubstituted, substVar)
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(numeratorSubstituted, substVar).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
+                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(denominatorSubstituted, substVar).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0) {
+
+                // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
+                ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
+                ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
+                ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
+                if (quotient[1].isEmpty()) {
+                    return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution), ONE};
+                }
+                // Für den Kehrwert ebenso versuchen!
+                quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, coefficientsNumerator);
+                if (quotient[1].isEmpty()) {
+                    return new Expression[]{ONE, SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution)};
+                }
+
+            }
 
         }
 
