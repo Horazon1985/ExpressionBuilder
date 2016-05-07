@@ -3014,26 +3014,35 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
         Expression numeratorSubstituted, denominatorSubstituted;
+        BigInteger degNumerator, degDenominator;
         String substVar = SubstitutionUtilities.getSubstitutionVariable(numerator.div(denominator));
         for (Expression substitution : setOfSubstitutions) {
 
             numeratorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(numerator, substitution, Variable.create(substVar));
             denominatorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, substitution, Variable.create(substVar));
-            if (SimplifyPolynomialMethods.isPolynomial(numeratorSubstituted, substVar) && SimplifyPolynomialMethods.isPolynomial(denominatorSubstituted, substVar)
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(numeratorSubstituted, substVar).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(denominatorSubstituted, substVar).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0) {
 
-                // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
-                ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
-                ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
-                ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
-                if (quotient[1].isEmpty()) {
-                    return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution), ONE};
-                }
-                // Für den Kehrwert ebenso versuchen!
-                quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, coefficientsNumerator);
-                if (quotient[1].isEmpty()) {
-                    return new Expression[]{ONE, SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution)};
+            if (SimplifyPolynomialMethods.isPolynomial(numeratorSubstituted, substVar) && SimplifyPolynomialMethods.isPolynomial(denominatorSubstituted, substVar)) {
+
+                degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(numeratorSubstituted, substVar);
+                degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominatorSubstituted, substVar);
+
+                if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
+                        && degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
+                        && degNumerator.compareTo(BigInteger.ZERO) > 0 && degNumerator.compareTo(BigInteger.ZERO) > 0) {
+
+                    // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
+                    ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
+                    ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
+                    ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
+                    if (quotient[1].isEmpty()) {
+                        return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution), ONE};
+                    }
+                    // Für den Kehrwert ebenso versuchen!
+                    quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, coefficientsNumerator);
+                    if (quotient[1].isEmpty()) {
+                        return new Expression[]{ONE, SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution)};
+                    }
+
                 }
 
             }
