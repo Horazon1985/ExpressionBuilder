@@ -3045,6 +3045,153 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
+     * Bringt Factoren im Zähler oder Nenner, welche ebenfalls Brüche als
+     * Summanden enthalten, auf einen Nenner.
+     */
+    public static void reduceDoubleFractionsInQuotient(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
+
+        Expression factor, exponent;
+        boolean doesQuotientOccur;
+        ExpressionCollection summandsLeft, summandsRight;
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+            factor = factorsNumerator.get(i);
+            if (factor.isSum() || factor.isDifference()) {
+                doesQuotientOccur = false;
+                summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(factor);
+                summandsRight = SimplifyUtilities.getSummandsRightInExpression(factor);
+                for (Expression summand : summandsLeft) {
+                    if (summand.isQuotient()) {
+                        doesQuotientOccur = true;
+                        break;
+                    }
+                }
+                if (!doesQuotientOccur) {
+                    for (Expression summand : summandsRight) {
+                        if (summand.isQuotient()) {
+                            doesQuotientOccur = true;
+                            break;
+                        }
+                    }
+                }
+                if (doesQuotientOccur) {
+                    factor = bringFractionToCommonDenominator((BinaryOperation) factor);
+                    factorsNumerator.put(i, factor);
+                }
+            }
+            if (factor.isPower() && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) factor).getRight())
+                    && (((BinaryOperation) factor).getLeft().isSum() || ((BinaryOperation) factor).getLeft().isDifference())) {
+
+                exponent = ((BinaryOperation) factor).getRight();
+                factor = ((BinaryOperation) factor).getLeft();
+                if (factor.isSum() || factor.isDifference()) {
+                    doesQuotientOccur = false;
+                    summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(factor);
+                    summandsRight = SimplifyUtilities.getSummandsRightInExpression(factor);
+                    for (Expression summand : summandsLeft) {
+                        if (summand.isQuotient()) {
+                            doesQuotientOccur = true;
+                            break;
+                        }
+                    }
+                    if (!doesQuotientOccur) {
+                        for (Expression summand : summandsRight) {
+                            if (summand.isQuotient()) {
+                                doesQuotientOccur = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (doesQuotientOccur) {
+                        factor = bringFractionToCommonDenominator((BinaryOperation) factor);
+                        if (factor.isQuotient()) {
+                            factor = factor.pow(exponent);
+                        } else {
+                            // Dürfte eigentlich nie passieren.
+                            factor = ((BinaryOperation) factor).getLeft().pow(exponent).div(((BinaryOperation) factor).getRight().pow(exponent));
+                        }
+                        factorsNumerator.put(i, factor);
+                    }
+                }
+
+            }
+
+        }
+
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+
+            if (factorsDenominator.get(i) == null) {
+                continue;
+            }
+            factor = factorsDenominator.get(i);
+            if (factor.isSum() || factor.isDifference()) {
+                doesQuotientOccur = false;
+                summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(factor);
+                summandsRight = SimplifyUtilities.getSummandsRightInExpression(factor);
+                for (Expression summand : summandsLeft) {
+                    if (summand.isQuotient()) {
+                        doesQuotientOccur = true;
+                        break;
+                    }
+                }
+                if (!doesQuotientOccur) {
+                    for (Expression summand : summandsRight) {
+                        if (summand.isQuotient()) {
+                            doesQuotientOccur = true;
+                            break;
+                        }
+                    }
+                }
+                if (doesQuotientOccur) {
+                    factor = bringFractionToCommonDenominator((BinaryOperation) factor);
+                    factorsDenominator.put(i, factor);
+                }
+            }
+            if (factor.isPower() && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) factor).getRight())
+                    && (((BinaryOperation) factor).getLeft().isSum() || ((BinaryOperation) factor).getLeft().isDifference())) {
+
+                exponent = ((BinaryOperation) factor).getRight();
+                factor = ((BinaryOperation) factor).getLeft();
+                if (factor.isSum() || factor.isDifference()) {
+                    doesQuotientOccur = false;
+                    summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(factor);
+                    summandsRight = SimplifyUtilities.getSummandsRightInExpression(factor);
+                    for (Expression summand : summandsLeft) {
+                        if (summand.isQuotient()) {
+                            doesQuotientOccur = true;
+                            break;
+                        }
+                    }
+                    if (!doesQuotientOccur) {
+                        for (Expression summand : summandsRight) {
+                            if (summand.isQuotient()) {
+                                doesQuotientOccur = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (doesQuotientOccur) {
+                        factor = bringFractionToCommonDenominator((BinaryOperation) factor);
+                        if (factor.isQuotient()) {
+                            factor = factor.pow(exponent);
+                        } else {
+                            // Dürfte eigentlich nie passieren.
+                            factor = ((BinaryOperation) factor).getLeft().pow(exponent).div(((BinaryOperation) factor).getRight().pow(exponent));
+                        }
+                        factorsDenominator.put(i, factor);
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
      * Falls factorsNumerator und factorsDenominator Faktoren (oder Potenzen von
      * Faktoren, bei denen die Exponenten gleich sind) besitzen, welche
      * rationale Polynome (von nicht allzu hohem Grad) sind, dann werden beide

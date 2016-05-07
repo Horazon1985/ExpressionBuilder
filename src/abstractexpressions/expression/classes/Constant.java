@@ -283,7 +283,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() {
+    public Expression simplifyReduceDifferencesAndQuotients() {
         return this;
     }
 

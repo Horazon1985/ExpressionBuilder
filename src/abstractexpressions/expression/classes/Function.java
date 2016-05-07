@@ -33,7 +33,7 @@ public class Function extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         return simplifyTypes;
@@ -955,8 +955,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
-        return new Function(this.left.simplifyReduceLeadingsCoefficients(), this.type);
+    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
+        return new Function(this.left.simplifyReduceDifferencesAndQuotients(), this.type);
     }
 
     @Override

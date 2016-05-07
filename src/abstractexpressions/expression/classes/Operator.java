@@ -1091,11 +1091,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyReduceLeadingsCoefficients();
+                resultParams[i] = ((Expression) this.params[i]).simplifyReduceDifferencesAndQuotients();
             } else {
                 resultParams[i] = this.params[i];
             }

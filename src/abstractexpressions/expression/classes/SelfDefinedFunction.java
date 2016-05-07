@@ -446,12 +446,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyReduceLeadingsCoefficients();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyReduceDifferencesAndQuotients();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReduceLeadingsCoefficients(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyReduceDifferencesAndQuotients(), resultLeft);
     }
 
     @Override

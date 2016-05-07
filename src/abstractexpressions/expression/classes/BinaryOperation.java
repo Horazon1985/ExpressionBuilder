@@ -38,7 +38,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_leadings_coefficients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -1057,20 +1057,20 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceLeadingsCoefficients() throws EvaluationException {
+    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyReduceLeadingsCoefficients());
+                summands.put(i, summands.get(i).simplifyReduceDifferencesAndQuotients());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyReduceLeadingsCoefficients());
+                factors.put(i, factors.get(i).simplifyReduceDifferencesAndQuotients());
             }
 
             /*
@@ -1081,10 +1081,10 @@ public class BinaryOperation extends Expression {
 
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
-            return this.left.simplifyReduceLeadingsCoefficients().pow(this.right.simplifyReduceLeadingsCoefficients());
+            return this.left.simplifyReduceDifferencesAndQuotients().pow(this.right.simplifyReduceDifferencesAndQuotients());
         }
 
-        // Nun kann es dich nur noch um type == TypeBinary.MINUS oder um type == TypeBinary.DIV handeln.
+        // Nun kann es dich nur noch um Differenzen oder Quotienten handeln.
         ExpressionCollection termsLeft;
         ExpressionCollection termsRight;
         if (this.isDifference()) {
@@ -1097,10 +1097,10 @@ public class BinaryOperation extends Expression {
 
         // Zunächst in allen Summanden/Faktoren einzeln kürzen.
         for (int i = 0; i < termsLeft.getBound(); i++) {
-            termsLeft.put(i, termsLeft.get(i).simplifyReduceLeadingsCoefficients());
+            termsLeft.put(i, termsLeft.get(i).simplifyReduceDifferencesAndQuotients());
         }
         for (int i = 0; i < termsRight.getBound(); i++) {
-            termsRight.put(i, termsRight.get(i).simplifyReduceLeadingsCoefficients());
+            termsRight.put(i, termsRight.get(i).simplifyReduceDifferencesAndQuotients());
         }
 
         // Nun das eigentliche Kürzen!
@@ -1145,15 +1145,15 @@ public class BinaryOperation extends Expression {
             SimplifyBinaryOperationMethods.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
 
             /*
+             Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad) im Zähler und Nenner gekürzt werden können.
+             */
+            SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
+
+            /*
              Prüft, ob bei (ganzzahlige Potenzen von) Ausdrücken aus Brüchen prinzipiell gekürzt werden kann, z. B. wird
              (ab^3+a^2)/(b^3+a) zu a gekürzt.
              */
-            SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
-
-            /*
-             Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad)
-             */
-            SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
+//            SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
 
             /*
              Hier wird Folgendes vereinfacht: Falls der zugrundeliegende
@@ -1162,63 +1162,7 @@ public class BinaryOperation extends Expression {
              Differenz ist, in der Brüche auftauchen, dann sollen diese auf
              einen gemeinsamen Nenner gebracht werden.
              */
-            boolean sumsOrDifferencesWithFractionsOccur = false;
-
-            for (int i = 0; i < termsLeft.getBound(); i++) {
-                if (termsLeft.get(i) == null) {
-                    continue;
-                }
-                if (termsLeft.get(i).isSum() || termsLeft.get(i).isDifference()) {
-
-                    Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) termsLeft.get(i));
-                    if (!factorSimplified.equals(termsLeft.get(i))) {
-                        termsLeft.put(i, factorSimplified);
-                        sumsOrDifferencesWithFractionsOccur = true;
-                    }
-
-                } else if (termsLeft.get(i).isPower()
-                        && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) termsLeft.get(i)).getRight())
-                        && (((BinaryOperation) termsLeft.get(i)).getLeft().isSum()
-                        || ((BinaryOperation) termsLeft.get(i)).getLeft().isDifference())) {
-
-                    Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) ((BinaryOperation) termsLeft.get(i)).getLeft());
-                    if (!factorSimplified.equals(termsLeft.get(i))) {
-                        termsLeft.put(i, factorSimplified.pow(((BinaryOperation) termsLeft.get(i)).getRight()));
-                        sumsOrDifferencesWithFractionsOccur = true;
-                    }
-
-                }
-            }
-            for (int i = 0; i < termsRight.getBound(); i++) {
-                if (termsRight.get(i) == null) {
-                    continue;
-                }
-                if (termsRight.get(i).isSum() || termsRight.get(i).isDifference()) {
-
-                    Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) termsRight.get(i));
-                    if (!factorSimplified.equals(termsRight.get(i))) {
-                        termsRight.put(i, factorSimplified);
-                        sumsOrDifferencesWithFractionsOccur = true;
-                    }
-
-                } else if (termsRight.get(i).isPower()
-                        && SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(((BinaryOperation) termsRight.get(i)).getRight())
-                        && (((BinaryOperation) termsRight.get(i)).getLeft().isSum()
-                        || ((BinaryOperation) termsRight.get(i)).getLeft().isDifference())) {
-
-                    Expression factorSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) ((BinaryOperation) termsRight.get(i)).getLeft());
-                    if (!factorSimplified.equals(termsRight.get(i))) {
-                        termsRight.put(i, factorSimplified.pow(((BinaryOperation) termsRight.get(i)).getRight()));
-                        sumsOrDifferencesWithFractionsOccur = true;
-                    }
-
-                }
-            }
-
-            // Ergebnis bilden.
-            if (sumsOrDifferencesWithFractionsOccur) {
-                return SimplifyUtilities.produceQuotient(termsLeft, termsRight).orderDifferencesAndQuotients().simplifyReduceQuotients();
-            }
+            SimplifyBinaryOperationMethods.reduceDoubleFractionsInQuotient(termsLeft, termsRight);
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 
