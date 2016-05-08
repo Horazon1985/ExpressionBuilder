@@ -2988,13 +2988,18 @@ public abstract class SimplifyBinaryOperationMethods {
 
         HashSet<Expression> setOfSubstitutions = new HashSet<>();
 
+        /*
+         Im Folgenden dürfen algebraische Operationen nicht auftreten, da diese 
+         im Laufe algebraischer Vereinfachungen wieder rückgängig gemacht werden können 
+         (-> Endloszyklen).
+        */
         for (Expression summand : summandsLeftInDenominator) {
             if (summand.isConstant()) {
                 continue;
             }
-            if (summand.isPositiveIntegerPower()) {
+            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
                 setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
-            } else {
+            } else if (!summand.containsAlgebraicOperation()) {
                 setOfSubstitutions.add(summand);
             }
         }
@@ -3002,9 +3007,9 @@ public abstract class SimplifyBinaryOperationMethods {
             if (summand.isConstant()) {
                 continue;
             }
-            if (summand.isPositiveIntegerPower()) {
+            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
                 setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
-            } else {
+            } else if (!summand.containsAlgebraicOperation()) {
                 setOfSubstitutions.add(summand);
             }
         }
