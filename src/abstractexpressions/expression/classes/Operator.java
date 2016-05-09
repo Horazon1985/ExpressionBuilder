@@ -1363,16 +1363,7 @@ public class Operator extends Expression {
     private Expression simplifyTrivialInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-            Expression integral = GeneralIntegralMethods.integrateIndefinite(this);
-            /*
-             Die Anwendung von simplifyMultiplyExponents() ist aus Schönheitsgründen
-             wichtig: wenn Wurzeln im Integral auftauchen, die nur für eine Teilmenge
-             der reellen Zahlen definiert sind, und diese wieder potenziert werden,
-             so sollen die Exponenten explizit ausmultipliziert werden. Dies
-             vergrößert den Definitionsbereich der Stammfunktion insgesamt NICHT,
-             denn dieselbe Wurzel muss noch woanders auftauchen. 
-            */
-            return integral.simplifyMultiplyExponents();
+            return GeneralIntegralMethods.integrateIndefinite(this);
         }
 
         if (this.precise && this.params.length == 4) {
