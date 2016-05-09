@@ -16,12 +16,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
+import static org.junit.Assert.fail;
 
 public class PolynomialTests {
 
-    Expression f, g, fFactorized, ggT;
+    Expression f, g, expectedFactorizationOfF, ggT;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -219,9 +219,9 @@ public class PolynomialTests {
         // Zerlegung von x^5-7 in irreduzible Faktoren.
         try {
             f = Expression.build("x^5-7", null);
-            fFactorized = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+(7^(1/5)*(1+5^(1/2))*x)/2)*((x^2+7^(2/5))-(7^(1/5)*(5^(1/2)-1)*x)/2)", null);
+            expectedFactorizationOfF = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+(7^(1/5)*(1+5^(1/2))*x)/2)*((x^2+7^(2/5))-(7^(1/5)*(5^(1/2)-1)*x)/2)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -232,9 +232,9 @@ public class PolynomialTests {
         // Zerlegung von x^4+1 in irreduzible Faktoren.
         try {
             f = Expression.build("x^4+1", null);
-            fFactorized = Expression.build("(x^2+2^(1/2)*x+1)*((x^2+1)-2^(1/2)*x)", null);
+            expectedFactorizationOfF = Expression.build("(x^2+2^(1/2)*x+1)*((x^2+1)-2^(1/2)*x)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -245,9 +245,9 @@ public class PolynomialTests {
         // Zerlegung von x^3+1 in irreduzible Faktoren.
         try {
             f = Expression.build("x^3+1", null);
-            fFactorized = Expression.build("(x+1)*((1+x^2)-x)", null);
+            expectedFactorizationOfF = Expression.build("(x+1)*((1+x^2)-x)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -258,35 +258,35 @@ public class PolynomialTests {
         // Zerlegung von 1+x+x^2+x^3+x^4 in irreduzible Faktoren.
         try {
             f = Expression.build("1+x+x^2+x^3+x^4", null);
-            fFactorized = Expression.build("((1+x^2)+((1-5^(1/2))*x)/2)*(1+x^2+((5^(1/2)+1)*x)/2)", null);
+            expectedFactorizationOfF = Expression.build("((1+x^2)+((1-5^(1/2))*x)/2)*(1+x^2+((5^(1/2)+1)*x)/2)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposeGeometricPolynomialOfOddDegreeTest() {
         // Zerlegung von 1+x+x^2+x^3+x^4+x^5 in irreduzible Faktoren.
         try {
             f = Expression.build("1+x+x^2+x^3+x^4+x^5", null);
-            fFactorized = Expression.build("(1+x)*((1+x^2)-x)*(1+x+x^2)", null);
+            expectedFactorizationOfF = Expression.build("(1+x)*((1+x^2)-x)*(1+x+x^2)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialTest2() {
         // Zerlegung von 4*x^5-7*x^4+2*x^3+4*x^2-7*x+2 in irreduzible Faktoren.
         try {
             f = Expression.build("4*x^5+3*x^4+25*x^3+4*x^2+3*x+25", null);
-            fFactorized = Expression.build("4*(x^2+(3*x)/4+25/4)*(1+x)*((1+x^2)-x)", null);
+            expectedFactorizationOfF = Expression.build("4*(x^2+(3*x)/4+25/4)*(1+x)*((1+x^2)-x)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -297,9 +297,9 @@ public class PolynomialTests {
         // Zerlegung von 12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8 in irreduzible Faktoren.
         try {
             f = Expression.build("12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8", null);
-            fFactorized = Expression.build("(12+2*x+x^2)*((1+x^6)-x^3)", null);
+            expectedFactorizationOfF = Expression.build("(12+2*x+x^2)*((1+x^6)-x^3)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x").orderDifferencesAndQuotients();
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -313,6 +313,7 @@ public class PolynomialTests {
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             Assert.assertTrue(factors.getBound() == 2);
+            // Hier werden nur die Grade getestet, da die Faktoren etwas zu kompliziert sind.
             Assert.assertTrue(SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
             Assert.assertTrue(SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(1), "x").compareTo(BigInteger.valueOf(2)) == 0);
         } catch (ExpressionException | EvaluationException e) {
@@ -325,9 +326,9 @@ public class PolynomialTests {
         // Zerlegung von f = 144+33*x^2+x^4+72*x+6*x^3 = (x^2+3*x+12)^2 in irreduzible Faktoren.
         try {
             f = Expression.build("144+33*x^2+x^4+72*x+6*x^3", null);
-            fFactorized = Expression.build("(x^2+3*x+12)^2", null);
+            expectedFactorizationOfF = Expression.build("(x^2+3*x+12)^2", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -341,9 +342,9 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("248832+259200*x^2+61020*x^4+5085*x^6+150*x^8+x^10+311040*x+142560*x^3+19683*x^5+990*x^7+15*x^9", null);
-            fFactorized = Expression.build("(x^2+3*x+12)^5", null);
+            expectedFactorizationOfF = Expression.build("(x^2+3*x+12)^5", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -356,9 +357,9 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("216+585*x^2+275*x^4+35*x^6+459*x+469*x^3+113*x^5+x^8+7*x^7", null);
-            fFactorized = Expression.build("(x^2+x+8)*(x^2+2*x+3)^3", null);
+            expectedFactorizationOfF = Expression.build("(x^2+x+8)*(x^2+2*x+3)^3", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -371,9 +372,9 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("2+4*x^2+2*x^4", null);
-            fFactorized = Expression.build("2*(1+x^2)^2", null);
+            expectedFactorizationOfF = Expression.build("2*(1+x^2)^2", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -386,14 +387,14 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("32+178*x^2+259*x^4+165*x^6+80*x+218*x^3+197*x^5+56*x^8+82*x^7+11*x^10+16*x^9+x^12+x^11", null);
-            fFactorized = Expression.build("(x^2+2)*((4+x^2)-x)^2*(x^2+x+1)^3", null);
+            expectedFactorizationOfF = Expression.build("(x^2+2)*((4+x^2)-x)^2*(x^2+x+1)^3", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialTest10() {
         /* 
@@ -401,14 +402,14 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("14+93*x+125*x^2+51*x^3+5*x^4", null);
-            fFactorized = Expression.build("5*(x+1)*(x+2)*(x+7)*(x+1/5)", null);
+            expectedFactorizationOfF = Expression.build("5*(x+1)*(x+2)*(x+7)*(x+1/5)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialTest11() {
         /* 
@@ -416,30 +417,29 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("27*x+27*x^3+9*x^5+x^7-(135+135*x^2+45*x^4+5*x^6)", null);
-            fFactorized = Expression.build("(x^2+3)^3*(x-5)", null);
+            expectedFactorizationOfF = Expression.build("(x^2+3)^3*(x-5)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
 
     @Test
-    @Ignore
     public void decomposePolynomialBySolvoingPolynomialSystemTest() {
         /* 
          Zerlegung von f = x^4+5*x^3+21*x^2+35*x+50 = (x^2+2*x+5)*(x^2+3*x+10) in irreduzible Faktoren.
          */
         try {
             f = Expression.build("x^4+5*x^3+21*x^2+35*x+50", null);
-            fFactorized = Expression.build("(x^2+2*x+5)*(x^2+3*x+10)", null);
+            expectedFactorizationOfF = Expression.build("(x^2+2*x+5)*(x^2+3*x+10)", null);
             f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest1() {
         /* 
@@ -448,14 +448,14 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("864+1728*x+2448*x^2+2768*x^3+2240*x^4+1616*x^5+864*x^6+408*x^7+138*x^8+40*x^9+7*x^10+x^11", null);
-            fFactorized = Expression.build("(1+x)*(2+x^2)^2*(6+2*x+x^2)^3", null);
+            expectedFactorizationOfF = Expression.build("(1+x)*(2+x^2)^2*(6+2*x+x^2)^3", null);
             f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest2() {
         /* 
@@ -464,15 +464,15 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("10125+23625*x+26325*x^2+22425*x^3+14990*x^4+7910*x^5+3486*x^6+1254*x^7+357*x^8+81*x^9+13*x^10+x^11", null);
-            fFactorized = Expression.build("(1+x)*(5+x^2)^3*(x+3)^4", null);
+            expectedFactorizationOfF = Expression.build("(1+x)*(5+x^2)^3*(x+3)^4", null);
             f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
-    @Test 
+
+    @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest3() {
         /* 
          Zerlegung von f = a^2+2*a*x+x^2 
@@ -480,29 +480,44 @@ public class PolynomialTests {
          */
         try {
             f = Expression.build("a^2+2*a*x+x^2", null);
-            fFactorized = Expression.build("(a+x)^2", null);
+            expectedFactorizationOfF = Expression.build("(a+x)^2", null);
             f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
-            Assert.assertTrue(f.equivalent(fFactorized));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
-//    @Test 
-//    @Ignore
-//    public void decomposePolynomialIntoSquarefreeFactorsTest4() {
-//        /* 
-//         Zerlegung von f = a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3 
-//         = (a+x)*(b+x)^2 in irreduzible Faktoren.
-//         */
-//        try {
-//            f = Expression.build("a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3", null);
-//            fFactorized = Expression.build("(a+x)*(b+x)^2", null);
-//            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
-//            Assert.assertTrue(f.equivalent(fFactorized));
-//        } catch (ExpressionException | EvaluationException e) {
-//            fail(e.getMessage());
-//        }
-//    }
-    
+
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest4() {
+        /* 
+         Zerlegung von f = 1+3*a*x+3*a^2*x^2+a^3*x^3 
+         = (1+a*x)^3 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("1+3*a*x+3*a^2*x^2+a^3*x^3", null);
+            expectedFactorizationOfF = Expression.build("a^3*(1/a+x)^3", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest5() {
+        /* 
+         Zerlegung von f = a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3 
+         = (a+x)*(b+x)^2 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3", null);
+            expectedFactorizationOfF = Expression.build("(a+x)*(b+x)^2", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

@@ -774,7 +774,12 @@ public abstract class SimplifyPolynomialMethods {
             return f;
         }
         try {
-            return decomposeRationalPolynomialIntoSquarefreeFactors(getPolynomialCoefficients(f, var), var);
+            // Polynom normieren und dann zerlegen.
+            ExpressionCollection coefficients = getPolynomialCoefficients(f, var);
+            Expression leadingCoefficient = coefficients.get(coefficients.getBound() - 1);
+            coefficients.divByExpression(leadingCoefficient);
+            coefficients.simplify();
+            return leadingCoefficient.mult(decomposeRationalPolynomialIntoSquarefreeFactors(coefficients, var));
         } catch (PolynomialNotDecomposableException e) {
             return f;
         }
