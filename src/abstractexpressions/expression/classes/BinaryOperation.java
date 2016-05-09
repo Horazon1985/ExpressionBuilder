@@ -599,9 +599,14 @@ public class BinaryOperation extends Expression {
 
                 }
                 if (this.isPower() && expr.isPower() && this.right.equivalent(((BinaryOperation) expr).right)
-                        && ((BinaryOperation) expr).right.isEvenIntegerConstant()) {
+                        && (((BinaryOperation) expr).right.isEvenIntegerConstant() || ((BinaryOperation) expr).right.isRationalConstant()
+                        && ((BinaryOperation) ((BinaryOperation) expr).right).left.isEvenIntegerConstant()
+                        && ((BinaryOperation) ((BinaryOperation) expr).right).right.isOddIntegerConstant())) {
 
-                    // Bei geraden Potenzen sollen die Ausdrücke äquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
+                    /* 
+                    Bei geraden Potenzen oder bei rationalen Potenzen mit geradem Zählen und ungeradem Nenner sollen 
+                    die Ausdrücke äquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
+                    */
                     ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this.left);
                     ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this.left);
                     ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(((BinaryOperation) expr).left);

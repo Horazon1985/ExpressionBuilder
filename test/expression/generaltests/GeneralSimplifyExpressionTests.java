@@ -404,6 +404,7 @@ public class GeneralSimplifyExpressionTests {
     @Test
     public void equivalentIfPowerIsEvenTest() {
         // ((x+y)-z)^6 äquivalent zu (z-(x+y))^6
+        // ((x+y)-z)^(4/7) äquivalent zu (z-(x+y))^(4/7)
         // ((x+y)-z)^(-3) nicht äquivalent zu (z-(x+y))^(-3)
         // ((x+y)-z)^(1/4) nicht äquivalent zu (z-(x+y))^(1/4)
         // ((x+y)-z)^(1/7) nicht äquivalent zu (z-(x+y))^(1/4)
@@ -411,6 +412,9 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("((x+y)-z)^6", null);
             Expression g = Expression.build("(z-(x+y))^6", null);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("((x+y)-z)^(4/7)", null);
+            g = Expression.build("(z-(x+y))^(4/7)", null);
             Assert.assertTrue(f.equivalent(g));
             f = Expression.build("((x+y)-z)^(-3)", null);
             g = Expression.build("(z-(x+y))^(-3)", null);
