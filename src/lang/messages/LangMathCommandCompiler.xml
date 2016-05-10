@@ -961,20 +961,20 @@
     <object id = "MCC_EQUATION_SYSTEM_HAS_ALL_REAL_TUPLES_AS_SOLUTIONS">
         <German>Alle reellen Zahlentupel sind Lösungen des Gleichungssystems.</German>
         <English>All real tuples are solutions of the system of equations.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>всі дійсні вектори є розв'язками системи рівнянь.</Ukrainian>
+        <Russian>Все вещественные векторы являются решениями системы уравнений.</Russian>
     </object>
     <object id = "MCC_EQUATION_SYSTEM_HAS_NO_SOLUTIONS">
         <German>Das Gleichungssystem besitzt keine Lösungen.</German>
         <English>The system of equations has no solutions.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Система не має розв'язків.</Ukrainian>
+        <Russian>Системы уравнений не имеет решений.</Russian>
     </object>
     <object id = "MCC_EQUATION_SYSTEM_NO_SOLUTIONS_FOUND">
         <German>Es konnten keine Lösungen des Gleichungssystems gefunden werden.</German>
         <English>No solutions of the system of equations could be found.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не вдалося знайти розв'язки системи рівнянь.</Ukrainian>
+        <Russian>Не удалось найти решения системы уравнений.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TANGENT">
         <German>Zu wenig Parameter im Befehl 'tangent'.</German>
