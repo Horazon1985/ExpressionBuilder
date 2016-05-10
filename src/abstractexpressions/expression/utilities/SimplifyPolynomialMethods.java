@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
+import abstractexpressions.matrixexpression.classes.Matrix;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import lang.translator.Translator;
@@ -520,7 +522,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -529,7 +531,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                                Variable.create(var).sub(zeros.get(2)).simplify());
+                        Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -558,7 +560,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -566,7 +568,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -578,7 +580,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -586,7 +588,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -784,7 +786,7 @@ public abstract class SimplifyPolynomialMethods {
             return f;
         }
     }
-    
+
     /**
      * Faktorisiert ein rationales Polynom f mittels Berechnung der gemeinsamen
      * Faktoren von f und f'.<br>
@@ -1193,6 +1195,41 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
         return result;
+    }
+
+    public static Expression getResultant(ExpressionCollection coeffcicientsOfF, ExpressionCollection coeffcicientsOfG) throws EvaluationException {
+
+        int degF = coeffcicientsOfF.getBound() - 1;
+        int degG = coeffcicientsOfG.getBound() - 1;
+
+        Expression[][] resMatrixEntries = new Expression[degF + degG][degF + degG];
+
+        for (int i = 0; i < degG; i++) {
+            for (int j = 0; j < degF + degG; j++) {
+                if (i < j || j > i + degF) {
+                    resMatrixEntries[i][j] = ZERO;
+                } else {
+                    resMatrixEntries[i][j] = coeffcicientsOfF.get(degF + i - j);
+                }
+            }
+        }
+        for (int i = degG; i < degF + degG; i++) {
+            for (int j = 0; j < degF + degG; j++) {
+                if (i - degG < j || j > i - degG + degF) {
+                    resMatrixEntries[i][j] = ZERO;
+                } else {
+                    resMatrixEntries[i][j] = coeffcicientsOfF.get(degF + i - degG - j);
+                }
+            }
+        }
+
+        MatrixExpression resultant = new Matrix(resMatrixEntries).det().simplify();
+        if (resultant.convertOneTimesOneMatrixToExpression() instanceof Expression) {
+            return (Expression) resultant.convertOneTimesOneMatrixToExpression();
+        }
+
+        throw new EvaluationException("TO DO");
+
     }
 
 }

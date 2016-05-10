@@ -10,8 +10,14 @@ import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
+import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
+import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import exceptions.NotAlgebraicallyIntegrableException;
 import java.math.BigInteger;
 import java.util.HashSet;
 
@@ -354,17 +360,81 @@ public abstract class RischAlgorithmMethods {
     /*
      Ab hier folgt der eigentliche Risch-Algorithmus!
      */
-    private static boolean isExtensionOfDegreeOne(){
-    
-        
-        
-        
-    
-        return true;
-        
+    /**
+     * Gibt zurück, ob f durch Adjunktion eines einzigen transzendenten Elements
+     * aus dem Körper der rationalen Funktionen (über den reellen Zahlen)
+     * gewonnen werden kann. Das transzendente Element muss auch noch die
+     * korrekte Form besitzen.
+     */
+    private static boolean isExtensionOfDegreeOne(Expression f, String var) {
+
+        ExpressionCollection transcendentalGenerators = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
+        boolean hasOnlyOneTranscendentalElement = transcendentalGenerators.getBound() == 1
+                && areFieldExtensionsInCorrectForm(transcendentalGenerators, var);
+        if (!hasOnlyOneTranscendentalElement) {
+            return false;
+        }
+        try {
+            return isRationalOverDifferentialField(f, var, transcendentalGenerators);
+        } catch (NotDecidableException e) {
+            return false;
+        }
+
     }
-    
-    
-    
-    
+
+    /*
+    Hermite-Reduktion.
+     */
+    private static Expression doHermiteReduction(Expression f, String var, Expression transcendentalElement) {
+
+        return null;
+
+    }
+
+    /*
+    Hermite-Reduktion.
+     */
+    private static Expression integrateByRischAlgorithmForDegOneExtension(Expression f, String var) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
+
+        // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
+        if (!isExtensionOfDegreeOne(f, var)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression transcententalElement = transcendentalExtensions.get(0);
+        String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
+        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
+
+        // Sei x = var und t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in x und sein.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, var, Variable.create(var), Variable.create(transcendentalVar))) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        
+        if (!(fSubstituted instanceof BinaryOperation)){
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        
+        // Zunächst alles auf einen Bruch bringen.
+        fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) fSubstituted);
+
+        // Separat behandeln, falls fSubstituted kein Quotient ist.
+        if (!fSubstituted.isQuotient()){
+            // TO DO.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        
+        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
+        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
+        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
+        
+        
+        
+        
+
+        return null;
+
+    }
+
 }

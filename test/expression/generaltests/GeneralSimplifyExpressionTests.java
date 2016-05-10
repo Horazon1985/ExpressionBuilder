@@ -433,4 +433,45 @@ public class GeneralSimplifyExpressionTests {
         }
     }
 
+    @Test
+    public void reduceFractionTest1() {
+        // ((a^2+b^2)/(b+a^2/b) = b
+        Expression f = a.pow(2).add(b.pow(2)).div(b.add(a.pow(2).div(b)));
+        Expression g = b;
+        try {
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceFractionTest2() {
+        // (4*a*b^2/9-2*a^2*b/9-2*b^3/9)/(4*a*b/9-2*a^2/9-2*b^2/9) = b
+        try {
+            Expression f = Expression.build("(4*a*b^2/9-2*a^2*b/9-2*b^3/9)/(4*a*b/9-2*a^2/9-2*b^2/9)", null);
+            Expression g = b;
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void reduceFractionTest3() {
+        //(b^3+a)/(a*b^3+a^2) = 1/a
+        Expression f = b.pow(3).add(a).div(a.mult(b.pow(3)).add(a.pow(2)));
+        Expression g = ONE.div(a);
+        try {
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    
+
 }

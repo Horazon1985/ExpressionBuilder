@@ -14,7 +14,6 @@ import abstractexpressions.expression.utilities.SimplifyUtilities;
 import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
@@ -513,6 +512,22 @@ public class PolynomialTests {
         try {
             f = Expression.build("a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3", null);
             expectedFactorizationOfF = Expression.build("(a+x)*(b+x)^2", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest6() {
+        /* 
+         Zerlegung von f = a^3+3*a^2*b+3*a*b^2+b^3+3*a^2*x+6*a*b*x+3*b^2*x+3*a*x^2+3*b*x^2+x^3 
+         = (a+b+x)^3 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("a^3+3*a^2*b+3*a*b^2+b^3+3*a^2*x+6*a*b*x+3*b^2*x+3*a*x^2+3*b*x^2+x^3", null);
+            expectedFactorizationOfF = Expression.build("(a+b+x)^3", null);
             f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {

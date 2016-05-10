@@ -260,8 +260,9 @@ public abstract class SimplifyRationalFunctionMethods {
     }
 
     /**
-     * Hilfsmethode. Gibt zurück, ob g eine rationale Funktion in f ist, d.h. g
-     * = F(f), wobei F(x) eine rationale Funktion in x ist.
+     * Hilfsmethode. Gibt zurück, ob f eine rationale Funktion in den Funktionen
+     * functions ist, welche als Funktionen der Veränderlichen var betrachtet
+     * werden.
      */
     public static boolean isRationalFunctionInFunctions(Expression f, String var, Expression... functions) {
         if (!f.contains(var)) {
@@ -273,7 +274,7 @@ public abstract class SimplifyRationalFunctionMethods {
             }
             if (f instanceof BinaryOperation) {
                 if (f.isNotPower()) {
-                    return isRationalFunctionInFunctions(((BinaryOperation) f).getLeft(), var, functions) 
+                    return isRationalFunctionInFunctions(((BinaryOperation) f).getLeft(), var, functions)
                             && isRationalFunctionInFunctions(((BinaryOperation) f).getRight(), var, functions);
                 } else if (f.isPower() && ((BinaryOperation) f).getRight().isPositiveIntegerConstant()) {
                     return isRationalFunctionInFunctions(((BinaryOperation) f).getLeft(), var, functions);
