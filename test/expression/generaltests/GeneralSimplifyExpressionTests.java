@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import enums.TypeSimplify;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -464,6 +465,19 @@ public class GeneralSimplifyExpressionTests {
         //(b^3+a)/(a*b^3+a^2) = 1/a
         Expression f = b.pow(3).add(a).div(a.mult(b.pow(3)).add(a.pow(2)));
         Expression g = ONE.div(a);
+        try {
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceFractionTest4() {
+        //(b+b^2*a)/(1+a*b) = b
+        Expression f = b.add(b.pow(2).mult(a)).div(ONE.add(a.mult(b)));
+        Expression g = b;
         try {
             f = f.simplify();
             Assert.assertTrue(f.equivalent(g));

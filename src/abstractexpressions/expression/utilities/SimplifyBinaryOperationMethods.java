@@ -2992,15 +2992,22 @@ public abstract class SimplifyBinaryOperationMethods {
          Im Folgenden dürfen algebraische Operationen nicht auftreten, da diese 
          im Laufe algebraischer Vereinfachungen wieder rückgängig gemacht werden können 
          (-> Endloszyklen).
-        */
+         */
+        ExpressionCollection factorsOfSummand;
         for (Expression summand : summandsLeftInDenominator) {
             if (summand.isConstant()) {
                 continue;
             }
             if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
-                setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
+                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
             } else if (!summand.containsAlgebraicOperation()) {
-                setOfSubstitutions.add(summand);
+                factorsOfSummand = SimplifyUtilities.getFactors(summand);
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
             }
         }
         for (Expression summand : summandsRightInDenominator) {
@@ -3008,9 +3015,15 @@ public abstract class SimplifyBinaryOperationMethods {
                 continue;
             }
             if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
-                setOfSubstitutions.add(((BinaryOperation) summand).getLeft());
+                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
             } else if (!summand.containsAlgebraicOperation()) {
-                setOfSubstitutions.add(summand);
+                factorsOfSummand = SimplifyUtilities.getFactors(summand);
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
             }
         }
 
@@ -3502,7 +3515,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).add(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3529,7 +3542,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).add(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(SimplifyUtilities.produceProduct(commonDenominators));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3589,7 +3602,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3603,7 +3616,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
                             SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators)).div(
-                                    SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceProduct(commonDenominators));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3617,8 +3630,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceProduct(commonNumerators).mult(
                             SimplifyUtilities.produceQuotient(leftSummandRestNumerators, leftSummandRestDenominators).sub(
-                                    SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(
-                                    SimplifyUtilities.produceProduct(commonDenominators));
+                            SimplifyUtilities.produceQuotient(rightSummandRestNumerators, rightSummandRestDenominators))).div(
+                            SimplifyUtilities.produceProduct(commonDenominators));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3883,8 +3896,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).add(
                             SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
-                                    SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
-                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                            SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
+                            SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summands.put(i, factorizedSummand);
                     summands.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
@@ -3987,8 +4000,8 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).sub(
                             SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
-                                    SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
-                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                            SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
+                            SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
                     summandsLeft.put(i, factorizedSummand);
                     summandsRight.remove(j);
                     // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
