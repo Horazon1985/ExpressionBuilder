@@ -1197,7 +1197,7 @@ public abstract class SimplifyPolynomialMethods {
         return result;
     }
 
-    public static Expression getResultant(ExpressionCollection coeffcicientsOfF, ExpressionCollection coeffcicientsOfG) throws EvaluationException {
+    public static MatrixExpression getResultant(ExpressionCollection coeffcicientsOfF, ExpressionCollection coeffcicientsOfG) throws EvaluationException {
 
         int degF = coeffcicientsOfF.getBound() - 1;
         int degG = coeffcicientsOfG.getBound() - 1;
@@ -1206,7 +1206,7 @@ public abstract class SimplifyPolynomialMethods {
 
         for (int i = 0; i < degG; i++) {
             for (int j = 0; j < degF + degG; j++) {
-                if (i < j || j > i + degF) {
+                if (j < i || j > i + degF) {
                     resMatrixEntries[i][j] = ZERO;
                 } else {
                     resMatrixEntries[i][j] = coeffcicientsOfF.get(degF + i - j);
@@ -1215,20 +1215,16 @@ public abstract class SimplifyPolynomialMethods {
         }
         for (int i = degG; i < degF + degG; i++) {
             for (int j = 0; j < degF + degG; j++) {
-                if (i - degG < j || j > i - degG + degF) {
+                if (j < i - degG || j > i - degG + degF) {
                     resMatrixEntries[i][j] = ZERO;
                 } else {
-                    resMatrixEntries[i][j] = coeffcicientsOfF.get(degF + i - degG - j);
+                    resMatrixEntries[i][j] = coeffcicientsOfG.get(degF + i - degG - j);
                 }
             }
         }
 
         MatrixExpression resultant = new Matrix(resMatrixEntries).det().simplify();
-        if (resultant.convertOneTimesOneMatrixToExpression() instanceof Expression) {
-            return (Expression) resultant.convertOneTimesOneMatrixToExpression();
-        }
-
-        throw new EvaluationException("TO DO");
+        return resultant;
 
     }
 

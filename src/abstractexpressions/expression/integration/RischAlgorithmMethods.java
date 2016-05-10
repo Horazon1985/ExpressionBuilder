@@ -7,7 +7,9 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.TypeOperator;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
@@ -383,7 +385,7 @@ public abstract class RischAlgorithmMethods {
     }
 
     /*
-    Hermite-Reduktion.
+     Der Hermite-Reduktion.
      */
     private static Expression doHermiteReduction(Expression f, String var, Expression transcendentalElement) {
 
@@ -392,7 +394,14 @@ public abstract class RischAlgorithmMethods {
     }
 
     /*
-    Hermite-Reduktion.
+     Der Risch-Algorithmus.
+     */
+    /**
+     * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
+     * einer transzendenten Erweiterung durch ein einziges Element.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
      */
     private static Expression integrateByRischAlgorithmForDegOneExtension(Expression f, String var) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
@@ -411,29 +420,77 @@ public abstract class RischAlgorithmMethods {
         if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, var, Variable.create(var), Variable.create(transcendentalVar))) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
-        if (!(fSubstituted instanceof BinaryOperation)){
+
+        if (!(fSubstituted instanceof BinaryOperation)) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         // Zunächst alles auf einen Bruch bringen.
         fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) fSubstituted);
 
         // Separat behandeln, falls fSubstituted kein Quotient ist.
-        if (!fSubstituted.isQuotient()){
+        if (!fSubstituted.isQuotient()) {
             // TO DO.
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
         ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
-        
-        
-        
-        
 
         return null;
+
+    }
+
+    /**
+     * Risch-Algorithmus für den polynoimialen Anteil. Hier wird direkt
+     * integriert.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     */
+    private static Expression integrateByRischAlgorithmForDegOneExtensionIntegralPart(ExpressionCollection coefficients, Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
+        Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+        return GeneralIntegralMethods.integrateDefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
+    }
+
+    /**
+     * Risch-Algorithmus für den gebrochenen Anteil.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     */
+    private static Expression integrateByRischAlgorithmForDegOneExtensionRationalPart(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
+            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        Expression decompositionOfDenominator;
+        try {
+            decompositionOfDenominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsNumerator, transcendentalVar);
+        } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        if (decompositionOfDenominator.isNotPower() && decompositionOfDenominator.isNotProduct()) {
+            // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
+            return integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+        }
+
+        // TO DO. Hermite-Reduktion.
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Risch-Algorithmus für den gebrochenen Anteil im Falle eines quadratfreien
+     * Nenners.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     */
+    private static Expression integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
+            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        throw new NotAlgebraicallyIntegrableException();
 
     }
 

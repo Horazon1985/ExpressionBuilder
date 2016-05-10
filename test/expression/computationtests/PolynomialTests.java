@@ -11,6 +11,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import static abstractexpressions.expression.utilities.SimplifyTrigonometry.THREE;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -530,6 +531,40 @@ public class PolynomialTests {
             expectedFactorizationOfF = Expression.build("(a+b+x)^3", null);
             f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getResultantOfPolynomialsTest1() {
+        /* 
+         Resultante von f = 2*x^2+5*x-3 und g = x^2-4*x+6 ist 459. 
+         */
+        try {
+            f = Expression.build("2*x^2+5*x-3", null);
+            g = Expression.build("x^2-4*x+6", null);
+            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"), 
+                    SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
+            Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
+            Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getResultantOfPolynomialsTest2() {
+        /* 
+         Resultante von f = 2*x^2+5*x-3 und g = x^2-4*x+6 ist 459. 
+         */
+        try {
+            f = Expression.build("2*x^2+5*x-3", null);
+            g = Expression.build("x^2-4*x+6", null);
+            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"), 
+                    SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
+            Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
+            Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
