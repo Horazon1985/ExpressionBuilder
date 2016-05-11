@@ -587,10 +587,29 @@ public abstract class RischAlgorithmMethods {
         }
         
         Expression resultant = (Expression) resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression();
+        if (!SimplifyPolynomialMethods.isPolynomial(resultant, resultantVar)){
+            // Sollte eigentlich nie vorkommen.
+            throw new NotAlgebraicallyIntegrableException();
+        }
         
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(resultant);
         
+        // z = resultantVar kann im Nenner nicht vorkommen. Deswegen nur Zähler absuchen.
+        for (int i = 0; i < factorsNumerator.getBound(); i++){
+            if (!factorsNumerator.get(i).contains(resultantVar)){
+                factorsNumerator.put(i, null);
+            }
+        }
+        Expression normalizedResultant = SimplifyUtilities.produceProduct(factorsNumerator);
+        if (normalizedResultant.contains(var) || normalizedResultant.contains(transcendentalVar)){
+            throw new NotAlgebraicallyIntegrableException();
+        }
         
+        normalizedResultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
+        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, var)){
+            throw new NotAlgebraicallyIntegrableException();
+        }
         
         // Logarithmischer Fall.
         
@@ -600,5 +619,17 @@ public abstract class RischAlgorithmMethods {
         throw new NotAlgebraicallyIntegrableException();
 
     }
+    
+    private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var){
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        for (Expression factor : factors){
+            if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)){
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    
 
 }
