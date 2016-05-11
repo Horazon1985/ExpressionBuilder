@@ -20,6 +20,7 @@ import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import exceptions.NotAlgebraicallyIntegrableException;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -517,16 +518,16 @@ public abstract class RischAlgorithmMethods {
                     Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
                     Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify();
                     Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify();
-                    
+
                     Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
                     derivativeOfB = derivativeOfB.diff(var);
                     derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar));
-                    
+
                     Expression newNumerator = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB));
                     ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newNumerator, transcendentalVar);
-                    return b.div(v.pow(m.subtract(BigInteger.ONE))).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))), 
+                    return b.div(v.pow(m.subtract(BigInteger.ONE))).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
                             transcententalElement, var, transcendentalVar));
-                    
+
                 } catch (EvaluationException e) {
                     throw new NotAlgebraicallyIntegrableException();
                 }
@@ -552,6 +553,49 @@ public abstract class RischAlgorithmMethods {
      */
     private static Expression integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        // Leitkoeffizienten vom Nenner in den Zähler verschieben.
+        coefficientsNumerator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+        coefficientsNumerator = coefficientsNumerator.simplify();
+
+        coefficientsDenominator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+        coefficientsDenominator = coefficientsDenominator.simplify();
+
+        // Sei t = transcendentalVar, a(t) = Zählöer, b(t) = Nenner.
+        // Zunächst: b'(t) bestimmen (Ableitung nach x = var).
+        Expression derivativeOfDenominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
+        derivativeOfDenominator = derivativeOfDenominator.replaceVariable(transcendentalVar, transcententalElement);
+        derivativeOfDenominator = derivativeOfDenominator.diff(var);
+        derivativeOfDenominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfDenominator, transcententalElement, Variable.create(transcendentalVar));
+
+        // Koeffizienten von b'(t) bestimmen.
+        ExpressionCollection coefficientsDerivativeOfDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(derivativeOfDenominator, transcendentalVar);
+
+        String resultantVar = SubstitutionUtilities.getSubstitutionVariable(SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar),
+                SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar));
+
+        // Resultante bilden.
+        // Erstes Argument der Resultante: a(t) - z*b'(t), z = resultantVar;
+        ExpressionCollection coefficientsOfFirstArgument = SimplifyPolynomialMethods.subtractPolynomials(coefficientsNumerator,
+                SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(Variable.create(resultantVar)), coefficientsDerivativeOfDenominator));
+        // Zweites Argument der Resultante: b(t);
+        MatrixExpression resultantAsMatrixExpression = SimplifyPolynomialMethods.getResultant(coefficientsOfFirstArgument, coefficientsDenominator);
+
+        if (!(resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression() instanceof Expression)) {
+            // Resultante nicht explizit berechenbar.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        
+        Expression resultant = (Expression) resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression();
+        
+        // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
+        
+        
+        
+        // Logarithmischer Fall.
+        
+        // Exponentieller Fall.
+        
 
         throw new NotAlgebraicallyIntegrableException();
 

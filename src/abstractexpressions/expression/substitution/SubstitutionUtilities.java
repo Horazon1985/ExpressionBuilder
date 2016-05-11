@@ -51,6 +51,28 @@ public abstract class SubstitutionUtilities {
     }
 
     /**
+     * In functions sind Variablen enthalten, unter anderem möglicherweise auch
+     * "Parametervariablen" X_1, X_2, .... Diese Funktion liefert dasjenige X_i
+     * mit dem kleinsten Index i, welches in keinem der Ausdrücke in functions
+     * vorkommt.
+     */
+    public static String getSubstitutionVariable(Expression... functions) {
+        String var = NotationLoader.SUBSTITUTION_VAR + "_";
+        int j = 1;
+        boolean someFContainsVar = false;
+        do {
+            for (Expression f : functions) {
+                if (f.contains(var + String.valueOf(j))) {
+                    someFContainsVar = true;
+                    j++;
+                    break;
+                }
+            }
+        } while (someFContainsVar);
+        return var + j;
+    }
+
+    /**
      * Gibt zurück, ob g eine positive ganzzahlige Potenz von f ist.
      * VORAUSSETZUNG: f und g sind KEINE Produkte. Falls ja, so wird der
      * entsprechende Exponent n zurückgegeben, so dass f^n = g. Andernfalls wird
