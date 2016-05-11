@@ -213,6 +213,39 @@ public class PolynomialTests {
         }
     }
 
+    @Test
+    public void getEuclideanRepresentationOfPolynomialsTest1() {
+        // ggT von f = x^2+3*x+2 und g = x^2+4*x+3 ist = x+1 und die Eukliddarstellung ist ggT = 1*f - 1*g.
+        try {
+            f = Expression.build("x^2+3*x+2", null);
+            g = Expression.build("x^2+4*x+3", null);
+            Expression[] expectedResult = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
+            Assert.assertTrue(expectedResult.length == 2);
+            Assert.assertTrue(expectedResult[0].equals(MINUS_ONE));
+            Assert.assertTrue(expectedResult[1].equals(ONE));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getEuclideanRepresentationOfPolynomialsTest2() {
+        /* 
+        ggT von f = 8+16*x+10*x^2+2*x^3 = (x+2)^2*(2*x+2) und g = 60+95*x+40*x^2+5*x^3 = (x+3)*(x+4)*(5*x+5) ist = x+1. 
+        und die Eukliddarstellung ist ggT = 1*f - 1*g.
+         */
+        try {
+            f = Expression.build("8+16*x+10*x^2+2*x^3", null);
+            g = Expression.build("60+95*x+40*x^2+5*x^3", null);
+            Expression[] expectedResult = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
+            Assert.assertTrue(expectedResult.length == 2);
+            Assert.assertTrue(expectedResult[0].equivalent(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8))));
+            Assert.assertTrue(expectedResult[1].equivalent(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
     // Tests für Polynomfaktorisierung.
     @Test
     public void decomposeCyclicPolynomialTest1() {
@@ -544,7 +577,7 @@ public class PolynomialTests {
         try {
             f = Expression.build("2*x^2+5*x-3", null);
             g = Expression.build("x^2-4*x+6", null);
-            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"), 
+            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));
@@ -561,7 +594,7 @@ public class PolynomialTests {
         try {
             f = Expression.build("2*x^2+5*x-3", null);
             g = Expression.build("x^2-4*x+6", null);
-            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"), 
+            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));

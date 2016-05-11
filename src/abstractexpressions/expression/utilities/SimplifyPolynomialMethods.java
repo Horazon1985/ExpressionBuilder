@@ -522,7 +522,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -531,7 +531,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                                Variable.create(var).sub(zeros.get(2)).simplify());
+                        Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -560,7 +560,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -568,7 +568,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -580,7 +580,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -588,7 +588,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -978,6 +978,67 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
+     * Addition zweier Polynome.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection addPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+        ExpressionCollection coefficientsOfSum = new ExpressionCollection();
+        for (int i = 0; i < Math.max(coefficientsLeft.getBound(), coefficientsRight.getBound()); i++) {
+            if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) == null) {
+                coefficientsOfSum.put(i, ZERO);
+            } else if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) != null) {
+                coefficientsOfSum.put(i, coefficientsRight.get(i));
+            } else if (coefficientsLeft.get(i) != null && coefficientsRight.get(i) == null) {
+                coefficientsOfSum.put(i, coefficientsLeft.get(i));
+            } else {
+                coefficientsOfSum.put(i, coefficientsLeft.get(i).add(coefficientsRight.get(i)));
+            }
+        }
+        return coefficientsOfSum.simplify();
+    }
+
+    /**
+     * Subtraktion zweier Polynome.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection subtractPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+        ExpressionCollection coefficientsOfDifference = new ExpressionCollection();
+        for (int i = 0; i < Math.max(coefficientsLeft.getBound(), coefficientsRight.getBound()); i++) {
+            if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) == null) {
+                coefficientsOfDifference.put(i, ZERO);
+            } else if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) != null) {
+                coefficientsOfDifference.put(i, MINUS_ONE.mult(coefficientsRight.get(i)));
+            } else if (coefficientsLeft.get(i) != null && coefficientsRight.get(i) == null) {
+                coefficientsOfDifference.put(i, coefficientsLeft.get(i));
+            } else {
+                coefficientsOfDifference.put(i, coefficientsLeft.get(i).sub(coefficientsRight.get(i)));
+            }
+        }
+        return coefficientsOfDifference.simplify();
+    }
+
+    /**
+     * Multiplikation zweier Polynome.
+     *
+     * @throws EvaluationException
+     */
+    public static ExpressionCollection multiplyPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+        ExpressionCollection coefficientsOfProduct = new ExpressionCollection();
+        for (int i = 0; i < coefficientsLeft.getBound(); i++) {
+            for (int j = 0; j < coefficientsRight.getBound(); j++) {
+                if (coefficientsOfProduct.get(i + j) == null) {
+                    coefficientsOfProduct.put(i + j, coefficientsLeft.get(i).mult(coefficientsRight.get(j)));
+                } else {
+                    coefficientsOfProduct.put(i + j, coefficientsOfProduct.get(i + j).add(coefficientsLeft.get(i).mult(coefficientsRight.get(j))));
+                }
+            }
+        }
+        return coefficientsOfProduct.simplify();
+    }
+
+    /**
      * Polynomdivision des Polynoms coefficientsEnumerator[n]*x^n + ... +
      * coeffcicientsEnumerator.get(1)*x + coeffcicientsEnumerator.get(0) durch
      * coefficientsDenominator[m]*x^m + ... + coefficientsDenominator[0].
@@ -1088,6 +1149,11 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Gibt die Eukliddarstellung zweier Polynome f und g zurück: ist d = gcd(f,
+     * g), so wird ein Polynomarray {a, b} zurückgegeben mit a*f + b*g = d.
+     * Dabei soll d stets normiert.
+     */
     public static Expression[] getEuclideanRepresentationOfGCDOfTwoPolynomials(Expression f, Expression g, String var) {
 
         try {
@@ -1105,7 +1171,10 @@ public abstract class SimplifyPolynomialMethods {
             ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
 
             ExpressionCollection[] coefficientsOfEuclideanRepresentation = getEuclideanRepresentationOfGCDOfTwoPolynomials(coefficientsF, coefficientsG);
-            return new Expression[]{getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[0], var), getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[1], var)};
+            if (coefficientsOfEuclideanRepresentation.length == 2) {
+                return new Expression[]{getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[0], var), getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[1], var)};
+            }
+            return new Expression[0];
 
         } catch (EvaluationException e) {
             return new Expression[0];
@@ -1113,13 +1182,54 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
-    public static ExpressionCollection[] getEuclideanRepresentationOfGCDOfTwoPolynomials(ExpressionCollection a, ExpressionCollection b) {
+    private static ExpressionCollection[] getEuclideanRepresentationOfGCDOfTwoPolynomials(ExpressionCollection a, ExpressionCollection b) {
 
-        
-        return null;
-        
+        if (b.getBound() > a.getBound()) {
+            ExpressionCollection[] euclideanRepresentationOfFormerStep = getEuclideanRepresentationOfGCDOfTwoPolynomials(b, a);
+            if (euclideanRepresentationOfFormerStep.length == 2) {
+                return new ExpressionCollection[]{euclideanRepresentationOfFormerStep[1], euclideanRepresentationOfFormerStep[0]};
+            } else {
+                return new ExpressionCollection[0];
+            }
+        }
+
+        ExpressionCollection[] quotient;
+        try {
+            quotient = polynomialDivision(a, b);
+        } catch (EvaluationException e) {
+            return new ExpressionCollection[0];
+        }
+
+        ExpressionCollection coefficientsOfSecondFactor;
+        if (quotient[1].isEmpty()) {
+
+            // Polynomdivision hinterlässt keinen Rest.
+            try {
+                return new ExpressionCollection[]{new ExpressionCollection(ZERO), new ExpressionCollection(ONE.div(b.get(b.getBound() - 1)).simplify())};
+            } catch (EvaluationException e) {
+                return new ExpressionCollection[0];
+            }
+
+        } else {
+
+            // Sonstiger Fall (Euklid-Darstellung wird rekursiv berechnet).
+            ExpressionCollection[] euclideanRepresentationOfFormerStep = getEuclideanRepresentationOfGCDOfTwoPolynomials(b, quotient[1]);
+            if (euclideanRepresentationOfFormerStep.length == 2) {
+                try {
+                    coefficientsOfSecondFactor = subtractPolynomials(euclideanRepresentationOfFormerStep[0],
+                            multiplyPolynomials(euclideanRepresentationOfFormerStep[1], quotient[0]));
+                    return new ExpressionCollection[]{euclideanRepresentationOfFormerStep[1], coefficientsOfSecondFactor};
+                } catch (EvaluationException e) {
+                    return new ExpressionCollection[0];
+                }
+            } else {
+                return new ExpressionCollection[0];
+            }
+
+        }
+
     }
-    
+
     /**
      * Liefert die kleinste Periode, unter welcher die Koeffizienten
      * coefficients periodisch sind.<br>
