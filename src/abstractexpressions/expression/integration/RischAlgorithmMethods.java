@@ -453,7 +453,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection coefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
         Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
-        return GeneralIntegralMethods.integrateDefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
+        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
     }
 
     /**
@@ -511,7 +511,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 try {
                     derivativeOfV = v.replaceVariable(transcendentalVar, transcententalElement);
                     derivativeOfV = derivativeOfV.diff(var);
-                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar));
+                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
                     Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
                     if (!gcd.equals(ONE)) {
@@ -526,7 +526,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                     Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
                     derivativeOfB = derivativeOfB.diff(var);
-                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar));
+                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
                     Expression newNumerator = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB));
                     ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newNumerator, transcendentalVar);
@@ -565,6 +565,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         coefficientsDenominator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
         coefficientsDenominator = coefficientsDenominator.simplify();
+        
+        // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
+        if (coefficientsDenominator.getBound() == 1){
+            Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(
+                    SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar)).replaceVariable(transcendentalVar, transcententalElement);
+            return SpecialIntegrationMethods.integrateRationalFunction(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
+        }
 
         // Sei t = transcendentalVar, a(t) = Zählöer, b(t) = Nenner.
         // Zunächst: b'(t) bestimmen (Ableitung nach x = var).

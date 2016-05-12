@@ -570,6 +570,21 @@ public class PolynomialTests {
     }
 
     @Test
+    public void decomposePolynomialIntoSquarefreeFactorsTest7() {
+        /* 
+         Zerlegung von f = x^4+2*x^2*t+t^2 = (x^2+t)^2 in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("x^4+2*x^2*t+t^2", null);
+            expectedFactorizationOfF = Expression.build("(x^2+t)^2", null);
+            f = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquerefreeFactors(f, "x");
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void getResultantOfPolynomialsTest1() {
         /* 
          Resultante von f = 2*x^2+5*x-3 und g = x^2-4*x+6 ist 459. 
