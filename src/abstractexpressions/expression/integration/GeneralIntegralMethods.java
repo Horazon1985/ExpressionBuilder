@@ -609,9 +609,19 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
-        // GANZ ZUM SCHLUSS: Partielle Integration, falls erlaubt.
+        // DANN: Partielle Integration, falls erlaubt.
         try {
             result = integrateByPartialIntegration(expr);
+            if (!result.containsIndefiniteIntegral()) {
+                // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
+                return result;
+            }
+        } catch (NotAlgebraicallyIntegrableException e) {
+        }
+        
+        // ZUM SCHLUSS, falls bisher nichts funktioniert hat: Risch-Algorithmus.
+        try {
+            result = RischAlgorithmMethods.integrateByRischAlgorithmForDegOneExtension(expr);
             if (!result.containsIndefiniteIntegral()) {
                 // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
                 return result;

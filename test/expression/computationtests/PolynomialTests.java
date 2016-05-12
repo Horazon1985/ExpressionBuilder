@@ -589,15 +589,15 @@ public class PolynomialTests {
     @Test
     public void getResultantOfPolynomialsTest2() {
         /* 
-         Resultante von f = 2*x^2+5*x-3 und g = x^2-4*x+6 ist 459. 
+         Resultante von f = 5*x^3+x-1 und g = 2*x^2+4*x+3 ist . 
          */
         try {
-            f = Expression.build("2*x^2+5*x-3", null);
-            g = Expression.build("x^2-4*x+6", null);
+            f = Expression.build("5*x^3+x-1", null);
+            g = Expression.build("2*x^2+4*x+3", null);
             MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
-            Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));
+            Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(731)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

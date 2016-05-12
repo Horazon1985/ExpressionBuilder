@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
@@ -16,16 +17,17 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
-import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
+import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import exceptions.NotAlgebraicallyIntegrableException;
+import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.HashSet;
 
-public abstract class RischAlgorithmMethods {
+public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = getSimplifyTypesForDifferentialFieldExtensions();
 
@@ -396,8 +398,11 @@ public abstract class RischAlgorithmMethods {
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmForDegOneExtension(Expression f, String var) throws NotAlgebraicallyIntegrableException, EvaluationException {
+    public static Expression integrateByRischAlgorithmForDegOneExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+        
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
         // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
@@ -585,51 +590,95 @@ public abstract class RischAlgorithmMethods {
             // Resultante nicht explizit berechenbar.
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         Expression resultant = (Expression) resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression();
-        if (!SimplifyPolynomialMethods.isPolynomial(resultant, resultantVar)){
+        if (!SimplifyPolynomialMethods.isPolynomial(resultant, resultantVar)) {
             // Sollte eigentlich nie vorkommen.
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
         ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(resultant);
-        
-        // z = resultantVar kann im Nenner nicht vorkommen. Deswegen nur Zähler absuchen.
-        for (int i = 0; i < factorsNumerator.getBound(); i++){
-            if (!factorsNumerator.get(i).contains(resultantVar)){
+
+        // z = resultantVar kann im Nenner nicht vorkommen (da resultant ein Polynom in z ist). Deswegen nur Zähler absuchen.
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (!factorsNumerator.get(i).contains(resultantVar)) {
                 factorsNumerator.put(i, null);
             }
         }
         Expression normalizedResultant = SimplifyUtilities.produceProduct(factorsNumerator);
-        if (normalizedResultant.contains(var) || normalizedResultant.contains(transcendentalVar)){
+        if (normalizedResultant.contains(var) || normalizedResultant.contains(transcendentalVar)) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         normalizedResultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
-        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, var)){
+        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, var)) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+        factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(normalizedResultant);
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (!SimplifyPolynomialMethods.isLinearPolynomial(normalizedResultant, resultantVar)) {
+                factorsNumerator.put(i, null);
+            }
+        }
+        // Hier ist die Resultante normalisiert.
+        normalizedResultant = SimplifyUtilities.produceProduct(factorsNumerator);
+
+        // Prüfung auf die Anzahl der Nullstellen.
+        ExpressionCollection zerosOfResultant;
+        try {
+            zerosOfResultant = SolveGeneralEquationMethods.solvePolynomialEquation(normalizedResultant, resultantVar);
+            if (BigInteger.valueOf(zerosOfResultant.getBound()).compareTo(SimplifyPolynomialMethods.getDegreeOfPolynomial(normalizedResultant, resultantVar)) < 0) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        } catch (NotAlgebraicallySolvableException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        ExpressionCollection thetas = new ExpressionCollection();
+        Expression gcd;
+        if (transcententalElement.isFunction(TypeFunction.exp) || transcententalElement.isFunction(TypeFunction.ln)) {
+            // theta_i(t) = gcd(a(t) - z_i*b'(t), b(t)), {z_0, ..., z_(k - 1)} sind die Nullstellen der Resultante.
+            for (Expression zero : zerosOfResultant) {
+                gcd = SimplifyPolynomialMethods.getPolynomialFromCoefficients(SimplifyPolynomialMethods.getGGTOfPolynomials(SimplifyPolynomialMethods.subtractPolynomials(coefficientsNumerator,
+                        SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(zero), coefficientsDerivativeOfDenominator)),
+                        coefficientsDenominator), transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+                thetas.add(gcd);
+            }
+        }
         // Logarithmischer Fall.
-        
+
+        if (transcententalElement.isFunction(TypeFunction.ln)) {
+            // Stammfunktion ausgeben.
+            Expression integral = ZERO;
+            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
+                integral = integral.add(thetas.get(i).ln());
+            }
+            return integral;
+        }
+
         // Exponentieller Fall.
-        
+        if (transcententalElement.isFunction(TypeFunction.exp)) {
+            // Stammfunktion ausgeben.
+            Expression integral = ZERO; // TO DO.
+            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
+                integral = integral.add(thetas.get(i).ln());
+            }
+            return integral;
+        }
 
         throw new NotAlgebraicallyIntegrableException();
 
     }
-    
-    private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var){
+
+    private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var) {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-        for (Expression factor : factors){
-            if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)){
+        for (Expression factor : factors) {
+            if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)) {
                 return false;
             }
         }
         return true;
     }
-    
-    
 
 }

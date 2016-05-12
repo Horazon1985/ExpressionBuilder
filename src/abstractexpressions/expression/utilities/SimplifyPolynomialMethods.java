@@ -1125,7 +1125,10 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
-    private static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
+    /**
+     * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten aund b gegeben sind.
+     */
+    public static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
 
         if (a.getBound() < b.getBound()) {
             return getGGTOfPolynomials(b, a);
@@ -1339,10 +1342,10 @@ public abstract class SimplifyPolynomialMethods {
         return result;
     }
 
-    public static MatrixExpression getResultant(ExpressionCollection coeffcicientsOfF, ExpressionCollection coeffcicientsOfG) throws EvaluationException {
+    public static MatrixExpression getResultant(ExpressionCollection coefficientsOfF, ExpressionCollection coefficientsOfG) throws EvaluationException {
 
-        int degF = coeffcicientsOfF.getBound() - 1;
-        int degG = coeffcicientsOfG.getBound() - 1;
+        int degF = coefficientsOfF.getBound() - 1;
+        int degG = coefficientsOfG.getBound() - 1;
 
         Expression[][] resMatrixEntries = new Expression[degF + degG][degF + degG];
 
@@ -1351,16 +1354,16 @@ public abstract class SimplifyPolynomialMethods {
                 if (j < i || j > i + degF) {
                     resMatrixEntries[i][j] = ZERO;
                 } else {
-                    resMatrixEntries[i][j] = coeffcicientsOfF.get(degF + i - j);
+                    resMatrixEntries[i][j] = coefficientsOfF.get(degF + i - j);
                 }
             }
         }
         for (int i = degG; i < degF + degG; i++) {
             for (int j = 0; j < degF + degG; j++) {
-                if (j < i - degG || j > i - degG + degF) {
+                if (i - j < 0 || i - j > degG) {
                     resMatrixEntries[i][j] = ZERO;
                 } else {
-                    resMatrixEntries[i][j] = coeffcicientsOfG.get(degF + i - degG - j);
+                    resMatrixEntries[i][j] = coefficientsOfG.get(i - j);
                 }
             }
         }
