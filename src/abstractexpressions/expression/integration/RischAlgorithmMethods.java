@@ -6,7 +6,6 @@ import exceptions.MathToolException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
-import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
@@ -472,6 +471,21 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
+        
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(decompositionOfDenominator);
+        Expression leadingCoefficient = ONE;
+        for (int i = 0; i < factorsDenominator.getBound(); i++){
+            if (!factorsDenominator.get(i).contains(transcendentalVar)){
+                leadingCoefficient = leadingCoefficient.mult(factorsDenominator.get(i));
+                factorsDenominator.put(i, null);
+            }
+        }
+        leadingCoefficient = leadingCoefficient.simplify();
+
+        // Nenner normieren!
+        decompositionOfDenominator = SimplifyUtilities.produceProduct(factorsDenominator);
+        coefficientsNumerator.divByExpression(leadingCoefficient);
+        coefficientsNumerator = coefficientsNumerator.simplify();
 
         // Hermite-Reduktion und expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
         return doHermiteReduction(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
@@ -581,9 +595,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
         if (coefficientsDenominator.getBound() == 1) {
+            if (coefficientsNumerator.getBound() > 1){
+                // Sollte eigentlich nie eintreten, da nach Hermite-Reduktion der Grad des Zählers kleiner als der Grad des Nenners sein sollte.
+                throw new NotAlgebraicallyIntegrableException();
+            }
             Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar)).replaceVariable(transcendentalVar, transcententalElement);
-            return SpecialIntegrationMethods.integrateRationalFunction(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
+            return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
         }
 
         // Sei t = transcendentalVar, a(t) = Zählöer, b(t) = Nenner.

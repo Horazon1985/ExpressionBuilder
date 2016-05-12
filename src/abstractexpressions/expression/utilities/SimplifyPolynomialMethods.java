@@ -798,6 +798,11 @@ public abstract class SimplifyPolynomialMethods {
         if (a.getBound() < 3){
             throw new PolynomialNotDecomposableException();
         }
+
+        // a normieren!
+        Expression leadingCoefficient = a.get(a.getBound() - 1);
+        a.divByExpression(leadingCoefficient);
+        a = a.simplify();
         
         Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
 
@@ -836,11 +841,11 @@ public abstract class SimplifyPolynomialMethods {
 
             for (int j = 0; j < coefficientsOfFactors.size(); j++) {
 
-                if (j == i || coefficientsOfFactors.get(j).getBound() < 3) {
+                if (j == i || coefficientsOfFactors.get(j).getBound() < 2) {
                     continue;
                 }
 
-                if (coefficientsOfFactors.get(j).getBound() > coefficientsOfFactors.get(i).getBound()) {
+                if (coefficientsOfFactors.get(j).getBound() >= coefficientsOfFactors.get(i).getBound()) {
                     quotient = polynomialDivision(coefficientsOfFactors.get(j), coefficientsOfFactors.get(i));
                     while (quotient[1].isEmpty() && quotient[0].getBound() > 1) {
                         coefficientsOfFactors.remove(j);
@@ -853,7 +858,7 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
 
-        Expression result = ONE;
+        Expression result = leadingCoefficient;
         for (ExpressionCollection factor : coefficientsOfFactors) {
             result = result.mult(getPolynomialFromCoefficients(factor, var));
         }
