@@ -683,15 +683,15 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (transcententalElement.isFunction(TypeFunction.exp)) {
             
             // Stammfunktion ausgeben.
-            Expression integral = ZERO; 
-            for (int i = 0; i < zerosOfResultant.getBound(); i++){
-                integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
-            }
-            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
-            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
-                integral = integral.add(thetas.get(i).ln());
-            }
-            return integral;
+//            Expression integral = ZERO; 
+//            for (int i = 0; i < zerosOfResultant.getBound(); i++){
+//                integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
+//            }
+//            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
+//            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
+//                integral = integral.add(thetas.get(i).ln());
+//            }
+//            return integral;
             
         }
 
