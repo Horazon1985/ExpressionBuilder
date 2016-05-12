@@ -794,6 +794,11 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static Expression decomposeRationalPolynomialIntoSquarefreeFactors(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
+        // Wenn a nicht mindestens einem quadratischen Polynom entspricht, so kann es nicht quadratfrei faktorisiert werden.
+        if (a.getBound() < 3){
+            throw new PolynomialNotDecomposableException();
+        }
+        
         Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
 
         // Falls decomposition kein Produkt ist, dann konnte das Polynom nicht faktorisiert werden.

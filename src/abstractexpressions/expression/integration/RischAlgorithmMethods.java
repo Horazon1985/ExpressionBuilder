@@ -6,6 +6,7 @@ import exceptions.MathToolException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
@@ -402,7 +403,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
-        
+
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
         // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
@@ -483,9 +484,21 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
+        // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
         ExpressionCollection coefficientsDenominator;
         try {
             coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
+            ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
+            if (gcdOfNumeratorAndDenominator.getBound() > 1) {
+                // Dann ist der ggT nicht trivial.
+                coefficientsNumerator = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator)[0];
+                coefficientsDenominator = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator)[0];
+                try {
+                    denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
+                    denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
+                }
+            }
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -528,9 +541,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     derivativeOfB = derivativeOfB.diff(var);
                     derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
-                    Expression newNumerator = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB));
-                    ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newNumerator, transcendentalVar);
-                    return b.div(v.pow(m.subtract(BigInteger.ONE))).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
+                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB));
+                    ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
+                    return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
                             transcententalElement, var, transcendentalVar));
 
                 } catch (EvaluationException e) {
@@ -565,9 +578,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         coefficientsDenominator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
         coefficientsDenominator = coefficientsDenominator.simplify();
-        
+
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
-        if (coefficientsDenominator.getBound() == 1){
+        if (coefficientsDenominator.getBound() == 1) {
             Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar)).replaceVariable(transcendentalVar, transcententalElement);
             return SpecialIntegrationMethods.integrateRationalFunction(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
@@ -653,25 +666,33 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 thetas.add(gcd);
             }
         }
+        
         // Logarithmischer Fall.
-
         if (transcententalElement.isFunction(TypeFunction.ln)) {
+            
             // Stammfunktion ausgeben.
             Expression integral = ZERO;
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(thetas.get(i).ln());
             }
             return integral;
+            
         }
 
         // Exponentieller Fall.
         if (transcententalElement.isFunction(TypeFunction.exp)) {
+            
             // Stammfunktion ausgeben.
-            Expression integral = ZERO; // TO DO.
+            Expression integral = ZERO; 
+            for (int i = 0; i < zerosOfResultant.getBound(); i++){
+                integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
+            }
+            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(thetas.get(i).ln());
             }
             return integral;
+            
         }
 
         throw new NotAlgebraicallyIntegrableException();
