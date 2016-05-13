@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
+import java.math.BigDecimal;
 
 public abstract class GeneralIntegralMethods {
 
@@ -618,7 +619,7 @@ public abstract class GeneralIntegralMethods {
             }
         } catch (NotAlgebraicallyIntegrableException e) {
         }
-        
+
         // ZUM SCHLUSS, falls bisher nichts funktioniert hat: Risch-Algorithmus.
         try {
             result = RischAlgorithmMethods.integrateByRischAlgorithmForDegOneExtension(expr);
@@ -711,29 +712,7 @@ public abstract class GeneralIntegralMethods {
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
-        if (f.isProduct()) {
-
-            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-            ExpressionCollection resultFactorsInIntegrand = new ExpressionCollection();
-            ExpressionCollection resultFactorsOutsideOfIntegrand = new ExpressionCollection();
-
-            for (int i = 0; i < factors.getBound(); i++) {
-                if (factors.get(i).contains(var)) {
-                    resultFactorsInIntegrand.add(factors.get(i));
-                } else {
-                    resultFactorsOutsideOfIntegrand.add(factors.get(i));
-                }
-            }
-
-            if (!resultFactorsOutsideOfIntegrand.isEmpty()) {
-                Object[] paramsResultIntegrand = new Object[2];
-                paramsResultIntegrand[0] = SimplifyUtilities.produceProduct(resultFactorsInIntegrand);
-                paramsResultIntegrand[1] = var;
-                return SimplifyUtilities.produceProduct(resultFactorsOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial());
-            }
-
-        }
-        if (f.isQuotient()) {
+        if (f.isProduct() || f.isQuotient()) {
 
             ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
@@ -761,16 +740,14 @@ public abstract class GeneralIntegralMethods {
             paramsResultIntegrand[0] = SimplifyUtilities.produceQuotient(resultFactorsInIntegrandNumerator, resultFactorsInIntegrandDenominator);
             paramsResultIntegrand[1] = var;
 
-            if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial());
-            } else if (resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial().div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
-            } else if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() && !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand, expr.getPrecise()).simplifyTrivial()).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
+            if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() || !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
+                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand).simplifyTrivial()).div(
+                        SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
             }
 
         }
 
+        // Wenn keine konstanten Faktoren auftraten, Fehler werfen (sonst Endlosschleifen möglich).
         throw new NotAlgebraicallyIntegrableException();
 
     }
@@ -1071,6 +1048,42 @@ public abstract class GeneralIntegralMethods {
         if (type.equals(TypeFunction.cosech)) {
             return integratePowerOfCosech(exponent.intValue(), var);
         }
+        if (type.equals(TypeFunction.arcsin)) {
+            return integratePowerOfArcsin(exponent.intValue(), var);
+        }
+        if (type.equals(TypeFunction.arccos)) {
+
+        }
+        if (type.equals(TypeFunction.arctan)) {
+
+        }
+        if (type.equals(TypeFunction.arccot)) {
+
+        }
+        if (type.equals(TypeFunction.arcsec)) {
+
+        }
+        if (type.equals(TypeFunction.arccosec)) {
+
+        }
+        if (type.equals(TypeFunction.arsinh)) {
+
+        }
+        if (type.equals(TypeFunction.arcosh)) {
+
+        }
+        if (type.equals(TypeFunction.artanh)) {
+
+        }
+        if (type.equals(TypeFunction.arcoth)) {
+
+        }
+        if (type.equals(TypeFunction.arsech)) {
+
+        }
+        if (type.equals(TypeFunction.arcosech)) {
+
+        }
 
         throw new NotAlgebraicallyIntegrableException();
 
@@ -1336,6 +1349,22 @@ public abstract class GeneralIntegralMethods {
         return Expression.MINUS_ONE.mult(Variable.create(var).cosech().pow(n - 1).mult(Variable.create(var).cosh())).div(n - 1).sub(
                 new Constant(n - 2).mult(integralOfLowerPower).div(n - 1));
 
+    }
+
+    /**
+     * Substitution: x = sin(t). Dann ist int(arcsin(x)^n,x) = int(t^n*cos(t),t)
+     *
+     * @throws EvaluationException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
+     */
+    private static Expression integratePowerOfArcsin(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
+        String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+                new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).cos()), substVar}), true);
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
     }
 
     /**
@@ -1719,6 +1748,12 @@ public abstract class GeneralIntegralMethods {
                     && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfLogarithmicFactorsInNumerator++;
                 indexOfLogarithmicFactorInNumerator = i;
+            } else if (factorsNumerator.get(i).isPositiveIntegerPower()
+                    && ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getValue().toBigInteger().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0
+                    && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.lg) || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.ln))
+                    && SimplifyRationalFunctionMethods.isRationalFunction(((Function) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft(), var)) {
+                numberOfLogarithmicFactorsInNumerator++;
+                indexOfLogarithmicFactorInNumerator = i;
             }
 
         }
@@ -1735,9 +1770,9 @@ public abstract class GeneralIntegralMethods {
 
         }
 
-        // Fall: f = Q(x)*g(R(x)), g = lg, ln, arctan, arccot, artanh, arcoth
+        // Fall: f = Q(x)*g(R(x))^n, g = lg, ln, arctan, arccot, artanh, arcoth
         if (numberOfRationalFactorsInNumerator + numberOfRationalFactorsInDenominator == factorsNumerator.getSize() + factorsDenominator.getSize() - 1
-                && numberOfLogarithmicFactorsInNumerator + numberOfArctanArccotArtanhArcothFactorsInNumerator == 1){
+                && numberOfLogarithmicFactorsInNumerator + numberOfArctanArccotArtanhArcothFactorsInNumerator == 1) {
             int indexOfV = Math.max(indexOfLogarithmicFactorInNumerator, indexOfArctanArccotArtanhArcothInNumerator);
             separation[1] = factorsNumerator.get(indexOfV);
             factorsNumerator.remove(indexOfV);
@@ -1745,14 +1780,14 @@ public abstract class GeneralIntegralMethods {
             return separation;
         }
         // Fall: f = P(x)*g(ax+b), P = Polynom, g = exp, sin, cos.
-        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialOrTrigonometricalFactorsInNumerator == 1){
+        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialOrTrigonometricalFactorsInNumerator == 1) {
             separation[0] = factorsNumerator.get(indexOfExponentialOrTrigonometricalFactorInNumerator);
             factorsNumerator.remove(indexOfExponentialOrTrigonometricalFactorInNumerator);
             separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
-        // Fall: f = P(x)*ln(ax+b), P = Polynom.
-        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfLogarithmicFactorsInNumerator == 1){
+        // Fall: f = P(x)*ln(ax+b)^n, P = Polynom.
+        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfLogarithmicFactorsInNumerator == 1) {
             separation[1] = factorsNumerator.get(indexOfLogarithmicFactorInNumerator);
             factorsNumerator.remove(indexOfLogarithmicFactorInNumerator);
             separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
@@ -1760,13 +1795,13 @@ public abstract class GeneralIntegralMethods {
         }
         // Fall: f = Q(x)*f(ax+b), Q = rationale Funktion, f = arcsin, arccos, arcsec, arccosec, arsinh, arcosh, arsech, arcosech.
         if (numberOfRationalFactorsInNumerator + numberOfRationalFactorsInDenominator == factorsNumerator.getSize() + factorsDenominator.getSize() - 1
-                && numberOfFactorsWithAlgebraicDerivativeInNumerator == 1){
+                && numberOfFactorsWithAlgebraicDerivativeInNumerator == 1) {
             separation[1] = factorsNumerator.get(indexOfFactorWithAlgebraicDerivativeInNumerator);
             factorsNumerator.remove(indexOfFactorWithAlgebraicDerivativeInNumerator);
             separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
-        
+
         throw new NotAlgebraicallyIntegrableException();
 
     }
@@ -1805,15 +1840,27 @@ public abstract class GeneralIntegralMethods {
         }
 
         /* 
-             Sonderfälle: ist u' = Q(x) und v = f(R(x)) mit Q und R rationale Funktionen und
-             f = ln, arctan oder artanh, dann darf nur DANN integriert werden, wenn 
-             u = int(Q(x),x) eine wieder rationale Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
+         Sonderfälle: ist u' = Q(x) und v = f(R(x))^n mit Q und R rationale Funktionen und
+         f = ln, arctan oder artanh, dann darf nur DANN integriert werden, wenn 
+         u = int(Q(x),x) eine wieder rationale Funktion ist (d.h. weder Integrale, noch Logarithmen enthält).
          */
         if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var)
-                && (v.isFunction(TypeFunction.lg) || v.isFunction(TypeFunction.ln) 
+                && (v.isFunction(TypeFunction.lg) || v.isFunction(TypeFunction.ln)
                 || v.isFunction(TypeFunction.arctan) || v.isFunction(TypeFunction.arccot)
                 || v.isFunction(TypeFunction.artanh) || v.isFunction(TypeFunction.arcoth))
                 && SimplifyRationalFunctionMethods.isRationalFunction(((Function) v).getLeft(), var)
+                && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        if (SimplifyRationalFunctionMethods.isRationalFunction(uPrime, var)
+                && v.isPositiveIntegerPower()
+                && (((BinaryOperation) v).getLeft().isFunction(TypeFunction.lg)
+                || ((BinaryOperation) v).getLeft().isFunction(TypeFunction.ln)
+                || ((BinaryOperation) v).getLeft().isFunction(TypeFunction.arctan)
+                || ((BinaryOperation) v).getLeft().isFunction(TypeFunction.arccot)
+                || ((BinaryOperation) v).getLeft().isFunction(TypeFunction.artanh)
+                || ((BinaryOperation) v).getLeft().isFunction(TypeFunction.arcoth))
+                && SimplifyRationalFunctionMethods.isRationalFunction(((Function) ((BinaryOperation) v).getLeft()).getLeft(), var)
                 && !SimplifyRationalFunctionMethods.isRationalFunction(u, var)) {
             throw new NotAlgebraicallyIntegrableException();
         }
