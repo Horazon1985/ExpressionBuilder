@@ -49,23 +49,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     }
 
     /**
-     * Private Fehlerklasse für den Fall, dass im Risch-Algorithmus etwas nicht
-     * entscheidbar ist.
+     * Gibt zurück, ob transzendente Erweiterungen eine Standardform besitzen.
+     * Für exponentielle Erweiterungen t = exp(f(x)) muss gelten, dass f(x)
+     * keine konstanten nichttrivialen Summanden besitzt, für logarithmische
+     * Erweiterungen t = ln(f(x)) muss gelten, dass f(x) keine konstanten
+     * nichttrivialen Faktoren besitzt.
      */
-    private static class NotDecidableException extends MathToolException {
-
-        private static final String NOT_DECIDABLE_MESSAGE = "Some aspects in the Risch algorithm are not decidable.";
-
-        public NotDecidableException() {
-            super(NOT_DECIDABLE_MESSAGE);
-        }
-
-        public NotDecidableException(String s) {
-            super(s);
-        }
-
-    }
-
     private static boolean areFieldExtensionsInCorrectForm(ExpressionCollection fieldGenerators, String var) {
         for (Expression fieldExtension : fieldGenerators) {
             if (fieldExtension.isFunction(TypeFunction.exp)) {
@@ -117,12 +106,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         } catch (EvaluationException e) {
             return false;
         }
-
-        try {
-            return isRationalOverDifferentialField(f, var, fieldGenerators);
-        } catch (NotDecidableException e) {
-            return false;
-        }
+        return isRationalOverDifferentialField(f, var, fieldGenerators);
 
     }
 
@@ -146,7 +130,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * false zurückgegeben (aufgrund des Summanden x!, welcher transzendent über
      * der angegebenen Körpererweiterung ist).<br>
      */
-    private static boolean isRationalOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) throws NotDecidableException {
+    private static boolean isRationalOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
 
         if (fieldGenerators.containsExquivalent(f)) {
             return true;
@@ -160,7 +144,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 return isRationalOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators)
                         && isRationalOverDifferentialField(((BinaryOperation) f).getRight(), var, fieldGenerators);
             }
-            if (f.isIntegerPowerOrRationalPower()) {
+            if (f.isIntegerPower()) {
                 return isRationalOverDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators);
             }
         }
@@ -185,7 +169,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                             return true;
                         }
                     } catch (EvaluationException e) {
-                        throw new NotDecidableException();
                     }
                 }
                 return false;
@@ -212,21 +195,17 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                             return true;
                         }
                     } catch (EvaluationException e) {
-                        throw new NotDecidableException();
+                        return false;
                     }
 
                 }
                 if (unclearCaseFound) {
-                    // Schlecht entscheidbare Fälle!
-                    throw new NotDecidableException();
+                    return false;
                 }
             }
 
             return false;
 
-        }
-        if (f.isOperator()) {
-            throw new NotDecidableException();
         }
 
         return false;
@@ -380,17 +359,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (!hasOnlyOneTranscendentalElement) {
             return false;
         }
-        try {
-            return isRationalOverDifferentialField(f, var, transcendentalGenerators);
-        } catch (NotDecidableException e) {
-            return false;
-        }
+        return isRationalOverDifferentialField(f, var, transcendentalGenerators);
 
     }
 
-    /*
-     Der Risch-Algorithmus.
-     */
+    ////////////////////////////////////////////////// Der Risch-Algorithmus ///////////////////////////////////////////
     /**
      * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
      * einer transzendenten Erweiterung durch ein einziges Element.
@@ -471,11 +444,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(decompositionOfDenominator);
         Expression leadingCoefficient = ONE;
-        for (int i = 0; i < factorsDenominator.getBound(); i++){
-            if (!factorsDenominator.get(i).contains(transcendentalVar)){
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            if (!factorsDenominator.get(i).contains(transcendentalVar)) {
                 leadingCoefficient = leadingCoefficient.mult(factorsDenominator.get(i));
                 factorsDenominator.put(i, null);
             }
@@ -492,8 +465,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     }
 
-    /*
-     Der Hermite-Reduktion.
+    ////////////////////////////////////////////////// Die Hermite-Reduktion ///////////////////////////////////////////
+    /**
+     * Integration mittels Hermite-Reduktion.
+     *
+     * @throws NotAlgebraicallyIntegrableException
      */
     private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
@@ -595,7 +571,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
         if (coefficientsDenominator.getBound() == 1) {
-            if (coefficientsNumerator.getBound() > 1){
+            if (coefficientsNumerator.getBound() > 1) {
                 // Sollte eigentlich nie eintreten, da nach Hermite-Reduktion der Grad des Zählers kleiner als der Grad des Nenners sein sollte.
                 throw new NotAlgebraicallyIntegrableException();
             }
@@ -684,22 +660,22 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 thetas.add(gcd);
             }
         }
-        
+
         // Logarithmischer Fall.
         if (transcententalElement.isFunction(TypeFunction.ln)) {
-            
+
             // Stammfunktion ausgeben.
             Expression integral = ZERO;
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(thetas.get(i).ln());
             }
             return integral;
-            
+
         }
 
         // Exponentieller Fall.
         if (transcententalElement.isFunction(TypeFunction.exp)) {
-            
+
             // Stammfunktion ausgeben.
 //            Expression integral = ZERO; 
 //            for (int i = 0; i < zerosOfResultant.getBound(); i++){
@@ -710,7 +686,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 //                integral = integral.add(thetas.get(i).ln());
 //            }
 //            return integral;
-            
         }
 
         throw new NotAlgebraicallyIntegrableException();
