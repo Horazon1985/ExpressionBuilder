@@ -540,6 +540,14 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
+        int degNumerator = coefficientsNumerator.getBound() - 1;
+        int degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominator, transcendentalVar).intValue();
+
+        // Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners sein (außer beide Polynome sind konstant). Daher diese Sicherheitsabfrage.
+        if (degDenominator == 0 && degNumerator > 0 || degDenominator > 0 && degNumerator >= degDenominator) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
         if (denominator.isNotPower() && denominator.isNotProduct()) {
             // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
             try {
@@ -724,8 +732,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (transcententalElement.isFunction(TypeFunction.exp)) {
 
             // Stammfunktion ausgeben.
-            Expression integral = ZERO; 
-            for (int i = 0; i < zerosOfResultant.getBound(); i++){
+            Expression integral = ZERO;
+            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
             }
             integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
