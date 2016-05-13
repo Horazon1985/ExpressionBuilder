@@ -2,10 +2,10 @@ package abstractexpressions.expression.integration;
 
 import abstractexpressions.expression.computation.ArithmeticMethods;
 import exceptions.EvaluationException;
-import exceptions.MathToolException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
@@ -409,8 +409,54 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
         ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
 
-        // Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
-        Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], transcententalElement, var, transcendentalVar);
+        // Im Fall einer Exponentialerweiterung: t im Nenner faktorisieren und in den polynomiallen Teil übertragen.
+        if (transcententalElement.isFunction(TypeFunction.exp)) {
+
+            int ordOfTranscendentalElementInDenominator = 0;
+            for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
+                if (!coefficientsDenominator.get(i).equals(ZERO)) {
+                    break;
+                } else {
+                    ordOfTranscendentalElementInDenominator++;
+                }
+            }
+
+            if (ordOfTranscendentalElementInDenominator > 0) {
+
+                ExpressionCollection coefficientsNewDenominator = new ExpressionCollection();
+                for (int i = 0; i < coefficientsDenominator.getBound() - ordOfTranscendentalElementInDenominator; i++) {
+                    coefficientsNewDenominator.add(coefficientsDenominator.get(i + ordOfTranscendentalElementInDenominator));
+                }
+
+                ExpressionCollection coefficientsPolynomialPart = new ExpressionCollection();
+                ExpressionCollection coefficientsLaurentPart = new ExpressionCollection();
+
+                // Koeffizienten des Polynomialteils berechnen.
+                for (int i = ordOfTranscendentalElementInDenominator; i < quotient[0].getBound(); i++) {
+                    coefficientsPolynomialPart.add(quotient[0].get(i));
+                }
+                // Koeffizienten des Laurentteils berechnen.
+                coefficientsLaurentPart.add(ZERO);
+                for (int i = ordOfTranscendentalElementInDenominator - 1; i >= 0; i--) {
+                    if (i >= quotient[0].getBound()) {
+                        continue;
+                    }
+                    coefficientsLaurentPart.add(quotient[0].get(i));
+                }
+
+                Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(coefficientsPolynomialPart, coefficientsLaurentPart, transcententalElement, var, transcendentalVar);
+                Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
+                return integralOfPolynomialPart.add(integralOfFractionalPart);
+
+            }
+
+        }
+
+        /* 
+        Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
+        Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
+         */
+        Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
         Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
         return integralOfPolynomialPart.add(integralOfFractionalPart);
 
@@ -423,10 +469,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection coefficients, Expression transcententalElement, String var, String transcendentalVar)
+    private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
-        Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
-        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
+        Expression integrandPolynomialPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(polynomialCoefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+        Expression integrandLaurentPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(laurentCoefficients, transcendentalVar).replaceVariable(transcendentalVar, ONE.div(transcententalElement));
+        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandPolynomialPart.add(integrandLaurentPart), var}));
     }
 
     /**
@@ -677,15 +724,15 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (transcententalElement.isFunction(TypeFunction.exp)) {
 
             // Stammfunktion ausgeben.
-//            Expression integral = ZERO; 
-//            for (int i = 0; i < zerosOfResultant.getBound(); i++){
-//                integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
-//            }
-//            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
-//            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
-//                integral = integral.add(thetas.get(i).ln());
-//            }
-//            return integral;
+            Expression integral = ZERO; 
+            for (int i = 0; i < zerosOfResultant.getBound(); i++){
+                integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
+            }
+            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
+            for (int i = 0; i < zerosOfResultant.getBound(); i++) {
+                integral = integral.add(thetas.get(i).ln());
+            }
+            return integral;
         }
 
         throw new NotAlgebraicallyIntegrableException();

@@ -732,6 +732,16 @@ public abstract class SubstitutionUtilities {
 
         }
         if (f.isFunction()) {
+            // Ausnahme: Exponentialfunktionen.
+            if (f.isFunction(TypeFunction.exp) && exprToSubstitute.isFunction(TypeFunction.exp)){
+                try {
+                    Expression exponent = ((Function) f).getLeft().div(((Function) exprToSubstitute).getLeft()).simplify();
+                    if (exponent.isIntegerConstant()) {
+                        return subst.pow(exponent);
+                    }
+                } catch (EvaluationException e) {
+                }
+            }
             return new Function(substituteExpressionByAnotherExpression(((Function) f).getLeft(), exprToSubstitute, subst), ((Function) f).getType());
         }
 
