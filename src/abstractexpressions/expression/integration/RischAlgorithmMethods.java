@@ -471,9 +471,14 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      */
     private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
-        Expression integrandPolynomialPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(polynomialCoefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
-        Expression integrandLaurentPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(laurentCoefficients, transcendentalVar).replaceVariable(transcendentalVar, ONE.div(transcententalElement));
-        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandPolynomialPart.add(integrandLaurentPart), var}));
+        // TO DO.
+        if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        return ZERO;
+//        Expression integrandPolynomialPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(polynomialCoefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+//        Expression integrandLaurentPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(laurentCoefficients, transcendentalVar).replaceVariable(transcendentalVar, ONE.div(transcententalElement));
+//        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandPolynomialPart.add(integrandLaurentPart), var}));
     }
 
     /**
