@@ -472,7 +472,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
         // TO DO.
-        if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) {
+        if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
             throw new NotAlgebraicallyIntegrableException();
         }
         return ZERO;
