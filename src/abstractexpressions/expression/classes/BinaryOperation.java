@@ -2148,16 +2148,13 @@ public class BinaryOperation extends Expression {
             return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
                     && !((BinaryOperation) f).getRight().contains(var);
         }
-        if (f.isPower()) {
-            return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var)
-                    && ((BinaryOperation) f).getRight().isIntegerConstant()
-                    && ((BinaryOperation) f).getRight().isPositive();
+        if (f.isPositiveIntegerPower()) {
+            return isPolynomialInVariousExponentialAndTrigonometricalFunctions(((BinaryOperation) f).getLeft(), var);
         }
         if (f.isFunction()) {
             return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
                     || f.isFunction(TypeFunction.sin))
-                    && SimplifyPolynomialMethods.isPolynomial(((Function) f).getLeft(), var)
-                    && SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) f).getLeft(), var).compareTo(BigInteger.ONE) <= 0;
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) f).getLeft(), var);
         }
         if (f instanceof Operator) {
             return !f.contains(var);

@@ -1686,25 +1686,53 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         Expression fSubstituted, integralOfFSubstituted;
 
         if (base.equals(Variable.create(var).arcsin())) {
+            // f = P(x)*arcsin(x)^n. Substitution: t = arcsin(x) <=> x = sin(t). Integriert werden muss g = P(sin(t))*t^n*cos(t)
             fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).sin()).mult(Variable.create(substVar).cos()).mult(Variable.create(substVar).pow(exponent));
             try {
                 integralOfFSubstituted = integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVar}));
                 if (integralOfFSubstituted.containsIndefiniteIntegral()) {
                     throw new NotAlgebraicallyIntegrableException();
                 }
+                return integralOfFSubstituted.replaceVariable(substVar, Variable.create(var).arcsin());
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }
-
         } else if (base.equals(Variable.create(var).arccos())) {
+            // f = P(x)*arccos(x)^n. Substitution: t = arccos(x) <=> x = cos(t). Integriert werden muss g = -P(cos(t))*t^n*sin(t)
             fSubstituted = MINUS_ONE.mult(factorLeft.replaceVariable(var, Variable.create(substVar).cos()).mult(Variable.create(substVar).sin()).mult(Variable.create(substVar).pow(exponent)));
-
+            try {
+                integralOfFSubstituted = integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVar}));
+                if (integralOfFSubstituted.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                return integralOfFSubstituted.replaceVariable(substVar, Variable.create(var).arccos());
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
         } else if (base.equals(Variable.create(var).arsinh())) {
+            // f = P(x)*arsinh(x)^n. Substitution: t = arsinh(x) <=> x = sinh(t). Integriert werden muss g = P(sinh(t))*t^n*cosh(t)
             fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).sinh()).mult(Variable.create(substVar).cosh()).mult(Variable.create(substVar).pow(exponent));
-
+            try {
+                integralOfFSubstituted = integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVar}));
+                if (integralOfFSubstituted.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                return integralOfFSubstituted.replaceVariable(substVar, Variable.create(var).arsinh());
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
         } else if (base.equals(Variable.create(var).arcosh())) {
+            // f = P(x)*arcosh(x)^n. Substitution: t = arcosh(x) <=> x = cosh(t). Integriert werden muss g = P(cosh(t))*t^n*sinh(t)
             fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).cosh()).mult(Variable.create(substVar).sinh()).mult(Variable.create(substVar).pow(exponent));
-
+            try {
+                integralOfFSubstituted = integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVar}));
+                if (integralOfFSubstituted.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                return integralOfFSubstituted.replaceVariable(substVar, Variable.create(var).arcosh());
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
         }
 
         throw new NotAlgebraicallyIntegrableException();

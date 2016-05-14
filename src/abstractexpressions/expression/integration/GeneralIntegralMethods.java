@@ -549,6 +549,7 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
+        // Integriert Polynome in sin(x) und cos(x).
         try {
             return SpecialIntegrationMethods.integratePolynomialInComplexExponentialFunctions(expr);
         } catch (NotAlgebraicallyIntegrableException e) {
@@ -1732,6 +1733,7 @@ public abstract class GeneralIntegralMethods {
         Expression[] separation = new Expression[2];
 
         int numberOfPolynomialFactorsInNumerator = 0;
+        int indexOfPolynomialFactorsInNumerator = -1;
 
         int numberOfRationalFactorsInNumerator = 0;
         int numberOfRationalFactorsInDenominator = 0;
@@ -1757,6 +1759,7 @@ public abstract class GeneralIntegralMethods {
             if (SimplifyPolynomialMethods.isPolynomial(factorsNumerator.get(i), var)) {
                 numberOfPolynomialFactorsInNumerator++;
                 numberOfRationalFactorsInNumerator++;
+                indexOfPolynomialFactorsInNumerator = i;
             } else if (SimplifyRationalFunctionMethods.isRationalFunction(factorsNumerator.get(i), var)) {
                 numberOfRationalFactorsInNumerator++;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.arctan) || factorsNumerator.get(i).isFunction(TypeFunction.arccot)
@@ -1773,6 +1776,12 @@ public abstract class GeneralIntegralMethods {
                 indexOfFactorWithAlgebraicDerivativeInNumerator = i;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.exp) || factorsNumerator.get(i).isFunction(TypeFunction.cos) || factorsNumerator.get(i).isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
+                numberOfExponentialOrTrigonometricalFactorsInNumerator++;
+                indexOfExponentialOrTrigonometricalFactorInNumerator = i;
+            } else if (factorsNumerator.get(i).isPositiveIntegerPower() && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.exp) 
+                    || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.cos) 
+                    || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.sin))
+                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft(), var)) {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;
                 indexOfExponentialOrTrigonometricalFactorInNumerator = i;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln))
@@ -1810,18 +1819,18 @@ public abstract class GeneralIntegralMethods {
             separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
             return separation;
         }
-        // Fall: f = P(x)*g(ax+b), P = Polynom, g = exp, sin, cos.
-        if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfExponentialOrTrigonometricalFactorsInNumerator == 1) {
-            separation[0] = factorsNumerator.get(indexOfExponentialOrTrigonometricalFactorInNumerator);
-            factorsNumerator.remove(indexOfExponentialOrTrigonometricalFactorInNumerator);
-            separation[1] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+        // Fall: f = P(x)*f(x), P = Polynom, f(x) ein Polynom in exp, sin, cos mit linearen Argumenten in x.
+        if (numberOfPolynomialFactorsInNumerator == 1 && factorsDenominator.isEmpty() && numberOfExponentialOrTrigonometricalFactorsInNumerator == factorsNumerator.getBound() - 1) {
+            separation[1] = factorsNumerator.get(indexOfPolynomialFactorsInNumerator);
+            factorsNumerator.remove(indexOfPolynomialFactorsInNumerator);
+            separation[0] = SimplifyUtilities.produceProduct(factorsNumerator);
             return separation;
         }
         // Fall: f = P(x)*ln(ax+b)^n, P = Polynom.
         if (numberOfPolynomialFactorsInNumerator == factorsNumerator.getSize() - 1 && factorsDenominator.isEmpty() && numberOfLogarithmicFactorsInNumerator == 1) {
             separation[1] = factorsNumerator.get(indexOfLogarithmicFactorInNumerator);
             factorsNumerator.remove(indexOfLogarithmicFactorInNumerator);
-            separation[0] = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+            separation[0] = SimplifyUtilities.produceProduct(factorsNumerator);
             return separation;
         }
         // Fall: f = Q(x)*f(ax+b), Q = rationale Funktion, f = arcsin, arccos, arcsec, arccosec, arsinh, arcosh, arsech, arcosech.
