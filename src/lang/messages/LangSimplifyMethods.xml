@@ -1,4 +1,10 @@
 <objects>
+  <object id = "SM_PolynomialAlgebraMethods_TOO_HIGH_DEGREE">
+    <German>Zu hoher Polynomgrad.</German>
+    <English>Too high polynomial degree.</English>
+    <Ukrainian>Занадто великий порядок полінома.</Ukrainian>
+    <Russian>Слишком большой порядок полинома.</Russian>
+  </object>
   <object id = "SM_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED">
     <German>tan(pi/2) ist nicht definiert.</German>
     <English>tan(pi/2) is not defined.</English>

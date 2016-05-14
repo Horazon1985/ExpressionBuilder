@@ -227,7 +227,7 @@ public abstract class SimplifyPolynomialMethods {
             return coefficients;
         }
         if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SM_PolynomialAlgebraMethods_TOO_HIGH_DEGREE"));
         }
 
         f = f.simplify(simplifyTypesExpandPolynomial);

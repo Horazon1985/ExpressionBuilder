@@ -7,6 +7,7 @@ import exceptions.NotSubstitutableException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.Operator;
@@ -1052,37 +1053,13 @@ public abstract class GeneralIntegralMethods {
             return integratePowerOfArcsin(exponent.intValue(), var);
         }
         if (type.equals(TypeFunction.arccos)) {
-
-        }
-        if (type.equals(TypeFunction.arctan)) {
-
-        }
-        if (type.equals(TypeFunction.arccot)) {
-
-        }
-        if (type.equals(TypeFunction.arcsec)) {
-
-        }
-        if (type.equals(TypeFunction.arccosec)) {
-
+            return integratePowerOfArccos(exponent.intValue(), var);
         }
         if (type.equals(TypeFunction.arsinh)) {
-
+            return integratePowerOfArsinh(exponent.intValue(), var);
         }
         if (type.equals(TypeFunction.arcosh)) {
-
-        }
-        if (type.equals(TypeFunction.artanh)) {
-
-        }
-        if (type.equals(TypeFunction.arcoth)) {
-
-        }
-        if (type.equals(TypeFunction.arsech)) {
-
-        }
-        if (type.equals(TypeFunction.arcosech)) {
-
+            return integratePowerOfArcosh(exponent.intValue(), var);
         }
 
         throw new NotAlgebraicallyIntegrableException();
@@ -1361,6 +1338,54 @@ public abstract class GeneralIntegralMethods {
         String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
         Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
                 new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).cos()), substVar}), true);
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
+    }
+
+    /**
+     * Substitution: x = cos(t). Dann ist int(arccos(x)^n,x) = int(-t^n*sin(t),t)
+     *
+     * @throws EvaluationException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
+     */
+    private static Expression integratePowerOfArccos(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
+        String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+                new Object[]{MINUS_ONE.mult(Variable.create(substVar).pow(n).mult(Variable.create(substVar).sin())), substVar}), true);
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
+    }
+
+    /**
+     * Substitution: x = sinh(t). Dann ist int(arsinh(x)^n,x) = int(t^n*cosh(t),t)
+     *
+     * @throws EvaluationException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
+     */
+    private static Expression integratePowerOfArsinh(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
+        String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+                new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).cosh()), substVar}), true);
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
+    }
+
+    /**
+     * Substitution: x = cosh(t). Dann ist int(arcosh(x)^n,x) = int(t^n*sinh(t),t)
+     *
+     * @throws EvaluationException
+     * @throws exceptions.NotAlgebraicallyIntegrableException
+     */
+    private static Expression integratePowerOfArcosh(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
+        String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+                new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).sinh()), substVar}), true);
         if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
             throw new NotAlgebraicallyIntegrableException();
         }

@@ -405,8 +405,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
-        ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
+        ExpressionCollection coefficientsNumerator, coefficientsDenominator;
+        try {
+            coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
+            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
         ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
 
         // Im Fall einer Exponentialerweiterung: t im Nenner faktorisieren und in den polynomiallen Teil übertragen.
@@ -453,8 +458,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         /* 
-        Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
-        Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
+         Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
+         Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
          */
         Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
         Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
@@ -475,7 +480,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        return ZERO;
+        throw new NotAlgebraicallyIntegrableException();
 //        Expression integrandPolynomialPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(polynomialCoefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
 //        Expression integrandLaurentPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(laurentCoefficients, transcendentalVar).replaceVariable(transcendentalVar, ONE.div(transcententalElement));
 //        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandPolynomialPart.add(integrandLaurentPart), var}));

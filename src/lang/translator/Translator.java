@@ -30,8 +30,6 @@ public abstract class Translator {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangMathCommandCompiler.xml");
             } else if (exceptionId.substring(0, 3).equals("MEB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangMatrixExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 3).equals("PRM")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangPolynomialRootMethods.xml");
             } else if (exceptionId.substring(0, 2).equals("SM")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangSimplifyMethods.xml");
             } else {
