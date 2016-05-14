@@ -342,6 +342,128 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     }
 
+    private static boolean addTranscendentalGeneratorForDifferentialField2(Expression f, String var, ExpressionCollection fieldGenerators) {
+
+        if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)) {
+            return false;
+        }
+        if (f instanceof BinaryOperation) {
+            if (f.isNotPower()) {
+                return addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators)
+                        || addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getRight(), var, fieldGenerators);
+            }
+            if (f.isIntegerPower()) {
+                return addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators);
+            }
+        }
+        if (f.isFunction()) {
+            
+            if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)){
+                // TO DO.
+            
+            
+            }
+
+            if (!isFunctionRationalOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)) {
+                // Dann zuerst Erzeuger hinzufügen, die im Funktionsargument enthalten sind.
+                return addTranscendentalGeneratorForDifferentialField(((Function) f).getLeft(), var, fieldGenerators);
+            }
+
+            if (f.isFunction(TypeFunction.exp)) {
+                ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((Function) f).getLeft(), var);
+                ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(((Function) f).getLeft(), var);
+                Expression nonConstantSummand = SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantSummandsRight);
+                Expression currentQuotient;
+                for (int i = 0; i < fieldGenerators.getBound(); i++) {
+                    if (fieldGenerators.get(i) == null || !fieldGenerators.get(i).isFunction(TypeFunction.exp)) {
+                        continue;
+                    }
+                    try {
+                        currentQuotient = nonConstantSummand.div(((Function) fieldGenerators.get(i)).getLeft()).simplify();
+                        if (currentQuotient.isRationalConstant()) {
+                            // Wenn das Verhältnis ganz ist, braucht man nichts aufzunehmen.
+                            /* Wenn currentQuotient = p/q ist und fieldGenerators.get(i) = exp(f(x)),
+                             so wird fieldGenerators.get(i) zu exp(f(x)/q).
+                             */
+                            BigInteger a = BigInteger.ONE;
+                            BigInteger b = BigInteger.ONE;
+                            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(nonConstantSummand);
+                            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
+
+                            if (factorsNumerator.get(0).isIntegerConstant()) {
+                                a = ((Constant) factorsNumerator.get(0)).getValue().toBigInteger().abs();
+                                factorsNumerator.remove(0);
+                            }
+                            if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()) {
+                                b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
+                                factorsDenominator.remove(0);
+                            }
+
+                            Expression quotient = new Constant(a).div(b).div(currentQuotient).simplify();
+
+                            BigInteger c, d;
+                            if (quotient.isIntegerConstant()) {
+                                c = ((Constant) quotient).getValue().toBigInteger();
+                                d = BigInteger.ONE;
+                            } else {
+                                c = ((Constant) ((BinaryOperation) quotient).getLeft()).getValue().toBigInteger();
+                                d = ((Constant) ((BinaryOperation) quotient).getRight()).getValue().toBigInteger();
+                            }
+
+                            a = a.gcd(c);
+                            b = ArithmeticMethods.lcm(b, d);
+                            factorsNumerator.add(new Constant(a));
+                            factorsDenominator.add(new Constant(b));
+                            Expression expArgument = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
+
+                            fieldGenerators.put(i, expArgument.exp().simplify());
+                            return true;
+                        }
+                    } catch (EvaluationException e) {
+                    }
+                }
+                fieldGenerators.add(f);
+                return true;
+            }
+
+            if (f.isFunction(TypeFunction.ln)) {
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(((Function) f).getLeft());
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(((Function) f).getLeft());
+                ExpressionCollection summandsLeftForCompare, summandsRightForCompare;
+                Expression currentQuotient;
+                boolean unclearCaseFound = false;
+                for (Expression fieldGenerator : fieldGenerators) {
+                    if (!fieldGenerator.isFunction(TypeFunction.ln)) {
+                        continue;
+                    }
+                    try {
+                        currentQuotient = ((Function) f).getLeft().div(((Function) fieldGenerator).getLeft()).simplify();
+                        if (currentQuotient.isIntegerConstantOrRationalConstant()) {
+                            return false;
+                        }
+                    } catch (EvaluationException e) {
+                    }
+                    summandsLeftForCompare = SimplifyUtilities.getSummandsLeftInExpression(((Function) fieldGenerator).getLeft());
+                    summandsRightForCompare = SimplifyUtilities.getSummandsRightInExpression(((Function) fieldGenerator).getLeft());
+                    if ((summandsLeft.getBound() + summandsRight.getBound()) * (summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
+                        unclearCaseFound = true;
+                    }
+                }
+                if (unclearCaseFound) {
+                    return false;
+                }
+                fieldGenerators.add(f);
+                return true;
+            }
+
+            return false;
+
+        }
+
+        return false;
+
+    }
+
     /*
      Ab hier folgt der eigentliche Risch-Algorithmus!
      */

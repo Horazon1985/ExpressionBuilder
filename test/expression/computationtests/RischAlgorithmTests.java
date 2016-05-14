@@ -28,7 +28,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest1() {
+    public void isRationalOverFieldExtensionTest1() {
         // f = exp(x+2), var = "x", fieldGenerators = {}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection();
@@ -41,7 +41,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest2() {
+    public void isRationalOverFieldExtensionTest2() {
         // f = exp(x)+3*ln(x)-7/4, var = "x", fieldGenerators = {exp(x), ln(x)}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(x)");
@@ -54,7 +54,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest3() {
+    public void isRationalOverFieldExtensionTest3() {
         // f = exp(x)+3*ln(x)-7/4, var = "x", fieldGenerators = {exp(x), ln(x)}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(x)");
@@ -67,7 +67,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest4() {
+    public void isRationalOverFieldExtensionTest4() {
         /* 
          Für f = exp(5+3*x/8+a^2)-7/11, var = "x", fieldGenerators = {exp(x/8)} wird 
          true zurückgegeben, für f = exp(5+3^(1/5)*x+a^2)-7/11 dagegen false.
@@ -86,7 +86,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest5() {
+    public void isRationalOverFieldExtensionTest5() {
         /* 
          Für f = x^2/(1+x)+ln((3+2*x)^7)-x, var = "x", fieldGenerators = {exp(x), ln(2*x+3)} wird 
          true zurückgegeben, für f = x^3+7*ln(x)-5 dagegen false.
@@ -105,7 +105,7 @@ public class RischAlgorithmTests {
     }
 
     @Test
-    public void isAlgebraicOverFieldExtensionTest6() {
+    public void isRationalOverFieldExtensionTest6() {
         /* 
          Für f = x^2/(1+x)+x*ln(21+9*x)-x^5, var = "x", fieldGenerators = {exp(x), ln(14/5+(6*x)/5)} wird 
          true zurückgegeben.
