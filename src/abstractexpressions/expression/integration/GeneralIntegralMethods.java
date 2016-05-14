@@ -596,6 +596,12 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
+        // Integragtion von P(x)*f(x)^n, P = Polynom, f = arcsin, arccos, arsinh, arcosh, n positive ganze Zahl.
+        try {
+            return SpecialIntegrationMethods.integrateProductOfPolynomialAndPowerOfArcusOrAreaFunction(expr).simplifyTrivial();
+        } catch (NotAlgebraicallyIntegrableException e) {
+        }
+
         // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels Standardsubstitution.
         try {
             result = integrateByStandardSubstitution(expr);

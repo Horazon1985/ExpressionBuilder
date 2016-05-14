@@ -32,6 +32,9 @@ import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import exceptions.MathToolException;
 
+/**
+ * Klasse mit Methoden für die Integration spezieller Funktionstypen.
+ */
 public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
     /**
@@ -1638,7 +1641,77 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
     }
 
-    // Integration algebraischer Funktionen.
+    /**
+     * Integriert Funktionen vom Typ P(x)*f(x)^n, P = Polynom, f = arcsin,
+     * arccos, arsinh, arcosh, n positive ganze Zahl.<br>
+     * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
+     *
+     * @throws EvaluationException
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    public static Expression integrateProductOfPolynomialAndPowerOfArcusOrAreaFunction(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        if (f.isNotProduct()) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression factorLeft = ((BinaryOperation) f).getLeft();
+        Expression factorRight = ((BinaryOperation) f).getRight();
+
+        if (!SimplifyPolynomialMethods.isPolynomial(factorLeft, var)) {
+            // Faktoren vertauschen und erneut prüfen.
+            Expression factor = factorLeft;
+            factorLeft = factorRight;
+            factorRight = factor;
+        }
+
+        if (!SimplifyPolynomialMethods.isPolynomial(factorLeft, var)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression base;
+        BigInteger exponent;
+        if (factorRight.isPositiveIntegerPower()) {
+            base = ((BinaryOperation) factorRight).getLeft();
+            exponent = ((Constant) ((BinaryOperation) factorRight).getRight()).getValue().toBigInteger();
+        } else {
+            base = factorRight;
+            exponent = BigInteger.ONE;
+        }
+
+        String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
+        Expression fSubstituted, integralOfFSubstituted;
+
+        if (base.equals(Variable.create(var).arcsin())) {
+            fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).sin()).mult(Variable.create(substVar).cos()).mult(Variable.create(substVar).pow(exponent));
+            try {
+                integralOfFSubstituted = integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{fSubstituted, substVar}));
+                if (integralOfFSubstituted.containsIndefiniteIntegral()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+        } else if (base.equals(Variable.create(var).arccos())) {
+            fSubstituted = MINUS_ONE.mult(factorLeft.replaceVariable(var, Variable.create(substVar).cos()).mult(Variable.create(substVar).sin()).mult(Variable.create(substVar).pow(exponent)));
+
+        } else if (base.equals(Variable.create(var).arsinh())) {
+            fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).sinh()).mult(Variable.create(substVar).cosh()).mult(Variable.create(substVar).pow(exponent));
+
+        } else if (base.equals(Variable.create(var).arcosh())) {
+            fSubstituted = factorLeft.replaceVariable(var, Variable.create(substVar).cosh()).mult(Variable.create(substVar).sinh()).mult(Variable.create(substVar).pow(exponent));
+
+        }
+
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /////////////////////////// Integration algebraischer Funktionen //////////////////////////////////////////
     /**
      * Ermittelt potenzielle Substitutionen für die Integration einer
      * algebraischen Funktion.
@@ -2021,7 +2094,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         String substVar = SubstitutionUtilities.getSubstitutionVariable(f);
         Expression substitution = Variable.create(var).pow(BigInteger.ONE, exponentDenominator);
         Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, substitution, Variable.create(substVar));
-        
+
         if (fSubstituted.contains(var) || !SimplifyRationalFunctionMethods.isRationalFunction(fSubstituted, substVar)) {
             throw new NotAlgebraicallyIntegrableException();
         }
