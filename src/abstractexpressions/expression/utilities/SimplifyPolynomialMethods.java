@@ -18,7 +18,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
-import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
+import abstractexpressions.expression.equation.PolynomialAlgebraMethods;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
@@ -517,7 +517,7 @@ public abstract class SimplifyPolynomialMethods {
         Expression discriminant = p.pow(3).div(27).add(q.pow(2).div(4)).simplify();
 
         if (discriminant.equals(ZERO) || discriminant.isAlwaysPositive() || discriminant.isAlwaysNegative()) {
-            ExpressionCollection zeros = PolynomiaAlgebraMethods.solveCubicEquation(a);
+            ExpressionCollection zeros = PolynomialAlgebraMethods.solveCubicEquation(a);
             if (discriminant.isAlwaysPositive()) {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
@@ -732,7 +732,7 @@ public abstract class SimplifyPolynomialMethods {
     private static Expression decomposeRationalPolynomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         ExpressionCollection zeros = new ExpressionCollection();
-        ExpressionCollection restCoefficients = PolynomiaAlgebraMethods.findAllRationalZerosOfRationalPolynomial(a, zeros);
+        ExpressionCollection restCoefficients = PolynomialAlgebraMethods.findAllRationalZerosOfRationalPolynomial(a, zeros);
         if (zeros.isEmpty()) {
             throw new PolynomialNotDecomposableException();
         }

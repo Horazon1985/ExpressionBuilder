@@ -13,7 +13,7 @@ import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.equation.PolynomiaAlgebraMethods;
+import abstractexpressions.expression.equation.PolynomialAlgebraMethods;
 import exceptions.MathToolException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1227,7 +1227,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1280,7 +1280,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1301,7 +1301,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             throw new RootNotRationalException();
         }
 
-        rationalZeros = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
+        rationalZeros = PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(coefficients);
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
             throw new RootNotRationalException();

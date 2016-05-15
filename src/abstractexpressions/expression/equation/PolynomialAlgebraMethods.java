@@ -24,7 +24,7 @@ import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
-public abstract class PolynomiaAlgebraMethods {
+public abstract class PolynomialAlgebraMethods {
 
     public static BigInteger getGCDOfExponentsInPolynomial(Expression f, String var) {
 
@@ -85,8 +85,8 @@ public abstract class PolynomiaAlgebraMethods {
 
     /**
      * Falls isPolynomialInRationalPowers() true zurückgibt, gibt es den
- kleinsten Exponenten m für eine geeignete Substitution var = y^m aus, so
- dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
+     * kleinsten Exponenten m für eine geeignete Substitution var = y^m aus, so
+     * dass die resultierende Gleichung ein Polynom in y wird. VORAUSSETZUNG:
      * expr muss ein Polynom sein.
      */
     private static BigInteger findExponentForPolynomialSubstitutionByRoots(Expression f, String var) {
@@ -135,11 +135,36 @@ public abstract class PolynomiaAlgebraMethods {
         ExpressionCollection zeros = new ExpressionCollection();
 
         // Vorarbeit: wenn die Koeffizienten alle Vielfache desselben Ausdrucks sind, so kann dieser Ausdruck gekürzt werden.
-        Expression commonFactor;
-        for (int i = 0; i < coefficients.getBound(); i++){
-            // TO DO.
+        try {
+            Expression coefficientForTesting = null;
+            for (int i = 0; i < coefficients.getBound(); i++) {
+                if (!coefficients.get(i).equals(ZERO) && !coefficients.get(i).isIntegerConstantOrRationalConstant()) {
+                    coefficientForTesting = coefficients.get(i);
+                    break;
+                }
+            }
+
+            if (coefficientForTesting != null) {
+                boolean allQuotientsAreRational = true;
+                ExpressionCollection reducedCoefficients = new ExpressionCollection();
+                Expression quotient;
+                for (int i = 0; i < coefficients.getBound(); i++) {
+                    quotient = coefficients.get(i).div(coefficientForTesting).simplify();
+                    if (!quotient.isIntegerConstantOrRationalConstant()) {
+                        allQuotientsAreRational = false;
+                        break;
+                    } else {
+                        reducedCoefficients.add(quotient);
+                    }
+                }
+                if (allQuotientsAreRational) {
+                    coefficients = reducedCoefficients;
+                }
+            }
+
+        } catch (EvaluationException e) {
         }
-        
+
         int degree = coefficients.getBound() - 1;
 
         /*
@@ -171,7 +196,7 @@ public abstract class PolynomiaAlgebraMethods {
         // Fall: f is ein Polynom mit zyklischen Koeffizienten.
         m = SimplifyPolynomialMethods.getPeriodOfCoefficients(coefficients);
         if (m < coefficients.getBound()) {
-            return PolynomiaAlgebraMethods.solvePeriodicPolynomialEquation(coefficients, var);
+            return PolynomialAlgebraMethods.solvePeriodicPolynomialEquation(coefficients, var);
         }
 
         // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= gewisse Schranke ist.
@@ -219,16 +244,16 @@ public abstract class PolynomiaAlgebraMethods {
 
             // Nullstellen von Polynomen vom Grad 1 - 4 können direkt ermittelt werden.
             if (degree == 1) {
-                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveLinearEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomialAlgebraMethods.solveLinearEquation(coefficients));
             }
             if (degree == 2) {
-                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveQuadraticEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomialAlgebraMethods.solveQuadraticEquation(coefficients));
             }
             if (degree == 3) {
-                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveCubicEquation(coefficients));
+                return SimplifyUtilities.union(zeros, PolynomialAlgebraMethods.solveCubicEquation(coefficients));
             }
             if (degree == 4) {
-                return SimplifyUtilities.union(zeros, PolynomiaAlgebraMethods.solveQuarticEquation(coefficients, var));
+                return SimplifyUtilities.union(zeros, PolynomialAlgebraMethods.solveQuarticEquation(coefficients, var));
             }
 
         }
@@ -328,7 +353,7 @@ public abstract class PolynomiaAlgebraMethods {
      * |Zähler|, |Nenner| <= eine gewisse Schranke.
      */
     public static ExpressionCollection getRationalZerosOfRationalPolynomial(Expression f, String var) {
-        
+
         ExpressionCollection coefficients;
         try {
             coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
@@ -343,7 +368,7 @@ public abstract class PolynomiaAlgebraMethods {
         } catch (EvaluationException e) {
             return new ExpressionCollection();
         }
-        
+
     }
 
     /**
@@ -729,7 +754,7 @@ public abstract class PolynomiaAlgebraMethods {
     public static ExpressionCollection solvePolynomialEquationWithFractionalExponents(Expression f, String var)
             throws EvaluationException, NotAlgebraicallySolvableException {
 
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomiaAlgebraMethods.isPolynomialInRationalPowers(f, var)) {
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialAlgebraMethods.isPolynomialInRationalPowers(f, var)) {
             throw new NotAlgebraicallySolvableException();
         }
 

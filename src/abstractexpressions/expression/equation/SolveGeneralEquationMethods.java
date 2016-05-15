@@ -1421,7 +1421,6 @@ public abstract class SolveGeneralEquationMethods {
      */
     private static ExpressionCollection solveEquationWithCommonFactors(Expression f, Expression g, String var) throws NotAlgebraicallySolvableException {
 
-        ExpressionCollection possibleZeros = new ExpressionCollection();
         ExpressionCollection zerosOfCancelledFactors = new ExpressionCollection();
 
         if (g.contains(var)) {
@@ -1434,7 +1433,7 @@ public abstract class SolveGeneralEquationMethods {
                         zerosOfCancelledFactors = SimplifyUtilities.union(zerosOfCancelledFactors,
                                 solveZeroEquation(commonFactorsOfFAndG.get(i), var));
                     }
-                    possibleZeros = SimplifyUtilities.union(solveGeneralEquation(fWithoutCommonFactors, gWithoutCommonFactors, var),
+                    return SimplifyUtilities.union(solveGeneralEquation(fWithoutCommonFactors, gWithoutCommonFactors, var),
                             zerosOfCancelledFactors);
                 }
             } catch (EvaluationException e) {
@@ -1512,7 +1511,7 @@ public abstract class SolveGeneralEquationMethods {
 
         // Fall: f is ein Polynom in x^(1/m) mit geeignetem m, x = var.
         try {
-            return PolynomiaAlgebraMethods.solvePolynomialEquationWithFractionalExponents(f, var);
+            return PolynomialAlgebraMethods.solvePolynomialEquationWithFractionalExponents(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
 
@@ -1757,7 +1756,7 @@ public abstract class SolveGeneralEquationMethods {
             return SimplifyUtilities.union(zeros, solvePolynomialEquation(f, var));
         }
 
-        BigInteger gcdOfExponents = PolynomiaAlgebraMethods.getGCDOfExponentsInPolynomial(f, var);
+        BigInteger gcdOfExponents = PolynomialAlgebraMethods.getGCDOfExponentsInPolynomial(f, var);
         if (gcdOfExponents.compareTo(BigInteger.ONE) > 0) {
             /* 
              Falls das Polynom f(x) als f(x) = g(x^m) mit einem ganzen m > 1 geschrieben werden kann,
@@ -1789,7 +1788,7 @@ public abstract class SolveGeneralEquationMethods {
         }
 
         ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
-        return PolynomiaAlgebraMethods.solvePolynomialEquation(coefficients, var);
+        return PolynomialAlgebraMethods.solvePolynomialEquation(coefficients, var);
 
     }
 

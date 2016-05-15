@@ -186,6 +186,22 @@ public class RischAlgorithmTests {
     }
     
     @Test
+    public void getFieldGeneratorsTest5() {
+        /* 
+         Für f = exp(x+exp(x))+exp(x), var = "x". Dann wird 
+         fieldGenerators = {exp(x), exp(x+exp(x))} zurückgegeben.
+         */
+        try {
+            f = Expression.build("exp(x+exp(x/2))+exp(x/3)", null);
+            ExpressionCollection fieldGenerators = RischAlgorithmMethods.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
+            ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(x/6)", "exp(x+exp(x/2))");
+            Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
     public void functionIsGeneratedByObtainedFieldGeneratorsTest1() {
         /* 
          Für f = x^2*exp(x+exp(x)*ln(x))+x^3/(8+x), var = "x". Dann wird 

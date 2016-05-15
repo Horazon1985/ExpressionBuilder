@@ -207,11 +207,11 @@ public class SolveGeneralSystemOfEquationsMethods {
                             continue;
                         }
                         if (i == 0) {
-                            solutions = PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var);
+                            solutions = PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var);
                         } else if (solutions.isEmpty()) {
                             return new ArrayList<>();
                         } else {
-                            solutions = SimplifyUtilities.intersection(solutions, PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var));
+                            solutions = SimplifyUtilities.intersection(solutions, PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i).toExpression(), var));
                         }
                     }
                 } else {
@@ -278,7 +278,7 @@ public class SolveGeneralSystemOfEquationsMethods {
             coefficientsOfEquation = equationsWithOneVar.get(i).toPolynomial(var);
             if (i == 0) {
                 try {
-                    solutionsOfEquation = PolynomiaAlgebraMethods.solvePolynomialEquation(coefficientsOfEquation, var);
+                    solutionsOfEquation = PolynomialAlgebraMethods.solvePolynomialEquation(coefficientsOfEquation, var);
                 } catch (EvaluationException e) {
                     throw new NotAlgebraicallySolvableException();
                 }
@@ -286,7 +286,7 @@ public class SolveGeneralSystemOfEquationsMethods {
                 return new ArrayList<>();
             } else {
                 try {
-                    solutionsOfEquation = SimplifyUtilities.intersection(solutionsOfEquation, PolynomiaAlgebraMethods.solvePolynomialEquation(coefficientsOfEquation, var));
+                    solutionsOfEquation = SimplifyUtilities.intersection(solutionsOfEquation, PolynomialAlgebraMethods.solvePolynomialEquation(coefficientsOfEquation, var));
                 } catch (EvaluationException e) {
                     throw new NotAlgebraicallySolvableException();
                 }
@@ -446,7 +446,7 @@ public class SolveGeneralSystemOfEquationsMethods {
                     } else if (solutions.isEmpty()) {
                         return new ArrayList<>();
                     } else {
-                        solutions = SimplifyUtilities.intersection(solutions, PolynomiaAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i), var));
+                        solutions = SimplifyUtilities.intersection(solutions, PolynomialAlgebraMethods.getRationalZerosOfRationalPolynomial(equations.get(i), var));
                     }
                 }
             } catch (EvaluationException e) {

@@ -368,7 +368,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    public static Expression integrateByRischAlgorithmForGeneralExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
+    public static Expression integrateByRischAlgorithmForTranscendentalExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
@@ -436,8 +436,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
          Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
          Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
          */
-        Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
-        Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
+        Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
+        Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
         return integralOfPolynomialPart.add(integralOfFractionalPart);
 
     }
@@ -516,38 +516,34 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
          Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
          Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
          */
-        Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
-        Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
+        Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
+        Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
         return integralOfPolynomialPart.add(integralOfFractionalPart);
 
     }
 
     /**
-     * Risch-Algorithmus für den polynoimialen Anteil. Hier wird direkt
-     * integriert.
+     * Risch-Algorithmus für den polynomialen Anteil.
      *
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmForDegOneExtensionPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
+    private static Expression integrateByRischAlgorithmPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
         // TO DO.
         if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
             throw new NotAlgebraicallyIntegrableException();
         }
         throw new NotAlgebraicallyIntegrableException();
-//        Expression integrandPolynomialPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(polynomialCoefficients, transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
-//        Expression integrandLaurentPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(laurentCoefficients, transcendentalVar).replaceVariable(transcendentalVar, ONE.div(transcententalElement));
-//        return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandPolynomialPart.add(integrandLaurentPart), var}));
     }
-
+    
     /**
      * Risch-Algorithmus für den gebrochenen Anteil.
      *
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmForDegOneExtensionFractionalPart(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
+    private static Expression integrateByRischAlgorithmFractionalPart(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         Expression decompositionOfDenominator;
@@ -616,7 +612,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (denominator.isNotPower() && denominator.isNotProduct()) {
             // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
             try {
-                return integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+                return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }
@@ -665,7 +661,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Dann ist der Nenner quadratfrei (aber eventuell faktorisiert).
         try {
-            return integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+            return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -679,7 +675,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmForDegOneExtensionRationalPartInSquareFreeCase(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
+    private static Expression integrateByRischAlgorithmInSquareFreeCase(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         // Leitkoeffizienten vom Nenner in den Zähler verschieben.

@@ -4,6 +4,8 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import abstractexpressions.expression.equation.PolynomialAlgebraMethods;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TEN;
 import static abstractexpressions.expression.classes.Expression.THREE;
@@ -118,6 +120,22 @@ public class SolveGeneralEquationMethodsTests {
             assertTrue(zeros.contains(new Constant(3).sub(new Constant(7).pow(1, 2))));
             assertTrue(zeros.contains(new Constant(3).add(new Constant(7).pow(1, 2))));
             assertTrue(zeros.contains(new Constant(7).pow(1, 3)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void solvePolynomialEquationByReducingTest() {
+        try {
+            /* 
+             Test: f = (1+exp(a))*x^2-5-5*exp(a) = 0. Die Lösungen sind -5^(1/2), 5^(1/2).
+             */
+            ExpressionCollection coefficients = new ExpressionCollection(Expression.build("-5-5*exp(a)", null), ZERO, Expression.build("1+exp(a)", null));
+            ExpressionCollection zeros = PolynomialAlgebraMethods.solvePolynomialEquation(coefficients, "x");
+            assertTrue(zeros.getBound() == 2);
+            assertTrue(zeros.contains(MINUS_ONE.mult(new Constant(5).pow(1, 2))));
+            assertTrue(zeros.contains(new Constant(5).pow(1, 2)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
