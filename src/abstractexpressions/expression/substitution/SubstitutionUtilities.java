@@ -59,8 +59,9 @@ public abstract class SubstitutionUtilities {
     public static String getSubstitutionVariable(Expression... functions) {
         String var = NotationLoader.SUBSTITUTION_VAR + "_";
         int j = 1;
-        boolean someFContainsVar = false;
+        boolean someFContainsVar;
         do {
+            someFContainsVar = false;
             for (Expression f : functions) {
                 if (f.contains(var + String.valueOf(j))) {
                     someFContainsVar = true;

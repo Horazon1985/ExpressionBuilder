@@ -386,7 +386,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
         // Sei t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in t sein.
-        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, transcendentalVar)) {
+        if (!SimplifyRationalFunctionMethods.isRationalFunction(fSubstituted, transcendentalVar)) {
             throw new NotAlgebraicallyIntegrableException();
         }
 
@@ -441,7 +441,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         return integralOfPolynomialPart.add(integralOfFractionalPart);
 
     }
-    
+
     /**
      * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
      * einer transzendenten Erweiterung durch ein einziges Element.
@@ -530,13 +530,16 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      */
     private static Expression integrateByRischAlgorithmPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
             throws NotAlgebraicallyIntegrableException, EvaluationException {
+        if (polynomialCoefficients.isEmpty() && laurentCoefficients.isEmpty()) {
+            return ZERO;
+        }
         // TO DO.
         if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
             throw new NotAlgebraicallyIntegrableException();
         }
         throw new NotAlgebraicallyIntegrableException();
     }
-    
+
     /**
      * Risch-Algorithmus für den gebrochenen Anteil.
      *
@@ -549,23 +552,33 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression decompositionOfDenominator;
         try {
             decompositionOfDenominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
-        } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
+        } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
+        } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
+            decompositionOfDenominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
         }
 
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(decompositionOfDenominator);
         Expression leadingCoefficient = ONE;
-        for (int i = 0; i < factorsDenominator.getBound(); i++) {
-            if (!factorsDenominator.get(i).contains(transcendentalVar)) {
-                leadingCoefficient = leadingCoefficient.mult(factorsDenominator.get(i));
-                factorsDenominator.put(i, null);
+
+        if (factorsDenominator.getBound() == 1) {
+            leadingCoefficient = coefficientsDenominator.get(coefficientsDenominator.getBound() - 1);
+            factorsDenominator.divideByExpression(leadingCoefficient);
+            factorsDenominator = factorsDenominator.simplify();
+        } else {
+            for (int i = 0; i < factorsDenominator.getBound(); i++) {
+                if (!factorsDenominator.get(i).contains(transcendentalVar)) {
+                    leadingCoefficient = leadingCoefficient.mult(factorsDenominator.get(i));
+                    factorsDenominator.put(i, null);
+                }
             }
         }
+
         leadingCoefficient = leadingCoefficient.simplify();
 
         // Nenner normieren!
         decompositionOfDenominator = SimplifyUtilities.produceProduct(factorsDenominator);
-        coefficientsNumerator.divByExpression(leadingCoefficient);
+        coefficientsNumerator.divideByExpression(leadingCoefficient);
         coefficientsNumerator = coefficientsNumerator.simplify();
 
         // Hermite-Reduktion und expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
@@ -679,10 +692,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         // Leitkoeffizienten vom Nenner in den Zähler verschieben.
-        coefficientsNumerator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+        coefficientsNumerator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
         coefficientsNumerator = coefficientsNumerator.simplify();
 
-        coefficientsDenominator.divByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+        coefficientsDenominator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
         coefficientsDenominator = coefficientsDenominator.simplify();
 
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.

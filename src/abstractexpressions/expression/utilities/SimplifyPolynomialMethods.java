@@ -22,6 +22,7 @@ import abstractexpressions.expression.equation.PolynomialAlgebraMethods;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import com.sun.javafx.applet.ExperimentalExtensions;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import lang.translator.Translator;
@@ -377,7 +378,7 @@ public abstract class SimplifyPolynomialMethods {
         // Leitkoeffizienten faktorisieren, damit das Restpolynom normiert ist.
         ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
         Expression leadCoefficient = a.get(a.getBound() - 1);
-        a.divByExpression(leadCoefficient);
+        a.divideByExpression(leadCoefficient);
         a = a.simplify();
 
         return leadCoefficient.mult(decomposePolynomialInIrreducibleFactors(a, var));
@@ -779,7 +780,7 @@ public abstract class SimplifyPolynomialMethods {
             // Polynom normieren und dann zerlegen.
             ExpressionCollection coefficients = getPolynomialCoefficients(f, var);
             Expression leadingCoefficient = coefficients.get(coefficients.getBound() - 1);
-            coefficients.divByExpression(leadingCoefficient);
+            coefficients.divideByExpression(leadingCoefficient);
             coefficients.simplify();
             return leadingCoefficient.mult(decomposeRationalPolynomialIntoSquarefreeFactors(coefficients, var));
         } catch (PolynomialNotDecomposableException e) {
@@ -788,23 +789,24 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Faktorisiert ein rationales Polynom f mittels Berechnung der gemeinsamen
-     * Faktoren von f und f'.<br>
-     * VORAUSSETZUNG: Alle Elemente von a sind rational.
+     * Faktorisiert ein Polynom f in quadratfreie Faktoren. Kann solch eine
+     * Zerlegung nicht ermittelt werden, so wird eine
+     * PolynomialNotDecomposableException geworfen.<br>
      */
     public static Expression decomposeRationalPolynomialIntoSquarefreeFactors(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
-        // Wenn a nicht mindestens einem quadratischen Polynom entspricht, so kann es nicht quadratfrei faktorisiert werden.
-        if (a.getBound() < 3){
+        // Wenn a nicht mindestens einem linearen Polynom entspricht, so kann es nicht quadratfrei faktorisiert werden.
+        if (a.getBound() < 2) {
             throw new PolynomialNotDecomposableException();
         }
 
+        ExpressionCollection aCopy = new ExpressionCollection(a);
         // a normieren!
-        Expression leadingCoefficient = a.get(a.getBound() - 1);
-        a.divByExpression(leadingCoefficient);
-        a = a.simplify();
-        
-        Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(a, var);
+        Expression leadingCoefficient = aCopy.get(aCopy.getBound() - 1);
+        aCopy.divideByExpression(leadingCoefficient);
+        aCopy = aCopy.simplify();
+
+        Expression decomposition = decomposeRationalPolynomialByComputingGGTWithDerivative(aCopy, var);
 
         // Falls decomposition kein Produkt ist, dann konnte das Polynom nicht faktorisiert werden.
         if (decomposition.isNotProduct() && !decomposition.isPositiveIntegerPower()) {
@@ -1136,7 +1138,8 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten aund b gegeben sind.
+     * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten aund b
+     * gegeben sind.
      */
     public static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
 
@@ -1154,7 +1157,7 @@ public abstract class SimplifyPolynomialMethods {
 
         // Anschließend normieren!
         if (b.getBound() > 0 && !ZERO.equals(b.get(b.getBound() - 1))) {
-            b.divByExpression(b.get(b.getBound() - 1));
+            b.divideByExpression(b.get(b.getBound() - 1));
             b = b.simplify();
         }
 

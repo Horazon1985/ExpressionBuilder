@@ -420,7 +420,7 @@ public abstract class PolynomialAlgebraMethods {
         ExpressionCollection coefficientsOfDivisionQuotient;
         ExpressionCollection multipleOfCoefficients = ExpressionCollection.copy(coefficients);
 
-        multipleOfCoefficients.multExpression(new Constant(commonDenominator));
+        multipleOfCoefficients.multiplyWithExpression(new Constant(commonDenominator));
         multipleOfCoefficients = multipleOfCoefficients.simplify();
 
         // Alle Polynomkoeffizienten werden nun durch ihren ggT dividiert.
@@ -433,7 +433,7 @@ public abstract class PolynomialAlgebraMethods {
             }
         }
         if (gcd.compareTo(BigInteger.ONE) > 0) {
-            multipleOfCoefficients.divByExpression(new Constant(gcd));
+            multipleOfCoefficients.divideByExpression(new Constant(gcd));
             multipleOfCoefficients = multipleOfCoefficients.simplify();
         }
 
@@ -456,7 +456,7 @@ public abstract class PolynomialAlgebraMethods {
         }
 
         // Zum Schluss: Ergebnis der Polynomdivision normieren.
-        coefficientsOfDivisionQuotient.divByExpression(coefficientsOfDivisionQuotient.get(coefficientsOfDivisionQuotient.getBound() - 1));
+        coefficientsOfDivisionQuotient.divideByExpression(coefficientsOfDivisionQuotient.get(coefficientsOfDivisionQuotient.getBound() - 1));
         coefficientsOfDivisionQuotient = coefficientsOfDivisionQuotient.simplify();
 
         return coefficientsOfDivisionQuotient;

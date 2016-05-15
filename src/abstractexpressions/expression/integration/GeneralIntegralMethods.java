@@ -630,7 +630,8 @@ public abstract class GeneralIntegralMethods {
 
         // ZUM SCHLUSS, falls bisher nichts funktioniert hat: Risch-Algorithmus.
         try {
-            result = RischAlgorithmMethods.integrateByRischAlgorithmForDegOneExtension(expr);
+//            result = RischAlgorithmMethods.integrateByRischAlgorithmForDegOneExtension(expr);
+            result = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension(expr);
             if (!result.containsIndefiniteIntegral()) {
                 // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.
                 return result;
@@ -1745,7 +1746,6 @@ public abstract class GeneralIntegralMethods {
         int indexOfFactorWithAlgebraicDerivativeInNumerator = -1;
 
         int numberOfExponentialOrTrigonometricalFactorsInNumerator = 0;
-        int indexOfExponentialOrTrigonometricalFactorInNumerator = -1;
 
         int numberOfLogarithmicFactorsInNumerator = 0;
         int indexOfLogarithmicFactorInNumerator = -1;
@@ -1777,13 +1777,11 @@ public abstract class GeneralIntegralMethods {
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.exp) || factorsNumerator.get(i).isFunction(TypeFunction.cos) || factorsNumerator.get(i).isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;
-                indexOfExponentialOrTrigonometricalFactorInNumerator = i;
             } else if (factorsNumerator.get(i).isPositiveIntegerPower() && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.exp) 
                     || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.cos) 
                     || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft(), var)) {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;
-                indexOfExponentialOrTrigonometricalFactorInNumerator = i;
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.lg) || factorsNumerator.get(i).isFunction(TypeFunction.ln))
                     && SimplifyRationalFunctionMethods.isRationalFunction(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfLogarithmicFactorsInNumerator++;

@@ -290,7 +290,7 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
-    public void subExpression(Expression expr) {
+    public void subtractExpression(Expression expr) {
         for (int i = 0; i < this.bound; i++) {
             if (this.terms.get(i) != null) {
                 this.terms.put(i, this.terms.get(i).sub(expr));
@@ -298,7 +298,7 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
-    public void multExpression(Expression expr) {
+    public void multiplyWithExpression(Expression expr) {
         for (int i = 0; i < this.bound; i++) {
             if (this.terms.get(i) != null) {
                 this.terms.put(i, this.terms.get(i).mult(expr));
@@ -306,7 +306,7 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
-    public void divByExpression(Expression expr) {
+    public void divideByExpression(Expression expr) {
         for (int i = 0; i < this.bound; i++) {
             if (this.terms.get(i) != null) {
                 this.terms.put(i, this.terms.get(i).div(expr));

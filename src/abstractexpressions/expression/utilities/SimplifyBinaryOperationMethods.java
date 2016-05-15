@@ -2404,19 +2404,19 @@ public abstract class SimplifyBinaryOperationMethods {
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
                     summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
-                    summandsLeftInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
                     summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
-                    summandsRightInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
                     summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
-                    summandsLeftInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
                     summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
-                    summandsRightInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
                     if (summandsLeftInNumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
@@ -2452,19 +2452,19 @@ public abstract class SimplifyBinaryOperationMethods {
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
                     summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
-                    summandsLeftInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
                     summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
-                    summandsRightInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
                     summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
-                    summandsLeftInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
                     summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
-                    summandsRightInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
                     if (summandsLeftInNumeratorMultiples.equivalentInTerms(summandsRightInDenominatorMultiples)
@@ -2513,19 +2513,19 @@ public abstract class SimplifyBinaryOperationMethods {
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
                     summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
-                    summandsLeftInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
                     summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
-                    summandsRightInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
                     summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
-                    summandsLeftInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
                     summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
-                    summandsRightInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
                     if (summandsRightInNumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
@@ -2561,19 +2561,19 @@ public abstract class SimplifyBinaryOperationMethods {
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
                     summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
-                    summandsLeftInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
                     summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
-                    summandsRightInNumeratorMultiples.multExpression(coefficientInDenominatorForTesting);
+                    summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
                     summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
-                    summandsLeftInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
                     summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
-                    summandsRightInDenominatorMultiples.multExpression(coefficientInNumeratorForTesting);
+                    summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
                     if (summandsLeftInNumeratorMultiples.equivalentInTerms(summandsLeftInDenominatorMultiples)
