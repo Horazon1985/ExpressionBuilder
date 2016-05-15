@@ -342,131 +342,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     }
 
-    private static boolean addTranscendentalGeneratorForDifferentialField2(Expression f, String var, ExpressionCollection fieldGenerators) {
-
-        if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)) {
-            return false;
-        }
-        if (f instanceof BinaryOperation) {
-            if (f.isNotPower()) {
-                return addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators)
-                        || addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getRight(), var, fieldGenerators);
-            }
-            if (f.isIntegerPower()) {
-                return addTranscendentalGeneratorForDifferentialField(((BinaryOperation) f).getLeft(), var, fieldGenerators);
-            }
-        }
-        if (f.isFunction()) {
-            
-            if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)){
-                // TO DO.
-            
-            
-            }
-
-            if (!isFunctionRationalOverDifferentialField(((Function) f).getLeft(), var, fieldGenerators)) {
-                // Dann zuerst Erzeuger hinzufügen, die im Funktionsargument enthalten sind.
-                return addTranscendentalGeneratorForDifferentialField(((Function) f).getLeft(), var, fieldGenerators);
-            }
-
-            if (f.isFunction(TypeFunction.exp)) {
-                ExpressionCollection nonConstantSummandsLeft = SimplifyUtilities.getNonConstantSummandsLeftInExpression(((Function) f).getLeft(), var);
-                ExpressionCollection nonConstantSummandsRight = SimplifyUtilities.getNonConstantSummandsRightInExpression(((Function) f).getLeft(), var);
-                Expression nonConstantSummand = SimplifyUtilities.produceDifference(nonConstantSummandsLeft, nonConstantSummandsRight);
-                Expression currentQuotient;
-                for (int i = 0; i < fieldGenerators.getBound(); i++) {
-                    if (fieldGenerators.get(i) == null || !fieldGenerators.get(i).isFunction(TypeFunction.exp)) {
-                        continue;
-                    }
-                    try {
-                        currentQuotient = nonConstantSummand.div(((Function) fieldGenerators.get(i)).getLeft()).simplify();
-                        if (currentQuotient.isRationalConstant()) {
-                            // Wenn das Verhältnis ganz ist, braucht man nichts aufzunehmen.
-                            /* Wenn currentQuotient = p/q ist und fieldGenerators.get(i) = exp(f(x)),
-                             so wird fieldGenerators.get(i) zu exp(f(x)/q).
-                             */
-                            BigInteger a = BigInteger.ONE;
-                            BigInteger b = BigInteger.ONE;
-                            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(nonConstantSummand);
-                            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
-
-                            if (factorsNumerator.get(0).isIntegerConstant()) {
-                                a = ((Constant) factorsNumerator.get(0)).getValue().toBigInteger().abs();
-                                factorsNumerator.remove(0);
-                            }
-                            if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()) {
-                                b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
-                                factorsDenominator.remove(0);
-                            }
-
-                            Expression quotient = new Constant(a).div(b).div(currentQuotient).simplify();
-
-                            BigInteger c, d;
-                            if (quotient.isIntegerConstant()) {
-                                c = ((Constant) quotient).getValue().toBigInteger();
-                                d = BigInteger.ONE;
-                            } else {
-                                c = ((Constant) ((BinaryOperation) quotient).getLeft()).getValue().toBigInteger();
-                                d = ((Constant) ((BinaryOperation) quotient).getRight()).getValue().toBigInteger();
-                            }
-
-                            a = a.gcd(c);
-                            b = ArithmeticMethods.lcm(b, d);
-                            factorsNumerator.add(new Constant(a));
-                            factorsDenominator.add(new Constant(b));
-                            Expression expArgument = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator);
-
-                            fieldGenerators.put(i, expArgument.exp().simplify());
-                            return true;
-                        }
-                    } catch (EvaluationException e) {
-                    }
-                }
-                fieldGenerators.add(f);
-                return true;
-            }
-
-            if (f.isFunction(TypeFunction.ln)) {
-                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(((Function) f).getLeft());
-                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(((Function) f).getLeft());
-                ExpressionCollection summandsLeftForCompare, summandsRightForCompare;
-                Expression currentQuotient;
-                boolean unclearCaseFound = false;
-                for (Expression fieldGenerator : fieldGenerators) {
-                    if (!fieldGenerator.isFunction(TypeFunction.ln)) {
-                        continue;
-                    }
-                    try {
-                        currentQuotient = ((Function) f).getLeft().div(((Function) fieldGenerator).getLeft()).simplify();
-                        if (currentQuotient.isIntegerConstantOrRationalConstant()) {
-                            return false;
-                        }
-                    } catch (EvaluationException e) {
-                    }
-                    summandsLeftForCompare = SimplifyUtilities.getSummandsLeftInExpression(((Function) fieldGenerator).getLeft());
-                    summandsRightForCompare = SimplifyUtilities.getSummandsRightInExpression(((Function) fieldGenerator).getLeft());
-                    if ((summandsLeft.getBound() + summandsRight.getBound()) * (summandsLeftForCompare.getBound() + summandsRightForCompare.getBound()) > 1) {
-                        unclearCaseFound = true;
-                    }
-                }
-                if (unclearCaseFound) {
-                    return false;
-                }
-                fieldGenerators.add(f);
-                return true;
-            }
-
-            return false;
-
-        }
-
-        return false;
-
-    }
-
-    /*
-     Ab hier folgt der eigentliche Risch-Algorithmus!
-     */
+    ////////////////////////////////////////////////// Der Risch-Algorithmus ///////////////////////////////////////////
     /**
      * Gibt zurück, ob f durch Adjunktion eines einzigen transzendenten Elements
      * aus dem Körper der rationalen Funktionen (über den reellen Zahlen)
@@ -485,36 +361,37 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     }
 
-    ////////////////////////////////////////////////// Der Risch-Algorithmus ///////////////////////////////////////////
     /**
      * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
-     * einer transzendenten Erweiterung durch ein einziges Element.
+     * einer Erweiterung durch transzendente Elemente.
      *
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    public static Expression integrateByRischAlgorithmForDegOneExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
+    public static Expression integrateByRischAlgorithmForGeneralExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
-        // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
-        if (!isExtensionOfDegreeOne(f, var)) {
+        // Nur echte transzende Erweiterungen betrachten.
+        if (transcendentalExtensions.isEmpty() || !isFunctionRationalOverDifferentialField(f, var, transcendentalExtensions)) {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        Expression transcententalElement = transcendentalExtensions.get(0);
+        // Letztes transzendes Element wählen und damit den Risch-Algorithmus starten.
+        Expression transcententalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
         String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
         Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
-        // Sei x = var und t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in x und sein.
-        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, var, Variable.create(var), Variable.create(transcendentalVar))) {
+        // Sei t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in t sein.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, transcendentalVar)) {
             throw new NotAlgebraicallyIntegrableException();
         }
 
         if (!(fSubstituted instanceof BinaryOperation)) {
+            // Dann sind andere Integrationsmethoden dafür zuständig.
             throw new NotAlgebraicallyIntegrableException();
         }
 
@@ -549,32 +426,88 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
 
             if (ordOfTranscendentalElementInDenominator > 0) {
+                // TO DO. Speziellen Teil abspalten.
+                throw new NotAlgebraicallyIntegrableException();
+            }
 
-                ExpressionCollection coefficientsNewDenominator = new ExpressionCollection();
-                for (int i = 0; i < coefficientsDenominator.getBound() - ordOfTranscendentalElementInDenominator; i++) {
-                    coefficientsNewDenominator.add(coefficientsDenominator.get(i + ordOfTranscendentalElementInDenominator));
+        }
+
+        /* 
+         Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
+         Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
+         */
+        Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
+        Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
+        return integralOfPolynomialPart.add(integralOfFractionalPart);
+
+    }
+    
+    /**
+     * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
+     * einer transzendenten Erweiterung durch ein einziges Element.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     */
+    public static Expression integrateByRischAlgorithmForDegOneExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        Expression f = (Expression) expr.getParams()[0];
+        String var = (String) expr.getParams()[1];
+
+        ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
+
+        // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
+        if (!isExtensionOfDegreeOne(f, var)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        Expression transcententalElement = transcendentalExtensions.get(0);
+        String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
+        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
+
+        // Sei x = var und t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in x und t sein.
+        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, var, Variable.create(var), Variable.create(transcendentalVar))) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        if (!(fSubstituted instanceof BinaryOperation)) {
+            // Dann sind andere Integrationsmethoden dafür zuständig.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        // Zunächst alles auf einen Bruch bringen.
+        fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) fSubstituted);
+
+        // Separat behandeln, falls fSubstituted kein Quotient ist.
+        if (!fSubstituted.isQuotient()) {
+            // TO DO.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        ExpressionCollection coefficientsNumerator, coefficientsDenominator;
+        try {
+            coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
+            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
+
+        // Im Fall einer Exponentialerweiterung: t im Nenner faktorisieren und in den polynomiallen Teil übertragen.
+        if (transcententalElement.isFunction(TypeFunction.exp)) {
+
+            int ordOfTranscendentalElementInDenominator = 0;
+            for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
+                if (!coefficientsDenominator.get(i).equals(ZERO)) {
+                    break;
+                } else {
+                    ordOfTranscendentalElementInDenominator++;
                 }
+            }
 
-                ExpressionCollection coefficientsPolynomialPart = new ExpressionCollection();
-                ExpressionCollection coefficientsLaurentPart = new ExpressionCollection();
-
-                // Koeffizienten des Polynomialteils berechnen.
-                for (int i = ordOfTranscendentalElementInDenominator; i < quotient[0].getBound(); i++) {
-                    coefficientsPolynomialPart.add(quotient[0].get(i));
-                }
-                // Koeffizienten des Laurentteils berechnen.
-                coefficientsLaurentPart.add(ZERO);
-                for (int i = ordOfTranscendentalElementInDenominator - 1; i >= 0; i--) {
-                    if (i >= quotient[0].getBound()) {
-                        continue;
-                    }
-                    coefficientsLaurentPart.add(quotient[0].get(i));
-                }
-
-                Expression integralOfPolynomialPart = integrateByRischAlgorithmForDegOneExtensionPolynomialPart(coefficientsPolynomialPart, coefficientsLaurentPart, transcententalElement, var, transcendentalVar);
-                Expression integralOfFractionalPart = integrateByRischAlgorithmForDegOneExtensionFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
-                return integralOfPolynomialPart.add(integralOfFractionalPart);
-
+            if (ordOfTranscendentalElementInDenominator > 0) {
+                // TO DO. Speziellen Teil abspalten.
+                throw new NotAlgebraicallyIntegrableException();
             }
 
         }

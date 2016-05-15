@@ -119,7 +119,7 @@ public class RischAlgorithmTests {
             fail(e.getMessage());
         }
     }
-
+    
     @Test
     public void getFieldGeneratorsTest1() {
         /* 

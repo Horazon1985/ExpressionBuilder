@@ -134,6 +134,12 @@ public abstract class PolynomiaAlgebraMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
+        // Vorarbeit: wenn die Koeffizienten alle Vielfache desselben Ausdrucks sind, so kann dieser Ausdruck gekürzt werden.
+        Expression commonFactor;
+        for (int i = 0; i < coefficients.getBound(); i++){
+            // TO DO.
+        }
+        
         int degree = coefficients.getBound() - 1;
 
         /*
