@@ -33,7 +33,7 @@ public class BinaryOperation extends Expression {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
@@ -707,7 +707,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
 
         // Allgemeine Vereinfachungen, falls der zugrundeliegende Ausdruck konstant ist.
         Expression exprLeftAndRightSimplified;
@@ -717,7 +717,7 @@ public class BinaryOperation extends Expression {
 
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyTrivial());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyBasic());
             }
 
             ExpressionCollection summandsRight = new ExpressionCollection();
@@ -737,7 +737,7 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isDifference()) {
 
-            exprLeftAndRightSimplified = this.left.simplifyTrivial().sub(this.right.simplifyTrivial());
+            exprLeftAndRightSimplified = this.left.simplifyBasic().sub(this.right.simplifyBasic());
             if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
                 return exprLeftAndRightSimplified;
             }
@@ -769,7 +769,7 @@ public class BinaryOperation extends Expression {
 
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyTrivial());
+                factors.put(i, factors.get(i).simplifyBasic());
             }
 
             Expression exprSimplified = SimplifyUtilities.produceProduct(factors);
@@ -798,7 +798,7 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isQuotient()) {
 
-            exprLeftAndRightSimplified = this.left.simplifyTrivial().div(this.right.simplifyTrivial());
+            exprLeftAndRightSimplified = this.left.simplifyBasic().div(this.right.simplifyBasic());
             if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
                 return exprLeftAndRightSimplified;
             }
@@ -865,7 +865,7 @@ public class BinaryOperation extends Expression {
             return exprSimplified;
         }
 
-        exprLeftAndRightSimplified = this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
+        exprLeftAndRightSimplified = this.left.simplifyBasic().pow(this.right.simplifyBasic());
         if (!(exprLeftAndRightSimplified instanceof BinaryOperation)) {
             return exprLeftAndRightSimplified;
         }

@@ -174,11 +174,11 @@ public abstract class SimplifyExpLog {
     /**
      * Hier wird geprüft, ob sich gewisse Exponentialfunktionen im Nenner
      * befinden. Falls ja, so werden diese in den Zähler gebracht (und an den
-     * letzten Faktor dranmultipliziert oder, falls der letzte Faktor leer ist,
-     * an diese Stelle hinzugefügt), falls der Exponent NICHT konstant ist.
-     * WICHTIG: Falls der Exponent konstant ist, darf dies NICHT gemacht werden,
-     * ansonsten gibt es Endlosschleifen, da in simplifyTrivial() beispielsweise
-     * a^(-3) wieder in den Nenner gebracht wird!
+ letzten Faktor dranmultipliziert oder, falls der letzte Faktor leer ist,
+ an diese Stelle hinzugefügt), falls der Exponent NICHT konstant ist.
+ WICHTIG: Falls der Exponent konstant ist, darf dies NICHT gemacht werden,
+ ansonsten gibt es Endlosschleifen, da in simplifyBasic() beispielsweise
+ a^(-3) wieder in den Nenner gebracht wird!
      *
      * @throws EvaluationException
      */

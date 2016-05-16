@@ -583,13 +583,13 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial() throws EvaluationException {
+    public MatrixExpression simplifyBasic() throws EvaluationException {
 
         // Zunächst alle Parameter, welche gültige Ausdrücke darstellen, vereinfachen.
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyTrivial();
+                resultParams[i] = ((Expression) this.params[i]).simplifyBasic();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -642,7 +642,7 @@ public class MatrixOperator extends MatrixExpression {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyTrivial();
+                resultParams[i] = ((Expression) this.params[i]).simplifyBasic();
             } else {
                 resultParams[i] = this.params[i];
             }

@@ -290,7 +290,7 @@ public class SelfDefinedFunction extends Expression {
             return Expression.ZERO;
         }
         // Die Funktion muss zunächst vereinfacht werden, denn in den Parametern können weitere Ausdrücke stehen.
-        return this.simplifyTrivial().diff(var);
+        return this.simplifyBasic().diff(var);
 
     }
 
@@ -414,11 +414,11 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
         for (int i = 0; i < this.left.length; i++) {
-            this.left[i] = this.left[i].simplifyTrivial();
+            this.left[i] = this.left[i].simplifyBasic();
         }
-        this.abstractExpression = this.abstractExpression.simplifyTrivial();
+        this.abstractExpression = this.abstractExpression.simplifyBasic();
         return this.replaceAllVariables(left);
     }
 

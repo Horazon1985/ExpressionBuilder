@@ -35,7 +35,7 @@ public abstract class GeneralIntegralMethods {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
@@ -51,7 +51,7 @@ public abstract class GeneralIntegralMethods {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
@@ -68,7 +68,7 @@ public abstract class GeneralIntegralMethods {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
@@ -493,14 +493,14 @@ public abstract class GeneralIntegralMethods {
 
         // Ab hier folgt die Integration spezieller Typen.
         /*
-         AHCTUNG: beim return muss vorher noch simplifyTrivial() angewendet
+         AHCTUNG: beim return muss vorher noch simplifyBasic() angewendet
          werden. GRUND: dieses ruft simplifyTrivialInt() auf, falls in result
          noch irgendwo Integrale auftauchen (und diese weiter vereinfacht
          werden können).
          */
         // Integration von Monomen
         try {
-            return integrateMonomial(expr).simplifyTrivial();
+            return integrateMonomial(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
@@ -513,32 +513,32 @@ public abstract class GeneralIntegralMethods {
 
         // Integration von Potenzen von Elementarfunktionen
         try {
-            return integratePowerOfElementaryFunction(expr).simplifyTrivial();
+            return integratePowerOfElementaryFunction(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Integration logarithmischer Ableitungen.
         try {
-            return integrateLogarithmicDerivative(expr).simplifyTrivial();
+            return integrateLogarithmicDerivative(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Integration elementarer Partialbrüche
         // Typ: (A*x + B) / (a*x^2 + b*x + c).
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndQuadraticPolynomial(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Typ: (A*x + B) / (a*x^2 + b*x + c)^k, k > 1.
         try {
-            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateQuotientOfLinearPolynomialAndPowerOfQuadraticPolynomial(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Partialbruchzerlegung
         try {
-            return SpecialIntegrationMethods.integrateRationalFunction(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateRationalFunction(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
@@ -586,19 +586,19 @@ public abstract class GeneralIntegralMethods {
 
         // Integration von R(exp(a*x)), R(t) = rationale Funktion in t.
         try {
-            return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateRationalFunctionInExp(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Integragtion von R(cos(a*x), sin(a*x)), R(t) = rationale Funktion in t.
         try {
-            return SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateRationalFunctionInTrigonometricFunctions(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
         // Integragtion von P(x)*f(x)^n, P = Polynom, f = arcsin, arccos, arsinh, arcosh, n positive ganze Zahl.
         try {
-            return SpecialIntegrationMethods.integrateProductOfPolynomialAndPowerOfArcusOrAreaFunction(expr).simplifyTrivial();
+            return SpecialIntegrationMethods.integrateProductOfPolynomialAndPowerOfArcusOrAreaFunction(expr).simplifyBasic();
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
@@ -612,7 +612,7 @@ public abstract class GeneralIntegralMethods {
                  Exponenten STUR ausmultipliziert werden (ohne Beträge etc.),
                  falls diese in Substitutionen involviert sind.
                  */
-                return result.simplifyMultiplyExponents().simplifyTrivial();
+                return result.simplifyMultiplyExponents().simplifyBasic();
             }
         } catch (NotAlgebraicallyIntegrableException e) {
         }
@@ -686,7 +686,7 @@ public abstract class GeneralIntegralMethods {
             }
             ExpressionCollection resultSummands = new ExpressionCollection();
             for (int i = 0; i < summands.getBound(); i++) {
-                resultSummands.add(new Operator(TypeOperator.integral, paramsSummands[i], expr.getPrecise()).simplifyTrivial());
+                resultSummands.add(new Operator(TypeOperator.integral, paramsSummands[i], expr.getPrecise()).simplifyBasic());
             }
             return SimplifyUtilities.produceSum(resultSummands);
 
@@ -699,8 +699,8 @@ public abstract class GeneralIntegralMethods {
             Object[] paramsRight = new Object[2];
             paramsRight[0] = ((BinaryOperation) f).getRight();
             paramsRight[1] = var;
-            return new Operator(TypeOperator.integral, paramsLeft, expr.getPrecise()).simplifyTrivial().sub(
-                    new Operator(TypeOperator.integral, paramsRight, expr.getPrecise()).simplifyTrivial());
+            return new Operator(TypeOperator.integral, paramsLeft, expr.getPrecise()).simplifyBasic().sub(
+                    new Operator(TypeOperator.integral, paramsRight, expr.getPrecise()).simplifyBasic());
 
         }
 
@@ -749,7 +749,7 @@ public abstract class GeneralIntegralMethods {
             paramsResultIntegrand[1] = var;
 
             if (!resultFactorsInNumeratorOutsideOfIntegrand.isEmpty() || !resultFactorsInDenominatorOutsideOfIntegrand.isEmpty()) {
-                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand).simplifyTrivial()).div(
+                return SimplifyUtilities.produceProduct(resultFactorsInNumeratorOutsideOfIntegrand).mult(new Operator(TypeOperator.integral, paramsResultIntegrand).simplifyBasic()).div(
                         SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfIntegrand));
             }
 
@@ -1468,7 +1468,7 @@ public abstract class GeneralIntegralMethods {
                  potentielle Substitution betrachtet werden (FALLS es bereits
                  ein Argument einer umschließenden Funktion ist), außer es
                  handelt sich um var^1 oder var^0 (dies sollte aber wegen
-                 vorheriger Anwendung von simplifyTrivial() ausgeschlossen
+                 vorheriger Anwendung von simplifyBasic() ausgeschlossen
                  sein; sicherheitshalber bleibt es drin, damit es keine
                  Endlosschleifen gibt).
                  */

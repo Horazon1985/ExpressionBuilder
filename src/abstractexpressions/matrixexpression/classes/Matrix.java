@@ -794,7 +794,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial() {
+    public MatrixExpression simplifyBasic() {
         return this;
     }
 

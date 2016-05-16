@@ -47,7 +47,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("2+3*5/2", null);
             Expression g = new Constant(19).div(2);
-            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products, TypeSimplify.simplify_trivial);
+            Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products, TypeSimplify.simplify_basic);
             Assert.assertTrue(fSimplified.equals(g));
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(g));
@@ -63,7 +63,7 @@ public class GeneralSimplifyExpressionTests {
             Expression f = Expression.build("2-7/2+3*5/7", null);
             Expression g = new Constant(9).div(14);
             Expression fSimplified = f.simplify(TypeSimplify.order_sums_and_products,
-                    TypeSimplify.order_difference_and_division, TypeSimplify.simplify_trivial);
+                    TypeSimplify.order_difference_and_division, TypeSimplify.simplify_basic);
             Assert.assertTrue(fSimplified.equals(g));
             fSimplified = f.simplify();
             Assert.assertTrue(fSimplified.equals(g));

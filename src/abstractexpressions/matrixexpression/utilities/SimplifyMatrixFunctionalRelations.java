@@ -402,7 +402,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
 
         if (matExpr.isPower() && ((MatrixPower) matExpr).getLeft().isPower()) {
             // Dann einfach nur Exponenten ausmultiplizieren, falls möglich.
-            return ((MatrixPower) ((MatrixPower) matExpr).getLeft()).getLeft().pow(((MatrixPower) ((MatrixPower) matExpr).getLeft()).getRight().mult(((MatrixPower) matExpr).getRight()).simplifyTrivial());
+            return ((MatrixPower) ((MatrixPower) matExpr).getLeft()).getLeft().pow(((MatrixPower) ((MatrixPower) matExpr).getLeft()).getRight().mult(((MatrixPower) matExpr).getRight()).simplifyBasic());
         }
         return matExpr;
 

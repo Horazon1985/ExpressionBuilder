@@ -441,7 +441,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
         if (this.name.equals("pi") && !this.precise) {
             return new Constant(Math.PI);
         }

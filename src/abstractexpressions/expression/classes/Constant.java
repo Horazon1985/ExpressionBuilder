@@ -257,7 +257,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
         if (this.precise) {
             return SimplifyBinaryOperationMethods.constantToQuotient(this.value, BigDecimal.ONE);
         }

@@ -785,8 +785,8 @@ public class MatrixFunction extends MatrixExpression {
         Expression currentEntry;
 
         for (int i = 0; i < matrix.getRowNumber(); i++) {
-            // Zur Vereinfachung genügt simplifyTrivial(), da die Einträge nur rationale Zahlen sind.
-            currentEntry = matrix.getEntry(i, 0).simplifyTrivial();
+            // Zur Vereinfachung genügt simplifyBasic(), da die Einträge nur rationale Zahlen sind.
+            currentEntry = matrix.getEntry(i, 0).simplifyBasic();
             if (currentEntry.equals(Expression.ZERO)) {
                 indexOfFirstRowWithNonZeroFirstEntry++;
             } else {
@@ -824,9 +824,9 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial() throws EvaluationException {
+    public MatrixExpression simplifyBasic() throws EvaluationException {
 
-        MatrixExpression argumentSimplified = this.left.simplifyTrivial();
+        MatrixExpression argumentSimplified = this.left.simplifyBasic();
         MatrixFunction function = new MatrixFunction(argumentSimplified, this.type);
 
         MatrixExpression functionSimplified;

@@ -168,7 +168,7 @@ public class Operator extends Expression {
          Operqator soweit wie möglich zu vereinfachen. Falls das Ergebnis noch
          Operatoren enthält, so wird ein Fehler geworfen.
          */
-        Expression operatorSimplified = this.simplifyTrivial();
+        Expression operatorSimplified = this.simplifyBasic();
         if (operatorSimplified.containsOperator()) {
             // Falls immer noch Operatoren auftreten -> keine explizite Auswertung möglich.
             throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_OPERATOR_CANNOT_BE_EVALUATED"));
@@ -1104,13 +1104,13 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
 
         // Zunächst alle Parameter, welche gültige Ausdrücke darstellen, vereinfachen.
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (this.params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyTrivial();
+                resultParams[i] = ((Expression) this.params[i]).simplifyBasic();
             } else {
                 resultParams[i] = this.params[i];
             }
@@ -1560,7 +1560,7 @@ public class Operator extends Expression {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
-            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+            arguments[i] = ((Expression) this.params[i]).simplifyBasic();
         }
 
         Expression result = ZERO;
@@ -1625,7 +1625,7 @@ public class Operator extends Expression {
 
         // Sonstiger Fall.
         Object[] resultParams = new Object[4];
-        resultParams[0] = factor.simplifyTrivial();
+        resultParams[0] = factor.simplifyBasic();
         resultParams[1] = this.params[1];
         resultParams[2] = this.params[2];
         resultParams[3] = this.params[3];
@@ -1643,7 +1643,7 @@ public class Operator extends Expression {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
-            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+            arguments[i] = ((Expression) this.params[i]).simplifyBasic();
         }
 
         Expression mu = new Operator(TypeOperator.mu, arguments);
@@ -1747,7 +1747,7 @@ public class Operator extends Expression {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
-            arguments[i] = ((Expression) this.params[i]).simplifyTrivial();
+            arguments[i] = ((Expression) this.params[i]).simplifyBasic();
         }
 
         Expression mu = new Operator(TypeOperator.mu, arguments);

@@ -127,7 +127,7 @@ public class LogicalVariable extends LogicalExpression {
     }
 
     @Override
-    public LogicalExpression simplifyTrivial() {
+    public LogicalExpression simplifyBasic() {
         return this;
     }
 

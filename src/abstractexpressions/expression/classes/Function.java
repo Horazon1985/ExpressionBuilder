@@ -26,7 +26,7 @@ public class Function extends Expression {
          simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
          */
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
@@ -673,10 +673,10 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyTrivial() throws EvaluationException {
+    public Expression simplifyBasic() throws EvaluationException {
 
         //Zunächst linken Teil (Argument in der Funktion) vereinfachen.
-        Expression argumentSimplified = this.getLeft().simplifyTrivial();
+        Expression argumentSimplified = this.getLeft().simplifyBasic();
         Function function = new Function(argumentSimplified, this.type);
 
         Expression functionSimplified;

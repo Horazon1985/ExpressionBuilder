@@ -444,14 +444,14 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial() throws EvaluationException {
+    public MatrixExpression simplifyBasic() throws EvaluationException {
 
         if (this.isSum()) {
 
             MatrixExpressionCollection summands = SimplifyMatrixUtilities.getSummands(this);
             // In jedem Summanden einzeln vereinfachen.
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyTrivial());
+                summands.put(i, summands.get(i).simplifyBasic());
             }
 
             // Nullmatrizen in Summen beseitigen.
@@ -484,7 +484,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection factors = SimplifyMatrixUtilities.getFactors(this);
             // In jedem Faktor einzeln vereinfachen.
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyTrivial());
+                factors.put(i, factors.get(i).simplifyBasic());
             }
 
             MatrixExpression matExpr = SimplifyMatrixUtilities.produceProduct(factors);

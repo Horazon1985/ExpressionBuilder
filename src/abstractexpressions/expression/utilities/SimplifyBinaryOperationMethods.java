@@ -24,7 +24,7 @@ import lang.translator.Translator;
 
 /**
  * Viele kleine Einzelmethoden zur Vereinfachung von Ausdrücken der Klasse
- * BinaryOperation (für simplifyTrivial).
+ BinaryOperation (für simplifyBasic).
  */
 public abstract class SimplifyBinaryOperationMethods {
 
@@ -41,7 +41,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
             if (summandsLeft.get(i) != null) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyTrivial());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyBasic());
             }
             if (!(summandsLeft.get(i) instanceof Constant)) {
                 allSummandsSimplifiedAreConstant = false;
@@ -50,7 +50,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
             if (summandsRight.get(i) != null) {
-                summandsRight.put(i, summandsRight.get(i).simplifyTrivial());
+                summandsRight.put(i, summandsRight.get(i).simplifyBasic());
             }
             if (!(summandsRight.get(i) instanceof Constant)) {
                 allSummandsSimplifiedAreConstant = false;
@@ -86,8 +86,8 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression computeDifferenceIfApprox(Expression expr) throws EvaluationException {
         if (expr.isDifference() && expr.isConstant() && expr.containsApproximates()) {
-            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
-            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyBasic();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyBasic();
             if (left instanceof Constant && right instanceof Constant) {
                 return new Constant(((Constant) left).getApproxValue() - ((Constant) right).getApproxValue());
             }
@@ -108,7 +108,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
         for (int i = 0; i < factors.getBound(); i++) {
             if (factors.get(i) != null) {
-                factors.put(i, factors.get(i).simplifyTrivial());
+                factors.put(i, factors.get(i).simplifyBasic());
             }
             if (!(factors.get(i) instanceof Constant)) {
                 allFactorsSimplifiedAreConstant = false;
@@ -138,8 +138,8 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression computeQuotientIfApprox(Expression expr) throws EvaluationException {
         if (expr.isQuotient() && expr.isConstant() && expr.containsApproximates()) {
-            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
-            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyBasic();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyBasic();
             if (left instanceof Constant && right instanceof Constant) {
                 return new Constant(((Constant) left).getApproxValue() / ((Constant) right).getApproxValue());
             }
@@ -155,8 +155,8 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression computePowerIfApprox(Expression expr) throws EvaluationException {
         if (expr.isPower() && expr.isConstant() && expr.containsApproximates()) {
-            Expression left = ((BinaryOperation) expr).getLeft().simplifyTrivial();
-            Expression right = ((BinaryOperation) expr).getRight().simplifyTrivial();
+            Expression left = ((BinaryOperation) expr).getLeft().simplifyBasic();
+            Expression right = ((BinaryOperation) expr).getRight().simplifyBasic();
             if (left instanceof Constant && right instanceof Constant) {
                 return new Constant(Math.pow(((Constant) left).getApproxValue(), ((Constant) right).getApproxValue()));
             }
@@ -276,7 +276,7 @@ public abstract class SimplifyBinaryOperationMethods {
          es um ungerade Wurzeln geht: negatives Vorzeichen rausschaffen!
          */
         if (expr.isConstant() && expr.containsApproximates()) {
-            double leftValue = expr.getLeft().simplifyTrivial().evaluate();
+            double leftValue = expr.getLeft().simplifyBasic().evaluate();
             if (leftValue < 0 && expr.getType().equals(TypeBinary.POW) && expr.getRight().isConstant()) {
                 Expression exponent = expr.getRight().turnToPrecise();
                 if (exponent.isRationalConstant() && expr.getRight().isRationalConstant()
@@ -626,7 +626,7 @@ public abstract class SimplifyBinaryOperationMethods {
             }
             exponentNumerator = exponentNumerator.subtract(exponentDenominator.multiply(integerPartOfExponent));
             if (integerPartOfExponent.compareTo(BigInteger.ZERO) != 0 && integerPartOfExponent.abs().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
-                return expr.getLeft().pow(integerPartOfExponent).simplifyTrivial().mult(expr.getLeft().pow(exponentNumerator, exponentDenominator));
+                return expr.getLeft().pow(integerPartOfExponent).simplifyBasic().mult(expr.getLeft().pow(exponentNumerator, exponentDenominator));
             }
 
         }
@@ -649,10 +649,10 @@ public abstract class SimplifyBinaryOperationMethods {
         if (expr.isPower() && expr.getRight().isQuotient()) {
 
             /*
-             Wichtig: wird diese Methode von simplifyTrivial() aufgerufen, so
+             Wichtig: wird diese Methode von simplifyBasic() aufgerufen, so
              werden keine Wurzeln gerader Ordnung aus negativen Zahlen
              gezogen, denn diese werden vorher in der Hauptmethode
-             simplifyTrivial() aussortiert (EvaluationException wird
+             simplifyBasic() aussortiert (EvaluationException wird
              geworfen). Bemerkung: Es werden nur Wurzeln bis zur Ordnung <=
              einer bestimmten Schranke exakt gezogen (analog zum Potenzieren).
              */
@@ -662,7 +662,7 @@ public abstract class SimplifyBinaryOperationMethods {
             if (factorsInExponentDenominator.get(0).isIntegerConstant()) {
                 /*
                  factorsInExponentDenominator.get(0) sollte positiv sein, da 
-                 negative Nenner in der Hauptprozedur simplifyTrivial() 
+                 negative Nenner in der Hauptprozedur simplifyBasic() 
                  vorher positiv gemacht wurden. Die folgende Prüfung dient daher
                  nur zur Sicherheit.
                  */
@@ -1144,7 +1144,7 @@ public abstract class SimplifyBinaryOperationMethods {
         if (expr.isPower() && expr.getLeft().isPower()) {
             // Zunächst: Ist die Basis immer nichtnegativ, so werden die Exponenten einfach ausmultipliziert.
             if (((BinaryOperation) expr.getLeft()).getLeft().isAlwaysNonNegative()) {
-                return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
+                return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyBasic());
             }
             if (((BinaryOperation) expr.getLeft()).getRight().isEvenIntegerConstant() && expr.getRight().isRationalConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
@@ -1178,7 +1178,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
             }
             // Ansonsten einfach nur Exponenten ausmultiplizieren.
-            return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyTrivial());
+            return ((BinaryOperation) expr.getLeft()).getLeft().pow(((BinaryOperation) expr.getLeft()).getRight().mult(expr.getRight()).simplifyBasic());
         }
 
         return expr;

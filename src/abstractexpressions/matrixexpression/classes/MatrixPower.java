@@ -347,8 +347,8 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyTrivial() throws EvaluationException {
-        return this.left.simplifyTrivial().pow(this.right.simplifyTrivial());
+    public MatrixExpression simplifyBasic() throws EvaluationException {
+        return this.left.simplifyBasic().pow(this.right.simplifyBasic());
     }
 
     @Override

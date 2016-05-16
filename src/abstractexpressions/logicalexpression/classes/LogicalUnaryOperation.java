@@ -69,10 +69,10 @@ public class LogicalUnaryOperation extends LogicalExpression {
     }
 
     @Override
-    public LogicalExpression simplifyTrivial() throws EvaluationException {
+    public LogicalExpression simplifyBasic() throws EvaluationException {
 
         //Linken und rechten Teil bei logischen Binäroperationen zunächst separat vereinfachen
-        LogicalUnaryOperation logExpr = new LogicalUnaryOperation(this.getLeft().simplifyTrivial(), this.getType());
+        LogicalUnaryOperation logExpr = new LogicalUnaryOperation(this.getLeft().simplifyBasic(), this.getType());
 
         //Konstante Ausdrücke direkt auswerten.
         if (logExpr.isConstant()) {

@@ -1376,7 +1376,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression simplifyTrivial() throws EvaluationException;
+    public abstract Expression simplifyBasic() throws EvaluationException;
 
     /**
      * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
@@ -1614,7 +1614,7 @@ public abstract class Expression implements AbstractExpression {
                 exprSimplified = exprSimplified.orderSumsAndProducts();
 //                System.out.println(exprSimplified.writeExpression());
                 Canceller.interruptComputationIfNeeded();
-                exprSimplified = exprSimplified.simplifyTrivial();
+                exprSimplified = exprSimplified.simplifyBasic();
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
                 Canceller.interruptComputationIfNeeded();
@@ -1669,8 +1669,8 @@ public abstract class Expression implements AbstractExpression {
                     } else if (simplifyType.equals(TypeSimplify.order_sums_and_products)) {
                         exprSimplified = exprSimplified.orderSumsAndProducts();
                         Canceller.interruptComputationIfNeeded();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_trivial)) {
-                        exprSimplified = exprSimplified.simplifyTrivial();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_basic)) {
+                        exprSimplified = exprSimplified.simplifyBasic();
                         Canceller.interruptComputationIfNeeded();
                     } else if (simplifyType.equals(TypeSimplify.simplify_by_inserting_defined_vars)) {
                         exprSimplified = exprSimplified.simplifyByInsertingDefinedVars();
@@ -1763,8 +1763,8 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.orderSumsAndProducts();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                    exprSimplified = exprSimplified.simplifyTrivial();
+                if (simplifyTypes.contains(TypeSimplify.simplify_basic)) {
+                    exprSimplified = exprSimplified.simplifyBasic();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {
@@ -1886,8 +1886,8 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.orderSumsAndProducts();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                    exprSimplified = exprSimplified.simplifyTrivial();
+                if (simplifyTypes.contains(TypeSimplify.simplify_basic)) {
+                    exprSimplified = exprSimplified.simplifyBasic();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {

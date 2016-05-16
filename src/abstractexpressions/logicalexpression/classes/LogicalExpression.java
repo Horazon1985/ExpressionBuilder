@@ -1,6 +1,5 @@
 package abstractexpressions.logicalexpression.classes;
 
-import abstractexpressions.expression.classes.Variable;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
@@ -448,7 +447,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract LogicalExpression simplifyTrivial() throws EvaluationException;
+    public abstract LogicalExpression simplifyBasic() throws EvaluationException;
 
     /**
      * Faktorisiert in einem logischen Ausdruck bezüglich OR, falls möglich.
@@ -633,7 +632,7 @@ public abstract class LogicalExpression implements AbstractExpression {
             do {
                 logExpr = logExprSimplified.copy();
 //                System.out.println(logExprSimplified.writeLogicalExpression());
-                logExprSimplified = logExprSimplified.simplifyTrivial();
+                logExprSimplified = logExprSimplified.simplifyBasic();
                 Canceller.interruptComputationIfNeeded();
                 logExprSimplified = logExprSimplified.factorizeInProducts();
                 Canceller.interruptComputationIfNeeded();

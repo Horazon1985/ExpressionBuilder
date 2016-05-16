@@ -734,7 +734,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     /**
      * Triviale Vereinfachungen für Matrizenausdrücke.
      */
-    public abstract MatrixExpression simplifyTrivial() throws EvaluationException;
+    public abstract MatrixExpression simplifyBasic() throws EvaluationException;
 
     /**
      * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
@@ -809,7 +809,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                 Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.orderSumsAndProducts();
                 Canceller.interruptComputationIfNeeded();
-                matExprSimplified = matExprSimplified.simplifyTrivial();
+                matExprSimplified = matExprSimplified.simplifyBasic();
                 Canceller.interruptComputationIfNeeded();
                 matExprSimplified = matExprSimplified.simplifyByInsertingDefinedVars();
                 Canceller.interruptComputationIfNeeded();
@@ -854,8 +854,8 @@ public abstract class MatrixExpression implements AbstractExpression {
                     matExprSimplified = matExprSimplified.orderSumsAndProducts();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_trivial)) {
-                    matExprSimplified = matExprSimplified.simplifyTrivial();
+                if (simplifyTypes.contains(TypeSimplify.simplify_basic)) {
+                    matExprSimplified = matExprSimplified.simplifyBasic();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_by_inserting_defined_vars)) {

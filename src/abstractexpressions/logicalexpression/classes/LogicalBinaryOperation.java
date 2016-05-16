@@ -167,7 +167,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
     }
 
     @Override
-    public LogicalExpression simplifyTrivial() throws EvaluationException {
+    public LogicalExpression simplifyBasic() throws EvaluationException {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
@@ -186,7 +186,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
             LogicalExpressionCollection summands = LogicalSimplifyUtilities.getLogicalSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyTrivial());
+                summands.put(i, summands.get(i).simplifyBasic());
             }
 
             LogicalTrivialSimplifyMethods.findTrueInSum(summands);
@@ -206,7 +206,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
             LogicalExpressionCollection factors = LogicalSimplifyUtilities.getLogicalFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyTrivial());
+                factors.put(i, factors.get(i).simplifyBasic());
             }
 
             LogicalTrivialSimplifyMethods.findFalseInProduct(factors);
@@ -226,7 +226,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
             LogicalExpressionCollection equivTerms = LogicalSimplifyUtilities.getLogicalEquivalentTerms(this);
             for (int i = 0; i < equivTerms.getBound(); i++) {
-                equivTerms.put(i, equivTerms.get(i).simplifyTrivial());
+                equivTerms.put(i, equivTerms.get(i).simplifyBasic());
             }
 
             LogicalTrivialSimplifyMethods.cancelDoubleTermsInEquivalenceChain(equivTerms);
@@ -239,7 +239,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
         }
 
         //Linken und rechten Teil bei logischen Binäroperationen zunächst separat vereinfachen
-        LogicalBinaryOperation logExpr = new LogicalBinaryOperation(this.getLeft().simplifyTrivial(), this.getRight().simplifyTrivial(), this.getType());
+        LogicalBinaryOperation logExpr = new LogicalBinaryOperation(this.getLeft().simplifyBasic(), this.getRight().simplifyBasic(), this.getType());
 
         // Triviale Umformungen mit 0 und 1.
         logExprSimplified = SimplifyLogicalBinaryOperationMethods.trivialOperationsWithFalseTrue(logExpr);

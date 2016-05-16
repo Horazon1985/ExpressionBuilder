@@ -24,7 +24,7 @@ public abstract class SubstitutionUtilities {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_trivial);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
