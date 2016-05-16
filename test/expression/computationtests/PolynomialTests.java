@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
+import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import static abstractexpressions.expression.utilities.SimplifyTrigonometry.THREE;
@@ -613,6 +614,23 @@ public class PolynomialTests {
                     SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(731)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getResultantOfPolynomialsTest3() {
+        /* 
+         Resultante von f = a und g = b*x+c ist . 
+         */
+        try {
+            f = Expression.build("a", null);
+            g = Expression.build("b*x+c", null);
+            MatrixExpression resultant = SimplifyPolynomialMethods.getResultant(SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x"),
+                    SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x"));
+            Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
+            Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(Variable.create("a")));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

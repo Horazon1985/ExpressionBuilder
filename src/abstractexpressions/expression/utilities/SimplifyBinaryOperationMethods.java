@@ -3316,10 +3316,10 @@ public abstract class SimplifyBinaryOperationMethods {
      * @throws EvaluationException
      */
     private static Expression[] reducePolynomialsInNumeratorAndDenominatorByGCD(Expression f, Expression g, String var) throws EvaluationException {
-
+        
         Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, var);
 
-        if (gcd.equals(ONE)) {
+        if (gcd.equals(ZERO) || gcd.equals(ONE)) {
             return new Expression[]{f, g};
         }
 

@@ -24,7 +24,6 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
-import java.math.BigDecimal;
 
 public abstract class GeneralIntegralMethods {
 

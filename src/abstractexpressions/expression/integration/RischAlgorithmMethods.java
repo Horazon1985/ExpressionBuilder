@@ -602,8 +602,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
             if (gcdOfNumeratorAndDenominator.getBound() > 1) {
                 // Dann ist der ggT nicht trivial.
-                coefficientsNumerator = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator)[0];
-                coefficientsDenominator = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator)[0];
+                ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator);
+                coefficientsNumerator = quotient[0];
+                coefficientsDenominator = quotient[0];
                 try {
                     denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
                 } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
@@ -692,12 +693,14 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         // Leitkoeffizienten vom Nenner in den Zähler verschieben.
-        coefficientsNumerator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
-        coefficientsNumerator = coefficientsNumerator.simplify();
+        if (!coefficientsDenominator.get(coefficientsDenominator.getBound() - 1).equals(ONE)) {
+            coefficientsNumerator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+            coefficientsNumerator = coefficientsNumerator.simplify();
 
-        coefficientsDenominator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
-        coefficientsDenominator = coefficientsDenominator.simplify();
-
+            coefficientsDenominator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
+            coefficientsDenominator = coefficientsDenominator.simplify();
+        }
+        
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
         if (coefficientsDenominator.getBound() == 1) {
             if (coefficientsNumerator.getBound() > 1) {
@@ -741,37 +744,16 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
-        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(resultant);
-
-        // z = resultantVar kann im Nenner nicht vorkommen (da resultant ein Polynom in z ist). Deswegen nur Zähler absuchen.
-        for (int i = 0; i < factorsNumerator.getBound(); i++) {
-            if (!factorsNumerator.get(i).contains(resultantVar)) {
-                factorsNumerator.put(i, null);
-            }
-        }
-        Expression normalizedResultant = SimplifyUtilities.produceProduct(factorsNumerator);
-        if (normalizedResultant.contains(var) || normalizedResultant.contains(transcendentalVar)) {
+        resultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
+        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, resultantVar)) {
             throw new NotAlgebraicallyIntegrableException();
         }
-
-        normalizedResultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
-        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, var)) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-        factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(normalizedResultant);
-        for (int i = 0; i < factorsNumerator.getBound(); i++) {
-            if (!SimplifyPolynomialMethods.isLinearPolynomial(normalizedResultant, resultantVar)) {
-                factorsNumerator.put(i, null);
-            }
-        }
-        // Hier ist die Resultante normalisiert.
-        normalizedResultant = SimplifyUtilities.produceProduct(factorsNumerator);
 
         // Prüfung auf die Anzahl der Nullstellen.
         ExpressionCollection zerosOfResultant;
         try {
-            zerosOfResultant = SolveGeneralEquationMethods.solvePolynomialEquation(normalizedResultant, resultantVar);
-            if (BigInteger.valueOf(zerosOfResultant.getBound()).compareTo(SimplifyPolynomialMethods.getDegreeOfPolynomial(normalizedResultant, resultantVar)) < 0) {
+            zerosOfResultant = SolveGeneralEquationMethods.solvePolynomialEquation(resultant, resultantVar);
+            if (BigInteger.valueOf(zerosOfResultant.getBound()).compareTo(SimplifyPolynomialMethods.getDegreeOfPolynomial(resultant, resultantVar)) < 0) {
                 throw new NotAlgebraicallyIntegrableException();
             }
         } catch (NotAlgebraicallySolvableException e) {
@@ -824,6 +806,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var) {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {
+            if (!factor.contains(var)){
+                continue;
+            }
             if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)) {
                 return false;
             }

@@ -127,6 +127,13 @@ public abstract class SimplifyPolynomialMethods {
      * BigInteger) zurückgegeben.
      */
     public static BigInteger getDegreeOfPolynomial(Expression f, String var) {
+        if (!isPolynomial(f, var)) {
+            return BigInteger.valueOf(-1);
+        }
+        return getPolynomialDegree(f, var);
+    }
+
+    private static BigInteger getPolynomialDegree(Expression f, String var) {
         if (!f.contains(var)) {
             return BigInteger.ZERO;
         }
@@ -166,6 +173,13 @@ public abstract class SimplifyPolynomialMethods {
      * (als BigInteger) zurückgegeben.
      */
     public static BigInteger getOrderOfPolynomial(Expression f, String var) {
+        if (!isPolynomial(f, var)) {
+            return BigInteger.valueOf(-1);
+        }
+        return getPolynomialOrder(f, var);
+    }
+
+    public static BigInteger getPolynomialOrder(Expression f, String var) {
         if (!f.contains(var)) {
             return BigInteger.ZERO;
         }
@@ -523,7 +537,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -532,7 +546,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                        Variable.create(var).sub(zeros.get(2)).simplify());
+                                Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -561,7 +575,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -569,7 +583,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -581,7 +595,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -589,7 +603,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                            a.pow(2, n)).simplify();
+                                    a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -1143,25 +1157,50 @@ public abstract class SimplifyPolynomialMethods {
      */
     public static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
 
+        // Spezialfall: alle Koeffizienten eines der beiden Polynome sind = 0.
+        // Prüfung für a.
+        boolean allCoefficientsAreZero = true;
+        for (Expression coefficient : a) {
+            if (!coefficient.equals(ZERO)) {
+                allCoefficientsAreZero = false;
+                break;
+            }
+        }
+        if (allCoefficientsAreZero) {
+            return b;
+        }
+        // Prüfung für b.
+        for (Expression coefficient : b) {
+            if (!coefficient.equals(ZERO)) {
+                allCoefficientsAreZero = false;
+                break;
+            }
+        }
+        if (allCoefficientsAreZero) {
+            return a;
+        }
+
         if (a.getBound() < b.getBound()) {
             return getGGTOfPolynomials(b, a);
         }
 
-        ExpressionCollection r = polynomialDivision(a, b)[1];
+        ExpressionCollection aCopy = ExpressionCollection.copy(a);
+        ExpressionCollection bCopy = ExpressionCollection.copy(b);
+        ExpressionCollection r = polynomialDivision(aCopy, bCopy)[1];
 
         while (!r.isEmpty()) {
-            a = ExpressionCollection.copy(b);
-            b = ExpressionCollection.copy(r);
-            r = polynomialDivision(a, b)[1];
+            aCopy = ExpressionCollection.copy(bCopy);
+            bCopy = ExpressionCollection.copy(r);
+            r = polynomialDivision(aCopy, bCopy)[1];
         }
 
         // Anschließend normieren!
-        if (b.getBound() > 0 && !ZERO.equals(b.get(b.getBound() - 1))) {
-            b.divideByExpression(b.get(b.getBound() - 1));
-            b = b.simplify();
+        if (bCopy.getBound() > 0 && !ZERO.equals(bCopy.get(bCopy.getBound() - 1))) {
+            bCopy.divideByExpression(bCopy.get(bCopy.getBound() - 1));
+            bCopy = bCopy.simplify();
         }
 
-        return b;
+        return bCopy;
 
     }
 
