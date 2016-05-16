@@ -604,6 +604,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 // Dann ist der ggT nicht trivial.
                 ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator);
                 coefficientsNumerator = quotient[0];
+                quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator);
                 coefficientsDenominator = quotient[0];
                 try {
                     denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
@@ -667,7 +668,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                             transcententalElement, var, transcendentalVar));
 
                 } catch (EvaluationException e) {
-                    throw new NotAlgebraicallyIntegrableException();
+                    factorsDenominator.put(i, v.pow(m));
                 }
 
             }
@@ -700,7 +701,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             coefficientsDenominator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
             coefficientsDenominator = coefficientsDenominator.simplify();
         }
-        
+
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
         if (coefficientsDenominator.getBound() == 1) {
             if (coefficientsNumerator.getBound() > 1) {
@@ -806,7 +807,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var) {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {
-            if (!factor.contains(var)){
+            if (!factor.contains(var)) {
                 continue;
             }
             if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)) {
