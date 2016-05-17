@@ -6,6 +6,8 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.integration.GeneralIntegralMethods;
+import abstractexpressions.expression.integration.RischAlgorithmMethods;
+import exceptions.NotAlgebraicallyIntegrableException;
 import junit.framework.Assert;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;
@@ -371,6 +373,21 @@ public class IntegrationTests {
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmTest4() {
+        // Integral von int(ln(1+x^2)/x^2,x) = (-ln(1+x^2))/x+2*arctan(x) gemäß dem Rischj-Algorithmus.
+        try {
+            f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
+            Expression expectedResult = Expression.build("(-ln(1+x^2))/x+2*arctan(x)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
             fail(e.getMessage());
         }
     }

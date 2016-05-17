@@ -31,6 +31,7 @@ import notations.NotationLoader;
 public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = getSimplifyTypesForDifferentialFieldExtensions();
+    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithmPolynomialPart = getSimplifyTypesRischAlgorithmPolynomialPart();
 
     private static HashSet<TypeSimplify> getSimplifyTypesForDifferentialFieldExtensions() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -46,6 +47,23 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesRischAlgorithmPolynomialPart() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
     }
 
@@ -454,7 +472,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (polynomialCoefficients.isEmpty() && laurentCoefficients.isEmpty()) {
             return ZERO;
         }
-        if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
+        if ((!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) && transcententalElement.isFunction(TypeFunction.exp)) {
             // Noch zu implementieren.
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -478,6 +496,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         Expression integral;
+        Expression equoationForFreeConstant;
         ExpressionCollection valuesForFreeConstant;
         for (int i = polynomialCoefficients.getBound(); i >= 0; i--) {
 
@@ -486,16 +505,22 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             } else {
                 
                 try {
-                    integral = polynomialCoefficients.get(i).sub(new Constant(i).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)).simplify();
-                    if (!SimplifyPolynomialMethods.isLinearPolynomial(integral, freeConstantsVars[i + 1])) {
+                    integral = new Operator(TypeOperator.integral, new Object[]{
+                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
+
+                    integral = SubstitutionUtilities.substituteExpressionByAnotherExpression(integral, transcententalElement, Variable.create(transcendentalVar));
+                    equoationForFreeConstant = integral.diff(transcendentalVar).simplify();
+                    
+                    if (!SimplifyPolynomialMethods.isLinearPolynomial(equoationForFreeConstant, freeConstantsVars[i + 1])) {
                         throw new NotAlgebraicallyIntegrableException();
                     }
-                    valuesForFreeConstant = SolveGeneralEquationMethods.solvePolynomialEquation(integral, freeConstantsVars[i + 1]);
+                    valuesForFreeConstant = SolveGeneralEquationMethods.solvePolynomialEquation(equoationForFreeConstant, freeConstantsVars[i + 1]);
                     if (valuesForFreeConstant.getBound() != 1) {
                         throw new NotAlgebraicallyIntegrableException();
                     }
                     coefficientsOfPolynomialInTranscendentalVar[i + 1] = coefficientsOfPolynomialInTranscendentalVar[i + 1].replaceVariable(freeConstantsVars[i + 1], valuesForFreeConstant.get(0));
-                    coefficientsOfPolynomialInTranscendentalVar[i] = polynomialCoefficients.get(i).sub(new Constant(i).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)).simplify();
+                    coefficientsOfPolynomialInTranscendentalVar[i] = new Operator(TypeOperator.integral, new Object[]{
+                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
                     if (coefficientsOfPolynomialInTranscendentalVar[i].containsIndefiniteIntegral()){
                         throw new NotAlgebraicallyIntegrableException();
                     }
