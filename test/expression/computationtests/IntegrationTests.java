@@ -30,6 +30,7 @@ public class IntegrationTests {
     public void defineExpressions() throws Exception {
     }
 
+    //////////////////////// Allgemeine Integrationsmethoden //////////////////////////////
     @Test
     public void computeIntegralOfPolynomialTest() {
         // Integral von x^3/7+x^2-5 ist = x^4/28+x^3/3-5*x.
@@ -80,7 +81,7 @@ public class IntegrationTests {
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
             Expression expectedResult = Variable.create("x").sin().mult(Variable.create("x").pow(2)).sub(
                     Expression.TWO.mult(Expression.MINUS_ONE.mult(Variable.create("x").cos()).mult(Variable.create("x")).sub(
-                                    Expression.MINUS_ONE.mult(Variable.create("x").sin()))));
+                            Expression.MINUS_ONE.mult(Variable.create("x").sin()))));
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -174,7 +175,7 @@ public class IntegrationTests {
         }
     }
 
-    // Test zur Integration spezieller Funktionstypen.
+    //////////////////////// Integrationsmethoden für spezielle Funktionstypen //////////////////////////////
     // Integration mittels Partialbruchzerlegung
     @Test
     public void integralOfRationalFunctionTest() {
@@ -189,7 +190,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfRationalFunctionTest2() {
         // Integral von (3*x+4)/(2*x^2+5*x+3) = (2*ln(|1+x|)+2*(ln(|3+2*x|)/2))/2.
@@ -217,7 +218,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfRationalFunctionInExpTest2() {
         // Integral von 1/(3+exp(2*x/7)) = x/3-ln((3+exp((2*x)/7))^(7/6)).
@@ -234,7 +235,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfRationalFunctionInSinCosTest1() {
         // Integral von 1/(2+cos(x)) = (2*arctan(tan(x/2)/3^(1/2)))/3^(1/2).
@@ -249,7 +250,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfRationalFunctionInSinCosTest2() {
         // Integral von 1/(sin(x)+cos(x)) = ln(|2^(1/2)+tan(x/2)-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2))).
@@ -294,7 +295,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfQuotientOfPolynomialAndSqrtOfOddPowerOfQuadraticPolynomialTest1() {
         // Integral von x^3*(1+x^2)^(1/2) = (1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3.
@@ -309,7 +310,7 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integralOfQuotientOfPolynomialAndSqrtOfOddPowerOfQuadraticPolynomialTest2() {
         // Integral von (2+x^3)/(1+x^2)^(3/2) = (1+x^2)^(1/2)+(1+2*x)/(1+x^2)^(1/2).
@@ -324,5 +325,54 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
+    //////////////////////// Integration mittels Risch-Algorithmus //////////////////////////////
+    @Test
+    public void integrateByRischAlgorithmTest1() {
+        // Integral von (ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2) = x/(x^2+ln(x)).
+        try {
+            f = Expression.build("int((ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = f.simplify();
+            Expression expectedResult = Expression.build("x/(x^2+ln(x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmTest2() {
+        // Integral von (x*exp(x)+1)/(x*(1+exp(x)+ln(x)) =ln(1+exp(x)+ln(x)).
+        try {
+            f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = f.simplify();
+            Expression expectedResult = Expression.build("ln(1+exp(x)+ln(x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmTest3() {
+        /* 
+         Integral von (1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)) = x-(x*exp(x^2))/(1+exp(x^2)).
+         Ideales Ergebnis wäre x/(1+exp(x^2)).
+         */
+        try {
+            f = Expression.build("int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = f.simplify();
+            Expression expectedResult = Expression.build("x-(x*exp(x^2))/(1+exp(x^2))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }
