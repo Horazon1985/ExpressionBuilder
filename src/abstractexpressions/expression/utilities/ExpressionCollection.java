@@ -29,6 +29,14 @@ public class ExpressionCollection implements Iterable<Expression> {
         }
     }
 
+    public ExpressionCollection(Expression[] terms) {
+        this.terms = new HashMap<>();
+        this.bound = 0;
+        for (Expression term : terms) {
+            this.add(term);
+        }
+    }
+
     public ExpressionCollection(Object... terms) {
         this.terms = new HashMap<>();
         this.bound = 0;

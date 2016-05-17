@@ -26,6 +26,7 @@ import exceptions.NotAlgebraicallyIntegrableException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.HashSet;
+import notations.NotationLoader;
 
 public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
@@ -443,101 +444,75 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     }
 
     /**
-     * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
-     * einer transzendenten Erweiterung durch ein einziges Element.
-     *
-     * @throws NotAlgebraicallyIntegrableException
-     * @throws EvaluationException
-     */
-    public static Expression integrateByRischAlgorithmForDegOneExtension(Operator expr) throws NotAlgebraicallyIntegrableException, EvaluationException {
-
-        Expression f = (Expression) expr.getParams()[0];
-        String var = (String) expr.getParams()[1];
-
-        ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
-
-        // Nur Erweiterungen vom Grad 1 sollen betrachtet werden.
-        if (!isExtensionOfDegreeOne(f, var)) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        Expression transcententalElement = transcendentalExtensions.get(0);
-        String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
-        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
-
-        // Sei x = var und t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in x und t sein.
-        if (!SimplifyRationalFunctionMethods.isRationalFunctionInFunctions(fSubstituted, var, Variable.create(var), Variable.create(transcendentalVar))) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        if (!(fSubstituted instanceof BinaryOperation)) {
-            // Dann sind andere Integrationsmethoden dafür zuständig.
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        // Zunächst alles auf einen Bruch bringen.
-        fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) fSubstituted);
-
-        // Separat behandeln, falls fSubstituted kein Quotient ist.
-        if (!fSubstituted.isQuotient()) {
-            // TO DO.
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        ExpressionCollection coefficientsNumerator, coefficientsDenominator;
-        try {
-            coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
-            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getRight(), transcendentalVar);
-        } catch (EvaluationException e) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-        ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
-
-        // Im Fall einer Exponentialerweiterung: t im Nenner faktorisieren und in den polynomiallen Teil übertragen.
-        if (transcententalElement.isFunction(TypeFunction.exp)) {
-
-            int ordOfTranscendentalElementInDenominator = 0;
-            for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
-                if (!coefficientsDenominator.get(i).equals(ZERO)) {
-                    break;
-                } else {
-                    ordOfTranscendentalElementInDenominator++;
-                }
-            }
-
-            if (ordOfTranscendentalElementInDenominator > 0) {
-                // TO DO. Speziellen Teil abspalten.
-                throw new NotAlgebraicallyIntegrableException();
-            }
-
-        }
-
-        /* 
-         Im Fall einer Logarithmuserweiterung (oder Exponentialerweiterung ohne speziellen Teil): 
-         Polynomialen und gebrochenen Teil separat integrieren (Nach Risch-Algorithmus erlaubt).
-         */
-        Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
-        Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
-        return integralOfPolynomialPart.add(integralOfFractionalPart);
-
-    }
-
-    /**
      * Risch-Algorithmus für den polynomialen Anteil.
      *
      * @throws NotAlgebraicallyIntegrableException
      * @throws EvaluationException
      */
-    private static Expression integrateByRischAlgorithmPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients, Expression transcententalElement, String var, String transcendentalVar)
-            throws NotAlgebraicallyIntegrableException, EvaluationException {
+    private static Expression integrateByRischAlgorithmPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients,
+            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
         if (polynomialCoefficients.isEmpty() && laurentCoefficients.isEmpty()) {
             return ZERO;
         }
-        // TO DO.
         if (!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.exp)) {
+            // Noch zu implementieren.
             throw new NotAlgebraicallyIntegrableException();
         }
+        if (!polynomialCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.ln)) {
+            return integrateByRischAlgorithmPolynomialPartLogarithmicExtension(polynomialCoefficients, transcententalElement, var, transcendentalVar);
+        }
+
         throw new NotAlgebraicallyIntegrableException();
+    }
+
+    public static Expression integrateByRischAlgorithmPolynomialPartLogarithmicExtension(ExpressionCollection polynomialCoefficients, Expression transcententalElement,
+            String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        Expression logArgument = ((Function) transcententalElement).getLeft();
+
+        Expression[] coefficientsOfPolynomialInTranscendentalVar = new Expression[polynomialCoefficients.getBound() + 1];
+        String[] freeConstantsVars = new String[polynomialCoefficients.getBound() + 1];
+
+        for (int i = 0; i < freeConstantsVars.length; i++) {
+            freeConstantsVars[i] = NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + i;
+        }
+
+        Expression integral;
+        ExpressionCollection valuesForFreeConstant;
+        for (int i = polynomialCoefficients.getBound(); i >= 0; i--) {
+
+            if (i == polynomialCoefficients.getBound()) {
+                coefficientsOfPolynomialInTranscendentalVar[i] = Variable.create(freeConstantsVars[i]);
+            } else {
+                
+                try {
+                    integral = polynomialCoefficients.get(i).sub(new Constant(i).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)).simplify();
+                    if (!SimplifyPolynomialMethods.isLinearPolynomial(integral, freeConstantsVars[i + 1])) {
+                        throw new NotAlgebraicallyIntegrableException();
+                    }
+                    valuesForFreeConstant = SolveGeneralEquationMethods.solvePolynomialEquation(integral, freeConstantsVars[i + 1]);
+                    if (valuesForFreeConstant.getBound() != 1) {
+                        throw new NotAlgebraicallyIntegrableException();
+                    }
+                    coefficientsOfPolynomialInTranscendentalVar[i + 1] = coefficientsOfPolynomialInTranscendentalVar[i + 1].replaceVariable(freeConstantsVars[i + 1], valuesForFreeConstant.get(0));
+                    coefficientsOfPolynomialInTranscendentalVar[i] = polynomialCoefficients.get(i).sub(new Constant(i).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)).simplify();
+                    if (coefficientsOfPolynomialInTranscendentalVar[i].containsIndefiniteIntegral()){
+                        throw new NotAlgebraicallyIntegrableException();
+                    }
+                    if (i > 0){
+                       coefficientsOfPolynomialInTranscendentalVar[i] = coefficientsOfPolynomialInTranscendentalVar[i].add(Variable.create(freeConstantsVars[i]));
+                    }
+                } catch (EvaluationException | NotAlgebraicallySolvableException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+            }
+
+        }
+
+        return SimplifyPolynomialMethods.getPolynomialFromCoefficients(new ExpressionCollection(coefficientsOfPolynomialInTranscendentalVar),
+                transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+
     }
 
     /**
@@ -581,7 +556,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         coefficientsNumerator.divideByExpression(leadingCoefficient);
         coefficientsNumerator = coefficientsNumerator.simplify();
 
-        // Hermite-Reduktion und expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
+        // Hermite-Reduktion und später expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
         return doHermiteReduction(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
 
     }
@@ -804,6 +779,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     }
 
+    /**
+     * Hilfsmethode. Gibt zurück, ob f ein Produkt aus entweder bzw. var
+     * konstanten oder bzw. var linearen Polynomen ist.
+     */
     private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var) {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {

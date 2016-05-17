@@ -22,7 +22,6 @@ import abstractexpressions.expression.equation.PolynomialAlgebraMethods;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
-import com.sun.javafx.applet.ExperimentalExtensions;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import lang.translator.Translator;
