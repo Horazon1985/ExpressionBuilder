@@ -384,7 +384,7 @@ public class IntegrationTests {
             f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
-            Expression expectedResult = Expression.build("(-ln(1+x^2))/x+2*arctan(x)", null);
+            Expression expectedResult = Expression.build("2*arctan(x)-ln((1+x^2)^(1/x))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {

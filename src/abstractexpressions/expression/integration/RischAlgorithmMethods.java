@@ -394,7 +394,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
-        // Nur echte transzende Erweiterungen betrachten.
+        // Nur echte transzende Erweiterungen betrachten. Diese müssen die Funktion auch erzeugen können.
         if (transcendentalExtensions.isEmpty() || !isFunctionRationalOverDifferentialField(f, var, transcendentalExtensions)) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -503,14 +503,14 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             if (i == polynomialCoefficients.getBound()) {
                 coefficientsOfPolynomialInTranscendentalVar[i] = Variable.create(freeConstantsVars[i]);
             } else {
-                
+
                 try {
                     integral = new Operator(TypeOperator.integral, new Object[]{
                         polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
 
                     integral = SubstitutionUtilities.substituteExpressionByAnotherExpression(integral, transcententalElement, Variable.create(transcendentalVar));
                     equoationForFreeConstant = integral.diff(transcendentalVar).simplify();
-                    
+
                     if (!SimplifyPolynomialMethods.isLinearPolynomial(equoationForFreeConstant, freeConstantsVars[i + 1])) {
                         throw new NotAlgebraicallyIntegrableException();
                     }
@@ -521,11 +521,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     coefficientsOfPolynomialInTranscendentalVar[i + 1] = coefficientsOfPolynomialInTranscendentalVar[i + 1].replaceVariable(freeConstantsVars[i + 1], valuesForFreeConstant.get(0));
                     coefficientsOfPolynomialInTranscendentalVar[i] = new Operator(TypeOperator.integral, new Object[]{
                         polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
-                    if (coefficientsOfPolynomialInTranscendentalVar[i].containsIndefiniteIntegral()){
+                    if (coefficientsOfPolynomialInTranscendentalVar[i].containsIndefiniteIntegral()) {
                         throw new NotAlgebraicallyIntegrableException();
                     }
-                    if (i > 0){
-                       coefficientsOfPolynomialInTranscendentalVar[i] = coefficientsOfPolynomialInTranscendentalVar[i].add(Variable.create(freeConstantsVars[i]));
+                    if (i > 0) {
+                        coefficientsOfPolynomialInTranscendentalVar[i] = coefficientsOfPolynomialInTranscendentalVar[i].add(Variable.create(freeConstantsVars[i]));
                     }
                 } catch (EvaluationException | NotAlgebraicallySolvableException e) {
                     throw new NotAlgebraicallyIntegrableException();
@@ -746,7 +746,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
         resultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
-        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, resultantVar)) {
+        if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, resultantVar, var)) {
             throw new NotAlgebraicallyIntegrableException();
         }
 
@@ -806,15 +806,19 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     /**
      * Hilfsmethode. Gibt zurück, ob f ein Produkt aus entweder bzw. var
-     * konstanten oder bzw. var linearen Polynomen ist.
+     * konstanten oder bzw. var linearen Polynomen ist und die linearen Polynome
+     * bzgl. var dürfen die Variable varNotAllowedToOccur nicht enthalten.
      */
-    private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var) {
+    private static boolean isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(Expression f, String var, String varNotAllowedToOccur) {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         for (Expression factor : factors) {
             if (!factor.contains(var)) {
                 continue;
             }
             if (!SimplifyPolynomialMethods.isLinearPolynomial(factor, var)) {
+                return false;
+            }
+            if (SimplifyPolynomialMethods.isLinearPolynomial(factor, var) && factor.contains(varNotAllowedToOccur)) {
                 return false;
             }
         }
