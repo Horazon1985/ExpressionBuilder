@@ -31,7 +31,7 @@ import notations.NotationLoader;
 public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = getSimplifyTypesForDifferentialFieldExtensions();
-    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithmPolynomialPart = getSimplifyTypesRischAlgorithmPolynomialPart();
+    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithm = getSimplifyTypesRischAlgorithm();
 
     private static HashSet<TypeSimplify> getSimplifyTypesForDifferentialFieldExtensions() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -50,7 +50,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesRischAlgorithmPolynomialPart() {
+    private static HashSet<TypeSimplify> getSimplifyTypesRischAlgorithm() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -392,6 +392,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
+        // Integranden auf bestimmte Art und Weise vereinfachen.
+        f = f.simplify(simplifyTypesRischAlgorithm);
+        
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
         // Nur echte transzende Erweiterungen betrachten. Diese müssen die Funktion auch erzeugen können.
@@ -402,7 +405,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         // Letztes transzendes Element wählen und damit den Risch-Algorithmus starten.
         Expression transcententalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
         String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
-        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify();
+        Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
 
         // Sei t = transcendentalVar. Dann muss fSubstituted eine rationale Funktion in t sein.
         if (!SimplifyRationalFunctionMethods.isRationalFunction(fSubstituted, transcendentalVar)) {
@@ -506,7 +509,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                 try {
                     integral = new Operator(TypeOperator.integral, new Object[]{
-                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
+                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithm);
 
                     integral = SubstitutionUtilities.substituteExpressionByAnotherExpression(integral, transcententalElement, Variable.create(transcendentalVar));
                     equoationForFreeConstant = integral.diff(transcendentalVar).simplify();
@@ -520,7 +523,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     }
                     coefficientsOfPolynomialInTranscendentalVar[i + 1] = coefficientsOfPolynomialInTranscendentalVar[i + 1].replaceVariable(freeConstantsVars[i + 1], valuesForFreeConstant.get(0));
                     coefficientsOfPolynomialInTranscendentalVar[i] = new Operator(TypeOperator.integral, new Object[]{
-                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithmPolynomialPart);
+                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithm);
                     if (coefficientsOfPolynomialInTranscendentalVar[i].containsIndefiniteIntegral()) {
                         throw new NotAlgebraicallyIntegrableException();
                     }
@@ -549,6 +552,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression integrateByRischAlgorithmFractionalPart(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
+        System.out.println("---------- Risch-Algorithmus für den gebrochenen Teil ----------------");
+        
         Expression decompositionOfDenominator;
         try {
             decompositionOfDenominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
@@ -595,22 +600,36 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
+        System.out.println("Hermite-Reduktion:");
+        System.out.println("Transzendentes Element = " + transcententalElement);
+        System.out.println("Zählerkoeffizienten = " + coefficientsNumerator + "; Nenner = " + denominator);
+
         // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
         ExpressionCollection coefficientsDenominator;
         try {
             coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
             ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
+
+            System.out.println("gcd(Zähler, Nenner) = " + gcdOfNumeratorAndDenominator);
+
             if (gcdOfNumeratorAndDenominator.getBound() > 1) {
                 // Dann ist der ggT nicht trivial.
                 ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator);
                 coefficientsNumerator = quotient[0];
                 quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator);
                 coefficientsDenominator = quotient[0];
+
+                System.out.println("Zähler und Nenner konnten gekürzt werden.");
+                System.out.println("Koeffizienten vom neuen Zähler = " + coefficientsNumerator);
+
                 try {
                     denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
                 } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
                     denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
                 }
+                
+                System.out.println("Neuer Nenner = " + denominator);
+                
             }
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
@@ -647,6 +666,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     derivativeOfV = derivativeOfV.diff(var);
                     derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify();
 
+                    System.out.println("m = " + m);
+                    System.out.println("u = " + u);
+                    System.out.println("v = " + v);
+
                     Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
                     if (!gcd.equals(ONE)) {
                         // Sollte eigentlich laut Theorem nie passieren!
@@ -655,15 +678,23 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                     Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
                     Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
-                    Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify();
-                    Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify();
+                    Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+                    Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+
+                    System.out.println("B = " + b);
+                    System.out.println("C = " + c);
 
                     Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
                     derivativeOfB = derivativeOfB.diff(var);
-                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify();
+                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
 
-                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB));
+                    System.out.println("B' = " + derivativeOfB);
+
+                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify();
                     ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
+
+                    System.out.println("(1-m)C - UB' = " + newIntegrand);
+
                     return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
                             transcententalElement, var, transcendentalVar));
 
