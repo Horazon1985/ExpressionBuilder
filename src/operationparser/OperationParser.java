@@ -441,7 +441,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
+        if (indexInOperatorArguments < arguments.length || arguments.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
                     + Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
@@ -636,7 +636,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInOperatorArguments < arguments.length - 1 || arguments.length > 0 && resultPattern.size() == 0) {
+        if (indexInOperatorArguments < arguments.length || arguments.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
                     + Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
@@ -828,7 +828,7 @@ public abstract class OperationParser {
         }
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
-        if (indexInCommandParameters < parameter.length - 1 || parameter.length > 0 && resultPattern.size() == 0) {
+        if (indexInCommandParameters < parameter.length || parameter.length > 0 && resultPattern.size() == 0) {
             throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND", commandName));
         }
 
