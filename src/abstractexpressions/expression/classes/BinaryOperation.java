@@ -592,10 +592,40 @@ public class BinaryOperation extends Expression {
                 }
                 if (this.isProduct()) {
 
-                    ExpressionCollection factorsOfThis = SimplifyUtilities.getFactors(this);
-                    ExpressionCollection factorsOfExpr = SimplifyUtilities.getFactors(expr);
-                    return factorsOfThis.getBound() == factorsOfExpr.getBound()
-                            && SimplifyUtilities.difference(factorsOfThis, factorsOfExpr).isEmpty();
+                    ExpressionCollection factorsThis = SimplifyUtilities.getFactors(this);
+                    ExpressionCollection factorsExpr = SimplifyUtilities.getFactors(expr);
+                    if (factorsThis.getBound() != factorsExpr.getBound()) {
+                        return false;
+                    }
+
+                    int numberOfFactors = factorsThis.getBound();
+                    int numberOfEquivalentFactors = 0;
+                    int numberOfAntiEquivalentFactors = 0;
+                    for (int i = 0; i < factorsThis.getBound(); i++) {
+                        for (int j = 0; j < factorsExpr.getBound(); j++) {
+                            if (factorsThis.get(i).equivalent(factorsExpr.get(j))) {
+                                factorsThis.remove(i);
+                                factorsExpr.remove(j);
+                                numberOfEquivalentFactors++;
+                                break;
+                            } else if (factorsThis.get(i).antiEquivalent(factorsExpr.get(j))) {
+                                factorsThis.remove(i);
+                                factorsExpr.remove(j);
+                                numberOfAntiEquivalentFactors++;
+                                break;
+                            }
+
+                        }
+                    }
+                    return numberOfEquivalentFactors + numberOfAntiEquivalentFactors == numberOfFactors && numberOfAntiEquivalentFactors % 2 == 0;
+
+                }
+                if (this.isQuotient()) {
+
+                    return this.left.equivalent(((BinaryOperation) expr).left)
+                            && this.right.equivalent(((BinaryOperation) expr).right)
+                            || this.left.antiEquivalent(((BinaryOperation) expr).left)
+                            && this.right.antiEquivalent(((BinaryOperation) expr).right);
 
                 }
                 if (this.isPower() && expr.isPower() && this.right.equivalent(((BinaryOperation) expr).right)
@@ -734,21 +764,21 @@ public class BinaryOperation extends Expression {
                     int numberOfAntiEquivalentFactors = 0;
                     for (int i = 0; i < factorsThis.getBound(); i++) {
                         for (int j = 0; j < factorsExpr.getBound(); j++) {
-                            if (factorsThis.get(i).equivalent(factorsExpr.get(j))){
+                            if (factorsThis.get(i).equivalent(factorsExpr.get(j))) {
                                 factorsThis.remove(i);
                                 factorsExpr.remove(j);
                                 numberOfEquivalentFactors++;
                                 break;
-                            } else if (factorsThis.get(i).equivalent(factorsExpr.get(j))){
+                            } else if (factorsThis.get(i).antiEquivalent(factorsExpr.get(j))) {
                                 factorsThis.remove(i);
                                 factorsExpr.remove(j);
                                 numberOfAntiEquivalentFactors++;
                                 break;
                             }
-                            
+
                         }
                     }
-                    return numberOfEquivalentFactors + numberOfAntiEquivalentFactors == numberOfFactors;
+                    return numberOfEquivalentFactors + numberOfAntiEquivalentFactors == numberOfFactors && numberOfAntiEquivalentFactors % 2 == 1;
 
                 }
                 if (this.isQuotient()) {

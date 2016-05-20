@@ -375,7 +375,7 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
-    public void equivalentIfFunctionIsEvenTest() {
+    public void equivalentTest1() {
         // cos((x+y)-z) äquivalent zu cos(z-(x+y))
         try {
             Expression f = Expression.build("cos((x+y)-z)", null);
@@ -387,7 +387,7 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
-    public void notEquivalentIfFunctionIsNotEvenTest() {
+    public void equivalentTest2() {
         // tan((x+y)-z) nicht äquivalent zu tan(z-(x+y))
         // exp((x+y)-z) nicht äquivalent zu exp(z-(x+y))
         try {
@@ -403,13 +403,7 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
-    public void equivalentIfPowerIsEvenTest() {
-        // ((x+y)-z)^6 äquivalent zu (z-(x+y))^6
-        // ((x+y)-z)^(4/7) äquivalent zu (z-(x+y))^(4/7)
-        // ((x+y)-z)^(-3) nicht äquivalent zu (z-(x+y))^(-3)
-        // ((x+y)-z)^(1/4) nicht äquivalent zu (z-(x+y))^(1/4)
-        // ((x+y)-z)^(1/7) nicht äquivalent zu (z-(x+y))^(1/4)
-        // ((x+y)-z)^a nicht äquivalent zu (z-(x+y))^a
+    public void equivalentTest3() {
         try {
             Expression f = Expression.build("((x+y)-z)^6", null);
             Expression g = Expression.build("(z-(x+y))^6", null);
@@ -429,6 +423,18 @@ public class GeneralSimplifyExpressionTests {
             f = Expression.build("((x+y)-z)^a", null);
             g = Expression.build("(z-(x+y))^a", null);
             Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)*b*sin(s-t)", null);
+            g = Expression.build("b*sin(t-s)*(z-(x+y))", null);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("((x+y)-z)*b*sin(s-t)*(p-q)", null);
+            g = Expression.build("b*sin(t-s)*(q-p)*(z-(x+y))", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)*sin(s-t)", null);
+            g = Expression.build("b*sin(t-s)*(z-(x+y))", null);
+            Assert.assertFalse(f.equivalent(g));
+            f = Expression.build("((x+y)-z)/sin(s-t)", null);
+            g = Expression.build("(z-(x+y))/sin(t-s)", null);
+            Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -451,7 +457,16 @@ public class GeneralSimplifyExpressionTests {
             Assert.assertTrue(f.antiEquivalent(g));
             f = Expression.build("exp(((x+y)-z))", null);
             g = Expression.build("exp((z-(x+y)))", null);
-            Assert.assertFalse(f.equivalent(g));
+            Assert.assertFalse(f.antiEquivalent(g));
+            f = Expression.build("((x+y)-z)*a*(p-q)*b*sin(s-t)", null);
+            g = Expression.build("b*sin(t-s)*(z-(x+y))*a*(q-p)", null);
+            Assert.assertTrue(f.antiEquivalent(g));
+            f = Expression.build("((x+y)-z)*a*(p-q)*sin(s-t)", null);
+            g = Expression.build("b*sin(t-s)*(z-(x+y))*a*(q-p)", null);
+            Assert.assertFalse(f.antiEquivalent(g));
+            f = Expression.build("((x+y)-z)*a*(p-q)*b", null);
+            g = Expression.build("b*(z-(x+y))*a*(q-p)", null);
+            Assert.assertFalse(f.antiEquivalent(g));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
