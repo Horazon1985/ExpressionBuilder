@@ -247,6 +247,12 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean antiEquivalent(Expression expr) {
+        return expr instanceof Constant && this.precise == ((Constant) expr).getPrecise()
+                && this.value.equals(((Constant) expr).getValue().negate());
+    }
+
+    @Override
     public boolean hasPositiveSign() {
         return this.getValue().compareTo(BigDecimal.ZERO) >= 0;
     }

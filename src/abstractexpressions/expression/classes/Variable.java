@@ -431,6 +431,12 @@ public class Variable extends Expression {
     }
 
     @Override
+    public boolean antiEquivalent(Expression expr) {
+        return expr.isProduct() && (((BinaryOperation) expr).getLeft().equals(MINUS_ONE) && ((BinaryOperation) expr).getRight().equals(this)
+                || ((BinaryOperation) expr).getLeft().equals(this) && ((BinaryOperation) expr).getRight().equals(MINUS_ONE));
+    }
+
+    @Override
     public boolean hasPositiveSign() {
         return true;
     }

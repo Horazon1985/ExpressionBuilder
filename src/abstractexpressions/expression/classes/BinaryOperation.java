@@ -604,9 +604,9 @@ public class BinaryOperation extends Expression {
                         && ((BinaryOperation) ((BinaryOperation) expr).right).right.isOddIntegerConstant())) {
 
                     /* 
-                    Bei geraden Potenzen oder bei rationalen Potenzen mit geradem Zählen und ungeradem Nenner sollen 
-                    die Ausdrücke äquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
-                    */
+                     Bei geraden Potenzen oder bei rationalen Potenzen mit geradem Zählen und ungeradem Nenner sollen 
+                     die Ausdrücke äquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
+                     */
                     ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this.left);
                     ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this.left);
                     ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(((BinaryOperation) expr).left);
@@ -660,6 +660,158 @@ public class BinaryOperation extends Expression {
                 }
                 return this.getLeft().equivalent(((BinaryOperation) expr).getLeft())
                         && this.getRight().equivalent(((BinaryOperation) expr).getRight());
+            }
+            return false;
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean antiEquivalent(Expression expr) {
+
+        if (expr instanceof BinaryOperation) {
+            if (this.getType().equals(((BinaryOperation) expr).getType())) {
+                if (this.isSum() || this.isDifference()) {
+
+                    ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this);
+                    ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this);
+                    ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(expr);
+                    ExpressionCollection summandsRightOfExpr = SimplifyUtilities.getSummandsRightInExpression(expr);
+
+                    ExpressionCollection summandsLeftOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsLeftOfExprWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfExprWithSign = new ExpressionCollection();
+
+                    try {
+                        for (int i = 0; i < summandsLeftOfThis.getBound(); i++) {
+                            if (summandsLeftOfThis.get(i).hasPositiveSign()) {
+                                summandsLeftOfThisWithSign.add(summandsLeftOfThis.get(i));
+                            } else {
+                                summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfThis.getBound(); i++) {
+                            if (summandsRightOfThis.get(i).hasPositiveSign()) {
+                                summandsRightOfThisWithSign.add(summandsRightOfThis.get(i));
+                            } else {
+                                summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsLeftOfExpr.getBound(); i++) {
+                            if (summandsLeftOfExpr.get(i).hasPositiveSign()) {
+                                summandsLeftOfExprWithSign.add(summandsLeftOfExpr.get(i));
+                            } else {
+                                summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfExpr.getBound(); i++) {
+                            if (summandsRightOfExpr.get(i).hasPositiveSign()) {
+                                summandsRightOfExprWithSign.add(summandsRightOfExpr.get(i));
+                            } else {
+                                summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        return summandsLeftOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                                && summandsRightOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsLeftOfExprWithSign).isEmpty();
+                    } catch (EvaluationException e) {
+                    }
+
+                }
+                if (this.isProduct()) {
+
+                    ExpressionCollection factorsThis = SimplifyUtilities.getFactors(this);
+                    ExpressionCollection factorsExpr = SimplifyUtilities.getFactors(expr);
+                    if (factorsThis.getBound() != factorsExpr.getBound()) {
+                        return false;
+                    }
+
+                    int numberOfFactors = factorsThis.getBound();
+                    int numberOfEquivalentFactors = 0;
+                    int numberOfAntiEquivalentFactors = 0;
+                    for (int i = 0; i < factorsThis.getBound(); i++) {
+                        for (int j = 0; j < factorsExpr.getBound(); j++) {
+                            if (factorsThis.get(i).equivalent(factorsExpr.get(j))){
+                                factorsThis.remove(i);
+                                factorsExpr.remove(j);
+                                numberOfEquivalentFactors++;
+                                break;
+                            } else if (factorsThis.get(i).equivalent(factorsExpr.get(j))){
+                                factorsThis.remove(i);
+                                factorsExpr.remove(j);
+                                numberOfAntiEquivalentFactors++;
+                                break;
+                            }
+                            
+                        }
+                    }
+                    return numberOfEquivalentFactors + numberOfAntiEquivalentFactors == numberOfFactors;
+
+                }
+                if (this.isQuotient()) {
+                    return this.left.equivalent(((BinaryOperation) expr).left) && this.right.antiEquivalent(((BinaryOperation) expr).right)
+                            || this.left.antiEquivalent(((BinaryOperation) expr).left) && this.right.equivalent(((BinaryOperation) expr).right);
+
+                }
+                if (this.isPower() && expr.isPower() && this.right.equivalent(((BinaryOperation) expr).right)
+                        && (((BinaryOperation) expr).right.isOddIntegerConstant() || ((BinaryOperation) expr).right.isRationalConstant()
+                        && ((BinaryOperation) ((BinaryOperation) expr).right).left.isOddIntegerConstant()
+                        && ((BinaryOperation) ((BinaryOperation) expr).right).right.isOddIntegerConstant())) {
+
+                    /* 
+                     Bei ungeraden Potenzen oder bei rationalen Potenzen mit ungeradem Zählen und ungeradem Nenner sollen 
+                     die Ausdrücke antiäquivalent sein, wenn sich die Basen sogar um ein Vorzeichen unterscheiden.
+                     */
+                    ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this.left);
+                    ExpressionCollection summandsRightOfThis = SimplifyUtilities.getSummandsRightInExpression(this.left);
+                    ExpressionCollection summandsLeftOfExpr = SimplifyUtilities.getSummandsLeftInExpression(((BinaryOperation) expr).left);
+                    ExpressionCollection summandsRightOfExpr = SimplifyUtilities.getSummandsRightInExpression(((BinaryOperation) expr).left);
+
+                    ExpressionCollection summandsLeftOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfThisWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsLeftOfExprWithSign = new ExpressionCollection();
+                    ExpressionCollection summandsRightOfExprWithSign = new ExpressionCollection();
+
+                    try {
+                        for (int i = 0; i < summandsLeftOfThis.getBound(); i++) {
+                            if (summandsLeftOfThis.get(i).hasPositiveSign()) {
+                                summandsLeftOfThisWithSign.add(summandsLeftOfThis.get(i));
+                            } else {
+                                summandsRightOfThisWithSign.add(MINUS_ONE.mult(summandsLeftOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfThis.getBound(); i++) {
+                            if (summandsRightOfThis.get(i).hasPositiveSign()) {
+                                summandsRightOfThisWithSign.add(summandsRightOfThis.get(i));
+                            } else {
+                                summandsLeftOfThisWithSign.add(MINUS_ONE.mult(summandsRightOfThis.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsLeftOfExpr.getBound(); i++) {
+                            if (summandsLeftOfExpr.get(i).hasPositiveSign()) {
+                                summandsLeftOfExprWithSign.add(summandsLeftOfExpr.get(i));
+                            } else {
+                                summandsRightOfExprWithSign.add(MINUS_ONE.mult(summandsLeftOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        for (int i = 0; i < summandsRightOfExpr.getBound(); i++) {
+                            if (summandsRightOfExpr.get(i).hasPositiveSign()) {
+                                summandsRightOfExprWithSign.add(summandsRightOfExpr.get(i));
+                            } else {
+                                summandsLeftOfExprWithSign.add(MINUS_ONE.mult(summandsRightOfExpr.get(i)).orderSumsAndProducts());
+                            }
+                        }
+                        return summandsLeftOfThisWithSign.getBound() == summandsRightOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsLeftOfThisWithSign, summandsRightOfExprWithSign).isEmpty()
+                                && summandsRightOfThisWithSign.getBound() == summandsLeftOfExprWithSign.getBound()
+                                && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsLeftOfExprWithSign).isEmpty();
+                    } catch (EvaluationException e) {
+                    }
+
+                }
             }
             return false;
         }

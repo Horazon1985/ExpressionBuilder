@@ -892,6 +892,11 @@ public abstract class Expression implements AbstractExpression {
     public abstract boolean equivalent(Expression expr);
 
     /**
+     * Liefert, ob der gegebene Ausdruck bis auf das Vorzeichen äquivalent zu dem von expr ist.
+     */
+    public abstract boolean antiEquivalent(Expression expr);
+
+    /**
      * Liefert true, wenn der Ausdruck this einen nicht-negativen Koeffizienten
      * besitzt, falls man this als Produkt auffasst.<br>
      * BEISPIELE: (1) Für expr =2*x*(-3)*y wird false zurückgegeben, da expr,

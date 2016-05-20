@@ -399,6 +399,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean antiEquivalent(Expression expr) {
+        // Explizites Ausschreiben notwendig!
+        return false;
+    }
+    
+    @Override
     public boolean hasPositiveSign() {
         return this.abstractExpression.hasPositiveSign();
     }

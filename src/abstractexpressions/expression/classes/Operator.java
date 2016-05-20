@@ -408,7 +408,7 @@ public class Operator extends Expression {
     }
 
     @Override
-    public boolean containsAlgebraicOperation(){
+    public boolean containsAlgebraicOperation() {
         boolean containsAlgebraicOperation = false;
         for (Object param : this.params) {
             if (param instanceof Expression) {
@@ -418,7 +418,7 @@ public class Operator extends Expression {
         }
         return containsAlgebraicOperation;
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         Object[] resultParams = new Object[this.params.length];
@@ -934,6 +934,45 @@ public class Operator extends Expression {
                     result = result && (this.params[i].equals(operator.params[i]));
                 }
             }
+            return result;
+
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean antiEquivalent(Expression expr) {
+
+        if (expr instanceof Operator) {
+
+            Operator operator = (Operator) expr;
+            boolean result = (this.type.equals(operator.type) & (this.params.length == operator.params.length));
+            if (!result) {
+                return false;
+            }
+
+            if (this.type.equals(TypeOperator.fourier) || this.type.equals(TypeOperator.integral) 
+                    || this.type.equals(TypeOperator.sum) || this.type.equals(TypeOperator.taylor)) {
+                result = result && (((Expression) this.params[0]).antiEquivalent((Expression) operator.params[0]));
+                for (int i = 1; i < this.params.length; i++) {
+                    if (this.params[i] instanceof Expression) {
+                        result = result && (((Expression) this.params[i]).equivalent((Expression) operator.params[i]));
+                    } else {
+                        result = result && (this.params[i].equals(operator.params[i]));
+                    }
+                }
+            } else if (this.type.equals(TypeOperator.diff) || this.type.equals(TypeOperator.div) 
+                    || this.type.equals(TypeOperator.laplace) || this.type.equals(TypeOperator.mu)) {
+                for (int i = 0; i < this.params.length; i++) {
+                    if (this.params[i] instanceof Expression) {
+                        result = result && (((Expression) this.params[i]).antiEquivalent((Expression) operator.params[i]));
+                    } else {
+                        result = result && (this.params[i].equals(operator.params[i]));
+                    }
+                }
+            }
+
             return result;
 
         }

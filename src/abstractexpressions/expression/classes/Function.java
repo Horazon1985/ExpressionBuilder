@@ -660,6 +660,12 @@ public class Function extends Expression {
     }
 
     @Override
+    public boolean antiEquivalent(Expression expr) {
+        return expr instanceof Function && ((Function) expr).type.equals(this.type) 
+                && this.type.isOddFunction() && this.left.antiEquivalent(((Function) expr).left);
+    }
+    
+    @Override
     public boolean hasPositiveSign() {
         return true;
     }
