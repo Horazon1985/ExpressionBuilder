@@ -3474,7 +3474,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * Methode für das Faktorisieren in Summen. Es wird alles, bis auf
      * Konstanten, faktorisiert.
      */
-    public static void simplifyFactorizeInSums(ExpressionCollection summands) throws EvaluationException {
+    public static void simplifyFactorizeInSums(ExpressionCollection summands) {
 
         ExpressionCollection commonNumerators, commonDenominators;
         ExpressionCollection leftSummandRestNumerators, leftSummandRestDenominators,
@@ -3558,10 +3558,90 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
+     * Methode für das Faktorisieren in Summen. Es wird alles, bis auf
+     * Konstanten, faktorisiert.
+     */
+    public static void simplifyFactorizeAntiEquivalentExpressionsInSums(ExpressionCollection summands) {
+
+        Expression summandLeft, summandRight;
+        ExpressionCollection factorsNumeratorLeft, factorsNumeratorRight, factorsDenominatorLeft, factorsDenominatorRight;
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+
+            summandLeft = summands.get(i);
+
+            for (int j = i + 1; j < summands.getBound(); j++) {
+
+                if (summands.get(j) == null) {
+                    continue;
+                }
+
+                summandRight = summands.get(j);
+
+                factorsNumeratorLeft = SimplifyUtilities.getFactorsOfNumeratorInExpression(summandLeft);
+                factorsNumeratorRight = SimplifyUtilities.getFactorsOfNumeratorInExpression(summandRight);
+                factorsDenominatorLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandLeft);
+                factorsDenominatorRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandRight);
+
+                //Zähler absuchen.
+                for (int p = 0; p < factorsNumeratorLeft.getBound(); p++) {
+                    
+                    // Konstanten NICHT faktorisieren!
+                    if (factorsNumeratorLeft.get(i) instanceof Constant){
+                        continue;
+                    }
+                    
+                    for (int q = 0; q < factorsNumeratorRight.getBound(); q++) {
+                        if (factorsNumeratorLeft.get(p).antiEquivalent(factorsNumeratorRight.get(q))) {
+                            Expression commonFactor = factorsNumeratorLeft.get(p);
+                            factorsNumeratorLeft.remove(p);
+                            factorsNumeratorRight.remove(q);
+                            Expression factorizedSummand = commonFactor.mult(
+                                    SimplifyUtilities.produceQuotient(factorsNumeratorLeft, factorsDenominatorLeft).sub(
+                                            SimplifyUtilities.produceQuotient(factorsNumeratorRight, factorsDenominatorRight)));
+                            summands.put(i, factorizedSummand);
+                            summands.remove(j);
+                            return;
+                        }
+                    }
+                }
+                //Nenner absuchen.
+                for (int p = 0; p < factorsDenominatorLeft.getBound(); p++) {
+                    
+                    // Konstanten NICHT faktorisieren!
+                    if (factorsDenominatorLeft.get(i) instanceof Constant){
+                        continue;
+                    }
+                    
+                    for (int q = 0; q < factorsDenominatorRight.getBound(); q++) {
+                        if (factorsDenominatorLeft.get(p).antiEquivalent(factorsDenominatorRight.get(q))) {
+                            Expression commonFactor = factorsDenominatorLeft.get(p);
+                            factorsDenominatorLeft.remove(p);
+                            factorsDenominatorRight.remove(q);
+                            Expression factorizedSummand
+                                    = SimplifyUtilities.produceQuotient(factorsNumeratorLeft, factorsDenominatorLeft).sub(
+                                            SimplifyUtilities.produceQuotient(factorsNumeratorRight, factorsDenominatorRight)).div(commonFactor);
+                            summands.put(i, factorizedSummand);
+                            summands.remove(j);
+                            return;
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
      * Methode für das Faktorisieren in Differenzen. Es wird alles, bis auf
      * Konstanten, faktorisiert.
      */
-    public static void simplifyFactorizeInDifferences(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) throws EvaluationException {
+    public static void simplifyFactorizeInDifferences(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
         ExpressionCollection commonNumerators, commonDenominators;
         ExpressionCollection leftSummandRestNumerators, leftSummandRestDenominators,
@@ -3646,6 +3726,86 @@ public abstract class SimplifyBinaryOperationMethods {
 
     }
 
+    /**
+     * Methode für das Faktorisieren in Differenzen. Es wird alles, bis auf
+     * Konstanten, faktorisiert.
+     */
+    public static void simplifyFactorizeAntiEquivalentExpressionsInDifferences(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
+
+        Expression summandLeft, summandRight;
+        ExpressionCollection factorsNumeratorLeft, factorsNumeratorRight, factorsDenominatorLeft, factorsDenominatorRight;
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            if (summandsLeft.get(i) == null) {
+                continue;
+            }
+
+            summandLeft = summandsLeft.get(i);
+
+            for (int j = 0; j < summandsRight.getBound(); j++) {
+
+                if (summandsRight.get(j) == null) {
+                    continue;
+                }
+
+                summandRight = summandsRight.get(j);
+
+                factorsNumeratorLeft = SimplifyUtilities.getFactorsOfNumeratorInExpression(summandLeft);
+                factorsNumeratorRight = SimplifyUtilities.getFactorsOfNumeratorInExpression(summandRight);
+                factorsDenominatorLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandLeft);
+                factorsDenominatorRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandRight);
+
+                //Zähler absuchen.
+                for (int p = 0; p < factorsNumeratorLeft.getBound(); p++) {
+                    
+                    // Konstanten NICHT faktorisieren!
+                    if (factorsNumeratorLeft.get(i) instanceof Constant){
+                        continue;
+                    }
+                    
+                    for (int q = 0; q < factorsNumeratorRight.getBound(); q++) {
+                        if (factorsNumeratorLeft.get(p).antiEquivalent(factorsNumeratorRight.get(q))) {
+                            Expression commonFactor = factorsNumeratorLeft.get(p);
+                            factorsNumeratorLeft.remove(p);
+                            factorsNumeratorRight.remove(q);
+                            Expression factorizedSummand = commonFactor.mult(
+                                    SimplifyUtilities.produceQuotient(factorsNumeratorLeft, factorsDenominatorLeft).add(
+                                            SimplifyUtilities.produceQuotient(factorsNumeratorRight, factorsDenominatorRight)));
+                            summandsLeft.put(i, factorizedSummand);
+                            summandsRight.remove(j);
+                            return;
+                        }
+                    }
+                }
+                //Nenner absuchen.
+                for (int p = 0; p < factorsDenominatorLeft.getBound(); p++) {
+                    
+                    // Konstanten NICHT faktorisieren!
+                    if (factorsDenominatorLeft.get(i) instanceof Constant){
+                        continue;
+                    }
+                    
+                    for (int q = 0; q < factorsDenominatorRight.getBound(); q++) {
+                        if (factorsDenominatorLeft.get(p).antiEquivalent(factorsDenominatorRight.get(q))) {
+                            Expression commonFactor = factorsDenominatorLeft.get(p);
+                            factorsDenominatorLeft.remove(p);
+                            factorsDenominatorRight.remove(q);
+                            Expression factorizedSummand
+                                    = SimplifyUtilities.produceQuotient(factorsNumeratorLeft, factorsDenominatorLeft).add(
+                                            SimplifyUtilities.produceQuotient(factorsNumeratorRight, factorsDenominatorRight)).div(commonFactor);
+                            summandsLeft.put(i, factorizedSummand);
+                            summandsRight.remove(j);
+                            return;
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+    }
+    
     /**
      * Hilfsmethode für simplifyExpand() in BinaryOperation. Multipliziert EINE
      * Klammer vollständig aus (gilt sowohl für Multiplikationen als auch für
