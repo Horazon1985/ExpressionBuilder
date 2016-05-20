@@ -435,6 +435,29 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
+    public void antiEequivalentTest() {
+        try {
+            Expression f = Expression.build("((x+y)-z)^5", null);
+            Expression g = Expression.build("(z-(x+y))^5", null);
+            Assert.assertTrue(f.antiEquivalent(g));
+            f = Expression.build("((x+y)-z)^(4/7)", null);
+            g = Expression.build("(z-(x+y))^(4/7)", null);
+            Assert.assertFalse(f.antiEquivalent(g));
+            f = Expression.build("sin(((x+y)-z)^(-3))", null);
+            g = Expression.build("sin((z-(x+y))^(-3))", null);
+            Assert.assertTrue(f.antiEquivalent(g));
+            f = Expression.build("(x+y)-z", null);
+            g = Expression.build("z-(x+y)", null);
+            Assert.assertTrue(f.antiEquivalent(g));
+            f = Expression.build("exp(((x+y)-z))", null);
+            g = Expression.build("exp((z-(x+y)))", null);
+            Assert.assertFalse(f.equivalent(g));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
     public void reduceFractionTest1() {
         // ((a^2+b^2)/(b+a^2/b) = b
         Expression f = a.pow(2).add(b.pow(2)).div(b.add(a.pow(2).div(b)));
