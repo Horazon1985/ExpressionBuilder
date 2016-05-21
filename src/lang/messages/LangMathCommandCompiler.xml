@@ -777,6 +777,18 @@
         <Ukrainian>Різниця між [0]. і [1]. параметр команди 'plotspherical' не повинен перевищувати 20*pi.</Ukrainian>
         <Russian>Разница между [0]. и [1]. параметр команды 'plotspherical' не должен превышать 20*pi.</Russian>
     </object>
+    <object id = "MCC_PLOTVECTORFIELD2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
+        <German>???</German>
+        <English>???</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "MCC_PLOTVECTORFIELD_CANNOT_BE_PLOTTED">
+        <German>???</German>
+        <English>???</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
         <German>Zu wenig Parameter im Befehl 'solve'.</German>
         <English>Not enough parameters in command 'solve'.</English>
