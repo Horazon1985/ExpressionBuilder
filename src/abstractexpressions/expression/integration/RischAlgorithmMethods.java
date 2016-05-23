@@ -183,7 +183,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                         continue;
                     }
                     try {
-                        currentQuotient = nonConstantSummand.div(((Function) fieldGenerator).getLeft()).simplify();
+                        currentQuotient = nonConstantSummand.div(((Function) fieldGenerator).getLeft()).simplify(simplifyTypesForDifferentialFieldExtension);
                         if (currentQuotient.isIntegerConstant()) {
                             return true;
                         }
@@ -512,7 +512,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                         polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithm);
 
                     integral = SubstitutionUtilities.substituteExpressionByAnotherExpression(integral, transcententalElement, Variable.create(transcendentalVar));
-                    equoationForFreeConstant = integral.diff(transcendentalVar).simplify();
+                    equoationForFreeConstant = integral.diff(transcendentalVar).simplify(simplifyTypesRischAlgorithm);
 
                     if (!SimplifyPolynomialMethods.isLinearPolynomial(equoationForFreeConstant, freeConstantsVars[i + 1])) {
                         throw new NotAlgebraicallyIntegrableException();
@@ -569,7 +569,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (factorsDenominator.getBound() == 1) {
             leadingCoefficient = coefficientsDenominator.get(coefficientsDenominator.getBound() - 1);
             factorsDenominator.divideByExpression(leadingCoefficient);
-            factorsDenominator = factorsDenominator.simplify();
+            factorsDenominator = factorsDenominator.simplify(simplifyTypesRischAlgorithm);
         } else {
             for (int i = 0; i < factorsDenominator.getBound(); i++) {
                 if (!factorsDenominator.get(i).contains(transcendentalVar)) {
@@ -579,12 +579,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
         }
 
-        leadingCoefficient = leadingCoefficient.simplify();
+        leadingCoefficient = leadingCoefficient.simplify(simplifyTypesRischAlgorithm);
 
         // Nenner normieren!
         decompositionOfDenominator = SimplifyUtilities.produceProduct(factorsDenominator);
         coefficientsNumerator.divideByExpression(leadingCoefficient);
-        coefficientsNumerator = coefficientsNumerator.simplify();
+        coefficientsNumerator = coefficientsNumerator.simplify(simplifyTypesRischAlgorithm);
 
         // Hermite-Reduktion und später expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
         return doHermiteReduction(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
@@ -664,7 +664,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 try {
                     derivativeOfV = v.replaceVariable(transcendentalVar, transcententalElement);
                     derivativeOfV = derivativeOfV.diff(var);
-                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify();
+                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
 
                     System.out.println("m = " + m);
                     System.out.println("u = " + u);
@@ -690,7 +690,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                     System.out.println("B' = " + derivativeOfB);
 
-                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify();
+                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify(simplifyTypesRischAlgorithm);
                     ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
 
                     System.out.println("(1-m)C - UB' = " + newIntegrand);
@@ -727,10 +727,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         // Leitkoeffizienten vom Nenner in den Zähler verschieben.
         if (!coefficientsDenominator.get(coefficientsDenominator.getBound() - 1).equals(ONE)) {
             coefficientsNumerator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
-            coefficientsNumerator = coefficientsNumerator.simplify();
+            coefficientsNumerator = coefficientsNumerator.simplify(simplifyTypesRischAlgorithm);
 
             coefficientsDenominator.divideByExpression(coefficientsDenominator.get(coefficientsDenominator.getBound() - 1));
-            coefficientsDenominator = coefficientsDenominator.simplify();
+            coefficientsDenominator = coefficientsDenominator.simplify(simplifyTypesRischAlgorithm);
         }
 
         // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
