@@ -877,7 +877,7 @@ public class BinaryOperation extends Expression {
             if (this.left instanceof Constant) {
                 return ((BinaryOperation) this).getRight().length();
             }
-            if (this.right instanceof Constant) {
+            if (this.right instanceof Constant && !(this.right instanceof BinaryOperation)) {
                 return ((BinaryOperation) this).getLeft().length();
             }
         }
@@ -1490,8 +1490,8 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyFactorize());
             }
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
             SimplifyBinaryOperationMethods.simplifyFactorizeAntiEquivalentExpressionsInSums(summands);
+            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
             return SimplifyUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -1500,8 +1500,8 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
             SimplifyBinaryOperationMethods.simplifyFactorizeAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {

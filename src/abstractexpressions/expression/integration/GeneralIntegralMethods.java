@@ -629,7 +629,6 @@ public abstract class GeneralIntegralMethods {
 
         // ZUM SCHLUSS, falls bisher nichts funktioniert hat: Risch-Algorithmus.
         try {
-//            result = RischAlgorithmMethods.integrateByRischAlgorithmForDegOneExtension(expr);
             result = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension(expr);
             if (!result.containsIndefiniteIntegral()) {
                 // Ergebnis nur DANN ausgeben, wenn darin keine weiteren Integrale vorkommen.

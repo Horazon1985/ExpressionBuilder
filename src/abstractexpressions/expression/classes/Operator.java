@@ -175,14 +175,14 @@ public class Operator extends Expression {
         }
 
         if (this.getType().equals(TypeOperator.diff)) {
-            return simplifyTrivialDiff().evaluate();
+            return simplifyBasicDiff().evaluate();
         }
         if (this.getType().equals(TypeOperator.div)) {
-            return simplifyTrivialDiv().evaluate();
+            return simplifyBasicDiv().evaluate();
         }
         if (this.getType().equals(TypeOperator.fac)) {
 
-            Expression expr = this.simplifyTrivialFac();
+            Expression expr = this.simplifyBasicFac();
             if (expr instanceof Operator && ((Operator) expr).getType().equals(TypeOperator.fac)) {
                 return AnalysisMethods.Gamma(((Expression) this.params[0]).evaluate() + 1);
             }
@@ -190,11 +190,11 @@ public class Operator extends Expression {
 
         }
         if (this.getType().equals(TypeOperator.gcd)) {
-            return simplifyTrivialGCD().evaluate();
+            return simplifyBasicGCD().evaluate();
         }
         if (this.getType().equals(TypeOperator.integral)) {
 
-            Expression expr = this.simplifyTrivialInt();
+            Expression expr = this.simplifyBasicInt();
             if (expr instanceof Operator && ((Operator) expr).getType().equals(TypeOperator.integral)) {
 
                 if (((Operator) expr).getParams().length == 2) {
@@ -222,22 +222,22 @@ public class Operator extends Expression {
 
         }
         if (this.getType().equals(TypeOperator.laplace)) {
-            return simplifyTrivialLaplace().evaluate();
+            return simplifyBasicLaplace().evaluate();
         }
         if (this.getType().equals(TypeOperator.lcm)) {
-            return simplifyTrivialLCM().evaluate();
+            return simplifyBasicLCM().evaluate();
         }
         if (this.getType().equals(TypeOperator.mod)) {
-            return simplifyTrivialMod().evaluate();
+            return simplifyBasicMod().evaluate();
         }
         if (this.getType().equals(TypeOperator.prod)) {
-            return simplifyTrivialProd().evaluate();
+            return simplifyBasicProd().evaluate();
         }
         if (this.getType().equals(TypeOperator.sum)) {
-            return simplifyTrivialSum().evaluate();
+            return simplifyBasicSum().evaluate();
         }
         if (this.getType().equals(TypeOperator.taylor)) {
-            return simplifyTrivialTaylor().evaluate();
+            return simplifyBasicTaylor().evaluate();
         }
         return 0;
 
@@ -1229,7 +1229,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.diff)
-    private Expression simplifyTrivialDiff() throws EvaluationException {
+    private Expression simplifyBasicDiff() throws EvaluationException {
 
         Expression expr = (Expression) this.params[0];
         if (this.params.length == 3 && this.params[2] instanceof Integer) {
@@ -1254,7 +1254,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.div)
-    private Expression simplifyTrivialDiv() throws EvaluationException {
+    private Expression simplifyBasicDiv() throws EvaluationException {
 
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
@@ -1277,7 +1277,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.fac)
-    private Expression simplifyTrivialFac() throws EvaluationException {
+    private Expression simplifyBasicFac() throws EvaluationException {
 
         Expression argument = ((Expression) this.params[0]).simplify();
 
@@ -1340,7 +1340,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.fourier)
-    private Expression simplifyTrivialFourier() throws EvaluationException {
+    private Expression simplifyBasicFourier() throws EvaluationException {
 
         Expression f = ((Expression) this.params[0]).simplify();
         String var = (String) this.params[1];
@@ -1358,7 +1358,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.gcd)
-    private Expression simplifyTrivialGCD() throws EvaluationException {
+    private Expression simplifyBasicGCD() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         ArrayList<BigInteger> integerArguments = new ArrayList<>();
@@ -1399,7 +1399,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.integral)
-    private Expression simplifyTrivialInt() throws EvaluationException {
+    private Expression simplifyBasicInt() throws EvaluationException {
 
         if (this.params.length == 2) {
             return GeneralIntegralMethods.integrateIndefinite(this);
@@ -1439,7 +1439,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.laplace)
-    private Expression simplifyTrivialLaplace() throws EvaluationException {
+    private Expression simplifyBasicLaplace() throws EvaluationException {
 
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
@@ -1466,7 +1466,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.lcm)
-    private Expression simplifyTrivialLCM() throws EvaluationException {
+    private Expression simplifyBasicLCM() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         ArrayList<BigInteger> integerArguments = new ArrayList<>();
@@ -1507,7 +1507,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.max)
-    private Expression simplifyTrivialMax() throws EvaluationException {
+    private Expression simplifyBasicMax() throws EvaluationException {
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < arguments.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
@@ -1537,7 +1537,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.min)
-    private Expression simplifyTrivialMin() throws EvaluationException {
+    private Expression simplifyBasicMin() throws EvaluationException {
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < arguments.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
@@ -1567,7 +1567,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.mod)
-    private Expression simplifyTrivialMod() throws EvaluationException {
+    private Expression simplifyBasicMod() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         ArrayList<BigInteger> integerArguments = new ArrayList<>();
@@ -1595,7 +1595,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.mu)
-    private Expression simplifyTrivialMu() throws EvaluationException {
+    private Expression simplifyBasicMu() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
@@ -1617,7 +1617,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.prod)
-    private Expression simplifyTrivialProd() throws EvaluationException {
+    private Expression simplifyBasicProd() throws EvaluationException {
 
         Expression factor = (Expression) this.params[0];
 
@@ -1678,7 +1678,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.sigma)
-    private Expression simplifyTrivialSigma() throws EvaluationException {
+    private Expression simplifyBasicSigma() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
@@ -1701,7 +1701,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.sum)
-    private Expression simplifyTrivialSum() throws EvaluationException {
+    private Expression simplifyBasicSum() throws EvaluationException {
 
         Expression summand = (Expression) this.params[0];
 
@@ -1767,7 +1767,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.taylor)
-    private Expression simplifyTrivialTaylor() throws EvaluationException {
+    private Expression simplifyBasicTaylor() throws EvaluationException {
 
         Expression f = (Expression) this.params[0];
         Expression centerPoint = (Expression) this.params[2];
@@ -1782,7 +1782,7 @@ public class Operator extends Expression {
      * @throws EvaluationException
      */
     @SimplifyOperator(type = TypeOperator.var)
-    private Expression simplifyTrivialVar() throws EvaluationException {
+    private Expression simplifyBasicVar() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
         for (int i = 0; i < this.params.length; i++) {

@@ -652,25 +652,25 @@ public class MatrixOperator extends MatrixExpression {
         // Nun wird noch operatorspezifisch vereinfacht.
         switch (type) {
             case cov:
-                return matrixOperator.simplifyTrivialCov();
+                return matrixOperator.simplifyBasicCov();
             case cross:
-                return matrixOperator.simplifyTrivialCross();
+                return matrixOperator.simplifyBasicCross();
             case diff:
-                return matrixOperator.simplifyTrivialDiff();
+                return matrixOperator.simplifyBasicDiff();
             case div:
-                return matrixOperator.simplifyTrivialDiv();
+                return matrixOperator.simplifyBasicDiv();
             case grad:
-                return matrixOperator.simplifyTrivialGrad();
+                return matrixOperator.simplifyBasicGrad();
             case integral:
-                return matrixOperator.simplifyTrivialInt();
+                return matrixOperator.simplifyBasicInt();
             case laplace:
-                return matrixOperator.simplifyTrivialLaplace();
+                return matrixOperator.simplifyBasicLaplace();
             case prod:
-                return matrixOperator.simplifyTrivialProd();
+                return matrixOperator.simplifyBasicProd();
             case rot:
-                return matrixOperator.simplifyTrivialRot();
+                return matrixOperator.simplifyBasicRot();
             case sum:
-                return matrixOperator.simplifyTrivialSum();
+                return matrixOperator.simplifyBasicSum();
         }
 
         // Kommt nicht vor, aber trotzdem;
@@ -684,7 +684,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.cov)
-    private MatrixExpression simplifyTrivialCov() throws EvaluationException {
+    private MatrixExpression simplifyBasicCov() throws EvaluationException {
 
         MatrixExpression[] points = new MatrixExpression[params.length];
         Dimension dim;
@@ -729,7 +729,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.cross)
-    private MatrixExpression simplifyTrivialCross() throws EvaluationException {
+    private MatrixExpression simplifyBasicCross() throws EvaluationException {
 
         MatrixExpression[] vectors = new MatrixExpression[params.length];
         Dimension dim;
@@ -789,7 +789,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.diff)
-    private MatrixExpression simplifyTrivialDiff() throws EvaluationException {
+    private MatrixExpression simplifyBasicDiff() throws EvaluationException {
 
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
         if (this.params.length == 2) {
@@ -820,7 +820,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.div)
-    private MatrixExpression simplifyTrivialDiv() throws EvaluationException {
+    private MatrixExpression simplifyBasicDiv() throws EvaluationException {
 
         Dimension dim = ((MatrixExpression) this.params[0]).getDimension();
         MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
@@ -845,7 +845,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.grad)
-    private MatrixExpression simplifyTrivialGrad() throws EvaluationException {
+    private MatrixExpression simplifyBasicGrad() throws EvaluationException {
 
         MatrixExpression expr = ((MatrixExpression) this.params[0]).simplify();
         Object exprConverted = expr.convertOneTimesOneMatrixToExpression();
@@ -869,7 +869,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.integral)
-    private MatrixExpression simplifyTrivialInt() throws EvaluationException {
+    private MatrixExpression simplifyBasicInt() throws EvaluationException {
 
         if (this.params[0] instanceof Matrix) {
 
@@ -921,7 +921,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.laplace)
-    private MatrixExpression simplifyTrivialLaplace() throws EvaluationException {
+    private MatrixExpression simplifyBasicLaplace() throws EvaluationException {
 
         Dimension dim = ((MatrixExpression) this.params[0]).getDimension();
         MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
@@ -951,7 +951,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.prod)
-    private MatrixExpression simplifyTrivialProd() throws EvaluationException {
+    private MatrixExpression simplifyBasicProd() throws EvaluationException {
 
         MatrixExpression factor = (MatrixExpression) this.params[0];
 
@@ -993,7 +993,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.rot)
-    private MatrixExpression simplifyTrivialRot() throws EvaluationException {
+    private MatrixExpression simplifyBasicRot() throws EvaluationException {
 
         MatrixExpression matExpr = ((MatrixExpression) this.params[0]).simplify();
 
@@ -1029,7 +1029,7 @@ public class MatrixOperator extends MatrixExpression {
      * @throws EvaluationException
      */
     @SimplifyMatrixOperator(type = TypeMatrixOperator.sum)
-    private MatrixExpression simplifyTrivialSum() throws EvaluationException {
+    private MatrixExpression simplifyBasicSum() throws EvaluationException {
 
         MatrixExpression summand = (MatrixExpression) this.params[0];
 
