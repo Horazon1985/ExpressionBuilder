@@ -394,7 +394,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Integranden auf bestimmte Art und Weise vereinfachen.
         f = f.simplify(simplifyTypesRischAlgorithm);
-        
+
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
 
         // Nur echte transzende Erweiterungen betrachten. Diese müssen die Funktion auch erzeugen können.
@@ -553,7 +553,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
 
         System.out.println("---------- Risch-Algorithmus für den gebrochenen Teil ----------------");
-        
+
         Expression decompositionOfDenominator;
         try {
             decompositionOfDenominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
@@ -627,9 +627,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
                     denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
                 }
-                
+
                 System.out.println("Neuer Nenner = " + denominator);
-                
+
             }
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
@@ -695,8 +695,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                     System.out.println("(1-m)C - UB' = " + newIntegrand);
 
-                    return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
-                            transcententalElement, var, transcendentalVar));
+                    return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(
+                            doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
+                                    transcententalElement, var, transcendentalVar));
 
                 } catch (EvaluationException e) {
                     factorsDenominator.put(i, v.pow(m));
