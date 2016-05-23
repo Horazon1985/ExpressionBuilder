@@ -4027,7 +4027,6 @@ public abstract class SimplifyBinaryOperationMethods {
                 for (int k = 0; k < rationalDenominatorsRight.getBound(); k++) {
                     if (!(rationalDenominatorsRight.get(k) instanceof Constant)) {
                         nonRationalDenominatorsRight.add(rationalDenominatorsRight.get(k));
-                        rationalNumeratorsLeft.remove(k);
                         rationalDenominatorsRight.remove(k);
                     }
                 }
