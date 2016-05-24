@@ -2932,10 +2932,10 @@ public abstract class SimplifyBinaryOperationMethods {
             if (factorsNumerator.get(i) == null) {
                 continue;
             }
-//            if (containsDoubleFraction(factorsNumerator.get(i))) {
-//                // Sicherheitshalber, sonst kann es Endlosschleifen geben.
-//                continue;
-//            }
+            if (containsDoubleFraction(factorsNumerator.get(i))) {
+                // Sicherheitshalber, sonst kann es Endlosschleifen geben.
+                continue;
+            }
 
             factorNumerator = factorsNumerator.get(i);
             for (int j = 0; j < factorsDenominator.getBound(); j++) {
@@ -2943,10 +2943,10 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (factorsDenominator.get(j) == null) {
                     continue;
                 }
-//                if (containsDoubleFraction(factorsDenominator.get(j))) {
-//                    // Sicherheitshalber, sonst kann es Endlosschleifen geben.
-//                    continue;
-//                }
+                if (containsDoubleFraction(factorsDenominator.get(j))) {
+                    // Sicherheitshalber, sonst kann es Endlosschleifen geben.
+                    continue;
+                }
 
                 factorDenominator = factorsDenominator.get(j);
                 if ((factorNumerator.isSum() || factorNumerator.isDifference())
