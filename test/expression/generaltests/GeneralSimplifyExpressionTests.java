@@ -568,6 +568,19 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
+    public void bringFractionToCommonDenominatorTest3() {
+        // a+x*(1/x+2*x) = (x*a+x+2*x^3)/x
+        try {
+            Expression f = Expression.build("a+x*(1/x+2*x)", null);
+            Expression g = Expression.build("(x*a+x+2*x^3)/x", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void reduceLongFractionTest() {
         /* 
          Anspruchsvoll: ((2*x^2*s)/(x^2+x^4-2*x^3)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-((x*s)/(x-x^2)+(2*x)/(x^2+x^4-2*x^3)+(s*x^3)/(x^2+x^4-2*x^3)))/((x^2*s)/(x^2+x^4-2*x^3)+x/(x^2+x^4-2*x^3)+x/(x-x^2)-((x*s)/(x-x^2)+(2*x^2)/(x^2+x^4-2*x^3)))

@@ -768,10 +768,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
             Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar)).replaceVariable(transcendentalVar, transcententalElement);
+
+            System.out.println("Integration mittels Partialbruchzerlegung von " + integrand);
+
             return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
         }
 
-        // Sei t = transcendentalVar, a(t) = Zählöer, b(t) = Nenner.
+        // Sei t = transcendentalVar, a(t) = Zähler, b(t) = Nenner.
         // Zunächst: b'(t) bestimmen (Ableitung nach x = var).
         Expression derivativeOfDenominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
         derivativeOfDenominator = derivativeOfDenominator.replaceVariable(transcendentalVar, transcententalElement);
@@ -789,14 +792,20 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         ExpressionCollection coefficientsOfFirstArgument = SimplifyPolynomialMethods.subtractPolynomials(coefficientsNumerator,
                 SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(Variable.create(resultantVar)), coefficientsDerivativeOfDenominator));
         // Zweites Argument der Resultante: b(t);
+        
+        System.out.println("Koeffizienten der Argumente der Resultante: " + coefficientsOfFirstArgument + ", " + coefficientsDenominator);
+        
         MatrixExpression resultantAsMatrixExpression = SimplifyPolynomialMethods.getResultant(coefficientsOfFirstArgument, coefficientsDenominator);
-
+        
         if (!(resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression() instanceof Expression)) {
             // Resultante nicht explizit berechenbar.
             throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression resultant = (Expression) resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression();
+        
+        System.out.println("Resultante: " + resultant);
+        
         if (!SimplifyPolynomialMethods.isPolynomial(resultant, resultantVar)) {
             // Sollte eigentlich nie vorkommen.
             throw new NotAlgebraicallyIntegrableException();
@@ -804,6 +813,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
         resultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
+        
+        System.out.println("Faktorisierte Resultante: " + resultant);
+        
         if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, resultantVar, var)) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -818,7 +830,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         } catch (NotAlgebraicallySolvableException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
-
+        
+        System.out.println("Nullstellen der Resultante: " + zerosOfResultant);
+        
         ExpressionCollection thetas = new ExpressionCollection();
         Expression gcd;
         if (transcententalElement.isFunction(TypeFunction.exp) || transcententalElement.isFunction(TypeFunction.ln)) {
@@ -831,6 +845,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
         }
 
+        System.out.println("Thetas: " + thetas);
+        
         // Logarithmischer Fall.
         if (transcententalElement.isFunction(TypeFunction.ln)) {
 
@@ -839,6 +855,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(thetas.get(i).ln());
             }
+            
+            System.out.println("Integral: " + integral);
+            
             return integral;
 
         }

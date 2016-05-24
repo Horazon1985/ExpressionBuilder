@@ -86,6 +86,7 @@ public class TestRunner {
             for (Method test : methods) {
                 if (test.getAnnotation(Test.class) != null) {
                     try {
+                        System.out.println("Execution of test " + test.getName() + " begins ...");
                         test.invoke(obj);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");

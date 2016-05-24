@@ -1964,11 +1964,11 @@ public abstract class Expression implements AbstractExpression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
                     copy = exprSimplified.copy();
                     exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
-                    if (!copy.equals(exprSimplified)) {
-                        System.out.println("Vorher: " + copy);
-                        System.out.println("Nachher: " + exprSimplified);
-                        System.out.println("--------------------------");
-                    }
+//                    if (!copy.equals(exprSimplified)) {
+//                        System.out.println("Vorher: " + copy);
+//                        System.out.println("Nachher: " + exprSimplified);
+//                        System.out.println("--------------------------");
+//                    }
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (exprSimplified.containsAlgebraicOperation()) {

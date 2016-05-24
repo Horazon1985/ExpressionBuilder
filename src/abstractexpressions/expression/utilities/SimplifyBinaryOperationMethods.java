@@ -2957,6 +2957,7 @@ public abstract class SimplifyBinaryOperationMethods {
                         // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
                         factorsNumerator.put(i, reducedFactor[0]);
                         factorsDenominator.put(j, reducedFactor[1]);
+                        break;
                     }
 
                 } else if (factorNumerator.isPower() && factorDenominator.isPower()
@@ -2974,6 +2975,7 @@ public abstract class SimplifyBinaryOperationMethods {
                             // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
                             factorsNumerator.put(i, reducedFactor[0].pow(((BinaryOperation) factorNumerator).getRight()));
                             factorsDenominator.put(j, reducedFactor[1]);
+                            break;
                         }
 
                     }
@@ -3095,6 +3097,12 @@ public abstract class SimplifyBinaryOperationMethods {
                     // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
                     ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
                     ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
+                    
+                    if (coefficientsNumerator.getBound() < 2 || coefficientsDenominator.getBound() < 2){
+                        // Falls eines der Grade doch noch auf 0 sinkt (getDegreeOfPolynomial() ist nur eine obere Schranke für den Grad!).
+                        return new Expression[0];
+                    }
+                    
                     ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
                     if (quotient[1].isEmpty()) {
                         return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution), ONE};

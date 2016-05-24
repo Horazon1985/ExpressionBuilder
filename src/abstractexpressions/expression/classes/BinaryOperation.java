@@ -1269,15 +1269,20 @@ public class BinaryOperation extends Expression {
                 factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringFractionsToCommonDenominator());
             }
             // Bis hierhin ist das Ergebnis von der Form (A_1/B_1)* ... *(A_m/B_m) / (C_1/D_1)* ... *(C_n/D_n). Den Rest erledigt das Ordnen.
-            return SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).orderDifferencesAndQuotients();
+            expr = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).orderDifferencesAndQuotients();
         } else if (this.isPower()) {
-            return this.left.simplifyBringFractionsToCommonDenominator().pow(this.right.simplifyBringFractionsToCommonDenominator());
+            expr = this.left.simplifyBringFractionsToCommonDenominator().pow(this.right.simplifyBringFractionsToCommonDenominator());
         }
 
         if (expr.isNotSum() && expr.isNotDifference()) {
             return expr;
         }
 
+        // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.
+        if (!containsDoubleFraction(expr)){
+            return expr;
+        }
+        
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
         ExpressionCollection commonDenominators;
@@ -1533,6 +1538,40 @@ public class BinaryOperation extends Expression {
 
     }
 
+    /**
+     * Hilfsmethode. Gibt zurück, ob expr Doppelbrüche enthält, die man auf
+     * einen Bruch bringen könnte (d.h. beispielsweise, dass Brüche in
+     * Funktionsargumenten ignoriert werden).
+     */
+    private static boolean containsDoubleFraction(Expression expr) {
+        return containsRepeatedFraction(expr, true);
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob expr Doppelbrüche enthält, die man auf
+     * einen Bruch bringen könnte (d.h. beispielsweise, dass Brüche in
+     * Funktionsargumenten ignoriert werden).
+     */
+    private static boolean containsRepeatedFraction(Expression expr, boolean nestedFractionAllowed) {
+
+        if (expr instanceof BinaryOperation) {
+            if (expr.isSum() || expr.isDifference() || expr.isProduct()) {
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), nestedFractionAllowed) || containsRepeatedFraction(((BinaryOperation) expr).getRight(), nestedFractionAllowed);
+            }
+            if (expr.isQuotient()) {
+                if (!nestedFractionAllowed) {
+                    return true;
+                }
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), false) || containsRepeatedFraction(((BinaryOperation) expr).getRight(), false);
+            }
+            if (expr.isIntegerPower()) {
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), nestedFractionAllowed);
+            }
+        }
+        return false;
+
+    }
+    
     @Override
     public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
 
