@@ -11,7 +11,6 @@ import enums.TypeSimplify;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -536,6 +535,32 @@ public class GeneralSimplifyExpressionTests {
             f = Expression.build("a^2/((a+a^2)*(a*b+a^5))", null);
             g = Expression.build("1/((1+a)*(b+a^4))", null);
             f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorTest1() {
+        // (1 + a*(1/x+1/y))/b = (x*y + a*(x+y))/(b*x*y)
+        try {
+            Expression f = Expression.build("(1 + a*(1/x+1/y))/b", null);
+            Expression g = Expression.build("(x*y + a*(y+x))/(x*y*b)", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorTest2() {
+        // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))
+        try {
+            Expression f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
+            Expression g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());

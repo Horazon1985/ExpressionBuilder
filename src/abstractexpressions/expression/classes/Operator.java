@@ -952,7 +952,7 @@ public class Operator extends Expression {
                 return false;
             }
 
-            if (this.type.equals(TypeOperator.fourier) || this.type.equals(TypeOperator.integral) 
+            if (this.type.equals(TypeOperator.fourier) || this.type.equals(TypeOperator.integral)
                     || this.type.equals(TypeOperator.sum) || this.type.equals(TypeOperator.taylor)) {
                 result = result && (((Expression) this.params[0]).antiEquivalent((Expression) operator.params[0]));
                 for (int i = 1; i < this.params.length; i++) {
@@ -962,7 +962,7 @@ public class Operator extends Expression {
                         result = result && (this.params[i].equals(operator.params[i]));
                     }
                 }
-            } else if (this.type.equals(TypeOperator.diff) || this.type.equals(TypeOperator.div) 
+            } else if (this.type.equals(TypeOperator.diff) || this.type.equals(TypeOperator.div)
                     || this.type.equals(TypeOperator.laplace) || this.type.equals(TypeOperator.mu)) {
                 for (int i = 0; i < this.params.length; i++) {
                     if (this.params[i] instanceof Expression) {
@@ -1122,6 +1122,19 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
                 resultParams[i] = ((Expression) this.params[i]).simplifyExpand(type);
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+        return new Operator(this.type, resultParams, this.precise);
+    }
+
+    @Override
+    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
+        Object[] resultParams = new Object[this.params.length];
+        for (int i = 0; i < this.params.length; i++) {
+            if (params[i] instanceof Expression) {
+                resultParams[i] = ((Expression) this.params[i]).simplifyBringFractionsToCommonDenominator();
             } else {
                 resultParams[i] = this.params[i];
             }

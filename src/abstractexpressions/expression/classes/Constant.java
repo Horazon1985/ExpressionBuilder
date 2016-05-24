@@ -289,6 +289,11 @@ public class Constant extends Expression {
     }
 
     @Override
+    public Expression simplifyBringFractionsToCommonDenominator(){
+        return this;
+    }
+    
+    @Override
     public Expression simplifyReduceDifferencesAndQuotients() {
         return this;
     }

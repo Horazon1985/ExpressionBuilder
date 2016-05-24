@@ -43,6 +43,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
@@ -60,6 +61,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
@@ -607,6 +609,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
         ExpressionCollection coefficientsDenominator;
         try {
+
+            // Alle transzendenten Ausdrücke werden vorübergehend durch Unbestimmte ersetzt -> verkürzt Rechenaufwand.
+            Expression numerator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+            ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(numerator.div(denominator), var);
+            String[] transcendentalVars = new String[transcendentalExtensions.getBound()];
+            for (int i = transcendentalExtensions.getBound() - 1; i >= 0; i--) {
+                transcendentalVars[i] = SubstitutionUtilities.getSubstitutionVariable(coefficientsNumerator, denominator);
+                coefficientsNumerator = SubstitutionUtilities.substituteExpressionByAnotherExpressionInExpressionCollection(
+                        coefficientsNumerator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+                denominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+            }
+
             coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
             ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
 
@@ -631,6 +645,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 System.out.println("Neuer Nenner = " + denominator);
 
             }
+
+            // Rücksubstitution.
+            for (int i = 0; i < transcendentalVars.length; i++) {
+                for (int j = 0; j < coefficientsNumerator.getBound(); j++) {
+                    coefficientsNumerator.put(j, coefficientsNumerator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
+                }
+                for (int j = 0; j < coefficientsDenominator.getBound(); j++) {
+                    coefficientsDenominator.put(j, coefficientsDenominator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
+                }
+                denominator = denominator.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
+            }
+
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }

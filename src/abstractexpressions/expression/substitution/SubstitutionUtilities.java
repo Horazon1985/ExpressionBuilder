@@ -30,6 +30,7 @@ public abstract class SubstitutionUtilities {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
@@ -67,6 +68,35 @@ public abstract class SubstitutionUtilities {
                     someFContainsVar = true;
                     j++;
                     break;
+                }
+            }
+        } while (someFContainsVar);
+        return var + j;
+    }
+
+    /**
+     * In functions sind Variablen enthalten, unter anderem möglicherweise auch
+     * "Parametervariablen" X_1, X_2, .... Diese Funktion liefert dasjenige X_i
+     * mit dem kleinsten Index i, welches in keinem der Ausdrücke in functions
+     * vorkommt.
+     */
+    public static String getSubstitutionVariable(ExpressionCollection functions, Expression function) {
+        String var = NotationLoader.SUBSTITUTION_VAR + "_";
+        int j = 1;
+        boolean someFContainsVar;
+        do {
+            someFContainsVar = false;
+            for (Expression f : functions) {
+                if (f.contains(var + String.valueOf(j))) {
+                    someFContainsVar = true;
+                    j++;
+                    break;
+                }
+            }
+            if (!someFContainsVar) {
+                if (function.contains(var + String.valueOf(j))) {
+                    someFContainsVar = true;
+                    j++;
                 }
             }
         } while (someFContainsVar);
@@ -734,7 +764,7 @@ public abstract class SubstitutionUtilities {
         }
         if (f.isFunction()) {
             // Ausnahme: Exponentialfunktionen.
-            if (f.isFunction(TypeFunction.exp) && exprToSubstitute.isFunction(TypeFunction.exp)){
+            if (f.isFunction(TypeFunction.exp) && exprToSubstitute.isFunction(TypeFunction.exp)) {
                 try {
                     Expression exponent = ((Function) f).getLeft().div(((Function) exprToSubstitute).getLeft()).simplify();
                     if (exponent.isIntegerConstant()) {
@@ -748,6 +778,18 @@ public abstract class SubstitutionUtilities {
 
         return f;
 
+    }
+
+    /**
+     * Substituiert, falls möglich, in allen Ausdrücken in functions Ausdrücke,
+     * die äquivalent sind zu exprToSubstitute, durch subst.
+     */
+    public static ExpressionCollection substituteExpressionByAnotherExpressionInExpressionCollection(ExpressionCollection functions, Expression exprToSubstitute, Expression subst) {
+        ExpressionCollection substitutedFunctions = new ExpressionCollection();
+        for (Expression f : functions) {
+            substitutedFunctions.add(substituteExpressionByAnotherExpression(f, exprToSubstitute, subst));
+        }
+        return substitutedFunctions;
     }
 
 }

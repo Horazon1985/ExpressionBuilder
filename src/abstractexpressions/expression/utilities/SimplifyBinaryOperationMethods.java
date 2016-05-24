@@ -2932,6 +2932,10 @@ public abstract class SimplifyBinaryOperationMethods {
             if (factorsNumerator.get(i) == null) {
                 continue;
             }
+//            if (containsDoubleFraction(factorsNumerator.get(i))) {
+//                // Sicherheitshalber, sonst kann es Endlosschleifen geben.
+//                continue;
+//            }
 
             factorNumerator = factorsNumerator.get(i);
             for (int j = 0; j < factorsDenominator.getBound(); j++) {
@@ -2939,6 +2943,10 @@ public abstract class SimplifyBinaryOperationMethods {
                 if (factorsDenominator.get(j) == null) {
                     continue;
                 }
+//                if (containsDoubleFraction(factorsDenominator.get(j))) {
+//                    // Sicherheitshalber, sonst kann es Endlosschleifen geben.
+//                    continue;
+//                }
 
                 factorDenominator = factorsDenominator.get(j);
                 if ((factorNumerator.isSum() || factorNumerator.isDifference())
@@ -2951,13 +2959,13 @@ public abstract class SimplifyBinaryOperationMethods {
                         factorsDenominator.put(j, reducedFactor[1]);
                     }
 
-                }
-                /*
-                 Sonderfall: Zähler und Nenner sind von der Form a^k, b^k. 
-                 Dann zu (a/b)^k kürzen.
-                 */
-                if (factorNumerator.isPower() && factorDenominator.isPower()
+                } else if (factorNumerator.isPower() && factorDenominator.isPower()
                         && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
+
+                    /*
+                     Sonderfall: Zähler und Nenner sind von der Form a^k, b^k. 
+                     Dann zu (a/b)^k kürzen.
+                     */
                     if ((((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference())
                             && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
 
@@ -2974,6 +2982,40 @@ public abstract class SimplifyBinaryOperationMethods {
             }
 
         }
+
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob expr Doppelbrüche enthält, die man auf
+     * einen Bruch bringen könnte (d.h. beispielsweise, dass Brüche in
+     * Funktionsargumenten ignoriert werden).
+     */
+    private static boolean containsDoubleFraction(Expression expr) {
+        return containsRepeatedFraction(expr, true);
+    }
+
+    /**
+     * Hilfsmethode. Gibt zurück, ob expr Doppelbrüche enthält, die man auf
+     * einen Bruch bringen könnte (d.h. beispielsweise, dass Brüche in
+     * Funktionsargumenten ignoriert werden).
+     */
+    private static boolean containsRepeatedFraction(Expression expr, boolean nestedFractionAllowed) {
+
+        if (expr instanceof BinaryOperation) {
+            if (expr.isSum() || expr.isDifference() || expr.isProduct()) {
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), nestedFractionAllowed) || containsRepeatedFraction(((BinaryOperation) expr).getRight(), nestedFractionAllowed);
+            }
+            if (expr.isQuotient()) {
+                if (!nestedFractionAllowed) {
+                    return true;
+                }
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), false) || containsRepeatedFraction(((BinaryOperation) expr).getRight(), false);
+            }
+            if (expr.isIntegerPower()) {
+                return containsRepeatedFraction(((BinaryOperation) expr).getLeft(), nestedFractionAllowed);
+            }
+        }
+        return false;
 
     }
 

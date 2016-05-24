@@ -53,6 +53,7 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);

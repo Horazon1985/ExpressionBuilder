@@ -1244,6 +1244,296 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
+
+        Expression expr = this;
+
+        if (this.isSum() || this.isDifference()) {
+            // Jeden Summanden einzeln auf einen Nenner bringen.
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                summandsLeft.put(i, summandsLeft.get(i).simplifyBringFractionsToCommonDenominator());
+            }
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                summandsRight.put(i, summandsRight.get(i).simplifyBringFractionsToCommonDenominator());
+            }
+            expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+        } else if (this.isProduct() || this.isQuotient()) {
+            ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
+            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
+            for (int i = 0; i < factorsNumerator.getBound(); i++) {
+                factorsNumerator.put(i, factorsNumerator.get(i).simplifyBringFractionsToCommonDenominator());
+            }
+            for (int i = 0; i < factorsDenominator.getBound(); i++) {
+                factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringFractionsToCommonDenominator());
+            }
+            // Bis hierhin ist das Ergebnis von der Form (A_1/B_1)* ... *(A_m/B_m) / (C_1/D_1)* ... *(C_n/D_n). Den Rest erledigt das Ordnen.
+            return SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).orderDifferencesAndQuotients();
+        } else if (this.isPower()) {
+            return this.left.simplifyBringFractionsToCommonDenominator().pow(this.right.simplifyBringFractionsToCommonDenominator());
+        }
+
+        if (expr.isNotSum() && expr.isNotDifference()) {
+            return expr;
+        }
+
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
+        ExpressionCollection commonDenominators;
+        ExpressionCollection additionalDenominators;
+        Expression baseOfFactorInCommonDenominators, baseOfFactorInCurrentDenominators;
+        BigInteger exponentOfFactorInCommonDenominators, exponentOfFactorInCurrentDenominators;
+
+        // Hauptnenner bilden.
+        boolean factorOccursInCommonDenominators;
+        commonDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(0)));
+
+        for (int i = 1; i < summandsLeft.getBound(); i++) {
+
+            additionalDenominators = SimplifyUtilities.difference(SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i))), commonDenominators);
+
+            for (int j = 0; j < additionalDenominators.getBound(); j++) {
+
+                factorOccursInCommonDenominators = false;
+
+                for (int k = 0; k < commonDenominators.getBound(); k++) {
+
+                    if (commonDenominators.get(k).isPower()
+                            && ((BinaryOperation) commonDenominators.get(k)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) commonDenominators.get(k)).getRight().isNonNegative()) {
+                        baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominators.get(k)).getLeft();
+                        exponentOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCommonDenominators = commonDenominators.get(k);
+                        exponentOfFactorInCommonDenominators = BigInteger.ONE;
+                    }
+                    if (additionalDenominators.get(j).isPower()
+                            && ((BinaryOperation) additionalDenominators.get(j)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) additionalDenominators.get(j)).getRight().isNonNegative()) {
+                        baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(j)).getLeft();
+                        exponentOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCurrentDenominators = additionalDenominators.get(j);
+                        exponentOfFactorInCurrentDenominators = BigInteger.ONE;
+                    }
+
+                    /*
+                     Jetzt: Entweder Exponenten eines bereits vorhandenen
+                     Faktors (in commonDenominators) erhöhen oder den neuen
+                     Faktor hinzufügen.
+                     */
+                    if (baseOfFactorInCommonDenominators.equivalent(baseOfFactorInCurrentDenominators)) {
+                        if (exponentOfFactorInCommonDenominators.max(exponentOfFactorInCurrentDenominators).compareTo(BigInteger.ONE) == 0) {
+                            commonDenominators.put(k, baseOfFactorInCommonDenominators);
+                        } else {
+                            commonDenominators.put(k, baseOfFactorInCommonDenominators.pow(exponentOfFactorInCommonDenominators.max(exponentOfFactorInCurrentDenominators)));
+                        }
+                        factorOccursInCommonDenominators = true;
+                    }
+
+                }
+                if (!factorOccursInCommonDenominators) {
+                    commonDenominators.add(additionalDenominators.get(j));
+                }
+
+            }
+
+        }
+
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+
+            additionalDenominators = SimplifyUtilities.difference(SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i))), commonDenominators);
+
+            for (int j = 0; j < additionalDenominators.getBound(); j++) {
+
+                factorOccursInCommonDenominators = false;
+
+                for (int k = 0; k < commonDenominators.getBound(); k++) {
+
+                    if (commonDenominators.get(k).isPower()
+                            && ((BinaryOperation) commonDenominators.get(k)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) commonDenominators.get(k)).getRight().isNonNegative()) {
+                        baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominators.get(k)).getLeft();
+                        exponentOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominators.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCommonDenominators = commonDenominators.get(k);
+                        exponentOfFactorInCommonDenominators = BigInteger.ONE;
+                    }
+                    if (additionalDenominators.get(j).isPower()
+                            && ((BinaryOperation) additionalDenominators.get(j)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) additionalDenominators.get(j)).getRight().isNonNegative()) {
+                        baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(j)).getLeft();
+                        exponentOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(j)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCurrentDenominators = additionalDenominators.get(j);
+                        exponentOfFactorInCurrentDenominators = BigInteger.ONE;
+                    }
+
+                    /*
+                     Jetzt: Entweder Exponenten eines bereits vorhandenen
+                     Faktors (in commonDenominators) erhöhen oder den neuen
+                     Faktor hinzufügen.
+                     */
+                    if (baseOfFactorInCommonDenominators.equivalent(baseOfFactorInCurrentDenominators)) {
+                        if (exponentOfFactorInCommonDenominators.max(exponentOfFactorInCurrentDenominators).compareTo(BigInteger.ONE) == 0) {
+                            commonDenominators.put(k, baseOfFactorInCommonDenominators);
+                        } else {
+                            commonDenominators.put(k, baseOfFactorInCommonDenominators.pow(exponentOfFactorInCommonDenominators.max(exponentOfFactorInCurrentDenominators)));
+                        }
+                        factorOccursInCommonDenominators = true;
+                    }
+
+                }
+                if (!factorOccursInCommonDenominators) {
+                    commonDenominators.add(additionalDenominators.get(j));
+                }
+
+            }
+
+        }
+
+        if (commonDenominators.isEmpty()) {
+            // Dann gab es in der Summe/Differenz keine Brüche!
+            return expr;
+        }
+
+        ExpressionCollection complementFactorsForEachSummand = new ExpressionCollection();
+        ExpressionCollection commonDenominatorsCopy;
+
+        /*
+         Jetzt: Alle Zähler mit fehlenden Faktoren multiplizieren und in
+         summandsLeft bzw. summandsRight abspeichern.
+         */
+        boolean factorOccursInCurrentDenominators;
+        int l_commonDenominators = commonDenominators.getBound();
+        int l_currentDenominators;
+
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+
+            commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
+            complementFactorsForEachSummand.clear();
+            additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i)));
+            l_currentDenominators = additionalDenominators.getBound();
+            for (int j = 0; j < l_commonDenominators; j++) {
+
+                if (commonDenominatorsCopy.get(j) == null) {
+                    continue;
+                }
+                if (commonDenominatorsCopy.get(j).isPower()
+                        && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isIntegerConstant()
+                        && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isNonNegative()) {
+                    baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominatorsCopy.get(j)).getLeft();
+                    exponentOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getValue().toBigInteger();
+                } else {
+                    baseOfFactorInCommonDenominators = commonDenominatorsCopy.get(j);
+                    exponentOfFactorInCommonDenominators = BigInteger.ONE;
+                }
+
+                factorOccursInCurrentDenominators = false;
+
+                for (int k = 0; k < l_currentDenominators; k++) {
+                    if (additionalDenominators.get(k) == null) {
+                        continue;
+                    }
+
+                    if (additionalDenominators.get(k).isPower()
+                            && ((BinaryOperation) additionalDenominators.get(k)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) additionalDenominators.get(k)).getRight().isNonNegative()) {
+                        baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(k)).getLeft();
+                        exponentOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCurrentDenominators = additionalDenominators.get(k);
+                        exponentOfFactorInCurrentDenominators = BigInteger.ONE;
+                    }
+
+                    if (baseOfFactorInCommonDenominators.equivalent(baseOfFactorInCurrentDenominators)) {
+                        complementFactorsForEachSummand.add(baseOfFactorInCurrentDenominators.pow(exponentOfFactorInCommonDenominators.subtract(exponentOfFactorInCurrentDenominators)));
+                        commonDenominatorsCopy.remove(j);
+                        additionalDenominators.remove(k);
+                        factorOccursInCurrentDenominators = true;
+                    }
+
+                }
+
+                if (!factorOccursInCurrentDenominators) {
+                    complementFactorsForEachSummand.add(commonDenominators.get(j));
+                }
+
+            }
+
+            if (!complementFactorsForEachSummand.isEmpty()) {
+                summandsLeft.put(i, SimplifyUtilities.produceProduct(complementFactorsForEachSummand).mult(SimplifyUtilities.produceProduct(
+                        SimplifyUtilities.getFactorsOfNumeratorInExpression(summandsLeft.get(i)))).simplify());
+            }
+
+        }
+
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+
+            commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
+            complementFactorsForEachSummand.clear();
+            additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i)));
+            l_currentDenominators = additionalDenominators.getBound();
+            for (int j = 0; j < l_commonDenominators; j++) {
+
+                if (commonDenominatorsCopy.get(j) == null) {
+                    continue;
+                }
+                if (commonDenominatorsCopy.get(j).isPower()
+                        && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isIntegerConstant()
+                        && ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight().isNonNegative()) {
+                    baseOfFactorInCommonDenominators = ((BinaryOperation) commonDenominatorsCopy.get(j)).getLeft();
+                    exponentOfFactorInCommonDenominators = ((Constant) ((BinaryOperation) commonDenominatorsCopy.get(j)).getRight()).getValue().toBigInteger();
+                } else {
+                    baseOfFactorInCommonDenominators = commonDenominatorsCopy.get(j);
+                    exponentOfFactorInCommonDenominators = BigInteger.ONE;
+                }
+
+                factorOccursInCurrentDenominators = false;
+
+                for (int k = 0; k < l_currentDenominators; k++) {
+                    if (additionalDenominators.get(k) == null) {
+                        continue;
+                    }
+
+                    if (additionalDenominators.get(k).isPower()
+                            && ((BinaryOperation) additionalDenominators.get(k)).getRight().isIntegerConstant()
+                            && ((BinaryOperation) additionalDenominators.get(k)).getRight().isNonNegative()) {
+                        baseOfFactorInCurrentDenominators = ((BinaryOperation) additionalDenominators.get(k)).getLeft();
+                        exponentOfFactorInCurrentDenominators = ((Constant) ((BinaryOperation) additionalDenominators.get(k)).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseOfFactorInCurrentDenominators = additionalDenominators.get(k);
+                        exponentOfFactorInCurrentDenominators = BigInteger.ONE;
+                    }
+
+                    if (baseOfFactorInCommonDenominators.equivalent(baseOfFactorInCurrentDenominators)) {
+                        complementFactorsForEachSummand.add(baseOfFactorInCurrentDenominators.pow(exponentOfFactorInCommonDenominators.subtract(exponentOfFactorInCurrentDenominators)));
+                        commonDenominatorsCopy.remove(j);
+                        additionalDenominators.remove(k);
+                        factorOccursInCurrentDenominators = true;
+                    }
+
+                }
+
+                if (!factorOccursInCurrentDenominators) {
+                    complementFactorsForEachSummand.add(commonDenominators.get(j));
+                }
+
+            }
+
+            if (!complementFactorsForEachSummand.isEmpty()) {
+                summandsRight.put(i, SimplifyUtilities.produceProduct(complementFactorsForEachSummand).mult(SimplifyUtilities.produceProduct(
+                        SimplifyUtilities.getFactorsOfNumeratorInExpression(summandsRight.get(i)))).simplify());
+            }
+
+        }
+
+        return SimplifyUtilities.produceDifference(summandsLeft, summandsRight).div(SimplifyUtilities.produceProduct(commonDenominators));
+
+    }
+
+    @Override
     public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
 
         if (this.isSum()) {

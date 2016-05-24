@@ -346,7 +346,7 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest2() {
-        // Integral von (x*exp(x)+1)/(x*(1+exp(x)+ln(x)) =ln(1+exp(x)+ln(x)).
+        // int((x*exp(x)+1)/(x*(1+exp(x)+ln(x)), x) = ln(1+exp(x)+ln(x)).
         try {
             f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
@@ -362,7 +362,7 @@ public class IntegrationTests {
     @Test
     public void integrateByRischAlgorithmTest3() {
         /* 
-         Integral von (1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)) = x-(x*exp(x^2))/(1+exp(x^2)).
+         int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x) = x-(x*exp(x^2))/(1+exp(x^2)).
          Ideales Ergebnis wäre x/(1+exp(x^2)).
          */
         try {
@@ -379,12 +379,27 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest4() {
-        // Integral von int(ln(1+x^2)/x^2,x) = (-ln(1+x^2))/x+2*arctan(x) gemäß dem Rischj-Algorithmus.
+        // int(ln(1+x^2)/x^2,x) = (-ln(1+x^2))/x+2*arctan(x) gemäß dem Rischj-Algorithmus.
         try {
             f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
             Expression expectedResult = Expression.build("2*arctan(x)-ln((1+x^2)^(1/x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmTest5() {
+        // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Rischj-Algorithmus.
+        try {
+            f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
+            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
