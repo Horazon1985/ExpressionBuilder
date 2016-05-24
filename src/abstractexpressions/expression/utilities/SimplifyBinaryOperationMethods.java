@@ -2619,8 +2619,8 @@ public abstract class SimplifyBinaryOperationMethods {
                 }
 
                 factorDenominator = factorsDenominator.get(j);
-                if ((factorNumerator.isSum() || factorNumerator.isDifference())
-                        && (factorDenominator.isSum() || factorDenominator.isDifference())) {
+                if (factorNumerator.isSum() || factorNumerator.isDifference()
+                        || factorDenominator.isSum() || factorDenominator.isDifference()) {
 
                     reducedFactor = reduceSameExpressionInAllSummandsInQuotient(factorNumerator, factorDenominator);
                     if (reducedFactor.length > 0) {
@@ -2642,8 +2642,8 @@ public abstract class SimplifyBinaryOperationMethods {
                  */
                 if (factorNumerator.isPower() && factorDenominator.isPower()
                         && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
-                    if ((((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference())
-                            && (((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference())) {
+                    if (((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference()
+                            || ((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference()) {
 
                         reducedFactor = reduceSameExpressionInAllSummandsInQuotient(((BinaryOperation) factorNumerator).getLeft(), ((BinaryOperation) factorDenominator).getLeft());
                         if (reducedFactor.length > 0) {
