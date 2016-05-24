@@ -8,7 +8,6 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import enums.TypeSimplify;
-import java.math.BigDecimal;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -16,6 +15,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.fail;
 
 public class GeneralSimplifyExpressionTests {
 
@@ -471,7 +471,7 @@ public class GeneralSimplifyExpressionTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void reduceFractionTest1() {
         // ((a^2+b^2)/(b+a^2/b) = b
@@ -497,7 +497,7 @@ public class GeneralSimplifyExpressionTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void reduceFractionTest3() {
         //(b^3+a)/(a*b^3+a^2) = 1/a
@@ -513,7 +513,7 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void reduceFractionTest4() {
-        //(b+b^2*a)/(1+a*b) = b
+        // (b+b^2*a)/(1+a*b) = b
         Expression f = b.add(b.pow(2).mult(a)).div(ONE.add(a.mult(b)));
         Expression g = b;
         try {
@@ -524,6 +524,38 @@ public class GeneralSimplifyExpressionTests {
         }
     }
 
-    
+    @Test
+    public void reduceFractionTest5() {
+        // a/((a+a^2)*(a*b+a^5)) = 1/((1+a)*(a*b+a^5))
+        // a^2/((a+a^2)*(a*b+a^5)) = 1/((1+a)*(b+a^4)) 
+        try {
+            Expression f = Expression.build("a/((a+a^2)*(a*b+a^5))", null);
+            Expression g = Expression.build("1/((1+a)*(a*b+a^5))", null);
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("a^2/((a+a^2)*(a*b+a^5))", null);
+            g = Expression.build("1/((1+a)*(b+a^4))", null);
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceLongFractionTest() {
+        /* 
+         Anspruchsvoll: ((2*x^2*s)/(x^2+x^4-2*x^3)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-((x*s)/(x-x^2)+(2*x)/(x^2+x^4-2*x^3)+(s*x^3)/(x^2+x^4-2*x^3)))/((x^2*s)/(x^2+x^4-2*x^3)+x/(x^2+x^4-2*x^3)+x/(x-x^2)-((x*s)/(x-x^2)+(2*x^2)/(x^2+x^4-2*x^3)))
+         = 1/x.
+         */
+        try {
+            Expression f = Expression.build("((2*x^2*s)/(x^2+x^4-2*x^3)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-((x*s)/(x-x^2)+(2*x)/(x^2+x^4-2*x^3)+(s*x^3)/(x^2+x^4-2*x^3)))/((x^2*s)/(x^2+x^4-2*x^3)+x/(x^2+x^4-2*x^3)+x/(x-x^2)-((x*s)/(x-x^2)+(2*x^2)/(x^2+x^4-2*x^3)))", null);
+            Expression g = Expression.build("1/x", null);
+            f = f.simplify();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
 
 }
