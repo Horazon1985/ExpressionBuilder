@@ -1323,27 +1323,23 @@ public class BinaryOperation extends Expression {
              etwa (5*a + 7*b)/(15*a + 21*b) = 1/3, (x - 3*y)/(12*y - 4*x) =
              -1/4 etc.
              */
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             SimplifyBinaryOperationMethods.reduceFactorsInNumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
 
             /*
              Prüft, ob sich (ganzzahlige Potenzen von) Ausdrücken aus Brüchen kürzen lassen, d.h. ob z.B. 
              (x^2*y + z*x^3)/(2*x - x^4) zu (x*y + z*x^2)/(2 - x^3) vereinfacht werden kann.
              */
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             SimplifyBinaryOperationMethods.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
 
             /*
              Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad) im Zähler und Nenner gekürzt werden können.
              */
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
 
             /*
              Prüft, ob bei (ganzzahlige Potenzen von) Ausdrücken aus Brüchen prinzipiell gekürzt werden kann, z. B. wird
              (ab^3+a^2)/(b^3+a) zu a gekürzt.
              */
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
 
             /*
@@ -1353,10 +1349,8 @@ public class BinaryOperation extends Expression {
              Differenz ist, in der Brüche auftauchen, dann sollen diese auf
              einen gemeinsamen Nenner gebracht werden.
              */
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             SimplifyBinaryOperationMethods.reduceDoubleFractionsInQuotient(termsLeft, termsRight);
 
-            System.out.println("Wert: " + SimplifyUtilities.produceQuotient(termsLeft, termsRight).evaluate());
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 
         }

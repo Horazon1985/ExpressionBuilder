@@ -1880,8 +1880,6 @@ public abstract class Expression implements AbstractExpression {
      */
     public Expression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
 
-        double valueBefore, valueAfter;
-        Expression foreCast;
         try {
             Expression expr, exprSimplified = this;
             do {
@@ -1943,16 +1941,7 @@ public abstract class Expression implements AbstractExpression {
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
-                    valueBefore = exprSimplified.evaluate();
-                    foreCast = exprSimplified;
                     exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
-                    valueAfter = exprSimplified.evaluate();
-                    if (valueBefore != valueAfter) {
-                        System.out.println("Vorher: " + valueBefore);
-                        System.out.println("Nachher: " + valueAfter);
-                        foreCast = foreCast.simplifyReduceDifferencesAndQuotients();
-                        System.out.println("--------------------------------");
-                    }
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (exprSimplified.containsAlgebraicOperation()) {
