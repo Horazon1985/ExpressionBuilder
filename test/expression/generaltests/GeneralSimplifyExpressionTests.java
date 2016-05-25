@@ -543,10 +543,10 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest1() {
-        // (1 + a*(1/x+1/y))/b = (x*y + a*(x+y))/(b*x*y)
+        // (1 + a*(1/x+1/y))/b = (1+a*(y+x)/(x*y))/b
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y))/b", null);
-            Expression g = Expression.build("(x*y + a*(y+x))/(x*y*b)", null);
+            Expression g = Expression.build("(1+a*(y+x)/(x*y))/b", null);
             f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -556,10 +556,10 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest2() {
-        // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))
+        // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p)
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
-            Expression g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
+            Expression g = Expression.build("(1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p)", null);
             f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -569,10 +569,10 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest3() {
-        // a+x*(1/x+2*x) = (x*a+x+2*x^3)/x
+        // a+x*(1/x+2*x) wird nicht vereinfacht, da es keine Mehrfachbrüche gibt.
         try {
             Expression f = Expression.build("a+x*(1/x+2*x)", null);
-            Expression g = Expression.build("(x*a+x+2*x^3)/x", null);
+            Expression g = Expression.build("a+x*(1/x+2*x)", null);
             f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
