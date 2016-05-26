@@ -961,8 +961,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
-        return new Function(this.left.simplifyBringFractionsToCommonDenominator(), this.type);
+    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
+        return new Function(this.left.simplifyBringExpressionToCommonDenominator(), this.type);
     }
     
     @Override

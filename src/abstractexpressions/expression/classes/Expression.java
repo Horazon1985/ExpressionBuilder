@@ -1445,7 +1445,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException;
+    public abstract Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException;
 
     /**
      * Fasst Leitkoeffizienten in Brüchen/Differenzen zusammen.
@@ -1639,7 +1639,7 @@ public abstract class Expression implements AbstractExpression {
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyFactorize();
                 Canceller.interruptComputationIfNeeded();
-                exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
+                exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 Canceller.interruptComputationIfNeeded();
@@ -1717,9 +1717,9 @@ public abstract class Expression implements AbstractExpression {
                     } else if (simplifyType.equals(TypeSimplify.simplify_factorize)) {
                         exprSimplified = exprSimplified.simplifyFactorize();
                         Canceller.interruptComputationIfNeeded();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_bring_fractions_to_common_denominator)) {
-//                        exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
-//                        Canceller.interruptComputationIfNeeded();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
+                        exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                        Canceller.interruptComputationIfNeeded();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
                         Canceller.interruptComputationIfNeeded();
@@ -1825,9 +1825,9 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.simplifyFactorize();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_bring_fractions_to_common_denominator)) {
-//                    exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
-//                    Canceller.interruptComputationIfNeeded();
+                if (simplifyTypes.contains(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
+                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();
@@ -1953,8 +1953,8 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.simplifyFactorize();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_bring_fractions_to_common_denominator)) {
-                    exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
+                if (simplifyTypes.contains(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
+                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
@@ -1964,11 +1964,6 @@ public abstract class Expression implements AbstractExpression {
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
                     copy = exprSimplified.copy();
                     exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
-//                    if (!copy.equals(exprSimplified)) {
-//                        System.out.println("Vorher: " + copy);
-//                        System.out.println("Nachher: " + exprSimplified);
-//                        System.out.println("--------------------------");
-//                    }
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (exprSimplified.containsAlgebraicOperation()) {

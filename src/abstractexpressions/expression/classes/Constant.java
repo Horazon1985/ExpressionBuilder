@@ -289,7 +289,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator(){
+    public Expression simplifyBringExpressionToCommonDenominator(){
         return this;
     }
     

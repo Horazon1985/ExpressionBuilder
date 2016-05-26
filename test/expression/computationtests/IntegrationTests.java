@@ -195,7 +195,7 @@ public class IntegrationTests {
 
     @Test
     public void integralOfRationalFunctionTest2() {
-        // Integral von (3*x+4)/(2*x^2+5*x+3) = (2*ln(|1+x|)+2*(ln(|3+2*x|)/2))/2.
+        // Integral von (3*x+4)/(2*x^2+5*x+3) = ln(|1+x|)+ln(|3+2*x|)/2.
         try {
             f = Expression.build("int((3*x+4)/(2*x^2+5*x+3),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -300,7 +300,7 @@ public class IntegrationTests {
 
     @Test
     public void integralOfQuotientOfPolynomialAndSqrtOfOddPowerOfQuadraticPolynomialTest1() {
-        // Integral von x^3*(1+x^2)^(1/2) = (1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3.
+        // Integral von x^3/(1+x^2)^(1/2) = (1+x^2)^(3/2)/3-(1+x^2)^(1/2).
         try {
             f = Expression.build("int(x^3/(1+x^2)^(1/2),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.

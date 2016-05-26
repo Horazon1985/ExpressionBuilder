@@ -464,7 +464,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator(){
+    public Expression simplifyBringExpressionToCommonDenominator(){
         return this;
     }
     

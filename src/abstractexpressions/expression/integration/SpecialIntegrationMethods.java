@@ -96,7 +96,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
@@ -114,7 +114,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
@@ -133,7 +133,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);

@@ -53,7 +53,7 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
@@ -334,11 +334,11 @@ public abstract class SolveGeneralEquationMethods {
         if (doesQuotientOccur(f) && f.contains(var)) {
 
             // Zunächst alle Summanden in f auf den kleinsten gemeinsamen Nenner bringen.
-            f = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2((BinaryOperation) f);
+            f = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator((BinaryOperation) f);
             /*
              Beide Seiten mit dem kleinsten gemeinsamen Nenner von f
              multiplizieren. WICHTIG: f ist nach der Anwendung von
-             bringFractionToCommonDenominator() automatisch ein Bruch, d. h.
+             bringExpressionToCommonDenominator() automatisch ein Bruch, d. h.
              der Typecast zu BinaryOperation ist unkritisch.
              */
             Expression multipleOfF = ((BinaryOperation) f).getLeft();
@@ -363,11 +363,11 @@ public abstract class SolveGeneralEquationMethods {
         if (doesQuotientOccur(g) && g.contains(var)) {
 
             // Zunächst alle Summanden in g auf den kleinsten gemeinsamen Nenner bringen.
-            g = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2((BinaryOperation) g);
+            g = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator((BinaryOperation) g);
             /*
              Beide Seiten mit dem kleinsten gemeinsamen Nenner von g
              multiplizieren. WICHTIG: g ist nach der Anwendung von
-             bringFractionToCommonDenominator() automatisch ein Bruch, d. h.
+             bringExpressionToCommonDenominator() automatisch ein Bruch, d. h.
              der Typecast zu BinaryOperation ist unkritisch.
              */
             Expression multipleOfF = ((BinaryOperation) g).getRight().mult(f);

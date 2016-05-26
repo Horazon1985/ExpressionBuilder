@@ -30,7 +30,7 @@ public abstract class SubstitutionUtilities {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);

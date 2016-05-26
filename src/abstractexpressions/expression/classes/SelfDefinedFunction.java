@@ -452,12 +452,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyBringFractionsToCommonDenominator();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyBringExpressionToCommonDenominator();
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyBringFractionsToCommonDenominator(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyBringExpressionToCommonDenominator(), resultLeft);
     }
     
     @Override

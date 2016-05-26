@@ -40,6 +40,7 @@ public abstract class PartialFractionDecompositionMethods {
     }
 
     private static final HashSet<TypeSimplify> simplifyTypesForPFD = getSimplifyTypesForPFD();
+    private static final HashSet<TypeSimplify> simplifyTypesForDenominatorOfPFD = getSimplifyTypesForDenominatorOfPFD();
 
     private static HashSet<TypeSimplify> getSimplifyTypesForPFD() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -51,7 +52,22 @@ public abstract class PartialFractionDecompositionMethods {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_bring_fractions_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesForDenominatorOfPFD() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
         return simplifyTypes;
@@ -99,6 +115,9 @@ public abstract class PartialFractionDecompositionMethods {
             fractionalPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
                     SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
 
+            // Falls Mehrfachbrüche auftauchen: alles auf einen Nenner bringen (ist in den Vereinfachungstypen enthalten).
+            fractionalPart = fractionalPart.simplify(simplifyTypesForDenominatorOfPFD);
+            
             if (!isDenominatorOfCorrectForm(((BinaryOperation) fractionalPart).getRight(), var)) {
                 // Dann kann keine Partialbruchzerlegung ermittelt werden.
                 throw new PartialFractionDecompositionNotComputableException();
@@ -131,7 +150,9 @@ public abstract class PartialFractionDecompositionMethods {
                  Sonstiger Fall: Ansatz auf einen Nenner bringen und Zähler betrachten.
                  Danach lineares Gleichungssystem für die Koeffizienten aufstellen und lösen.
                  */
-                Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) approachForPFD);
+//                System.out.println("Vorher: " + approachForPFD);
+                Expression approachForPFDAsOneFraction = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator((BinaryOperation) approachForPFD);
+//                System.out.println("Nachher: " + approachForPFDAsOneFraction);
 
                 if (approachForPFDAsOneFraction.isNotQuotient()) {
                     throw new PartialFractionDecompositionNotComputableException();
@@ -147,9 +168,14 @@ public abstract class PartialFractionDecompositionMethods {
 
             }
 
+//            System.out.println("Koeffizienten:");
             for (int i = 0; i < n; i++) {
+//                System.out.println(getPFDVariable(i) + " = " + coefficientsForPFD[i]);
                 approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i].div(constantFactorInDenominator));
+                approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i]);
             }
+
+//            System.out.println("PBZ: " + polynomialPart.add(approachForPFD));
 
             return polynomialPart.add(approachForPFD);
 

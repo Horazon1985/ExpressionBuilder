@@ -1130,11 +1130,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyBringFractionsToCommonDenominator();
+                resultParams[i] = ((Expression) this.params[i]).simplifyBringExpressionToCommonDenominator();
             } else {
                 resultParams[i] = this.params[i];
             }

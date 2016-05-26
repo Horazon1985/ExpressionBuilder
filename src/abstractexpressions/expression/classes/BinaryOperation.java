@@ -1244,7 +1244,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
 
         Expression expr = this;
         boolean containsMultipleFractions = containsDoubleFraction(expr);
@@ -1254,25 +1254,25 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyBringFractionsToCommonDenominator());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyBringExpressionToCommonDenominator());
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, summandsRight.get(i).simplifyBringFractionsToCommonDenominator());
+                summandsRight.put(i, summandsRight.get(i).simplifyBringExpressionToCommonDenominator());
             }
             expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
         } else if (this.isProduct() || this.isQuotient()) {
             ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
             for (int i = 0; i < factorsNumerator.getBound(); i++) {
-                factorsNumerator.put(i, factorsNumerator.get(i).simplifyBringFractionsToCommonDenominator());
+                factorsNumerator.put(i, factorsNumerator.get(i).simplifyBringExpressionToCommonDenominator());
             }
             for (int i = 0; i < factorsDenominator.getBound(); i++) {
-                factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringFractionsToCommonDenominator());
+                factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringExpressionToCommonDenominator());
             }
             // Bis hierhin ist das Ergebnis von der Form (A_1/B_1)* ... *(A_m/B_m) / (C_1/D_1)* ... *(C_n/D_n). Den Rest erledigt das Ordnen.
             expr = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).orderDifferencesAndQuotients();
         } else if (this.isPower()) {
-            expr = this.left.simplifyBringFractionsToCommonDenominator().pow(this.right.simplifyBringFractionsToCommonDenominator());
+            expr = this.left.simplifyBringExpressionToCommonDenominator().pow(this.right.simplifyBringExpressionToCommonDenominator());
         }
 
         // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.
@@ -1280,12 +1280,12 @@ public class BinaryOperation extends Expression {
             return expr;
         }
 
-        Expression exprSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2(expr);
+        Expression exprSimplified = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator(expr);
 
         // Es wird solange auf einen Nenner gebracht, bis dies nicht mehr möglich ist.
         while (!expr.equals(exprSimplified)) {
             expr = exprSimplified.copy();
-            exprSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2(expr);
+            exprSimplified = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator(expr);
         }
         
         return expr;
