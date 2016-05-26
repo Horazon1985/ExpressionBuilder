@@ -546,7 +546,7 @@ public class GeneralSimplifyExpressionTests {
         // (1 + a*(1/x+1/y))/b = (1+a*(y+x)/(x*y))/b
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y))/b", null);
-            Expression g = Expression.build("(1+a*(y+x)/(x*y))/b", null);
+            Expression g = Expression.build("(x*y+a*(y+x))/(x*y*b)", null);
             f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -559,7 +559,7 @@ public class GeneralSimplifyExpressionTests {
         // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p)
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
-            Expression g = Expression.build("(1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p)", null);
+            Expression g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
             f = f.simplifyBringFractionsToCommonDenominator();
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -569,6 +569,32 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest3() {
+        // 1+1/(1+1/(1+1/x)) = (2+2*x+x)/(1+x+x)
+        try {
+            Expression f = Expression.build("1+1/(1+1/(1+1/x))", null);
+            Expression g = Expression.build("(2+2*x+x)/(1+x+x)", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorTest4() {
+        // (a+b/(1+1/c))^n = (((1+c)*a+b*c)/(1+c))^n
+        try {
+            Expression f = Expression.build("(a+b/(1+1/c))^n", null);
+            Expression g = Expression.build("(((1+c)*a+b*c)/(1+c))^n", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorNotNecessaryTest() {
         // a+x*(1/x+2*x) wird nicht vereinfacht, da es keine Mehrfachbrüche gibt.
         try {
             Expression f = Expression.build("a+x*(1/x+2*x)", null);

@@ -1639,8 +1639,8 @@ public abstract class Expression implements AbstractExpression {
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyFactorize();
                 Canceller.interruptComputationIfNeeded();
-//                exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
-//                Canceller.interruptComputationIfNeeded();
+                exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
+                Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
@@ -1954,8 +1954,8 @@ public abstract class Expression implements AbstractExpression {
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_bring_fractions_to_common_denominator)) {
-//                    exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
-//                    Canceller.interruptComputationIfNeeded();
+                    exprSimplified = exprSimplified.simplifyBringFractionsToCommonDenominator();
+                    Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();

@@ -1247,6 +1247,7 @@ public class BinaryOperation extends Expression {
     public Expression simplifyBringFractionsToCommonDenominator() throws EvaluationException {
 
         Expression expr = this;
+        boolean containsMultipleFractions = containsDoubleFraction(expr);
 
         if (this.isSum() || this.isDifference()) {
             // Jeden Summanden einzeln auf einen Nenner bringen.
@@ -1275,11 +1276,19 @@ public class BinaryOperation extends Expression {
         }
 
         // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.
-        if (!(expr instanceof BinaryOperation) || !containsDoubleFraction(expr)){
+        if (!(expr instanceof BinaryOperation) || !containsMultipleFractions){
             return expr;
         }
+
+        Expression exprSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2(expr);
+
+        // Es wird solange auf einen Nenner gebracht, bis dies nicht mehr möglich ist.
+        while (!expr.equals(exprSimplified)) {
+            expr = exprSimplified.copy();
+            exprSimplified = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2(expr);
+        }
         
-        return SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2(expr);
+        return expr;
 
     }
 
@@ -1423,7 +1432,7 @@ public class BinaryOperation extends Expression {
              Differenz ist, in der Brüche auftauchen, dann sollen diese auf
              einen gemeinsamen Nenner gebracht werden.
              */
-            SimplifyBinaryOperationMethods.reduceDoubleFractionsInQuotient(termsLeft, termsRight);
+//            SimplifyBinaryOperationMethods.reduceDoubleFractionsInQuotient(termsLeft, termsRight);
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 

@@ -2274,29 +2274,35 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     public static Expression bringFractionToCommonDenominator2(Expression expr) throws EvaluationException {
 
-        if (expr.isSum() || expr.isDifference()){
-            
+        if (expr.isSum() || expr.isDifference()) {
+
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
-            for (int i = 0; i < summandsLeft.getBound(); i++){
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
                 summandsLeft.put(i, bringFractionToCommonDenominator2(summandsLeft.get(i)));
             }
-            for (int i = 0; i < summandsRight.getBound(); i++){
+            for (int i = 0; i < summandsRight.getBound(); i++) {
                 summandsRight.put(i, bringFractionToCommonDenominator2(summandsRight.get(i)));
             }
             expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
-        
-        } else if (expr.isProduct()){
+
+        } else if (expr.isProduct()) {
 
             ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
-            for (int i = 0; i < factors.getBound(); i++){
+            for (int i = 0; i < factors.getBound(); i++) {
                 factors.put(i, bringFractionToCommonDenominator2(factors.get(i)));
             }
             expr = SimplifyUtilities.produceProduct(factors);
-            
+
         } else if (expr.isQuotient() || expr.isPower()) {
-            return bringFractionToCommonDenominator2(((BinaryOperation) expr).getLeft()).div(bringFractionToCommonDenominator2(((BinaryOperation) expr).getRight()));
-        } 
+
+            expr = bringFractionToCommonDenominator2(((BinaryOperation) expr).getLeft()).div(bringFractionToCommonDenominator2(((BinaryOperation) expr).getRight()));
+            if (expr.isQuotient()) {
+                return expr.orderDifferencesAndQuotients().orderSumsAndProducts();
+            }
+            return expr;
+
+        }
 
         // Ab hier kommt das eigentliche "auf einen Nenner bringen". 
         if (expr.isNotSum() && expr.isNotDifference()) {
@@ -3389,12 +3395,12 @@ public abstract class SimplifyBinaryOperationMethods {
                     // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
                     ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
                     ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
-                    
-                    if (coefficientsNumerator.getBound() < 2 || coefficientsDenominator.getBound() < 2){
+
+                    if (coefficientsNumerator.getBound() < 2 || coefficientsDenominator.getBound() < 2) {
                         // Falls eines der Grade doch noch auf 0 sinkt (getDegreeOfPolynomial() ist nur eine obere Schranke für den Grad!).
                         return new Expression[0];
                     }
-                    
+
                     ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
                     if (quotient[1].isEmpty()) {
                         return new Expression[]{SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], substVar).replaceVariable(substVar, substitution), ONE};
