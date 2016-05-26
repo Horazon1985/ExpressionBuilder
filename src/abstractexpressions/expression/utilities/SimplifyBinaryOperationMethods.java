@@ -2294,9 +2294,17 @@ public abstract class SimplifyBinaryOperationMethods {
             }
             expr = SimplifyUtilities.produceProduct(factors);
 
-        } else if (expr.isQuotient() || expr.isPower()) {
+        } else if (expr.isQuotient()) {
 
             expr = bringFractionToCommonDenominator2(((BinaryOperation) expr).getLeft()).div(bringFractionToCommonDenominator2(((BinaryOperation) expr).getRight()));
+            if (expr.isQuotient()) {
+                return expr.orderDifferencesAndQuotients().orderSumsAndProducts();
+            }
+            return expr;
+
+        } else if (expr.isPower()) {
+
+            expr = bringFractionToCommonDenominator2(((BinaryOperation) expr).getLeft()).pow(bringFractionToCommonDenominator2(((BinaryOperation) expr).getRight()));
             if (expr.isQuotient()) {
                 return expr.orderDifferencesAndQuotients().orderSumsAndProducts();
             }

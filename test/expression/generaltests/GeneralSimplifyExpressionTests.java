@@ -592,6 +592,20 @@ public class GeneralSimplifyExpressionTests {
             fail(e.getMessage());
         }
     }
+    
+    @Test
+    public void bringFractionToCommonDenominatorTest5() {
+    // (a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)
+        try {
+            Expression f = Expression.build("(a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)", null);
+            Expression g = Expression.build("(9*(a*b^2-a^2*b))/(9*(a*b-a^2))", null);
+            f = f.simplifyBringFractionsToCommonDenominator();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
 
     @Test
     public void bringFractionToCommonDenominatorNotNecessaryTest() {
