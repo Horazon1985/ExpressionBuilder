@@ -1425,15 +1425,6 @@ public class BinaryOperation extends Expression {
              */
             SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
 
-            /*
-             Hier wird Folgendes vereinfacht: Falls der zugrundeliegende
-             Ausdruck ein Bruch ist, etwa (A_1 * ... * A_m)/(B_1 * ... * B_n)
-             und mindestens eines der A_i oder der B_j eine Summe oder
-             Differenz ist, in der Brüche auftauchen, dann sollen diese auf
-             einen gemeinsamen Nenner gebracht werden.
-             */
-//            SimplifyBinaryOperationMethods.reduceDoubleFractionsInQuotient(termsLeft, termsRight);
-
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 
         }

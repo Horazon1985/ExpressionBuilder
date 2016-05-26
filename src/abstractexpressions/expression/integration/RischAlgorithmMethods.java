@@ -420,7 +420,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         // Zunächst alles auf einen Bruch bringen.
-        fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) fSubstituted);
+        fSubstituted = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2((BinaryOperation) fSubstituted);
 
         // Separat behandeln, falls fSubstituted kein Quotient ist.
         if (!fSubstituted.isQuotient()) {

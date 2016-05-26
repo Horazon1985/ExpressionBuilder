@@ -334,7 +334,7 @@ public abstract class SolveGeneralEquationMethods {
         if (doesQuotientOccur(f) && f.contains(var)) {
 
             // Zunächst alle Summanden in f auf den kleinsten gemeinsamen Nenner bringen.
-            f = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) f);
+            f = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2((BinaryOperation) f);
             /*
              Beide Seiten mit dem kleinsten gemeinsamen Nenner von f
              multiplizieren. WICHTIG: f ist nach der Anwendung von
@@ -363,7 +363,7 @@ public abstract class SolveGeneralEquationMethods {
         if (doesQuotientOccur(g) && g.contains(var)) {
 
             // Zunächst alle Summanden in g auf den kleinsten gemeinsamen Nenner bringen.
-            g = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator((BinaryOperation) g);
+            g = SimplifyBinaryOperationMethods.bringFractionToCommonDenominator2((BinaryOperation) g);
             /*
              Beide Seiten mit dem kleinsten gemeinsamen Nenner von g
              multiplizieren. WICHTIG: g ist nach der Anwendung von

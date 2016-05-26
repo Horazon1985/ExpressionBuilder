@@ -320,7 +320,7 @@ public class IntegrationTests {
             f = Expression.build("int((2+x^3)/(1+x^2)^(3/2),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("(1+x^2)^(1/2)+(1+2*x)/(1+x^2)^(1/2)", null);
+            Expression expectedResult = Expression.build(" (2+x^2+2*x)/(1+x^2)^(1/2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -369,7 +369,7 @@ public class IntegrationTests {
             f = Expression.build("int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("x-(x*exp(x^2))/(1+exp(x^2))", null);
+            Expression expectedResult = Expression.build("x/(1+exp(x^2))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
