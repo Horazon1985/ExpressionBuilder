@@ -392,19 +392,19 @@ public class IntegrationTests {
         }
     }
 
-//    @Test
-//    public void integrateByRischAlgorithmTest5() {
-//        // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Rischj-Algorithmus.
-//        try {
-//            f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
-//            // Ohne simplify() ist der Ausdruck zu lang.
-//            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
-//            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))", null);
-//            TestUtilities.printResult(expectedResult, integral);
-//            Assert.assertTrue(integral.equivalent(expectedResult));
-//        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
-//            fail(e.getMessage());
-//        }
-//    }
+    @Test
+    public void integrateByRischAlgorithmTest5() {
+        // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Rischj-Algorithmus.
+        try {
+            f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
+            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
 
 }
