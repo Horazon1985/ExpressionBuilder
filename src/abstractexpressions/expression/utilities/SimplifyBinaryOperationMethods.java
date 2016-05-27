@@ -2676,13 +2676,13 @@ public abstract class SimplifyBinaryOperationMethods {
                         break;
                     }
 
-                }
-                /*
-                 Sonderfall: Zähler und Nenner sind von der Form a^k,
-                 b^k. Dann zu (a/b)^k kürzen.
-                 */
-                if (factorNumerator.isPower() && factorDenominator.isPower()
+                } else if (factorNumerator.isPower() && factorDenominator.isPower()
                         && ((BinaryOperation) factorNumerator).getRight().equivalent(((BinaryOperation) factorDenominator).getRight())) {
+
+                    /*
+                     Sonderfall: Zähler und Nenner sind von der Form a^k,
+                     b^k. Dann zu (a/b)^k kürzen.
+                     */
                     if (((BinaryOperation) factorNumerator).getLeft().isSum() || ((BinaryOperation) factorNumerator).getLeft().isDifference()
                             || ((BinaryOperation) factorDenominator).getLeft().isSum() || ((BinaryOperation) factorDenominator).getLeft().isDifference()) {
 
@@ -2966,6 +2966,8 @@ public abstract class SimplifyBinaryOperationMethods {
     public static void reduceGeneralFractionToNonFractionInQuotient(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
 
         Expression factorNumerator, factorDenominator;
+        Expression baseNumerator, baseDenominator;
+        BigInteger exponentNumerator, exponentDenominator;
         Expression[] reducedFactor;
 
         for (int i = 0; i < factorsNumerator.getBound(); i++) {
@@ -3020,6 +3022,40 @@ public abstract class SimplifyBinaryOperationMethods {
                         }
 
                     }
+                } else {
+
+                    /*
+                     Sonderfall: Zähler oder Nenner sind von der Form (P(x))^p,
+                     und Q(x)^q. Dann wird in P(x) und Q(x) gekürzt und danach entsprechend vereinfacht.
+                     */
+                    if (factorNumerator.isPositiveIntegerPower()) {
+                        baseNumerator = ((BinaryOperation) factorNumerator).getLeft();
+                        exponentNumerator = ((Constant) ((BinaryOperation) factorNumerator).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseNumerator = factorNumerator;
+                        exponentNumerator = BigInteger.ONE;
+                    }
+                    if (factorDenominator.isPositiveIntegerPower()) {
+                        baseDenominator = ((BinaryOperation) factorDenominator).getLeft();
+                        exponentDenominator = ((Constant) ((BinaryOperation) factorDenominator).getRight()).getValue().toBigInteger();
+                    } else {
+                        baseDenominator = factorDenominator;
+                        exponentDenominator = BigInteger.ONE;
+                    }
+
+                    reducedFactor = reduceGeneralFractionToNonFractionInQuotient(baseNumerator, baseDenominator);
+                    if (reducedFactor.length > 0) {
+                        // Es konnten Terme in mindestens einem Faktor im Zähler gegen Terme in einem Faktor im Nenner gekürzt werden.
+                        if (exponentNumerator.compareTo(exponentDenominator) > 0) {
+                            factorsNumerator.put(i, reducedFactor[0].pow(exponentDenominator).mult(baseNumerator.pow(exponentNumerator.subtract(exponentDenominator))));
+                            factorsDenominator.put(j, reducedFactor[1].pow(exponentDenominator));
+                        } else {
+                            factorsNumerator.put(i, reducedFactor[0].pow(exponentNumerator));
+                            factorsDenominator.put(j, reducedFactor[1].pow(exponentNumerator).mult(baseDenominator.pow(exponentDenominator.subtract(exponentNumerator))));
+                        }
+                        break;
+                    }
+
                 }
 
             }
@@ -3281,7 +3317,7 @@ public abstract class SimplifyBinaryOperationMethods {
                             factorsNumerator.put(i, reducedFactor[0].pow(exponentDenominator).mult(baseNumerator.pow(exponentNumerator.subtract(exponentDenominator))));
                             factorsDenominator.put(j, reducedFactor[1].pow(exponentDenominator));
                         } else {
-                            factorsNumerator.put(i, reducedFactor[0].pow(exponentNumerator).mult(baseNumerator.pow(exponentNumerator.subtract(exponentDenominator))));
+                            factorsNumerator.put(i, reducedFactor[0].pow(exponentNumerator));
                             factorsDenominator.put(j, reducedFactor[1].pow(exponentNumerator).mult(baseDenominator.pow(exponentDenominator.subtract(exponentNumerator))));
                         }
                         break;
