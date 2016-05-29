@@ -1277,7 +1277,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.
-        if (!(expr instanceof BinaryOperation) || !containsMultipleFractions){
+        if (!(expr instanceof BinaryOperation) || type.equals(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS) && !containsMultipleFractions){
             return expr;
         }
 

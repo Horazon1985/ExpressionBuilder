@@ -546,11 +546,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest1() {
-        // (1 + a*(1/x+1/y))/b = (1+a*(y+x)/(x*y))/b
+        // (1 + a*(1/x+1/y))/b = (1+a*(y+x)/(x*y))/b in beiden Modi.
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y))/b", null);
             Expression g = Expression.build("(x*y+a*(y+x))/(x*y*b)", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("(1 + a*(1/x+1/y))/b", null);
+            g = Expression.build("(x*y+a*(y+x))/(x*y*b)", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -559,11 +563,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest2() {
-        // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p)
+        // (1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q)) = (1+a*(y+x)/(x*y)*(z+2)/z)/sin(q/p) in beiden Modi.
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
             Expression g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
+            g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -572,11 +580,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest3() {
-        // 1+1/(1+1/(1+1/x)) = (2+2*x+x)/(1+x+x)
+        // 1+1/(1+1/(1+1/x)) = (2+2*x+x)/(1+x+x) in beiden Modi.
         try {
             Expression f = Expression.build("1+1/(1+1/(1+1/x))", null);
             Expression g = Expression.build("(2+2*x+x)/(1+x+x)", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("1+1/(1+1/(1+1/x))", null);
+            g = Expression.build("(2+2*x+x)/(1+x+x)", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -585,11 +597,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest4() {
-        // (a+b/(1+1/c))^n = (((1+c)*a+b*c)/(1+c))^n
+        // (a+b/(1+1/c))^n = (((1+c)*a+b*c)/(1+c))^n in beiden Modi.
         try {
             Expression f = Expression.build("(a+b/(1+1/c))^n", null);
             Expression g = Expression.build("(((1+c)*a+b*c)/(1+c))^n", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("(a+b/(1+1/c))^n", null);
+            g = Expression.build("(((1+c)*a+b*c)/(1+c))^n", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -598,11 +614,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest5() {
-        // (a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)
+        // (a*b^2/9-a^2*b/9)/(a*b/9-a^2/9) = (9*(a*b^2-a^2*b))/(9*(a*b-a^2)) in beiden Modi.
         try {
             Expression f = Expression.build("(a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)", null);
             Expression g = Expression.build("(9*(a*b^2-a^2*b))/(9*(a*b-a^2))", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("(a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)", null);
+            g = Expression.build("(9*(a*b^2-a^2*b))/(9*(a*b-a^2))", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -611,11 +631,15 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorNotNecessaryTest() {
-        // a+x*(1/x+2*x) wird nicht vereinfacht, da es keine Mehrfachbrüche gibt.
+        // a+x*(1/x+2*x) wird im Modus IF_MULTIPLE_FRACTION_OCCURS nicht vereinfacht, da es keine Mehrfachbrüche gibt, im ALWAYS dagagen zu (x*a+x+2*x^3)/x.
         try {
             Expression f = Expression.build("a+x*(1/x+2*x)", null);
             Expression g = Expression.build("a+x*(1/x+2*x)", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
+            f = Expression.build("a+x*(1/x+2*x)", null);
+            g = Expression.build("(x*a+x+2*x^3)/x", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
