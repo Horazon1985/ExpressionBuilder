@@ -8,6 +8,7 @@ import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyTrigonometry;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -961,8 +962,8 @@ public class Function extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
-        return new Function(this.left.simplifyBringExpressionToCommonDenominator(), this.type);
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException {
+        return new Function(this.left.simplifyBringExpressionToCommonDenominator(type), this.type);
     }
     
     @Override

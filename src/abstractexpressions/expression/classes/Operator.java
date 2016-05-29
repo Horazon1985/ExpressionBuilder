@@ -10,6 +10,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
 import abstractexpressions.expression.integration.GeneralIntegralMethods;
+import enums.TypeFractionSimplification;
 import exceptions.CancellationException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -1130,11 +1131,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyBringExpressionToCommonDenominator();
+                resultParams[i] = ((Expression) this.params[i]).simplifyBringExpressionToCommonDenominator(type);
             } else {
                 resultParams[i] = this.params[i];
             }

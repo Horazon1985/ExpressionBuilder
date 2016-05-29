@@ -1,6 +1,7 @@
 package abstractexpressions.expression.classes;
 
 import enums.TypeExpansion;
+import enums.TypeFractionSimplification;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -464,7 +465,7 @@ public class Variable extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator(){
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type){
         return this;
     }
     

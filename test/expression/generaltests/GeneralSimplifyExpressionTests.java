@@ -9,6 +9,7 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
+import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.util.HashSet;
 import org.junit.AfterClass;
@@ -549,7 +550,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y))/b", null);
             Expression g = Expression.build("(x*y+a*(y+x))/(x*y*b)", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -562,7 +563,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("(1 + a*(1/x+1/y)*(1+2/z))/sin(1/(p/q))", null);
             Expression g = Expression.build("(x*y*z+a*(y+x)*(2+z))/(x*y*z*sin(q/p))", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -575,7 +576,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("1+1/(1+1/(1+1/x))", null);
             Expression g = Expression.build("(2+2*x+x)/(1+x+x)", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -588,7 +589,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("(a+b/(1+1/c))^n", null);
             Expression g = Expression.build("(((1+c)*a+b*c)/(1+c))^n", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -601,7 +602,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("(a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)", null);
             Expression g = Expression.build("(9*(a*b^2-a^2*b))/(9*(a*b-a^2))", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -614,7 +615,7 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("a+x*(1/x+2*x)", null);
             Expression g = Expression.build("a+x*(1/x+2*x)", null);
-            f = f.simplifyBringExpressionToCommonDenominator();
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());

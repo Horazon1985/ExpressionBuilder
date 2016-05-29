@@ -8,6 +8,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -1445,7 +1446,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException;
+    public abstract Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException;
 
     /**
      * Fasst Leitkoeffizienten in Brüchen/Differenzen zusammen.
@@ -1639,7 +1640,7 @@ public abstract class Expression implements AbstractExpression {
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyFactorize();
                 Canceller.interruptComputationIfNeeded();
-                exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 Canceller.interruptComputationIfNeeded();
@@ -1718,7 +1719,7 @@ public abstract class Expression implements AbstractExpression {
                         exprSimplified = exprSimplified.simplifyFactorize();
                         Canceller.interruptComputationIfNeeded();
                     } else if (simplifyType.equals(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
-                        exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                        exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
                         Canceller.interruptComputationIfNeeded();
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
@@ -1826,7 +1827,7 @@ public abstract class Expression implements AbstractExpression {
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
-                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {
@@ -1954,7 +1955,7 @@ public abstract class Expression implements AbstractExpression {
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_bring_expression_to_common_denominator)) {
-                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator();
+                    exprSimplified = exprSimplified.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_quotients)) {

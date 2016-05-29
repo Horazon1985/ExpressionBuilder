@@ -13,6 +13,7 @@ import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -1244,7 +1245,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException {
 
         Expression expr = this;
         boolean containsMultipleFractions = containsDoubleFraction(expr);
@@ -1254,25 +1255,25 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, summandsLeft.get(i).simplifyBringExpressionToCommonDenominator());
+                summandsLeft.put(i, summandsLeft.get(i).simplifyBringExpressionToCommonDenominator(type));
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, summandsRight.get(i).simplifyBringExpressionToCommonDenominator());
+                summandsRight.put(i, summandsRight.get(i).simplifyBringExpressionToCommonDenominator(type));
             }
             expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
         } else if (this.isProduct() || this.isQuotient()) {
             ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(this);
             for (int i = 0; i < factorsNumerator.getBound(); i++) {
-                factorsNumerator.put(i, factorsNumerator.get(i).simplifyBringExpressionToCommonDenominator());
+                factorsNumerator.put(i, factorsNumerator.get(i).simplifyBringExpressionToCommonDenominator(type));
             }
             for (int i = 0; i < factorsDenominator.getBound(); i++) {
-                factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringExpressionToCommonDenominator());
+                factorsDenominator.put(i, factorsDenominator.get(i).simplifyBringExpressionToCommonDenominator(type));
             }
             // Bis hierhin ist das Ergebnis von der Form (A_1/B_1)* ... *(A_m/B_m) / (C_1/D_1)* ... *(C_n/D_n). Den Rest erledigt das Ordnen.
             expr = SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator).orderDifferencesAndQuotients();
         } else if (this.isPower()) {
-            expr = this.left.simplifyBringExpressionToCommonDenominator().pow(this.right.simplifyBringExpressionToCommonDenominator());
+            expr = this.left.simplifyBringExpressionToCommonDenominator(type).pow(this.right.simplifyBringExpressionToCommonDenominator(type));
         }
 
         // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.

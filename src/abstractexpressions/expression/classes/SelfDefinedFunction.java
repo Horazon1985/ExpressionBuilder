@@ -1,6 +1,7 @@
 package abstractexpressions.expression.classes;
 
 import enums.TypeExpansion;
+import enums.TypeFractionSimplification;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -452,12 +453,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator() throws EvaluationException {
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
         for (int i = 0; i < this.left.length; i++) {
-            resultLeft[i] = ((Expression) this.left[i]).simplifyBringExpressionToCommonDenominator();
+            resultLeft[i] = ((Expression) this.left[i]).simplifyBringExpressionToCommonDenominator(type);
         }
-        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyBringExpressionToCommonDenominator(), resultLeft);
+        return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyBringExpressionToCommonDenominator(type), resultLeft);
     }
     
     @Override

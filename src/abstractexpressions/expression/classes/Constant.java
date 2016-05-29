@@ -3,6 +3,7 @@ package abstractexpressions.expression.classes;
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
+import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
@@ -289,7 +290,7 @@ public class Constant extends Expression {
     }
 
     @Override
-    public Expression simplifyBringExpressionToCommonDenominator(){
+    public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type){
         return this;
     }
     
