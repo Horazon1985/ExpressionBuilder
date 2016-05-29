@@ -1277,7 +1277,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Nur bei Mehrfachbrüchen alles auf einen Nenner bringen.
-        if (!(expr instanceof BinaryOperation) || type.equals(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS) && !containsMultipleFractions){
+        if (!(expr instanceof BinaryOperation) || type.equals(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS) && !containsMultipleFractions) {
             return expr;
         }
 
@@ -1288,7 +1288,7 @@ public class BinaryOperation extends Expression {
             expr = exprSimplified.copy();
             exprSimplified = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator(expr);
         }
-        
+
         return expr;
 
     }
@@ -1326,7 +1326,7 @@ public class BinaryOperation extends Expression {
         return false;
 
     }
-    
+
     @Override
     public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
 
@@ -2086,8 +2086,8 @@ public class BinaryOperation extends Expression {
 
     }
 
-    @Override
-    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
+//    @Override
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter2() throws EvaluationException {
 
         Expression expr = this;
         Expression exprSimplified;
@@ -2145,6 +2145,83 @@ public class BinaryOperation extends Expression {
             }
         } catch (EvaluationException e) {
             return expr;
+        }
+
+        return expr;
+
+    }
+
+    public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
+
+        Expression expr = this;
+        Expression exprOptimized;
+
+        // "Kurzes / Schnelles" Ausmultiplizieren soll stattfinden.
+        if (this.isSum() || this.isDifference()) {
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+            Expression summandSimplified;
+            for (int i = 0; i < summandsLeft.getBound(); i++) {
+                summandSimplified = summandsLeft.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                if (summandSimplified.length() < summandsLeft.get(i).length()) {
+                    summandsLeft.put(i, summandSimplified);
+                }
+            }
+            for (int i = 0; i < summandsRight.getBound(); i++) {
+                summandSimplified = summandsRight.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                if (summandSimplified.length() < summandsRight.get(i).length()) {
+                    summandsRight.put(i, summandSimplified);
+                }
+            }
+
+            expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+
+        } else if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+            Expression factorSimplified;
+            for (int i = 0; i < factors.getBound(); i++) {
+                factorSimplified = factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
+                if (factorSimplified.length() < factors.get(i).length()) {
+                    factors.put(i, factorSimplified);
+                }
+            }
+            expr = SimplifyUtilities.produceProduct(factors);
+
+        }
+
+        // Verusuch: Ausmultiplizieren, zusammenfassen und prüfen, ob das Ergebnis kürzer ist.
+        if (expr.isQuotient()) {
+            /* 
+                 Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
+                 ob sich diese Vereinfachungsart lohnt. 
+             */
+            exprOptimized = ((BinaryOperation) expr).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
+                    ((BinaryOperation) expr).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
+            exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+        } else {
+            exprOptimized = expr.simplifyExpand(TypeExpansion.SHORT);
+            exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+        }
+        if (exprOptimized.length() >= expr.length()) {
+            // Dann die letzte Vereinfachung rückgängig machen.
+            exprOptimized = expr;
+        }
+
+        /* 
+            Verusuch: Auf einen Nenner bringen und dann den Zähler und Nenner separat 
+            analog vereinfachen und prüfen, ob das Ergebnis kürzer ist.
+         */
+        exprOptimized = exprOptimized.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+        exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+        if (exprOptimized.isQuotient()) {
+            exprOptimized = ((BinaryOperation) exprOptimized).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
+                    ((BinaryOperation) exprOptimized).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
+        }
+        if (exprOptimized.length() < expr.length()) {
+            // Dann die letzte Vereinfachung rückgängig machen.
+            return exprOptimized;
         }
 
         return expr;

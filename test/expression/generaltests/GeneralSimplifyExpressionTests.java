@@ -630,7 +630,7 @@ public class GeneralSimplifyExpressionTests {
     }
 
     @Test
-    public void bringFractionToCommonDenominatorNotNecessaryTest() {
+    public void bringFractionToCommonDenominatorNotAlwaysNecessaryTest() {
         // a+x*(1/x+2*x) wird im Modus IF_MULTIPLE_FRACTION_OCCURS nicht vereinfacht, da es keine Mehrfachbrüche gibt, im ALWAYS dagagen zu (x*a+x+2*x^3)/x.
         try {
             Expression f = Expression.build("a+x*(1/x+2*x)", null);
@@ -639,6 +639,21 @@ public class GeneralSimplifyExpressionTests {
             Assert.assertTrue(f.equivalent(g));
             f = Expression.build("a+x*(1/x+2*x)", null);
             g = Expression.build("(x*a+x+2*x^3)/x", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorNotNecessaryTest() {
+        // a+b-sin(x) wird in beiden Modi nicht weiter vereinfacht.
+        try {
+            Expression f = Expression.build("a+b-sin(x)", null);
+            Expression g = Expression.build("a+b-sin(x)", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
+            Assert.assertTrue(f.equivalent(g));
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -662,4 +677,57 @@ public class GeneralSimplifyExpressionTests {
         }
     }
 
+    @Test
+    public void reduceLengthOfExpressionTest1() {
+        // (1+x)^2-x^2 wird zu 1+2*x vereinfacht.
+        try {
+            Expression f = Expression.build("(1+x)^2-x^2", null);
+            Expression g = Expression.build("1+2*x", null);
+            f = f.simplifyExpandAndCollectEquivalentsIfShorter();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceLengthOfExpressionTest2() {
+        // 1-1/(1+x) wird zu x/(1+x) vereinfacht.
+        try {
+            Expression f = Expression.build("1-1/(1+x)", null);
+            Expression g = Expression.build("x/(1+x)", null);
+            f = f.simplifyExpandAndCollectEquivalentsIfShorter();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceLengthOfExpressionTest3() {
+        // 1/(2+x)+x/(2+x)^2 wird zu (2+2*x)/(2+x)^2 vereinfacht.
+        try {
+            Expression f = Expression.build("1/(2+x)+x/(2+x)^2", null);
+            Expression g = Expression.build("(2+2*x)/(2+x)^2", null);
+            f = f.simplifyExpandAndCollectEquivalentsIfShorter();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void reduceLengthOfExpressionTest4() {
+        // 1/x-1/(1+x) wird zu 1/(x+x^2) vereinfacht.
+        try {
+            Expression f = Expression.build("1/x-1/(1+x)", null);
+            Expression g = Expression.build("1/(x+x^2)", null);
+            f = f.simplifyExpandAndCollectEquivalentsIfShorter();
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    
 }

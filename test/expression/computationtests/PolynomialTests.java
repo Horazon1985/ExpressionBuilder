@@ -201,6 +201,27 @@ public class PolynomialTests {
     }
 
     @Test
+    public void getGGTOfPolynomialsTest3() {
+        /* 
+         ggT von f = t/(1+x^2-2*x)+1/(x+x^3-2*x^2)+1/(1-x)-(t/(1-x)+2/(1+x^2-2*x)) + z*((2*t)/(1+x^2-2*x)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-(t/(1-x)+(x*t)/(1+x^2-2*x)+2/(x+x^3-2*x^2))) 
+         und g = x + z bezüglich der Veränderlichen z.
+         */
+        // ggT = x + z.
+        try {
+            f = Expression.build("t/(1+x^2-2*x)+1/(x+x^3-2*x^2)+1/(1-x)-(t/(1-x)+2/(1+x^2-2*x)) + z*((2*t)/(1+x^2-2*x)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-(t/(1-x)+(x*t)/(1+x^2-2*x)+2/(x+x^3-2*x^2)))", null);
+            g = Expression.build("x+z", null);
+            ggT = Expression.build("x+z", null);
+            Expression expectedResult = SimplifyPolynomialMethods.getGGTOfPolynomials(f, g, "z");
+            Assert.assertTrue(expectedResult.equivalent(ggT));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    
+//X_2/(1+x^2-2*x)+1/(x+x^3-2*x^2)+1/(1-x)-(X_2/(1-x)+2/(1+x^2-2*x)), (2*X_2)/(1+x^2-2*x)+1/(x^2+x^4-2*x^3)+1/(x-x^2)-(X_2/(1-x)+(x*X_2)/(1+x^2-2*x)+2/(x+x^3-2*x^2))    
+    
+    @Test
     public void getGGTOfPolynomialsIsTrivialTest() {
         // ggT von f = x^3+5*x^2-7*x-4 und g = 2*x^2+4*x-18 ist = 1.
         try {
