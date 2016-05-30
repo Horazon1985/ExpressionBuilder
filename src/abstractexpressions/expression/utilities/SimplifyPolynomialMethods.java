@@ -1073,15 +1073,15 @@ public abstract class SimplifyPolynomialMethods {
      *
      * @throws EvaluationException
      */
-    public static ExpressionCollection[] polynomialDivision(ExpressionCollection coefficientsEnumerator, ExpressionCollection coefficientsDenominator) throws EvaluationException {
+    public static ExpressionCollection[] polynomialDivision(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator) throws EvaluationException {
 
         ExpressionCollection[] quotient = new ExpressionCollection[2];
         quotient[0] = new ExpressionCollection();
         quotient[1] = new ExpressionCollection();
 
         // Falls deg(Zähler) < deg(Nenner) -> fertig.
-        if (coefficientsEnumerator.getBound() < coefficientsDenominator.getBound()) {
-            quotient[1] = new ExpressionCollection(coefficientsEnumerator);
+        if (coefficientsNumerator.getBound() < coefficientsDenominator.getBound()) {
+            quotient[1] = new ExpressionCollection(coefficientsNumerator);
             return quotient;
         }
 
@@ -1095,7 +1095,7 @@ public abstract class SimplifyPolynomialMethods {
 
         int degreeDenominator = coefficientsDenominator.getBound() - 1;
         ExpressionCollection multipleOfDenominator = new ExpressionCollection();
-        ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsEnumerator);
+        ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsNumerator);
         for (int i = coeffcicientsEnumeratorCopy.getBound() - 1; i >= degreeDenominator; i--) {
             quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify());
             for (int j = degreeDenominator; j >= 0; j--) {
