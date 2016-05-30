@@ -1674,6 +1674,7 @@ public class BinaryOperation extends Expression {
             }
             // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);
+            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInSums(summands);
             return SimplifyUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -1684,6 +1685,7 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
             SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {

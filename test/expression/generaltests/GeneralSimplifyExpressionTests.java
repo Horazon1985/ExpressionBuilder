@@ -1,6 +1,5 @@
 package expression.generaltests;
 
-import abstractexpressions.expression.classes.BinaryOperation;
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
@@ -8,7 +7,6 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
-import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
 import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.util.HashSet;
@@ -340,6 +338,28 @@ public class GeneralSimplifyExpressionTests {
         try {
             Expression f = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
             Expression g = Expression.build("5^(1/2)*a+5^(1/2)*b", null);
+            f = f.simplifyFactorizeAllButRationals();
+            Assert.assertTrue(f.equals(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void factorizeAllButRationalsWithAntiEquivalentExpressionsTest() {
+        // 5/(x-y)+-2/(y-x)+z wird zu (5-+2)/(x-y)+z faktorisiert.
+        // (5*a)/(x-y)-(2*a)/(y-x)+z wird zu ((5+2)*a)/(x-y)+z faktorisiert.
+        try {
+            Expression f = Expression.build("5/(x-y)+2/(y-x)+z", null);
+            Expression g = Expression.build("(5-2)/(x-y)+z", null);
+            f = f.simplifyFactorizeAllButRationals();
+            Assert.assertTrue(f.equals(g));
+            f = Expression.build("5/(x-y)-2/(y-x)+z", null);
+            g = Expression.build("(5+2)/(x-y)+z", null);
+            f = f.simplifyFactorizeAllButRationals();
+            Assert.assertTrue(f.equals(g));
+            f = Expression.build("(5*a)/(x-y)-(2*a)/(y-x)+z", null);
+            g = Expression.build("((5+2)*a)/(x-y)+z", null);
             f = f.simplifyFactorizeAllButRationals();
             Assert.assertTrue(f.equals(g));
         } catch (ExpressionException | EvaluationException e) {
