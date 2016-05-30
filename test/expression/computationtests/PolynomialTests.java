@@ -214,6 +214,8 @@ public class PolynomialTests {
             ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "z");
             ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, "z");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsF, coefficientsG);
+            ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsF, coefficientsG);
+            System.out.println("Quotient: " + quotient[0] + "Rest: " + quotient[1]);
             Expression expectedResult = SimplifyPolynomialMethods.getPolynomialFromCoefficients(expectedResultCoefficients, "z");
 //            Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {

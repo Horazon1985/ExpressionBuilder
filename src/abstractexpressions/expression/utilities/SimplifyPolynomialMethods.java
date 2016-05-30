@@ -307,7 +307,7 @@ public abstract class SimplifyPolynomialMethods {
         // Koeffizienten vereinfachen!
         coefficients = coefficients.simplify(simplifyTypesExpandPolynomial);
 
-        // Koeffizienten, die = 0 sind, entfernen.
+        // Führende Koeffizienten, die = 0 sind, entfernen.
         while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
             coefficients.remove(coefficients.getBound() - 1);
         }

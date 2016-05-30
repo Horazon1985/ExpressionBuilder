@@ -4098,6 +4098,109 @@ public abstract class SimplifyBinaryOperationMethods {
     }
 
     /**
+     * Methode für das Faktorisieren in Summen. Es wird nur dann faktorisiert,
+     * wenn die Summanden, bis auf konstante Faktoren und bis auf Antiäquivalenz, übereinstimmen.
+     */
+    public static void simplifyFactorizeAllButRationalsInAntiEquivalentCaseInSums(ExpressionCollection summands) throws EvaluationException {
+
+        ExpressionCollection rationalNumeratorsLeft;
+        ExpressionCollection nonRationalNumeratorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsLeft;
+        ExpressionCollection nonRationalDenominatorsLeft = new ExpressionCollection();
+        ExpressionCollection rationalNumeratorsRight;
+        ExpressionCollection nonRationalNumeratorsRight = new ExpressionCollection();
+        ExpressionCollection rationalDenominatorsRight;
+        ExpressionCollection nonRationalDenominatorsRight = new ExpressionCollection();
+
+        Expression factorizedSummand;
+
+        for (int i = 0; i < summands.getBound(); i++) {
+
+            if (summands.get(i) == null) {
+                continue;
+            }
+
+            for (int j = i + 1; j < summands.getBound(); j++) {
+
+                if (summands.get(j) == null) {
+                    continue;
+                }
+
+                rationalNumeratorsLeft = SimplifyUtilities.getFactorsOfNumeratorInExpression(summands.get(i));
+                rationalNumeratorsRight = SimplifyUtilities.getFactorsOfNumeratorInExpression(summands.get(j));
+                rationalDenominatorsLeft = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(i));
+                rationalDenominatorsRight = SimplifyUtilities.getFactorsOfDenominatorInExpression(summands.get(j));
+                nonRationalNumeratorsLeft.clear();
+                nonRationalNumeratorsRight.clear();
+                nonRationalDenominatorsLeft.clear();
+                nonRationalDenominatorsRight.clear();
+
+                for (int k = 0; k < rationalNumeratorsLeft.getBound(); k++) {
+                    if (!(rationalNumeratorsLeft.get(k) instanceof Constant)) {
+                        nonRationalNumeratorsLeft.add(rationalNumeratorsLeft.get(k));
+                        rationalNumeratorsLeft.remove(k);
+                    }
+                }
+                for (int k = 0; k < rationalNumeratorsRight.getBound(); k++) {
+                    if (!(rationalNumeratorsRight.get(k) instanceof Constant)) {
+                        nonRationalNumeratorsRight.add(rationalNumeratorsRight.get(k));
+                        rationalNumeratorsRight.remove(k);
+                    }
+                }
+                for (int k = 0; k < rationalDenominatorsLeft.getBound(); k++) {
+                    if (!(rationalDenominatorsLeft.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsLeft.add(rationalDenominatorsLeft.get(k));
+                        rationalDenominatorsLeft.remove(k);
+                    }
+                }
+                for (int k = 0; k < rationalDenominatorsRight.getBound(); k++) {
+                    if (!(rationalDenominatorsRight.get(k) instanceof Constant)) {
+                        nonRationalDenominatorsRight.add(rationalDenominatorsRight.get(k));
+                        rationalDenominatorsRight.remove(k);
+                    }
+                }
+
+                // Falls die nichtrationalen Faktoren NICHT übereinstimmen, nächster Schleifendurchgang.
+                if (!nonRationalNumeratorsLeft.equivalentInTerms(nonRationalNumeratorsRight)
+                        || !nonRationalDenominatorsLeft.equivalentInTerms(nonRationalDenominatorsRight)) {
+                    continue;
+                }
+
+                if (!nonRationalNumeratorsLeft.isEmpty() && nonRationalDenominatorsLeft.isEmpty()) {
+
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).add(SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
+                            SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft));
+                    summands.put(i, factorizedSummand);
+                    summands.remove(j);
+                    // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
+                    break;
+
+                } else if (nonRationalNumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
+
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).add(SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).div(SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                    summands.put(i, factorizedSummand);
+                    summands.remove(j);
+                    // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
+                    break;
+                } else if (!nonRationalNumeratorsLeft.isEmpty() && !nonRationalDenominatorsLeft.isEmpty()) {
+
+                    factorizedSummand = SimplifyUtilities.produceQuotient(rationalNumeratorsLeft, rationalDenominatorsLeft).add(
+                            SimplifyUtilities.produceQuotient(rationalNumeratorsRight, rationalDenominatorsRight)).mult(
+                                    SimplifyUtilities.produceProduct(nonRationalNumeratorsLeft)).div(
+                                    SimplifyUtilities.produceProduct(nonRationalDenominatorsLeft));
+                    summands.put(i, factorizedSummand);
+                    summands.remove(j);
+                    // Zweite Schleife abbrechen und weiter fortfahren mit dem nächsten Summanden!
+                    break;
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
      * Methode für das Faktorisieren in Differenzen. Es wird nur dann
      * faktorisiert, wenn die Summanden, bis auf konstante Faktoren,
      * übereinstimmen.
