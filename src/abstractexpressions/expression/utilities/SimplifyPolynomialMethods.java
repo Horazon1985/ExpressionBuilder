@@ -536,7 +536,7 @@ public abstract class SimplifyPolynomialMethods {
                 // z_0 = einzige Nullstelle. Restfaktor = x^2 + (z_0+A)*x + (z_0^2+A*z_0+B).
                 Expression irreducibleQuadraticFactor = Variable.create(var).pow(2).add(
                         zeros.get(0).add(A).mult(Variable.create(var))).add(
-                                zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
+                        zeros.get(0).pow(2).add(A.mult(zeros.get(0))).add(B)).simplify();
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(irreducibleQuadraticFactor);
             }
             if (discriminant.equals(ZERO)) {
@@ -545,7 +545,7 @@ public abstract class SimplifyPolynomialMethods {
             if (discriminant.isAlwaysNegative()) {
                 return a.get(3).mult(Variable.create(var).sub(zeros.get(0)).simplify()).mult(
                         Variable.create(var).sub(zeros.get(1)).simplify()).mult(
-                                Variable.create(var).sub(zeros.get(2)).simplify());
+                        Variable.create(var).sub(zeros.get(2)).simplify());
             }
         }
 
@@ -574,7 +574,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 1; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -582,7 +582,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(TWO.mult(i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -594,7 +594,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             } else {
@@ -602,7 +602,7 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < n / 2; i++) {
                     quadraticFactor = Variable.create(var).pow(2).sub(
                             TWO.mult(a.pow(1, n)).mult(new Constant(2 * i + 1).mult(PI).div(n).cos()).mult(Variable.create(var))).add(
-                                    a.pow(2, n)).simplify();
+                            a.pow(2, n)).simplify();
                     decomposedPolynomial = decomposedPolynomial.mult(quadraticFactor);
                 }
             }
@@ -1119,7 +1119,8 @@ public abstract class SimplifyPolynomialMethods {
     /**
      * Gibt den ggT zweier Polynome f und g zurück, falls deren Koeffizienten
      * rational sind. Ist f oder g kein Polynom in var, oder hat f oder g einen
-     * zu hohen Grad, so wird 1 zurückgegeben.
+     * zu hohen Grad, so wird 1 zurückgegeben. Ebenso wird in schwer
+     * entscheidbaren Fällen 1 zurückgegeben.
      */
     public static Expression getGGTOfPolynomials(Expression f, Expression g, String var) {
 
@@ -1152,7 +1153,8 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten aund b
-     * gegeben sind.
+     * gegeben sind. Ebenso wird in schwer entscheidbaren Fällen 1
+     * zurückgegeben.
      */
     public static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
 

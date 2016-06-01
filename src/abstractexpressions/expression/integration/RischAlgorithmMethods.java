@@ -589,7 +589,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         coefficientsNumerator = coefficientsNumerator.simplify(simplifyTypesRischAlgorithm);
 
         // Hermite-Reduktion und später expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
-        return doHermiteReduction(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
+        return doHermiteReduction2(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
 
     }
 
@@ -742,6 +742,164 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     }
 
     /**
+     * Integration mittels Hermite-Reduktion.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression doHermiteReduction2(ExpressionCollection coefficientsNumerator, Expression denominator,
+            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        System.out.println("Hermite-Reduktion:");
+        System.out.println("Transzendentes Element = " + transcententalElement);
+        System.out.println("Zählerkoeffizienten = " + coefficientsNumerator + "; Nenner = " + denominator);
+
+        // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
+        ExpressionCollection coefficientsDenominator;
+        try {
+
+            // Alle transzendenten Ausdrücke werden vorübergehend durch Unbestimmte ersetzt -> verkürzt Rechenaufwand.
+            Expression numerator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+            ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(numerator.div(denominator), var);
+            String[] transcendentalVars = new String[transcendentalExtensions.getBound()];
+            for (int i = transcendentalExtensions.getBound() - 1; i >= 0; i--) {
+                transcendentalVars[i] = SubstitutionUtilities.getSubstitutionVariable(coefficientsNumerator, denominator);
+                coefficientsNumerator = SubstitutionUtilities.substituteExpressionByAnotherExpressionInExpressionCollection(
+                        coefficientsNumerator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+                denominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+            }
+
+            Expression integrandSimplified = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(denominator);
+            System.out.println("Integrand = " + integrandSimplified);
+            integrandSimplified = prepareIntegrandForHermiteReduction(integrandSimplified, transcendentalVar);
+            System.out.println("Vereinfachter Integrand = " + integrandSimplified);
+
+            // Rücksubstitution.
+            for (int i = 0; i < transcendentalVars.length; i++) {
+                denominator = denominator.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
+            }
+
+            if (!SimplifyRationalFunctionMethods.isRationalFunction(integrandSimplified, transcendentalVar)) {
+                // Sollte eigentlich nie vorkommen. Trotzdem: sicherheitshalber abfragen!
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            if (SimplifyRationalFunctionMethods.isRationalFunction(integrandSimplified, var) && !integrandSimplified.contains(transcendentalVar)) {
+                // In diesem Fall: Integration mittels Partialbruchzerlegung.
+                return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandSimplified, var}));
+            }
+
+            if (integrandSimplified.isQuotient()) {
+                coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
+                denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+            } else {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getLeft(), transcendentalVar);
+            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getRight(), transcendentalVar);
+            int degNumerator = coefficientsNumerator.getBound() - 1;
+            int degDenominator = coefficientsDenominator.getBound() - 1;
+
+            /*
+            Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners sein.
+            (Der Fall, dass beide Polynome konstant sind, der Integrand also eine rationale Funktion in var ist, wurde 
+            bereits vorher behandelt). Trotzdem diese Sicherheitsabfrage.
+             */
+            if (degNumerator >= degDenominator) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            if (denominator.isNotPower() && denominator.isNotProduct()) {
+                // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
+                try {
+                    return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+            }
+
+            ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(denominator);
+            for (int i = factorsDenominator.getBound() - 1; i >= 0; i--) {
+                if (factorsDenominator.get(i).isIntegerPower()) {
+
+                    BigInteger m = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().toBigInteger();
+                    Expression v = ((BinaryOperation) factorsDenominator.get(i)).getLeft();
+                    factorsDenominator.put(i, null);
+                    Expression u = SimplifyUtilities.produceProduct(factorsDenominator);
+                    Expression derivativeOfV;
+                    try {
+                        derivativeOfV = v.replaceVariable(transcendentalVar, transcententalElement);
+                        derivativeOfV = derivativeOfV.diff(var);
+                        derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
+
+                        System.out.println("m = " + m);
+                        System.out.println("u = " + u);
+                        System.out.println("v = " + v);
+
+                        Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
+                        if (!gcd.equals(ONE)) {
+                            // Sollte eigentlich laut Theorem nie passieren!
+                            throw new NotAlgebraicallyIntegrableException();
+                        }
+
+                        Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
+                        Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+                        Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+                        Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+
+                        System.out.println("B = " + b);
+                        System.out.println("C = " + c);
+
+                        Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
+                        derivativeOfB = derivativeOfB.diff(var);
+                        derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
+
+                        System.out.println("B' = " + derivativeOfB);
+
+                        Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify(simplifyTypesRischAlgorithm);
+                        ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
+
+                        System.out.println("(1-m)C - UB' = " + newIntegrand);
+
+                        return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(
+                                doHermiteReduction2(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
+                                        transcententalElement, var, transcendentalVar));
+
+                    } catch (EvaluationException e) {
+                        factorsDenominator.put(i, v.pow(m));
+                    }
+
+                }
+            }
+
+            // Dann ist der Nenner quadratfrei (aber eventuell faktorisiert).
+            try {
+                return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+        } catch (EvaluationException | SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+    }
+
+    /**
+     * Hilfsmethode. Vereinfacht den Integranden passend für die
+     * Hermite-Reduktion vor.
+     */
+    private static Expression prepareIntegrandForHermiteReduction(Expression f, String var) throws EvaluationException {
+
+        // Zunächst passend vereinfachen.
+        Expression integrandSimplified = f.simplify(simplifyTypesRischAlgorithm);
+
+        // Nun wieder quadratfreie Faktorisierung des Nenners durchführen.
+        return integrandSimplified;
+
+    }
+
+    /**
      * Risch-Algorithmus für den gebrochenen Anteil im Falle eines quadratfreien
      * Nenners.
      *
@@ -792,20 +950,20 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         ExpressionCollection coefficientsOfFirstArgument = SimplifyPolynomialMethods.subtractPolynomials(coefficientsNumerator,
                 SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(Variable.create(resultantVar)), coefficientsDerivativeOfDenominator));
         // Zweites Argument der Resultante: b(t);
-        
+
         System.out.println("Koeffizienten der Argumente der Resultante: " + coefficientsOfFirstArgument + ", " + coefficientsDenominator);
-        
+
         MatrixExpression resultantAsMatrixExpression = SimplifyPolynomialMethods.getResultant(coefficientsOfFirstArgument, coefficientsDenominator);
-        
+
         if (!(resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression() instanceof Expression)) {
             // Resultante nicht explizit berechenbar.
             throw new NotAlgebraicallyIntegrableException();
         }
 
         Expression resultant = (Expression) resultantAsMatrixExpression.convertOneTimesOneMatrixToExpression();
-        
+
         System.out.println("Resultante: " + resultant);
-        
+
         if (!SimplifyPolynomialMethods.isPolynomial(resultant, resultantVar)) {
             // Sollte eigentlich nie vorkommen.
             throw new NotAlgebraicallyIntegrableException();
@@ -813,9 +971,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Prüfen, ob 1. die Nullstellen von resultant von konstant sind und 2. ob ihre Anzahl = deg(resultant) ist.
         resultant = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(resultant, resultantVar);
-        
+
         System.out.println("Faktorisierte Resultante: " + resultant);
-        
+
         if (!isPolynomialDecomposedIntoPairwiseDifferentLinearFaktors(resultant, resultantVar, var)) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -830,9 +988,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         } catch (NotAlgebraicallySolvableException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         System.out.println("Nullstellen der Resultante: " + zerosOfResultant);
-        
+
         ExpressionCollection thetas = new ExpressionCollection();
         Expression gcd;
         if (transcententalElement.isFunction(TypeFunction.exp) || transcententalElement.isFunction(TypeFunction.ln)) {
@@ -846,7 +1004,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         System.out.println("Thetas: " + thetas);
-        
+
         // Logarithmischer Fall.
         if (transcententalElement.isFunction(TypeFunction.ln)) {
 
@@ -855,9 +1013,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(thetas.get(i).ln());
             }
-            
+
             System.out.println("Integral: " + integral);
-            
+
             return integral;
 
         }
