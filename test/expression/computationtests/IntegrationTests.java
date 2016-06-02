@@ -362,7 +362,7 @@ public class IntegrationTests {
     @Test
     public void integrateByRischAlgorithmTest3() {
         /* 
-         int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x) = x-(x*exp(x^2))/(1+exp(x^2)).
+         int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x) = x/(1+exp(x^2)).
          Ideales Ergebnis wäre x/(1+exp(x^2)).
          */
         try {

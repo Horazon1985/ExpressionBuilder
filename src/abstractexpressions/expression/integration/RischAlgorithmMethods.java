@@ -19,6 +19,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
 import abstractexpressions.expression.equation.SolveGeneralEquationMethods;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyPolynomialMethods.PolynomialNotDecomposableException;
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
@@ -771,12 +772,14 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             Expression integrandSimplified = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(denominator);
             System.out.println("Integrand = " + integrandSimplified);
             integrandSimplified = prepareIntegrandForHermiteReduction(integrandSimplified, transcendentalVar);
-            System.out.println("Vereinfachter Integrand = " + integrandSimplified);
 
             // Rücksubstitution.
             for (int i = 0; i < transcendentalVars.length; i++) {
+                integrandSimplified = integrandSimplified.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
                 denominator = denominator.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
             }
+
+            System.out.println("Vereinfachter Integrand = " + integrandSimplified);
 
             if (!SimplifyRationalFunctionMethods.isRationalFunction(integrandSimplified, transcendentalVar)) {
                 // Sollte eigentlich nie vorkommen. Trotzdem: sicherheitshalber abfragen!
@@ -789,14 +792,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
 
             if (integrandSimplified.isQuotient()) {
-                coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
-                denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+                coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getRight(), transcendentalVar);
+                try {
+                    denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+                } catch (PolynomialNotDecomposableException e) {
+                    // Nichts tun, der Nenner ist dann einfach unzerlegbar.
+                    denominator = ((BinaryOperation) integrandSimplified).getRight();
+                }
             } else {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
             coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getLeft(), transcendentalVar);
-            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getRight(), transcendentalVar);
             int degNumerator = coefficientsNumerator.getBound() - 1;
             int degDenominator = coefficientsDenominator.getBound() - 1;
 
@@ -879,7 +886,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-        } catch (EvaluationException | SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
+        } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
 
