@@ -11,8 +11,10 @@ import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
+import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import java.math.BigDecimal;
@@ -4458,6 +4460,103 @@ public abstract class SimplifyBinaryOperationMethods {
             factorsNumerator.put(i, base.pow(exponent));
 
         }
+
+    }
+
+    /**
+     *
+     */
+    public static void reduceFactorialsInQuotients(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) {
+
+        Expression factorNumerator, factorDenominator;
+        Expression[] reducedFactors;
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+
+            if (factorsNumerator.get(i) == null) {
+                continue;
+            }
+            if (!factorsNumerator.get(i).isOperator(TypeOperator.fac)) {
+                continue;
+            }
+            factorNumerator = factorsNumerator.get(i);
+
+            for (int j = 0; j < factorsDenominator.getBound(); j++) {
+
+                if (factorsDenominator.get(j) == null) {
+                    continue;
+                }
+                if (!factorsDenominator.get(j).isOperator(TypeOperator.fac)) {
+                    continue;
+                }
+                factorDenominator = factorsDenominator.get(j);
+
+                reducedFactors = reduceQuotientOfFactorials((Expression) ((Operator) factorNumerator).getParams()[0], (Expression) ((Operator) factorDenominator).getParams()[0]);
+                if (reducedFactors.length == 2) {
+                    if (reducedFactors[0].equals(ONE)) {
+                        factorsNumerator.remove(i);
+                        factorsDenominator.put(j, reducedFactors[1]);
+                    } else if (reducedFactors[1].equals(ONE)) {
+                        factorsNumerator.put(i, reducedFactors[0]);
+                        factorsDenominator.remove(j);
+                    }
+                    break;
+                }
+
+            }
+
+        }
+
+    }
+
+    private static Expression[] reduceQuotientOfFactorials(Expression factorialArgumentFactorNumerator, Expression factorialArgumentFactorDenominator) {
+
+        Expression difference;
+        Expression[] reducedFactors;
+        try {
+
+            difference = factorialArgumentFactorNumerator.sub(factorialArgumentFactorDenominator).simplify();
+            if (difference.isIntegerConstant()) {
+
+                Expression quotient = factorialArgumentFactorNumerator.div(factorialArgumentFactorDenominator);
+                /*
+                 Zunächst wird die Summationsvariable für die äußere Summe
+                 ermittelt. Dies ist entweder k (falls k nicht schon vorher
+                 auftaucht), oder k_0, k_1, k_2, ...
+                 */
+                String indexVarForProduct = "k";
+                int index = 0;
+                while (quotient.contains(indexVarForProduct + "_" + index)) {
+                    index++;
+                }
+                if (index == 0) {
+                    if (quotient.contains("k")) {
+                        indexVarForProduct = indexVarForProduct + "_0";
+                    } else {
+                        indexVarForProduct = "k";
+                    }
+                } else {
+                    indexVarForProduct = indexVarForProduct + "_" + index;
+                }
+
+                if (difference.isNonNegativeIntegerConstant()) {
+                    reducedFactors = new Expression[2];
+                    reducedFactors[0] = new Operator(TypeOperator.prod, new Object[]{factorialArgumentFactorDenominator.add(Variable.create(indexVarForProduct)),
+                        indexVarForProduct, ONE, difference});
+                    reducedFactors[1] = ONE;
+                    return reducedFactors;
+                } else if (difference.isNegativeIntegerConstant()) {
+                    reducedFactors = new Expression[2];
+                    reducedFactors[0] = ONE;
+                    reducedFactors[1] = new Operator(TypeOperator.prod, new Object[]{factorialArgumentFactorNumerator.add(Variable.create(indexVarForProduct)),
+                        indexVarForProduct, ONE, MINUS_ONE.mult(difference)});
+                    return reducedFactors;
+                }
+
+            }
+
+        } catch (EvaluationException e) {
+        }
+        return new Expression[0];
 
     }
 

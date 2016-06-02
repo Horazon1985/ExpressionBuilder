@@ -1425,6 +1425,11 @@ public class BinaryOperation extends Expression {
              (ab^3+a^2)/(b^3+a) zu a gekürzt.
              */
             SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
+            
+            /*
+            Kürzen von Fakultäten mit ganzzahligen Differenzen (z.B. (x+3)!/x! = (x+1)*(x+2)*(x+3))
+            */
+            SimplifyBinaryOperationMethods.reduceFactorialsInQuotients(termsLeft, termsRight);
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 

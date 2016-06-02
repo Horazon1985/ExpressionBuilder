@@ -765,11 +765,27 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem
+     * nichtpositiven ganzzahligen Wert ist.
+     */
+    public boolean isNonPositiveIntegerConstant() {
+        return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) <= 0;
+    }
+
+    /**
      * Liefert true genau dann, wenn this eine Konstante mit einem positiven
      * ganzzahligen Wert ist.
      */
     public boolean isPositiveIntegerConstant() {
         return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    /**
+     * Liefert true genau dann, wenn this eine Konstante mit einem negativen
+     * ganzzahligen Wert ist.
+     */
+    public boolean isNegativeIntegerConstant() {
+        return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0;
     }
 
     /**
