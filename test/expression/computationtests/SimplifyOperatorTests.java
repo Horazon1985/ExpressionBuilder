@@ -76,4 +76,25 @@ public class SimplifyOperatorTests {
         }
     }
 
+    @Test
+    public void simplifyReduceQuotientOfFactorialsTest1() {
+        try {
+            // Quotienten von Fakultäten, bei denen die Differenz der Argumente ganzzahlig ist, explizit ausschreiben.
+            Expression f = Expression.build("(x+8)!/(x+2)!", null);
+            Expression g = Expression.build("(x+3)*(x+4)*(x+5)*(x+6)*(x+7)*(x+8)", null);
+            Expression fSimplified = f.simplify();
+            Assert.assertTrue(fSimplified.equivalent(g));
+            f = Expression.build("(x+2)!/(x+8)!", null);
+            g = Expression.build("1/((x+3)*(x+4)*(x+5)*(x+6)*(x+7)*(x+8))", null);
+            fSimplified = f.simplify();
+            Assert.assertTrue(fSimplified.equivalent(g));
+            f = Expression.build("(x+100000)!/(x+5)!", null);
+            g = Expression.build("prod(5+x+k,k,1,99995)", null);
+            fSimplified = f.simplify();
+            Assert.assertTrue(fSimplified.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

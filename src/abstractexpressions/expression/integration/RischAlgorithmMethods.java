@@ -590,7 +590,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         coefficientsNumerator = coefficientsNumerator.simplify(simplifyTypesRischAlgorithm);
 
         // Hermite-Reduktion und später expliziten Risch-Algorithmus anwenden, wenn der Nenner quadratfrei ist.
-        return doHermiteReduction2(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
+        return doHermiteReduction(coefficientsNumerator, decompositionOfDenominator, transcententalElement, var, transcendentalVar);
 
     }
 
@@ -600,154 +600,154 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
-            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
-
-        System.out.println("Hermite-Reduktion:");
-        System.out.println("Transzendentes Element = " + transcententalElement);
-        System.out.println("Zählerkoeffizienten = " + coefficientsNumerator + "; Nenner = " + denominator);
-
-        // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
-        ExpressionCollection coefficientsDenominator;
-        try {
-
-            // Alle transzendenten Ausdrücke werden vorübergehend durch Unbestimmte ersetzt -> verkürzt Rechenaufwand.
-            Expression numerator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
-            ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(numerator.div(denominator), var);
-            String[] transcendentalVars = new String[transcendentalExtensions.getBound()];
-            for (int i = transcendentalExtensions.getBound() - 1; i >= 0; i--) {
-                transcendentalVars[i] = SubstitutionUtilities.getSubstitutionVariable(coefficientsNumerator, denominator);
-                coefficientsNumerator = SubstitutionUtilities.substituteExpressionByAnotherExpressionInExpressionCollection(
-                        coefficientsNumerator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
-                denominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
-            }
-
-            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
-            ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
-
-            System.out.println("gcd(Zähler, Nenner) = " + gcdOfNumeratorAndDenominator);
-
-            if (gcdOfNumeratorAndDenominator.getBound() > 1) {
-                // Dann ist der ggT nicht trivial.
-                ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator);
-                coefficientsNumerator = quotient[0];
-                quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator);
-                coefficientsDenominator = quotient[0];
-
-                System.out.println("Zähler und Nenner konnten gekürzt werden.");
-                System.out.println("Koeffizienten vom neuen Zähler = " + coefficientsNumerator);
-
-                try {
-                    denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
-                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
-                    denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
-                }
-
-                System.out.println("Neuer Nenner = " + denominator);
-
-            }
-
-            // Rücksubstitution.
-            for (int i = 0; i < transcendentalVars.length; i++) {
-                for (int j = 0; j < coefficientsNumerator.getBound(); j++) {
-                    coefficientsNumerator.put(j, coefficientsNumerator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
-                }
-                for (int j = 0; j < coefficientsDenominator.getBound(); j++) {
-                    coefficientsDenominator.put(j, coefficientsDenominator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
-                }
-                denominator = denominator.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
-            }
-
-        } catch (EvaluationException e) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        int degNumerator = coefficientsNumerator.getBound() - 1;
-        int degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominator, transcendentalVar).intValue();
-
-        // Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners sein (außer beide Polynome sind konstant). Daher diese Sicherheitsabfrage.
-        if (degDenominator == 0 && degNumerator > 0 || degDenominator > 0 && degNumerator >= degDenominator) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-        if (denominator.isNotPower() && denominator.isNotProduct()) {
-            // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
-            try {
-                return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
-            } catch (EvaluationException e) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
-        }
-
-        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(denominator);
-        for (int i = factorsDenominator.getBound() - 1; i >= 0; i--) {
-            if (factorsDenominator.get(i).isIntegerPower()) {
-
-                BigInteger m = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().toBigInteger();
-                Expression v = ((BinaryOperation) factorsDenominator.get(i)).getLeft();
-                factorsDenominator.put(i, null);
-                Expression u = SimplifyUtilities.produceProduct(factorsDenominator);
-                Expression derivativeOfV;
-                try {
-                    derivativeOfV = v.replaceVariable(transcendentalVar, transcententalElement);
-                    derivativeOfV = derivativeOfV.diff(var);
-                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
-
-                    System.out.println("m = " + m);
-                    System.out.println("u = " + u);
-                    System.out.println("v = " + v);
-
-                    Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
-                    if (!gcd.equals(ONE)) {
-                        // Sollte eigentlich laut Theorem nie passieren!
-                        throw new NotAlgebraicallyIntegrableException();
-                    }
-
-                    Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
-                    Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
-                    Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
-                    Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
-
-                    System.out.println("B = " + b);
-                    System.out.println("C = " + c);
-
-                    Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
-                    derivativeOfB = derivativeOfB.diff(var);
-                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
-
-                    System.out.println("B' = " + derivativeOfB);
-
-                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify(simplifyTypesRischAlgorithm);
-                    ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
-
-                    System.out.println("(1-m)C - UB' = " + newIntegrand);
-
-                    return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(
-                            doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
-                                    transcententalElement, var, transcendentalVar));
-
-                } catch (EvaluationException e) {
-                    factorsDenominator.put(i, v.pow(m));
-                }
-
-            }
-        }
-
-        // Dann ist der Nenner quadratfrei (aber eventuell faktorisiert).
-        try {
-            return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
-        } catch (EvaluationException e) {
-            throw new NotAlgebraicallyIntegrableException();
-        }
-
-    }
-
+//    private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
+//            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+//
+//        System.out.println("Hermite-Reduktion:");
+//        System.out.println("Transzendentes Element = " + transcententalElement);
+//        System.out.println("Zählerkoeffizienten = " + coefficientsNumerator + "; Nenner = " + denominator);
+//
+//        // Zunächst: Prüfung, ob Zähler und Nenner teilerfremd sind. Wenn nicht: kürzen, neuen Nenner wieder zerlegen und fortfahren.
+//        ExpressionCollection coefficientsDenominator;
+//        try {
+//
+//            // Alle transzendenten Ausdrücke werden vorübergehend durch Unbestimmte ersetzt -> verkürzt Rechenaufwand.
+//            Expression numerator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+//            ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(numerator.div(denominator), var);
+//            String[] transcendentalVars = new String[transcendentalExtensions.getBound()];
+//            for (int i = transcendentalExtensions.getBound() - 1; i >= 0; i--) {
+//                transcendentalVars[i] = SubstitutionUtilities.getSubstitutionVariable(coefficientsNumerator, denominator);
+//                coefficientsNumerator = SubstitutionUtilities.substituteExpressionByAnotherExpressionInExpressionCollection(
+//                        coefficientsNumerator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+//                denominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, transcendentalExtensions.get(i), Variable.create(transcendentalVars[i]));
+//            }
+//
+//            coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
+//            ExpressionCollection gcdOfNumeratorAndDenominator = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsNumerator, coefficientsDenominator);
+//
+//            System.out.println("gcd(Zähler, Nenner) = " + gcdOfNumeratorAndDenominator);
+//
+//            if (gcdOfNumeratorAndDenominator.getBound() > 1) {
+//                // Dann ist der ggT nicht trivial.
+//                ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, gcdOfNumeratorAndDenominator);
+//                coefficientsNumerator = quotient[0];
+//                quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsDenominator, gcdOfNumeratorAndDenominator);
+//                coefficientsDenominator = quotient[0];
+//
+//                System.out.println("Zähler und Nenner konnten gekürzt werden.");
+//                System.out.println("Koeffizienten vom neuen Zähler = " + coefficientsNumerator);
+//
+//                try {
+//                    denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+//                } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
+//                    denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
+//                }
+//
+//                System.out.println("Neuer Nenner = " + denominator);
+//
+//            }
+//
+//            // Rücksubstitution.
+//            for (int i = 0; i < transcendentalVars.length; i++) {
+//                for (int j = 0; j < coefficientsNumerator.getBound(); j++) {
+//                    coefficientsNumerator.put(j, coefficientsNumerator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
+//                }
+//                for (int j = 0; j < coefficientsDenominator.getBound(); j++) {
+//                    coefficientsDenominator.put(j, coefficientsDenominator.get(j).replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i)));
+//                }
+//                denominator = denominator.replaceVariable(transcendentalVars[i], transcendentalExtensions.get(i));
+//            }
+//
+//        } catch (EvaluationException e) {
+//            throw new NotAlgebraicallyIntegrableException();
+//        }
+//
+//        int degNumerator = coefficientsNumerator.getBound() - 1;
+//        int degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominator, transcendentalVar).intValue();
+//
+//        // Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners sein (außer beide Polynome sind konstant). Daher diese Sicherheitsabfrage.
+//        if (degDenominator == 0 && degNumerator > 0 || degDenominator > 0 && degNumerator >= degDenominator) {
+//            throw new NotAlgebraicallyIntegrableException();
+//        }
+//
+//        if (denominator.isNotPower() && denominator.isNotProduct()) {
+//            // Nenner ist quadratfrei -> explizit Stammfunktion bestimmen.
+//            try {
+//                return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+//            } catch (EvaluationException e) {
+//                throw new NotAlgebraicallyIntegrableException();
+//            }
+//        }
+//
+//        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactors(denominator);
+//        for (int i = factorsDenominator.getBound() - 1; i >= 0; i--) {
+//            if (factorsDenominator.get(i).isIntegerPower()) {
+//
+//                BigInteger m = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().toBigInteger();
+//                Expression v = ((BinaryOperation) factorsDenominator.get(i)).getLeft();
+//                factorsDenominator.put(i, null);
+//                Expression u = SimplifyUtilities.produceProduct(factorsDenominator);
+//                Expression derivativeOfV;
+//                try {
+//                    derivativeOfV = v.replaceVariable(transcendentalVar, transcententalElement);
+//                    derivativeOfV = derivativeOfV.diff(var);
+//                    derivativeOfV = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfV, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
+//
+//                    System.out.println("m = " + m);
+//                    System.out.println("u = " + u);
+//                    System.out.println("v = " + v);
+//
+//                    Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
+//                    if (!gcd.equals(ONE)) {
+//                        // Sollte eigentlich laut Theorem nie passieren!
+//                        throw new NotAlgebraicallyIntegrableException();
+//                    }
+//
+//                    Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getEuclideanRepresentationOfGCDOfTwoPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
+//                    Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+//                    Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+//                    Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+//
+//                    System.out.println("B = " + b);
+//                    System.out.println("C = " + c);
+//
+//                    Expression derivativeOfB = b.replaceVariable(transcendentalVar, transcententalElement);
+//                    derivativeOfB = derivativeOfB.diff(var);
+//                    derivativeOfB = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfB, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
+//
+//                    System.out.println("B' = " + derivativeOfB);
+//
+//                    Expression newIntegrand = ONE.sub(m).mult(c).sub(u.mult(derivativeOfB)).simplify(simplifyTypesRischAlgorithm);
+//                    ExpressionCollection coefficientsNewNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(newIntegrand, transcendentalVar);
+//
+//                    System.out.println("(1-m)C - UB' = " + newIntegrand);
+//
+//                    return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(
+//                            doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
+//                                    transcententalElement, var, transcendentalVar));
+//
+//                } catch (EvaluationException e) {
+//                    factorsDenominator.put(i, v.pow(m));
+//                }
+//
+//            }
+//        }
+//
+//        // Dann ist der Nenner quadratfrei (aber eventuell faktorisiert).
+//        try {
+//            return integrateByRischAlgorithmInSquareFreeCase(coefficientsNumerator, coefficientsDenominator, transcententalElement, var, transcendentalVar);
+//        } catch (EvaluationException e) {
+//            throw new NotAlgebraicallyIntegrableException();
+//        }
+//
+//    }
+//
     /**
      * Integration mittels Hermite-Reduktion.
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression doHermiteReduction2(ExpressionCollection coefficientsNumerator, Expression denominator,
+    private static Expression doHermiteReduction(ExpressionCollection coefficientsNumerator, Expression denominator,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
         System.out.println("Hermite-Reduktion:");
@@ -869,7 +869,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                         System.out.println("(1-m)C - UB' = " + newIntegrand);
 
                         return b.div(v.pow(m.subtract(BigInteger.ONE))).replaceVariable(transcendentalVar, transcententalElement).add(
-                                doHermiteReduction2(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
+                                doHermiteReduction(coefficientsNewNumerator, u.mult(v.pow(m.subtract(BigInteger.ONE))),
                                         transcententalElement, var, transcendentalVar));
 
                     } catch (EvaluationException e) {
