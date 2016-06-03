@@ -609,15 +609,19 @@ public class PolynomialTests {
     }
 
     @Test
-    public void decomposePolynomialIntoSquarefreeFactorsTest8() {
+    public void decomposePolynomialIntoSquarefreeFactorsTwoVariantsTest() {
         /* 
          Zerlegung von f = (2+4*x+2*x^2)*(3+4*x+x^2) = 2*(3+x)*(1+x)^3 in irreduzible Faktoren.
+         Hier wird auf zwei Arten faktorisiert.
          */
         try {
             f = Expression.build("(2+4*x+2*x^2)*(3+4*x+x^2)", null);
             expectedFactorizationOfF = Expression.build("2*(3+x)*(1+x)^3", null);
-            f = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+            Expression fDecomposed = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(f, "x");
+            Assert.assertTrue(fDecomposed.equivalent(expectedFactorizationOfF));
+            fDecomposed = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactorsLight(f, "x");
+            expectedFactorizationOfF = Expression.build("2*(1+x)^2*(3+4*x+x^2)", null);
+            Assert.assertTrue(fDecomposed.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

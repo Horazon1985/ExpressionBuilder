@@ -85,7 +85,7 @@ public abstract class SimplifyPolynomialMethods {
     /**
      * Gibt zurück, ob expr ein Polynom in der Variablen var ist. Voraussetzung:
      * expr ist vereinfacht, d.h. Operatoren etc. kommen NICHT vor (außer evtl.
-     * Gamma(x), was kein Polynom ist).
+     * &#915;(x), was kein Polynom ist).
      */
     public static boolean isPolynomial(Expression expr, String var) {
         if (!expr.contains(var)) {
@@ -700,8 +700,9 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Faktorisiert Polynome, deren Monome Exponenten mit nichttrivialem ggT
-     * besitzen.
+     * Faktorisiert Polynome, deren Monome Exponenten mit einem nichttrivialen
+     * ggT besitzen (beispielsweise Polynome wie x^9+5*x^6-2*x^3+7; der ggT der
+     * Exponenten beträgt 3).
      */
     private static Expression decomposePolynomialInMonomial(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
@@ -781,6 +782,16 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Faktorisiert ein Polynom in quadratfreie Faktoren. Ist das Polynom
+     * rational, so hat die Faktorisierung die folgende Gestalt: ist f das zu
+     * zerlegende Polynom, so wird f zu f = g<sub>1</sub>^n<sub>1</sub>* ...
+     * *g<sub>k</sub>^n<sub>k</sub> mit n<sub>1</sub>
+     * &#60; ... &#60; n<sub>k</sub> und paarweise teilerfremden g_i
+     * faktorisiert.
+     *
+     * @throws EvaluationException
+     */
     public static Expression decomposePolynomialIntoSquarefreeFactors(Expression f, String var) throws EvaluationException {
 
         if (!isPolynomial(f, var)) {
@@ -804,7 +815,12 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
-    public static Expression decomposePolynomialIntoSquarefreeFactors2(Expression f, String var) throws EvaluationException {
+    /**
+     * Faktorisiert ein Polynom in quadratfreie Faktoren.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression decomposePolynomialIntoSquarefreeFactorsLight(Expression f, String var) throws EvaluationException {
 
         if (!isPolynomial(f, var)) {
             return f;
@@ -945,6 +961,12 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Hilfsmethode. Sind a die Koeffizienten eines Polynoms f, so wird eine
+     * ExpressionCollection mit Koeffizienten von f' zurückgegeben.
+     *
+     * @throws EvaluationException
+     */
     private static ExpressionCollection getCoefficientsOfDerivativeOfPolynomial(ExpressionCollection a) throws EvaluationException {
         ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
         for (int i = 0; i < a.getBound() - 1; i++) {
@@ -1159,10 +1181,9 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Gibt den ggT zweier Polynome f und g zurück, falls deren Koeffizienten
-     * rational sind. Ist f oder g kein Polynom in var, oder hat f oder g einen
-     * zu hohen Grad, so wird 1 zurückgegeben. Ebenso wird in schwer
-     * entscheidbaren Fällen 1 zurückgegeben.
+     * Gibt den ggT zweier Polynome f und g zurück. Ist f oder g kein Polynom in
+     * var, oder hat f oder g einen zu hohen Grad, so wird 1 zurückgegeben.
+     * Ebenso wird in schwer entscheidbaren Fällen 1 zurückgegeben.
      */
     public static Expression getGGTOfPolynomials(Expression f, Expression g, String var) {
 
@@ -1194,7 +1215,7 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten aund b
+     * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten a und b
      * gegeben sind. Ebenso wird in schwer entscheidbaren Fällen 1
      * zurückgegeben.
      */
@@ -1249,8 +1270,8 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Gibt die Eukliddarstellung zweier Polynome f und g zurück: ist d = gcd(f,
-     * g), so wird ein Polynomarray {a, b} zurückgegeben mit a*f + b*g = d.
-     * Dabei soll d stets normiert.
+     * g), so wird ein Polynomarray {a, b} zurückgegeben mit der Eigenschaft,
+     * dass a*f + b*g = d. Dabei soll d stets normiert.
      */
     public static Expression[] getEuclideanRepresentationOfGCDOfTwoPolynomials(Expression f, Expression g, String var) {
 
@@ -1280,6 +1301,12 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
+    /**
+     * Gibt die Eukliddarstellung zweier Polynome f und g, die durch ihre
+     * Koeffizienten a und b gegeben sind, zurück: ist d = gcd(f, g), so wird
+     * ein Polynomarray {a, b} zurückgegeben mit der Eigenschaft, dass a*f + b*g
+     * = d. Dabei soll d stets normiert.
+     */
     private static ExpressionCollection[] getEuclideanRepresentationOfGCDOfTwoPolynomials(ExpressionCollection a, ExpressionCollection b) {
 
         if (b.getBound() > a.getBound()) {
@@ -1437,6 +1464,13 @@ public abstract class SimplifyPolynomialMethods {
         return result;
     }
 
+    /**
+     * Gibt die Resultante res(f,g) zweier Polynome f und g, welche durch ihre
+     * Koeffizienten gegeben sind, als MatrixExpression (genauer: als eine
+     * Determinante) zurück.
+     *
+     * @throws EvaluationException
+     */
     public static MatrixExpression getResultant(ExpressionCollection coefficientsOfF, ExpressionCollection coefficientsOfG) throws EvaluationException {
 
         int degF = coefficientsOfF.getBound() - 1;
