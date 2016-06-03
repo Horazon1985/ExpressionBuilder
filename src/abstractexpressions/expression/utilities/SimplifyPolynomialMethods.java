@@ -434,7 +434,7 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
-                return decomposeRationalPolynomialIntoSquarefreeFactors(a, var);
+                return decomposePolynomialIntoSquarefreeFactors(a, var);
             } catch (PolynomialNotDecomposableException e) {
             }
             try {
@@ -781,7 +781,8 @@ public abstract class SimplifyPolynomialMethods {
 
     }
 
-    public static Expression decomposeRationalPolynomialIntoSquerefreeFactors(Expression f, String var) throws EvaluationException {
+    public static Expression decomposePolynomialIntoSquarefreeFactors(Expression f, String var) throws EvaluationException {
+
         if (!isPolynomial(f, var)) {
             return f;
         }
@@ -789,16 +790,34 @@ public abstract class SimplifyPolynomialMethods {
         if (getDegreeOfPolynomial(f, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
             return f;
         }
-        try {
-            // Polynom normieren und dann zerlegen.
-            ExpressionCollection coefficients = getPolynomialCoefficients(f, var);
-            Expression leadingCoefficient = coefficients.get(coefficients.getBound() - 1);
-            coefficients.divideByExpression(leadingCoefficient);
-            coefficients.simplify();
-            return leadingCoefficient.mult(decomposeRationalPolynomialIntoSquarefreeFactors(coefficients, var));
-        } catch (PolynomialNotDecomposableException e) {
-            return f;
+
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        Expression base, decomposition;
+        BigInteger exponent;
+        for (int i = 0; i < factors.getBound(); i++) {
+            try {
+                if (factors.get(i).isPositiveIntegerPower()){
+                    base = ((BinaryOperation) factors.get(i)).getLeft();
+                    exponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getValue().toBigInteger();
+                } else {
+                    base = factors.get(i);
+                    exponent = BigInteger.ONE;
+                }
+                // Polynom normieren, zerlegen und dann in die Faktoren wieder einfügen.
+                ExpressionCollection coefficients = getPolynomialCoefficients(base, var);
+                Expression leadingCoefficient = coefficients.get(coefficients.getBound() - 1);
+                coefficients.divideByExpression(leadingCoefficient);
+                coefficients.simplify();
+                decomposition = leadingCoefficient.mult(decomposePolynomialIntoSquarefreeFactors(coefficients, var));
+                factors.put(i, decomposition.pow(exponent));
+            } catch (PolynomialNotDecomposableException e) {
+            }
         }
+        
+        // Jetzt passende Faktoren zusammenfassen und ausgeben.
+        return SimplifyUtilities.produceProduct(factors).simplify(TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products, 
+                TypeSimplify.simplify_basic, TypeSimplify.simplify_collect_products);
+
     }
 
     /**
@@ -806,7 +825,7 @@ public abstract class SimplifyPolynomialMethods {
      * Zerlegung nicht ermittelt werden, so wird eine
      * PolynomialNotDecomposableException geworfen.<br>
      */
-    public static Expression decomposeRationalPolynomialIntoSquarefreeFactors(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
+    public static Expression decomposePolynomialIntoSquarefreeFactors(ExpressionCollection a, String var) throws EvaluationException, PolynomialNotDecomposableException {
 
         // Wenn a nicht mindestens einem linearen Polynom entspricht, so kann es nicht quadratfrei faktorisiert werden.
         if (a.getBound() < 2) {

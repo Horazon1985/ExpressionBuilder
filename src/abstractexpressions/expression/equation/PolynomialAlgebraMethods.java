@@ -224,7 +224,7 @@ public abstract class PolynomialAlgebraMethods {
             // Versuchen, rationale Polynome zu faktorisieren.
             if (SimplifyPolynomialMethods.isPolynomialRational(coefficients)) {
                 try {
-                    Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficients, var);
+                    Expression factorizedPolynomial = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(coefficients, var);
                     // Fall: Faktorisiertes Polynom ist ein nichttriviales Produkt.
                     if (factorizedPolynomial.isProduct()
                             && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) factorizedPolynomial).getLeft(), var).compareTo(BigInteger.ZERO) > 0

@@ -559,7 +559,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         Expression decompositionOfDenominator;
         try {
-            decompositionOfDenominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+            decompositionOfDenominator = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException e) {
@@ -794,7 +794,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             if (integrandSimplified.isQuotient()) {
                 coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) integrandSimplified).getRight(), transcendentalVar);
                 try {
-                    denominator = SimplifyPolynomialMethods.decomposeRationalPolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
+                    denominator = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(coefficientsDenominator, transcendentalVar);
                 } catch (PolynomialNotDecomposableException e) {
                     // Nichts tun, der Nenner ist dann einfach unzerlegbar.
                     denominator = ((BinaryOperation) integrandSimplified).getRight();
