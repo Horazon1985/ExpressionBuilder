@@ -791,12 +791,35 @@ public abstract class SimplifyPolynomialMethods {
             return f;
         }
 
+        try {
+            // Polynom normieren und zerlegen.
+            ExpressionCollection coefficients = getPolynomialCoefficients(f, var);
+            Expression leadingCoefficient = coefficients.get(coefficients.getBound() - 1);
+            coefficients.divideByExpression(leadingCoefficient);
+            coefficients.simplify();
+            return leadingCoefficient.mult(decomposePolynomialIntoSquarefreeFactors(coefficients, var));
+        } catch (PolynomialNotDecomposableException e) {
+            return f;
+        }
+
+    }
+
+    public static Expression decomposePolynomialIntoSquarefreeFactors2(Expression f, String var) throws EvaluationException {
+
+        if (!isPolynomial(f, var)) {
+            return f;
+        }
+        // Faktorisierung nur für Polynome, wenn degree <= gewisse Schranke ist.
+        if (getDegreeOfPolynomial(f, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
+            return f;
+        }
+
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
         Expression base, decomposition;
         BigInteger exponent;
         for (int i = 0; i < factors.getBound(); i++) {
             try {
-                if (factors.get(i).isPositiveIntegerPower()){
+                if (factors.get(i).isPositiveIntegerPower()) {
                     base = ((BinaryOperation) factors.get(i)).getLeft();
                     exponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getValue().toBigInteger();
                 } else {
@@ -813,9 +836,9 @@ public abstract class SimplifyPolynomialMethods {
             } catch (PolynomialNotDecomposableException e) {
             }
         }
-        
+
         // Jetzt passende Faktoren zusammenfassen und ausgeben.
-        return SimplifyUtilities.produceProduct(factors).simplify(TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products, 
+        return SimplifyUtilities.produceProduct(factors).simplify(TypeSimplify.order_difference_and_division, TypeSimplify.order_sums_and_products,
                 TypeSimplify.simplify_basic, TypeSimplify.simplify_collect_products);
 
     }

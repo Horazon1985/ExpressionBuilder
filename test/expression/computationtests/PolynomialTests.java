@@ -611,13 +611,13 @@ public class PolynomialTests {
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest8() {
         /* 
-         Zerlegung von f = (2+4*x+2*x^2)*(3+4*x+x^2) = 2*(1+x)^3*(3+x) in irreduzible Faktoren.
+         Zerlegung von f = (2+4*x+2*x^2)*(3+4*x+x^2) = 2*(3+x)*(1+x)^3 in irreduzible Faktoren.
          */
         try {
             f = Expression.build("(2+4*x+2*x^2)*(3+4*x+x^2)", null);
-            expectedFactorizationOfF = Expression.build("2*(1+x)^3*(3+x)", null);
+            expectedFactorizationOfF = Expression.build("2*(3+x)*(1+x)^3", null);
             f = SimplifyPolynomialMethods.decomposePolynomialIntoSquarefreeFactors(f, "x");
-//            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
