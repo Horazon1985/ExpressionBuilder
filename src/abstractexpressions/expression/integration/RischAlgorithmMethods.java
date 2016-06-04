@@ -786,8 +786,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-            if (SimplifyRationalFunctionMethods.isRationalFunction(integrandSimplified, var) && !integrandSimplified.contains(transcendentalVar)) {
-                // In diesem Fall: Integration mittels Partialbruchzerlegung.
+            if (!integrandSimplified.contains(transcendentalVar)) {
+                /* 
+                In diesem Fall: Erneute Integration, welche auf Ad-Hoc-Methoden, Risch-Algorithmus 
+                mit weniger transcendenten Erweiterungen oder auf Integration mittels Partialbruchzerlegung
+                hinausläuft.
+                */
                 return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandSimplified, var}));
             }
 
@@ -808,11 +812,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             int degDenominator = coefficientsDenominator.getBound() - 1;
 
             /*
-            Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners sein.
-            (Der Fall, dass beide Polynome konstant sind, der Integrand also eine rationale Funktion in var ist, wurde 
-            bereits vorher behandelt). Trotzdem diese Sicherheitsabfrage.
+            Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners 
+            bzgl. der Veränderlichen t = transcendentalVar sein.
+            (Der Fall, dass beide Polynome konstant sind, der Integrand also eine rationale Funktion in den 
+            restlichen Veränderlichen ist, wurde bereits vorher behandelt). Trotzdem diese Sicherheitsabfrage.
              */
-            if (degNumerator >= degDenominator) {
+            if (degNumerator >= degDenominator && integrandSimplified.contains(transcendentalVar)) {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
