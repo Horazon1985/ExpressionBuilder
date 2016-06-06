@@ -103,31 +103,29 @@ public class ExpressionCollection implements Iterable<Expression> {
     }
 
     public void insert(int i, Expression expr) {
-        
+
         if (i < 0) {
             return;
         }
-        
+
         if (expr != null) {
-            if (this.terms.get(i) == null){
+            if (this.terms.get(i) == null) {
                 this.terms.put(i, expr);
                 this.bound = Math.max(this.bound, i + 1);
+            } else if (i >= this.bound) {
+                put(i, expr);
             } else {
-                if (i >= this.bound){
-                    put(i, expr);
-                } else {
-                    for (int j = this.bound; j > i; j--){
-                        this.terms.put(j, this.terms.get(j - 1));
-                        this.terms.remove(j - 1);
-                    }
-                    put(i, expr);
-                    this.bound++;
+                for (int j = this.bound; j > i; j--) {
+                    this.terms.put(j, this.terms.get(j - 1));
+                    this.terms.remove(j - 1);
                 }
+                put(i, expr);
+                this.bound++;
             }
         }
-        
+
     }
-    
+
     public void remove(int i) {
         this.terms.remove(i);
         for (int j = this.bound - 1; j >= 0; j--) {
@@ -174,10 +172,23 @@ public class ExpressionCollection implements Iterable<Expression> {
     }
 
     /**
+     * Gibt zurück, ob die ExpressionCollection einen Ausdruck enthält, in
+     * welchem die Veränderliche var vorkommt.
+     */
+    public boolean contains(String var) {
+        for (Expression term : this) {
+            if (term.contains(var)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Gibt zurück, ob die ExpressionCollection den Ausdruck expr enthält
      * (verglichen wird mit equals()).
      */
-    public boolean contains(Expression expr) {
+    public boolean containsExpression(Expression expr) {
         if (expr == null) {
             for (int i = 0; i < this.bound; i++) {
                 if (this.terms.get(i) == null) {

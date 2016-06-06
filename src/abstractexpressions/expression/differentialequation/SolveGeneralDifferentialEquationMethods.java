@@ -98,7 +98,7 @@ public abstract class SolveGeneralDifferentialEquationMethods {
         return integrationConstant;
     }
 
-    public static void resetIndexForIntegrationConstantVariable() {
+    private static void resetIndexForIntegrationConstantVariable() {
         indexForNextIntegrationConstant = 1;
     }
 
@@ -227,7 +227,37 @@ public abstract class SolveGeneralDifferentialEquationMethods {
      */
     public static ExpressionCollection solveDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
         resetIndexForIntegrationConstantVariable();
-        return solveGeneralDifferentialEquation(f, g, varAbsc, varOrd);
+        ExpressionCollection solutions = solveGeneralDifferentialEquation(f, g, varAbsc, varOrd);
+        return reindexFreeIntegrationConstantsInSolutions(solutions);
+    }
+
+    /**
+     * Gibt eine ExpressionCollection zurück, in der die Elemente denen von
+     * solutions entsprechen, bis auf die Indizes der freien Konstanten. Die
+     * neuen Indizes lassen keinen Index mehr aus.<br>
+     * Beispiel: Ist solutions = [C_1 + C_4*x + C_9*x^2, c_4 + C_15*sin(x)], so
+     * wird [C_1 + C_2*x + C_3*x^2, C_2 + C_4*sin(x)] zurückgegeben. Diese
+     * Methode dient dazu, dass die endgültigen Lösungen eine "natürlichere"
+     * Struktur bekommen.
+     */
+    private static ExpressionCollection reindexFreeIntegrationConstantsInSolutions(ExpressionCollection solutions) {
+
+        ArrayList<Variable> freeIntegrationConstants = getListOfFreeIntegrationConstants(solutions);
+        int oldIndex = 1;
+
+        for (int i = 0; i < freeIntegrationConstants.size(); i++) {
+            while (!solutions.contains(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + oldIndex)) {
+                oldIndex++;
+            }
+            for (int j = 0; j < solutions.getBound(); j++) {
+                solutions.put(j, solutions.get(j).replaceVariable(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + oldIndex,
+                        Variable.create(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR + "_" + (i + 1))));
+            }
+            oldIndex++;
+        }
+
+        return solutions;
+
     }
 
     /**

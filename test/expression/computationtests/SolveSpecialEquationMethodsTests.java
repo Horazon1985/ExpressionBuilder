@@ -84,9 +84,9 @@ public class SolveSpecialEquationMethodsTests {
             Expression f = Expression.build("exp(3*x)-20*exp(2*x)+101*exp(x)-130", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 3);
-            assertTrue(zeros.contains(new Constant(2).ln()));
-            assertTrue(zeros.contains(new Constant(5).ln()));
-            assertTrue(zeros.contains(new Constant(13).ln()));
+            assertTrue(zeros.containsExpression(new Constant(2).ln()));
+            assertTrue(zeros.containsExpression(new Constant(5).ln()));
+            assertTrue(zeros.containsExpression(new Constant(13).ln()));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         } 
@@ -111,7 +111,7 @@ public class SolveSpecialEquationMethodsTests {
             Expression f = Expression.build("5^x + 3*25^x - 8/25", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
-            assertTrue(zeros.contains(Expression.MINUS_ONE));
+            assertTrue(zeros.containsExpression(Expression.MINUS_ONE));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -124,7 +124,7 @@ public class SolveSpecialEquationMethodsTests {
             Expression f = Expression.build("a^x+a^(2*x)-30", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
-            assertTrue(zeros.contains(new Constant(5).ln().div(Variable.create("a").ln())));
+            assertTrue(zeros.containsExpression(new Constant(5).ln().div(Variable.create("a").ln())));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

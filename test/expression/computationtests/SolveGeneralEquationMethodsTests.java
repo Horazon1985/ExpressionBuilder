@@ -43,8 +43,8 @@ public class SolveGeneralEquationMethodsTests {
             assertTrue(zeros.getBound() == 2);
             Expression zeroOne = Expression.build("(7+ln(2/5))^(1/4)", null);
             Expression zeroTwo = Expression.build("-(7+ln(2/5))^(1/4)", null);
-            assertTrue(zeros.contains(zeroOne));
-            assertTrue(zeros.contains(zeroTwo));
+            assertTrue(zeros.containsExpression(zeroOne));
+            assertTrue(zeros.containsExpression(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -58,7 +58,7 @@ public class SolveGeneralEquationMethodsTests {
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             Expression zeroOne = new Constant(-7);
-            assertTrue(zeros.contains(zeroOne));
+            assertTrue(zeros.containsExpression(zeroOne));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -71,9 +71,9 @@ public class SolveGeneralEquationMethodsTests {
             Expression f = Expression.build("x^3+3*x^2-5*x+1", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 3);
-            assertTrue(zeros.contains(Expression.ONE));
-            assertTrue(zeros.contains(new Constant(-2).sub(new Constant(5).pow(1, 2))));
-            assertTrue(zeros.contains(new Constant(5).pow(1, 2).sub(2)));
+            assertTrue(zeros.containsExpression(Expression.ONE));
+            assertTrue(zeros.containsExpression(new Constant(-2).sub(new Constant(5).pow(1, 2))));
+            assertTrue(zeros.containsExpression(new Constant(5).pow(1, 2).sub(2)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -98,10 +98,10 @@ public class SolveGeneralEquationMethodsTests {
             Expression f = Expression.build("14+93*x+125*x^2+51*x^3+5*x^4", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 4);
-            assertTrue(zeros.contains(new Constant(-1)));
-            assertTrue(zeros.contains(new Constant(-2)));
-            assertTrue(zeros.contains(new Constant(-7)));
-            assertTrue(zeros.contains(new Constant(-1).div(5)));
+            assertTrue(zeros.containsExpression(new Constant(-1)));
+            assertTrue(zeros.containsExpression(new Constant(-2)));
+            assertTrue(zeros.containsExpression(new Constant(-7)));
+            assertTrue(zeros.containsExpression(new Constant(-1).div(5)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -117,9 +117,9 @@ public class SolveGeneralEquationMethodsTests {
             Expression f = Expression.build("2*x^9+x^11+126*x^7+294*x^3+147*x^5+2058*x-(686+6*x^10+42*x^6+21*x^8+882*x^4+343*x^2)", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 3);
-            assertTrue(zeros.contains(new Constant(3).sub(new Constant(7).pow(1, 2))));
-            assertTrue(zeros.contains(new Constant(3).add(new Constant(7).pow(1, 2))));
-            assertTrue(zeros.contains(new Constant(7).pow(1, 3)));
+            assertTrue(zeros.containsExpression(new Constant(3).sub(new Constant(7).pow(1, 2))));
+            assertTrue(zeros.containsExpression(new Constant(3).add(new Constant(7).pow(1, 2))));
+            assertTrue(zeros.containsExpression(new Constant(7).pow(1, 3)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -134,8 +134,8 @@ public class SolveGeneralEquationMethodsTests {
             ExpressionCollection coefficients = new ExpressionCollection(Expression.build("-5-5*exp(a)", null), ZERO, Expression.build("1+exp(a)", null));
             ExpressionCollection zeros = PolynomialAlgebraMethods.solvePolynomialEquation(coefficients, "x");
             assertTrue(zeros.getBound() == 2);
-            assertTrue(zeros.contains(MINUS_ONE.mult(new Constant(5).pow(1, 2))));
-            assertTrue(zeros.contains(new Constant(5).pow(1, 2)));
+            assertTrue(zeros.containsExpression(MINUS_ONE.mult(new Constant(5).pow(1, 2))));
+            assertTrue(zeros.containsExpression(new Constant(5).pow(1, 2)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -148,7 +148,7 @@ public class SolveGeneralEquationMethodsTests {
             Expression f = Expression.build("exp(x)", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, THREE, "x");
             assertTrue(zeros.getBound() == 1);
-            assertTrue(zeros.contains(Expression.THREE.ln()));
+            assertTrue(zeros.containsExpression(Expression.THREE.ln()));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -163,8 +163,8 @@ public class SolveGeneralEquationMethodsTests {
             assertTrue(zeros.getBound() == 2);
             Expression zeroOne = Expression.PI.mult(ONE.div(6).add(Expression.TWO.mult(Variable.create("K_1"))));
             Expression zeroTwo = Expression.PI.mult(new Constant(5).div(6).add(Expression.TWO.mult(Variable.create("K_1"))));
-            assertTrue(zeros.contains(zeroOne));
-            assertTrue(zeros.contains(zeroTwo));
+            assertTrue(zeros.containsExpression(zeroOne));
+            assertTrue(zeros.containsExpression(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -180,9 +180,9 @@ public class SolveGeneralEquationMethodsTests {
             assertTrue(zeros.getBound() == 3);
             Expression zeroOne = Expression.ONE.div(2).add(Expression.THREE.pow(1, 2).div(2));
             Expression zeroTwo = Expression.ONE.div(2).sub(Expression.THREE.pow(1, 2).div(2));
-            assertTrue(zeros.contains(Expression.ONE));
-            assertTrue(zeros.contains(zeroOne));
-            assertTrue(zeros.contains(zeroTwo));
+            assertTrue(zeros.containsExpression(Expression.ONE));
+            assertTrue(zeros.containsExpression(zeroOne));
+            assertTrue(zeros.containsExpression(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -197,8 +197,8 @@ public class SolveGeneralEquationMethodsTests {
             assertTrue(zeros.getBound() == 2);
             Expression zeroOne = new Constant(-5).div(2).sub((new Constant(29).div(4).add(TEN.ln())).pow(1, 2));
             Expression zeroTwo = new Constant(29).div(4).add(TEN.ln()).pow(1, 2).sub(new Constant(5).div(2));
-            assertTrue(zeros.contains(zeroOne));
-            assertTrue(zeros.contains(zeroTwo));
+            assertTrue(zeros.containsExpression(zeroOne));
+            assertTrue(zeros.containsExpression(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

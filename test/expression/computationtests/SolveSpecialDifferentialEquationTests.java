@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package expression.computationtests;
 
 import abstractexpressions.expression.classes.Constant;
@@ -24,10 +19,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/**
- *
- * @author Sergei
- */
 public class SolveSpecialDifferentialEquationTests {
 
     @BeforeClass
@@ -45,13 +36,13 @@ public class SolveSpecialDifferentialEquationTests {
     @Test
     public void solveDiffEqWithOnlySecondDerivativeAndFunctionTest() {
         try {
-            // DGL: y'' = y^2. Implizite Lösungen sind: int(1/((2*y^3)/3+C_1)^(1/2),y)+x+C_4 = 0, int(1/((2*y^3)/3+C_1)^(1/2),y)-(x+C_4) = 0.
+            // DGL: y'' = y^2. Implizite Lösungen sind: int(1/((2*y^3)/3+C_1)^(1/2),y)+x+C_2 = 0, int(1/((2*y^3)/3+C_1)^(1/2),y)-(x+C_3) = 0.
             Expression leftSide = Expression.build("y''", null);
             Expression rightSide = Expression.build("y^2", null);
             ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(leftSide, rightSide, "x", "y");
             assertTrue(solutions.getBound() == 2);
-            Expression solutionOne = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).add(Variable.create("x")).add(Variable.create("C_4"));
-            Expression solutionTwo = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).sub(Variable.create("x").add(Variable.create("C_5")));
+            Expression solutionOne = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).add(Variable.create("x")).add(Variable.create("C_2"));
+            Expression solutionTwo = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).sub(Variable.create("x").add(Variable.create("C_3")));
             assertTrue(solutions.containsExquivalent(solutionOne));
             assertTrue(solutions.containsExquivalent(solutionTwo));
         } catch (ExpressionException | EvaluationException e) {

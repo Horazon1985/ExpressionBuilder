@@ -209,10 +209,10 @@ public class ExpressionCollectionTests {
             Expression expr1 = Expression.build("a+b", new HashSet<String>());
             Expression expr2 = Expression.build("x*y", new HashSet<String>());
             Expression expr3 = Expression.build("sin(z)", new HashSet<String>());
-            assertTrue(terms.contains(expr1));
-            assertFalse(terms.contains(expr2));
-            assertTrue(terms.contains(expr3));
-            assertTrue(terms.contains(null));
+            assertTrue(terms.containsExpression(expr1));
+            assertFalse(terms.containsExpression(expr2));
+            assertTrue(terms.containsExpression(expr3));
+            assertTrue(terms.containsExpression(null));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }

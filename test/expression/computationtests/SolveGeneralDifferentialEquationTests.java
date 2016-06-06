@@ -69,7 +69,7 @@ public class SolveGeneralDifferentialEquationTests {
             Expression rightSide = Expression.build("y^5*x^3", null);
             ExpressionCollection solutions = SolveGeneralDifferentialEquationMethods.solveDifferentialEquation(Variable.create("y'"), rightSide, "x", "y");
             assertTrue(solutions.getBound() == 3);
-            assertTrue(solutions.contains(ZERO));
+            assertTrue(solutions.containsExpression(ZERO));
             Expression solutionOne = MINUS_ONE.div(Variable.create("x").pow(4).add(FOUR.mult(Variable.create("C_1")))).pow(1, 4);
             Expression solutionTwo = MINUS_ONE.mult(MINUS_ONE.div(Variable.create("x").pow(4).add(FOUR.mult(Variable.create("C_1")))).pow(1, 4));
             assertTrue(solutions.containsExquivalent(solutionOne));
