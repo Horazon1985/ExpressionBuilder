@@ -5,6 +5,7 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.PI;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.Operator;
@@ -1489,6 +1490,48 @@ public abstract class SimplifyFunctionalRelations {
         return SimplifyUtilities.produceProduct(resultFactorsInEnumeratorOutsideOfAbs).mult(new Function(
                 SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator),
                 TypeFunction.abs)).div(SimplifyUtilities.produceProduct(resultFactorsInDenominatorOutsideOfAbs));
+
+    }
+
+    public static Expression reduceAbsOfQuotientIfNumeratorHasFixedSign(Expression expr) {
+
+        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.abs) || !((Function) expr).getLeft().isQuotient()){
+            return expr;
+        }
+        
+        Expression numerator = ((BinaryOperation) ((Function) expr).getLeft()).getLeft();
+        Expression denominator = ((BinaryOperation) ((Function) expr).getLeft()).getRight();
+        
+        if (numerator.isAlwaysNonNegative()){
+            return numerator.div(denominator.abs());
+        }
+        
+        if (numerator.isAlwaysNonPositive()){
+            return MINUS_ONE.mult(numerator).div(denominator.abs());
+        }
+        
+        return expr;
+
+    }
+
+    public static Expression reduceSgnOfQuotientIfNumeratorHasFixedSign(Expression expr) {
+
+        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.sgn) || !((Function) expr).getLeft().isQuotient()){
+            return expr;
+        }
+        
+        Expression numerator = ((BinaryOperation) ((Function) expr).getLeft()).getLeft();
+        Expression denominator = ((BinaryOperation) ((Function) expr).getLeft()).getRight();
+        
+        if (numerator.isAlwaysPositive()){
+            return ONE.div(denominator.abs());
+        }
+        
+        if (numerator.isAlwaysNegative()){
+            return MINUS_ONE.div(denominator.abs());
+        }
+        
+        return expr;
 
     }
 

@@ -1013,7 +1013,14 @@ public class Function extends Expression {
 
     @Override
     public Expression simplifyFunctionalRelations() throws EvaluationException {
-        return new Function(this.left.simplifyFunctionalRelations(), this.type);
+        Function functionSimplified = new Function(this.left.simplifyFunctionalRelations(), this.type);
+        if (functionSimplified.type.equals(TypeFunction.abs)){
+            return SimplifyFunctionalRelations.reduceAbsOfQuotientIfNumeratorHasFixedSign(functionSimplified);
+        }
+        if (functionSimplified.type.equals(TypeFunction.sgn)){
+            return SimplifyFunctionalRelations.reduceSgnOfQuotientIfNumeratorHasFixedSign(functionSimplified);
+        }
+        return functionSimplified;
     }
 
     @Override
