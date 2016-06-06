@@ -2214,13 +2214,16 @@ public class BinaryOperation extends Expression {
         if (exprOptimized.length() >= expr.length()) {
             // Dann die letzte Vereinfachung rückgängig machen.
             exprOptimized = expr;
+        } else {
+            // Dann die letzte Vereinfachung akzeptieren.
+            expr = exprOptimized;
         }
 
         /* 
             Verusuch: Auf einen Nenner bringen und dann den Zähler und Nenner separat 
             analog vereinfachen und prüfen, ob das Ergebnis kürzer ist.
          */
-        exprOptimized = exprOptimized.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+        exprOptimized = expr.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
         exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
         if (exprOptimized.isQuotient()) {
             exprOptimized = ((BinaryOperation) exprOptimized).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
