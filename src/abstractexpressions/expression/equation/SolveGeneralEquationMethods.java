@@ -1617,7 +1617,7 @@ public abstract class SolveGeneralEquationMethods {
      */
     private static ExpressionCollection solveZeroProduct(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        /**
+        /*
          * Bei Multiplikation: expr = f(x)*g(x) -> f(x) = 0, g(x) = 0 separat
          * lösen und die Lösungen dann vereinigen.
          */

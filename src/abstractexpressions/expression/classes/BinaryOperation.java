@@ -524,16 +524,16 @@ public class BinaryOperation extends Expression {
     @Override
     public boolean equals(Expression expr) {
         return expr instanceof BinaryOperation
-                && this.getType().equals(((BinaryOperation) expr).getType())
-                && this.getLeft().equals(((BinaryOperation) expr).getLeft())
-                && this.getRight().equals(((BinaryOperation) expr).getRight());
+                && this.type.equals(((BinaryOperation) expr).type)
+                && this.left.equals(((BinaryOperation) expr).left)
+                && this.right.equals(((BinaryOperation) expr).right);
     }
 
     @Override
     public boolean equivalent(Expression expr) {
 
         if (expr instanceof BinaryOperation) {
-            if (this.getType().equals(((BinaryOperation) expr).getType())) {
+            if (this.type.equals(((BinaryOperation) expr).type)) {
                 if (this.isSum()) {
 
                     ExpressionCollection summandsOfThis = SimplifyUtilities.getSummands(this);
@@ -689,8 +689,8 @@ public class BinaryOperation extends Expression {
                     }
 
                 }
-                return this.getLeft().equivalent(((BinaryOperation) expr).getLeft())
-                        && this.getRight().equivalent(((BinaryOperation) expr).getRight());
+                return this.left.equivalent(((BinaryOperation) expr).left)
+                        && this.right.equivalent(((BinaryOperation) expr).right);
             }
             return false;
         }
@@ -702,7 +702,7 @@ public class BinaryOperation extends Expression {
     public boolean antiEquivalent(Expression expr) {
 
         if (expr instanceof BinaryOperation) {
-            if (this.getType().equals(((BinaryOperation) expr).getType())) {
+            if (this.type.equals(((BinaryOperation) expr).type)) {
                 if (this.isSum() || this.isDifference()) {
 
                     ExpressionCollection summandsLeftOfThis = SimplifyUtilities.getSummandsLeftInExpression(this);
