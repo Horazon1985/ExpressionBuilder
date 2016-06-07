@@ -23,6 +23,7 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods.Polyno
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import enums.TypeFractionSimplification;
 import exceptions.NotAlgebraicallyIntegrableException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
@@ -367,24 +368,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     ////////////////////////////////////////////////// Der Risch-Algorithmus ///////////////////////////////////////////
     /**
-     * Gibt zurück, ob f durch Adjunktion eines einzigen transzendenten Elements
-     * aus dem Körper der rationalen Funktionen (über den reellen Zahlen)
-     * gewonnen werden kann. Das transzendente Element muss auch noch die
-     * korrekte Form besitzen.
-     */
-    private static boolean isExtensionOfDegreeOne(Expression f, String var) {
-
-        ExpressionCollection transcendentalGenerators = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
-        boolean hasOnlyOneTranscendentalElement = transcendentalGenerators.getBound() == 1
-                && areFieldExtensionsInCorrectForm(transcendentalGenerators, var);
-        if (!hasOnlyOneTranscendentalElement) {
-            return false;
-        }
-        return isRationalOverDifferentialField(f, var, transcendentalGenerators);
-
-    }
-
-    /**
      * Hauptmethode für das Integrieren gemäß dem Risch-Algorithmus im Falle
      * einer Erweiterung durch transzendente Elemente.
      *
@@ -452,8 +435,21 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
 
             if (ordOfTranscendentalElementInDenominator > 0) {
-                // TO DO. Speziellen Teil abspalten.
-                throw new NotAlgebraicallyIntegrableException();
+
+                ExpressionCollection laurentCoefficients = getPartialFractionDecompositionForIntegrandInCaseOfExponentialExtension(quotient[1], coefficientsDenominator, transcendentalVar);
+                Expression numeratorOfNonSpecialPart = laurentCoefficients.get(0);
+                laurentCoefficients.put(0, ZERO);
+                ExpressionCollection coefficientsOfNumeratorOfNonSpecialPart;
+                try {
+                    coefficientsOfNumeratorOfNonSpecialPart = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorOfNonSpecialPart, transcendentalVar);
+                } catch (EvaluationException e) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], laurentCoefficients, transcententalElement, var, transcendentalVar);
+                Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(coefficientsOfNumeratorOfNonSpecialPart, 
+                        coefficientsDenominator, transcententalElement, var, transcendentalVar);
+                return integralOfPolynomialPart.add(integralOfFractionalPart);
+                
             }
 
         }
@@ -465,6 +461,119 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], new ExpressionCollection(), transcententalElement, var, transcendentalVar);
         Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(quotient[1], coefficientsDenominator, transcententalElement, var, transcendentalVar);
         return integralOfPolynomialPart.add(integralOfFractionalPart);
+
+    }
+
+    /**
+     * Wenn der Integrand die Form f = g(x,t)/(t<sup>n</sup>*(a<sub>0</sub> +
+     * ... + a<sub>k</sub>t<sup>k</sup>)), t = exponentielles Element, besitzt,
+     * so gibt diese Methode eine Darstellung der Form f = b<sub>1</sub>/t + ...
+     * + b<sub>n</sub>/t<sup>n</sup> + h(x,t)/(a<sub>0</sub> + ... +
+     * a<sub>k</sub>t<sup>k</sup>) zurück. Die Grade von g und h sind dabei
+     * stets kleiner als die Grade der entsprechenden Nenner. Es wird eine
+     * ExpressionCollection der Form [h, b<sub>1</sub>, ..., b<sub>k</sub>]
+     * zurückgegeben.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static ExpressionCollection getPartialFractionDecompositionForIntegrandInCaseOfExponentialExtension(ExpressionCollection coefficientsNumerator, ExpressionCollection coefficientsDenominator,
+            String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        int ord = 0;
+        for (int i = 0; i < coefficientsDenominator.getBound(); i++) {
+            if (coefficientsDenominator.get(i).equals(ZERO)) {
+                ord++;
+            } else {
+                break;
+            }
+        }
+
+        if (ord == coefficientsDenominator.getBound()) {
+            // Nenner = 0; sollte eigentlich nie passieren.
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        // Sonderfall: Nenner ist von der Form t^n.
+        if (ord == coefficientsDenominator.getBound() - 1) {
+
+            int degDenominator = coefficientsDenominator.getBound();
+            ExpressionCollection numeratorsInPFD = new ExpressionCollection();
+            numeratorsInPFD.put(0, ZERO);
+            for (int i = 0; i < coefficientsNumerator.getBound(); i++) {
+                numeratorsInPFD.put(degDenominator - i, coefficientsNumerator.get(i));
+            }
+
+            return numeratorsInPFD;
+
+        }
+
+        ExpressionCollection numeratorsInPFD = new ExpressionCollection();
+        Expression denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar);
+
+        // Berechnung des nichtspeziellen Faktors des Nenner.
+        ExpressionCollection nonSpecialFactorOfDenominatorCoefficients = new ExpressionCollection();
+        for (int i = ord; i < coefficientsDenominator.getBound(); i++) {
+            nonSpecialFactorOfDenominatorCoefficients.add(coefficientsDenominator.get(i));
+        }
+        Expression nonSpecialFactorOfDenominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(nonSpecialFactorOfDenominatorCoefficients, transcendentalVar);
+
+        Expression f = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(denominator);
+        Expression currentNumerator;
+
+        for (int i = ord; i > 0; i--) {
+            currentNumerator = f;
+            for (int j = ord; j > i; j--) {
+                currentNumerator = currentNumerator.sub(numeratorsInPFD.get(j).div(Variable.create(transcendentalVar).pow(j)));
+            }
+            try {
+                currentNumerator = currentNumerator.mult(Variable.create(transcendentalVar).pow(i));
+                // Der gesamte Ausdruck muss auf einen Nenner gebracht werden. Dann wird "standardisiert" vereinfacht.
+                currentNumerator = currentNumerator.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+                currentNumerator = currentNumerator.simplify().replaceVariable(transcendentalVar, ZERO);
+                currentNumerator = currentNumerator.simplify();
+                numeratorsInPFD.put(i, currentNumerator);
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        }
+        currentNumerator = f;
+        for (int j = ord; j > 0; j--) {
+            currentNumerator = currentNumerator.sub(numeratorsInPFD.get(j).div(Variable.create(transcendentalVar).pow(j)));
+        }
+        try {
+            currentNumerator = currentNumerator.mult(nonSpecialFactorOfDenominator);
+            // Der gesamte Ausdruck muss auf einen Nenner gebracht werden. Dann wird "standardisiert" vereinfacht.
+            currentNumerator = currentNumerator.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+            currentNumerator = currentNumerator.simplify();
+            numeratorsInPFD.put(0, currentNumerator);
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        /* 
+        Jetzt prüfen, ob die Zähler der PBZ gewisse Bedingungen erfüllen:
+        (1) Die Zähler zu den Nennern t^k sind bzgl. t konstant (t = transcendentalVar).    
+        (2) Der Zähler zum nichtspeziellen Nenner hat Grad < grad(Nenner).    
+        Dies sollte bei korrekter Berechnung immer der Fall sein.
+         */
+        for (int i = 1; i < numeratorsInPFD.getBound(); i++) {
+            if (numeratorsInPFD.get(i).contains(transcendentalVar)) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        }
+        if (!SimplifyPolynomialMethods.isPolynomial(numeratorsInPFD.get(0), transcendentalVar)) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        try {
+            ExpressionCollection coefficientsNumeratorOfNonSpecialPart = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorsInPFD.get(0), transcendentalVar);
+            if (coefficientsNumeratorOfNonSpecialPart.getBound() >= nonSpecialFactorOfDenominatorCoefficients.getBound()) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+        return numeratorsInPFD;
 
     }
 
@@ -645,7 +754,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 In diesem Fall: Erneute Integration, welche auf Ad-Hoc-Methoden, Risch-Algorithmus 
                 mit weniger transcendenten Erweiterungen oder auf Integration mittels Partialbruchzerlegung
                 hinausläuft.
-                */
+                 */
                 return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandSimplified, var}));
             }
 
