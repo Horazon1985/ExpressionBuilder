@@ -497,7 +497,7 @@ public abstract class GeneralIntegralMethods {
         // Ab hier folgt die Integration spezieller Typen.
         /*
          AHCTUNG: beim return muss vorher noch simplifyBasic() angewendet
-         werden. GRUND: dieses ruft simplifyTrivialInt() auf, falls in result
+         werden. GRUND: dieses ruft simplifyBasicInt() auf, falls in result
          noch irgendwo Integrale auftauchen (und diese weiter vereinfacht
          werden können).
          */

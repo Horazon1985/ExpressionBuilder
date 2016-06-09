@@ -3108,49 +3108,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     private static Expression[] reduceGeneralFractionToNonFractionInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
 
-        ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(denominator);
-        ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(denominator);
-
-        HashSet<Expression> setOfSubstitutions = new HashSet<>();
-
-        /*
-         Im Folgenden dürfen algebraische Operationen nicht auftreten, da diese 
-         im Laufe algebraischer Vereinfachungen wieder rückgängig gemacht werden können 
-         (-> Endloszyklen).
-         */
-        ExpressionCollection factorsOfSummand;
-        for (Expression summand : summandsLeftInDenominator) {
-            if (summand.isConstant()) {
-                continue;
-            }
-            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
-                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
-                for (Expression factor : factorsOfSummand) {
-                    setOfSubstitutions.add(factor);
-                }
-            } else if (!summand.containsAlgebraicOperation()) {
-                factorsOfSummand = SimplifyUtilities.getFactors(summand);
-                for (Expression factor : factorsOfSummand) {
-                    setOfSubstitutions.add(factor);
-                }
-            }
-        }
-        for (Expression summand : summandsRightInDenominator) {
-            if (summand.isConstant()) {
-                continue;
-            }
-            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
-                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
-                for (Expression factor : factorsOfSummand) {
-                    setOfSubstitutions.add(factor);
-                }
-            } else if (!summand.containsAlgebraicOperation()) {
-                factorsOfSummand = SimplifyUtilities.getFactors(summand);
-                for (Expression factor : factorsOfSummand) {
-                    setOfSubstitutions.add(factor);
-                }
-            }
-        }
+        HashSet<Expression> setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(denominator);
 
         if (setOfSubstitutions.isEmpty()) {
             return new Expression[0];
@@ -3200,6 +3158,109 @@ public abstract class SimplifyBinaryOperationMethods {
 
         return new Expression[0];
 
+    }
+
+    private static HashSet<Expression> getSetOfSubstitutionsForFractionReduction(Expression expr) {
+        ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(expr);
+        ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(expr);
+        HashSet<Expression> setOfSubstitutions = new HashSet<>();
+
+        /*
+         Im Folgenden dürfen algebraische Operationen nicht auftreten, da diese 
+         im Laufe algebraischer Vereinfachungen wieder rückgängig gemacht werden können 
+         (-> Endloszyklen).
+         */
+        ExpressionCollection factorsOfSummand;
+        Expression quotient, newSubstitution;
+        boolean algebraicallyDependendExpFunctionFound;
+
+        for (Expression summand : summandsLeftInDenominator) {
+            if (summand.isConstant()) {
+                continue;
+            }
+            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
+                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
+            } else if (!summand.containsAlgebraicOperation()) {
+                factorsOfSummand = SimplifyUtilities.getFactors(summand);
+                for (Expression factor : factorsOfSummand) {
+
+                    if (factor.isFunction(TypeFunction.exp)) {
+
+                        algebraicallyDependendExpFunctionFound = false;
+                        // Sonderfall: Der Faktor ist eine Exponentialfunktion.
+                        for (Expression subst : setOfSubstitutions) {
+                            if (subst.isFunction(TypeFunction.exp)) {
+                                try {
+                                    quotient = ((Function) factor).getLeft().div(((Function) subst).getLeft()).simplify();
+                                    if (quotient.isIntegerConstantOrRationalConstant()){
+                                        algebraicallyDependendExpFunctionFound = true;
+                                    }
+                                    if (quotient.isRationalConstant()) {
+                                        newSubstitution = ((Function) subst).getLeft().div(((BinaryOperation) quotient).getRight()).exp().simplify();
+                                        setOfSubstitutions.remove(subst);
+                                        setOfSubstitutions.add(newSubstitution);
+                                        break;
+                                    }
+                                } catch (EvaluationException e) {
+                                    // Nichts tun, weiter suchen.
+                                }
+                            }
+                        }
+                        if (!algebraicallyDependendExpFunctionFound){
+                            setOfSubstitutions.add(factor);
+                        }
+
+                    } else {
+                        setOfSubstitutions.add(factor);
+                    }
+
+                }
+            }
+        }
+
+        for (Expression summand : summandsRightInDenominator) {
+            if (summand.isConstant()) {
+                continue;
+            }
+            if (summand.isPositiveIntegerPower() && !summand.containsAlgebraicOperation()) {
+                factorsOfSummand = SimplifyUtilities.getFactors(((BinaryOperation) summand).getLeft());
+                for (Expression factor : factorsOfSummand) {
+                    setOfSubstitutions.add(factor);
+                }
+            } else if (!summand.containsAlgebraicOperation()) {
+                factorsOfSummand = SimplifyUtilities.getFactors(summand);
+                for (Expression factor : factorsOfSummand) {
+
+                    if (factor.isFunction(TypeFunction.exp)) {
+
+                        // Sonderfall: Der Faktor ist eine Exponentialfunktion.
+                        for (Expression subst : setOfSubstitutions) {
+                            if (subst.isFunction(TypeFunction.exp)) {
+                                try {
+                                    quotient = ((Function) subst).getLeft().div(((Function) factor).getLeft()).simplify();
+                                    if (quotient.isRationalConstant()) {
+                                        newSubstitution = ((Function) factor).getLeft().div(((BinaryOperation) quotient).getRight()).simplify();
+                                        setOfSubstitutions.remove(subst);
+                                        setOfSubstitutions.add(newSubstitution);
+                                        break;
+                                    }
+                                } catch (EvaluationException e) {
+                                    // Nichts tun, weiter suchen.
+                                }
+                            }
+                        }
+
+                    } else {
+                        setOfSubstitutions.add(factor);
+                    }
+
+                }
+            }
+        }
+        return setOfSubstitutions;
     }
 
     /**

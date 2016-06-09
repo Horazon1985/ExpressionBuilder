@@ -1913,7 +1913,6 @@ public abstract class Expression implements AbstractExpression {
      */
     public Expression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
 
-        Expression copy;
         try {
             Expression expr, exprSimplified = this;
             do {
@@ -1979,7 +1978,6 @@ public abstract class Expression implements AbstractExpression {
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
-                    copy = exprSimplified.copy();
                     exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
                     Canceller.interruptComputationIfNeeded();
                 }
