@@ -42,7 +42,7 @@ public abstract class PolynomialAlgebraMethods {
         }
         if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant()) {
             if (((BinaryOperation) f).getLeft().equals(Variable.create(var))) {
-                return ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                return ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
             }
             return getGCDOfExponentsInPolynomial(((BinaryOperation) f).getLeft(), var);
         }
@@ -116,7 +116,7 @@ public abstract class PolynomialAlgebraMethods {
                 } else if (((BinaryOperation) f).getRight().isRationalConstant()
                         && ((BinaryOperation) f).getLeft() instanceof Variable
                         && ((Variable) ((BinaryOperation) f).getLeft()).getName().equals(var)) {
-                    return ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
+                    return ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getBigIntValue();
                 }
 
             }
@@ -234,7 +234,7 @@ public abstract class PolynomialAlgebraMethods {
                     }
                     // Fall: Faktorisiertes Polynom ist eine nichttriviale Potenz.
                     if (factorizedPolynomial.isIntegerPower()
-                            && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getValue().toBigInteger().compareTo(BigInteger.ONE) > 0) {
+                            && ((Constant) ((BinaryOperation) factorizedPolynomial).getRight()).getBigIntValue().compareTo(BigInteger.ONE) > 0) {
                         return SolveGeneralEquationMethods.solveZeroEquation(((BinaryOperation) factorizedPolynomial).getLeft(), var);
                     }
                 } catch (SimplifyPolynomialMethods.PolynomialNotDecomposableException | EvaluationException e) {
@@ -305,8 +305,8 @@ public abstract class PolynomialAlgebraMethods {
         ArrayList<BigInteger> pDivisors = new ArrayList<>();
         // Wichtig: pDivisors muss auch die 0 enthalten.
         pDivisors.add(BigInteger.ZERO);
-        pDivisors.addAll(ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getValue().toBigInteger()));
-        ArrayList<BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getValue().toBigInteger());
+        pDivisors.addAll(ArithmeticMethods.getDivisors(((Constant) coefficients.get(0)).getBigIntValue()));
+        ArrayList<BigInteger> qDivisors = ArithmeticMethods.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getBigIntValue());
 
         for (BigInteger pDivisor : pDivisors) {
             for (BigInteger qDivisor : qDivisors) {
@@ -317,7 +317,7 @@ public abstract class PolynomialAlgebraMethods {
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
                     pDivisorPower = pDivisor.pow(k);
                     qDivisorPower = qDivisor.pow(coefficients.getBound() - 1 - k);
-                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
+                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getBigIntValue().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
@@ -331,7 +331,7 @@ public abstract class PolynomialAlgebraMethods {
                 for (int k = 0; k <= coefficients.getBound() - 1; k++) {
                     pDivisorPower = pDivisor.negate().pow(k);
                     qDivisorPower = qDivisor.pow(coefficients.getBound() - 1 - k);
-                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getValue().toBigInteger().multiply(
+                    polynomValue = polynomValue.add(((Constant) coefficients.get(k)).getBigIntValue().multiply(
                             pDivisorPower.multiply(qDivisorPower)));
                 }
                 if (polynomValue.compareTo(BigInteger.ZERO) == 0) {
@@ -413,7 +413,7 @@ public abstract class PolynomialAlgebraMethods {
         BigInteger commonDenominator = BigInteger.ONE;
         for (Expression coefficient : coefficients) {
             if (coefficient.isQuotient()) {
-                commonDenominator = ArithmeticMethods.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) coefficient).getRight()).getValue().toBigInteger()});
+                commonDenominator = ArithmeticMethods.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) coefficient).getRight()).getBigIntValue()});
             }
         }
 
@@ -427,9 +427,9 @@ public abstract class PolynomialAlgebraMethods {
         BigInteger gcd = BigInteger.ZERO;
         for (int i = 0; i < coefficients.getBound(); i++) {
             if (gcd.equals(BigInteger.ZERO)) {
-                gcd = ((Constant) multipleOfCoefficients.get(i)).getValue().toBigInteger();
+                gcd = ((Constant) multipleOfCoefficients.get(i)).getBigIntValue();
             } else {
-                gcd = ArithmeticMethods.gcd(new BigInteger[]{gcd, ((Constant) multipleOfCoefficients.get(i)).getValue().toBigInteger()});
+                gcd = ArithmeticMethods.gcd(new BigInteger[]{gcd, ((Constant) multipleOfCoefficients.get(i)).getBigIntValue()});
             }
         }
         if (gcd.compareTo(BigInteger.ONE) > 0) {

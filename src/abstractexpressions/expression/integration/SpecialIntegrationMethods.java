@@ -234,7 +234,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
 
         ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) f).getLeft(), var);
         ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft(), var);
-        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
+        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getBigIntValue();
 
         if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotAlgebraicallyIntegrableException();
@@ -482,7 +482,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var)) {
 
             BigInteger degPolynomial = SimplifyPolynomialMethods.getDegreeOfPolynomial(factors.get(0), var);
-            BigInteger exponentOfTrigonometricFunction = ((Constant) ((BinaryOperation) factors.get(1)).getRight()).getValue().toBigInteger();
+            BigInteger exponentOfTrigonometricFunction = ((Constant) ((BinaryOperation) factors.get(1)).getRight()).getBigIntValue();
             BigInteger degArgument = SimplifyPolynomialMethods.getDegreeOfPolynomial(((Function) ((BinaryOperation) factors.get(1)).getLeft()).getLeft(), var);
 
             if (degPolynomial.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0
@@ -828,7 +828,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         Expression c = coefficients.get(0);
         Expression discriminant = b.pow(2).sub(new Constant(4).mult(a).mult(c)).simplify();
 
-        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getBigIntValue();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotAlgebraicallyIntegrableException();
@@ -1011,7 +1011,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) f).getLeft(), var)
                 && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getValue().toBigInteger();
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft()).getBigIntValue();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
@@ -1033,7 +1033,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) rightFactor).getLeft(), var)
                 && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) rightFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft()).getValue().toBigInteger();
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) rightFactor).getRight()).getLeft()).getBigIntValue();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
@@ -1047,7 +1047,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
                 && SimplifyPolynomialMethods.isPolynomial(((BinaryOperation) leftFactor).getLeft(), var)
                 && SimplifyPolynomialMethods.getDegreeOfPolynomial(((BinaryOperation) leftFactor).getLeft(), var).compareTo(BigInteger.valueOf(2)) == 0) {
 
-            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft()).getValue().toBigInteger();
+            BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) leftFactor).getRight()).getLeft()).getBigIntValue();
             return exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) < 0;
 
         }
@@ -1195,7 +1195,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getBigIntValue();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotAlgebraicallyIntegrableException();
@@ -1293,7 +1293,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getBigIntValue();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotAlgebraicallyIntegrableException();
@@ -1381,7 +1381,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getValue().toBigInteger();
+        BigInteger exponentNumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getLeft()).getBigIntValue();
 
         if (exponentNumerator.compareTo(BigInteger.valueOf(2 * ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
             throw new NotAlgebraicallyIntegrableException();
@@ -1490,11 +1490,11 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getBigIntValue());
                 } else {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getBigIntValue());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getBigIntValue());
                 }
 
             }
@@ -1573,11 +1573,11 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getBigIntValue());
                 } else {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getBigIntValue());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getBigIntValue());
                 }
 
             }
@@ -1679,7 +1679,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         BigInteger exponent;
         if (factorRight.isPositiveIntegerPower()) {
             base = ((BinaryOperation) factorRight).getLeft();
-            exponent = ((Constant) ((BinaryOperation) factorRight).getRight()).getValue().toBigInteger();
+            exponent = ((Constant) ((BinaryOperation) factorRight).getRight()).getBigIntValue();
         } else {
             base = factorRight;
             exponent = BigInteger.ONE;
@@ -2162,10 +2162,10 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
                 throw new NotRationalFunctionInRationalPowerOfVarException();
             }
             if (lcmOfExponentDenominator == null) {
-                lcmOfExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getValue().toBigInteger().abs();
+                lcmOfExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getBigIntValue().abs();
             } else {
                 lcmOfExponentDenominator = ArithmeticMethods.lcm(lcmOfExponentDenominator,
-                        ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getValue().toBigInteger().abs());
+                        ((Constant) ((BinaryOperation) ((BinaryOperation) subst).getRight()).getRight()).getBigIntValue().abs());
             }
         }
 

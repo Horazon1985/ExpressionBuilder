@@ -293,11 +293,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(nonConstantSummand);
 
                             if (factorsNumerator.get(0).isIntegerConstant()) {
-                                a = ((Constant) factorsNumerator.get(0)).getValue().toBigInteger().abs();
+                                a = ((Constant) factorsNumerator.get(0)).getBigIntValue().abs();
                                 factorsNumerator.remove(0);
                             }
                             if (!factorsDenominator.isEmpty() && factorsDenominator.get(0).isIntegerConstant()) {
-                                b = ((Constant) factorsDenominator.get(0)).getValue().toBigInteger().abs();
+                                b = ((Constant) factorsDenominator.get(0)).getBigIntValue().abs();
                                 factorsDenominator.remove(0);
                             }
 
@@ -305,11 +305,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                             BigInteger c, d;
                             if (quotient.isIntegerConstant()) {
-                                c = ((Constant) quotient).getValue().toBigInteger();
+                                c = ((Constant) quotient).getBigIntValue();
                                 d = BigInteger.ONE;
                             } else {
-                                c = ((Constant) ((BinaryOperation) quotient).getLeft()).getValue().toBigInteger();
-                                d = ((Constant) ((BinaryOperation) quotient).getRight()).getValue().toBigInteger();
+                                c = ((Constant) ((BinaryOperation) quotient).getLeft()).getBigIntValue();
+                                d = ((Constant) ((BinaryOperation) quotient).getRight()).getBigIntValue();
                             }
 
                             a = a.gcd(c);
@@ -797,7 +797,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             for (int i = factorsDenominator.getBound() - 1; i >= 0; i--) {
                 if (factorsDenominator.get(i).isIntegerPower()) {
 
-                    BigInteger m = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getValue().toBigInteger();
+                    BigInteger m = ((Constant) ((BinaryOperation) factorsDenominator.get(i)).getRight()).getBigIntValue();
                     Expression v = ((BinaryOperation) factorsDenominator.get(i)).getLeft();
                     factorsDenominator.put(i, null);
                     Expression u = SimplifyUtilities.produceProduct(factorsDenominator);

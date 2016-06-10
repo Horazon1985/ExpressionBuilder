@@ -794,7 +794,7 @@ public abstract class Expression implements AbstractExpression {
      */
     public boolean isOddIntegerConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            BigInteger value = ((Constant) this).getBigIntValue();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
                 return true;
             }
@@ -808,7 +808,7 @@ public abstract class Expression implements AbstractExpression {
      */
     public boolean isPositiveOddIntegerConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            BigInteger value = ((Constant) this).getBigIntValue();
             if (value.compareTo(BigInteger.ZERO) > 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
                 return true;
             }
@@ -822,22 +822,8 @@ public abstract class Expression implements AbstractExpression {
      */
     public boolean isEvenIntegerConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            BigInteger value = ((Constant) this).getBigIntValue();
             if (value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem
-     * nichtnegativen ganzzahligen geraden Wert ist.
-     */
-    public boolean isNonNegativeEvenIntegerConstant() {
-        if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getValue().toBigInteger();
-            if (value.compareTo(BigInteger.ZERO) >= 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return true;
             }
         }
@@ -850,7 +836,7 @@ public abstract class Expression implements AbstractExpression {
      */
     public boolean isPositiveEvenIntegerConstant() {
         if (this.isIntegerConstant()) {
-            BigInteger value = ((Constant) this).getValue().toBigInteger();
+            BigInteger value = ((Constant) this).getBigIntValue();
             if (value.compareTo(BigInteger.ZERO) > 0 && value.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                 return true;
             }

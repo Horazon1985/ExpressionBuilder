@@ -1018,7 +1018,7 @@ public abstract class GeneralIntegralMethods {
             throw new NotAlgebraicallyIntegrableException();
         }
 
-        BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+        BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
         TypeFunction type = ((Function) ((BinaryOperation) f).getLeft()).getType();
 
         if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) > 0) {
@@ -1788,7 +1788,7 @@ public abstract class GeneralIntegralMethods {
                 numberOfLogarithmicFactorsInNumerator++;
                 indexOfLogarithmicFactorInNumerator = i;
             } else if (factorsNumerator.get(i).isPositiveIntegerPower()
-                    && ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getValue().toBigInteger().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0
+                    && ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getBigIntValue().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_INTEGRABLE_POWER)) <= 0
                     && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.lg) || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.ln))
                     && SimplifyRationalFunctionMethods.isRationalFunction(((Function) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft(), var)) {
                 numberOfLogarithmicFactorsInNumerator++;

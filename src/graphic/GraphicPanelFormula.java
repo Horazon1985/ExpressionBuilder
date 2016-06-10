@@ -1080,8 +1080,8 @@ public class GraphicPanelFormula extends JPanel {
 
                 // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
                 if (((BinaryOperation) expr).getRight().isRationalConstant()) {
-                    BigInteger p = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getValue().toBigInteger();
-                    BigInteger q = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
+                    BigInteger p = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getBigIntValue();
+                    BigInteger q = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getBigIntValue();
                     return getHeightOfBinaryOperationRoot(g, ((BinaryOperation) expr).getLeft(), p, q, fontSize);
                 }
 
@@ -1516,8 +1516,8 @@ public class GraphicPanelFormula extends JPanel {
 
             // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
             if (expr.getRight().isRationalConstant()) {
-                BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
-                BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+                BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getBigIntValue();
+                BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getBigIntValue();
                 return getLengthOfBinaryOperationRoot(g, expr.getLeft(), p, q, fontSize);
             }
 
@@ -2545,8 +2545,8 @@ public class GraphicPanelFormula extends JPanel {
         // Sonderfall: rationale Exponenten. Dann wird das Wurzelsymbol verwendet.
         if (expr.getRight().isRationalConstant()) {
 
-            BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
-            BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+            BigInteger p = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getBigIntValue();
+            BigInteger q = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getBigIntValue();
             drawBinaryOperationRoot(g, expr.getLeft(), p, q, x_0, y_0, fontSize);
 
         } else if (expr.getLeft() instanceof BinaryOperation

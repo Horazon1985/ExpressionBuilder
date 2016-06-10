@@ -77,6 +77,13 @@ public class Constant extends Expression {
         return this.value;
     }
 
+    /**
+     * Gibt den abgerundeten Wert von value (als BigInteger) zurück.
+     */
+    public BigInteger getBigIntValue() {
+        return this.value.toBigInteger();
+    }
+
     public boolean getPrecise() {
         return this.precise;
     }

@@ -153,7 +153,7 @@ public abstract class SimplifyPolynomialMethods {
                 return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
                 return getDegreeOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
         }
@@ -208,7 +208,7 @@ public abstract class SimplifyPolynomialMethods {
                 return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
                 return getOrderOfPolynomial(((BinaryOperation) f).getLeft(), var).multiply(exp);
             }
             // Dann ist f kein Polynom
@@ -837,7 +837,7 @@ public abstract class SimplifyPolynomialMethods {
             try {
                 if (factors.get(i).isPositiveIntegerPower()) {
                     base = ((BinaryOperation) factors.get(i)).getLeft();
-                    exponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getValue().toBigInteger();
+                    exponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getBigIntValue();
                 } else {
                     base = factors.get(i);
                     exponent = BigInteger.ONE;
@@ -889,7 +889,7 @@ public abstract class SimplifyPolynomialMethods {
         ExpressionCollection polynomialCoefficients;
         for (Expression factor : factors) {
             if (factor.isPositiveIntegerPower()) {
-                if (((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger().compareTo(
+                if (((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue().compareTo(
                         BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
                     throw new PolynomialNotDecomposableException();
                 }

@@ -165,11 +165,11 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getBigIntValue());
                 } else {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getBigIntValue());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getBigIntValue());
                 }
 
             }
@@ -253,11 +253,11 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             if (currentQuotient.isIntegerConstantOrRationalConstant()) {
 
                 if (currentQuotient.isIntegerConstant()) {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) currentQuotient).getBigIntValue());
                 } else {
-                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getValue().toBigInteger());
+                    gcdOfNumerators = gcdOfNumerators.gcd(((Constant) ((BinaryOperation) currentQuotient).getLeft()).getBigIntValue());
                     lcmOfDenominators = ArithmeticMethods.lcm(lcmOfDenominators,
-                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getValue().toBigInteger());
+                            ((Constant) ((BinaryOperation) currentQuotient).getRight()).getBigIntValue());
                 }
 
             }
@@ -405,7 +405,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             if (((BinaryOperation) f).getLeft() instanceof Function
                     && ((Function) ((BinaryOperation) f).getLeft()).getType().equals(TypeFunction.sin)
                     && ((BinaryOperation) f).getRight().isEvenIntegerConstant()) {
-                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().cos().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }
             return substituteInTrigonometricalEquationSinByCos(((BinaryOperation) f).getLeft()).pow(
@@ -439,7 +439,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         } else if (f.isPower()) {
             if (((BinaryOperation) f).getLeft().isFunction(TypeFunction.cos)
                     && ((BinaryOperation) f).getRight().isEvenIntegerConstant()) {
-                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
+                BigInteger n = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
                 return Expression.ONE.sub(((Function) ((BinaryOperation) f).getLeft()).getLeft().sin().pow(2)).pow(n.divide(BigInteger.valueOf(2)));
             }
             return substituteInTrigonometricalEquationCosBySin(((BinaryOperation) f).getLeft()).pow(

@@ -253,7 +253,7 @@ public abstract class SolveGeneralEquationMethods {
                         return new ExpressionCollection();
                     }
                     if (fAsBinaryOperation.getRight().isRationalConstant()) {
-                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getValue().toBigInteger();
+                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getBigIntValue();
                         if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenIntegerConstant()) {
                             zeros = solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), var);
                             if (g.isConstant() && g.isNonPositive()) {
@@ -444,8 +444,8 @@ public abstract class SolveGeneralEquationMethods {
 
             if (((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) g).getRight().isIntegerConstant()) {
 
-                BigInteger m = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
-                BigInteger n = ((Constant) ((BinaryOperation) g).getRight()).getValue().toBigInteger();
+                BigInteger m = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
+                BigInteger n = ((Constant) ((BinaryOperation) g).getRight()).getBigIntValue();
                 BigInteger commonRootDegree = m.gcd(n);
                 if (commonRootDegree.compareTo(BigInteger.ONE) > 0 && commonRootDegree.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
                     return solveGeneralEquation(((BinaryOperation) f).getLeft().pow(m.divide(commonRootDegree)),
@@ -464,12 +464,12 @@ public abstract class SolveGeneralEquationMethods {
             if (((BinaryOperation) f).getRight().isIntegerConstantOrRationalConstant() && ((BinaryOperation) g).getRight().isIntegerConstantOrRationalConstant()) {
                 BigInteger m, n;
                 if (((BinaryOperation) f).getRight().isRationalConstant()) {
-                    m = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getValue().toBigInteger();
+                    m = ((Constant) ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight()).getBigIntValue();
                 } else {
                     m = BigInteger.ONE;
                 }
                 if (((BinaryOperation) g).getRight().isRationalConstant()) {
-                    n = ((Constant) ((BinaryOperation) ((BinaryOperation) g).getRight()).getRight()).getValue().toBigInteger();
+                    n = ((Constant) ((BinaryOperation) ((BinaryOperation) g).getRight()).getRight()).getBigIntValue();
                 } else {
                     n = BigInteger.ONE;
                 }

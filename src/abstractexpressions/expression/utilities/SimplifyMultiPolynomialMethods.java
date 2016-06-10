@@ -184,8 +184,8 @@ public class SimplifyMultiPolynomialMethods {
                 return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars);
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
-                BigInteger exp = ((Constant) ((BinaryOperation) f).getRight()).getValue().toBigInteger();
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).multiply(exp);
+                BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
+                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).multiply(exponent);
             }
         }
         if (f instanceof Operator) {

@@ -83,13 +83,13 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return expr;
         }
 
-        BigInteger m = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
-        BigInteger n = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+        BigInteger m = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getBigIntValue();
+        BigInteger n = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getBigIntValue();
         if (m.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0 || n.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
             return expr;
         }
 
-        BigInteger a = ((Constant) expr.getLeft()).getValue().toBigInteger();
+        BigInteger a = ((Constant) expr.getLeft()).getBigIntValue();
 
         if (a.compareTo(BigInteger.ZERO) <= 0 || m.intValue() < 0 || n.intValue() < 0) {
             return expr;
@@ -169,10 +169,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return expr;
         }
 
-        BigInteger a = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getValue().toBigInteger();
-        BigInteger b = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getValue().toBigInteger();
-        BigInteger m = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getValue().toBigInteger();
-        BigInteger n = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getValue().toBigInteger();
+        BigInteger a = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getBigIntValue();
+        BigInteger b = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getBigIntValue();
+        BigInteger m = ((Constant) ((BinaryOperation) expr.getRight()).getLeft()).getBigIntValue();
+        BigInteger n = ((Constant) ((BinaryOperation) expr.getRight()).getRight()).getBigIntValue();
         if (m.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0 || n.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
             return expr;
         }
@@ -440,7 +440,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return expr;
         }
 
-        BigInteger n = ((Constant) expr.getRight()).getValue().toBigInteger();
+        BigInteger n = ((Constant) expr.getRight()).getBigIntValue();
         if (n.compareTo(BigInteger.ZERO) < 0 || n.compareTo(BigInteger.valueOf(maxExponent)) > 0) {
             return expr;
         }
@@ -463,7 +463,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) summandLeft).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) summandLeft).getRight().isRationalConstant()) {
             // Falls summandLeft = a^(k/m) oder = (a/b)^(k/m)
-            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getBigIntValue();
             leftSummandSuitable = true;
         } else if (summandLeft.isProduct()
                 && ((BinaryOperation) summandLeft).getLeft().isIntegerConstant()
@@ -471,7 +471,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight().isRationalConstant()) {
             // Falls summandLeft = a*b^(k/m) oder = a*(b/c)^(k/m)
-            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight()).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight()).getBigIntValue();
             leftSummandSuitable = true;
         } else if (summandLeft.isQuotient()
                 && ((BinaryOperation) summandLeft).getRight().isIntegerConstant()
@@ -479,7 +479,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight().isRationalConstant()) {
             // Falls summandLeft = a^(k/m)/b oder = (a/b)^(k/m)/c
-            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight()).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight()).getBigIntValue();
             leftSummandSuitable = true;
         } else if (summandLeft.isQuotient()
                 && ((BinaryOperation) summandLeft).getRight().isIntegerConstant()
@@ -489,7 +489,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight().isRationalConstant()) {
             // Falls summandLeft = a*c^(k/m)/b oder = a*(b/c)^(k/m)/d
-            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight()).getRight()).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getLeft()).getRight()).getRight()).getRight()).getBigIntValue();
             leftSummandSuitable = true;
         } else if (summandLeft.isQuotient()
                 && ((BinaryOperation) summandLeft).getLeft().isIntegerConstant()
@@ -497,7 +497,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && (((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getLeft()).isIntegerConstantOrRationalConstant()
                 && (((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).isRationalConstant()) {
             // Falls summandLeft = a/b^(k/m) oder = a/(b/c)^(k/m)
-            leftExponentDenominator = ((Constant) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight())).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight())).getBigIntValue();
             leftSummandSuitable = true;
         } else if (summandLeft.isQuotient()
                 && ((BinaryOperation) summandLeft).getLeft().isIntegerConstant()
@@ -507,7 +507,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight())).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight())).getRight().isRationalConstant()) {
             // Falls summandLeft = a/(b*c^(k/m)) oder = a/(b*(c/d)^(k/m))
-            leftExponentDenominator = ((Constant) ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight())).getRight()).getValue().toBigInteger();
+            leftExponentDenominator = ((Constant) ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandLeft).getRight()).getRight()).getRight())).getRight()).getBigIntValue();
             leftSummandSuitable = true;
         }
 
@@ -519,7 +519,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) summandRight).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) summandRight).getRight().isRationalConstant()) {
             // Falls summandRight = a^(k/m) oder = (a/b)^(k/m)
-            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getBigIntValue();
             rightSummandSuitable = true;
         } else if (summandRight.isProduct()
                 && ((BinaryOperation) summandRight).getLeft().isIntegerConstant()
@@ -527,7 +527,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight().isRationalConstant()) {
             // Falls summandRight = a*b^(k/m) oder a*(b/c)^(k/m)
-            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight()).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight()).getBigIntValue();
             rightSummandSuitable = true;
         } else if (summandRight.isQuotient()
                 && ((BinaryOperation) summandRight).getRight().isIntegerConstant()
@@ -535,7 +535,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight().isRationalConstant()) {
             // Falls summandRight = a^(k/m)/b oder = (a/b)^(k/m)/c
-            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight()).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight()).getBigIntValue();
             rightSummandSuitable = true;
         } else if (summandRight.isQuotient()
                 && ((BinaryOperation) summandRight).getRight().isIntegerConstant()
@@ -545,7 +545,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight().isRationalConstant()) {
             // Falls summandRight = a*b^(k/m)/c oder = a*(b/c)^(k/m)/d
-            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight()).getRight()).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getLeft()).getRight()).getRight()).getRight()).getBigIntValue();
             rightSummandSuitable = true;
         } else if (summandRight.isQuotient()
                 && ((BinaryOperation) summandRight).getLeft().isIntegerConstant()
@@ -553,7 +553,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && (((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getLeft()).isIntegerConstantOrRationalConstant()
                 && (((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).isRationalConstant()) {
             // Falls summandRight = a/b^(k/m) oder = a/(b/c)^(k/m)
-            rightExponentDenominator = ((Constant) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight())).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight())).getBigIntValue();
             rightSummandSuitable = true;
         } else if (summandRight.isQuotient()
                 && ((BinaryOperation) summandRight).getLeft().isIntegerConstant()
@@ -563,7 +563,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 && ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight())).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight())).getRight().isRationalConstant()) {
             // Falls summandRight = a/(b*c^(k/m)) oder = a/(b*(c/d)^(k/m))
-            rightExponentDenominator = ((Constant) ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight())).getRight()).getValue().toBigInteger();
+            rightExponentDenominator = ((Constant) ((BinaryOperation) (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) summandRight).getRight()).getRight()).getRight())).getRight()).getBigIntValue();
             rightSummandSuitable = true;
         }
 
@@ -804,16 +804,16 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     && ((BinaryOperation) factors.get(i)).getLeft().isIntegerConstantOrRationalConstant()
                     && ((BinaryOperation) factors.get(i)).getRight().isRationalConstant()) {
 
-                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getRight()).getLeft()).getValue().toBigInteger();
-                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getRight()).getRight()).getValue().toBigInteger();
+                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getRight()).getLeft()).getBigIntValue();
+                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getRight()).getRight()).getBigIntValue();
                 for (int j = i + 1; j < factors.getBound(); j++) {
 
                     if (factors.get(j) != null && factors.get(j).isPower()
                             && ((BinaryOperation) factors.get(j)).getLeft().isIntegerConstantOrRationalConstant()
                             && ((BinaryOperation) factors.get(j)).getRight().isRationalConstant()) {
 
-                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getRight()).getLeft()).getValue().toBigInteger();
-                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getRight()).getRight()).getValue().toBigInteger();
+                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getRight()).getLeft()).getBigIntValue();
+                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getRight()).getRight()).getBigIntValue();
                         commonRootDegree = ArithmeticMethods.lcm(m, n);
 
                         // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
@@ -822,17 +822,17 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                         }
 
                         if (((BinaryOperation) factors.get(i)).getLeft().isRationalConstant()) {
-                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
-                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getLeft()).getRight()).getValue().toBigInteger();
+                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getLeft()).getLeft()).getBigIntValue();
+                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(i)).getLeft()).getRight()).getBigIntValue();
                         } else {
-                            a = ((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getValue().toBigInteger();
+                            a = ((Constant) ((BinaryOperation) factors.get(i)).getLeft()).getBigIntValue();
                             b = BigInteger.ONE;
                         }
                         if (((BinaryOperation) factors.get(j)).getLeft().isRationalConstant()) {
-                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
-                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getLeft()).getRight()).getValue().toBigInteger();
+                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getLeft()).getLeft()).getBigIntValue();
+                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factors.get(j)).getLeft()).getRight()).getBigIntValue();
                         } else {
-                            c = ((Constant) ((BinaryOperation) factors.get(j)).getLeft()).getValue().toBigInteger();
+                            c = ((Constant) ((BinaryOperation) factors.get(j)).getLeft()).getBigIntValue();
                             d = BigInteger.ONE;
                         }
 
@@ -894,8 +894,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                     && ((BinaryOperation) factorsNumerator.get(i)).getLeft().isIntegerConstantOrRationalConstant()
                     && ((BinaryOperation) factorsNumerator.get(i)).getRight().isRationalConstant()) {
 
-                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getLeft()).getValue().toBigInteger();
-                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getRight()).getValue().toBigInteger();
+                p = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getLeft()).getBigIntValue();
+                m = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getRight()).getRight()).getBigIntValue();
 
                 for (int j = 0; j < factorsDenominator.getBound(); j++) {
 
@@ -903,8 +903,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                             && ((BinaryOperation) factorsDenominator.get(j)).getLeft().isIntegerConstantOrRationalConstant()
                             && ((BinaryOperation) factorsDenominator.get(j)).getRight().isRationalConstant()) {
 
-                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getLeft()).getValue().toBigInteger();
-                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getRight()).getValue().toBigInteger();
+                        q = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getLeft()).getBigIntValue();
+                        n = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getRight()).getRight()).getBigIntValue();
                         commonRootDegree = ArithmeticMethods.lcm(m, n);
 
                         // In diesem Fall werden die Potenzen von simplify() nicht vollständig ausgerechnet.
@@ -913,17 +913,17 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                         }
 
                         if (((BinaryOperation) factorsNumerator.get(i)).getLeft().isRationalConstant()) {
-                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft()).getValue().toBigInteger();
-                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getRight()).getValue().toBigInteger();
+                            a = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft()).getBigIntValue();
+                            b = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getRight()).getBigIntValue();
                         } else {
-                            a = ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getValue().toBigInteger();
+                            a = ((Constant) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getBigIntValue();
                             b = BigInteger.ONE;
                         }
                         if (((BinaryOperation) factorsDenominator.get(j)).getLeft().isRationalConstant()) {
-                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getValue().toBigInteger();
-                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getRight()).getValue().toBigInteger();
+                            c = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getLeft()).getBigIntValue();
+                            d = ((Constant) ((BinaryOperation) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getRight()).getBigIntValue();
                         } else {
-                            c = ((Constant) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getValue().toBigInteger();
+                            c = ((Constant) ((BinaryOperation) factorsDenominator.get(j)).getLeft()).getBigIntValue();
                             d = BigInteger.ONE;
                         }
 
@@ -987,8 +987,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return expr;
         }
 
-        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getValue().toBigInteger();
-        BigInteger rootdegree = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getValue().toBigInteger();
+        BigInteger exponent = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getBigIntValue();
+        BigInteger rootdegree = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getBigIntValue();
         Expression a = ZERO, b = ZERO, c = ZERO;
         boolean rationalSummandFound = false, sqrtSummandFound = false;
 
@@ -1133,7 +1133,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
     private static Expression root(Expression radicand, int n) throws RootNotRationalException {
 
         if (radicand.isIntegerConstant()) {
-            BigInteger a = ((Constant) radicand).getValue().toBigInteger();
+            BigInteger a = ((Constant) radicand).getBigIntValue();
             BigInteger sqrt;
             try {
                 sqrt = ArithmeticMethods.root(a, n);
@@ -1144,8 +1144,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
                 return new Constant(sqrt);
             }
         } else if (radicand.isRationalConstant()) {
-            BigInteger numerator = ((Constant) ((BinaryOperation) radicand).getLeft()).getValue().toBigInteger();
-            BigInteger denominator = ((Constant) ((BinaryOperation) radicand).getRight()).getValue().toBigInteger();
+            BigInteger numerator = ((Constant) ((BinaryOperation) radicand).getLeft()).getBigIntValue();
+            BigInteger denominator = ((Constant) ((BinaryOperation) radicand).getRight()).getBigIntValue();
             BigInteger sqrtOfNumerator, sqrtOfDenominator;
             try {
                 sqrtOfNumerator = ArithmeticMethods.root(numerator, n);

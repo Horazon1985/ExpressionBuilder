@@ -1237,7 +1237,7 @@ public abstract class SimplifyFunctionalRelations {
                         factors.remove(i);
                     }
                 } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                    exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                    exponent = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                     if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                         resultFactorsOutsideOfAbs.add(factor);
                         factors.remove(i);
@@ -1300,7 +1300,7 @@ public abstract class SimplifyFunctionalRelations {
                             factorsEnumerator.remove(i);
                         }
                     } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                         if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             resultFactorsInEnumeratorOutsideOfAbs.add(factor);
                             factorsEnumerator.remove(i);
@@ -1327,7 +1327,7 @@ public abstract class SimplifyFunctionalRelations {
                             factorsDenominator.remove(i);
                         }
                     } else if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                         if (exponent.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             resultFactorsInDenominatorOutsideOfAbs.add(factor);
                             factorsDenominator.remove(i);
@@ -1558,15 +1558,15 @@ public abstract class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factors.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factors.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getBigIntValue();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getBigIntValue();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factors.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
@@ -1608,15 +1608,15 @@ public abstract class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getBigIntValue();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getBigIntValue();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factorsEnumerator.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
@@ -1633,15 +1633,15 @@ public abstract class SimplifyFunctionalRelations {
                 if (factor.isPower() && ((BinaryOperation) factor).getRight().isIntegerConstantOrRationalConstant()) {
 
                     if (((BinaryOperation) factor).getRight().isIntegerConstant()) {
-                        exponentDenominator = ((Constant) ((BinaryOperation) factor).getRight()).getValue().toBigInteger();
+                        exponentDenominator = ((Constant) ((BinaryOperation) factor).getRight()).getBigIntValue();
                         if (exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft().pow(Expression.TWO));
                         } else {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft());
                         }
                     } else {
-                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getValue().toBigInteger();
-                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getValue().toBigInteger();
+                        exponentEnumerator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getLeft()).getBigIntValue();
+                        exponentDenominator = ((Constant) ((BinaryOperation) ((BinaryOperation) factor).getRight()).getRight()).getBigIntValue();
                         if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {
                             factorsDenominator.put(i, ((BinaryOperation) factor).getLeft());
                         } else if (exponentEnumerator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0 && exponentDenominator.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 1) {

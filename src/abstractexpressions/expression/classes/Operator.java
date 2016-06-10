@@ -766,7 +766,7 @@ public class Operator extends Expression {
                              */
                             return false;
                         }
-                        BigInteger valueRoundedDown = ((Constant) argument).getValue().toBigInteger();
+                        BigInteger valueRoundedDown = ((Constant) argument).getBigIntValue();
                         return valueRoundedDown.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0;
                     } else {
                         /*
@@ -1328,7 +1328,7 @@ public class Operator extends Expression {
         BigInteger argumentRoundedDown;
 
         if (argument.isIntegerConstant()) {
-            argumentRoundedDown = ((Constant) argument).getValue().toBigInteger();
+            argumentRoundedDown = ((Constant) argument).getBigIntValue();
             // Nur Fakultäten mit Argument <= einer bestimmten Schranke werden explizit ausgeben.
             if (argumentRoundedDown.compareTo(BigInteger.ZERO) < 0) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
@@ -1379,7 +1379,7 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
-                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+                integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER", i + 1));
             }
@@ -1487,7 +1487,7 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
-                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+                integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER", i + 1));
             }
@@ -1588,7 +1588,7 @@ public class Operator extends Expression {
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
-                integerArguments.add(((Constant) arguments[i]).getValue().toBigInteger());
+                integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant()) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER", i + 1));
             }
@@ -1636,8 +1636,8 @@ public class Operator extends Expression {
         Expression factor = (Expression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getBigIntValue();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getBigIntValue();
             if (upperLimit.subtract(lowerLimit).compareTo(
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
@@ -1720,8 +1720,8 @@ public class Operator extends Expression {
         Expression summand = (Expression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getBigIntValue();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getBigIntValue();
             if (upperLimit.subtract(lowerLimit).compareTo(
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 

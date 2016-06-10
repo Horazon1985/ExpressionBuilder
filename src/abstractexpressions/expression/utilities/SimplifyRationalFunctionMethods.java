@@ -92,10 +92,10 @@ public abstract class SimplifyRationalFunctionMethods {
                  */
                 int n = 1;
                 if (argument.isProduct()) {
-                    if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+                    if (((Constant) ((BinaryOperation) argument).getLeft()).getBigIntValue().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                         return f;
                     }
-                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
+                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getBigIntValue().intValue();
                     if (Math.abs(n) > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
                         return f;
                     }
@@ -135,7 +135,7 @@ public abstract class SimplifyRationalFunctionMethods {
                 int n = 1;
                 Expression variable = argument;
                 if (argument.isProduct()) {
-                    if (((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+                    if (((Constant) ((BinaryOperation) argument).getLeft()).getBigIntValue().abs().compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                         return f;
                     }
 
@@ -153,7 +153,7 @@ public abstract class SimplifyRationalFunctionMethods {
                             break;
                     }
 
-                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getValue().toBigInteger().intValue();
+                    n = ((Constant) ((BinaryOperation) argument).getLeft()).getBigIntValue().intValue();
                     variable = ((BinaryOperation) argument).getRight();
                     if (Math.abs(n) > bound) {
                         return f;

@@ -961,8 +961,8 @@ public class MatrixOperator extends MatrixExpression {
         }
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getBigIntValue();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getBigIntValue();
             if (upperLimit.subtract(lowerLimit).compareTo(
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
@@ -1034,8 +1034,8 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression summand = (MatrixExpression) this.params[0];
 
         if (((Expression) this.params[2]).isIntegerConstant() && ((Expression) this.params[3]).isIntegerConstant()) {
-            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getValue().toBigInteger();
-            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getValue().toBigInteger();
+            BigInteger lowerLimit = ((Constant) ((Expression) this.params[2])).getBigIntValue();
+            BigInteger upperLimit = ((Constant) ((Expression) this.params[3])).getBigIntValue();
             if (upperLimit.subtract(lowerLimit).compareTo(
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 

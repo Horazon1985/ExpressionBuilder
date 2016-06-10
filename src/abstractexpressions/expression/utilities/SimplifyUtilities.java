@@ -168,7 +168,7 @@ public abstract class SimplifyUtilities {
                         && ((BinaryOperation) factors.get(i)).getRight().isIntegerConstant()
                         && ((BinaryOperation) factors.get(i)).getRight().isNonNegative()) {
                     resultBase = ((BinaryOperation) factors.get(i)).getLeft();
-                    resultExponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getValue().toBigInteger();
+                    resultExponent = ((Constant) ((BinaryOperation) factors.get(i)).getRight()).getBigIntValue();
                     factors.remove(i);
                 } else {
                     resultBase = factors.get(i);
@@ -185,7 +185,7 @@ public abstract class SimplifyUtilities {
                             && ((BinaryOperation) factors.get(j)).getRight().isIntegerConstant()
                             && ((BinaryOperation) factors.get(j)).getRight().isNonNegative()) {
                         base = ((BinaryOperation) factors.get(j)).getLeft();
-                        exponent = ((Constant) ((BinaryOperation) factors.get(j)).getRight()).getValue().toBigInteger();
+                        exponent = ((Constant) ((BinaryOperation) factors.get(j)).getRight()).getBigIntValue();
                     } else {
                         base = factors.get(j);
                         exponent = BigInteger.ONE;
