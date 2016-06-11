@@ -680,16 +680,40 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         Expression solution = ZERO, solutionOfRischDiffEq;
         Expression expArgument = ((Function) transcententalElement).getLeft();
-        
-        for (int i = 0; i < polynomialCoefficients.getBound(); i++){
 
-        }
-        
-        for (int i = 1; i < laurentCoefficients.getBound(); i++){
-        
+        /*
+        Hier wird eine Funktion vom Typ f = h_{-m}*t^(-m) + ... + h_n*t^n, m = laurentCoefficients.getBound(),
+        n = polynomialCoefficients.getBound() gelöst (h_i, i < 0, sind Elemente von laurentCoefficients,
+        h_i, i >= 0 Elemente von polynomialCoefficients). Da die Stammfunktion vom selben Typ ist,
+        nämlich von der Form y_{-m}*t^(-m) + ... + y_n*t^n, ergeben sich die Differentialgleichungen
+        y_i' + iy_i = h_i für jedes -m <= i <= n. Für jedes solche i wird von solveRischDifferentialEquation(...)
+        eine Lösung dieser Differentialgleichung geliefert, sofern diese existiert. Dann wird entsprechend
+        summiert und die gesamte Stammfunktion wird zurückgegeben.
+         */
+        Expression f, g;
+        for (int i = 0; i < polynomialCoefficients.getBound(); i++) {
+            try {
+                f = new Constant(i).mult(expArgument.diff(var)).simplify();
+                g = polynomialCoefficients.get(i);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, g, transcendentalVar);
+                solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
         }
 
-        throw new NotAlgebraicallyIntegrableException();
+        for (int i = 1; i < laurentCoefficients.getBound(); i++) {
+            try {
+                f = new Constant(i).mult(expArgument.diff(var)).simplify();
+                g = laurentCoefficients.get(i);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, g, transcendentalVar);
+                solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        }
+
+        return solution;
 
     }
 
@@ -702,11 +726,115 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      */
     private static Expression solveRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
+        // Schritt 1: Zur schwachen Normierung übergehen.
+        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, g, transcendentalVar);
+        if (weakNormalization.length != 3) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+        Expression p = weakNormalization[0];
+        f = weakNormalization[1];
+        g = weakNormalization[2];
+
+        Expression[] denominatorData = getDenominatorOfRischDifferentialEquation(f, g, transcendentalVar);
+        if (denominatorData.length != 4) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
         
-        
-        
+        Expression denominatorOfSolution = denominatorData[0];
+        Expression a = denominatorData[1];
+        Expression b = denominatorData[2];
+        Expression c = denominatorData[3];
+        Expression numeratorOfSolution = getNumeratorOfRischDifferentialEquation(a, b, c, transcendentalVar);
+
+        return numeratorOfSolution.div(p.mult(denominatorOfSolution));
+
+    }
+
+    /**
+     * Liefert den Nenner T der Lösung der Risch-Differentialgleichung y' + f*y
+     * = g, falls diese lösbar ist, und zusätzlich Koeffizienten a, b, c, so
+     * dass der Zähler q die Differentialgleichung a*q' + b*q = c erfüllt. Es
+     * wird ein Array von Expression von der Form {T, a, b, c} zurückgegeben.
+     * Ansonsten wird eine NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression[] getDenominatorOfRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        try {
+
+            f = f.simplify(simplifyTypesRischAlgorithm);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+            f = f.simplify(simplifyTypesRischAlgorithm);
+            g = g.simplify(simplifyTypesRischAlgorithm);
+            g = g.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+            g = g.simplify(simplifyTypesRischAlgorithm);
+
+            Expression d, e;
+            if (f.isQuotient()) {
+                d = ((BinaryOperation) f).getRight();
+            } else {
+                d = ONE;
+            }
+            if (g.isQuotient()) {
+                e = ((BinaryOperation) g).getRight();
+            } else {
+                e = ONE;
+            }
+
+            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(d, transcendentalVar)) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(e, transcendentalVar)) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            Expression numerator, denominator;
+            // TO DO.
+
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
         throw new NotAlgebraicallyIntegrableException();
-        
+
+    }
+
+    /**
+     * Gibt zurück, ob die Funktion f bzgl. der Veränderlichen x = var schwach
+     * normiert ist, d.h. ob int(f, x) die Form g +
+     * c<sub>1</sub>*ln(v<sub>1</sub>) + ... + c<sub>n</sub>*ln(v<sub>n</sub>),
+     * c<sub>i</sub> nicht ganzzahlig und positiv, besitzt.
+     */
+    private static boolean isWeaklyNormalized(Expression f, String transcendentalVar) {
+
+        return true;
+
+    }
+
+    /**
+     * Gibt für die Differentialgleichung y' + f*y = g ein Polynom p in t =
+     * transcendentalVar und Functionen F und G zurück, so dass F schwach
+     * normiert ist und für z = p*y die Differentialgleichung z' + F*z = G
+     * erfüllt ist.
+     */
+    private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression g, String transcendentalVar) {
+
+        return new Expression[0];
+
+    }
+
+    /**
+     * Liefert den Zähler der Lösung der Risch-Differentialgleichung a*q' + b*q
+     * = c, falls diese lösbar ist. Ansonsten wird eine
+     * NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression getNumeratorOfRischDifferentialEquation(Expression a, Expression b, Expression c, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        throw new NotAlgebraicallyIntegrableException();
+
     }
 
     /**

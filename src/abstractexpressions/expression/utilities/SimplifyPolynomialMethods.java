@@ -107,6 +107,16 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
+     * Gibt zurück, ob expr ein Polynom in der Variablen var ist und ob sein
+     * Grad zusätzlich nicht zu hoch ist (aktuell &#8804; 100). Voraussetzung: expr
+     * ist vereinfacht, d.h. Operatoren etc. kommen NICHT vor (außer evtl.
+     * &#915;(x), was kein Polynom ist).
+     */
+    public static boolean isPolynomialAdmissibleForComputation(Expression expr, String var) {
+        return isPolynomial(expr, var) && getDegreeOfPolynomial(expr, var).compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0;
+    }
+
+    /**
      * Gibt zurück, ob expr ein lineares Polynom in der Variablen var ist.
      */
     public static boolean isLinearPolynomial(Expression expr, String var) {
