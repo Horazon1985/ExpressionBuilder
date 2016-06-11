@@ -470,7 +470,7 @@ public class Variable extends Expression {
     }
     
     @Override
-    public Expression simplifyReduceDifferencesAndQuotients() {
+    public Expression simplifyReduceDifferencesAndQuotientsAdvanced() {
         return this;
     }
 

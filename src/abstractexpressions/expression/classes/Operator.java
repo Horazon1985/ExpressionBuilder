@@ -1144,11 +1144,11 @@ public class Operator extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
+    public Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException {
         Object[] resultParams = new Object[this.params.length];
         for (int i = 0; i < this.params.length; i++) {
             if (params[i] instanceof Expression) {
-                resultParams[i] = ((Expression) this.params[i]).simplifyReduceDifferencesAndQuotients();
+                resultParams[i] = ((Expression) this.params[i]).simplifyReduceDifferencesAndQuotientsAdvanced();
             } else {
                 resultParams[i] = this.params[i];
             }

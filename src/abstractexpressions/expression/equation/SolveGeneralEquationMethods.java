@@ -56,7 +56,7 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);

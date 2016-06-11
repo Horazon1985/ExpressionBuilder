@@ -1455,7 +1455,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException;
+    public abstract Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException;
 
     /**
      * Ordnet Ketten von + und von * nach rechts.
@@ -1646,7 +1646,7 @@ public abstract class Expression implements AbstractExpression {
                 Canceller.interruptComputationIfNeeded();
                 exprSimplified = exprSimplified.simplifyReduceQuotients();
                 Canceller.interruptComputationIfNeeded();
-                exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
+                exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotientsAdvanced();
                 Canceller.interruptComputationIfNeeded();
                 if (exprSimplified.containsAlgebraicOperation()) {
                     exprSimplified = exprSimplified.simplifyAlgebraicExpressions();
@@ -1726,8 +1726,8 @@ public abstract class Expression implements AbstractExpression {
                     } else if (simplifyType.equals(TypeSimplify.simplify_reduce_quotients)) {
                         exprSimplified = exprSimplified.simplifyReduceQuotients();
                         Canceller.interruptComputationIfNeeded();
-                    } else if (simplifyType.equals(TypeSimplify.simplify_reduce_differences_and_quotients)) {
-                        exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
+                    } else if (simplifyType.equals(TypeSimplify.simplify_reduce_differences_and_quotients_advanced)) {
+                        exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotientsAdvanced();
                         Canceller.interruptComputationIfNeeded();
                     } else if (exprSimplified.containsAlgebraicOperation()) {
                         if (simplifyType.equals(TypeSimplify.simplify_algebraic_expressions)) {
@@ -1836,8 +1836,8 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
-                    exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
+                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients_advanced)) {
+                    exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotientsAdvanced();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (exprSimplified.containsAlgebraicOperation()) {
@@ -1963,8 +1963,8 @@ public abstract class Expression implements AbstractExpression {
                     exprSimplified = exprSimplified.simplifyReduceQuotients();
                     Canceller.interruptComputationIfNeeded();
                 }
-                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients)) {
-                    exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotients();
+                if (simplifyTypes.contains(TypeSimplify.simplify_reduce_differences_and_quotients_advanced)) {
+                    exprSimplified = exprSimplified.simplifyReduceDifferencesAndQuotientsAdvanced();
                     Canceller.interruptComputationIfNeeded();
                 }
                 if (exprSimplified.containsAlgebraicOperation()) {

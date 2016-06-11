@@ -42,7 +42,7 @@ public abstract class SimplifyPolynomialMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         return simplifyTypes;
     }
@@ -58,7 +58,7 @@ public abstract class SimplifyPolynomialMethods {
         simplifyTypes.add(TypeSimplify.simplify_expand_powerful);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         return simplifyTypes;

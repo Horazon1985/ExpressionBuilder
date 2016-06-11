@@ -47,7 +47,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
         return simplifyTypes;
@@ -66,7 +66,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
@@ -446,10 +446,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     throw new NotAlgebraicallyIntegrableException();
                 }
                 Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], laurentCoefficients, transcententalElement, var, transcendentalVar);
-                Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(coefficientsOfNumeratorOfNonSpecialPart, 
+                Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(coefficientsOfNumeratorOfNonSpecialPart,
                         coefficientsDenominator, transcententalElement, var, transcendentalVar);
                 return integralOfPolynomialPart.add(integralOfFractionalPart);
-                
+
             }
 
         }
@@ -551,10 +551,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         /* 
-        Jetzt prüfen, ob die Zähler der PBZ gewisse Bedingungen erfüllen:
-        (1) Die Zähler zu den Nennern t^k sind bzgl. t konstant (t = transcendentalVar).    
-        (2) Der Zähler zum nichtspeziellen Nenner hat Grad < grad(Nenner).    
-        Dies sollte bei korrekter Berechnung immer der Fall sein.
+         Jetzt prüfen, ob die Zähler der PBZ gewisse Bedingungen erfüllen:
+         (1) Die Zähler zu den Nennern t^k sind bzgl. t konstant (t = transcendentalVar).    
+         (2) Der Zähler zum nichtspeziellen Nenner hat Grad < grad(Nenner).    
+         Dies sollte bei korrekter Berechnung immer der Fall sein.
          */
         for (int i = 1; i < numeratorsInPFD.getBound(); i++) {
             if (numeratorsInPFD.get(i).contains(transcendentalVar)) {
@@ -585,20 +585,33 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      */
     private static Expression integrateByRischAlgorithmPolynomialPart(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients,
             Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException, EvaluationException {
+
+        // Fall: Es gibt keinen polynomiellen Anteil.
         if (polynomialCoefficients.isEmpty() && laurentCoefficients.isEmpty()) {
             return ZERO;
         }
+
+        // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist exponentiell.
         if ((!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) && transcententalElement.isFunction(TypeFunction.exp)) {
-            // Noch zu implementieren.
-            throw new NotAlgebraicallyIntegrableException();
+            return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
         }
+
+        // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist logarithmisch.
         if (!polynomialCoefficients.isEmpty() && transcententalElement.isFunction(TypeFunction.ln)) {
             return integrateByRischAlgorithmPolynomialPartLogarithmicExtension(polynomialCoefficients, transcententalElement, var, transcendentalVar);
         }
 
+        // Sollte eigentlich nie eintreten.
         throw new NotAlgebraicallyIntegrableException();
+
     }
 
+    /**
+     * Risch-Algorithmus für den polynomialen Anteil im Fall einer
+     * logarithmischen Erweiterung.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
     public static Expression integrateByRischAlgorithmPolynomialPartLogarithmicExtension(ExpressionCollection polynomialCoefficients, Expression transcententalElement,
             String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
@@ -654,6 +667,46 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         return SimplifyPolynomialMethods.getPolynomialFromCoefficients(new ExpressionCollection(coefficientsOfPolynomialInTranscendentalVar),
                 transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
 
+    }
+
+    /**
+     * Risch-Algorithmus für den polynomialen Anteil im Fall einer
+     * exponentiellen Erweiterung.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    public static Expression integrateByRischAlgorithmPolynomialPartExponentialExtension(ExpressionCollection polynomialCoefficients, ExpressionCollection laurentCoefficients,
+            Expression transcententalElement, String var, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        Expression solution = ZERO, solutionOfRischDiffEq;
+        Expression expArgument = ((Function) transcententalElement).getLeft();
+        
+        for (int i = 0; i < polynomialCoefficients.getBound(); i++){
+
+        }
+        
+        for (int i = 1; i < laurentCoefficients.getBound(); i++){
+        
+        }
+
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Gibt die Lösung der Risch-Differentialgleichung y' + f*y = g zurück, wenn
+     * diese lösbar und die Lösung rational in t ist. Ansonsten wird eine
+     * NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression solveRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+
+        
+        
+        
+        throw new NotAlgebraicallyIntegrableException();
+        
     }
 
     /**
@@ -751,9 +804,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
             if (!integrandSimplified.contains(transcendentalVar)) {
                 /* 
-                In diesem Fall: Erneute Integration, welche auf Ad-Hoc-Methoden, Risch-Algorithmus 
-                mit weniger transcendenten Erweiterungen oder auf Integration mittels Partialbruchzerlegung
-                hinausläuft.
+                 In diesem Fall: Erneute Integration, welche auf Ad-Hoc-Methoden, Risch-Algorithmus 
+                 mit weniger transcendenten Erweiterungen oder auf Integration mittels Partialbruchzerlegung
+                 hinausläuft.
                  */
                 return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrandSimplified, var}));
             }
@@ -775,10 +828,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             int degDenominator = coefficientsDenominator.getBound() - 1;
 
             /*
-            Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners 
-            bzgl. der Veränderlichen t = transcendentalVar sein.
-            (Der Fall, dass beide Polynome konstant sind, der Integrand also eine rationale Funktion in den 
-            restlichen Veränderlichen ist, wurde bereits vorher behandelt). Trotzdem diese Sicherheitsabfrage.
+             Der Grad des Zählers sollte eigentlich bei jedem Reduktionsschritt kleiner als der Grad des Nenners 
+             bzgl. der Veränderlichen t = transcendentalVar sein.
+             (Der Fall, dass beide Polynome konstant sind, der Integrand also eine rationale Funktion in den 
+             restlichen Veränderlichen ist, wurde bereits vorher behandelt). Trotzdem diese Sicherheitsabfrage.
              */
             if (degNumerator >= degDenominator && integrandSimplified.contains(transcendentalVar)) {
                 throw new NotAlgebraicallyIntegrableException();

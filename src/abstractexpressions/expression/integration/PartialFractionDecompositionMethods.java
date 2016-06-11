@@ -54,7 +54,7 @@ public abstract class PartialFractionDecompositionMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         return simplifyTypes;
     }
 
@@ -69,7 +69,7 @@ public abstract class PartialFractionDecompositionMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         return simplifyTypes;
     }
 

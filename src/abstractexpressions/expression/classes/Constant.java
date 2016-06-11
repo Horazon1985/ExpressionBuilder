@@ -302,7 +302,7 @@ public class Constant extends Expression {
     }
     
     @Override
-    public Expression simplifyReduceDifferencesAndQuotients() {
+    public Expression simplifyReduceDifferencesAndQuotientsAdvanced() {
         return this;
     }
 

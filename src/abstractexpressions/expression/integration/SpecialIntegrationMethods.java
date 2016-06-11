@@ -98,7 +98,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
@@ -116,7 +116,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_collect_products);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_expand_products_of_complex_exponential_functions);
         simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
         return simplifyTypes;
@@ -135,7 +135,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
         simplifyTypes.add(TypeSimplify.simplify_factorize);
         simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);

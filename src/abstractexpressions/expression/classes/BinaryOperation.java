@@ -40,7 +40,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-//        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients);
+//        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         return simplifyTypes;
@@ -1328,20 +1328,20 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public Expression simplifyReduceDifferencesAndQuotients() throws EvaluationException {
+    public Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException {
 
         if (this.isSum()) {
             // In jedem Summanden einzeln kürzen.
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             for (int i = 0; i < summands.getBound(); i++) {
-                summands.put(i, summands.get(i).simplifyReduceDifferencesAndQuotients());
+                summands.put(i, summands.get(i).simplifyReduceDifferencesAndQuotientsAdvanced());
             }
             return SimplifyUtilities.produceSum(summands);
         } else if (this.isProduct()) {
             // In jedem Faktor einzeln kürzen.
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             for (int i = 0; i < factors.getBound(); i++) {
-                factors.put(i, factors.get(i).simplifyReduceDifferencesAndQuotients());
+                factors.put(i, factors.get(i).simplifyReduceDifferencesAndQuotientsAdvanced());
             }
 
             /*
@@ -1352,7 +1352,7 @@ public class BinaryOperation extends Expression {
 
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
-            return this.left.simplifyReduceDifferencesAndQuotients().pow(this.right.simplifyReduceDifferencesAndQuotients());
+            return this.left.simplifyReduceDifferencesAndQuotientsAdvanced().pow(this.right.simplifyReduceDifferencesAndQuotientsAdvanced());
         }
 
         // Nun kann es dich nur noch um Differenzen oder Quotienten handeln.
@@ -1368,10 +1368,10 @@ public class BinaryOperation extends Expression {
 
         // Zunächst in allen Summanden/Faktoren einzeln kürzen.
         for (int i = 0; i < termsLeft.getBound(); i++) {
-            termsLeft.put(i, termsLeft.get(i).simplifyReduceDifferencesAndQuotients());
+            termsLeft.put(i, termsLeft.get(i).simplifyReduceDifferencesAndQuotientsAdvanced());
         }
         for (int i = 0; i < termsRight.getBound(); i++) {
-            termsRight.put(i, termsRight.get(i).simplifyReduceDifferencesAndQuotients());
+            termsRight.put(i, termsRight.get(i).simplifyReduceDifferencesAndQuotientsAdvanced());
         }
 
         // Nun das eigentliche Kürzen!
