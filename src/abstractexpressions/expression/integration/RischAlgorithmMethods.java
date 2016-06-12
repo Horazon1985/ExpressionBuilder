@@ -593,7 +593,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist exponentiell.
         if ((!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) && transcententalElement.isFunction(TypeFunction.exp)) {
-            return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
+            throw new NotAlgebraicallyIntegrableException();
+//            return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
         }
 
         // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist logarithmisch.
@@ -690,12 +691,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         eine Lösung dieser Differentialgleichung geliefert, sofern diese existiert. Dann wird entsprechend
         summiert und die gesamte Stammfunktion wird zurückgegeben.
          */
-        Expression f, g;
+        Expression f, g, integralOfF;
         for (int i = 0; i < polynomialCoefficients.getBound(); i++) {
             try {
                 f = new Constant(i).mult(expArgument.diff(var)).simplify();
+                integralOfF = new Constant(i).mult(expArgument).simplify();
                 g = polynomialCoefficients.get(i);
-                solutionOfRischDiffEq = solveRischDifferentialEquation(f, g, transcendentalVar);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, transcendentalVar);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
@@ -705,8 +707,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         for (int i = 1; i < laurentCoefficients.getBound(); i++) {
             try {
                 f = new Constant(i).mult(expArgument.diff(var)).simplify();
+                integralOfF = new Constant(i).mult(expArgument).simplify();
                 g = laurentCoefficients.get(i);
-                solutionOfRischDiffEq = solveRischDifferentialEquation(f, g, transcendentalVar);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, transcendentalVar);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
@@ -724,10 +727,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression solveRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+    private static Expression solveRischDifferentialEquation(Expression f, Expression integralOfF, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
         // Schritt 1: Zur schwachen Normierung übergehen.
-        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, g, transcendentalVar);
+        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, transcendentalVar);
         if (weakNormalization.length != 3) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -739,7 +742,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         if (denominatorData.length != 4) {
             throw new NotAlgebraicallyIntegrableException();
         }
-        
+
         Expression denominatorOfSolution = denominatorData[0];
         Expression a = denominatorData[1];
         Expression b = denominatorData[2];
@@ -816,10 +819,16 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * Gibt für die Differentialgleichung y' + f*y = g ein Polynom p in t =
      * transcendentalVar und Functionen F und G zurück, so dass F schwach
      * normiert ist und für z = p*y die Differentialgleichung z' + F*z = G
-     * erfüllt ist.
+     * erfüllt ist. Der Parameter integralOfF ist die Stammfunktion von f bzgl.
+     * der eigentlichen Integrationsvariablen, die hier als Parameter nicht
+     * übergeben wird.
      */
-    private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression g, String transcendentalVar) {
+    private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression integralOfF, Expression g, String transcendentalVar) {
 
+        ExpressionCollection summandsLeftOfIntegralOfF = SimplifyUtilities.getSummandsLeftInExpression(integralOfF);
+        ExpressionCollection summandsRightOfIntegralOfF = SimplifyUtilities.getSummandsRightInExpression(integralOfF);
+        
+        
         return new Expression[0];
 
     }

@@ -348,7 +348,7 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest2() {
-        // int((x*exp(x)+1)/(x*(1+exp(x)+ln(x)), x) = ln(1+exp(x)+ln(x)).
+        // int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))), x) = ln(1+exp(x)+ln(x)).
         try {
             f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.

@@ -20,6 +20,7 @@ import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import lang.translator.Translator;
@@ -3108,7 +3109,13 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     private static Expression[] reduceGeneralFractionToNonFractionInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
 
-        HashSet<Expression> setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
+        HashSet<Expression> setOfSubstitutions;
+        try {
+            setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
+        } catch (ConcurrentModificationException e) {
+            setOfSubstitutions = new HashSet<>();
+            System.out.println("FEHLER!");
+        }
 
         if (setOfSubstitutions.isEmpty()) {
             return new Expression[0];
