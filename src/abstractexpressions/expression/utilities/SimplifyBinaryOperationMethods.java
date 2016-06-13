@@ -20,7 +20,6 @@ import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Iterator;
 import lang.translator.Translator;
@@ -3109,13 +3108,7 @@ public abstract class SimplifyBinaryOperationMethods {
      */
     private static Expression[] reduceGeneralFractionToNonFractionInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
 
-        HashSet<Expression> setOfSubstitutions;
-        try {
-            setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
-        } catch (ConcurrentModificationException e) {
-            setOfSubstitutions = new HashSet<>();
-            System.out.println("FEHLER!");
-        }
+        HashSet<Expression> setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
 
         if (setOfSubstitutions.isEmpty()) {
             return new Expression[0];
@@ -3143,8 +3136,8 @@ public abstract class SimplifyBinaryOperationMethods {
                     ExpressionCollection coefficientsDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(denominatorSubstituted, substVar);
 
                     if (coefficientsNumerator.getBound() < 2 || coefficientsDenominator.getBound() < 2) {
-                        // Falls eines der Grade doch noch auf 0 sinkt (getDegreeOfPolynomial() ist nur eine obere Schranke für den Grad!).
-                        return new Expression[0];
+                        // Falls eines der Grade doch noch auf 0 sinkt (getDegreeOfPolynomial() ist nur eine obere Schranke für den Grad!) -> einfach weiter probieren.
+                        continue;
                     }
 
                     ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsNumerator, coefficientsDenominator);
