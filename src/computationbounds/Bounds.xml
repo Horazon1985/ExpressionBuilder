@@ -67,7 +67,7 @@
     <value>100</value>
   </object>
   <object id = "BOUND_MATRIX_MAX_DIM_FOR_COMPUTE_DET_EXPLICITELY">
-    <value>5</value>
+    <value>6</value>
   </object>
   <object id = "BOUND_NUMERIC_DEFAULT_NUMBER_OF_INTERVALS">
     <value>10000</value>

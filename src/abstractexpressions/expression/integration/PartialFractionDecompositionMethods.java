@@ -109,10 +109,8 @@ public abstract class PartialFractionDecompositionMethods {
                 throw new PartialFractionDecompositionNotComputableException();
             }
 
-            ExpressionCollection coefficientsForCompare = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fractionalPart).getLeft(), var);
-
             // f schreiben als: Zähler ausmultipliziert und zusammengefasst, Nenner faktorisiert.
-            fractionalPart = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsForCompare, var).div(
+            fractionalPart = ((BinaryOperation) fractionalPart).getLeft().div(
                     SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(((BinaryOperation) fractionalPart).getRight(), var));
 
             // Falls Mehrfachbrüche auftauchen: alles auf einen Nenner bringen (ist in den Vereinfachungstypen enthalten).
@@ -128,9 +126,12 @@ public abstract class PartialFractionDecompositionMethods {
             Expression constantFactorInDenominator = SimplifyUtilities.produceProduct(SimplifyUtilities.getConstantFactors(((BinaryOperation) fractionalPart).getRight(), var));
             fractionalPart = ((BinaryOperation) fractionalPart).getLeft().div(
                     SimplifyUtilities.produceProduct(SimplifyUtilities.getNonConstantFactors(((BinaryOperation) fractionalPart).getRight(), var)));
+
+            // Nur im Falle eines Quotienten weitermachen.        
             if (fractionalPart.isNotQuotient()) {
                 throw new PartialFractionDecompositionNotComputableException();
             }
+            ExpressionCollection coefficientsForCompare = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fractionalPart).getLeft(), var);
 
             Expression approachForPFD = getPartialFractionDecompositionApproach((BinaryOperation) fractionalPart, var);
             Expression[] coefficientsForPFD;

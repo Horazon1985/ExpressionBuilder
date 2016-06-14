@@ -32,44 +32,38 @@ import notations.NotationLoader;
 
 public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
-    private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = getSimplifyTypesForDifferentialFieldExtensions();
-    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithm = getSimplifyTypesRischAlgorithm();
+    private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithm = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesForDifferentialFieldExtensions() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        simplifyTypes.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
-        return simplifyTypes;
-    }
+    static {
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_basic);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.simplify_replace_exponential_functions_with_respect_to_variable_by_definitions);
 
-    private static HashSet<TypeSimplify> getSimplifyTypesRischAlgorithm() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        return simplifyTypes;
+        simplifyTypesRischAlgorithm.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_basic);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_factorize);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_logarithms);
     }
 
     /**
@@ -697,7 +691,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 f = new Constant(i).mult(expArgument.diff(var)).simplify();
                 integralOfF = new Constant(i).mult(expArgument).simplify();
                 g = polynomialCoefficients.get(i);
-                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, transcendentalVar);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
@@ -709,7 +703,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 f = new Constant(i).mult(expArgument.diff(var)).simplify();
                 integralOfF = new Constant(i).mult(expArgument).simplify();
                 g = laurentCoefficients.get(i);
-                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, transcendentalVar);
+                solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
@@ -727,10 +721,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression solveRischDifferentialEquation(Expression f, Expression integralOfF, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+    private static Expression solveRischDifferentialEquation(Expression f, Expression integralOfF, Expression g, String var) throws NotAlgebraicallyIntegrableException {
+
+        ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
+        Expression transcendentalElement;
+        if (transcendentalExtensions.isEmpty()) {
+            transcendentalElement = Variable.create(var);
+        } else {
+            transcendentalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
+        }
 
         // Schritt 1: Zur schwachen Normierung übergehen.
-        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, transcendentalVar);
+        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, var);
         if (weakNormalization.length != 3) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -738,7 +740,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         f = weakNormalization[1];
         g = weakNormalization[2];
 
-        Expression[] denominatorData = getDenominatorOfRischDifferentialEquation(f, g, transcendentalVar);
+        Expression[] denominatorData = getDenominatorDataOfRischDifferentialEquation(f, g, var);
         if (denominatorData.length != 4) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -747,7 +749,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression a = denominatorData[1];
         Expression b = denominatorData[2];
         Expression c = denominatorData[3];
-        Expression numeratorOfSolution = getNumeratorOfRischDifferentialEquation(a, b, c, transcendentalVar);
+        Expression numeratorOfSolution = getNumeratorOfRischDifferentialEquation(a, b, c, var);
 
         return numeratorOfSolution.div(p.mult(denominatorOfSolution));
 
@@ -762,7 +764,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression[] getDenominatorOfRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+    private static Expression[] getDenominatorDataOfRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
 
         try {
 
@@ -827,8 +829,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         ExpressionCollection summandsLeftOfIntegralOfF = SimplifyUtilities.getSummandsLeftInExpression(integralOfF);
         ExpressionCollection summandsRightOfIntegralOfF = SimplifyUtilities.getSummandsRightInExpression(integralOfF);
-        
-        
+
         return new Expression[0];
 
     }
