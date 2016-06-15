@@ -724,15 +724,20 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression solveRischDifferentialEquation(Expression f, Expression integralOfF, Expression g, String var) throws NotAlgebraicallyIntegrableException {
 
         ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
+        String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f, g);
         Expression transcendentalElement;
         if (transcendentalExtensions.isEmpty()) {
+            /*
+            Wenn transcendentalExtensions leer ist, dann ist f eine rationale Funktion
+            in x = var. Dann nehme man die Veränderliche x selbst als transzendentes Element.
+             */
             transcendentalElement = Variable.create(var);
         } else {
             transcendentalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
         }
 
         // Schritt 1: Zur schwachen Normierung übergehen.
-        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, var);
+        Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, var, transcendentalVar);
         if (weakNormalization.length != 3) {
             throw new NotAlgebraicallyIntegrableException();
         }
@@ -806,31 +811,48 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     }
 
     /**
-     * Gibt zurück, ob die Funktion f bzgl. der Veränderlichen x = var schwach
-     * normiert ist, d.h. ob int(f, x) die Form g +
-     * c<sub>1</sub>*ln(v<sub>1</sub>) + ... + c<sub>n</sub>*ln(v<sub>n</sub>),
-     * c<sub>i</sub> nicht ganzzahlig und positiv, besitzt.
-     */
-    private static boolean isWeaklyNormalized(Expression f, String transcendentalVar) {
-
-        return true;
-
-    }
-
-    /**
      * Gibt für die Differentialgleichung y' + f*y = g ein Polynom p in t =
      * transcendentalVar und Functionen F und G zurück, so dass F schwach
      * normiert ist und für z = p*y die Differentialgleichung z' + F*z = G
-     * erfüllt ist. Der Parameter integralOfF ist die Stammfunktion von f bzgl.
-     * der eigentlichen Integrationsvariablen, die hier als Parameter nicht
-     * übergeben wird.
+     * erfüllt ist. Der Parameter F := integralOfF ist die Stammfunktion von f
+     * bzgl. der eigentlichen Integrationsvariablen, die hier als Parameter
+     * nicht übergeben wird. f ist schwach normiert bedeutet dabei, dass F die
+     * Form g + c<sub>1</sub>*ln(v<sub>1</sub>) + ... +
+     * c<sub>n</sub>*ln(v<sub>n</sub>), c<sub>i</sub> nicht ganzzahlig und
+     * positiv, g rational in t und v<sub>i</sub> polynomial in t, besitzt. Der
+     * Rückgabewert ist ein Expression-Array aus drei Elementen der Form {}
      */
-    private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression integralOfF, Expression g, String transcendentalVar) {
+    private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression integralOfF, Expression g, String var, String transcendentalVar) {
 
         ExpressionCollection summandsLeftOfIntegralOfF = SimplifyUtilities.getSummandsLeftInExpression(integralOfF);
         ExpressionCollection summandsRightOfIntegralOfF = SimplifyUtilities.getSummandsRightInExpression(integralOfF);
 
-        return new Expression[0];
+        Expression p = ONE;
+        for (Expression summand : summandsLeftOfIntegralOfF) {
+            if (summand.isFunction(TypeFunction.ln) && SimplifyPolynomialMethods.isPolynomial(((Function) summand).getLeft(), transcendentalVar)) {
+                p = p.mult(((Function) summand).getLeft());
+            } else if (summand.isProduct() && ((BinaryOperation) summand).getLeft().isPositiveIntegerConstant()
+                    && ((BinaryOperation) summand).getRight().isFunction(TypeFunction.ln)
+                    && SimplifyPolynomialMethods.isPolynomial(((Function) ((BinaryOperation) summand).getRight()).getLeft(), transcendentalVar)) {
+                p = p.mult(((Function) ((BinaryOperation) summand).getRight()).getLeft().pow(((BinaryOperation) summand).getLeft()));
+            }
+        }
+        for (Expression summand : summandsRightOfIntegralOfF) {
+            if (summand.isProduct() && ((BinaryOperation) summand).getLeft().isNegativeIntegerConstant()
+                    && ((BinaryOperation) summand).getRight().isFunction(TypeFunction.ln)
+                    && SimplifyPolynomialMethods.isPolynomial(((Function) ((BinaryOperation) summand).getRight()).getLeft(), transcendentalVar)) {
+                p = p.mult(((Function) ((BinaryOperation) summand).getRight()).getLeft().pow(((BinaryOperation) summand).getLeft().negate()));
+            }
+        }
+
+        try {
+            p = p.simplify(simplifyTypesRischAlgorithm);
+            Expression newF = f.sub(p.diff(var).div(p)).simplify(simplifyTypesRischAlgorithm);
+            Expression newG = p.mult(g).simplify(simplifyTypesRischAlgorithm);
+            return new Expression[]{p, newF, newG};
+        } catch (EvaluationException e) {
+            return new Expression[0];
+        }
 
     }
 
