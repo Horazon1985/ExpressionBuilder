@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 
 public class PolynomialTests {
 
-    Expression f, g, expectedFactorizationOfF, ggT;
+    Expression f, g, h, expectedFactorizationOfF, ggT;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -222,7 +222,7 @@ public class PolynomialTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void getGGTOfPolynomialsIsTrivialTest() {
         // ggT von f = x^3+5*x^2-7*x-4 und g = 2*x^2+4*x-18 ist = 1.
@@ -265,6 +265,25 @@ public class PolynomialTests {
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8))));
             Assert.assertTrue(expectedResult[1].equivalent(SimplifyPolynomialMethods.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getEuclideanRepresentationOfPolynomialsTest3() {
+        /* 
+        ggT von f = x^2+x+2 und g = x^2+1 ist = 1 
+        und die optimale Eukliddarstellung von h = x^2 ist (x^2/2+x/2)*f + (-x^2/2-x)*g.
+         */
+        try {
+            f = Expression.build("x^2+x+2", null);
+            g = Expression.build("x^2+1", null);
+            h = Expression.build("x^2", null);
+            Expression[] expectedResult = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(f, g, h, "x");
+            Assert.assertTrue(expectedResult.length == 2);
+            Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(1/2)*x^2+(1/2)*x", null)));
+            Assert.assertTrue(expectedResult[1].equivalent(Expression.build("((-1)/2)*x^2+(-1)*x", null)));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -496,7 +515,6 @@ public class PolynomialTests {
 //            fail(e.getMessage());
 //        }
 //    }
-
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest1() {
         /* 

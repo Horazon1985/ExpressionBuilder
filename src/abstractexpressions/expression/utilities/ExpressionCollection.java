@@ -77,6 +77,13 @@ public class ExpressionCollection implements Iterable<Expression> {
         return this.terms.get(i);
     }
 
+    public Expression getLast() {
+        if (isEmpty()){
+            return null;
+        }
+        return get(getBound() - 1);
+    }
+
     public void put(int i, Expression expr) {
         if (i < 0) {
             return;

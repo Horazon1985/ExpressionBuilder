@@ -1087,6 +1087,7 @@ public abstract class SimplifyPolynomialMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection addPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+
         ExpressionCollection coefficientsOfSum = new ExpressionCollection();
         for (int i = 0; i < Math.max(coefficientsLeft.getBound(), coefficientsRight.getBound()); i++) {
             if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) == null) {
@@ -1099,7 +1100,20 @@ public abstract class SimplifyPolynomialMethods {
                 coefficientsOfSum.put(i, coefficientsLeft.get(i).add(coefficientsRight.get(i)));
             }
         }
+
+        // Führende Nullen beseitigen.
+        while (!coefficientsOfSum.isEmpty() && coefficientsOfSum.get(coefficientsOfSum.getBound() - 1).equals(ZERO)) {
+            coefficientsOfSum.remove(coefficientsOfSum.getBound() - 1);
+        }
+        // Fehlende Koeffizienten durch Nullen ergänzen.
+        for (int i = 0; i < coefficientsOfSum.getBound(); i++) {
+            if (coefficientsOfSum.get(i) == null) {
+                coefficientsOfSum.put(i, ZERO);
+            }
+        }
+
         return coefficientsOfSum.simplify();
+
     }
 
     /**
@@ -1108,6 +1122,7 @@ public abstract class SimplifyPolynomialMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection subtractPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+
         ExpressionCollection coefficientsOfDifference = new ExpressionCollection();
         for (int i = 0; i < Math.max(coefficientsLeft.getBound(), coefficientsRight.getBound()); i++) {
             if (coefficientsLeft.get(i) == null && coefficientsRight.get(i) == null) {
@@ -1120,7 +1135,21 @@ public abstract class SimplifyPolynomialMethods {
                 coefficientsOfDifference.put(i, coefficientsLeft.get(i).sub(coefficientsRight.get(i)));
             }
         }
+        coefficientsOfDifference = coefficientsOfDifference.simplify();
+
+        // Führende Nullen beseitigen.
+        while (!coefficientsOfDifference.isEmpty() && coefficientsOfDifference.get(coefficientsOfDifference.getBound() - 1).equals(ZERO)) {
+            coefficientsOfDifference.remove(coefficientsOfDifference.getBound() - 1);
+        }
+        // Fehlende Koeffizienten durch Nullen ergänzen.
+        for (int i = 0; i < coefficientsOfDifference.getBound(); i++) {
+            if (coefficientsOfDifference.get(i) == null) {
+                coefficientsOfDifference.put(i, ZERO);
+            }
+        }
+
         return coefficientsOfDifference.simplify();
+
     }
 
     /**
@@ -1129,9 +1158,16 @@ public abstract class SimplifyPolynomialMethods {
      * @throws EvaluationException
      */
     public static ExpressionCollection multiplyPolynomials(ExpressionCollection coefficientsLeft, ExpressionCollection coefficientsRight) throws EvaluationException {
+
         ExpressionCollection coefficientsOfProduct = new ExpressionCollection();
         for (int i = 0; i < coefficientsLeft.getBound(); i++) {
+            if (coefficientsLeft.get(i) == null) {
+                continue;
+            }
             for (int j = 0; j < coefficientsRight.getBound(); j++) {
+                if (coefficientsRight.get(j) == null) {
+                    continue;
+                }
                 if (coefficientsOfProduct.get(i + j) == null) {
                     coefficientsOfProduct.put(i + j, coefficientsLeft.get(i).mult(coefficientsRight.get(j)));
                 } else {
@@ -1139,7 +1175,15 @@ public abstract class SimplifyPolynomialMethods {
                 }
             }
         }
+
+        // Fehlende Koeffizienten durch Nullen ergänzen.
+        for (int i = 0; i < coefficientsOfProduct.getBound(); i++) {
+            if (coefficientsOfProduct.get(i) == null) {
+                coefficientsOfProduct.put(i, ZERO);
+            }
+        }
         return coefficientsOfProduct.simplify();
+
     }
 
     /**
@@ -1373,10 +1417,10 @@ public abstract class SimplifyPolynomialMethods {
     /**
      * Gibt die Eukliddarstellung dreier Polynome f, g und h zurück: es wird ein
      * Expression-Array {a, b} zurückgegeben, so dass a*f + b*g = h gilt mit
-     * deg(a), deg(b) &#8804; max(deg(f), deg(g)). Ist dies nicht möglich, so wird
-     * ein leeres Expression-Arrayegeben.
+     * deg(a), deg(b) &#8804; max(deg(f), deg(g)). Ist dies nicht möglich, so
+     * wird ein leeres Expression-Arrayegeben.
      */
-    public static Expression[] getEuclideanRepresentation(Expression f, Expression g, Expression h, String var) {
+    public static Expression[] getOptimalEuclideanRepresentation(Expression f, Expression g, Expression h, String var) {
 
         try {
 
@@ -1395,32 +1439,63 @@ public abstract class SimplifyPolynomialMethods {
 
             ExpressionCollection gcdOfFAndG = getGGTOfPolynomials(coefficientsF, coefficientsG);
             ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsH, gcdOfFAndG);
-            if (!quotient[1].isEmpty()){
+            if (!quotient[1].isEmpty()) {
                 return new Expression[0];
             }
-            
-            ExpressionCollection[] coefficientsOfEuclideanRepresentation = getEuclideanRepresentationOfGCDOfTwoPolynomials(coefficientsF, coefficientsG);
-            
-            if (coefficientsOfEuclideanRepresentation.length == 2) {
-                // Gradkorrektur.
-                ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
-                ExpressionCollection b = coefficientsOfEuclideanRepresentation[0];
-                int n = Math.max(coefficientsF.getBound(), coefficientsG.getBound());
 
-                ExpressionCollection intermediatePolynomialCoefficients;
+            // Für a = coFactorF und b = coFactorG gilt a*f + b*g = 0.
+            ExpressionCollection coFactorF = SimplifyPolynomialMethods.polynomialDivision(coefficientsG, gcdOfFAndG)[0];
+            ExpressionCollection coFactorG = SimplifyPolynomialMethods.polynomialDivision(coefficientsF, gcdOfFAndG)[0];
+            coFactorG.multiplyWithExpression(MINUS_ONE);
+            coFactorG = coFactorG.simplify();
+
+            ExpressionCollection[] coefficientsOfEuclideanRepresentation = getEuclideanRepresentationOfGCDOfTwoPolynomials(coefficientsF, coefficientsG);
+
+            // Berechnung einer Euklid-Darstellung von h. Diese ist noch nicht optimal.
+            coefficientsOfEuclideanRepresentation[0] = multiplyPolynomials(coefficientsOfEuclideanRepresentation[0], quotient[0]);
+            coefficientsOfEuclideanRepresentation[1] = multiplyPolynomials(coefficientsOfEuclideanRepresentation[1], quotient[0]);
+
+            if (coefficientsOfEuclideanRepresentation.length == 2) {
                 
-                while(a.getBound() > n || b.getBound() > n){
-                    if (a.getBound() > n){
-//                        a = multiplyPolynomials(coefficientsF, coefficientsH);
-                    
+                // Gradkorrektur / Optimierung der Euklid-Darstellung.
+                ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
+                ExpressionCollection b = coefficientsOfEuclideanRepresentation[1];
+                int degCoFactorF = coFactorF.getBound() - 1;
+                int degCoFactorG = coFactorG.getBound() - 1;
+                int degLeftSide = Math.max(a.getBound() + coefficientsF.getBound() - 2, b.getBound() + coefficientsG.getBound() - 2);
+
+                ExpressionCollection multipleOfCoFactorF, multipleOfCoFactorG;
+                ExpressionCollection factor = new ExpressionCollection();
+
+                /* 
+                Da der Grad auf der linken Seite bei jedem Schritt um mindestens 1 fällt,
+                ist die maximale Anzahl an Reduktionen gleich degLeftSide - (degF + degCoFactorF) 
+                = degLeftSide - (degG + degCcoFactorG).
+                */
+                for (int i = 0; i < degLeftSide - (degF.intValue() + degCoFactorF); i++){
+                    if (a.getBound() > coFactorF.getBound()) {
+                        factor.clear();
+                        factor.put(a.getBound() - coFactorF.getBound(), a.getLast().div(coFactorF.getLast()).simplify());
+                        multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);
+                        a = subtractPolynomials(a, multipleOfCoFactorF);
+                        multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
+                        b = subtractPolynomials(b, multipleOfCoFactorG);
+                    } else if (b.getBound() > coFactorG.getBound()) {
+                        factor.clear();
+                        factor.put(b.getBound() - coFactorG.getBound(), b.getLast().div(coFactorG.getLast()).simplify());
+                        multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
+                        b = subtractPolynomials(b, multipleOfCoFactorG);
+                        multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);
+                        a = subtractPolynomials(a, multipleOfCoFactorG);
                     } else {
-                    
-                    
+                        break;
                     }
                 }
+
+                return new Expression[]{getPolynomialFromCoefficients(a, var), getPolynomialFromCoefficients(b, var)};
                 
-                return new Expression[]{getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[0], var), getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[1], var)};
             }
+            
             return new Expression[0];
 
         } catch (EvaluationException e) {
