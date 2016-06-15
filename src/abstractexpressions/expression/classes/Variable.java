@@ -442,7 +442,12 @@ public class Variable extends Expression {
     }
 
     @Override
-    public int length() {
+    public int getLength() {
+        return 1;
+    }
+
+    @Override
+    public int getMaximalNumberOfSummandsInExpansion(){
         return 1;
     }
 

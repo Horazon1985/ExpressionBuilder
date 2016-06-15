@@ -1371,6 +1371,65 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
+     * Gibt die Eukliddarstellung dreier Polynome f, g und h zurück: es wird ein
+     * Expression-Array {a, b} zurückgegeben, so dass a*f + b*g = h gilt mit
+     * deg(a), deg(b) &#8804; max(deg(f), deg(g)). Ist dies nicht möglich, so wird
+     * ein leeres Expression-Arrayegeben.
+     */
+    public static Expression[] getEuclideanRepresentation(Expression f, Expression g, Expression h, String var) {
+
+        try {
+
+            BigInteger degF = getDegreeOfPolynomial(f, var);
+            BigInteger degG = getDegreeOfPolynomial(g, var);
+
+            if (degF.compareTo(BigInteger.ZERO) < 0 || degG.compareTo(BigInteger.ZERO) < 0
+                    || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0
+                    || degG.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
+                return new Expression[0];
+            }
+
+            ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+            ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
+            ExpressionCollection coefficientsH = SimplifyPolynomialMethods.getPolynomialCoefficients(h, var);
+
+            ExpressionCollection gcdOfFAndG = getGGTOfPolynomials(coefficientsF, coefficientsG);
+            ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsH, gcdOfFAndG);
+            if (!quotient[1].isEmpty()){
+                return new Expression[0];
+            }
+            
+            ExpressionCollection[] coefficientsOfEuclideanRepresentation = getEuclideanRepresentationOfGCDOfTwoPolynomials(coefficientsF, coefficientsG);
+            
+            if (coefficientsOfEuclideanRepresentation.length == 2) {
+                // Gradkorrektur.
+                ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
+                ExpressionCollection b = coefficientsOfEuclideanRepresentation[0];
+                int n = Math.max(coefficientsF.getBound(), coefficientsG.getBound());
+
+                ExpressionCollection intermediatePolynomialCoefficients;
+                
+                while(a.getBound() > n || b.getBound() > n){
+                    if (a.getBound() > n){
+//                        a = multiplyPolynomials(coefficientsF, coefficientsH);
+                    
+                    } else {
+                    
+                    
+                    }
+                }
+                
+                return new Expression[]{getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[0], var), getPolynomialFromCoefficients(coefficientsOfEuclideanRepresentation[1], var)};
+            }
+            return new Expression[0];
+
+        } catch (EvaluationException e) {
+            return new Expression[0];
+        }
+
+    }
+
+    /**
      * Liefert die kleinste Periode, unter welcher die Koeffizienten
      * coefficients periodisch sind.<br>
      * BEISPIEL: Sind [1,3,-17,2,3,9,1,3,-17,2,3,9] die Koeffizienten von einem

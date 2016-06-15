@@ -859,13 +859,13 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public int length() {
+    public int getLength() {
         if (this.isProduct()) {
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             int length = 0;
             for (int i = 0; i < factors.getBound(); i++) {
                 if (!(factors.get(i) instanceof Constant)) {
-                    length += factors.get(i).length();
+                    length += factors.get(i).getLength();
                 }
             }
             /* 
@@ -876,17 +876,72 @@ public class BinaryOperation extends Expression {
         }
         if (this.isPower()) {
             if (this.left instanceof Constant) {
-                return ((BinaryOperation) this).getRight().length();
+                return ((BinaryOperation) this).getRight().getLength();
             }
             if (this.right instanceof Constant && !(this.right instanceof BinaryOperation)) {
-                return ((BinaryOperation) this).getLeft().length();
+                return ((BinaryOperation) this).getLeft().getLength();
             }
         }
         if (this.isQuotient()) {
             // Hier wird eher die Länge des Bruches gewertet, nicht die des ausgeschriebenen Strings.
-            return Math.max(this.left.length(), this.right.length());
+            return Math.max(this.left.getLength(), this.right.getLength());
         }
-        return this.left.length() + this.right.length();
+        return this.left.getLength() + this.right.getLength();
+    }
+
+    @Override
+    public int getMaximalNumberOfSummandsInExpansion() {
+
+        int numberOfSummands = 0;
+
+        if (this.isSum() || this.isDifference()) {
+
+            ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
+            ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
+
+            for (Expression summand : summandsLeft) {
+                numberOfSummands = numberOfSummands + summand.getMaximalNumberOfSummandsInExpansion();
+            }
+            for (Expression summand : summandsRight) {
+                numberOfSummands = numberOfSummands + summand.getMaximalNumberOfSummandsInExpansion();
+            }
+
+            return numberOfSummands;
+
+        }
+        if (this.isProduct()) {
+
+            ExpressionCollection factors = SimplifyUtilities.getFactors(this);
+
+            for (Expression factor : factors) {
+                numberOfSummands = numberOfSummands * factor.getMaximalNumberOfSummandsInExpansion();
+            }
+
+            return numberOfSummands;
+
+        }
+        if (this.isQuotient()) {
+
+            return this.left.getMaximalNumberOfSummandsInExpansion();
+
+        }
+
+        // Ab hier ist this eine Potenz;
+        if (this.right.isPositiveIntegerConstant()
+                && ((Constant) this.right).getBigIntValue().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL)) <= 0) {
+            int exponent = ((Constant) this.right).getBigIntValue().intValue();
+            int numberOfSummandsInBase = this.left.getMaximalNumberOfSummandsInExpansion();
+            BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
+            
+            if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0){
+                return Integer.MAX_VALUE;
+            }
+            return numberOfSummandsInResult.intValue();
+        }
+
+        // In diesem Fall findet kein Ausmultiplizieren statt. Die Anzahl der Summanden ist also 1.
+        return 1;
+
     }
 
     @Override
@@ -1425,10 +1480,10 @@ public class BinaryOperation extends Expression {
              (ab^3+a^2)/(b^3+a) zu a gekürzt.
              */
             SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
-            
+
             /*
             Kürzen von Fakultäten mit ganzzahligen Differenzen (z.B. (x+3)!/x! = (x+1)*(x+2)*(x+3))
-            */
+             */
             SimplifyBinaryOperationMethods.reduceFactorialsInQuotients(termsLeft, termsRight);
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
@@ -2108,13 +2163,13 @@ public class BinaryOperation extends Expression {
                 Expression summandSimplified;
                 for (int i = 0; i < summandsLeft.getBound(); i++) {
                     summandSimplified = summandsLeft.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (summandSimplified.length() < summandsLeft.get(i).length()) {
+                    if (summandSimplified.getLength() < summandsLeft.get(i).getLength()) {
                         summandsLeft.put(i, summandSimplified);
                     }
                 }
                 for (int i = 0; i < summandsRight.getBound(); i++) {
                     summandSimplified = summandsRight.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (summandSimplified.length() < summandsRight.get(i).length()) {
+                    if (summandSimplified.getLength() < summandsRight.get(i).getLength()) {
                         summandsRight.put(i, summandSimplified);
                     }
                 }
@@ -2127,7 +2182,7 @@ public class BinaryOperation extends Expression {
                 Expression factorSimplified;
                 for (int i = 0; i < factors.getBound(); i++) {
                     factorSimplified = factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                    if (factorSimplified.length() < factors.get(i).length()) {
+                    if (factorSimplified.getLength() < factors.get(i).getLength()) {
                         factors.put(i, factorSimplified);
                     }
                 }
@@ -2147,7 +2202,7 @@ public class BinaryOperation extends Expression {
                 exprSimplified = expr.simplifyExpand(TypeExpansion.SHORT);
                 exprSimplified = exprSimplified.simplify(simplifyTypesExpandAndCollectIfShorter);
             }
-            if (exprSimplified.length() < expr.length()) {
+            if (exprSimplified.getLength() < expr.getLength()) {
                 return exprSimplified;
             }
         } catch (EvaluationException e) {
@@ -2171,13 +2226,13 @@ public class BinaryOperation extends Expression {
             Expression summandSimplified;
             for (int i = 0; i < summandsLeft.getBound(); i++) {
                 summandSimplified = summandsLeft.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                if (summandSimplified.length() < summandsLeft.get(i).length()) {
+                if (summandSimplified.getLength() < summandsLeft.get(i).getLength()) {
                     summandsLeft.put(i, summandSimplified);
                 }
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
                 summandSimplified = summandsRight.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                if (summandSimplified.length() < summandsRight.get(i).length()) {
+                if (summandSimplified.getLength() < summandsRight.get(i).getLength()) {
                     summandsRight.put(i, summandSimplified);
                 }
             }
@@ -2190,7 +2245,7 @@ public class BinaryOperation extends Expression {
             Expression factorSimplified;
             for (int i = 0; i < factors.getBound(); i++) {
                 factorSimplified = factors.get(i).simplifyExpandAndCollectEquivalentsIfShorter();
-                if (factorSimplified.length() < factors.get(i).length()) {
+                if (factorSimplified.getLength() < factors.get(i).getLength()) {
                     factors.put(i, factorSimplified);
                 }
             }
@@ -2211,7 +2266,7 @@ public class BinaryOperation extends Expression {
             exprOptimized = expr.simplifyExpand(TypeExpansion.SHORT);
             exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
         }
-        if (exprOptimized.length() >= expr.length()) {
+        if (exprOptimized.getLength() >= expr.getLength()) {
             // Dann die letzte Vereinfachung rückgängig machen.
             exprOptimized = expr;
         } else {
@@ -2229,7 +2284,7 @@ public class BinaryOperation extends Expression {
             exprOptimized = ((BinaryOperation) exprOptimized).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
                     ((BinaryOperation) exprOptimized).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
         }
-        if (exprOptimized.length() < expr.length()) {
+        if (exprOptimized.getLength() < expr.getLength()) {
             // Dann die letzte Vereinfachung rückgängig machen.
             return exprOptimized;
         }

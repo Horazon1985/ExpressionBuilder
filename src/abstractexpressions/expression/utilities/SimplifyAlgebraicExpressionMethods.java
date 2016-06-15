@@ -571,11 +571,11 @@ public abstract class SimplifyAlgebraicExpressionMethods {
             return expr;
         }
 
-        /**
-         * Anwendung der binomischen Formel wird nur dann für sinnvoll erachtet,
-         * wenn leftExponentDenominator == rightExponentDenominator und
-         * leftExponentDenominator == rightExponentDenominator <= max(5, n) und
-         * n <= 100 ist.
+        /*
+         Anwendung der binomischen Formel wird nur dann für sinnvoll erachtet,
+         wenn leftExponentDenominator == rightExponentDenominator und
+         leftExponentDenominator == rightExponentDenominator <= max(5, n) und
+         n <= 100 ist.
          */
         if (leftExponentDenominator.compareTo(BigInteger.ZERO) > 0 && rightExponentDenominator.compareTo(BigInteger.ZERO) > 0
                 && leftExponentDenominator.compareTo(rightExponentDenominator) != 0 || leftExponentDenominator.compareTo(n) > 0

@@ -411,13 +411,18 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public int length() {
+    public int getLength() {
         Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
         int length = 0;
         for (Expression argument : arguments) {
-            length += argument.length();
+            length += argument.getLength();
         }
         return length;
+    }
+
+    @Override
+    public int getMaximalNumberOfSummandsInExpansion(){
+        return 1;
     }
 
     @Override

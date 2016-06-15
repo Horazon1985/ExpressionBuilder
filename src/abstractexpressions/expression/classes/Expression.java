@@ -914,7 +914,15 @@ public abstract class Expression implements AbstractExpression {
     /**
      * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
      */
-    public abstract int length();
+    public abstract int getLength();
+
+    /**
+     * Ermittelt die maximale Anzahl von Summanden, die im Ausdruck vorkommen,
+     * wenn man simplifyExpand() anwendet und BEVOR man wieder zusammenfasst.
+     * Wenn die geschätzte Anzahl der Summanden größer ist als Integer.MAX_VALUE,
+     * wird Integer.MAX_VALUE zurückgegeben.
+     */
+    public abstract int getMaximalNumberOfSummandsInExpansion();
 
     /**
      * Addiert zwei Ausdrücke.

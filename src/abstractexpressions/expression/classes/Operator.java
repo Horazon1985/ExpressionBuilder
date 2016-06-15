@@ -987,17 +987,22 @@ public class Operator extends Expression {
     }
 
     @Override
-    public int length() {
+    public int getLength() {
         Object[] arguments = ((Operator) this).getParams();
         int length = 0;
         for (Object argument : arguments) {
             if (argument instanceof Expression) {
-                length += ((Expression) argument).length();
+                length += ((Expression) argument).getLength();
             } else {
                 length++;
             }
         }
         return length;
+    }
+
+    @Override
+    public int getMaximalNumberOfSummandsInExpansion(){
+        return 1;
     }
 
     @Override

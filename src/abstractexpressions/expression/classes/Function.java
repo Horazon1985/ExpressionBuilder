@@ -672,11 +672,16 @@ public class Function extends Expression {
     }
 
     @Override
-    public int length() {
-        if (((Function) this).getLeft().length() == 1) {
+    public int getLength() {
+        if (((Function) this).getLeft().getLength() == 1) {
             return 1;
         }
-        return ((Function) this).getLeft().length() + 1;
+        return ((Function) this).getLeft().getLength() + 1;
+    }
+
+    @Override
+    public int getMaximalNumberOfSummandsInExpansion(){
+        return 1;
     }
 
     @Override
