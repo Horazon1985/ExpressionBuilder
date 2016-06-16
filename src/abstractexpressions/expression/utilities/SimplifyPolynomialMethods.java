@@ -30,7 +30,8 @@ import notations.NotationLoader;
 public abstract class SimplifyPolynomialMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
-    private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
+    private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getSimplifyTypesExpandPolynomial();
+    private static final HashSet<TypeSimplify> simplifyTypesPolynomialDivisionEuklidRepresentation = getSimplifyTypesPolynomialDivisionEuklidRepresentation();
 
     private static HashSet<TypeSimplify> getSimplifyTypesDecomposePolynomial() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
@@ -47,7 +48,7 @@ public abstract class SimplifyPolynomialMethods {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getsimplifyTypesExpandPolynomial() {
+    private static HashSet<TypeSimplify> getSimplifyTypesExpandPolynomial() {
         HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
@@ -61,6 +62,26 @@ public abstract class SimplifyPolynomialMethods {
         simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        return simplifyTypes;
+    }
+
+    private static HashSet<TypeSimplify> getSimplifyTypesPolynomialDivisionEuklidRepresentation() {
+        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
         return simplifyTypes;
     }
 
@@ -1112,7 +1133,7 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
 
-        return coefficientsOfSum.simplify();
+        return coefficientsOfSum.simplify(simplifyTypesPolynomialDivisionEuklidRepresentation);
 
     }
 
@@ -1148,7 +1169,7 @@ public abstract class SimplifyPolynomialMethods {
             }
         }
 
-        return coefficientsOfDifference.simplify();
+        return coefficientsOfDifference.simplify(simplifyTypesPolynomialDivisionEuklidRepresentation);
 
     }
 
@@ -1182,7 +1203,7 @@ public abstract class SimplifyPolynomialMethods {
                 coefficientsOfProduct.put(i, ZERO);
             }
         }
-        return coefficientsOfProduct.simplify();
+        return coefficientsOfProduct.simplify(simplifyTypesPolynomialDivisionEuklidRepresentation);
 
     }
 
@@ -1220,12 +1241,12 @@ public abstract class SimplifyPolynomialMethods {
         ExpressionCollection multipleOfDenominator = new ExpressionCollection();
         ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsNumerator);
         for (int i = coeffcicientsEnumeratorCopy.getBound() - 1; i >= degreeDenominator; i--) {
-            quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify());
+            quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
             for (int j = degreeDenominator; j >= 0; j--) {
-                multipleOfDenominator.put(j, (coefficientsDenominator.get(j).mult(coeffcicientsEnumeratorCopy.get(i))).div(coefficientsDenominator.get(degreeDenominator)).simplify());
+                multipleOfDenominator.put(j, (coefficientsDenominator.get(j).mult(coeffcicientsEnumeratorCopy.get(i))).div(coefficientsDenominator.get(degreeDenominator)).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
             }
             for (int j = degreeDenominator; j >= 0; j--) {
-                coeffcicientsEnumeratorCopy.put(i + j - degreeDenominator, coeffcicientsEnumeratorCopy.get(i + j - degreeDenominator).sub(multipleOfDenominator.get(j)).simplify());
+                coeffcicientsEnumeratorCopy.put(i + j - degreeDenominator, coeffcicientsEnumeratorCopy.get(i + j - degreeDenominator).sub(multipleOfDenominator.get(j)).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
             }
         }
         int indexOfLeadingCoefficientInRest = degreeDenominator - 1;
@@ -1447,7 +1468,7 @@ public abstract class SimplifyPolynomialMethods {
             ExpressionCollection coFactorF = SimplifyPolynomialMethods.polynomialDivision(coefficientsG, gcdOfFAndG)[0];
             ExpressionCollection coFactorG = SimplifyPolynomialMethods.polynomialDivision(coefficientsF, gcdOfFAndG)[0];
             coFactorG.multiplyWithExpression(MINUS_ONE);
-            coFactorG = coFactorG.simplify();
+            coFactorG = coFactorG.simplify(simplifyTypesPolynomialDivisionEuklidRepresentation);
 
             ExpressionCollection[] coefficientsOfEuclideanRepresentation = getEuclideanRepresentationOfGCDOfTwoPolynomials(coefficientsF, coefficientsG);
 
@@ -1485,7 +1506,7 @@ public abstract class SimplifyPolynomialMethods {
                         multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
                         b = subtractPolynomials(b, multipleOfCoFactorG);
                         multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);
-                        a = subtractPolynomials(a, multipleOfCoFactorG);
+                        a = subtractPolynomials(a, multipleOfCoFactorF);
                     } else {
                         break;
                     }

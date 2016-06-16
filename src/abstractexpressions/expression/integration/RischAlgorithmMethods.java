@@ -1026,7 +1026,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                         Expression gcd = SimplifyPolynomialMethods.getGGTOfPolynomials(u.mult(derivativeOfV), v, transcendentalVar);
                         if (!gcd.equals(ONE)) {
-                            // Sollte eigentlich laut Theorem nie passieren!
+                            // Der ggT ist nur zur Kontrolle gedacht. Sollte eigentlich laut Theorem nie passieren!
                             throw new NotAlgebraicallyIntegrableException();
                         }
 
@@ -1034,6 +1034,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                         Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
                         Expression b = euclideanCoefficients[0].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
                         Expression c = euclideanCoefficients[1].mult(a.div(ONE.sub(m))).simplify(simplifyTypesRischAlgorithm);
+//                        Expression a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar);
+//                        Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(u.mult(derivativeOfV), v, a.div(ONE.sub(m)).simplify(simplifyTypesRischAlgorithm), transcendentalVar);
+//                        Expression b = euclideanCoefficients[0].simplify(simplifyTypesRischAlgorithm);
+//                        Expression c = euclideanCoefficients[1].simplify(simplifyTypesRischAlgorithm);
 
                         System.out.println("B = " + b);
                         System.out.println("C = " + c);
