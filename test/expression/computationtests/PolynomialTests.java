@@ -214,10 +214,25 @@ public class PolynomialTests {
             ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "z");
             ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, "z");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsF, coefficientsG);
-            ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsF, coefficientsG);
-            System.out.println("Quotient: " + quotient[0] + "Rest: " + quotient[1]);
             Expression expectedResult = SimplifyPolynomialMethods.getPolynomialFromCoefficients(expectedResultCoefficients, "z");
-//            Assert.assertTrue(expectedResult.equivalent(ggT));
+            Assert.assertTrue(expectedResult.equivalent(ggT));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getGGTOfPolynomialsTest4() {
+        // ggT von f = x^2+(a+b)*x+a*b und g = x^2+(a+c)*x+a*c bezüglich der Veränderlichen x ist x+a.
+        try {
+            f = Expression.build("x^2+(a+b)*x+a*b", null);
+            g = Expression.build("x^2+(a+c)*x+a*c", null);
+            ggT = Expression.build("x+a", null);
+            ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, "x");
+            ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, "x");
+            ExpressionCollection expectedResultCoefficients = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsF, coefficientsG);
+            Expression expectedResult = SimplifyPolynomialMethods.getPolynomialFromCoefficients(expectedResultCoefficients, "x");
+            Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -225,7 +240,7 @@ public class PolynomialTests {
 
     @Test
     public void getGGTOfPolynomialsIsTrivialTest() {
-        // ggT von f = x^3+5*x^2-7*x-4 und g = 2*x^2+4*x-18 ist = 1.
+        // ggT von f = x^3+5*x^2-7*x-4 und g = 2*x^2+4*x-18 ist 1.
         try {
             f = Expression.build("x^3+5*x^2-7*x-4", null);
             g = Expression.build("2*x^2+4*x-18", null);
@@ -284,6 +299,42 @@ public class PolynomialTests {
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(1/2)*x^2+(1/2)*x", null)));
             Assert.assertTrue(expectedResult[1].equivalent(Expression.build("((-1)/2)*x^2+(-1)*x", null)));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getEuclideanRepresentationOfPolynomialsTest4() {
+        /* 
+        ggT von f = x^2+3*x+2 und g = x^2+4*x+3 ist = x+1 
+        und die optimale Eukliddarstellung von h = x^3+x^2 ist 3*x*f + (-2*x)*g.
+         */
+        try {
+            f = Expression.build("x^2+3*x+2", null);
+            g = Expression.build("x^2+4*x+3", null);
+            h = Expression.build("x^3+x^2", null);
+            Expression[] expectedResult = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(f, g, h, "x");
+            Assert.assertTrue(expectedResult.length == 2);
+            Assert.assertTrue(expectedResult[0].equivalent(Expression.build("3*x", null)));
+            Assert.assertTrue(expectedResult[1].equivalent(Expression.build("(-2)*x", null)));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void noEuclideanRepresentationOfPolynomialsTest() {
+        /* 
+        ggT von f = x^2+3*x+2 und g = x^2+4*x+3 ist = x+1 
+        und eine Eukliddarstellung von h = x^4 existiert nicht.
+         */
+        try {
+            f = Expression.build("x^2+3*x+2", null);
+            g = Expression.build("x^2+4*x+3", null);
+            h = Expression.build("x^4", null);
+            Expression[] expectedResult = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(f, g, h, "x");
+            Assert.assertTrue(expectedResult.length == 0);
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }

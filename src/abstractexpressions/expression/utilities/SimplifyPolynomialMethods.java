@@ -1461,7 +1461,6 @@ public abstract class SimplifyPolynomialMethods {
                 ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
                 ExpressionCollection b = coefficientsOfEuclideanRepresentation[1];
                 int degCoFactorF = coFactorF.getBound() - 1;
-                int degCoFactorG = coFactorG.getBound() - 1;
                 int degLeftSide = Math.max(a.getBound() + coefficientsF.getBound() - 2, b.getBound() + coefficientsG.getBound() - 2);
 
                 ExpressionCollection multipleOfCoFactorF, multipleOfCoFactorG;
