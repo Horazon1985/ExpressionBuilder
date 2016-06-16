@@ -393,8 +393,50 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Zerlegt ein Polynom in Linearteile, soweit es geht.<br>
-     * BEISPIEL wird 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) zu (x-1)^2*(x-2)*(x^2+1)
-     * faktorisiert.
+     * BEISPIEL: Das Polynom 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) wird zu
+     * (x-1)^2*(x-2)*(x^2+1) faktorisiert.
+     *
+     * @throws EvaluationException
+     */
+    public static Expression decomposeRationalPolynomialInIrreducibleFactors(Expression f, String var) throws EvaluationException {
+
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var)) {
+            return f;
+        }
+        if (f.isProduct()) {
+            ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, decomposeRationalPolynomialInIrreducibleFactors(factors.get(i), var));
+            }
+            return SimplifyUtilities.produceProduct(factors).simplify(simplifyTypesDecomposePolynomial);
+        }
+        if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
+            Expression baseDecomposed = decomposeRationalPolynomialInIrreducibleFactors(((BinaryOperation) f).getLeft(), var);
+            ExpressionCollection factors = SimplifyUtilities.getFactors(baseDecomposed);
+            for (int i = 0; i < factors.getBound(); i++) {
+                factors.put(i, factors.get(i).pow(((BinaryOperation) f).getRight()));
+            }
+            return SimplifyUtilities.produceProduct(factors);
+        }
+
+        // Leitkoeffizienten faktorisieren, damit das Restpolynom normiert ist.
+        ExpressionCollection a = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
+        Expression leadCoefficient = a.get(a.getBound() - 1);
+        a.divideByExpression(leadCoefficient);
+        a = a.simplify();
+
+        try {
+            return leadCoefficient.mult(decomposeRationalPolynomial(a, var));
+        } catch (PolynomialNotDecomposableException e) {
+            return f;
+        }
+
+    }
+
+    /**
+     * Zerlegt ein Polynom in Linearteile, soweit es geht.<br>
+     * BEISPIEL: Das Polynom 5*x+6*x^3+x^5-(2+6*x^2+4*x^4) wird zu
+     * (x-1)^2*(x-2)*(x^2+1) faktorisiert.
      *
      * @throws EvaluationException
      */
@@ -1477,7 +1519,7 @@ public abstract class SimplifyPolynomialMethods {
             coefficientsOfEuclideanRepresentation[1] = multiplyPolynomials(coefficientsOfEuclideanRepresentation[1], quotient[0]);
 
             if (coefficientsOfEuclideanRepresentation.length == 2) {
-                
+
                 // Gradkorrektur / Optimierung der Euklid-Darstellung.
                 ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
                 ExpressionCollection b = coefficientsOfEuclideanRepresentation[1];
@@ -1491,8 +1533,8 @@ public abstract class SimplifyPolynomialMethods {
                 Da der Grad auf der linken Seite bei jedem Schritt um mindestens 1 fällt,
                 ist die maximale Anzahl an Reduktionen gleich degLeftSide - (degF + degCoFactorF) 
                 = degLeftSide - (degG + degCcoFactorG).
-                */
-                for (int i = 0; i < degLeftSide - (degF.intValue() + degCoFactorF); i++){
+                 */
+                for (int i = 0; i < degLeftSide - (degF.intValue() + degCoFactorF); i++) {
                     if (a.getBound() > coFactorF.getBound()) {
                         factor.clear();
                         factor.put(a.getBound() - coFactorF.getBound(), a.getLast().div(coFactorF.getLast()).simplify());
@@ -1513,9 +1555,9 @@ public abstract class SimplifyPolynomialMethods {
                 }
 
                 return new Expression[]{getPolynomialFromCoefficients(a, var), getPolynomialFromCoefficients(b, var)};
-                
+
             }
-            
+
             return new Expression[0];
 
         } catch (EvaluationException e) {

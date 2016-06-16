@@ -2061,6 +2061,36 @@ public abstract class SimplifyBinaryOperationMethods {
         Expression baseOfFactorInCommonDenominators, baseOfFactorInCurrentDenominators;
         BigInteger exponentOfFactorInCommonDenominators, exponentOfFactorInCurrentDenominators;
 
+        /* 
+        Etwas Vorarbeit: Falls im Nenner rationale Polynome in genau einer Veränderlichen auftauchen, 
+        so sollen diese faktorisiert werden, wenn möglich.
+         */
+        Expression denominator;
+        ExpressionCollection factorsDenominator;
+        
+        // Im Minuenden Nenner faktorisieren.
+//        for (int i = 1; i < summandsLeft.getBound(); i++) {
+//            if (summandsLeft.get(i).isQuotient()){
+//                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
+//                for (int j = 0; j < factorsDenominator.getBound(); j++){
+//                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
+//                }
+//                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
+//                summandsLeft.put(i, ((BinaryOperation) summandsLeft.get(i)).div(denominator));
+//            }
+//        }
+        // Im Subtrahenden Nenner faktorisieren.
+//        for (int i = 1; i < summandsRight.getBound(); i++) {
+//            if (summandsRight.get(i).isQuotient()){
+//                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i));
+//                for (int j = 0; j < factorsDenominator.getBound(); j++){
+//                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
+//                }
+//                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
+//                summandsRight.put(i, ((BinaryOperation) summandsRight.get(i)).div(denominator));
+//            }
+//        }
+        
         // Hauptnenner bilden.
         boolean factorOccursInCommonDenominators;
         commonDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(0)));
@@ -2306,6 +2336,34 @@ public abstract class SimplifyBinaryOperationMethods {
         }
 
         return SimplifyUtilities.produceDifference(summandsLeft, summandsRight).div(SimplifyUtilities.produceProduct(commonDenominators));
+
+    }
+
+    /**
+     * Hilfsmethode. Es wird, wenn möglich, der faktorisierte Ausdruck
+     * zurückgegeben, wenn der Ausdruck ein Polynom in genau einer
+     * Veränderlichen ist.
+     */
+    private static Expression decomposeIfIsRationalPolynomialInOneVariable(Expression expr) {
+
+        HashSet<String> vars = expr.getContainedIndeterminates();
+        if (vars.size() != 1) {
+            return expr;
+        }
+
+        String var = null;
+        for (String v : vars) {
+            var = v;
+        }
+
+        if (SimplifyPolynomialMethods.isPolynomial(expr, var)) {
+            try {
+                return SimplifyPolynomialMethods.decomposeRationalPolynomialInIrreducibleFactors(expr, var);
+            } catch (EvaluationException e) {
+            }
+        }
+
+        return expr;
 
     }
 
