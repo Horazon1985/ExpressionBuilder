@@ -282,7 +282,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
     /**
      * Hilfsmethode: "Counter" für Exponententupel für (a_1 + ... + a_n)^k
      */
-    public static int[] counterBinomialExponents(int[] counter, int k) {
+    private static int[] counterBinomialExponents(int[] counter, int k) {
 
         // Sicherheitsabfrage (sollte nicht eintreten, denn sonst hätte man nur einen Summanden).
         if (counter.length == 1) {
@@ -615,7 +615,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * sein, und in mindestens einer der beiden Summanden muss ein
      * Quadratwurzelfaktor enthalten sein.
      */
-    public static boolean isSuitableCandidateForThirdBinomial(BinaryOperation expr) {
+    private static boolean isSuitableCandidateForThirdBinomial(BinaryOperation expr) {
         return (expr.isSum() || expr.isDifference())
                 && (containsSqrtFactor(expr.getLeft()) || containsSqrtFactor(expr.getRight()));
     }
@@ -628,6 +628,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      */
     public static boolean isProductOfIntegerAndSqrtOfExpression(Expression expr) {
         if (expr.isPower()
+                && ((BinaryOperation) expr).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) expr).getRight().isRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isIntegerConstant()
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight().equals(Expression.TWO)) {
@@ -636,6 +637,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         return expr.isProduct()
                 && ((BinaryOperation) expr).getLeft().isIntegerConstant()
                 && ((BinaryOperation) expr).getRight().isPower()
+                && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isIntegerConstantOrRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight().isRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getLeft().isIntegerConstant()
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight()).getRight().equals(Expression.TWO);
@@ -645,9 +647,10 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      * Hilfsfunktion: Liefert, ob expr ein passender Kandidat für die
      * Rationalisierung des Nenners ist.
      */
-    public static boolean isSuitableCandidateForMakingDenominatorRational(BinaryOperation expr) {
+    private static boolean isSuitableCandidateForMakingDenominatorRational(BinaryOperation expr) {
         return (expr.isSum() || expr.isDifference())
-                && (isProductOfIntegerAndSqrtOfExpression(expr.getLeft()) || isProductOfIntegerAndSqrtOfExpression(expr.getRight()));
+                && (isProductOfIntegerAndSqrtOfExpression(expr.getLeft()) && expr.getRight().isIntegerConstantOrRationalConstant() 
+                || expr.getLeft().isIntegerConstantOrRationalConstant() && isProductOfIntegerAndSqrtOfExpression(expr.getRight()));
     }
 
     /**
