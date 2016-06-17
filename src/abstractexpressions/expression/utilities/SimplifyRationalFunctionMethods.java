@@ -96,7 +96,7 @@ public abstract class SimplifyRationalFunctionMethods {
                         return f;
                     }
                     n = ((Constant) ((BinaryOperation) argument).getLeft()).getBigIntValue().intValue();
-                    if (Math.abs(n) > ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
+                    if (Math.abs(n) > ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL) {
                         return f;
                     }
                 }

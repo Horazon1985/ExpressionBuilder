@@ -3185,8 +3185,8 @@ public abstract class SimplifyBinaryOperationMethods {
                 degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(numeratorSubstituted, substVar);
                 degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominatorSubstituted, substVar);
 
-                if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
-                        && degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
+                if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
+                        && degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
                         && degNumerator.compareTo(BigInteger.ZERO) > 0 && degNumerator.compareTo(BigInteger.ZERO) > 0) {
 
                     // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.

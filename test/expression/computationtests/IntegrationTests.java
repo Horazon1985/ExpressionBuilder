@@ -20,10 +20,24 @@ import utilities.TestUtilities;
 
 public class IntegrationTests {
 
-    Expression f;
+    private static HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private Expression f;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        simplifyTypes.add(TypeSimplify.order_difference_and_division);
+        simplifyTypes.add(TypeSimplify.order_sums_and_products);
+        simplifyTypes.add(TypeSimplify.simplify_basic);
+        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypes.add(TypeSimplify.simplify_collect_products);
+        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypes.add(TypeSimplify.simplify_factorize);
+        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
     }
 
     @AfterClass
@@ -402,21 +416,6 @@ public class IntegrationTests {
          */
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_basic);
-            simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-            simplifyTypes.add(TypeSimplify.simplify_factorize);
-            simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-
             f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
@@ -427,30 +426,16 @@ public class IntegrationTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void integrateByRischAlgorithmTest6() {
         /* 
         int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(2+(3-2*x)*exp(x))+2*(1+exp(x))^2*x)/(2*(1+exp(x))^2) gemäß dem Risch-Algorithmus.
-        Ideales (vereinfachtes Ergebnis) wäre: x/(1+exp(x))^2 + 3/2; eine "bessere" Stammfunktion ist damit x/(1+exp(x))^2.
+        Ideales (vereinfachtes Ergebnis) wäre: x/(1+exp(x))^2 + 3/2 bzw. (3+6*exp(x)+3*exp(2*x)+2*x)/(2*(1+exp(x))^2),
+        wenn man es auf einen Nenner bringt; eine "bessere" Stammfunktion ist damit x/(1+exp(x))^2.
          */
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-            simplifyTypes.add(TypeSimplify.order_difference_and_division);
-            simplifyTypes.add(TypeSimplify.order_sums_and_products);
-            simplifyTypes.add(TypeSimplify.simplify_basic);
-            simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-            simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-            simplifyTypes.add(TypeSimplify.simplify_collect_products);
-            simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-            simplifyTypes.add(TypeSimplify.simplify_factorize);
-            simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-            simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-            simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-            simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-
             f = Expression.build("int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);

@@ -172,7 +172,7 @@ public abstract class PolynomialAlgebraMethods {
          = y und dann zuerst nach y auflösen und dann nach x.
          */
         int m = SimplifyPolynomialMethods.getGGTOfAllExponents(coefficients);
-        if (m > 1 && degree / m <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
+        if (m > 1 && degree / m <= ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL) {
             ExpressionCollection coefficientsOfSubstitutedPolynomial = substituteMonomialInPolynomial(coefficients, m, var);
             ExpressionCollection zerosOfSubstitutedPolynomial = solvePolynomialEquation(coefficientsOfSubstitutedPolynomial, var);
             if (m % 2 == 0) {
@@ -200,7 +200,7 @@ public abstract class PolynomialAlgebraMethods {
         }
 
         // (Nichttriviale) Polynome sollen nur dann exakt gelöst werden, wenn deg - ord <= gewisse Schranke ist.
-        if (degree <= ComputationBounds.BOUND_COMMAND_MAX_DEGREE_OF_POLYNOMIAL) {
+        if (degree <= ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL) {
 
             if (degree == 0) {
                 return zeros;
