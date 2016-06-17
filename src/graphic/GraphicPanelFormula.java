@@ -2881,26 +2881,29 @@ public class GraphicPanelFormula extends JPanel {
         int heightLowerLimit = getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterLowerLimit = getHeightOfCenterOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
-        setFont(g, getSizeForSup(fontSize));
-        int lengthVarEquals = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+        int lengthVar = getLengthOfVariable(g, Variable.create((String) params[1]), getSizeForSub(fontSize));
+        setFont(g, getSizeForSub(fontSize));
+        int lengthEquals = g.getFontMetrics().stringWidth(" = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthPiSign = getWidthOfSignPi(g, fontSize, heightFactor);
-        int lengthOfPiSignWithLimits = Math.max(Math.max(lengthUpperLimit, lengthVarEquals + lengthLowerLimit), lengthPiSign);
+        int lengthOfPiSignWithLimits = Math.max(Math.max(lengthUpperLimit, lengthVar + lengthEquals + lengthLowerLimit), lengthPiSign);
 
         //Untere Grenze mitsamt dem String "var="
-        //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
-        setFont(g, getSizeForSup(fontSize));
-        g.drawString((String) params[1] + " = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
-        drawExpression(g, (Expression) params[2], x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2 + lengthVarEquals, y_0, getSizeForSup(fontSize));
+        //Zunächst Schriftgröße verkleinern, da Indizes kleinere Schriftgröße besitzen.
+        drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
+        setFont(g, getSizeForSub(fontSize));
+        g.drawString(" = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar, 
+                y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
+        drawExpression(g, (Expression) params[2], x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
+        setFont(g, fontSize);
         drawSignPi(g, x_0 + (lengthOfPiSignWithLimits - lengthPiSign) / 2, y_0 - heightLowerLimit, heightFactor);
         //Obere Grenze
+        setFont(g, getSizeForSub(fontSize));
         drawExpression(g, (Expression) params[3], x_0 + (lengthOfPiSignWithLimits - lengthUpperLimit) / 2, y_0 - heightLowerLimit - heightFactor, getSizeForSup(fontSize));
         //Produktfunktion
-        if (((Expression) params[0]) instanceof BinaryOperation
-                && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
-                || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
+        if (((Expression) params[0]).isSum() || ((Expression) params[0]).isDifference()) {
             drawOpeningBracket(g, x_0 + lengthOfPiSignWithLimits, y_0 - heightLowerLimit, fontSize, heightFactor);
             drawExpression(g, (Expression) params[0], x_0 + lengthOfPiSignWithLimits + getWidthOfBracket(fontSize), y_0 - heightLowerLimit, fontSize);
             drawClosingBracket(g, x_0 + lengthOfPiSignWithLimits + getWidthOfBracket(fontSize) + lengthFactor,
@@ -2921,26 +2924,28 @@ public class GraphicPanelFormula extends JPanel {
         int heightLowerLimit = getHeightOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterLowerLimit = getHeightOfCenterOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
-        setFont(g, getSizeForSup(fontSize));
-        int lengthVarEquals = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+        int lengthVar = getLengthOfVariable(g, Variable.create((String) params[1]), getSizeForSub(fontSize));
+        setFont(g, getSizeForSub(fontSize));
+        int lengthEquals = g.getFontMetrics().stringWidth(" = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthSigmaSign = getWidthOfSignSigma(g, fontSize, heightSummand);
-        int lengthOfSigmaSignWithLimits = Math.max(Math.max(lengthUpperLimit, lengthVarEquals + lengthLowerLimit), lengthSigmaSign);
+        int lengthOfSigmaSignWithLimits = Math.max(Math.max(lengthUpperLimit, lengthVar + lengthEquals + lengthLowerLimit), lengthSigmaSign);
 
         //Untere Grenze mitsamt dem String "var="
         //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
-        setFont(g, getSizeForSup(fontSize));
-        g.drawString((String) params[1] + " = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
-        drawExpression(g, (Expression) params[2], x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2 + lengthVarEquals, y_0, getSizeForSup(fontSize));
+        drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
+        setFont(g, getSizeForSub(fontSize));
+        g.drawString(" = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar, 
+                y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
+        drawExpression(g, (Expression) params[2], x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
+        setFont(g, fontSize);
         drawSignSigma(g, x_0 + (lengthOfSigmaSignWithLimits - lengthSigmaSign) / 2, y_0 - heightLowerLimit, heightSummand);
         //Obere Grenze
         drawExpression(g, (Expression) params[3], x_0 + (lengthOfSigmaSignWithLimits - lengthUpperLimit) / 2, y_0 - heightLowerLimit - heightSummand, getSizeForSup(fontSize));
         //Produktfunktion
-        if (((Expression) params[0]) instanceof BinaryOperation
-                && ((((BinaryOperation) params[0]).getType()).equals(TypeBinary.PLUS)
-                || (((BinaryOperation) params[0]).getType()).equals(TypeBinary.MINUS))) {
+        if (((Expression) params[0]).isSum() || ((Expression) params[0]).isDifference()) {
             drawOpeningBracket(g, x_0 + lengthOfSigmaSignWithLimits, y_0 - heightLowerLimit, fontSize, heightSummand);
             drawExpression(g, (Expression) params[0], x_0 + lengthOfSigmaSignWithLimits + getWidthOfBracket(fontSize), y_0 - heightLowerLimit, fontSize);
             drawClosingBracket(g, x_0 + lengthOfSigmaSignWithLimits + getWidthOfBracket(fontSize) + lengthSummand,

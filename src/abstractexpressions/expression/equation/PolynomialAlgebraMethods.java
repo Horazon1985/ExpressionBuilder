@@ -754,7 +754,7 @@ public abstract class PolynomialAlgebraMethods {
     public static ExpressionCollection solvePolynomialEquationWithFractionalExponents(Expression f, String var)
             throws EvaluationException, NotAlgebraicallySolvableException {
 
-        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && PolynomialAlgebraMethods.isPolynomialInRationalPowers(f, var)) {
+        if (!SimplifyPolynomialMethods.isPolynomial(f, var) && !PolynomialAlgebraMethods.isPolynomialInRationalPowers(f, var)) {
             throw new NotAlgebraicallySolvableException();
         }
 

@@ -914,7 +914,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
          + (e-d*b/(2*a))*int((a*x^2+b*x+c)^((2*n+1)/2), x)
          */
         Expression firstSummand = d.mult(SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsQuadraticPolynomial, var).pow(2 * n + 3, 2)).div(new Constant(2 * n + 3).mult(a));
-        Expression factor = e.sub(e.mult(b).div(TWO.mult(a)));
+        Expression factor = e.sub(d.mult(b).div(TWO.mult(a)));
         Object[] params = new Object[2];
         params[0] = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsQuadraticPolynomial, var).pow(2 * n + 1, 2);
         params[1] = var;
