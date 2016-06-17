@@ -600,14 +600,14 @@ public class GeneralSimplifyExpressionTests {
 
     @Test
     public void bringFractionToCommonDenominatorTest3() {
-        // 1+1/(1+1/(1+1/x)) = (2+2*x+x)/(1+x+x) in beiden Modi.
+        // 1+1/(1+1/(1+1/x)) = (2*(2+2*x+x))/(2*(1+2*x)) in beiden Modi.
         try {
             Expression f = Expression.build("1+1/(1+1/(1+1/x))", null);
-            Expression g = Expression.build("(2+2*x+x)/(1+x+x)", null);
+            Expression g = Expression.build("(2*(2+2*x+x))/(2*(1+2*x))", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.IF_MULTIPLE_FRACTION_OCCURS);
             Assert.assertTrue(f.equivalent(g));
             f = Expression.build("1+1/(1+1/(1+1/x))", null);
-            g = Expression.build("(2+2*x+x)/(1+x+x)", null);
+            g = Expression.build("(2*(2+2*x+x))/(2*(1+2*x))", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {
@@ -642,6 +642,19 @@ public class GeneralSimplifyExpressionTests {
             Assert.assertTrue(f.equivalent(g));
             f = Expression.build("(a*b^2/9-a^2*b/9)/(a*b/9-a^2/9)", null);
             g = Expression.build("(9*(a*b^2-a^2*b))/(9*(a*b-a^2))", null);
+            f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
+            Assert.assertTrue(f.equivalent(g));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void bringFractionToCommonDenominatorTest6() {
+        // 1/(3+7*x+5*x^2+x^3)-1/(9+15*x+7*x^2+x^3) = 
+        try {
+            Expression f = Expression.build("1/(3+7*x+5*x^2+x^3)-1/(9+15*x+7*x^2+x^3)", null);
+            Expression g = Expression.build("((x+3)-(x+1))/((x+1)^2*(x+3)^2)", null);
             f = f.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             Assert.assertTrue(f.equivalent(g));
         } catch (ExpressionException | EvaluationException e) {

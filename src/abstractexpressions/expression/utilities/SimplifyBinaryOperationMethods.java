@@ -2067,30 +2067,30 @@ public abstract class SimplifyBinaryOperationMethods {
          */
         Expression denominator;
         ExpressionCollection factorsDenominator;
-        
+
         // Im Minuenden Nenner faktorisieren.
-//        for (int i = 1; i < summandsLeft.getBound(); i++) {
-//            if (summandsLeft.get(i).isQuotient()){
-//                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
-//                for (int j = 0; j < factorsDenominator.getBound(); j++){
-//                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
-//                }
-//                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
-//                summandsLeft.put(i, ((BinaryOperation) summandsLeft.get(i)).div(denominator));
-//            }
-//        }
+        for (int i = 0; i < summandsLeft.getBound(); i++) {
+            if (summandsLeft.get(i).isQuotient()) {
+                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i));
+                for (int j = 0; j < factorsDenominator.getBound(); j++) {
+                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
+                }
+                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
+                summandsLeft.put(i, ((BinaryOperation) summandsLeft.get(i)).getLeft().div(denominator));
+            }
+        }
         // Im Subtrahenden Nenner faktorisieren.
-//        for (int i = 1; i < summandsRight.getBound(); i++) {
-//            if (summandsRight.get(i).isQuotient()){
-//                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i));
-//                for (int j = 0; j < factorsDenominator.getBound(); j++){
-//                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
-//                }
-//                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
-//                summandsRight.put(i, ((BinaryOperation) summandsRight.get(i)).div(denominator));
-//            }
-//        }
-        
+        for (int i = 0; i < summandsRight.getBound(); i++) {
+            if (summandsRight.get(i).isQuotient()) {
+                factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i));
+                for (int j = 0; j < factorsDenominator.getBound(); j++) {
+                    factorsDenominator.put(j, decomposeIfIsRationalPolynomialInOneVariable(factorsDenominator.get(j)));
+                }
+                denominator = SimplifyUtilities.produceProduct(factorsDenominator);
+                summandsRight.put(i, ((BinaryOperation) summandsRight.get(i)).getLeft().div(denominator));
+            }
+        }
+
         // Hauptnenner bilden.
         boolean factorOccursInCommonDenominators;
         commonDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(0)));
@@ -2212,16 +2212,16 @@ public abstract class SimplifyBinaryOperationMethods {
          summandsLeft bzw. summandsRight abspeichern.
          */
         boolean factorOccursInCurrentDenominators;
-        int l_commonDenominators = commonDenominators.getBound();
-        int l_currentDenominators;
+        int numberOfFactorsInCommonDenominator = commonDenominators.getBound();
+        int numberOfFactorsInCurrentDenominator;
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
 
             commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
             complementFactorsForEachSummand.clear();
             additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i)));
-            l_currentDenominators = additionalDenominators.getBound();
-            for (int j = 0; j < l_commonDenominators; j++) {
+            numberOfFactorsInCurrentDenominator = additionalDenominators.getBound();
+            for (int j = 0; j < numberOfFactorsInCommonDenominator; j++) {
 
                 if (commonDenominatorsCopy.get(j) == null) {
                     continue;
@@ -2238,7 +2238,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                 factorOccursInCurrentDenominators = false;
 
-                for (int k = 0; k < l_currentDenominators; k++) {
+                for (int k = 0; k < numberOfFactorsInCurrentDenominator; k++) {
                     if (additionalDenominators.get(k) == null) {
                         continue;
                     }
@@ -2280,8 +2280,8 @@ public abstract class SimplifyBinaryOperationMethods {
             commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
             complementFactorsForEachSummand.clear();
             additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i)));
-            l_currentDenominators = additionalDenominators.getBound();
-            for (int j = 0; j < l_commonDenominators; j++) {
+            numberOfFactorsInCurrentDenominator = additionalDenominators.getBound();
+            for (int j = 0; j < numberOfFactorsInCommonDenominator; j++) {
 
                 if (commonDenominatorsCopy.get(j) == null) {
                     continue;
@@ -2298,7 +2298,7 @@ public abstract class SimplifyBinaryOperationMethods {
 
                 factorOccursInCurrentDenominators = false;
 
-                for (int k = 0; k < l_currentDenominators; k++) {
+                for (int k = 0; k < numberOfFactorsInCurrentDenominator; k++) {
                     if (additionalDenominators.get(k) == null) {
                         continue;
                     }
