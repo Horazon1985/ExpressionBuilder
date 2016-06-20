@@ -395,12 +395,12 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest4() {
-        // int(ln(1+x^2)/x^2,x) = (-ln(1+x^2))/x+2*arctan(x) gemäß dem Risch-Algorithmus.
+        // int(ln(1+x^2)/x^2,x) = 2*arctan(x)-ln(1+x^2)/x gemäß dem Risch-Algorithmus.
         try {
             f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
-            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify();
-            Expression expectedResult = Expression.build("2*arctan(x)-ln((1+x^2)^(1/x))", null);
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("2*arctan(x)-ln(1+x^2)/x", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -430,9 +430,10 @@ public class IntegrationTests {
     @Test
     public void integrateByRischAlgorithmTest6() {
         /* 
-        int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(2+(3-2*x)*exp(x))+2*(1+exp(x))^2*x)/(2*(1+exp(x))^2) gemäß dem Risch-Algorithmus.
-        Ideales (vereinfachtes Ergebnis) wäre: x/(1+exp(x))^2 + 3/2 bzw. (3+6*exp(x)+3*exp(2*x)+2*x)/(2*(1+exp(x))^2),
-        wenn man es auf einen Nenner bringt; eine "bessere" Stammfunktion ist damit x/(1+exp(x))^2.
+        int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(2+(3-2*x)*exp(x))+2*(1+exp(x))^2*x)/(2*(1+exp(x))^2) 
+        gemäß dem Risch-Algorithmus. Wendet man darauf noch das Standard-simplify() an, 
+        so erhält man das Ergebnis (3+6*exp(x)+3*exp(2*x)+2*x)/(2*(1+exp(x))^2) 
+        (= x/(1+exp(x))^2 + 3/2); eine "bessere" Stammfunktion ist damit x/(1+exp(x))^2.
          */
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.

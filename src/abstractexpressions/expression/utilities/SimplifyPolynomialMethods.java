@@ -1487,12 +1487,7 @@ public abstract class SimplifyPolynomialMethods {
 
         try {
 
-            BigInteger degF = getDegreeOfPolynomial(f, var);
-            BigInteger degG = getDegreeOfPolynomial(g, var);
-
-            if (degF.compareTo(BigInteger.ZERO) < 0 || degG.compareTo(BigInteger.ZERO) < 0
-                    || degF.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) > 0
-                    || degG.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
+            if (!isPolynomialAdmissibleForComputation(f, var) || !isPolynomialAdmissibleForComputation(g, var) || !isPolynomialAdmissibleForComputation(h, var)) {
                 return new Expression[0];
             }
 
@@ -1523,8 +1518,8 @@ public abstract class SimplifyPolynomialMethods {
                 // Gradkorrektur / Optimierung der Euklid-Darstellung.
                 ExpressionCollection a = coefficientsOfEuclideanRepresentation[0];
                 ExpressionCollection b = coefficientsOfEuclideanRepresentation[1];
-                int degCoFactorF = coFactorF.getBound() - 1;
                 int degLeftSide = Math.max(a.getBound() + coefficientsF.getBound() - 2, b.getBound() + coefficientsG.getBound() - 2);
+                int degRightSide = coefficientsH.getBound() - 1;
 
                 ExpressionCollection multipleOfCoFactorF, multipleOfCoFactorG;
                 ExpressionCollection factor = new ExpressionCollection();
@@ -1534,15 +1529,15 @@ public abstract class SimplifyPolynomialMethods {
                 ist die maximale Anzahl an Reduktionen gleich degLeftSide - (degF + degCoFactorF) 
                 = degLeftSide - (degG + degCcoFactorG).
                  */
-                for (int i = 0; i < degLeftSide - (degF.intValue() + degCoFactorF); i++) {
-                    if (a.getBound() > coFactorF.getBound()) {
+                for (int i = 0; i < degLeftSide - degRightSide; i++) {
+                    if (a.getBound() >= coFactorF.getBound()) {
                         factor.clear();
                         factor.put(a.getBound() - coFactorF.getBound(), a.getLast().div(coFactorF.getLast()).simplify());
                         multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);
                         a = subtractPolynomials(a, multipleOfCoFactorF);
                         multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
                         b = subtractPolynomials(b, multipleOfCoFactorG);
-                    } else if (b.getBound() > coFactorG.getBound()) {
+                    } else if (b.getBound() >= coFactorG.getBound()) {
                         factor.clear();
                         factor.put(b.getBound() - coFactorG.getBound(), b.getLast().div(coFactorG.getLast()).simplify());
                         multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);

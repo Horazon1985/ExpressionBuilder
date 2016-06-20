@@ -289,7 +289,7 @@ public class PolynomialTests {
     public void getEuclideanRepresentationOfPolynomialsTest3() {
         /* 
         ggT von f = x^2+x+2 und g = x^2+1 ist = 1 
-        und die optimale Eukliddarstellung von h = x^2 ist (x^2/2+x/2)*f + (-x^2/2-x)*g.
+        und die optimale Eukliddarstellung von h = x^2 ist ((-1)/2+(1/2)*x)*f + (1+((-1)/2)*x)*g.
          */
         try {
             f = Expression.build("x^2+x+2", null);
@@ -297,8 +297,8 @@ public class PolynomialTests {
             h = Expression.build("x^2", null);
             Expression[] expectedResult = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(f, g, h, "x");
             Assert.assertTrue(expectedResult.length == 2);
-            Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(1/2)*x^2+(1/2)*x", null)));
-            Assert.assertTrue(expectedResult[1].equivalent(Expression.build("((-1)/2)*x^2+(-1)*x", null)));
+            Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(-1)/2+(1/2)*x", null)));
+            Assert.assertTrue(expectedResult[1].equivalent(Expression.build("1+((-1)/2)*x", null)));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
