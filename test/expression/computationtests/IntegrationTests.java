@@ -20,7 +20,7 @@ import utilities.TestUtilities;
 
 public class IntegrationTests {
 
-    private static HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
     private Expression f;
 
     @BeforeClass
@@ -410,16 +410,13 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest5() {
-        /* 
-        int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-x*(ln(x)-1)-(x*ln(x)-1)*exp(x))/((x-x^2)*(x+exp(x)))+(1-ln(x))/(x-1)-1/x gemäß dem Risch-Algorithmus.
-        Ideales (vereinfachtes Ergebnis) wäre: (-ln(x))/(x+exp(x)).
-         */
+        // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
             f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("((-x*(ln(x)-1)-(x*ln(x)-1)*exp(x))/((x-x^2)*(x+exp(x)))+(1-ln(x))/(x-1))-1/x", null);
+            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -429,18 +426,13 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest6() {
-        /* 
-        int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(2+(3-2*x)*exp(x))+2*(1+exp(x))^2*x)/(2*(1+exp(x))^2) 
-        gemäß dem Risch-Algorithmus. Wendet man darauf noch das Standard-simplify() an, 
-        so erhält man das Ergebnis (3+6*exp(x)+3*exp(2*x)+2*x)/(2*(1+exp(x))^2) 
-        (= x/(1+exp(x))^2 + 3/2); eine "bessere" Stammfunktion ist damit x/(1+exp(x))^2.
-         */
+        // int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = x/(1+exp(x))^2 gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
             f = Expression.build("int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(1+(1-2*x)*exp(x)+(1+exp(x))*(2+(3-2*x)*exp(x))+2*(1+exp(x))^2*x)/(2*(1+exp(x))^2)", null);
+            Expression expectedResult = Expression.build("x/(1+exp(x))^2", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {

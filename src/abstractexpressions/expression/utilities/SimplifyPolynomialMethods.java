@@ -1532,14 +1532,14 @@ public abstract class SimplifyPolynomialMethods {
                 for (int i = 0; i < degLeftSide - degRightSide; i++) {
                     if (a.getBound() >= coFactorF.getBound()) {
                         factor.clear();
-                        factor.put(a.getBound() - coFactorF.getBound(), a.getLast().div(coFactorF.getLast()).simplify());
+                        factor.put(a.getBound() - coFactorF.getBound(), a.getLast().div(coFactorF.getLast()).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
                         multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);
                         a = subtractPolynomials(a, multipleOfCoFactorF);
                         multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
                         b = subtractPolynomials(b, multipleOfCoFactorG);
                     } else if (b.getBound() >= coFactorG.getBound()) {
                         factor.clear();
-                        factor.put(b.getBound() - coFactorG.getBound(), b.getLast().div(coFactorG.getLast()).simplify());
+                        factor.put(b.getBound() - coFactorG.getBound(), b.getLast().div(coFactorG.getLast()).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
                         multipleOfCoFactorG = multiplyPolynomials(coFactorG, factor);
                         b = subtractPolynomials(b, multipleOfCoFactorG);
                         multipleOfCoFactorF = multiplyPolynomials(coFactorF, factor);

@@ -83,6 +83,18 @@ public class TestRunner {
                     }
                 }
             }
+            
+            // Zuerst muss die mit @BeforeClass annotierte Methode aufgerufen werden.
+            for (Method method : methods) {
+                if (method.getAnnotation(BeforeClass.class) != null) {
+                    try {
+                        method.invoke(obj);
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    }
+                }
+                
+            }
+            
             for (Method test : methods) {
                 if (test.getAnnotation(Test.class) != null) {
                     try {
