@@ -73,17 +73,15 @@ public class TestRunner {
                 continue;
             }
             Method[] methods = cls.getDeclaredMethods();
-            // @Before aufrufen.
-            for (Method test : methods) {
-                if (test.getAnnotation(Before.class) != null) {
-                    try {
-                        test.invoke(obj);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        break;
-                    }
+            Method beforeMethod = null;
+            // @Before-Methode finden.
+            for (Method m : methods) {
+                if (m.getAnnotation(Before.class) != null) {
+                    beforeMethod = m;
+                    break;
                 }
             }
-            
+
             // Zuerst muss die mit @BeforeClass annotierte Methode aufgerufen werden.
             for (Method method : methods) {
                 if (method.getAnnotation(BeforeClass.class) != null) {
@@ -92,13 +90,16 @@ public class TestRunner {
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
                     }
                 }
-                
             }
-            
+
             for (Method test : methods) {
                 if (test.getAnnotation(Test.class) != null) {
                     try {
                         System.out.println("Execution of test " + test.getName() + " begins ...");
+                        if (beforeMethod != null) {
+                            // @Before-Methode aufrufen.
+                            beforeMethod.invoke(obj);
+                        }
                         test.invoke(obj);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");
@@ -108,7 +109,19 @@ public class TestRunner {
                     }
                 }
             }
+
+            // Zum Schluss muss die mit @AfterClass annotierte Methode aufgerufen werden.
+            for (Method method : methods) {
+                if (method.getAnnotation(AfterClass.class) != null) {
+                    try {
+                        method.invoke(obj);
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    }
+                }
+            }
+
         }
+
         System.out.println("Number of successful tests: " + numberOfSuccessfulTests);
         System.err.println("Number of failed tests: " + numberOfFailedTests);
     }
