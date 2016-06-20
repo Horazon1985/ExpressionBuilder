@@ -3180,14 +3180,13 @@ public abstract class SimplifyBinaryOperationMethods {
             numeratorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(numerator, substitution, Variable.create(substVar));
             denominatorSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(denominator, substitution, Variable.create(substVar));
 
-            if (SimplifyPolynomialMethods.isPolynomial(numeratorSubstituted, substVar) && SimplifyPolynomialMethods.isPolynomial(denominatorSubstituted, substVar)) {
+            if (SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(numeratorSubstituted, substVar)
+                    && SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(denominatorSubstituted, substVar)) {
 
                 degNumerator = SimplifyPolynomialMethods.getDegreeOfPolynomial(numeratorSubstituted, substVar);
                 degDenominator = SimplifyPolynomialMethods.getDegreeOfPolynomial(denominatorSubstituted, substVar);
 
-                if (degNumerator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
-                        && degDenominator.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0
-                        && degNumerator.compareTo(BigInteger.ZERO) > 0 && degNumerator.compareTo(BigInteger.ZERO) > 0) {
+                if (degNumerator.compareTo(BigInteger.ZERO) > 0 && degDenominator.compareTo(BigInteger.ZERO) > 0) {
 
                     // Polynomdivision versuchen. Wenn diese keinen Rest hinterlässt -> Rücksubstitution und Ausgabe.
                     ExpressionCollection coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(numeratorSubstituted, substVar);
@@ -3291,6 +3290,33 @@ public abstract class SimplifyBinaryOperationMethods {
                         if (!algebraicallyDependendExpFunctionFound) {
                             setOfSubstitutions.add(factor);
                         }
+
+                    } else if (factor.isPower() && !((BinaryOperation) factor).getRight().isConstant()) {
+
+//                        algebraicallyDependendExpFunctionFound = false;
+//                        // Sonderfall: Der Faktor ist eine Exponentialfunktion.
+//                        for (Expression subst : setOfSubstitutions) {
+//                            if (subst.isFunction(TypeFunction.exp)) {
+//                                try {
+//                                    quotient = (((BinaryOperation) factor).getLeft()).ln().mult(((BinaryOperation) factor).getRight()).div(
+//                                            ((Function) subst).getLeft()).simplify();
+//                                    if (quotient.isIntegerConstantOrRationalConstant()) {
+//                                        algebraicallyDependendExpFunctionFound = true;
+//                                    }
+//                                    if (quotient.isRationalConstant()) {
+//                                        newSubstitution = ((Function) subst).getLeft().div(((BinaryOperation) quotient).getRight()).exp().simplify();
+//                                        setOfSubstitutions.remove(subst);
+//                                        setOfSubstitutions.add(newSubstitution);
+//                                        break;
+//                                    }
+//                                } catch (EvaluationException e) {
+//                                    // Nichts tun, weiter suchen.
+//                                }
+//                            }
+//                        }
+//                        if (!algebraicallyDependendExpFunctionFound) {
+//                            setOfSubstitutions.add(factor);
+//                        }
 
                     } else if (factor.isPositiveIntegerPower() && !factor.containsAlgebraicOperation() && !(((BinaryOperation) factor).getLeft() instanceof BinaryOperation)) {
 
