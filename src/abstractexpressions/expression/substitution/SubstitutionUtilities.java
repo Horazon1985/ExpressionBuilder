@@ -747,6 +747,33 @@ public abstract class SubstitutionUtilities {
         }
         if (f instanceof BinaryOperation) {
 
+            if (f.isPower() && !((BinaryOperation) f).getRight().isConstant()) {
+
+                Expression expArgumentOfF = ((BinaryOperation) f).getRight().mult(((BinaryOperation) f).getLeft().ln());
+                Expression expArgumentOfSubst, quotientOfExpArguments;
+
+                if (exprToSubstitute.isFunction(TypeFunction.exp)) {
+                    expArgumentOfSubst = ((Function) exprToSubstitute).getLeft();
+                    try {
+                        quotientOfExpArguments = expArgumentOfF.div(expArgumentOfSubst).simplify();
+                        if (quotientOfExpArguments.isIntegerConstantOrRationalConstant()) {
+                            return subst.pow(quotientOfExpArguments);
+                        }
+                    } catch (EvaluationException e) {
+                    }
+                } else if (exprToSubstitute.isPower() && !((BinaryOperation) exprToSubstitute).getRight().isConstant()) {
+                    expArgumentOfSubst = ((BinaryOperation) exprToSubstitute).getRight().mult(((BinaryOperation) exprToSubstitute).getLeft().ln());
+                    try {
+                        quotientOfExpArguments = expArgumentOfF.div(expArgumentOfSubst).simplify();
+                        if (quotientOfExpArguments.isIntegerConstantOrRationalConstant()) {
+                            return subst.pow(quotientOfExpArguments);
+                        }
+                    } catch (EvaluationException e) {
+                    }
+                }
+
+            }
+
             if (f.isPower() && exprToSubstitute.isPower() && ((BinaryOperation) f).getLeft().equivalent(((BinaryOperation) exprToSubstitute).getLeft())) {
                 try {
                     Expression exponent = ((BinaryOperation) f).getRight().div(((BinaryOperation) exprToSubstitute).getRight()).simplify();
@@ -766,9 +793,19 @@ public abstract class SubstitutionUtilities {
             // Ausnahme: Exponentialfunktionen.
             if (f.isFunction(TypeFunction.exp) && exprToSubstitute.isFunction(TypeFunction.exp)) {
                 try {
-                    Expression exponent = ((Function) f).getLeft().div(((Function) exprToSubstitute).getLeft()).simplify();
-                    if (exponent.isIntegerConstant()) {
-                        return subst.pow(exponent);
+                    Expression quotientOfExpArguments = ((Function) f).getLeft().div(((Function) exprToSubstitute).getLeft()).simplify();
+                    if (quotientOfExpArguments.isIntegerConstant()) {
+                        return subst.pow(quotientOfExpArguments);
+                    }
+                } catch (EvaluationException e) {
+                }
+            }
+            if (f.isFunction(TypeFunction.exp) && exprToSubstitute.isPower() && !((BinaryOperation) exprToSubstitute).getRight().isConstant()) {
+                try {
+                    Expression quotientOfExpArguments = ((Function) f).getLeft().div(
+                            ((BinaryOperation) exprToSubstitute).getRight().mult(((BinaryOperation) exprToSubstitute).getLeft().ln())).simplify();
+                    if (quotientOfExpArguments.isIntegerConstant()) {
+                        return subst.pow(quotientOfExpArguments);
                     }
                 } catch (EvaluationException e) {
                 }

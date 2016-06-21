@@ -3293,30 +3293,30 @@ public abstract class SimplifyBinaryOperationMethods {
 
                     } else if (factor.isPower() && !((BinaryOperation) factor).getRight().isConstant()) {
 
-//                        algebraicallyDependendExpFunctionFound = false;
-//                        // Sonderfall: Der Faktor ist eine Exponentialfunktion.
-//                        for (Expression subst : setOfSubstitutions) {
-//                            if (subst.isFunction(TypeFunction.exp)) {
-//                                try {
-//                                    quotient = (((BinaryOperation) factor).getLeft()).ln().mult(((BinaryOperation) factor).getRight()).div(
-//                                            ((Function) subst).getLeft()).simplify();
-//                                    if (quotient.isIntegerConstantOrRationalConstant()) {
-//                                        algebraicallyDependendExpFunctionFound = true;
-//                                    }
-//                                    if (quotient.isRationalConstant()) {
-//                                        newSubstitution = ((Function) subst).getLeft().div(((BinaryOperation) quotient).getRight()).exp().simplify();
-//                                        setOfSubstitutions.remove(subst);
-//                                        setOfSubstitutions.add(newSubstitution);
-//                                        break;
-//                                    }
-//                                } catch (EvaluationException e) {
-//                                    // Nichts tun, weiter suchen.
-//                                }
-//                            }
-//                        }
-//                        if (!algebraicallyDependendExpFunctionFound) {
-//                            setOfSubstitutions.add(factor);
-//                        }
+                        algebraicallyDependendExpFunctionFound = false;
+                        // Sonderfall: Der Faktor ist eine Exponentialfunktion.
+                        for (Expression subst : setOfSubstitutions) {
+                            if (subst.isFunction(TypeFunction.exp)) {
+                                try {
+                                    quotient = (((BinaryOperation) factor).getLeft()).ln().mult(((BinaryOperation) factor).getRight()).div(
+                                            ((Function) subst).getLeft()).simplify();
+                                    if (quotient.isIntegerConstantOrRationalConstant()) {
+                                        algebraicallyDependendExpFunctionFound = true;
+                                    }
+                                    if (quotient.isRationalConstant()) {
+                                        newSubstitution = ((Function) subst).getLeft().div(((BinaryOperation) quotient).getRight()).exp().simplify();
+                                        setOfSubstitutions.remove(subst);
+                                        setOfSubstitutions.add(newSubstitution);
+                                        break;
+                                    }
+                                } catch (EvaluationException e) {
+                                    // Nichts tun, weiter suchen.
+                                }
+                            }
+                        }
+                        if (!algebraicallyDependendExpFunctionFound) {
+                            setOfSubstitutions.add((((BinaryOperation) factor).getLeft()).ln().mult(((BinaryOperation) factor).getRight()).exp());
+                        }
 
                     } else if (factor.isPositiveIntegerPower() && !factor.containsAlgebraicOperation() && !(((BinaryOperation) factor).getLeft() instanceof BinaryOperation)) {
 
