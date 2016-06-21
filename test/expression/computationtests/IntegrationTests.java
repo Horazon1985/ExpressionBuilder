@@ -426,13 +426,33 @@ public class IntegrationTests {
 
     @Test
     public void integrateByRischAlgorithmTest6() {
-        // int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x) = x/(1+exp(x))^2 gemäß dem Risch-Algorithmus.
+        // int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x) = x/(1+exp(x))^4 gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            f = Expression.build("int((1+exp(x)-2*x*exp(x))/(1+exp(x))^3,x)", null);
+            f = Expression.build("int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x)", null);
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("x/(1+exp(x))^2", null);
+            Expression expectedResult = Expression.build("x/(1+exp(x))^4", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmTest7() {
+        /* 
+        int((1-2*x*exp(x)-exp(2*x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(1+2*x))/(2*(1+exp(x))^2) 
+        gemäß dem Risch-Algorithmus. "Längenverkürzung" ergibt später die einfachere Stammfunktion
+        (1+x+exp(x))/(1+exp(x))^2.
+         */
+        try {
+            // Für diesen Test müssen Logarithmen auseinandergezogen werden.
+            f = Expression.build("int((1-2*x*exp(x)-exp(2*x))/(1+exp(x))^3,x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("(1+(1-2*x)*exp(x)+(1+exp(x))*(1+2*x))/(2*(1+exp(x))^2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
