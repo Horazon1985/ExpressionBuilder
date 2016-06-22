@@ -1020,7 +1020,7 @@ public abstract class SimplifyPolynomialMethods {
      */
     private static Expression decomposeRationalPolynomialByComputingGGTWithDerivative(ExpressionCollection a, String var) throws EvaluationException {
 
-        ExpressionCollection coefficientsOfDerivative = getCoefficientsOfDerivativeOfPolynomial(a);
+        ExpressionCollection coefficientsOfDerivative = getPolynomialCoefficientsOfDerivative(a);
         ExpressionCollection ggT = getGGTOfPolynomials(a, coefficientsOfDerivative);
 
         if (ggT.getBound() < 2) {
@@ -1035,12 +1035,12 @@ public abstract class SimplifyPolynomialMethods {
     }
 
     /**
-     * Hilfsmethode. Sind a die Koeffizienten eines Polynoms f, so wird eine
+     * Sind a die Koeffizienten eines Polynoms f, so wird eine
      * ExpressionCollection mit Koeffizienten von f' zurückgegeben.
      *
      * @throws EvaluationException
      */
-    private static ExpressionCollection getCoefficientsOfDerivativeOfPolynomial(ExpressionCollection a) throws EvaluationException {
+    public static ExpressionCollection getPolynomialCoefficientsOfDerivative(ExpressionCollection a) throws EvaluationException {
         ExpressionCollection coefficientsOfDerivative = new ExpressionCollection();
         for (int i = 0; i < a.getBound() - 1; i++) {
             coefficientsOfDerivative.put(i, new Constant(i + 1).mult(a.get(i + 1)).simplify());

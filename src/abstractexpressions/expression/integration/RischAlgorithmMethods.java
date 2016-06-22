@@ -34,6 +34,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = new HashSet<>();
     private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithm = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesRischDifferentialEquation = new HashSet<>();
 
     static {
         simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.order_difference_and_division);
@@ -64,6 +65,22 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_logarithms);
+
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_factorize);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
     }
 
     /**
@@ -707,8 +724,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         Expression f, g, integralOfF;
         for (int i = 0; i < polynomialCoefficients.getBound(); i++) {
             try {
-                f = new Constant(i).mult(expArgument.diff(var)).simplify();
-                integralOfF = new Constant(i).mult(expArgument).simplify();
+                f = new Constant(i).mult(expArgument.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+                integralOfF = new Constant(i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
                 g = polynomialCoefficients.get(i);
                 solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
@@ -719,8 +736,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         for (int i = 1; i < laurentCoefficients.getBound(); i++) {
             try {
-                f = new Constant(i).mult(expArgument.diff(var)).simplify();
-                integralOfF = new Constant(i).mult(expArgument).simplify();
+                f = new Constant(i).mult(expArgument.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+                integralOfF = new Constant(i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
                 g = laurentCoefficients.get(i);
                 solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
                 solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
@@ -742,18 +759,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      */
     private static Expression solveRischDifferentialEquation(Expression f, Expression integralOfF, Expression g, String var) throws NotAlgebraicallyIntegrableException {
 
-        ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(f, var);
         String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f, g);
-        Expression transcendentalElement;
-        if (transcendentalExtensions.isEmpty()) {
-            /*
-            Wenn transcendentalExtensions leer ist, dann ist f eine rationale Funktion
-            in x = var. Dann nehme man die Veränderliche x selbst als transzendentes Element.
-             */
-            transcendentalElement = Variable.create(var);
-        } else {
-            transcendentalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
-        }
 
         // Schritt 1: Zur schwachen Normierung übergehen.
         Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, var, transcendentalVar);
@@ -788,7 +794,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression[] getDenominatorDataOfRischDifferentialEquation(Expression f, Expression g, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+    private static Expression[] getDenominatorDataOfRischDifferentialEquation(Expression f, Expression g, String var) throws NotAlgebraicallyIntegrableException {
 
         try {
 
@@ -811,21 +817,60 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 e = ONE;
             }
 
-            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(d, transcendentalVar)) {
+            // Nun muss das transzendente Element bestimmt werden.
+            ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(new Expression[]{f, g}, var);
+            Expression transcendentalElement = transcendentalExtensions.getLast();
+            String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f, g);
+            // In d und e das transzendente Element durch eine formale Variable ersetzen.
+            Expression dSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(d, transcendentalElement, Variable.create(transcendentalVar));
+            Expression eSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(e, transcendentalElement, Variable.create(transcendentalVar));
+
+            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(dSubstituted, transcendentalVar)) {
                 throw new NotAlgebraicallyIntegrableException();
             }
-            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(e, transcendentalVar)) {
+            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(eSubstituted, transcendentalVar)) {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-            Expression numerator, denominator;
-            // TO DO.
+            Expression derivativeOfD = dSubstituted.diff(transcendentalVar).simplify(simplifyTypesRischDifferentialEquation);
+            Expression derivativeOfE = eSubstituted.diff(transcendentalVar).simplify(simplifyTypesRischDifferentialEquation);
+
+            ExpressionCollection coefficientsOfD = SimplifyPolynomialMethods.getPolynomialCoefficients(dSubstituted, transcendentalVar);
+            ExpressionCollection coefficientsOfE = SimplifyPolynomialMethods.getPolynomialCoefficients(eSubstituted, transcendentalVar);
+            ExpressionCollection coefficientsOfG = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsOfD, coefficientsOfE);
+            ExpressionCollection coefficientsOfDerivativeOfE = SimplifyPolynomialMethods.getPolynomialCoefficients(derivativeOfE, transcendentalVar);
+            ExpressionCollection coefficientsOfDerivativeOfG = SimplifyPolynomialMethods.getPolynomialCoefficientsOfDerivative(coefficientsOfG);
+            ExpressionCollection coefficientsOfGcdOfEAndDerivativeOfE = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsOfE, coefficientsOfDerivativeOfE);
+            ExpressionCollection coefficientsOfGcdOfGAndDerivativeOfG = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsOfG, coefficientsOfDerivativeOfG);
+
+            ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsOfGcdOfEAndDerivativeOfE, coefficientsOfGcdOfGAndDerivativeOfG);
+
+            if (!quotient[1].isEmpty()) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            Expression denominator = SimplifyPolynomialMethods.getGGTOfPolynomials(eSubstituted, derivativeOfE, transcendentalVar).div(
+                    SimplifyPolynomialMethods.getGGTOfPolynomials(dSubstituted, derivativeOfD, transcendentalVar));
+            denominator = denominator.replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
+
+            Expression derivativeOfDenominator = denominator.diff(var).simplify(simplifyTypesRischDifferentialEquation);
+            
+            // Prüfung, ob DT^2 von E geteilt wird (als Polynome in t = transcendentalVar).
+            
+            
+            /* 
+             Sei T der Nenner. Dann ist a = DT, b = AT - DT', c = BDT^2/E. 
+             D und E sind dabei die oberen d und e.
+             */
+            Expression a = d.mult(denominator);
+            Expression b = a.mult(denominator).sub(d.mult(derivativeOfDenominator));
+            Expression c = b.mult(d).mult(denominator.pow(2)).div(e).simplify(simplifyTypesRischDifferentialEquation);
+
+            return new Expression[]{denominator, a, b, c};
 
         } catch (EvaluationException e) {
             throw new NotAlgebraicallyIntegrableException();
         }
-
-        throw new NotAlgebraicallyIntegrableException();
 
     }
 
@@ -833,13 +878,13 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      * Gibt für die Differentialgleichung y' + f*y = g ein Polynom p in t =
      * transcendentalVar und Functionen F und G zurück, so dass F schwach
      * normiert ist und für z = p*y die Differentialgleichung z' + F*z = G
-     * erfüllt ist. Der Parameter F := integralOfF ist die Stammfunktion von f
-     * bzgl. der eigentlichen Integrationsvariablen, die hier als Parameter
-     * nicht übergeben wird. f ist schwach normiert bedeutet dabei, dass F die
-     * Form g + c<sub>1</sub>*ln(v<sub>1</sub>) + ... +
+     * erfüllt ist. Der Parameter integralOfF ist die Stammfunktion von f bzgl.
+     * der Integrationsvariablen var. f ist schwach normiert bedeutet dabei,
+     * dass integralOfF die Form g + c<sub>1</sub>*ln(v<sub>1</sub>) + ... +
      * c<sub>n</sub>*ln(v<sub>n</sub>), c<sub>i</sub> nicht ganzzahlig und
      * positiv, g rational in t und v<sub>i</sub> polynomial in t, besitzt. Der
-     * Rückgabewert ist ein Expression-Array aus drei Elementen der Form {}
+     * Rückgabewert ist ein Expression-Array aus drei Elementen der Form {p, F,
+     * G}.
      */
     private static Expression[] getWeaklyNormalizationOfFunction(Expression f, Expression integralOfF, Expression g, String var, String transcendentalVar) {
 
@@ -885,12 +930,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
     private static Expression getNumeratorOfRischDifferentialEquation(Expression a, Expression b, Expression c, String var) throws NotAlgebraicallyIntegrableException {
 
         ExpressionCollection transcendentalElements = getOrderedTranscendentalGeneratorsForDifferentialField(new Expression[]{a, b, c}, var);
-        
-        if (transcendentalElements.isEmpty()){
+
+        if (transcendentalElements.isEmpty()) {
             // Dann sind a, b, c rationale Funktionen in var.
-        
+
         }
-        
+
         throw new NotAlgebraicallyIntegrableException();
 
     }
