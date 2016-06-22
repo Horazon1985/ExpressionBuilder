@@ -460,4 +460,24 @@ public class IntegrationTests {
         }
     }
 
+    @Test
+    public void integrateByRischAlgorithmTest8() {
+        /* 
+        int((2+(2*x-1)*ln(x)-x)/(x^2+x*ln(x)+x^2*ln(x)+x*ln(x)^2),x) = 2*ln(x+ln(x))-3*ln(1+ln(x)) 
+        gemäß dem Risch-Algorithmus. "Längenverkürzung" ergibt später die einfachere Stammfunktion
+        (1+x+exp(x))/(1+exp(x))^2.
+         */
+        try {
+            // Für diesen Test müssen Logarithmen auseinandergezogen werden.
+            f = Expression.build("int((2+(2*x-1)*ln(x)-x)/(x^2+x*ln(x)+x^2*ln(x)+x*ln(x)^2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("2*ln(x+ln(x))-3*ln(1+ln(x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

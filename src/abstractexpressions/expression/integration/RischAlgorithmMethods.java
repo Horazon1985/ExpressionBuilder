@@ -244,6 +244,25 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         return fieldGenerators;
     }
 
+    public static ExpressionCollection getOrderedTranscendentalGeneratorsForDifferentialField(Expression[] functions, String var) {
+        ExpressionCollection fieldGenerators = new ExpressionCollection();
+        try {
+            for (int i = 0; i < functions.length; i++) {
+                functions[i] = functions[i].simplify(simplifyTypesForDifferentialFieldExtension, var);
+            }
+        } catch (EvaluationException e) {
+            return fieldGenerators;
+        }
+        boolean newGeneratorFound;
+        do {
+            newGeneratorFound = false;
+            for (int i = 0; i < functions.length; i++) {
+                newGeneratorFound = newGeneratorFound || addTranscendentalGeneratorForDifferentialField(functions[i], var, fieldGenerators);
+            }
+        } while (newGeneratorFound);
+        return fieldGenerators;
+    }
+
     private static boolean addTranscendentalGeneratorForDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
 
         if (isFunctionRationalOverDifferentialField(f, var, fieldGenerators)) {
@@ -384,7 +403,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         }
 
         // Letztes transzendes Element wählen und damit den Risch-Algorithmus starten.
-        Expression transcententalElement = transcendentalExtensions.get(transcendentalExtensions.getBound() - 1);
+        Expression transcententalElement = transcendentalExtensions.getLast();
         String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f);
         Expression fSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(f, transcententalElement, Variable.create(transcendentalVar)).simplify(simplifyTypesRischAlgorithm);
 
@@ -863,8 +882,15 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
      *
      * @throws NotAlgebraicallyIntegrableException
      */
-    private static Expression getNumeratorOfRischDifferentialEquation(Expression a, Expression b, Expression c, String transcendentalVar) throws NotAlgebraicallyIntegrableException {
+    private static Expression getNumeratorOfRischDifferentialEquation(Expression a, Expression b, Expression c, String var) throws NotAlgebraicallyIntegrableException {
 
+        ExpressionCollection transcendentalElements = getOrderedTranscendentalGeneratorsForDifferentialField(new Expression[]{a, b, c}, var);
+        
+        if (transcendentalElements.isEmpty()){
+            // Dann sind a, b, c rationale Funktionen in var.
+        
+        }
+        
         throw new NotAlgebraicallyIntegrableException();
 
     }
@@ -1126,6 +1152,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         derivativeOfDenominator = derivativeOfDenominator.replaceVariable(transcendentalVar, transcententalElement);
         derivativeOfDenominator = derivativeOfDenominator.diff(var);
         derivativeOfDenominator = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfDenominator, transcententalElement, Variable.create(transcendentalVar));
+        derivativeOfDenominator = derivativeOfDenominator.simplify(simplifyTypesRischAlgorithm);
 
         // Koeffizienten von b'(t) bestimmen.
         ExpressionCollection coefficientsDerivativeOfDenominator = SimplifyPolynomialMethods.getPolynomialCoefficients(derivativeOfDenominator, transcendentalVar);
@@ -1199,7 +1226,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             // Stammfunktion ausgeben.
             Expression integral = ZERO;
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
-                integral = integral.add(thetas.get(i).ln());
+                integral = integral.add(zerosOfResultant.get(i).mult(thetas.get(i).ln()));
             }
 
             System.out.println("Integral: " + integral);
@@ -1218,7 +1245,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
             integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
-                integral = integral.add(thetas.get(i).ln());
+                integral = integral.add(zerosOfResultant.get(i).mult(thetas.get(i).ln()));
             }
             return integral;
         }
