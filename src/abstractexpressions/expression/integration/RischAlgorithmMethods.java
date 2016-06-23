@@ -628,7 +628,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist exponentiell.
         if ((!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) && transcententalElement.isFunction(TypeFunction.exp)) {
-//            throw new NotAlgebraicallyIntegrableException();
             return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
         }
 
@@ -1002,6 +1001,11 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             // Fall: a = 1
             if (a.equals(ONE)) {
 
+                // Ist c = 0, so ist q = 0.
+                if (coefficientsC.isEmpty()){
+                    return ZERO;
+                }
+                
                 // Ist b = 0, so ist q = int(c, x), x = var.
                 if (coefficientsB.isEmpty()) {
                     return GeneralIntegralMethods.indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{c, var}), true).simplify(simplifyTypesRischDifferentialEquation);
@@ -1018,7 +1022,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 cNew = c - (q_n*x^n)' - b*q_n*x^n.
                  */
                 Expression cNew = c.sub(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)).diff(var).add(
-                        b.mult(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)))));
+                        b.mult(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))))).simplify(simplifyTypesRischDifferentialEquation);
 
                 /* 
                 restNumerator = r = q - q_n*x^n erfüllt die folgende Differentialgleichung:
