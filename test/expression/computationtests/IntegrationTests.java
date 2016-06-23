@@ -480,4 +480,21 @@ public class IntegrationTests {
         }
     }
 
+    @Test
+    public void integrateByRischAlgorithmTest9() {
+        /* 
+        int((2*x^2+4*x+1)*exp(x^2),x) = (x+2)*exp(x^2) gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((2*x^2+4*x+1)*exp(x^2),x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("(x+2)*exp(x^2)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
 }

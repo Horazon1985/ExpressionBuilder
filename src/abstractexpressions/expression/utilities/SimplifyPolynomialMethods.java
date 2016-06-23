@@ -339,7 +339,7 @@ public abstract class SimplifyPolynomialMethods {
         coefficients = coefficients.simplify(simplifyTypesExpandPolynomial);
 
         // Führende Koeffizienten, die = 0 sind, entfernen.
-        while (coefficients.getBound() > 0 && coefficients.get(coefficients.getBound() - 1).equals(Expression.ZERO)) {
+        while (coefficients.getBound() > 0 && coefficients.getLast().equals(Expression.ZERO)) {
             coefficients.remove(coefficients.getBound() - 1);
         }
 
@@ -1338,8 +1338,7 @@ public abstract class SimplifyPolynomialMethods {
 
     /**
      * Gibt den ggT zweier Polynome zurück, die durch die Koeffizienten a und b
-     * gegeben sind. Ebenso wird in schwer entscheidbaren Fällen 1
-     * zurückgegeben.
+     * gegeben sind.
      */
     public static ExpressionCollection getGGTOfPolynomials(ExpressionCollection a, ExpressionCollection b) throws EvaluationException {
 
@@ -1356,6 +1355,7 @@ public abstract class SimplifyPolynomialMethods {
             return b;
         }
         // Prüfung für b.
+        allCoefficientsAreZero = true;
         for (Expression coefficient : b) {
             if (!coefficient.equals(ZERO)) {
                 allCoefficientsAreZero = false;

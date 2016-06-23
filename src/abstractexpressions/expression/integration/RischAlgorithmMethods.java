@@ -23,6 +23,7 @@ import abstractexpressions.expression.utilities.SimplifyPolynomialMethods.Polyno
 import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import computationbounds.ComputationBounds;
 import enums.TypeFractionSimplification;
 import exceptions.NotAlgebraicallyIntegrableException;
 import exceptions.NotAlgebraicallySolvableException;
@@ -437,12 +438,16 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         // Zunächst alles auf einen Bruch bringen.
         fSubstituted = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator((BinaryOperation) fSubstituted);
 
-        // Separat behandeln, falls fSubstituted kein Quotient ist.
         if (!fSubstituted.isQuotient()) {
-            // TO DO.
+            // Dann kann es sich nur um ein Polynom in t = transcendentalElement handeln (sogar OHNE Laurentanteile!).
+            if (SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(fSubstituted, transcendentalVar)) {
+                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(fSubstituted, transcendentalVar);
+                return integrateByRischAlgorithmPolynomialPart(coefficients, new ExpressionCollection(), transcententalElement, var, transcendentalVar);
+            }
             throw new NotAlgebraicallyIntegrableException();
         }
 
+        // Ab hier ist der Integrand ein Bruch.
         ExpressionCollection coefficientsNumerator, coefficientsDenominator;
         try {
             coefficientsNumerator = SimplifyPolynomialMethods.getPolynomialCoefficients(((BinaryOperation) fSubstituted).getLeft(), transcendentalVar);
@@ -623,8 +628,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist exponentiell.
         if ((!polynomialCoefficients.isEmpty() || !laurentCoefficients.isEmpty()) && transcententalElement.isFunction(TypeFunction.exp)) {
-            throw new NotAlgebraicallyIntegrableException();
-//            return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
+//            throw new NotAlgebraicallyIntegrableException();
+            return integrateByRischAlgorithmPolynomialPartExponentialExtension(polynomialCoefficients, laurentCoefficients, transcententalElement, var, transcendentalVar);
         }
 
         // Fall: Es gibt einen polynomiellen Anteil, transzendentes Element ist logarithmisch.
@@ -761,6 +766,15 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f, g);
 
+        // Sonderfall: f = 0. Dann ist y = int(g, x), x = var.
+        if (f.equals(ZERO)) {
+            try {
+                return GeneralIntegralMethods.indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{g, var}), true).simplify(simplifyTypesRischDifferentialEquation);
+            } catch (EvaluationException e) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+        }
+
         // Schritt 1: Zur schwachen Normierung übergehen.
         Expression[] weakNormalization = getWeaklyNormalizationOfFunction(f, integralOfF, g, var, transcendentalVar);
         if (weakNormalization.length != 3) {
@@ -805,22 +819,32 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             g = g.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
             g = g.simplify(simplifyTypesRischAlgorithm);
 
-            Expression d, e;
+            Expression d, e, numeratorOfF, numeratorOfG;
             if (f.isQuotient()) {
+                numeratorOfF = ((BinaryOperation) f).getLeft();
                 d = ((BinaryOperation) f).getRight();
             } else {
+                numeratorOfF = f;
                 d = ONE;
             }
             if (g.isQuotient()) {
+                numeratorOfG = ((BinaryOperation) g).getLeft();
                 e = ((BinaryOperation) g).getRight();
             } else {
+                numeratorOfG = g;
                 e = ONE;
             }
 
             // Nun muss das transzendente Element bestimmt werden.
             ExpressionCollection transcendentalExtensions = getOrderedTranscendentalGeneratorsForDifferentialField(new Expression[]{f, g}, var);
-            Expression transcendentalElement = transcendentalExtensions.getLast();
+            Expression transcendentalElement;
+            if (transcendentalExtensions.isEmpty()){
+                transcendentalElement = Variable.create(var);
+            } else {
+                transcendentalElement = transcendentalExtensions.getLast();
+            }
             String transcendentalVar = SubstitutionUtilities.getSubstitutionVariable(f, g);
+            
             // In d und e das transzendente Element durch eine formale Variable ersetzen.
             Expression dSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(d, transcendentalElement, Variable.create(transcendentalVar));
             Expression eSubstituted = SubstitutionUtilities.substituteExpressionByAnotherExpression(e, transcendentalElement, Variable.create(transcendentalVar));
@@ -853,18 +877,29 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     SimplifyPolynomialMethods.getGGTOfPolynomials(dSubstituted, derivativeOfD, transcendentalVar));
             denominator = denominator.replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
 
-            Expression derivativeOfDenominator = denominator.diff(var).simplify(simplifyTypesRischDifferentialEquation);
-            
+            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(denominator, transcendentalVar)) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
+            // T ist der Nenner denominator.
+            ExpressionCollection coefficientsOfT = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
+
             // Prüfung, ob DT^2 von E geteilt wird (als Polynome in t = transcendentalVar).
-            
-            
+            ExpressionCollection coefficientsOfProductOfDAndTSquare = SimplifyPolynomialMethods.multiplyPolynomials(coefficientsOfT, coefficientsOfT);
+            coefficientsOfProductOfDAndTSquare = SimplifyPolynomialMethods.multiplyPolynomials(coefficientsOfD, coefficientsOfProductOfDAndTSquare);
+            quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsOfProductOfDAndTSquare, coefficientsOfE);
+            if (!quotient[1].isEmpty()) {
+                throw new NotAlgebraicallyIntegrableException();
+            }
+
             /* 
              Sei T der Nenner. Dann ist a = DT, b = AT - DT', c = BDT^2/E. 
              D und E sind dabei die oberen d und e.
              */
+            Expression derivativeOfDenominator = denominator.diff(var).simplify(simplifyTypesRischDifferentialEquation);
             Expression a = d.mult(denominator);
-            Expression b = a.mult(denominator).sub(d.mult(derivativeOfDenominator));
-            Expression c = b.mult(d).mult(denominator.pow(2)).div(e).simplify(simplifyTypesRischDifferentialEquation);
+            Expression b = numeratorOfF.mult(denominator).sub(d.mult(derivativeOfDenominator));
+            Expression c = numeratorOfG.mult(d).mult(denominator.pow(2)).div(e).simplify(simplifyTypesRischDifferentialEquation);
 
             return new Expression[]{denominator, a, b, c};
 
@@ -933,8 +968,195 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         if (transcendentalElements.isEmpty()) {
             // Dann sind a, b, c rationale Funktionen in var.
-
+            return getNumeratorOfRischDifferentialEquationInBaseCase(a, b, c, var);
         }
+        Expression transcendentalElement = transcendentalElements.getLast();
+        if (transcendentalElement.isFunction(TypeFunction.exp)) {
+            return getNumeratorOfRischDifferentialEquationInExponentialCase(a, b, c, var);
+        }
+        if (transcendentalElement.isFunction(TypeFunction.ln)) {
+            return getNumeratorOfRischDifferentialEquationInLogarithmicCase(a, b, c, var);
+        }
+
+        // Sollte eigentlich nie eintreten.
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Liefert den Zähler der Lösung der Risch-Differentialgleichung a*q' + b*q
+     * = c, falls diese lösbar ist und falls das transzendenteElement t die
+     * Variable var selbst ist. Ansonsten wird eine
+     * NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression getNumeratorOfRischDifferentialEquationInBaseCase(Expression a, Expression b, Expression c, String var) throws NotAlgebraicallyIntegrableException {
+
+        try {
+
+            ExpressionCollection coefficientsA = SimplifyPolynomialMethods.getPolynomialCoefficients(a, var);
+            ExpressionCollection coefficientsB = SimplifyPolynomialMethods.getPolynomialCoefficients(b, var);
+            ExpressionCollection coefficientsC = SimplifyPolynomialMethods.getPolynomialCoefficients(c, var);
+
+            // Fall: a = 1
+            if (a.equals(ONE)) {
+
+                // Ist b = 0, so ist q = int(c, x), x = var.
+                if (coefficientsB.isEmpty()) {
+                    return GeneralIntegralMethods.indefiniteIntegration(new Operator(TypeOperator.integral, new Object[]{c, var}), true).simplify(simplifyTypesRischDifferentialEquation);
+                }
+
+                // Ab hier gilt b != 0.
+                int degNumerator = coefficientsC.getBound() - coefficientsB.getBound();
+                if (degNumerator < 0) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+                Expression leadingCoefficient = coefficientsC.getLast().div(coefficientsB.getLast()).simplify(simplifyTypesRischDifferentialEquation);
+                /*
+                Ist q_n der Leitkoeffizient von q = Zähler und n = degNumerator der Grad von q, so sei
+                cNew = c - (q_n*x^n)' - b*q_n*x^n.
+                 */
+                Expression cNew = c.sub(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)).diff(var).add(
+                        b.mult(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)))));
+
+                /* 
+                restNumerator = r = q - q_n*x^n erfüllt die folgende Differentialgleichung:
+                r' + b*r = cNew.
+                 */
+                Expression restNumerator = getNumeratorOfRischDifferentialEquationInBaseCase(ONE, b, cNew, var);
+                return restNumerator.add(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))).simplify(simplifyTypesRischDifferentialEquation);
+
+            } else {
+
+                // Fall: a != 1.
+                // Sonderfall: a ist konstant und ungleich 1. Dann wird q' + (b/a)*q = c/a gelöst.
+                if (coefficientsA.getBound() == 1 && !coefficientsA.getLast().equals(ONE)) {
+                    if (!coefficientsA.getLast().equals(ZERO)) {
+                        b = b.div(a).simplify(simplifyTypesRischDifferentialEquation);
+                        c = c.div(a).simplify(simplifyTypesRischDifferentialEquation);
+                        return getNumeratorOfRischDifferentialEquationInBaseCase(ONE, b, c, var);
+                    }
+                    // a = 0 sollte eigentlich nie vorkommen.
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                // Ab hier gilt deg(a) > 0.
+                ExpressionCollection coefficientsOfGCDOfAAndB = SimplifyPolynomialMethods.getGGTOfPolynomials(coefficientsA, coefficientsB);
+
+                // Sicherheitshalber
+                if (coefficientsOfGCDOfAAndB.isEmpty()) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                // Fall: der ggT von A und B ist nicht trivial.
+                if (coefficientsOfGCDOfAAndB.getBound() > 1 || !coefficientsOfGCDOfAAndB.getLast().equals(ONE)) {
+                    /* 
+                    Prüfung, ob d = ggTOfAB auch c teilt. Wenn nicht, gibt es keine Lösung. Ansonsten soll
+                    (a/d)*q' + (b/d)*q = c/d gelöst werden.
+                     */
+                    ExpressionCollection[] quotient = SimplifyPolynomialMethods.polynomialDivision(coefficientsC, coefficientsOfGCDOfAAndB);
+                    if (!quotient[1].isEmpty()) {
+                        throw new NotAlgebraicallyIntegrableException();
+                    }
+
+                    coefficientsA = SimplifyPolynomialMethods.polynomialDivision(coefficientsA, coefficientsOfGCDOfAAndB)[0];
+                    coefficientsB = SimplifyPolynomialMethods.polynomialDivision(coefficientsB, coefficientsOfGCDOfAAndB)[0];
+                    coefficientsC = SimplifyPolynomialMethods.polynomialDivision(coefficientsC, coefficientsOfGCDOfAAndB)[0];
+                    a = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsA, var);
+                    b = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsB, var);
+                    c = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsC, var);
+                    return getNumeratorOfRischDifferentialEquationInBaseCase(a, b, c, var);
+                }
+
+                // Ab hier sind a und b teilerfremd.
+                Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(a, b, c, var);
+                if (euclideanCoefficients.length != 2) {
+                    throw new NotAlgebraicallyIntegrableException();
+                }
+
+                /* 
+                Seien s, t derart, dass s*a + t*b = c gilt. h = (q - t)/a erfüllt
+                die Differentialgleichung a*h' + (b + a')*h = s - t' und insbesondere
+                gilt deg(h) <= n - deg(a), n = obere Schranke für den Grad von q.
+                Im Folgenden sei bNew = b + a', cNew = s - t'.
+                 */
+                Expression bNew = b.add(a.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+                Expression cNew = euclideanCoefficients[0].sub(euclideanCoefficients[1].diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+
+                Expression solutionOfReducedDiffEq = getNumeratorOfRischDifferentialEquationInBaseCase(a, bNew, cNew, var);
+                Expression numerator = solutionOfReducedDiffEq.mult(a).add(euclideanCoefficients[1]).simplify(simplifyTypesRischDifferentialEquation);
+                return numerator;
+
+            }
+
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallyIntegrableException();
+        }
+
+    }
+
+    /**
+     * Hilfsmethode. Liefert eine obere Schranke für den Grad von q, wobei q die
+     * Differentialgleichung a*q' + b*q = c erfüllt. q ist der Zähler der Lösung
+     * der Risch-Differentialgleichung.
+     */
+    private static int getUpperBoundForDegreeOfNumeratorInBaseCase(ExpressionCollection coefficientsA, ExpressionCollection coefficientsB, ExpressionCollection coefficientsC) {
+
+        if (coefficientsA.getBound() > coefficientsB.getBound() + 1) {
+            // deg(q) = deg(c) - deg(a) + 1.
+            return coefficientsC.getBound() - coefficientsA.getBound() + 1;
+        }
+        if (coefficientsA.getBound() < coefficientsB.getBound() + 1) {
+            // deg(q) = deg(c) - deg(b).
+            return coefficientsC.getBound() - coefficientsB.getBound();
+        }
+
+        try {
+
+            Expression possibleUpperBound = MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()).simplify(simplifyTypesRischDifferentialEquation);
+            if (possibleUpperBound.isPositiveIntegerConstant()) {
+                // Sonderfall: -lc(b)/lc(a) = n ist eine natürliche Zahl. Dann ist n eine mögliche obere Schranke. 
+                if (((Constant) possibleUpperBound).getBigIntValue().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0) {
+                    return ((Constant) possibleUpperBound).getBigIntValue().intValue();
+                }
+                // Obere Schranke ist zu hoch für eine Berechnung! Dürfte selten passieren.
+                return -1;
+            }
+
+            // deg(q) = deg(c) - deg(b).
+            return coefficientsC.getBound() - coefficientsB.getBound();
+
+        } catch (EvaluationException e) {
+            // Im Falle, dass irgendetwas schiefgelaufen ist.
+            return -1;
+        }
+
+    }
+
+    /**
+     * Liefert den Zähler der Lösung der Risch-Differentialgleichung a*q' + b*q
+     * = c, falls diese lösbar ist und falls das transzendenteElement t
+     * exponentiell ist. Ansonsten wird eine NotAlgebraicallyIntegrableException
+     * geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression getNumeratorOfRischDifferentialEquationInExponentialCase(Expression a, Expression b, Expression c, String var) throws NotAlgebraicallyIntegrableException {
+
+        throw new NotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Liefert den Zähler der Lösung der Risch-Differentialgleichung a*q' + b*q
+     * = c, falls diese lösbar ist und falls das transzendenteElement t
+     * logarithmisch ist. Ansonsten wird eine
+     * NotAlgebraicallyIntegrableException geworfen.
+     *
+     * @throws NotAlgebraicallyIntegrableException
+     */
+    private static Expression getNumeratorOfRischDifferentialEquationInLogarithmicCase(Expression a, Expression b, Expression c, String var) throws NotAlgebraicallyIntegrableException {
 
         throw new NotAlgebraicallyIntegrableException();
 
