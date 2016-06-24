@@ -531,7 +531,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         // Sonderfall: Nenner ist von der Form t^n.
         if (ord == coefficientsDenominator.getBound() - 1) {
 
-            int degDenominator = coefficientsDenominator.getBound();
+            int degDenominator = coefficientsDenominator.getBound() - 1;
             ExpressionCollection numeratorsInPFD = new ExpressionCollection();
             numeratorsInPFD.put(0, ZERO);
             for (int i = 0; i < coefficientsNumerator.getBound(); i++) {
@@ -732,7 +732,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 integralOfF = new Constant(i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
                 g = polynomialCoefficients.get(i);
                 solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
-                solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
+                solution = solution.add(solutionOfRischDiffEq.mult(transcententalElement.pow(i)));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }
@@ -744,7 +744,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 integralOfF = new Constant(i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
                 g = laurentCoefficients.get(i);
                 solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
-                solution = solutionOfRischDiffEq.mult(transcententalElement.pow(i));
+                solution = solution.add(solutionOfRischDiffEq.mult(transcententalElement.pow(-i)));
             } catch (EvaluationException e) {
                 throw new NotAlgebraicallyIntegrableException();
             }
@@ -1122,9 +1122,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
             Expression possibleUpperBound = MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()).simplify(simplifyTypesRischDifferentialEquation);
             if (possibleUpperBound.isPositiveIntegerConstant()) {
-                // Sonderfall: -lc(b)/lc(a) = n ist eine natürliche Zahl. Dann ist n eine mögliche obere Schranke. 
+                // Sonderfall: -lc(b)/lc(a) = n ist eine natürliche Zahl. Dann ist n ebenfalls eine mögliche obere Schranke (neben deg(c) - deg(b)). 
                 if (((Constant) possibleUpperBound).getBigIntValue().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) <= 0) {
-                    return ((Constant) possibleUpperBound).getBigIntValue().intValue();
+                    return Math.max(((Constant) possibleUpperBound).getBigIntValue().intValue(), coefficientsC.getBound() - coefficientsB.getBound());
                 }
                 // Obere Schranke ist zu hoch für eine Berechnung! Dürfte selten passieren.
                 return -1;

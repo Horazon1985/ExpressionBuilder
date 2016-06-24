@@ -483,13 +483,13 @@ public class IntegrationTests {
     @Test
     public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest1() {
         /* 
-        int((2*x^2+4*x+1)*exp(x^2),x) = (x+2)*exp(x^2) gemäß dem Risch-Algorithmus.
+        int((2*x^2+4*x+1)*exp(x^2),x) = (2+x)*exp(x^2) gemäß dem Risch-Algorithmus.
          */
         try {
             f = Expression.build("int((2*x^2+4*x+1)*exp(x^2),x)", null);
-            // Ohne simplify() ist der Ausdruck zu lang.
+            // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(x+2)*exp(x^2)", null);
+            Expression expectedResult = Expression.build("(2+x)*exp(x^2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -504,7 +504,7 @@ public class IntegrationTests {
          */
         try {
             f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)", null);
-            // Ohne simplify() ist der Ausdruck zu lang.
+            // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
             Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x", null);
             TestUtilities.printResult(expectedResult, integral);
@@ -517,13 +517,30 @@ public class IntegrationTests {
     @Test
     public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest3() {
         /* 
-        int((x^3+x^2+x-1)*exp(x)/x^2,x) = ((1+x^2)*exp(x))/x gemäß dem Risch-Algorithmus.
+        int((x^2+2*x)*exp(x)+(2*x^2+2*x+1)*exp(2*x)/(1+x)^2,x) = x^2*exp(x)+(x*exp(2*x))/(1+x) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)", null);
-            // Ohne simplify() ist der Ausdruck zu lang.
+            f = Expression.build("int((x^2+2*x)*exp(x)+(2*x^2+2*x+1)*exp(2*x)/(1+x)^2,x)", null);
+            // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x", null);
+            Expression expectedResult = Expression.build("x^2*exp(x)+(x*exp(2*x))/(1+x)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest4() {
+        /* 
+        int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x) = (4+2*x)*exp(2*x^2)+(1+2*x-2*x^2)*exp(-x^2) gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x)", null);
+            // simplify(...) macht den Ausdruck ein wenig schöner.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("(4+2*x)*exp(2*x^2)+(1+2*x-2*x^2)*exp(-x^2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
