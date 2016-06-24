@@ -740,8 +740,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         for (int i = 1; i < laurentCoefficients.getBound(); i++) {
             try {
-                f = new Constant(i).mult(expArgument.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
-                integralOfF = new Constant(i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
+                f = new Constant(-i).mult(expArgument.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+                integralOfF = new Constant(-i).mult(expArgument).simplify(simplifyTypesRischDifferentialEquation);
                 g = laurentCoefficients.get(i);
                 solutionOfRischDiffEq = solveRischDifferentialEquation(f, integralOfF, g, var);
                 solution = solution.add(solutionOfRischDiffEq.mult(transcententalElement.pow(-i)));

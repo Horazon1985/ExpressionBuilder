@@ -540,7 +540,7 @@ public class IntegrationTests {
             f = Expression.build("int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x)", null);
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(4+2*x)*exp(2*x^2)+(1+2*x-2*x^2)*exp(-x^2)", null);
+            Expression expectedResult = Expression.build("2*(2+x)*exp(2*x^2)+(x-1)*exp(-x^2)", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
