@@ -873,8 +873,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             }
 
             Expression denominator = SimplifyPolynomialMethods.getGGTOfPolynomials(eSubstituted, derivativeOfE, transcendentalVar).div(
-                    SimplifyPolynomialMethods.getGGTOfPolynomials(dSubstituted, derivativeOfD, transcendentalVar));
-            denominator = denominator.replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
+                    SimplifyPolynomialMethods.getGGTOfPolynomials(dSubstituted, derivativeOfD, transcendentalVar)).simplify(simplifyTypesRischDifferentialEquation);
 
             if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(denominator, transcendentalVar)) {
                 throw new NotAlgebraicallyIntegrableException();
@@ -883,6 +882,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             // T ist der Nenner denominator.
             ExpressionCollection coefficientsOfT = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
 
+            // Im Nenner transzendente Veränderliche wieder durch ihren eigentlichen Wert ersetzen.
+            denominator = denominator.replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
+            
             // Prüfung, ob DT^2 von E geteilt wird (als Polynome in t = transcendentalVar).
             ExpressionCollection coefficientsOfProductOfDAndTSquare = SimplifyPolynomialMethods.multiplyPolynomials(coefficientsOfT, coefficientsOfT);
             coefficientsOfProductOfDAndTSquare = SimplifyPolynomialMethods.multiplyPolynomials(coefficientsOfD, coefficientsOfProductOfDAndTSquare);

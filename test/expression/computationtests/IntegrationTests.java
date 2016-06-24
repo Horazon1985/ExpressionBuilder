@@ -346,7 +346,7 @@ public class IntegrationTests {
 
     //////////////////////// Integration mittels Risch-Algorithmus //////////////////////////////
     @Test
-    public void integrateByRischAlgorithmTest1() {
+    public void integrateByRischAlgorithmRationalPartTest1() {
         // Integral von (ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2) = x/(x^2+ln(x)).
         try {
             f = Expression.build("int((ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2),x)", null);
@@ -361,7 +361,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest2() {
+    public void integrateByRischAlgorithmRationalPartTest2() {
         // int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))), x) = ln(1+exp(x)+ln(x)).
         try {
             f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)", null);
@@ -376,7 +376,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest3() {
+    public void integrateByRischAlgorithmRationalPartTest3() {
         /* 
          int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x) = x/(1+exp(x^2)).
          Ideales Ergebnis wäre x/(1+exp(x^2)).
@@ -394,22 +394,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest4() {
-        // int(ln(1+x^2)/x^2,x) = 2*arctan(x)-ln(1+x^2)/x gemäß dem Risch-Algorithmus.
-        try {
-            f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
-            // Ohne simplify() ist der Ausdruck zu lang.
-            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("2*arctan(x)-ln(1+x^2)/x", null);
-            TestUtilities.printResult(expectedResult, integral);
-            Assert.assertTrue(integral.equivalent(expectedResult));
-        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
-            fail(e.getMessage());
-        }
-    }
-
-    @Test
-    public void integrateByRischAlgorithmTest5() {
+    public void integrateByRischAlgorithmRationalPartTest4() {
         // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
@@ -425,7 +410,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest6() {
+    public void integrateByRischAlgorithmRationalPartTest5() {
         // int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x) = x/(1+exp(x))^4 gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
@@ -441,7 +426,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest7() {
+    public void integrateByRischAlgorithmRationalPartTest6() {
         /* 
         int((1-2*x*exp(x)-exp(2*x))/(1+exp(x))^3,x) = (1+(1-2*x)*exp(x)+(1+exp(x))*(1+2*x))/(2*(1+exp(x))^2) 
         gemäß dem Risch-Algorithmus. "Längenverkürzung" ergibt später die einfachere Stammfunktion
@@ -461,7 +446,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest8() {
+    public void integrateByRischAlgorithmRationalPartTest7() {
         /* 
         int((2+(2*x-1)*ln(x)-x)/(x^2+x*ln(x)+x^2*ln(x)+x*ln(x)^2),x) = 2*ln(x+ln(x))-3*ln(1+ln(x)) 
         gemäß dem Risch-Algorithmus. "Längenverkürzung" ergibt später die einfachere Stammfunktion
@@ -481,7 +466,22 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmTest9() {
+    public void integrateByRischAlgorithmPolynomialPartLogarithmicCaseTest1() {
+        // int(ln(1+x^2)/x^2,x) = 2*arctan(x)-ln(1+x^2)/x gemäß dem Risch-Algorithmus.
+        try {
+            f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("2*arctan(x)-ln(1+x^2)/x", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest1() {
         /* 
         int((2*x^2+4*x+1)*exp(x^2),x) = (x+2)*exp(x^2) gemäß dem Risch-Algorithmus.
          */
@@ -490,6 +490,40 @@ public class IntegrationTests {
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
             Expression expectedResult = Expression.build("(x+2)*exp(x^2)", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest2() {
+        /* 
+        int((x^3+x^2+x-1)*exp(x)/x^2,x) = ((1+x^2)*exp(x))/x gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest3() {
+        /* 
+        int((x^3+x^2+x-1)*exp(x)/x^2,x) = ((1+x^2)*exp(x))/x gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)", null);
+            // Ohne simplify() ist der Ausdruck zu lang.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
