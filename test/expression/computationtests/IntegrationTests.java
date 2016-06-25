@@ -549,7 +549,7 @@ public class IntegrationTests {
     }
 
     @Test
-    public void integrateByRischAlgorithmPolynomialAndFractionalPartExponentialCaseTest() {
+    public void integrateByRischAlgorithmPolynomialAndFractionalPartExponentialCaseTest1() {
         /* 
         int((1+(3*x^2+4)*exp(x^3)+(24*x^3+12*x^2+8)*exp(2*x^3)+(24*x^3+12*x^2+8)*exp(3*x^3))/(1+4*exp(x^3)+4*exp(2*x^3)),x)
         = (1+2*x)*exp(x^3) + x/(1+2*exp(x^3)) gemäß dem Risch-Algorithmus.
@@ -559,6 +559,24 @@ public class IntegrationTests {
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
             Expression expectedResult = Expression.build("((1+2*exp(x^3))*(1+2*x)*exp(x^3)+x)/(1+2*exp(x^3))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void integrateByRischAlgorithmPolynomialAndFractionalPartExponentialCaseTest2() {
+        /* 
+        int((x-2*x^3+2*(1-x^2)*exp(x^2)+2*x*exp(2*x^2))/(x*exp(x^2)+exp(2*x^2)),x)
+        = x*exp(-x^2)+ln(x+exp(x^2)) gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((x-2*x^3+2*(1-x^2)*exp(x^2)+2*x*exp(2*x^2))/(x*exp(x^2)+exp(2*x^2)),x)", null);
+            // simplify(...) macht den Ausdruck ein wenig schöner.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("x*exp(-x^2)+ln(x+exp(x^2))", null);
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {

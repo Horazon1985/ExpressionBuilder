@@ -468,6 +468,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     ordOfTranscendentalElementInDenominator++;
                 }
             }
+            ExpressionCollection coefficientsOfDenominatorOfNonSpecialPart = new ExpressionCollection();
+            for (int i = ordOfTranscendentalElementInDenominator; i < coefficientsDenominator.getBound(); i++){
+                coefficientsOfDenominatorOfNonSpecialPart.put(i - ordOfTranscendentalElementInDenominator, coefficientsDenominator.get(i));
+            }
 
             if (ordOfTranscendentalElementInDenominator > 0) {
 
@@ -482,7 +486,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 }
                 Expression integralOfPolynomialPart = integrateByRischAlgorithmPolynomialPart(quotient[0], laurentCoefficients, transcententalElement, var, transcendentalVar);
                 Expression integralOfFractionalPart = integrateByRischAlgorithmFractionalPart(coefficientsOfNumeratorOfNonSpecialPart,
-                        coefficientsDenominator, transcententalElement, var, transcendentalVar);
+                        coefficientsOfDenominatorOfNonSpecialPart, transcententalElement, var, transcendentalVar);
                 return integralOfPolynomialPart.add(integralOfFractionalPart);
 
             }
@@ -1405,7 +1409,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             coefficientsDenominator = coefficientsDenominator.simplify(simplifyTypesRischAlgorithm);
         }
 
-        // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration mittels Partialbruchzerlegung.
+        // Sonderfall: Nenner hat Grad = 0 (also von t nicht abhängig) -> Integration (nach Risch-Algorithmus), Transzendenzgrad ist gesunken.
         if (coefficientsDenominator.getBound() == 1) {
             if (coefficientsNumerator.getBound() > 1) {
                 // Sollte eigentlich nie eintreten, da nach Hermite-Reduktion der Grad des Zählers kleiner als der Grad des Nenners sein sollte.
@@ -1414,7 +1418,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             Expression integrand = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsNumerator, transcendentalVar).div(
                     SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsDenominator, transcendentalVar)).replaceVariable(transcendentalVar, transcententalElement);
 
-            System.out.println("Integration mittels Partialbruchzerlegung von " + integrand);
+            System.out.println("Integration von " + integrand);
 
             return GeneralIntegralMethods.integrateIndefinite(new Operator(TypeOperator.integral, new Object[]{integrand, var}));
         }
@@ -1486,7 +1490,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             for (Expression zero : zerosOfResultant) {
                 gcd = SimplifyPolynomialMethods.getPolynomialFromCoefficients(SimplifyPolynomialMethods.getGGTOfPolynomials(SimplifyPolynomialMethods.subtractPolynomials(coefficientsNumerator,
                         SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(zero), coefficientsDerivativeOfDenominator)),
-                        coefficientsDenominator), transcendentalVar).replaceVariable(transcendentalVar, transcententalElement);
+                        coefficientsDenominator), transcendentalVar);
+//                gcd = gcd.replaceVariable(transcendentalVar, transcententalElement);
                 thetas.add(gcd);
             }
         }
@@ -1495,31 +1500,33 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
         // Logarithmischer Fall.
         if (transcententalElement.isFunction(TypeFunction.ln)) {
-
-            // Stammfunktion ausgeben.
+            // Stammfunktion explizit ausgeben.
             Expression integral = ZERO;
+            for (int i = 0; i < thetas.getBound(); i++){
+                thetas.put(i, thetas.get(i).replaceVariable(transcendentalVar, transcententalElement));
+            }
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(zerosOfResultant.get(i).mult(thetas.get(i).ln()));
             }
-
             System.out.println("Integral: " + integral);
-
             return integral;
-
         }
 
         // Exponentieller Fall.
         if (transcententalElement.isFunction(TypeFunction.exp)) {
-
-            // Stammfunktion ausgeben.
+            // Stammfunktion explizit ausgeben.
             Expression integral = ZERO;
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(zerosOfResultant.get(i).mult(SimplifyPolynomialMethods.getDegreeOfPolynomial(thetas.get(i), transcendentalVar)));
             }
-            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft());
+            integral = MINUS_ONE.mult(integral).mult(((Function) transcententalElement).getLeft()).replaceVariable(transcendentalVar, transcententalElement);
+            for (int i = 0; i < thetas.getBound(); i++){
+                thetas.put(i, thetas.get(i).replaceVariable(transcendentalVar, transcententalElement));
+            }
             for (int i = 0; i < zerosOfResultant.getBound(); i++) {
                 integral = integral.add(zerosOfResultant.get(i).mult(thetas.get(i).ln()));
             }
+            System.out.println("Integral: " + integral);
             return integral;
         }
 
