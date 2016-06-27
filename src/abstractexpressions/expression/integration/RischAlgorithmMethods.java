@@ -64,6 +64,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_logarithms);
 
@@ -673,8 +674,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             } else {
 
                 try {
-                    integral = new Operator(TypeOperator.integral, new Object[]{
-                        polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(Variable.create(freeConstantsVars[i + 1])).mult(logArgument.diff(var)).div(logArgument)), var}).simplify(simplifyTypesRischAlgorithm);
+                    integral = polynomialCoefficients.get(i).sub(new Constant(i + 1).mult(coefficientsOfPolynomialInTranscendentalVar[i + 1]).mult(logArgument.diff(var)).div(logArgument)).simplify(simplifyTypesRischAlgorithm);
+                    integral = new Operator(TypeOperator.integral, new Object[]{integral, var}).simplify(simplifyTypesRischAlgorithm);
 
                     integral = SubstitutionUtilities.substituteExpressionByAnotherExpression(integral, transcententalElement, Variable.create(transcendentalVar));
                     equoationForFreeConstant = integral.diff(transcendentalVar).simplify(simplifyTypesRischAlgorithm);
