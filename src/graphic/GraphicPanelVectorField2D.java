@@ -137,7 +137,7 @@ public class GraphicPanelVectorField2D extends JPanel implements Exportable {
         return this.vectorFieldExpr;
     }
 
-    public ArrayList<String> getInstructions() {
+    public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
