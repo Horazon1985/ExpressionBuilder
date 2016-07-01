@@ -564,6 +564,23 @@ public class IntegrationTests {
     }
 
     @Test
+    public void integrateByRischAlgorithmPolynomialPartExponentialCaseTest5() {
+        /* 
+        int((2*x+x^2+2*exp(x)+x^2*exp(x)+exp(2*x))*exp(x+exp(x)),x) = (x^2+exp(x))*exp(x+exp(x)) gemäß dem Risch-Algorithmus.
+         */
+        try {
+            f = Expression.build("int((2*x+x^2+2*exp(x)+x^2*exp(x)+exp(2*x))*exp(x+exp(x)),x)", null);
+            // simplify(...) macht den Ausdruck ein wenig schöner.
+            Expression integral = RischAlgorithmMethods.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
+            Expression expectedResult = Expression.build("(x^2+exp(x))*exp(x+exp(x))", null);
+            TestUtilities.printResult(expectedResult, integral);
+            Assert.assertTrue(integral.equivalent(expectedResult));
+        } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
     public void integrateByRischAlgorithmPolynomialAndFractionalPartExponentialCaseTest1() {
         /* 
         int((1+(3*x^2+4)*exp(x^3)+(24*x^3+12*x^2+8)*exp(2*x^3)+(24*x^3+12*x^2+8)*exp(3*x^3))/(1+4*exp(x^3)+4*exp(2*x^3)),x)
