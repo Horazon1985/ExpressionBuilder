@@ -141,6 +141,10 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     }
 
+    private static boolean isOperation(String formula) {
+        return formula.equals("+") || formula.equals("-") || formula.equals("*") || formula.equals("/") || formula.equals("^");
+    }
+    
     /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
@@ -176,6 +180,13 @@ public abstract class MatrixExpression implements AbstractExpression {
 
         if (formula.isEmpty()) {
             throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+        }
+        
+        // Prüfen, ob nicht zwei Operatoren nacheinander auftreten.
+        for (int i = 0; i < formulaLength - 1; i++) {
+            if (isOperation(formula.substring(i, i + 1)) && isOperation(formula.substring(i + 1, i + 2))) {
+                throw new ExpressionException(Translator.translateOutputMessage("EB_MatrixExpression_TWO_OPERATIONS"));
+            }
         }
 
         for (int i = 1; i <= formulaLength; i++) {

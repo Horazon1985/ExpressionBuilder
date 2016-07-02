@@ -226,6 +226,10 @@ public abstract class Expression implements AbstractExpression {
         return formula.equals("pi");
     }
 
+    private static boolean isOperation(String formula) {
+        return formula.equals("+") || formula.equals("-") || formula.equals("*") || formula.equals("/") || formula.equals("^");
+    }
+
     /**
      * Hauptmethode zum Erstellen einer Expression aus einem String.
      *
@@ -246,6 +250,13 @@ public abstract class Expression implements AbstractExpression {
 
         if (formula.isEmpty()) {
             throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+        }
+
+        // Prüfen, ob nicht zwei Operatoren nacheinander auftreten.
+        for (int i = 0; i < formulaLength - 1; i++) {
+            if (isOperation(formula.substring(i, i + 1)) && isOperation(formula.substring(i + 1, i + 2))) {
+                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_TWO_OPERATIONS"));
+            }
         }
 
         for (int i = 1; i <= formulaLength; i++) {
@@ -919,8 +930,8 @@ public abstract class Expression implements AbstractExpression {
     /**
      * Ermittelt die maximale Anzahl von Summanden, die im Ausdruck vorkommen,
      * wenn man simplifyExpand() anwendet und BEVOR man wieder zusammenfasst.
-     * Wenn die geschätzte Anzahl der Summanden größer ist als Integer.MAX_VALUE,
-     * wird Integer.MAX_VALUE zurückgegeben.
+     * Wenn die geschätzte Anzahl der Summanden größer ist als
+     * Integer.MAX_VALUE, wird Integer.MAX_VALUE zurückgegeben.
      */
     public abstract int getMaximalNumberOfSummandsInExpansion();
 

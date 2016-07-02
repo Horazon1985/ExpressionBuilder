@@ -35,6 +35,12 @@
         <Ukrainian>Вираз порожній або неповний.</Ukrainian>
         <Russian>Выражение пустое либо неполное.</Russian>
     </object>
+    <object id = "EB_MatrixExpression_TWO_OPERATIONS">
+        <German>Im Ausdruck treten zwei Operationen hintereinander auf.</German>
+        <English>The expression contains two operations without an argument in between.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY">
         <German>Linke Seite eines binären Operators ist leer.</German>
         <English>Left side of a binary operator is empty.</English>
