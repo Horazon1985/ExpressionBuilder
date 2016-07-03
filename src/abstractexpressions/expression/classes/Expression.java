@@ -324,8 +324,8 @@ public abstract class Expression implements AbstractExpression {
             if (bracketCounter != 0 || absBracketCounter != 0) {
                 continue;
             }
-            //Aufteilungspunkt finden; zunächst wird nach -, +, *, /, ^ gesucht 
-            //breakpoint gibt den Index in formula an, wo die Formel aufgespalten werden soll.
+            // Aufteilungspunkt finden; zunächst wird nach -, +, *, /, ^ gesucht 
+            // breakpoint gibt den Index in formula an, wo die Formel aufgespalten werden soll.
             if (currentChar.equals("+") && priority > 0) {
                 priority = 0;
                 breakpoint = formulaLength - i;
@@ -374,9 +374,9 @@ public abstract class Expression implements AbstractExpression {
                  Konstanten und Verhältnisse von Konstanten bilden Ausnahmen: Dann wird das 
                  Minuszeichen direkt in den Zähler gezogen.
                  */
-                if (right instanceof Constant) {
+                if (right instanceof Constant && ((Constant) right).getValue().compareTo(BigDecimal.ZERO) >= 0) {
                     return new Constant(((Constant) right).getValue().negate());
-                } else if (right.isRationalConstant()) {
+                } else if (right.isRationalConstant() && ((BinaryOperation) right).getLeft().isNonNegative()) {
                     return new Constant(((Constant) ((BinaryOperation) right).getLeft()).getValue().negate()).div(((BinaryOperation) right).getRight());
                 }
                 return MINUS_ONE.mult(build(formulaRight, vars));
