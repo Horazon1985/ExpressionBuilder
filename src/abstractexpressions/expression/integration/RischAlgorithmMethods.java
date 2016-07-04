@@ -978,8 +978,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             return getNumeratorOfRischDifferentialEquationInExponentialCase(a, b, c, expArgument, transcendentalElement, var, transcendentalVar).replaceVariable(transcendentalVar, transcendentalElement);
         }
         if (transcendentalElement.isFunction(TypeFunction.ln)) {
-            throw new NotAlgebraicallyIntegrableException();
-//            return getNumeratorOfRischDifferentialEquationInLogarithmicCase(a, b, c, expArgument, transcendentalElement, var, transcendentalVar).replaceVariable(transcendentalVar, transcendentalElement);
+            return getNumeratorOfRischDifferentialEquationInLogarithmicCase(a, b, c, expArgument, transcendentalElement, var, transcendentalVar).replaceVariable(transcendentalVar, transcendentalElement);
         }
 
         // Sollte eigentlich nie eintreten.
@@ -1215,7 +1214,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     Expression[] leadingCoefficientData = getDiffEqDataForLeadingCoefficientInExponentialCase(b, a, c, var, transcendentalVar);
 
                     if (leadingCoefficientData.length == 2) {
-                        
+
                         // Fall: b = f'/f + n*u'.
                         // Dann ist q = int(f*c*t^n)/(f*t^n).
                         Expression f = leadingCoefficientData[0];
@@ -1347,7 +1346,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         try {
 
             Expression integralOfQuotientOfLC = new Operator(TypeOperator.integral,
-                    new Object[]{MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()), var}).simplify(simplifyTypesRischDifferentialEquation);
+                    new Object[]{MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()).replaceVariable(transcendentalVar, transcendentalElement),
+                        var}).simplify(simplifyTypesRischDifferentialEquation);
             if (!integralOfQuotientOfLC.isOperator(TypeOperator.integral)) {
 
                 /* 
@@ -1568,7 +1568,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                     Expression[] leadingCoefficientData = getDiffEqDataForLeadingCoefficientInLogarithmicCase(b, a, c, var, transcendentalVar);
 
                     if (leadingCoefficientData.length == 1) {
-                        
+
                         // Fall: b = f'/f.
                         // Dann ist q = int(f*c)/f.
                         Expression f = leadingCoefficientData[0];
@@ -1734,8 +1734,8 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 if (!SimplifyPolynomialMethods.isPolynomial(f, transcendentalVar)) {
                     return new Expression[0];
                 }
-                
-                if (summandsLeft.isEmpty() && summandsRight.isEmpty()){
+
+                if (summandsLeft.isEmpty() && summandsRight.isEmpty()) {
                     return new Expression[]{f};
                 }
 
@@ -1771,8 +1771,55 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
             f rationale Funktion in der Körpererweiterung, die t nicht enthält. Im letzteren
             Fall kann deg(q) auch n sein.
              */
-            // TO DO.
-            return BigInteger.valueOf(coefficientsC.getBound() - coefficientsA.getBound() + 1);
+            try {
+
+                Expression integralOfQuotientOfLC = new Operator(TypeOperator.integral,
+                        new Object[]{MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()).replaceVariable(transcendentalVar, transcendentalElement),
+                            var}).simplify(simplifyTypesRischDifferentialEquation);
+                if (!integralOfQuotientOfLC.isOperator(TypeOperator.integral)) {
+
+                    /* 
+                    Hier kommt eine wichtige Annahme zum Tragen: in expArgument
+                    kommt kein Summand vor, welches ein rationales Vielfaches des
+                    Logarithmus eines Ausdrucks ist, welcher var enthält. Wäre
+                    dies so, dann würde der Integrand entweder algebraische Anteile 
+                    enthalten (im rationalen Fall: z.B. u = 3*ln(1+x^2)/5, dann wäre 
+                    exp(u) = (1+x^2)^(3/5)) oder er würde sich weiter vereinfachen 
+                    lassen (im ganzzahligen Fall: z.B. u = 3*ln(1+x^2), dann wäre 
+                    exp(u) = (1+x^2)^3).
+                     */
+                    integralOfQuotientOfLC = SubstitutionUtilities.substituteExpressionByAnotherExpression(integralOfQuotientOfLC, transcendentalElement,
+                            Variable.create(transcendentalVar));
+                    ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(integralOfQuotientOfLC);
+                    ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(integralOfQuotientOfLC);
+
+                    // Alle entsprechenden Logarithmussummanden entfernen.
+                    for (int i = 0; i < summandsLeft.getBound(); i++) {
+                        if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                            summandsLeft.remove(i);
+                        }
+                    }
+                    for (int i = 0; i < summandsLeft.getBound(); i++) {
+                        if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                            summandsLeft.remove(i);
+                        }
+                    }
+
+                    /* 
+    ^                Falls der Rest = n*u, u = expArgument ist, dann ist die obere Schranke
+                     durch max(deg(c) - deg(a) + 1, n) gegeben.
+                     */
+                    Expression rest = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+                    Expression quotient = rest.div(expArgument).simplify();
+                    if (quotient.isNonNegativeIntegerConstant()) {
+                        return BigInteger.valueOf(coefficientsC.getBound() - coefficientsA.getBound() + 1).max(((Constant) quotient).getBigIntValue());
+                    }
+
+                }
+
+            } catch (EvaluationException e) {
+                return BigInteger.valueOf(coefficientsC.getBound() - coefficientsA.getBound() + 1);
+            }
         }
 
         // Fall: deg(a) = deg(b).
@@ -1781,7 +1828,88 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         t = das vorliegende transzendente Element, q_n und f rationale Funktionen in der Körpererweiterung, 
         die t nicht enthält. Im letzteren Fall kann deg(q) auch n sein.
          */
-        // TO DO.
+        try {
+
+            Expression integralOfQuotientOfLC = new Operator(TypeOperator.integral,
+                    new Object[]{MINUS_ONE.mult(coefficientsB.getLast()).div(coefficientsA.getLast()).replaceVariable(transcendentalVar, transcendentalElement),
+                        var}).simplify(simplifyTypesRischDifferentialEquation);
+            if (!integralOfQuotientOfLC.isOperator(TypeOperator.integral)) {
+
+                /* 
+                Hier kommt eine wichtige Annahme zum Tragen: in expArgument
+                kommt kein Summand vor, welches ein rationales Vielfaches des
+                Logarithmus eines Ausdrucks ist, welcher var enthält. Wäre
+                dies so, dann würde der Integrand entweder algebraische Anteile 
+                enthalten (im rationalen Fall: z.B. u = 3*ln(1+x^2)/5, dann wäre 
+                exp(u) = (1+x^2)^(3/5)) oder er würde sich weiter vereinfachen 
+                lassen (im ganzzahligen Fall: z.B. u = 3*ln(1+x^2), dann wäre 
+                exp(u) = (1+x^2)^3).
+                 */
+                integralOfQuotientOfLC = SubstitutionUtilities.substituteExpressionByAnotherExpression(integralOfQuotientOfLC, transcendentalElement,
+                        Variable.create(transcendentalVar));
+                ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(integralOfQuotientOfLC);
+                ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(integralOfQuotientOfLC);
+
+                // Alle entsprechenden Logarithmussummanden entfernen.
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                        summandsLeft.remove(i);
+                    }
+                }
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                        summandsLeft.remove(i);
+                    }
+                }
+
+                if (!summandsLeft.isEmpty() || !summandsRight.isEmpty()) {
+                    // Fall: -lc(b)/lc(a) != q_n'/q_n für alle q_n. Dann ist deg(q) = deg(c) - deg(b).
+                    return BigInteger.valueOf(coefficientsC.getBound() - coefficientsB.getBound());
+                }
+
+                /* 
+                Prüfung, ob lc(lc(b)*a - lc(a)*b)/ln(a)^2 = f' + nt' für geeignete f und n.
+                durch max(deg(c) - deg(b), n) gegeben.
+                 */
+                ExpressionCollection polynomialInNumerator = SimplifyPolynomialMethods.subtractPolynomials(SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(coefficientsB.getLast()), coefficientsA),
+                        SimplifyPolynomialMethods.multiplyPolynomials(new ExpressionCollection(coefficientsA.getLast()), coefficientsB));
+                Expression quotient = polynomialInNumerator.getLast().div(coefficientsA.getLast().pow(2)).replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
+                integralOfQuotientOfLC = new Operator(TypeOperator.integral, new Object[]{quotient, var}).simplify(simplifyTypesRischDifferentialEquation);
+                integralOfQuotientOfLC = SubstitutionUtilities.substituteExpressionByAnotherExpression(integralOfQuotientOfLC, transcendentalElement,
+                        Variable.create(transcendentalVar));
+
+                summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(integralOfQuotientOfLC);
+                summandsRight = SimplifyUtilities.getSummandsRightInExpression(integralOfQuotientOfLC);
+
+                // Alle entsprechenden Logarithmussummanden entfernen.
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                        summandsLeft.remove(i);
+                    }
+                }
+                for (int i = 0; i < summandsLeft.getBound(); i++) {
+                    if (isIntegerMultipleOfLogarithmWithoutTranscendentalVar(summandsLeft.get(i), transcendentalVar)) {
+                        summandsLeft.remove(i);
+                    }
+                }
+
+                /* 
+^                Falls der Rest = n*u, u = expArgument ist, dann ist die obere Schranke
+                 durch max(deg(c) - deg(a) + 1, n) gegeben.
+                 */
+                Expression rest = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
+                Expression quotientByTranscendentalElement = rest.div(expArgument).simplify();
+                if (quotientByTranscendentalElement.isNonNegativeIntegerConstant()) {
+                    return BigInteger.valueOf(coefficientsC.getBound() - coefficientsB.getBound()).max(((Constant) quotientByTranscendentalElement).getBigIntValue());
+                }
+
+            }
+
+        } catch (EvaluationException e) {
+            return BigInteger.valueOf(coefficientsC.getBound() - coefficientsA.getBound() + 1);
+        }
+
+        // Sonst: deg(q) = deg(c) - deg(b).
         return BigInteger.valueOf(coefficientsC.getBound() - coefficientsB.getBound());
 
     }
