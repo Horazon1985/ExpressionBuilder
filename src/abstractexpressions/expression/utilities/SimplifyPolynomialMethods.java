@@ -1323,10 +1323,6 @@ public abstract class SimplifyPolynomialMethods {
             ExpressionCollection coefficientsF = SimplifyPolynomialMethods.getPolynomialCoefficients(f, var);
             ExpressionCollection coefficientsG = SimplifyPolynomialMethods.getPolynomialCoefficients(g, var);
 
-            if (!isPolynomialRational(coefficientsF) || !isPolynomialRational(coefficientsG)) {
-                return ONE;
-            }
-
             ExpressionCollection coefficientsGGT = getGGTOfPolynomials(coefficientsF, coefficientsG);
             return getPolynomialFromCoefficients(coefficientsGGT, var);
 

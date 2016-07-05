@@ -874,15 +874,10 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 throw new NotAlgebraicallyIntegrableException();
             }
 
-            Expression denominator = SimplifyPolynomialMethods.getGGTOfPolynomials(eSubstituted, derivativeOfE, transcendentalVar).div(
-                    SimplifyPolynomialMethods.getGGTOfPolynomials(dSubstituted, derivativeOfD, transcendentalVar)).simplify(simplifyTypesRischDifferentialEquation);
-
-            if (!SimplifyPolynomialMethods.isPolynomialAdmissibleForComputation(denominator, transcendentalVar)) {
-                throw new NotAlgebraicallyIntegrableException();
-            }
+            Expression denominator = SimplifyPolynomialMethods.getPolynomialFromCoefficients(quotient[0], transcendentalVar).simplify(simplifyTypesRischDifferentialEquation);
 
             // T ist der Nenner denominator.
-            ExpressionCollection coefficientsOfT = SimplifyPolynomialMethods.getPolynomialCoefficients(denominator, transcendentalVar);
+            ExpressionCollection coefficientsOfT = quotient[0];
 
             // Im Nenner transzendente Veränderliche wieder durch ihren eigentlichen Wert ersetzen.
             denominator = denominator.replaceVariable(transcendentalVar, transcendentalElement).simplify(simplifyTypesRischDifferentialEquation);
@@ -1642,7 +1637,7 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 }
 
                 // Ab hier sind a und b teilerfremd.
-                Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(a, b, c, var);
+                Expression[] euclideanCoefficients = SimplifyPolynomialMethods.getOptimalEuclideanRepresentation(a, b, c, transcendentalVar);
                 if (euclideanCoefficients.length != 2) {
                     throw new NotAlgebraicallyIntegrableException();
                 }
@@ -1660,8 +1655,12 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                 gilt deg(h) <= n - deg(a), n = obere Schranke für den Grad von q.
                 Im Folgenden sei bNew = b + a', cNew = s - t'.
                  */
-                Expression bNew = b.add(a.diff(var)).simplify(simplifyTypesRischDifferentialEquation);
-                Expression cNew = euclideanCoefficients[0].sub(euclideanCoefficients[1].diff(var)).simplify(simplifyTypesRischDifferentialEquation);
+                Expression derivativeOfA = a.replaceVariable(transcendentalVar, transcendentalElement).diff(var).simplify(simplifyTypesRischDifferentialEquation);
+                derivativeOfA = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfA, transcendentalElement, Variable.create(transcendentalVar));
+                Expression derivativeOfT = euclideanCoefficients[1].replaceVariable(transcendentalVar, transcendentalElement).diff(var).simplify(simplifyTypesRischDifferentialEquation);
+                derivativeOfT = SubstitutionUtilities.substituteExpressionByAnotherExpression(derivativeOfT, transcendentalElement, Variable.create(transcendentalVar));
+                Expression bNew = b.add(derivativeOfA).simplify(simplifyTypesRischDifferentialEquation);
+                Expression cNew = euclideanCoefficients[0].sub(derivativeOfT).simplify(simplifyTypesRischDifferentialEquation);
 
                 Expression solutionOfReducedDiffEq = getNumeratorOfRischDifferentialEquationInLogarithmicCase(a, bNew, cNew, expArgument, transcendentalElement, var, transcendentalVar);
                 Expression numerator = solutionOfReducedDiffEq.mult(a).add(euclideanCoefficients[1]).simplify(simplifyTypesRischDifferentialEquation);

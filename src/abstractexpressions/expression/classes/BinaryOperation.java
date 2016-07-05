@@ -40,7 +40,7 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         return simplifyTypes;
     }
 
