@@ -717,16 +717,6 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Gibt den Ausdruck als String aus.
-     */
-    public abstract String writeExpression();
-
-    @Override
-    public String toString() {
-        return this.writeExpression();
-    }
-
-    /**
      * Prüft, ob der Ausdruck ein eine rationale Konstante ist.
      */
     public boolean isRationalConstant() {

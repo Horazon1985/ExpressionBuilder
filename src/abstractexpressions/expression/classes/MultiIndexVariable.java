@@ -61,7 +61,7 @@ public class MultiIndexVariable extends Variable {
     }
 
     @Override
-    public String writeExpression() {
+    public String toString() {
         if (this.indices.isEmpty()){
             return this.name;
         }
@@ -78,11 +78,6 @@ public class MultiIndexVariable extends Variable {
             }
         }
         return result + "}";
-    }
-    
-    @Override
-    public String toString() {
-        return writeExpression();
     }
 
 }

@@ -62,7 +62,7 @@ public class LogicalConstant extends LogicalExpression {
     }
 
     @Override
-    public String writeLogicalExpression() {
+    public String toString() {
         if (this.value == true) {
             return "1";
         }

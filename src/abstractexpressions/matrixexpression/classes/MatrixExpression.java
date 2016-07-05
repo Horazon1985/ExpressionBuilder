@@ -733,16 +733,6 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression replaceVariable(String var, Expression expr);
 
     /**
-     * Schreibt Matrizenausdrücke aus.
-     */
-    public abstract String writeMatrixExpression();
-
-    @Override
-    public String toString() {
-        return this.writeMatrixExpression();
-    }
-
-    /**
      * Triviale Vereinfachungen für Matrizenausdrücke.
      */
     public abstract MatrixExpression simplifyBasic() throws EvaluationException;

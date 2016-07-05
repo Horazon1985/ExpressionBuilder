@@ -61,11 +61,11 @@ public class LogicalUnaryOperation extends LogicalExpression {
     }
 
     @Override
-    public String writeLogicalExpression() {
+    public String toString() {
         if (this.left instanceof LogicalBinaryOperation) {
-            return "!(" + this.left.writeLogicalExpression() + ")";
+            return "!(" + this.left.toString() + ")";
         }
-        return "!" + this.left.writeLogicalExpression();
+        return "!" + this.left.toString();
     }
 
     @Override

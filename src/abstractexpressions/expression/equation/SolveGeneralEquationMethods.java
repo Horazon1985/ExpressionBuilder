@@ -41,27 +41,25 @@ public abstract class SolveGeneralEquationMethods {
     public static final ExpressionCollection ALL_REALS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
-    private static final HashSet<TypeSimplify> simplifyTypesEquation = getSimplifyTypesEquation();
+    private static final HashSet<TypeSimplify> simplifyTypesEquation = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesEquation() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        return simplifyTypes;
+    static {
+        simplifyTypesEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesEquation.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesEquation.add(TypeSimplify.simplify_factorize);
+        simplifyTypesEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesEquation.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypesEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesEquation.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypesEquation.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesEquation.add(TypeSimplify.simplify_collect_logarithms);
     }
 
     /**

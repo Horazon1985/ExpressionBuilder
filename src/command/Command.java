@@ -50,10 +50,12 @@ public class Command {
         for (Object param : this.params) {
             if (param instanceof Expression[]) {
                 // Dann ist der Parameter eine Gleichung.
-                result = result + ((Expression[]) param)[0].writeExpression() + "=" + ((Expression[]) param)[1].writeExpression() + ",";
+                result = result + ((Expression[]) param)[0].toString() + "=" + ((Expression[]) param)[1].toString() + ",";
             } else {
+                // Alle anderen Fälle.
                 result = result + param.toString() + ",";
             }
+
         }
         return result.substring(0, result.length() - 1) + ")";
     }

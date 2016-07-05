@@ -432,16 +432,6 @@ public abstract class LogicalExpression implements AbstractExpression {
     public abstract boolean equivalent(LogicalExpression logExpr);
 
     /**
-     * Gibt den vorliegenden logischen Ausdruck als String zurück.
-     */
-    public abstract String writeLogicalExpression();
-
-    @Override
-    public String toString() {
-        return this.writeLogicalExpression();
-    }
-
-    /**
      * Liefert einen vereinfachten logischen Ausdruck des vorliegenden logischen
      * Ausdrucks mittels einfacher Vereinfachungsoperationen.
      *

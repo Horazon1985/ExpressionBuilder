@@ -769,13 +769,13 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public String writeMatrixExpression() {
+    public String toString() {
 
         String entriesAsText = "";
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
 
-                entriesAsText = entriesAsText + this.entry[i][j].writeExpression();
+                entriesAsText = entriesAsText + this.entry[i][j].toString();
 
                 if (j < this.getColumnNumber() - 1) {
                     entriesAsText = entriesAsText + ",";

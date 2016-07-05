@@ -40,8 +40,6 @@ public class BinaryOperation extends Expression {
         simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
         simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-//        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
         simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
         return simplifyTypes;
     }
@@ -254,19 +252,19 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public String writeExpression() {
+    public String toString(){
 
         String leftAsText, rightAsText;
 
         if (this.isSum()) {
             if (this.right.doesExpressionStartWithAMinusSign()) {
-                return this.left.writeExpression() + "+(" + this.right.writeExpression() + ")";
+                return this.left.toString() + "+(" + this.right.toString() + ")";
             } else {
-                return this.left.writeExpression() + "+" + this.right.writeExpression();
+                return this.left.toString() + "+" + this.right.toString();
             }
         } else if (this.isDifference()) {
 
-            leftAsText = this.left.writeExpression();
+            leftAsText = this.left.toString();
 
             //0 - a soll als -a ausgegeben werden.
             if (this.left.equals(Expression.ZERO)) {
@@ -274,35 +272,35 @@ public class BinaryOperation extends Expression {
             }
 
             if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                return leftAsText + "-(" + this.right.writeExpression() + ")";
+                return leftAsText + "-(" + this.right.toString() + ")";
             }
-            return leftAsText + "-" + this.right.writeExpression();
+            return leftAsText + "-" + this.right.toString();
 
         } else if (this.isProduct()) {
 
             if (this.left.isSum() || this.left.isDifference()) {
 
-                leftAsText = "(" + this.left.writeExpression() + ")";
+                leftAsText = "(" + this.left.toString() + ")";
                 if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                    rightAsText = "(" + this.right.writeExpression() + ")";
+                    rightAsText = "(" + this.right.toString() + ")";
                 } else {
-                    rightAsText = this.right.writeExpression();
+                    rightAsText = this.right.toString();
                 }
 
             } else {
 
-                leftAsText = this.left.writeExpression();
+                leftAsText = this.left.toString();
                 if (this.left instanceof Constant
                         && ((Constant) this.left).getValue().compareTo(BigDecimal.valueOf(-1)) == 0) {
                     // Ausnahmefall: Der Ausdruck fängt mit einem - an.
                     if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                        return "-(" + this.right.writeExpression() + ")";
+                        return "-(" + this.right.toString() + ")";
                     }
-                    return "-" + this.right.writeExpression();
+                    return "-" + this.right.toString();
                 } else if (this.right.doesExpressionStartWithAMinusSign() || this.right.isSum() || this.right.isDifference()) {
-                    rightAsText = "(" + this.right.writeExpression() + ")";
+                    rightAsText = "(" + this.right.toString() + ")";
                 } else {
-                    rightAsText = this.right.writeExpression();
+                    rightAsText = this.right.toString();
                 }
 
             }
@@ -312,16 +310,16 @@ public class BinaryOperation extends Expression {
         } else if (this.isQuotient()) {
 
             if (this.left.isSum() || this.left.isDifference() || this.left.isProduct()) {
-                leftAsText = "(" + this.left.writeExpression() + ")";
+                leftAsText = "(" + this.left.toString() + ")";
             } else {
-                leftAsText = this.left.writeExpression();
+                leftAsText = this.left.toString();
             }
 
             if (this.right.doesExpressionStartWithAMinusSign()
                     || (this.right instanceof BinaryOperation && !this.right.isPower())) {
-                rightAsText = "(" + this.right.writeExpression() + ")";
+                rightAsText = "(" + this.right.toString() + ")";
             } else {
-                rightAsText = this.right.writeExpression();
+                rightAsText = this.right.toString();
             }
 
             return leftAsText + "/" + rightAsText;
@@ -331,22 +329,22 @@ public class BinaryOperation extends Expression {
         // Hier handelt es sich um eine Potenz.
         if (this.left instanceof BinaryOperation
                 || (this.left instanceof Constant && ((Constant) this.left).getValue().compareTo(BigDecimal.ZERO) < 0)) {
-            leftAsText = "(" + this.left.writeExpression() + ")";
+            leftAsText = "(" + this.left.toString() + ")";
         } else {
-            leftAsText = this.left.writeExpression();
+            leftAsText = this.left.toString();
         }
 
         if (this.right instanceof BinaryOperation
                 || (this.right instanceof Constant && ((Constant) this.right).getValue().compareTo(BigDecimal.ZERO) < 0)) {
-            rightAsText = "(" + this.right.writeExpression() + ")";
+            rightAsText = "(" + this.right.toString() + ")";
         } else {
-            rightAsText = this.right.writeExpression();
+            rightAsText = this.right.toString();
         }
 
         return leftAsText + "^" + rightAsText;
-
+    
     }
-
+    
     @Override
     public String expressionToLatex() {
 
@@ -356,7 +354,7 @@ public class BinaryOperation extends Expression {
             return this.left.expressionToLatex() + "+" + this.right.expressionToLatex();
         } else if (this.isDifference()) {
 
-            leftAsLatexCode = this.left.writeExpression();
+            leftAsLatexCode = this.left.toString();
 
             //0 - a soll als -a ausgegeben werden.
             if (this.left.equals(Expression.ZERO)) {
@@ -411,7 +409,7 @@ public class BinaryOperation extends Expression {
 
             if (this.left instanceof Variable) {
 
-                if (this.right instanceof Variable && (this.right.writeExpression().length() == 1)) {
+                if (this.right instanceof Variable && (this.right.toString().length() == 1)) {
                     return leftAsLatexCode + "^" + this.right.expressionToLatex();
                 }
                 return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
@@ -419,13 +417,13 @@ public class BinaryOperation extends Expression {
             } else if (this.left instanceof Constant) {
 
                 if (this.left.isNonNegative()) {
-                    if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
+                    if ((this.right instanceof Variable) && (this.right.toString().length() == 1)) {
                         return leftAsLatexCode + "^" + this.right.expressionToLatex();
                     }
                     return leftAsLatexCode + "^{" + this.right.expressionToLatex() + "}";
                 }
 
-            } else if ((this.right instanceof Variable) && (this.right.writeExpression().length() == 1)) {
+            } else if ((this.right instanceof Variable) && (this.right.toString().length() == 1)) {
                 return "{" + leftAsLatexCode + "}^" + this.right.expressionToLatex();
             }
 
@@ -2213,6 +2211,7 @@ public class BinaryOperation extends Expression {
 
     }
 
+    @Override
     public Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException {
 
         Expression expr = this;
@@ -2256,8 +2255,8 @@ public class BinaryOperation extends Expression {
         // Verusuch: Ausmultiplizieren, zusammenfassen und prüfen, ob das Ergebnis kürzer ist.
         if (expr.isQuotient()) {
             /* 
-                 Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
-                 ob sich diese Vereinfachungsart lohnt. 
+             Bei einem Quotienten soll man im Zähler und im Nenner separat beurteilen, 
+             ob sich diese Vereinfachungsart lohnt. 
              */
             exprOptimized = ((BinaryOperation) expr).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
                     ((BinaryOperation) expr).getRight().simplifyExpandAndCollectEquivalentsIfShorter());

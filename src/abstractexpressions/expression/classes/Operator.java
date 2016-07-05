@@ -789,17 +789,17 @@ public class Operator extends Expression {
     }
 
     @Override
-    public String writeExpression() {
+    public String toString() {
 
         // Operator Fakultät wird mit als (...)! ausgeschrieben.
         if (this.type.equals(TypeOperator.fac)) {
             if ((Expression) this.params[0] instanceof Constant && ((Constant) this.params[0]).getValue().compareTo(BigDecimal.ZERO) >= 0) {
-                return ((Expression) this.params[0]).writeExpression() + "!";
+                return ((Expression) this.params[0]).toString() + "!";
             }
             if ((Expression) this.params[0] instanceof Variable) {
-                return ((Expression) this.params[0]).writeExpression() + "!";
+                return ((Expression) this.params[0]).toString() + "!";
             }
-            return "(" + ((Expression) this.params[0]).writeExpression() + ")!";
+            return "(" + ((Expression) this.params[0]).toString() + ")!";
         }
 
         String result = (String) getNameFromType(this.type) + "(";
@@ -807,7 +807,7 @@ public class Operator extends Expression {
 
         for (Object param : this.params) {
             if (param instanceof Expression) {
-                parameter = ((Expression) param).writeExpression();
+                parameter = ((Expression) param).toString();
             } else if (param instanceof String) {
                 parameter = (String) param;
             } else if (param instanceof Double) {

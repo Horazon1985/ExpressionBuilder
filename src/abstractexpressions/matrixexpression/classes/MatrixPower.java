@@ -325,21 +325,21 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
-    public String writeMatrixExpression() {
+    public String toString() {
 
         String baseAsText, exponentAsText;
 
         if (this.left instanceof MatrixBinaryOperation) {
-            baseAsText = "(" + this.left.writeMatrixExpression() + ")";
+            baseAsText = "(" + this.left.toString() + ")";
         } else {
-            baseAsText = this.left.writeMatrixExpression();
+            baseAsText = this.left.toString();
         }
 
         if (this.right instanceof BinaryOperation
                 || (this.right instanceof Constant && this.right.isNonPositive())) {
-            exponentAsText = "(" + this.right.writeExpression() + ")";
+            exponentAsText = "(" + this.right.toString()+ ")";
         } else {
-            exponentAsText = this.right.writeExpression();
+            exponentAsText = this.right.toString();
         }
 
         return baseAsText + "^" + exponentAsText;

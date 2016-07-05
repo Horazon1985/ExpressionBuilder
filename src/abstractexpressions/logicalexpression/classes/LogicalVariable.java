@@ -122,7 +122,7 @@ public class LogicalVariable extends LogicalExpression {
     }
     
     @Override
-    public String writeLogicalExpression() {
+    public String toString() {
         return this.name;
     }
 

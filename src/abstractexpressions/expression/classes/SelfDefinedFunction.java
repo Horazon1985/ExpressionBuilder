@@ -296,12 +296,12 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public String writeExpression() {
+    public String toString() {
         String result = this.name + "(";
         for (int i = 0; i < this.left.length - 1; i++) {
-            result = result + this.left[i].writeExpression() + ",";
+            result = result + this.left[i].toString() + ",";
         }
-        result = result + this.left[this.left.length - 1].writeExpression() + ")";
+        result = result + this.left[this.left.length - 1].toString() + ")";
         return result;
     }
 

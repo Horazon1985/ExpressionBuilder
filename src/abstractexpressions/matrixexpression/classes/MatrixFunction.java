@@ -194,8 +194,8 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public String writeMatrixExpression() {
-        return this.type.toString() + "(" + this.left.writeMatrixExpression() + ")";
+    public String toString() {
+        return this.type.toString() + "(" + this.left.toString() + ")";
     }
 
     /**

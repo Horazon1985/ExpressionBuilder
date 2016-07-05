@@ -476,16 +476,16 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public String writeMatrixExpression() {
+    public String toString() {
 
         String result = (String) getNameFromType(this.type) + "(";
         String parameter = "";
 
         for (Object param : this.params) {
             if (param instanceof Expression) {
-                parameter = ((Expression) param).writeExpression();
+                parameter = ((Expression) param).toString();
             } else if (param instanceof MatrixExpression) {
-                parameter = ((MatrixExpression) param).writeMatrixExpression();
+                parameter = ((MatrixExpression) param).toString();
             } else if (param instanceof String) {
                 parameter = (String) param;
             } else if (param instanceof Double) {

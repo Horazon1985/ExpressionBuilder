@@ -508,12 +508,12 @@ public class GraphicPanelFormula extends JPanel {
 
     private int getLengthOfLogicalConstant(Graphics g, LogicalConstant logExpr, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth(logExpr.writeLogicalExpression());
+        return g.getFontMetrics().stringWidth(logExpr.toString());
     }
 
     private int getLengthOfLogicalVariable(Graphics g, LogicalVariable logExpr, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth(logExpr.writeLogicalExpression());
+        return g.getFontMetrics().stringWidth(logExpr.toString());
     }
 
     private int getLengthOfLogicalUnaryOperation(Graphics g, LogicalUnaryOperation logExpr, int fontSize) {
@@ -1342,7 +1342,7 @@ public class GraphicPanelFormula extends JPanel {
 
     private int getLengthOfConstant(Graphics g, Constant expr, int fontSize) {
         setFont(g, fontSize);
-        String s = expr.writeExpression();
+        String s = expr.toString();
         if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
             return getWidthOfSignMinus(g, fontSize) + g.getFontMetrics().stringWidth(s.substring(1, s.length()));
         }
@@ -1358,7 +1358,7 @@ public class GraphicPanelFormula extends JPanel {
         
         
         if (!expr.getName().contains("_")) {
-            String s = expr.writeExpression();
+            String s = expr.toString();
             return g.getFontMetrics().stringWidth(s);
         }
 
@@ -2230,10 +2230,10 @@ public class GraphicPanelFormula extends JPanel {
             Constant exprNeg = new Constant(expr.getValue().negate());
             // Minuszeichen wird mit der internen Methode separat gezeichnet (der Einheitlichkeit halber).
             drawSignMinus(g, x_0, y_0 - (getHeightOfCenterOfExpression(g, exprNeg, fontSize) - fontSize / 2), fontSize);
-            g.drawString(exprNeg.writeExpression(), x_0 + getWidthOfSignMinus(g, fontSize), y_0);
+            g.drawString(exprNeg.toString(), x_0 + getWidthOfSignMinus(g, fontSize), y_0);
             return;
         }
-        g.drawString(expr.writeExpression(), x_0, y_0);
+        g.drawString(expr.toString(), x_0, y_0);
     }
 
     /**
@@ -2252,7 +2252,7 @@ public class GraphicPanelFormula extends JPanel {
             // Unicode: pi = \u03C0
             g.drawString("\u03C0", x_0, y_0);
         } else if (!expr.getName().contains("_")) {
-            g.drawString(expr.writeExpression(), x_0, y_0);
+            g.drawString(expr.toString(), x_0, y_0);
         } else {
             // Die Variable ist von der Form x_index mit eventuellen Apostrophs.
             int i = 2;
@@ -3169,7 +3169,7 @@ public class GraphicPanelFormula extends JPanel {
      */
     private void drawLogicalConstant(Graphics g, LogicalConstant logExpr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString(logExpr.writeLogicalExpression(), x_0, y_0);
+        g.drawString(logExpr.toString(), x_0, y_0);
     }
 
     /**
@@ -3177,7 +3177,7 @@ public class GraphicPanelFormula extends JPanel {
      */
     private void drawLogicalVariable(Graphics g, LogicalVariable logExpr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString(logExpr.writeLogicalExpression(), x_0, y_0);
+        g.drawString(logExpr.toString(), x_0, y_0);
     }
 
     /**

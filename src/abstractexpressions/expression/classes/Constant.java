@@ -195,31 +195,27 @@ public class Constant extends Expression {
     }
 
     @Override
-    public String writeExpression() {
-
+    public String toString() {
         if (this.precise) {
-
-            //Falls preciseValue eine ganze Zahl ist -> value ohne Nachkommastellen ausgeben!
+            // Falls value eine ganze Zahl ist -> value ohne Nachkommastellen ausgeben!
             if (this.isIntegerConstant()) {
                 return this.value.setScale(0, BigDecimal.ROUND_HALF_UP).toPlainString();
             }
             return this.value.toPlainString();
-
         }
         /*
-         Falls approximiert wird und this.value eine ganze Zahl ist -> value
+         Falls approximiert wird und this.approxValue eine ganze Zahl ist -> value
          ohne Nachkommastellen ausgeben!
          */
         if (this.approxValue == Math.round(this.approxValue)) {
             return String.valueOf((long) this.approxValue);
         }
         return String.valueOf(this.approxValue);
-
     }
 
     @Override
     public String expressionToLatex() {
-        return this.writeExpression();
+        return this.toString();
     }
 
     @Override

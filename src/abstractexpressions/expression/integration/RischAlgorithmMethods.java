@@ -64,7 +64,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-        simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesRischAlgorithm.add(TypeSimplify.simplify_expand_logarithms);
 
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.order_difference_and_division);
@@ -79,7 +78,6 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_expand_logarithms);
         simplifyTypesRischDifferentialEquation.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
     }

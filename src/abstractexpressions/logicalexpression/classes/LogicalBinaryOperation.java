@@ -115,31 +115,31 @@ public class LogicalBinaryOperation extends LogicalExpression {
     }
 
     @Override
-    public String writeLogicalExpression() {
+    public String toString() {
 
         if (this.type.equals(TypeLogicalBinary.EQUIVALENCE)) {
-            return this.left.writeLogicalExpression() + "=" + this.right.writeLogicalExpression();
+            return this.left.toString() + "=" + this.right.toString();
         } else if (this.type.equals(TypeLogicalBinary.IMPLICATION)) {
 
             if (this.right.isEquiv()) {
-                return this.left.writeLogicalExpression() + ">" + this.right.writeLogicalExpression();
+                return this.left.toString() + ">" + this.right.toString();
             }
-            return this.left.writeLogicalExpression() + ">" + this.right.writeLogicalExpression();
+            return this.left.toString() + ">" + this.right.toString();
 
         } else if (this.type.equals(TypeLogicalBinary.OR)) {
 
             String leftAsText, rightAsText;
 
             if (this.left.isEquiv() || this.left.isImpl()) {
-                leftAsText = "(" + this.left.writeLogicalExpression() + ")";
+                leftAsText = "(" + this.left.toString() + ")";
             } else {
-                leftAsText = this.left.writeLogicalExpression();
+                leftAsText = this.left.toString();
             }
 
             if (this.right.isEquiv() || this.right.isImpl()) {
-                rightAsText = "(" + this.right.writeLogicalExpression() + ")";
+                rightAsText = "(" + this.right.toString() + ")";
             } else {
-                rightAsText = this.right.writeLogicalExpression();
+                rightAsText = this.right.toString();
             }
 
             return leftAsText + "|" + rightAsText;
@@ -149,15 +149,15 @@ public class LogicalBinaryOperation extends LogicalExpression {
             String leftAsText, rightAsText;
 
             if (this.left instanceof LogicalBinaryOperation && this.left.isNotAnd()) {
-                leftAsText = "(" + this.left.writeLogicalExpression() + ")";
+                leftAsText = "(" + this.left.toString() + ")";
             } else {
-                leftAsText = this.left.writeLogicalExpression();
+                leftAsText = this.left.toString();
             }
 
             if (this.right instanceof LogicalBinaryOperation && this.right.isNotAnd()) {
-                rightAsText = "(" + this.right.writeLogicalExpression() + ")";
+                rightAsText = "(" + this.right.toString() + ")";
             } else {
-                rightAsText = this.right.writeLogicalExpression();
+                rightAsText = this.right.toString();
             }
 
             return leftAsText + "&" + rightAsText;

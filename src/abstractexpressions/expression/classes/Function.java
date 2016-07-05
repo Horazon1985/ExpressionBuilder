@@ -427,14 +427,14 @@ public class Function extends Expression {
     }
 
     @Override
-    public String writeExpression() {
+    public String toString() {
 
         if (this.type == TypeFunction.id) {
-            return this.left.writeExpression();
+            return this.left.toString();
         } else if (this.type == TypeFunction.abs) {
-            return "|" + this.left.writeExpression() + "|";
+            return "|" + this.left.toString() + "|";
         }
-        return this.type.toString() + "(" + this.left.writeExpression() + ")";
+        return this.type.toString() + "(" + this.left.toString() + ")";
 
     }
 

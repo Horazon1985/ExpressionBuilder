@@ -56,72 +56,62 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = getSimplifyTypesRationalExponentialEquation();
-    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = getSimplifyTypesRationalTrigonometricalEquation();
-    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicEquation = getSimplifyTypesAlgebraicEquation();
+    private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicEquation = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesRationalExponentialEquation() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        return simplifyTypes;
+    static {
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_factorize);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_expand_logarithms);
+        simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_sums_and_products);
+        
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
+
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_factorize);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_collect_logarithms);
+        simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
     }
-
-    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalEquation() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
-        return simplifyTypes;
-    }
-
-    private static HashSet<TypeSimplify> getSimplifyTypesAlgebraicEquation() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        simplifyTypes.add(TypeSimplify.simplify_expand_and_collect_equivalents_if_shorter);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
-        return simplifyTypes;
-    }
-
+    
     // Exponentialgleichungen.
     /**
      * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine

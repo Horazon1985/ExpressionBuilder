@@ -377,20 +377,20 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public String writeMatrixExpression() {
+    public String toString() {
 
         String leftAsText, rightAsText;
 
         if (this.type.equals(TypeMatrixBinary.PLUS)) {
-            return this.left.writeMatrixExpression() + "+" + this.right.writeMatrixExpression();
+            return this.left.toString() + "+" + this.right.toString();
         } else if (this.type.equals(TypeMatrixBinary.MINUS)) {
 
-            leftAsText = this.left.writeMatrixExpression();
+            leftAsText = this.left.toString();
 
             if (this.right.isSum() || this.right.isDifference()) {
-                return leftAsText + "-(" + this.right.writeMatrixExpression() + ")";
+                return leftAsText + "-(" + this.right.toString() + ")";
             }
-            return leftAsText + "-" + this.right.writeMatrixExpression();
+            return leftAsText + "-" + this.right.toString();
 
         }
 
@@ -409,14 +409,14 @@ public class MatrixBinaryOperation extends MatrixExpression {
                     || (matrixConverted instanceof BinaryOperation
                     && (((BinaryOperation) matrixConverted).getType().equals(TypeBinary.PLUS)
                     || ((BinaryOperation) matrixConverted).getType().equals(TypeBinary.MINUS)))) {
-                leftAsText = "(" + matrixConverted.writeExpression() + ")";
+                leftAsText = "(" + matrixConverted.toString() + ")";
             } else {
-                leftAsText = matrixConverted.writeExpression();
+                leftAsText = matrixConverted.toString();
             }
         } else if (this.left.isSum() || this.left.isDifference()) {
-            leftAsText = "(" + this.left.writeMatrixExpression() + ")";
+            leftAsText = "(" + this.left.toString() + ")";
         } else {
-            leftAsText = this.left.writeMatrixExpression();
+            leftAsText = this.left.toString();
         }
 
         if (this.right.convertOneTimesOneMatrixToExpression() instanceof Expression) {
@@ -426,14 +426,14 @@ public class MatrixBinaryOperation extends MatrixExpression {
                     || (matrixConverted instanceof BinaryOperation
                     && (((BinaryOperation) matrixConverted).getType().equals(TypeBinary.PLUS)
                     || ((BinaryOperation) matrixConverted).getType().equals(TypeBinary.MINUS)))) {
-                rightAsText = "(" + matrixConverted.writeExpression() + ")";
+                rightAsText = "(" + matrixConverted.toString()+ ")";
             } else {
-                rightAsText = matrixConverted.writeExpression();
+                rightAsText = matrixConverted.toString();
             }
         } else if (this.right.isSum() || this.right.isDifference()) {
-            rightAsText = "(" + this.right.writeMatrixExpression() + ")";
+            rightAsText = "(" + this.right.toString() + ")";
         } else {
-            rightAsText = this.right.writeMatrixExpression();
+            rightAsText = this.right.toString();
         }
 
         if (leftAsText.equals("-")) {
