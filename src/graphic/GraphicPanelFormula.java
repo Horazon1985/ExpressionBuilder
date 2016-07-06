@@ -53,19 +53,22 @@ public class GraphicPanelFormula extends JPanel {
     private TypeGraphicFormula type;
     private int width, height, fontSize;
 
+    private ArrayList<Integer> indicesOfFormulasInOutput = new ArrayList<>();
+
     private Color backgroundColor = Color.white;
-    private static final Color backgroundColorUnmarked = Color.white;
-    private static final Color backgroundColorMarked = new Color(51, 204, 255);
+    private static final Color BACKGROUND_COLOR_UNMARKED = Color.white;
+    private static final Color BACKGROUND_COLOR_MARKED = new Color(51, 204, 255);
 
     private static final ArrayList<GraphicPanelFormula> formulas = new ArrayList<>();
 
     public GraphicPanelFormula() {
         formulas.add(this);
+        this.indicesOfFormulasInOutput = new ArrayList<>();
         this.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (getBackgroundColor().equals(GraphicPanelFormula.backgroundColorUnmarked)) {
+                if (getBackgroundColor().equals(GraphicPanelFormula.BACKGROUND_COLOR_UNMARKED)) {
                     setMarked();
                 } else {
                     setUnmarked();
@@ -99,19 +102,23 @@ public class GraphicPanelFormula extends JPanel {
     public Color getBackgroundColor() {
         return this.backgroundColor;
     }
+    
+    public ArrayList<Integer> getIndicesOfFormulasInOutput() {
+        return this.indicesOfFormulasInOutput;
+    }
 
     public boolean isMarked() {
-        return this.backgroundColor.equals(backgroundColorMarked);
+        return this.backgroundColor.equals(BACKGROUND_COLOR_MARKED);
     }
 
     // MouseListener-Methoden
     private void setMarked() {
-        this.backgroundColor = backgroundColorMarked;
+        this.backgroundColor = BACKGROUND_COLOR_MARKED;
         repaint();
     }
 
     private void setUnmarked() {
-        this.backgroundColor = backgroundColorUnmarked;
+        this.backgroundColor = BACKGROUND_COLOR_UNMARKED;
         repaint();
     }
 
@@ -174,6 +181,17 @@ public class GraphicPanelFormula extends JPanel {
         for (Object o : out) {
             output[i] = o;
             i++;
+        }
+    }
+
+    public void setIndicesOfFormulasInOutput(ArrayList<Integer> indices) {
+        this.indicesOfFormulasInOutput = indices;
+    }
+
+    public void setIndicesOfFormulasInOutput(Integer... indices) {
+        this.indicesOfFormulasInOutput.clear();
+        for (Integer i : indices){
+            this.indicesOfFormulasInOutput.add(i);
         }
     }
 
@@ -1351,12 +1369,11 @@ public class GraphicPanelFormula extends JPanel {
 
     private int getLengthOfVariable(Graphics g, Variable expr, int fontSize) {
         setFont(g, fontSize);
-        
-        if (expr instanceof MultiIndexVariable){
-            return getLengthOfMultiIndexVariable(g, (MultiIndexVariable) expr, fontSize);        
+
+        if (expr instanceof MultiIndexVariable) {
+            return getLengthOfMultiIndexVariable(g, (MultiIndexVariable) expr, fontSize);
         }
-        
-        
+
         if (!expr.getName().contains("_")) {
             String s = expr.toString();
             return g.getFontMetrics().stringWidth(s);
@@ -2243,11 +2260,11 @@ public class GraphicPanelFormula extends JPanel {
 
         setFont(g, fontSize);
 
-        if (expr instanceof MultiIndexVariable){
+        if (expr instanceof MultiIndexVariable) {
             drawMultiIndexVariable(g, (MultiIndexVariable) expr, x_0, y_0, fontSize);
             return;
         }
-        
+
         if (expr.getName().equals("pi")) {
             // Unicode: pi = \u03C0
             g.drawString("\u03C0", x_0, y_0);
@@ -2893,7 +2910,7 @@ public class GraphicPanelFormula extends JPanel {
         //Zunächst Schriftgröße verkleinern, da Indizes kleinere Schriftgröße besitzen.
         drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        g.drawString(" = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar, 
+        g.drawString(" = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
                 y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
@@ -2936,7 +2953,7 @@ public class GraphicPanelFormula extends JPanel {
         //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
         drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        g.drawString(" = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar, 
+        g.drawString(" = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
                 y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen

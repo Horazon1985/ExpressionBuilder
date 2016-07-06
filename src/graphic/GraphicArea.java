@@ -61,8 +61,9 @@ public class GraphicArea extends JTextArea {
 
         graphicPresentationOfFormula.setExpr(f);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.EXPRESSION);
+        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -81,8 +82,9 @@ public class GraphicArea extends JTextArea {
 
         graphicPresentationOfFormula.setLogExpr(f);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.LOGICAL_EXPRESSION);
+        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -101,8 +103,9 @@ public class GraphicArea extends JTextArea {
 
         graphicPresentationOfFormula.setMatExpr(f);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.MATRIX_EXPRESSION);
+        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -122,7 +125,7 @@ public class GraphicArea extends JTextArea {
         graphicPresentationOfFormula.setCommand(c);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.COMMAND);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -142,7 +145,7 @@ public class GraphicArea extends JTextArea {
         graphicPresentationOfFormula.setText(t);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.TEXT);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -161,8 +164,9 @@ public class GraphicArea extends JTextArea {
 
         graphicPresentationOfFormula.setOutput(out);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
+//        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(indices);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -182,7 +186,7 @@ public class GraphicArea extends JTextArea {
         graphicPresentationOfFormula.setOutput(out);
         graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
         graphicPresentationOfFormula.initialize(getFontSize());
-        formulas.add(graphicPresentationOfFormula);
+        this.formulas.add(graphicPresentationOfFormula);
         graphicPresentationOfFormula.drawFormula();
         setPosition(graphicPresentationOfFormula);
 
@@ -190,13 +194,13 @@ public class GraphicArea extends JTextArea {
 
     public void setPosition(GraphicPanelFormula f) {
 
-        if (formulasCoordinates.isEmpty()) {
-            formulasCoordinates.add(new Point(10, f.getHeight()));
+        if (this.formulasCoordinates.isEmpty()) {
+            this.formulasCoordinates.add(new Point(10, f.getHeight()));
         } else {
-            formulasCoordinates.add(new Point(10, formulasCoordinates.get(formulasCoordinates.size() - 1).y + 10 + f.getHeight()));
+            this.formulasCoordinates.add(new Point(10, this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y + 10 + f.getHeight()));
         }
-        f.setBounds(formulasCoordinates.get(formulasCoordinates.size() - 1).x,
-                formulasCoordinates.get(formulasCoordinates.size() - 1).y - f.getHeight(),
+        f.setBounds(this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).x,
+                this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y - f.getHeight(),
                 f.getWidth(), f.getHeight());
         updateSize();
 
@@ -211,8 +215,8 @@ public class GraphicArea extends JTextArea {
                 this.setPreferredSize(new Dimension(formula.getWidth() + 40, this.getHeight()));
                 revalidate();
             }
-            if (formulasCoordinates.get(formulas.indexOf(formula)).y > this.getHeight()) {
-                this.setPreferredSize(new Dimension(this.getWidth(), formulasCoordinates.get(formulas.indexOf(formula)).y + 40));
+            if (this.formulasCoordinates.get(formulas.indexOf(formula)).y > this.getHeight()) {
+                this.setPreferredSize(new Dimension(this.getWidth(), this.formulasCoordinates.get(formulas.indexOf(formula)).y + 40));
                 revalidate();
             }
         }
@@ -220,8 +224,8 @@ public class GraphicArea extends JTextArea {
     }
 
     public void clearArea() {
-        formulas.clear();
-        formulasCoordinates.clear();
+        this.formulas.clear();
+        this.formulasCoordinates.clear();
         this.removeAll();
         // Standardgröße wiederherstellen.
         this.setBounds(this.mathToolGraphicAreaX, this.mathToolGraphicAreaY,

@@ -1213,9 +1213,9 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
                         Expression f = leadingCoefficientData[0];
                         Expression n = leadingCoefficientData[1];
                         Expression numeratorOfSolution = f.mult(SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficientsC, transcendentalVar)).mult(
-                                Variable.create(transcendentalVar).pow(n));
+                                transcendentalElement.pow(n));
                         numeratorOfSolution = new Operator(TypeOperator.integral, new Object[]{numeratorOfSolution, var}).simplify(simplifyTypesRischDifferentialEquation);
-                        return numeratorOfSolution.div(f.mult(Variable.create(transcendentalVar).pow(n))).simplify(simplifyTypesRischDifferentialEquation);
+                        return numeratorOfSolution.div(f.mult(transcendentalElement.pow(n))).simplify(simplifyTypesRischDifferentialEquation);
 
                     } else {
 
@@ -1227,17 +1227,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                         /*
                         Ist q_n der Leitkoeffizient von q = Zähler und n = degNumerator der Grad von q, so sei
-                        cNew = c - (q_n*x^n)' - b*q_n*x^n.
+                        cNew = c - (q_n*t^n)' - b*q_n*t^n.
                          */
-                        Expression cNew = c.sub(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)).diff(var).add(
-                                b.mult(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))))).simplify(simplifyTypesRischDifferentialEquation);
+                        Expression summandToSubtract = leadingCoefficient.mult(transcendentalElement).pow(degNumerator).diff(var).simplify(simplifyTypesRischDifferentialEquation);
+                        summandToSubtract = SubstitutionUtilities.substituteExpressionByAnotherExpression(summandToSubtract, transcendentalElement, Variable.create(transcendentalVar));
+                        Expression cNew = c.sub(summandToSubtract.add(b.mult(leadingCoefficient.mult(Variable.create(transcendentalVar).pow(degNumerator))))).simplify(simplifyTypesRischDifferentialEquation);
 
                         /* 
-                        restNumerator = r = q - q_n*x^n erfüllt die folgende Differentialgleichung:
+                        restNumerator = r = q - q_n*t^n erfüllt die folgende Differentialgleichung:
                         r' + b*r = cNew.
                          */
                         Expression restNumerator = getNumeratorOfRischDifferentialEquationInExponentialCase(ONE, b, cNew, expArgument, transcendentalElement, var, transcendentalVar);
-                        return restNumerator.add(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))).simplify(simplifyTypesRischDifferentialEquation);
+                        return restNumerator.add(leadingCoefficient.mult(transcendentalElement.pow(degNumerator))).simplify(simplifyTypesRischDifferentialEquation);
 
                     }
 
@@ -1578,17 +1579,18 @@ public abstract class RischAlgorithmMethods extends GeneralIntegralMethods {
 
                         /*
                         Ist q_n der Leitkoeffizient von q = Zähler und n = degNumerator der Grad von q, so sei
-                        cNew = c - (q_n*x^n)' - b*q_n*x^n.
+                        cNew = c - (q_n*t^n)' - b*q_n*t^n.
                          */
-                        Expression cNew = c.sub(leadingCoefficient.mult(Variable.create(var).pow(degNumerator)).diff(var).add(
-                                b.mult(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))))).simplify(simplifyTypesRischDifferentialEquation);
+                        Expression summandToSubtract = leadingCoefficient.mult(transcendentalElement).pow(degNumerator).diff(var).simplify(simplifyTypesRischDifferentialEquation);
+                        summandToSubtract = SubstitutionUtilities.substituteExpressionByAnotherExpression(summandToSubtract, transcendentalElement, Variable.create(transcendentalVar));
+                        Expression cNew = c.sub(summandToSubtract.add(b.mult(leadingCoefficient.mult(Variable.create(transcendentalVar).pow(degNumerator))))).simplify(simplifyTypesRischDifferentialEquation);
 
                         /* 
                         restNumerator = r = q - q_n*x^n erfüllt die folgende Differentialgleichung:
                         r' + b*r = cNew.
                          */
                         Expression restNumerator = getNumeratorOfRischDifferentialEquationInLogarithmicCase(ONE, b, cNew, expArgument, transcendentalElement, var, transcendentalVar);
-                        return restNumerator.add(leadingCoefficient.mult(Variable.create(var).pow(degNumerator))).simplify(simplifyTypesRischDifferentialEquation);
+                        return restNumerator.add(leadingCoefficient.mult(transcendentalElement.pow(degNumerator))).simplify(simplifyTypesRischDifferentialEquation);
 
                     }
 
