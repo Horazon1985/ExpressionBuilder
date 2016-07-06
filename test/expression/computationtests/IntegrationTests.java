@@ -51,7 +51,7 @@ public class IntegrationTests {
     //////////////////////// Allgemeine Integrationsmethoden //////////////////////////////
     @Test
     public void computeIntegralOfPolynomialTest() {
-        // Integral von x^3/7+x^2-5 ist = x^4/28+x^3/3-5*x.
+        // int(x^3/7+x^2-5,x) = x^4/28+x^3/3-5*x.
         try {
             f = Expression.build("int(x^3/7+x^2-5,x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -65,7 +65,7 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralBySubstitutionTest1() {
-        // Integral von x^2*exp(x^3) ist = exp(x^3)/3.
+        // int(x^2*exp(x^3),x) = exp(x^3)/3.
         try {
             f = Expression.build("int(x^2*exp(x^3),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -79,7 +79,7 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralBySubstitutionTest2() {
-        // Integral von (6*x^2+2*cos(x))*cos(x^3+sin(x)) ist = sin(x^3+sin(x)).
+        // int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x) = sin(x^3+sin(x)).
         try {
             f = Expression.build("int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -93,7 +93,7 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralByPartialIntegrationTest() {
-        // Integral von x^2*cos(x) ist = sin(x)*x^2-2*(-cos(x)*x-(-sin(x))).
+        // int(x^2*cos(x),x) = sin(x)*x^2-2*(-cos(x)*x-(-sin(x))).
         try {
             f = Expression.build("int(x^2*cos(x),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -109,9 +109,9 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralsOfElementaryFunctionsTest() {
-        // Integral von ln(x) ist = x*ln(x)-x.
-        // Integral von cot(x) ist = ln(|sin(x)|).
-        // Integral von 5^x ist = 5^x/ln(5).
+        // int(ln(x),x) = x*ln(x)-x.
+        // int(cot(x),x) = ln(|sin(x)|).
+        // int(5^x,x) = 5^x/ln(5).
         try {
             f = Expression.build("int(ln(x),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -140,7 +140,7 @@ public class IntegrationTests {
 
     @Test
     public void computeIntegralOfPowerOfElementaryFunctionTest() {
-        // Integral von tan(x)^3 ist = tan(x)^2/2+ln(|cos(x)|).
+        // int(tan(x)^3,x) = tan(x)^2/2+ln(|cos(x)|).
         try {
             f = Expression.build("int(tan(x)^3,x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -154,7 +154,7 @@ public class IntegrationTests {
 
     @Test
     public void integralOfGaussianFunctionNotExistsTest() {
-        // Integral von exp(x^2) ist nicht in kompakter Form berechenbar.
+        // int(exp(x^2),x) ist nicht in kompakter Form berechenbar.
         try {
             f = Expression.build("int(exp(x^2),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);
@@ -167,7 +167,7 @@ public class IntegrationTests {
 
     @Test
     public void integralOfSumTest() {
-        // Integral von x^2+exp(x^2) ist = x^3/3 + int(exp(x^2), x).
+        // int(x^2+exp(x^2),x) ist = x^3/3+int(exp(x^2), x).
         try {
             f = Expression.build("int(x^2+exp(x^2),x)", null);
             Expression integral = GeneralIntegralMethods.integrateIndefinite((Operator) f);

@@ -605,7 +605,7 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
-        // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels Standardsubstitution.
+        // ALLGEMEIN, falls bisher kein Ergebnis: Integration mittels heuristischer Substitutionen.
         try {
             result = integrateByStandardSubstitution(expr);
             if (!result.containsIndefiniteIntegral()) {
@@ -640,21 +640,7 @@ public abstract class GeneralIntegralMethods {
         } catch (NotAlgebraicallyIntegrableException e) {
         }
 
-        /*
-         Falls nichts geholfen hat: Integranden ausmultiplizieren. Falls sich
-         etwas geändert hat -> noch einmal versuchen zu integrieren.
-         */
-        Expression integrand = (Expression) expr.getParams()[0];
-        Expression expandedIntegrand = multiplyOutIntegrand(integrand, var);
-        if (!integrand.equals(expandedIntegrand)) {
-
-            Object[] paramsOfExpandedIntegral = new Object[2];
-            paramsOfExpandedIntegral[0] = expandedIntegrand;
-            paramsOfExpandedIntegral[1] = expr.getParams()[1];
-            return indefiniteIntegration(new Operator(TypeOperator.integral, paramsOfExpandedIntegral), false);
-
-        }
-
+        // Alle bekannten Integrationsmethoden schlagen nicht an.
         throw new NotAlgebraicallyIntegrableException();
 
     }
