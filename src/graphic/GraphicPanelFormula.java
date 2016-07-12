@@ -15,6 +15,7 @@ import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.interfaces.AbstractExpression;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -96,13 +97,12 @@ public class GraphicPanelFormula extends JPanel {
 
             }
         });
-
     }
 
     public Color getBackgroundColor() {
         return this.backgroundColor;
     }
-    
+
     public ArrayList<Integer> getIndicesOfFormulasInOutput() {
         return this.indicesOfFormulasInOutput;
     }
@@ -140,6 +140,24 @@ public class GraphicPanelFormula extends JPanel {
     @Override
     public int getWidth() {
         return this.width;
+    }
+
+    /**
+     * Gibt ein Array zurück, welches alle Elemente von output enthält, welche
+     * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
+     */
+    public AbstractExpression[] getContainedAbstractExpression() {
+        ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
+        for (Object out : output) {
+            if (out instanceof Object[] && ((Object[]) out).length == 2 
+                    && ((Object[]) out)[0] instanceof AbstractExpression
+                    && ((Object[]) out)[1] instanceof Boolean
+                    && (Boolean) ((Object[]) out)[1] == true){
+                abstractExpressionList.add((AbstractExpression) ((Object[]) out)[0]);
+            }
+        }
+        AbstractExpression[] abstractExpressions = new AbstractExpression[abstractExpressionList.size()];
+        return abstractExpressionList.toArray(abstractExpressions);
     }
 
     public void setTypeGraphicFormula(TypeGraphicFormula type) {
@@ -190,7 +208,7 @@ public class GraphicPanelFormula extends JPanel {
 
     public void setIndicesOfFormulasInOutput(Integer... indices) {
         this.indicesOfFormulasInOutput.clear();
-        for (Integer i : indices){
+        for (Integer i : indices) {
             this.indicesOfFormulasInOutput.add(i);
         }
     }
@@ -1793,7 +1811,25 @@ public class GraphicPanelFormula extends JPanel {
              Ausdruck umschließen, und diese tragen zur Höhe des Zentrums
              nicht bei.
              */
-            if (out instanceof Expression) {
+            if (out instanceof Object[] && ((Object[]) out).length == 2
+                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+
+                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                if (outAsAbstrExpr instanceof Expression) {
+                    heightCenter = getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
+                    heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
+                    heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfExpression(g, (Expression) outAsAbstrExpr, fontSize) - heightCenter);
+                } else if (outAsAbstrExpr instanceof LogicalExpression) {
+                    heightCenter = getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize);
+                    heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
+                    heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize) - heightCenter);
+                } else if (outAsAbstrExpr instanceof MatrixExpression) {
+                    heightCenter = getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
+                    heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
+                    heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize) - heightCenter);
+                }
+
+            } else if (out instanceof Expression) {
                 heightCenter = getHeightOfCenterOfExpression(g, (Expression) out, fontSize);
                 heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
                 heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfExpression(g, (Expression) out, fontSize) - heightCenter);
@@ -1832,7 +1868,19 @@ public class GraphicPanelFormula extends JPanel {
              Ausdruck umschließen, und diese tragen zur Höhe des Zentrums
              nicht bei.
              */
-            if (out instanceof Expression) {
+            if (out instanceof Object[] && ((Object[]) out).length == 2
+                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+
+                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                if (outAsAbstrExpr instanceof Expression) {
+                    heightCenter = Math.max(heightCenter, getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize));
+                } else if (outAsAbstrExpr instanceof LogicalExpression) {
+                    heightCenter = Math.max(heightCenter, getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize));
+                } else if (outAsAbstrExpr instanceof MatrixExpression) {
+                    heightCenter = Math.max(heightCenter, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize));
+                }
+
+            } else if (out instanceof Expression) {
                 heightCenter = Math.max(heightCenter, getHeightOfCenterOfExpression(g, (Expression) out, fontSize));
             } else if (out instanceof LogicalExpression) {
                 heightCenter = Math.max(heightCenter, getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) out, fontSize));
@@ -1856,7 +1904,19 @@ public class GraphicPanelFormula extends JPanel {
 
         for (Object out : output) {
 
-            if (out instanceof Expression) {
+            if (out instanceof Object[] && ((Object[]) out).length == 2
+                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+
+                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                if (outAsAbstrExpr instanceof Expression) {
+                    length = length + getLengthOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
+                } else if (outAsAbstrExpr instanceof LogicalExpression) {
+                    length = length + getLengthOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize);
+                } else if (outAsAbstrExpr instanceof MatrixExpression) {
+                    length = length + getLengthOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
+                }
+
+            } else if (out instanceof Expression) {
                 length = length + getLengthOfExpression(g, (Expression) out, fontSize);
             } else if (out instanceof LogicalExpression) {
                 length = length + getLengthOfLogicalExpression(g, (LogicalExpression) out, fontSize);
@@ -4381,6 +4441,7 @@ public class GraphicPanelFormula extends JPanel {
          umgehend wieder auf false gesetzt (s. u.).
          */
         boolean nextExpressionIsSurroundedByBrackets = false;
+        int index = 0;
 
         for (Object out : output) {
 
@@ -4416,8 +4477,37 @@ public class GraphicPanelFormula extends JPanel {
                 distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfMultiIndexVariable(g, (MultiIndexVariable) out, fontSize);
             } else if (out instanceof TypeBracket) {
                 nextExpressionIsSurroundedByBrackets = true;
+            } else if (out instanceof Object[] && ((Object[]) out).length == 2
+                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+
+                // Ausdrücke normal zeichnen.
+                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                if (outAsAbstrExpr instanceof Expression) {
+                    heightCenterOfCurrentOutputParameter = getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
+                    if (nextExpressionIsSurroundedByBrackets) {
+                        drawExpressionSurroundedByBrackets(g, (Expression) outAsAbstrExpr, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - heightCenterOfCurrentOutputParameter), fontSize);
+                        distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
+                        nextExpressionIsSurroundedByBrackets = false;
+                    } else {
+                        drawExpression(g, (Expression) outAsAbstrExpr, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - heightCenterOfCurrentOutputParameter), fontSize);
+                        distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
+                    }
+                } else if (outAsAbstrExpr instanceof LogicalExpression) {
+                    heightCenterOfCurrentOutputParameter = getHeightOfCenterOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize);
+                    drawLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - heightCenterOfCurrentOutputParameter), fontSize);
+                    distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfLogicalExpression(g, (LogicalExpression) outAsAbstrExpr, fontSize);
+                } else if (outAsAbstrExpr instanceof MatrixExpression) {
+                    heightCenterOfCurrentOutputParameter = getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
+                    drawMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - heightCenterOfCurrentOutputParameter), fontSize);
+                    distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
+                }
+
+                // Als bearbeitbar / kopierbar markieren.
+                this.indicesOfFormulasInOutput.add(index);
+
             }
 
+            index++;
         }
 
     }

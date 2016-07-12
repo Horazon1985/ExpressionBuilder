@@ -9,24 +9,28 @@ import java.util.Iterator;
 import javax.swing.JTextArea;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import java.awt.event.MouseListener;
 
 public class GraphicArea extends JTextArea {
 
     private final ArrayList<GraphicPanelFormula> formulas;
     private final ArrayList<Point> formulasCoordinates;
     private static int fontSize;
+    
+    private final MouseListener mathToolMouseListener;
 
     public int mathToolGraphicAreaX;
     public int mathToolGraphicAreaY;
     public int mathToolGraphicAreaWidth;
     public int mathToolGraphicAreaHeight;
 
-    public GraphicArea(int x, int y, int width, int height) {
+    public GraphicArea(int x, int y, int width, int height, MouseListener listener) {
         this.formulas = new ArrayList<>();
         this.formulasCoordinates = new ArrayList<>();
         this.setLayout(null);
         this.setEditable(false);
         this.setBounds(x, y, width, height);
+        this.mathToolMouseListener = listener;
     }
 
     public static int getFontSize() {
@@ -48,147 +52,177 @@ public class GraphicArea extends JTextArea {
         GraphicArea.fontSize = fontSize;
     }
 
-    public void addComponent(Expression f) {
-
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
-
-        // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
-            return;
-        }
-
-        graphicPresentationOfFormula.setExpr(f);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.EXPRESSION);
-        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
-
-    }
-
-    public void addComponent(LogicalExpression f) {
-
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
-
-        // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
-            return;
-        }
-
-        graphicPresentationOfFormula.setLogExpr(f);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.LOGICAL_EXPRESSION);
-        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
-
-    }
-
-    public void addComponent(MatrixExpression f) {
-
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
-
-        // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
-            return;
-        }
-
-        graphicPresentationOfFormula.setMatExpr(f);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.MATRIX_EXPRESSION);
-        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
-
-    }
-
-    public void addComponent(Command c) {
-
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
-
-        // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
-            return;
-        }
-
-        graphicPresentationOfFormula.setCommand(c);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.COMMAND);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
-
-    }
-
-    public void addComponent(String t) {
-
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
-
-        // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
-            return;
-        }
-
-        graphicPresentationOfFormula.setText(t);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.TEXT);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
-
-    }
+//    public void addComponent(Expression f) {
+//
+//        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
+//        this.add(graphicPresentationOfFormula);
+//
+//        // Sicherheitshalber!
+//        if (graphicPresentationOfFormula.getGraphics() == null) {
+//            this.remove(graphicPresentationOfFormula);
+//            return;
+//        }
+//
+//        graphicPresentationOfFormula.setExpr(f);
+//        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.EXPRESSION);
+//        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
+//        graphicPresentationOfFormula.initialize(getFontSize());
+//        this.formulas.add(graphicPresentationOfFormula);
+//        graphicPresentationOfFormula.drawFormula();
+//        setPosition(graphicPresentationOfFormula);
+//
+//        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+//        if (getMouseListeners().length > 0) {
+//            addMouseListener(getMouseListeners()[0]);
+//        }
+//
+//    }
+//
+//    public void addComponent(LogicalExpression f) {
+//
+//        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
+//        this.add(graphicPresentationOfFormula);
+//
+//        // Sicherheitshalber!
+//        if (graphicPresentationOfFormula.getGraphics() == null) {
+//            this.remove(graphicPresentationOfFormula);
+//            return;
+//        }
+//
+//        graphicPresentationOfFormula.setLogExpr(f);
+//        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.LOGICAL_EXPRESSION);
+//        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
+//        graphicPresentationOfFormula.initialize(getFontSize());
+//        this.formulas.add(graphicPresentationOfFormula);
+//        graphicPresentationOfFormula.drawFormula();
+//        setPosition(graphicPresentationOfFormula);
+//
+//        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+//        if (getMouseListeners().length > 0) {
+//            addMouseListener(getMouseListeners()[0]);
+//        }
+//
+//    }
+//
+//    public void addComponent(MatrixExpression f) {
+//
+//        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
+//        this.add(graphicPresentationOfFormula);
+//
+//        // Sicherheitshalber!
+//        if (graphicPresentationOfFormula.getGraphics() == null) {
+//            this.remove(graphicPresentationOfFormula);
+//            return;
+//        }
+//
+//        graphicPresentationOfFormula.setMatExpr(f);
+//        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.MATRIX_EXPRESSION);
+//        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(0);
+//        graphicPresentationOfFormula.initialize(getFontSize());
+//        this.formulas.add(graphicPresentationOfFormula);
+//        graphicPresentationOfFormula.drawFormula();
+//        setPosition(graphicPresentationOfFormula);
+//
+//        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+//        if (getMouseListeners().length > 0) {
+//            addMouseListener(getMouseListeners()[0]);
+//        }
+//
+//    }
+//
+//    public void addComponent(Command c) {
+//
+//        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
+//        this.add(graphicPresentationOfFormula);
+//
+//        // Sicherheitshalber!
+//        if (graphicPresentationOfFormula.getGraphics() == null) {
+//            this.remove(graphicPresentationOfFormula);
+//            return;
+//        }
+//
+//        graphicPresentationOfFormula.setCommand(c);
+//        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.COMMAND);
+//        graphicPresentationOfFormula.initialize(getFontSize());
+//        this.formulas.add(graphicPresentationOfFormula);
+//        graphicPresentationOfFormula.drawFormula();
+//        setPosition(graphicPresentationOfFormula);
+//
+//        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+//        if (getMouseListeners().length > 0) {
+//            addMouseListener(getMouseListeners()[0]);
+//        }
+//
+//    }
+//
+//    public void addComponent(String t) {
+//
+//        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
+//        this.add(graphicPresentationOfFormula);
+//
+//        // Sicherheitshalber!
+//        if (graphicPresentationOfFormula.getGraphics() == null) {
+//            this.remove(graphicPresentationOfFormula);
+//            return;
+//        }
+//
+//        graphicPresentationOfFormula.setText(t);
+//        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.TEXT);
+//        graphicPresentationOfFormula.initialize(getFontSize());
+//        this.formulas.add(graphicPresentationOfFormula);
+//        graphicPresentationOfFormula.drawFormula();
+//        setPosition(graphicPresentationOfFormula);
+//
+//        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+//        if (getMouseListeners().length > 0) {
+//            addMouseListener(getMouseListeners()[0]);
+//        }
+//
+//    }
 
     public void addComponent(ArrayList out) {
 
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
+        GraphicPanelFormula formula = new GraphicPanelFormula();
+        this.add(formula);
 
         // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
+        if (formula.getGraphics() == null) {
+            this.remove(formula);
             return;
         }
 
-        graphicPresentationOfFormula.setOutput(out);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
-//        graphicPresentationOfFormula.setIndicesOfFormulasInOutput(indices);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
+        formula.setOutput(out);
+        formula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
+        formula.initialize(getFontSize());
+        this.formulas.add(formula);
+        formula.drawFormula();
+        setPosition(formula);
+
+        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+        formula.addMouseListener(this.mathToolMouseListener);
 
     }
 
     public void addComponent(Object... out) {
 
-        GraphicPanelFormula graphicPresentationOfFormula = new GraphicPanelFormula();
-        this.add(graphicPresentationOfFormula);
+        GraphicPanelFormula formula = new GraphicPanelFormula();
+        this.add(formula);
 
         // Sicherheitshalber!
-        if (graphicPresentationOfFormula.getGraphics() == null) {
-            this.remove(graphicPresentationOfFormula);
+        if (formula.getGraphics() == null) {
+            this.remove(formula);
             return;
         }
 
-        graphicPresentationOfFormula.setOutput(out);
-        graphicPresentationOfFormula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
-        graphicPresentationOfFormula.initialize(getFontSize());
-        this.formulas.add(graphicPresentationOfFormula);
-        graphicPresentationOfFormula.drawFormula();
-        setPosition(graphicPresentationOfFormula);
+        formula.setOutput(out);
+        formula.setTypeGraphicFormula(TypeGraphicFormula.OUTPUT);
+        formula.initialize(getFontSize());
+        this.formulas.add(formula);
+        formula.drawFormula();
+        setPosition(formula);
+
+        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+        formula.addMouseListener(this.mathToolMouseListener);
 
     }
 
@@ -203,6 +237,11 @@ public class GraphicArea extends JTextArea {
                 this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y - f.getHeight(),
                 f.getWidth(), f.getHeight());
         updateSize();
+
+        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+        if (getMouseListeners().length > 0) {
+            addMouseListener(getMouseListeners()[0]);
+        }
 
     }
 
