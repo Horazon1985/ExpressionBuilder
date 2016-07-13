@@ -1,14 +1,10 @@
 package graphic;
 
-import command.Command;
-import abstractexpressions.expression.classes.Expression;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JTextArea;
-import abstractexpressions.logicalexpression.classes.LogicalExpression;
-import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import java.awt.event.MouseListener;
 
 public class GraphicArea extends JTextArea {
@@ -16,7 +12,7 @@ public class GraphicArea extends JTextArea {
     private final ArrayList<GraphicPanelFormula> formulas;
     private final ArrayList<Point> formulasCoordinates;
     private static int fontSize;
-    
+
     private final MouseListener mathToolMouseListener;
 
     public int mathToolGraphicAreaX;
@@ -33,10 +29,6 @@ public class GraphicArea extends JTextArea {
         this.mathToolMouseListener = listener;
     }
 
-    public static int getFontSize() {
-        return fontSize;
-    }
-
     public void initializeBounds(int x, int y, int width, int height) {
         this.mathToolGraphicAreaX = x;
         this.mathToolGraphicAreaY = y;
@@ -44,12 +36,28 @@ public class GraphicArea extends JTextArea {
         this.mathToolGraphicAreaHeight = height;
     }
 
-    public ArrayList<GraphicPanelFormula> getFormulas() {
-        return this.formulas;
+    public static int getFontSize() {
+        return fontSize;
     }
 
     public void setFontSize(int fontSize) {
         GraphicArea.fontSize = fontSize;
+    }
+
+    public ArrayList<GraphicPanelFormula> getFormulas() {
+        return this.formulas;
+    }
+
+    /**
+     * Gibt die Koordinaten der linken oberen Ecke von f zurück, falls die
+     * vorliegende GraphicArea f enthält. Ansonsten wird der Punkt (-1, -1)
+     * zurückgegeben.
+     */
+    public Point getOutputCoordinate(GraphicPanelFormula f) {
+        if (this.formulas.contains(f)) {
+            return this.formulasCoordinates.get(this.formulas.indexOf(f));
+        }
+        return new Point(-1, -1);
     }
 
 //    public void addComponent(Expression f) {
@@ -179,7 +187,6 @@ public class GraphicArea extends JTextArea {
 //        }
 //
 //    }
-
     public void addComponent(ArrayList out) {
 
         GraphicPanelFormula formula = new GraphicPanelFormula();

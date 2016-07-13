@@ -69,10 +69,14 @@ public class GraphicPanelFormula extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (getBackgroundColor().equals(GraphicPanelFormula.BACKGROUND_COLOR_UNMARKED)) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (getBackgroundColor().equals(GraphicPanelFormula.BACKGROUND_COLOR_UNMARKED)) {
+                        setMarked();
+                    } else {
+                        setUnmarked();
+                    }
+                } else if (e.getButton() == MouseEvent.BUTTON3) {
                     setMarked();
-                } else {
-                    setUnmarked();
                 }
                 setRestUnmarked();
             }
@@ -149,10 +153,10 @@ public class GraphicPanelFormula extends JPanel {
     public AbstractExpression[] getContainedAbstractExpression() {
         ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
         for (Object out : output) {
-            if (out instanceof Object[] && ((Object[]) out).length == 2 
+            if (out instanceof Object[] && ((Object[]) out).length == 2
                     && ((Object[]) out)[0] instanceof AbstractExpression
                     && ((Object[]) out)[1] instanceof Boolean
-                    && (Boolean) ((Object[]) out)[1] == true){
+                    && (Boolean) ((Object[]) out)[1] == true) {
                 abstractExpressionList.add((AbstractExpression) ((Object[]) out)[0]);
             }
         }
