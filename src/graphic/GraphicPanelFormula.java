@@ -152,12 +152,35 @@ public class GraphicPanelFormula extends JPanel {
      */
     public AbstractExpression[] getContainedAbstractExpression() {
         ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
+        boolean abstrExprIsAlreadyContained;
         for (Object out : output) {
             if (out instanceof Object[] && ((Object[]) out).length == 2
                     && ((Object[]) out)[0] instanceof AbstractExpression
                     && ((Object[]) out)[1] instanceof Boolean
                     && (Boolean) ((Object[]) out)[1] == true) {
-                abstractExpressionList.add((AbstractExpression) ((Object[]) out)[0]);
+                AbstractExpression abstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                abstrExprIsAlreadyContained = false;
+
+                // Prüfung, ob abstrExpr bereits in der Liste vorhanden ist.
+                for (AbstractExpression abstrE : abstractExpressionList) {
+                    if (abstrExpr.getClass().equals(abstrE.getClass())) {
+                        if (abstrExpr instanceof Expression && ((Expression) abstrExpr).equals((Expression) abstrE)){
+                            abstrExprIsAlreadyContained = true;
+                            break;
+                        } else if (abstrExpr instanceof LogicalExpression && ((LogicalExpression) abstrExpr).equals((LogicalExpression) abstrE)){
+                            abstrExprIsAlreadyContained = true;
+                            break;
+                        } else if (abstrExpr instanceof MatrixExpression && ((MatrixExpression) abstrExpr).equals((MatrixExpression) abstrE)){
+                            abstrExprIsAlreadyContained = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!abstrExprIsAlreadyContained) {
+                    abstractExpressionList.add((AbstractExpression) ((Object[]) out)[0]);
+                }
+                
             }
         }
         AbstractExpression[] abstractExpressions = new AbstractExpression[abstractExpressionList.size()];
