@@ -16,6 +16,7 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.interfaces.AbstractExpression;
+import abstractexpressions.interfaces.EditableAbstractExpression;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -154,11 +155,8 @@ public class GraphicPanelFormula extends JPanel {
         ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
         boolean abstrExprIsAlreadyContained;
         for (Object out : output) {
-            if (out instanceof Object[] && ((Object[]) out).length == 2
-                    && ((Object[]) out)[0] instanceof AbstractExpression
-                    && ((Object[]) out)[1] instanceof Boolean
-                    && (Boolean) ((Object[]) out)[1] == true) {
-                AbstractExpression abstrExpr = (AbstractExpression) ((Object[]) out)[0];
+            if (out instanceof EditableAbstractExpression && ((EditableAbstractExpression) out).isEditable()) {
+                AbstractExpression abstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 abstrExprIsAlreadyContained = false;
 
                 // Prüfung, ob abstrExpr bereits in der Liste vorhanden ist.
@@ -178,7 +176,7 @@ public class GraphicPanelFormula extends JPanel {
                 }
                 
                 if (!abstrExprIsAlreadyContained) {
-                    abstractExpressionList.add((AbstractExpression) ((Object[]) out)[0]);
+                    abstractExpressionList.add(((EditableAbstractExpression) out).getAbstractExpression());
                 }
                 
             }
@@ -1838,10 +1836,9 @@ public class GraphicPanelFormula extends JPanel {
              Ausdruck umschließen, und diese tragen zur Höhe des Zentrums
              nicht bei.
              */
-            if (out instanceof Object[] && ((Object[]) out).length == 2
-                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+            if (out instanceof EditableAbstractExpression) {
 
-                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                AbstractExpression outAsAbstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 if (outAsAbstrExpr instanceof Expression) {
                     heightCenter = getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
                     heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
@@ -1895,10 +1892,9 @@ public class GraphicPanelFormula extends JPanel {
              Ausdruck umschließen, und diese tragen zur Höhe des Zentrums
              nicht bei.
              */
-            if (out instanceof Object[] && ((Object[]) out).length == 2
-                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+            if (out instanceof EditableAbstractExpression) {
 
-                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                AbstractExpression outAsAbstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 if (outAsAbstrExpr instanceof Expression) {
                     heightCenter = Math.max(heightCenter, getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize));
                 } else if (outAsAbstrExpr instanceof LogicalExpression) {
@@ -1931,10 +1927,9 @@ public class GraphicPanelFormula extends JPanel {
 
         for (Object out : output) {
 
-            if (out instanceof Object[] && ((Object[]) out).length == 2
-                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+            if (out instanceof EditableAbstractExpression) {
 
-                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                AbstractExpression outAsAbstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 if (outAsAbstrExpr instanceof Expression) {
                     length = length + getLengthOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
                 } else if (outAsAbstrExpr instanceof LogicalExpression) {
@@ -4504,11 +4499,10 @@ public class GraphicPanelFormula extends JPanel {
                 distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfMultiIndexVariable(g, (MultiIndexVariable) out, fontSize);
             } else if (out instanceof TypeBracket) {
                 nextExpressionIsSurroundedByBrackets = true;
-            } else if (out instanceof Object[] && ((Object[]) out).length == 2
-                    && ((Object[]) out)[0] instanceof AbstractExpression && ((Object[]) out)[1] instanceof Boolean) {
+            } else if (out instanceof EditableAbstractExpression) {
 
                 // Ausdrücke normal zeichnen.
-                AbstractExpression outAsAbstrExpr = (AbstractExpression) ((Object[]) out)[0];
+                AbstractExpression outAsAbstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 if (outAsAbstrExpr instanceof Expression) {
                     heightCenterOfCurrentOutputParameter = getHeightOfCenterOfExpression(g, (Expression) outAsAbstrExpr, fontSize);
                     if (nextExpressionIsSurroundedByBrackets) {
