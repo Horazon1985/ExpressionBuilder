@@ -1188,10 +1188,10 @@
         <Russian>Ни одной переменной не задано.</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_E">
-        <German>Eulersche Zahl e auf [0] Stellen gerundet: [1]</German>
-        <English>Euler constant e rounded to [0] digits: [1]</English>
-        <Ukrainian>Число Ейлера e округлено до [0] знаків: [1]</Ukrainian>
-        <Russian>Число Эйлера e округлено до [0] знаков: [1]</Russian>
+        <German>Eulersche Zahl e auf [0] Stellen gerundet: </German>
+        <English>Euler constant e rounded to [0] digits: </English>
+        <Ukrainian>Число Ейлера e округлено до [0] знаків: </Ukrainian>
+        <Russian>Число Эйлера e округлено до [0] знаков: </Russian>
     </object>
     <object id = "MCC_NO_EXTREMA_FOUND">
         <German>Es konnten keine lokalen Extrema ermittelt werden.</German>
@@ -1230,10 +1230,10 @@
         <Russian>[0]. параметр команды 'extrema' должен быть меньше чем [1]. параметр.</Russian>
     </object>
     <object id = "MCC_DIGITS_OF_PI">
-        <German>Kreiszahl pi auf [0] Stellen gerundet: [1]</German>
-        <English>Constant pi rounded to [0] digits: [1]</English>
-        <Ukrainian>Число pi e округлено до [0] знаків: [1]</Ukrainian>
-        <Russian>Число pi e округлено до [0] знаков: [1]</Russian>
+        <German>Kreiszahl pi auf [0] Stellen gerundet: </German>
+        <English>Constant pi rounded to [0] digits: </English>
+        <Ukrainian>Число pi e округлено до [0] знаків: </Ukrainian>
+        <Russian>Число pi e округлено до [0] знаков: </Russian>
     </object>
     <object id = "MCC_REGRESSIONLINE_CANNOT_BE_COMPUTED">
         <German>Die Gleichung der Regressionsgeraden kann nicht berechnet werden, da die auftretenden Parameter nicht vereinfacht werden können oder Fehler enthalten.</German>

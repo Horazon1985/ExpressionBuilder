@@ -1,9 +1,11 @@
-package abstractexpressions.interfaces;
+package abstractexpressions.output;
+
+import abstractexpressions.interfaces.AbstractExpression;
 
 public class EditableAbstractExpression {
 
-    private AbstractExpression abstrExpr;
-    private boolean editable;
+    private final AbstractExpression abstrExpr;
+    private final boolean editable;
     
     public EditableAbstractExpression(AbstractExpression abstrExpr, boolean editable){
         this.abstrExpr = abstrExpr;

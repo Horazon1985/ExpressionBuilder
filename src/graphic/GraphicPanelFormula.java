@@ -16,7 +16,7 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyUtilities;
 import abstractexpressions.interfaces.AbstractExpression;
-import abstractexpressions.interfaces.EditableAbstractExpression;
+import abstractexpressions.output.EditableAbstractExpression;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -43,6 +43,7 @@ import abstractexpressions.matrixexpression.classes.MatrixOperator;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
+import abstractexpressions.output.EditableString;
 
 public class GraphicPanelFormula extends JPanel {
 
@@ -55,8 +56,6 @@ public class GraphicPanelFormula extends JPanel {
     private TypeGraphicFormula type;
     private int width, height, fontSize;
 
-    private ArrayList<Integer> indicesOfFormulasInOutput = new ArrayList<>();
-
     private Color backgroundColor = Color.white;
     private static final Color BACKGROUND_COLOR_UNMARKED = Color.white;
     private static final Color BACKGROUND_COLOR_MARKED = new Color(51, 204, 255);
@@ -65,7 +64,6 @@ public class GraphicPanelFormula extends JPanel {
 
     public GraphicPanelFormula() {
         formulas.add(this);
-        this.indicesOfFormulasInOutput = new ArrayList<>();
         this.addMouseListener(new MouseListener() {
 
             @Override
@@ -106,10 +104,6 @@ public class GraphicPanelFormula extends JPanel {
 
     public Color getBackgroundColor() {
         return this.backgroundColor;
-    }
-
-    public ArrayList<Integer> getIndicesOfFormulasInOutput() {
-        return this.indicesOfFormulasInOutput;
     }
 
     public boolean isMarked() {
@@ -185,6 +179,24 @@ public class GraphicPanelFormula extends JPanel {
         return abstractExpressionList.toArray(abstractExpressions);
     }
 
+    /**
+     * Gibt ein Array zurück, welches alle Elemente von output enthält, welche
+     * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
+     */
+    public String[] getContainedEditableStrings() {
+        ArrayList<String> editableStringList = new ArrayList<>();
+        for (Object out : output) {
+            if (out instanceof EditableString && ((EditableString) out).isEditable()) {
+                String text = ((EditableString) out).getText();
+                if (!editableStringList.contains(text)){
+                    editableStringList.add(((EditableString) out).getText());
+                }
+            }
+        }
+        String[] editableStrings = new String[editableStringList.size()];
+        return editableStringList.toArray(editableStrings);
+    }
+    
     public void setTypeGraphicFormula(TypeGraphicFormula type) {
         this.type = type;
     }
@@ -224,17 +236,6 @@ public class GraphicPanelFormula extends JPanel {
         for (Object o : out) {
             output[i] = o;
             i++;
-        }
-    }
-
-    public void setIndicesOfFormulasInOutput(ArrayList<Integer> indices) {
-        this.indicesOfFormulasInOutput = indices;
-    }
-
-    public void setIndicesOfFormulasInOutput(Integer... indices) {
-        this.indicesOfFormulasInOutput.clear();
-        for (Integer i : indices) {
-            this.indicesOfFormulasInOutput.add(i);
         }
     }
 
@@ -1853,6 +1854,9 @@ public class GraphicPanelFormula extends JPanel {
                     heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize) - heightCenter);
                 }
 
+            } else if (out instanceof EditableString) {    
+                heightBelowCommonCenter = Math.max(heightBelowCommonCenter, (2 * fontSize) / 5);
+                heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, (3 * fontSize) / 5);
             } else if (out instanceof Expression) {
                 heightCenter = getHeightOfCenterOfExpression(g, (Expression) out, fontSize);
                 heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightCenter);
@@ -1903,6 +1907,8 @@ public class GraphicPanelFormula extends JPanel {
                     heightCenter = Math.max(heightCenter, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize));
                 }
 
+            } else if (out instanceof EditableString) {    
+                heightCenter = Math.max(heightCenter, (2 * fontSize) / 5);
             } else if (out instanceof Expression) {
                 heightCenter = Math.max(heightCenter, getHeightOfCenterOfExpression(g, (Expression) out, fontSize));
             } else if (out instanceof LogicalExpression) {
@@ -1938,6 +1944,12 @@ public class GraphicPanelFormula extends JPanel {
                     length = length + getLengthOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
                 }
 
+            } else if (out instanceof EditableString) {
+            
+                String text = ((EditableString) out).getText();
+                setFont(g, fontSize);
+                length = length + g.getFontMetrics().stringWidth(text);
+                
             } else if (out instanceof Expression) {
                 length = length + getLengthOfExpression(g, (Expression) out, fontSize);
             } else if (out instanceof LogicalExpression) {
@@ -4463,7 +4475,6 @@ public class GraphicPanelFormula extends JPanel {
          umgehend wieder auf false gesetzt (s. u.).
          */
         boolean nextExpressionIsSurroundedByBrackets = false;
-        int index = 0;
 
         for (Object out : output) {
 
@@ -4523,12 +4534,16 @@ public class GraphicPanelFormula extends JPanel {
                     distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize);
                 }
 
-                // Als bearbeitbar / kopierbar markieren.
-                this.indicesOfFormulasInOutput.add(index);
+            } else if (out instanceof EditableString) {
 
+                String text = ((EditableString) out).getText();
+                
+                setFont(g, fontSize);
+                g.drawString(text, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
+                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + g.getFontMetrics().stringWidth(text);
+                
             }
 
-            index++;
         }
 
     }
