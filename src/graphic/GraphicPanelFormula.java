@@ -53,7 +53,6 @@ public class GraphicPanelFormula extends JPanel {
     private Command c;
     private String t;
     private Object[] output;
-    private TypeGraphicFormula type;
     private int width, height, fontSize;
 
     private Color backgroundColor = Color.white;
@@ -156,23 +155,23 @@ public class GraphicPanelFormula extends JPanel {
                 // Prüfung, ob abstrExpr bereits in der Liste vorhanden ist.
                 for (AbstractExpression abstrE : abstractExpressionList) {
                     if (abstrExpr.getClass().equals(abstrE.getClass())) {
-                        if (abstrExpr instanceof Expression && ((Expression) abstrExpr).equals((Expression) abstrE)){
+                        if (abstrExpr instanceof Expression && ((Expression) abstrExpr).equals((Expression) abstrE)) {
                             abstrExprIsAlreadyContained = true;
                             break;
-                        } else if (abstrExpr instanceof LogicalExpression && ((LogicalExpression) abstrExpr).equals((LogicalExpression) abstrE)){
+                        } else if (abstrExpr instanceof LogicalExpression && ((LogicalExpression) abstrExpr).equals((LogicalExpression) abstrE)) {
                             abstrExprIsAlreadyContained = true;
                             break;
-                        } else if (abstrExpr instanceof MatrixExpression && ((MatrixExpression) abstrExpr).equals((MatrixExpression) abstrE)){
+                        } else if (abstrExpr instanceof MatrixExpression && ((MatrixExpression) abstrExpr).equals((MatrixExpression) abstrE)) {
                             abstrExprIsAlreadyContained = true;
                             break;
                         }
                     }
                 }
-                
+
                 if (!abstrExprIsAlreadyContained) {
                     abstractExpressionList.add(((EditableAbstractExpression) out).getAbstractExpression());
                 }
-                
+
             }
         }
         AbstractExpression[] abstractExpressions = new AbstractExpression[abstractExpressionList.size()];
@@ -188,17 +187,13 @@ public class GraphicPanelFormula extends JPanel {
         for (Object out : output) {
             if (out instanceof EditableString && ((EditableString) out).isEditable()) {
                 String text = ((EditableString) out).getText();
-                if (!editableStringList.contains(text)){
+                if (!editableStringList.contains(text)) {
                     editableStringList.add(((EditableString) out).getText());
                 }
             }
         }
         String[] editableStrings = new String[editableStringList.size()];
         return editableStringList.toArray(editableStrings);
-    }
-    
-    public void setTypeGraphicFormula(TypeGraphicFormula type) {
-        this.type = type;
     }
 
     public void setExpr(Expression expr) {
@@ -244,7 +239,6 @@ public class GraphicPanelFormula extends JPanel {
         this.fontSize = fontSize;
         Graphics g = this.getGraphics();
         setFont(g, fontSize);
-
         /*
          Pufferrahmen mit Breite fontsize/2 lassen! GRUND: Buchstaben wie
          beispielsweise g (die einen Haken nach unten besitzen) werden sonst
@@ -252,37 +246,9 @@ public class GraphicPanelFormula extends JPanel {
          beginnt nämlich beim Kopf von g! Daher bei getLengthOfFormula() und
          getHeightOfFormula() noch this.fontsize hinzuaddieren.
          */
-        if (type.equals(TypeGraphicFormula.EXPRESSION)) {
-            // Fall: expr zeichnen.
-            this.width = getLengthOfExpression(g, this.expr, this.fontSize) + this.fontSize;
-            this.height = getHeightOfExpression(g, this.expr, this.fontSize) + this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        } else if (type.equals(TypeGraphicFormula.LOGICAL_EXPRESSION)) {
-            // Fall: logExpr zeichnen.
-            this.width = getLengthOfLogicalExpression(g, this.logExpr, this.fontSize) + this.fontSize;
-            this.height = getHeightOfLogicalExpression(g, this.logExpr, this.fontSize) + this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        } else if (type.equals(TypeGraphicFormula.MATRIX_EXPRESSION)) {
-            // Fall: matExpr zeichnen.
-            this.width = getLengthOfMatrixExpression(g, this.matExpr, this.fontSize) + this.fontSize;
-            this.height = getHeightOfMatrixExpression(g, this.matExpr, this.fontSize) + this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        } else if (type.equals(TypeGraphicFormula.COMMAND)) {
-            // Fall: c zeichnen.
-            this.width = getLengthOfCommand(g, this.c, this.fontSize) + this.fontSize;
-            this.height = getHeightOfCommand(g, this.c, this.fontSize) + this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        } else if (type.equals(TypeGraphicFormula.TEXT)) {
-            // Fall: t zeichnen.
-            this.width = g.getFontMetrics().stringWidth(t) + this.fontSize;
-            this.height = 2 * this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        } else if (type.equals(TypeGraphicFormula.OUTPUT)) {
-            // Fall: output zeichnen.
-            this.width = getLengthOfOutput(g, fontSize, output) + this.fontSize;
-            this.height = getHeightOfOutput(g, fontSize, output) + this.fontSize;
-            this.setBounds(0, 0, this.width, this.height);
-        }
+        this.width = getLengthOfOutput(g, fontSize, output) + this.fontSize;
+        this.height = getHeightOfOutput(g, fontSize, output) + this.fontSize;
+        this.setBounds(0, 0, this.width, this.height);
 
     }
 
@@ -1854,7 +1820,7 @@ public class GraphicPanelFormula extends JPanel {
                     heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, getHeightOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize) - heightCenter);
                 }
 
-            } else if (out instanceof EditableString) {    
+            } else if (out instanceof EditableString) {
                 heightBelowCommonCenter = Math.max(heightBelowCommonCenter, (2 * fontSize) / 5);
                 heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, (3 * fontSize) / 5);
             } else if (out instanceof Expression) {
@@ -1907,7 +1873,7 @@ public class GraphicPanelFormula extends JPanel {
                     heightCenter = Math.max(heightCenter, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) outAsAbstrExpr, fontSize));
                 }
 
-            } else if (out instanceof EditableString) {    
+            } else if (out instanceof EditableString) {
                 heightCenter = Math.max(heightCenter, (2 * fontSize) / 5);
             } else if (out instanceof Expression) {
                 heightCenter = Math.max(heightCenter, getHeightOfCenterOfExpression(g, (Expression) out, fontSize));
@@ -1945,11 +1911,11 @@ public class GraphicPanelFormula extends JPanel {
                 }
 
             } else if (out instanceof EditableString) {
-            
+
                 String text = ((EditableString) out).getText();
                 setFont(g, fontSize);
                 length = length + g.getFontMetrics().stringWidth(text);
-                
+
             } else if (out instanceof Expression) {
                 length = length + getLengthOfExpression(g, (Expression) out, fontSize);
             } else if (out instanceof LogicalExpression) {
@@ -4537,11 +4503,11 @@ public class GraphicPanelFormula extends JPanel {
             } else if (out instanceof EditableString) {
 
                 String text = ((EditableString) out).getText();
-                
+
                 setFont(g, fontSize);
                 g.drawString(text, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
                 distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + g.getFontMetrics().stringWidth(text);
-                
+
             }
 
         }
@@ -4561,28 +4527,7 @@ public class GraphicPanelFormula extends JPanel {
         g.setColor(Color.black);
         setFont(g, fontSize);
         // Pufferrahmen mit Breite fontsize/2 lassen!
-        switch (type) {
-            case EXPRESSION:
-                drawExpression(g, this.expr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-                break;
-            case LOGICAL_EXPRESSION:
-                drawLogicalExpression(g, this.logExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-                break;
-            case MATRIX_EXPRESSION:
-                drawMatrixExpression(g, this.matExpr, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-                break;
-            case COMMAND:
-                drawCommand(g, c, this.fontSize / 2, this.height - this.fontSize / 2, this.fontSize);
-                break;
-            case TEXT:
-                drawText(g, this.t, this.fontSize / 2, this.height - this.fontSize / 2, fontSize);
-                break;
-            case OUTPUT:
-                drawOutput(g, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
-                break;
-            default:
-                break;
-        }
+        drawOutput(g, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
 
     }
 
