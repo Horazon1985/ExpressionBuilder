@@ -1031,22 +1031,34 @@
         <Russian>Переменная [0] должна быть в параметрах.</Russian>
     </object>
     <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_TAYLORDIFFEQ">
-        <German>Zu wenig Parameter im Befehl 'taylordeq'.</German>
-        <English>Not enough parameters in command 'taylordeq'.</English>
-        <Ukrainian>Недостатньо параметрів у команди 'taylordeq'.</Ukrainian>
-        <Russian>Недостаточно параметров у команды 'taylordeq'.</Russian>
+        <German>Zu wenig Parameter im Befehl 'taylordiffeq'.</German>
+        <English>Not enough parameters in command 'taylordiffeq'.</English>
+        <Ukrainian>Недостатньо параметрів у команди 'taylordiffeq'.</Ukrainian>
+        <Russian>Недостаточно параметров у команды 'taylordiffeq'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 3. Parameter im Befehl 'taylordeq' muss eine positive ganze Zahl sein.</German>
-        <English>The 3. parameter in command 'taylordeq' must be a positive integer.</English>
-        <Ukrainian>3. параметр команди 'taylordeq' має бути додатним цілим числом.</Ukrainian>
-        <Russian>3. команды 'taylordeq' должен быть положительным целым числом.</Russian>
+        <German>Der 3. Parameter im Befehl 'taylordiffeq' muss eine positive ganze Zahl sein.</German>
+        <English>The 3. parameter in command 'taylordiffeq' must be a positive integer.</English>
+        <Ukrainian>3. параметр команди 'taylordiffeq' має бути додатним цілим числом.</Ukrainian>
+        <Russian>3. команды 'taylordiffeq' должен быть положительным целым числом.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_4_PARAMETER_IN_TAYLORDIFFEQ">
+        <German>Der 4. Parameter im Befehl 'taylordiffeq' muss eine positive ganze Zahl sein.</German>
+        <English>The 4. parameter in command 'taylordiffeq' must be a positive integer.</English>
+        <Ukrainian>4. параметр команди 'taylordiffeq' має бути додатним цілим числом.</Ukrainian>
+        <Russian>4. команды 'taylordiffeq' должен быть положительным целым числом.</Russian>
+    </object>
+    <object id = "MCC_INDETERMINATES_MUST_BE_PAIRWISE_DIFFERENT_IN_TAYLORDIFFEQ">
+        <German>Die Veränderlichen im Befehl 'taylordiffeq' müssen paarweise verschieden sein.</German>
+        <English>The variables in command 'taylordiffeq' must be pairwise different.</English>
+        <Ukrainian>Змінні у команді 'taylordiffeq' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'taylordiffeq' должны попарно отличаться.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 1. Parameter im Befehl 'taylordeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
-        <English>The 1. parameter in command 'taylordeq' must be a valid expression. Reported error: </English>
-        <Ukrainian>1. параметр команди 'taylordeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
-        <Russian>1. Параматр команды 'taylordeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+        <German>Der 1. Parameter im Befehl 'taylordiffeq' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+        <English>The 1. parameter in command 'taylordiffeq' must be a valid expression. Reported error: </English>
+        <Ukrainian>1. параметр команди 'taylordiffeq' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+        <Russian>1. Параматр команды 'taylordiffeq' должен быть действительным выражением. Сообщение об ошибке: </Russian>
     </object>
     <object id = "MCC_WRONG_DERIVATIVE_ORDER_OCCUR_IN_TAYLORDIFFEQ">
         <German>Die Differentialgleichung besitzt die Ordnung [0]. Es dürfen daher nur Ableitungen höchstens [1]. Ordnung auftreten.</German>
@@ -1067,28 +1079,34 @@
         <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 2. Parameter im Befehl 'taylordeq' muss eine gültige Veränderliche sein.</German>
-        <English>The 2. parameter in command 'taylordeq' must be a valid variable.</English>
-        <Ukrainian>2. параметр команди 'taylordeq' має бути діючою змінною.</Ukrainian>
-        <Russian>2. параматр команды 'taylordeq' должен быть действительной переменной.</Russian>
+        <German>Der 2. Parameter im Befehl 'taylordiffeq' muss eine gültige Veränderliche sein.</German>
+        <English>The 2. parameter in command 'taylordiffeq' must be a valid variable.</English>
+        <Ukrainian>2. параметр команди 'taylordiffeq' має бути діючою змінною.</Ukrainian>
+        <Russian>2. параматр команды 'taylordiffeq' должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDIFFEQ">
+        <German>Der 3. Parameter im Befehl 'taylordiffeq' muss eine gültige Veränderliche sein.</German>
+        <English>The 3. parameter in command 'taylordiffeq' must be a valid variable.</English>
+        <Ukrainian>3. параметр команди 'taylordiffeq' має бути діючою змінною.</Ukrainian>
+        <Russian>3. параматр команды 'taylordiffeq' должен быть действительной переменной.</Russian>
     </object>
     <object id = "MCC_TOO_MANY_PARAMETERS_IN_TAYLORDIFFEQ">
-        <German>Zu viele Parameter im Befehl 'taylordeq'.</German>
-        <English>Too many parameters in command 'taylordeq'.</English>
-        <Ukrainian>Забагато параметрів у команди 'taylordeq'.</Ukrainian>
-        <Russian>Слишком много параметров у команды 'taylordeq'.</Russian>
+        <German>Zu viele Parameter im Befehl 'taylordiffeq'.</German>
+        <English>Too many parameters in command 'taylordiffeq'.</English>
+        <Ukrainian>Забагато параметрів у команди 'taylordiffeq'.</Ukrainian>
+        <Russian>Слишком много параметров у команды 'taylordiffeq'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der [0]. Parameter im Befehl 'taylordeq' muss ein gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
-        <English>The [0]. parameter in command 'taylordeq' must be a valid expression, which does not contain any variable occurring in the differential equation.</English>
-        <Ukrainian>[0]. параметр в команді 'taylordeq' має бути діючим виразом, що не містить змінних, що задіяні у диференціальному рівнянні.</Ukrainian>
-        <Russian>[0]. параметр в команде 'taylordeq' должен быть действительным выражением, не содержащим переменных, учавствующих в дифференциальном уравнении.</Russian>
+        <German>Der [0]. Parameter im Befehl 'taylordiffeq' muss ein gültiger Ausdruck sein, welcher keine in der Differentialgleichung auftretenden Veränderlichen enthält.</German>
+        <English>The [0]. parameter in command 'taylordiffeq' must be a valid expression, which does not contain any variable occurring in the differential equation.</English>
+        <Ukrainian>[0]. параметр в команді 'taylordiffeq' має бути діючим виразом, що не містить змінних, що задіяні у диференціальному рівнянні.</Ukrainian>
+        <Russian>[0]. параметр в команде 'taylordiffeq' должен быть действительным выражением, не содержащим переменных, учавствующих в дифференциальном уравнении.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LAST_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der letzte Parameter im Befehl 'taylordeq' muss eine nichtnegative ganze Zahl sein.</German>
-        <English>The last parameter in command 'taylordeq' must be a nonnegative integer.</English>
-        <Ukrainian>Останній параметр команди 'taylordeq' має бути невід'ємним цілим числом.</Ukrainian>
-        <Russian>Последний параметр команды 'taylordeq' должен быть неотрицательным целым числом.</Russian>
+        <German>Der letzte Parameter im Befehl 'taylordiffeq' muss eine nichtnegative ganze Zahl sein.</German>
+        <English>The last parameter in command 'taylordiffeq' must be a nonnegative integer.</English>
+        <Ukrainian>Останній параметр команди 'taylordiffeq' має бути невід'ємним цілим числом.</Ukrainian>
+        <Russian>Последний параметр команды 'taylordiffeq' должен быть неотрицательным целым числом.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_UNDEFFUNCS">
         <German>Zu wenig Parameter im Befehl 'undeffuncs'.</German>
