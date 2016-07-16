@@ -148,7 +148,7 @@ public class GraphicPanelFormula extends JPanel {
         ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
         boolean abstrExprIsAlreadyContained;
         for (Object out : output) {
-            if (out instanceof EditableAbstractExpression && ((EditableAbstractExpression) out).isEditable()) {
+            if (out instanceof EditableAbstractExpression) {
                 AbstractExpression abstrExpr = ((EditableAbstractExpression) out).getAbstractExpression();
                 abstrExprIsAlreadyContained = false;
 
@@ -185,7 +185,7 @@ public class GraphicPanelFormula extends JPanel {
     public String[] getContainedEditableStrings() {
         ArrayList<String> editableStringList = new ArrayList<>();
         for (Object out : output) {
-            if (out instanceof EditableString && ((EditableString) out).isEditable()) {
+            if (out instanceof EditableString) {
                 String text = ((EditableString) out).getText();
                 if (!editableStringList.contains(text)) {
                     editableStringList.add(((EditableString) out).getText());
@@ -1530,14 +1530,17 @@ public class GraphicPanelFormula extends JPanel {
                  Ignoriert wird dagegen der Fall, dass der Nenner mit einer negativen Konstante
                  beginnt. Das Minuszeichen wird in diesem Fall im Nenner gelassen und wird
                  nicht herausgezogen.
+                 Der Summand fontSize kommt deswegen zustande, da der Bruchstrich an beiden Seiten 
+                 um fontSize / 2 länger sein soll, als das Minimum der Längen vom Zähler
+                 und Nenner.
                  */
                 return getWidthOfSignMinus(g, fontSize) + Math.max(getLengthOfExpression(g, expr.getLeft().negate(), fontSize),
-                        getLengthOfExpression(g, expr.getRight(), fontSize));
+                        getLengthOfExpression(g, expr.getRight(), fontSize)) + fontSize;
 
             }
 
             return Math.max(getLengthOfExpression(g, expr.getLeft(), fontSize),
-                    getLengthOfExpression(g, expr.getRight(), fontSize));
+                    getLengthOfExpression(g, expr.getRight(), fontSize)) + fontSize;
 
         } else {
 
@@ -2161,12 +2164,12 @@ public class GraphicPanelFormula extends JPanel {
         g.drawString("=", x_0 + (getWidthOfSignEquals(g, fontSize) - g.getFontMetrics().stringWidth("=")) / 2, y_0);
     }
 
-    private void drawFractionLine(Graphics g, int x_0, int y_0, int fontSize, int l) {
+    private void drawFractionLine(Graphics g, int x_0, int y_0, int fontSize, int length) {
         Graphics2D g2 = (Graphics2D) g;
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
         g2.setStroke(new BasicStroke(thick));
-        g2.drawLine(x_0, y_0, x_0 + l, y_0);
+        g2.drawLine(x_0, y_0, x_0 + length, y_0);
     }
 
     private void drawSignPartial(Graphics g, int x_0, int y_0, int fontSize) {

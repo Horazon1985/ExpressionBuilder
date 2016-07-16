@@ -778,14 +778,14 @@
         <Russian>Разница между [0]. и [1]. параметр команды 'plotspherical' не должен превышать 20*pi.</Russian>
     </object>
     <object id = "MCC_PLOTVECTORFIELD2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
-        <German>???</German>
-        <English>???</English>
+        <German>Der 1. Parameter im Befehl 'plotvectorfield2d' muss ein zweidimensionaler Vektor sein.</German>
+        <English>The 1. parameter in command 'plotvectorfield2d' must be a two dimensional vector.</English>
         <Ukrainian>???</Ukrainian>
         <Russian>???</Russian>
     </object>
     <object id = "MCC_PLOTVECTORFIELD_CANNOT_BE_PLOTTED">
-        <German>???</German>
-        <English>???</English>
+        <German>Das Vektorfeld konnte nicht geplottet werden.</German>
+        <English>The vector field cannot be plotted.</English>
         <Ukrainian>???</Ukrainian>
         <Russian>???</Russian>
     </object>
@@ -855,11 +855,11 @@
         <Ukrainian>Недостатньо параметрів у команди 'solvediffeq'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'solvediffeq'.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der 3. Parameter im Befehl 'solvediffeq' muss eine positive ganze Zahl sein.</German>
-        <English>The 3. parameter in command 'solvediffeq' must be a positive integer.</English>
-        <Ukrainian>3. параметр команди 'solvediffeq' має бути додатним цілим числом.</Ukrainian>
-        <Russian>3. параметр команды 'solvediffeq' должен быть положительным целым числом.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_4_PARAMETER_IN_SOLVEDIFFEQ">
+        <German>Der 4. Parameter im Befehl 'solvediffeq' muss eine positive ganze Zahl sein.</German>
+        <English>The 4. parameter in command 'solvediffeq' must be a positive integer.</English>
+        <Ukrainian>4. параметр команди 'solvediffeq' має бути додатним цілим числом.</Ukrainian>
+        <Russian>4. параметр команды 'solvediffeq' должен быть положительным целым числом.</Russian>
     </object>
     <object id = "MCC_1_PARAMETER_IN_SOLVEDIFFEQ_MUST_CONTAIN_EQUALITY_SIGN">
         <German>Der 1. Parameter im Befehl 'solvediffeq' muss ein '='-Zeichen enthalten.</German>
@@ -892,23 +892,23 @@
         <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
         <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_SOLVEDIFFEQ">
-        <German>Die Veränderliche [0] muss in der Differentialgleichung vorkommen.</German>
-        <English>The variable [0] must occur in the differential equation.</English>
-        <Ukrainian>Змінна [0] має бути присутня у диференціальному рівнянні.</Ukrainian>
-        <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
-    </object>
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_SOLVEDIFFEQ">
         <German>Im Befehl 'solvediffeq' müss entweder drei oder mindestens sechs Parameter stehen.</German>
         <English>The command 'solvediffeq' must contain either three or at leat six parameters.</English>
         <Ukrainian>У команди 'solvediffeq' має бути або три або щонайменше шість параметрів.</Ukrainian>
         <Russian>У команды 'solvediffeq' должно быть три или как минимум шесть параметров.</Russian>
     </object>
-    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_SOLVEDIFFEQ">
-        <German>Der 2. Parameter im Befehl 'solvediffeq' muss eine gültige Veränderliche sein.</German>
-        <English>The 2. parameter in command 'solvediffeq' must be a valid variable.</English>
-        <Ukrainian>2. параметр команди 'solvediffeq' має бути діючою змінною.</Ukrainian>
-        <Russian>2. параматр команды 'solvediffeq' должен быть действительной переменной.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_VAR_PARAMETER_IN_SOLVEDIFFEQ">
+        <German>Der [0]. Parameter im Befehl 'solvediffeq' muss eine gültige Veränderliche sein.</German>
+        <English>The [0]. parameter in command 'solvediffeq' must be a valid variable.</English>
+        <Ukrainian>[0]. параметр команди 'solvediffeq' має бути діючою змінною.</Ukrainian>
+        <Russian>[0]. параматр команды 'solvediffeq' должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "MCC_INDETERMINATES_MUST_BE_PAIRWISE_DIFFERENT_IN_SOLVEDIFFEQ">
+        <German>Die Veränderlichen im Befehl 'solvediffeq' müssen paarweise verschieden sein.</German>
+        <English>The variables in command 'solvediffeq' must be pairwise different.</English>
+        <Ukrainian>Змінні у команді 'solvediffeq' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'solvediffeq' должны попарно отличаться.</Russian>
     </object>
     <object id = "MCC_TOO_MANY_PARAMETERS_IN_SOLVEDIFFEQ">
         <German>Zu viele Parameter im Befehl 'solvediffeq'.</German>
@@ -921,6 +921,18 @@
         <English>The [0]. parameter in command 'solvediffeq' must be a real number with absolute value of at most 1.7E308.</English>
         <Ukrainian>[0]. параметр команди 'solvediffeq' має бути дійсним числом, модуль якого не перевищує 1.7E308.</Ukrainian>
         <Russian>[0]. параметр команды 'solvediffeq' должен быть вещественным числом, модуль которого не превышает 1.7E308.</Russian>
+    </object>
+    <object id = "MCC_LIMITS_MUST_BE_WELL_ORDERED_IN_SOLVEDIFFEQ">
+        <German>Der [0]. Parameter im Befehl 'solvediffeq' muss kleiner sein als der [1]. Parameter.</German>
+        <English>The [0]. parameter in command 'solvediffeq' must be smaller than the [1]. parameter.</English>
+        <Ukrainian>[0]. параметр команди 'solvediffeq' має бути меншим ніж [1]. параметр.</Ukrainian>
+        <Russian>[0]. параметр команды 'solvediffeq' должен быть меньше чем [1]. параметр.</Russian>
+    </object>
+    <object id = "MCC_SOLUTION_OF_DIFFEQ_CANNOT_BE_PLOTTED">
+        <German>Die Lösung der Differentialgleichung konnte nicht geplottet werden.</German>
+        <English>The solution of the differential equation cannot be plotted.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVESYSTEM">
         <German>Zu wenig Parameter im Befehl 'solvesystem'.</German>
@@ -1030,17 +1042,11 @@
         <Ukrainian>Змінна [0] має бути у параметррах.</Ukrainian>
         <Russian>Переменная [0] должна быть в параметрах.</Russian>
     </object>
-    <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_TAYLORDIFFEQ">
+    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TAYLORDIFFEQ">
         <German>Zu wenig Parameter im Befehl 'taylordiffeq'.</German>
         <English>Not enough parameters in command 'taylordiffeq'.</English>
         <Ukrainian>Недостатньо параметрів у команди 'taylordiffeq'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'taylordiffeq'.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 3. Parameter im Befehl 'taylordiffeq' muss eine positive ganze Zahl sein.</German>
-        <English>The 3. parameter in command 'taylordiffeq' must be a positive integer.</English>
-        <Ukrainian>3. параметр команди 'taylordiffeq' має бути додатним цілим числом.</Ukrainian>
-        <Russian>3. команды 'taylordiffeq' должен быть положительным целым числом.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_4_PARAMETER_IN_TAYLORDIFFEQ">
         <German>Der 4. Parameter im Befehl 'taylordiffeq' muss eine positive ganze Zahl sein.</German>
@@ -1072,23 +1078,11 @@
         <Ukrainian>Диференціальне рівняння має містити щонайбільше дві змінні.</Ukrainian>
         <Russian>Дифференциальное уравнение должно содержать максимум две переменные.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TAYLORDIFFEQ">
-        <German>Die Veränderliche [0] muss in der Differentialgleichung vorkommen.</German>
-        <English>The variable [0] must occur in the differential equation.</English>
-        <Ukrainian>Змінна [0] має бути присутня у диференціальному рівнянні.</Ukrainian>
-        <Russian>Переменная [0] должна присутствовать в дифференциальном уравнении.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_2_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 2. Parameter im Befehl 'taylordiffeq' muss eine gültige Veränderliche sein.</German>
-        <English>The 2. parameter in command 'taylordiffeq' must be a valid variable.</English>
-        <Ukrainian>2. параметр команди 'taylordiffeq' має бути діючою змінною.</Ukrainian>
-        <Russian>2. параматр команды 'taylordiffeq' должен быть действительной переменной.</Russian>
-    </object>
-    <object id = "MCC_WRONG_FORM_OF_3_PARAMETER_IN_TAYLORDIFFEQ">
-        <German>Der 3. Parameter im Befehl 'taylordiffeq' muss eine gültige Veränderliche sein.</German>
-        <English>The 3. parameter in command 'taylordiffeq' must be a valid variable.</English>
-        <Ukrainian>3. параметр команди 'taylordiffeq' має бути діючою змінною.</Ukrainian>
-        <Russian>3. параматр команды 'taylordiffeq' должен быть действительной переменной.</Russian>
+    <object id = "MCC_WRONG_FORM_OF_VAR_PARAMETER_IN_TAYLORDIFFEQ">
+        <German>Der [0]. Parameter im Befehl 'taylordiffeq' muss eine gültige Veränderliche sein.</German>
+        <English>The [0]. parameter in command 'taylordiffeq' must be a valid variable.</English>
+        <Ukrainian>[0]. параметр команди 'taylordiffeq' має бути діючою змінною.</Ukrainian>
+        <Russian>[0]. параматр команды 'taylordiffeq' должен быть действительной переменной.</Russian>
     </object>
     <object id = "MCC_TOO_MANY_PARAMETERS_IN_TAYLORDIFFEQ">
         <German>Zu viele Parameter im Befehl 'taylordiffeq'.</German>
