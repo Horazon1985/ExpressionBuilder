@@ -1522,7 +1522,10 @@ public abstract class SolveGeneralEquationMethods {
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
         try {
-            return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            ExpressionCollection zeros = SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            if (!zeros.isEmpty() || zeros == ALL_REALS || zeros == NO_SOLUTIONS) {
+                return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
+            }
         } catch (NotAlgebraicallySolvableException e) {
         }
 
