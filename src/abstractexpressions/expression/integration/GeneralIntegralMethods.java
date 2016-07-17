@@ -27,60 +27,50 @@ import abstractexpressions.expression.utilities.SimplifyRationalFunctionMethods;
 
 public abstract class GeneralIntegralMethods {
 
-    private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = getSimplifyTypesPrepareIntegrand();
-    private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = getSimplifyTypesPrepareDominatorOfIntegrand();
-    private static final HashSet<TypeSimplify> simplifyTypesMultiplyOutIntegrand = getSimplifyTypesMultiplyOutIntegrand();
+    private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesMultiplyOutIntegrand = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesPrepareIntegrand() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        return simplifyTypes;
-    }
-
-    private static HashSet<TypeSimplify> getSimplifyTypesPrepareDominatorOfIntegrand() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_functional_relations);
-        simplifyTypes.add(TypeSimplify.simplify_expand_logarithms);
-        return simplifyTypes;
-    }
-
-    private static HashSet<TypeSimplify> getSimplifyTypesMultiplyOutIntegrand() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_expand_moderate);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_algebraic_expressions);
-        return simplifyTypes;
+    static {
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_basic);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesPrepareIntegrand.add(TypeSimplify.simplify_expand_logarithms);
+        
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_basic);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesPrepareDominatorOfIntegrand.add(TypeSimplify.simplify_expand_logarithms);
+        
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_basic);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_expand_moderate);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesMultiplyOutIntegrand.add(TypeSimplify.simplify_algebraic_expressions);
     }
 
     /**
@@ -1331,57 +1321,60 @@ public abstract class GeneralIntegralMethods {
      */
     private static Expression integratePowerOfArcsin(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
-        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral,
                 new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).cos()), substVar}), true);
-        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()) {
             throw new NotAlgebraicallyIntegrableException();
         }
         return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
     }
 
     /**
-     * Substitution: x = cos(t). Dann ist int(arccos(x)^n,x) = int(-t^n*sin(t),t)
+     * Substitution: x = cos(t). Dann ist int(arccos(x)^n,x) =
+     * int(-t^n*sin(t),t)
      *
      * @throws EvaluationException
      * @throws exceptions.NotAlgebraicallyIntegrableException
      */
     private static Expression integratePowerOfArccos(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
-        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral,
                 new Object[]{MINUS_ONE.mult(Variable.create(substVar).pow(n).mult(Variable.create(substVar).sin())), substVar}), true);
-        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()) {
             throw new NotAlgebraicallyIntegrableException();
         }
         return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
     }
 
     /**
-     * Substitution: x = sinh(t). Dann ist int(arsinh(x)^n,x) = int(t^n*cosh(t),t)
+     * Substitution: x = sinh(t). Dann ist int(arsinh(x)^n,x) =
+     * int(t^n*cosh(t),t)
      *
      * @throws EvaluationException
      * @throws exceptions.NotAlgebraicallyIntegrableException
      */
     private static Expression integratePowerOfArsinh(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
-        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral,
                 new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).cosh()), substVar}), true);
-        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()) {
             throw new NotAlgebraicallyIntegrableException();
         }
         return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
     }
 
     /**
-     * Substitution: x = cosh(t). Dann ist int(arcosh(x)^n,x) = int(t^n*sinh(t),t)
+     * Substitution: x = cosh(t). Dann ist int(arcosh(x)^n,x) =
+     * int(t^n*sinh(t),t)
      *
      * @throws EvaluationException
      * @throws exceptions.NotAlgebraicallyIntegrableException
      */
     private static Expression integratePowerOfArcosh(int n, String var) throws EvaluationException, NotAlgebraicallyIntegrableException {
         String substVar = notations.NotationLoader.SUBSTITUTION_VAR;
-        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral, 
+        Expression integralOfSubstitutedFunction = indefiniteIntegration(new Operator(TypeOperator.integral,
                 new Object[]{Variable.create(substVar).pow(n).mult(Variable.create(substVar).sinh()), substVar}), true);
-        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()){
+        if (integralOfSubstitutedFunction.containsIndefiniteIntegral()) {
             throw new NotAlgebraicallyIntegrableException();
         }
         return integralOfSubstitutedFunction.replaceVariable(substVar, Variable.create(var).arcsin());
@@ -1764,8 +1757,8 @@ public abstract class GeneralIntegralMethods {
             } else if ((factorsNumerator.get(i).isFunction(TypeFunction.exp) || factorsNumerator.get(i).isFunction(TypeFunction.cos) || factorsNumerator.get(i).isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) factorsNumerator.get(i)).getLeft(), var)) {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;
-            } else if (factorsNumerator.get(i).isPositiveIntegerPower() && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.exp) 
-                    || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.cos) 
+            } else if (factorsNumerator.get(i).isPositiveIntegerPower() && (((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.exp)
+                    || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.cos)
                     || ((BinaryOperation) factorsNumerator.get(i)).getLeft().isFunction(TypeFunction.sin))
                     && SimplifyPolynomialMethods.isLinearPolynomial(((Function) ((BinaryOperation) factorsNumerator.get(i)).getLeft()).getLeft(), var)) {
                 numberOfExponentialOrTrigonometricalFactorsInNumerator++;

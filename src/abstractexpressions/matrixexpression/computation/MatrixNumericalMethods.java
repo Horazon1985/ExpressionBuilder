@@ -8,7 +8,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixFunction;
 import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
 
-public class MatrixNumericalMethods {
+public abstract class MatrixNumericalMethods {
 
     private static Matrix add(Matrix mLeft, Matrix mRight) throws EvaluationException {
         double[][] resultEntry = new double[mLeft.getRowNumber()][mLeft.getRowNumber()];

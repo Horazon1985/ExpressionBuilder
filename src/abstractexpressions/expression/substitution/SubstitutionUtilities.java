@@ -18,23 +18,21 @@ import notations.NotationLoader;
 
 public abstract class SubstitutionUtilities {
 
-    private static final HashSet<TypeSimplify> simplifyTypesSubstitution = getSimplifyTypesSubstitution();
+    private static final HashSet<TypeSimplify> simplifyTypesSubstitution = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesSubstitution() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize);
-        simplifyTypes.add(TypeSimplify.simplify_multiply_exponents);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        return simplifyTypes;
+    static {
+        simplifyTypesSubstitution.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesSubstitution.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_basic);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_factorize);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesSubstitution.add(TypeSimplify.simplify_collect_logarithms);
     }
 
     /**

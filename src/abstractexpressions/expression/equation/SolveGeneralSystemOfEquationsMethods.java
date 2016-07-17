@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class SolveGeneralSystemOfEquationsMethods {
+public abstract class SolveGeneralSystemOfEquationsMethods {
 
     public enum SolutionType {
 

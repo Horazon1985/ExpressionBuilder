@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import lang.translator.Translator;
 
-public class SimplifyMultiPolynomialMethods {
+public abstract class SimplifyMultiPolynomialMethods {
 
     private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
 

@@ -39,38 +39,32 @@ public abstract class PartialFractionDecompositionMethods {
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesForPFD = getSimplifyTypesForPFD();
-    private static final HashSet<TypeSimplify> simplifyTypesForDenominatorOfPFD = getSimplifyTypesForDenominatorOfPFD();
+    private static final HashSet<TypeSimplify> simplifyTypesForPFD = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesForDenominatorOfPFD = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesForPFD() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_expand_powerful);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        return simplifyTypes;
-    }
+    static {
+        simplifyTypesForPFD.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesForPFD.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_basic);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_expand_powerful);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesForPFD.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
 
-    private static HashSet<TypeSimplify> getSimplifyTypesForDenominatorOfPFD() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.simplify_by_inserting_defined_vars);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        return simplifyTypes;
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_basic);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesForDenominatorOfPFD.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
     }
 
     /**
@@ -115,7 +109,7 @@ public abstract class PartialFractionDecompositionMethods {
 
             // Falls Mehrfachbrüche auftauchen: alles auf einen Nenner bringen (ist in den Vereinfachungstypen enthalten).
             fractionalPart = fractionalPart.simplify(simplifyTypesForDenominatorOfPFD);
-            
+
             if (!isDenominatorOfCorrectForm(((BinaryOperation) fractionalPart).getRight(), var)) {
                 // Dann kann keine Partialbruchzerlegung ermittelt werden.
                 throw new PartialFractionDecompositionNotComputableException();
@@ -177,7 +171,6 @@ public abstract class PartialFractionDecompositionMethods {
             }
 
 //            System.out.println("PBZ: " + polynomialPart.add(approachForPFD));
-
             return polynomialPart.add(approachForPFD);
 
         } catch (PartialFractionDecompositionNotComputableException e) {

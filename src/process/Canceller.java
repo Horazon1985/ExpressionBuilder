@@ -3,8 +3,11 @@ package process;
 import exceptions.CancellationException;
 import lang.translator.Translator;
 
-public class Canceller {
+public abstract class Canceller {
 
+    // IDs für Fehlertexte.
+    private static String MCC_COMPUTATION_ABORTED = "MCC_COMPUTATION_ABORTED";
+    
     private Canceller() {
     }
 
@@ -14,7 +17,7 @@ public class Canceller {
      */
     public static void interruptComputationIfNeeded() {
         if (Thread.interrupted()) {
-            throw new CancellationException(Translator.translateOutputMessage("MCC_COMPUTATION_ABORTED"));
+            throw new CancellationException(Translator.translateOutputMessage(MCC_COMPUTATION_ABORTED));
         }
     }
 

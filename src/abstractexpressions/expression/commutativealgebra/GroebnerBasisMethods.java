@@ -12,16 +12,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class GroebnerBasisMethods {
+public abstract class GroebnerBasisMethods {
 
-    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = getsimplifyTypesBuchbergerAlgorithmRationalCase();
+    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = new HashSet<>();
 
-    private static HashSet<TypeSimplify> getsimplifyTypesBuchbergerAlgorithmRationalCase() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        return simplifyTypes;
+    static {
+        simplifyTypesBuchbergerAlgorithmRationalCase.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesBuchbergerAlgorithmRationalCase.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesBuchbergerAlgorithmRationalCase.add(TypeSimplify.simplify_basic);
     }
 
     /**

@@ -5,7 +5,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixFunction;
 import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
 
-public class SimplifyMatrixFunctionMethods {
+public abstract class SimplifyMatrixFunctionMethods {
     
     public static MatrixExpression approxConstantMatrixExpression(MatrixFunction matExpr) throws EvaluationException {
         if (matExpr.getLeft().isConstant() && matExpr.getLeft().containsApproximates()) {
