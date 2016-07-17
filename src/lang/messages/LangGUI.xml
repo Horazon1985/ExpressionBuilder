@@ -278,8 +278,8 @@
     <object id = "GUI_LegendGUI_VECTORFIELD">
         <German>Vektorfeld </German>
         <English>Vector field </English>
-        <Ukrainian>??? </Ukrainian>
-        <Russian>??? </Russian>
+        <Ukrainian>векторне поле</Ukrainian>
+        <Russian>векторное поле</Russian>
     </object>
     <object id = "GUI_LegendGUI_EQUATION_OF_IMPLICIT_FUNCTION">
         <German>Gleichung der implizit gegebenen Funktion: </German>
@@ -438,8 +438,8 @@
     <object id = "GUI_OutputDetailsGUI_INFO">
         <German>Verfügbare Ausdrücke</German>
         <English>Available expressions</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Доступні вирази</Ukrainian>
+        <Russian>Доступные выражения</Russian>
     </object>
     <object id = "GUI_OutputDetailsGUI_GENERAL_AVAILABLE_EXPRESSION">
         <German>Ausdruck [0]:</German>

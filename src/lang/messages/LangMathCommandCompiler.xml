@@ -780,14 +780,14 @@
     <object id = "MCC_PLOTVECTORFIELD2D_1_PARAMETER_MUST_BE_2_DIM_VECTOR">
         <German>Der 1. Parameter im Befehl 'plotvectorfield2d' muss ein zweidimensionaler Vektor sein.</German>
         <English>The 1. parameter in command 'plotvectorfield2d' must be a two dimensional vector.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>1. параметр команди 'plotvectorfield2d' має бути двовимірний вектором.</Ukrainian>
+        <Russian>1. Параматр команды 'plotvectorfield2d' должен быть должен быть двумерный вектором.</Russian>
     </object>
     <object id = "MCC_PLOTVECTORFIELD_CANNOT_BE_PLOTTED">
         <German>Das Vektorfeld konnte nicht geplottet werden.</German>
         <English>The vector field cannot be plotted.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не вдалося побудувати графік векторного поля.</Ukrainian>
+        <Russian>Не удалось построить график векторного поля.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVE">
         <German>Zu wenig Parameter im Befehl 'solve'.</German>
@@ -931,8 +931,8 @@
     <object id = "MCC_SOLUTION_OF_DIFFEQ_CANNOT_BE_PLOTTED">
         <German>Die Lösung der Differentialgleichung konnte nicht geplottet werden.</German>
         <English>The solution of the differential equation cannot be plotted.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не вдалося побудувати графік вирішення дифференційного рівняння.</Ukrainian>
+        <Russian>Не удалось построить график решения дифференциалного уравнения.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_SOLVESYSTEM">
         <German>Zu wenig Parameter im Befehl 'solvesystem'.</German>
