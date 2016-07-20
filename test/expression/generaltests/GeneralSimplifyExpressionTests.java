@@ -762,5 +762,16 @@ public class GeneralSimplifyExpressionTests {
         }
     }
 
+    @Test
+    public void isNonPositiveTest1() {
+        // 1/2+ln((1/2+(2/3)^(1/2))^(1/3)+(1/2-(2/3)^(1/2))^(1/3)) liefert false bei isNonPositive().
+        try {
+            Expression f = Expression.build("1/2+ln((1/2+(2/3)^(1/2))^(1/3)+(1/2-(2/3)^(1/2))^(1/3))", null);
+            Assert.assertTrue(f.isNonPositive());
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+
     
 }

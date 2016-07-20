@@ -346,6 +346,23 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean isNonPositive() {
+
+        if (!this.isConstant()) {
+            return false;
+        }
+
+        // Falls die Funktion konstant ist -> versuchen auszuwerten.
+        try {
+            return this.evaluate() <= 0;
+        } catch (EvaluationException e) {
+        }
+
+        return false;
+
+    }
+
+    @Override
     public boolean isAlwaysNonNegative() {
         return this.abstractExpression.isAlwaysNonNegative();
     }
@@ -353,6 +370,11 @@ public class SelfDefinedFunction extends Expression {
     @Override
     public boolean isAlwaysPositive() {
         return this.abstractExpression.isAlwaysPositive();
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
+        return this.abstractExpression.isAlwaysNonPositive();
     }
 
     @Override

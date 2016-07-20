@@ -455,7 +455,8 @@ public class BinaryOperation extends Expression {
         } else if (this.type.equals(TypeBinary.MINUS)) {
             return this.left.isNonNegative() && this.right.isNonPositive();
         } else if (this.type.equals(TypeBinary.TIMES) || this.type.equals(TypeBinary.DIV)) {
-            return (this.left.isNonNegative() && this.right.isNonNegative());
+            return this.left.isNonNegative() && this.right.isNonNegative()
+                    || this.left.isNonPositive() && this.right.isNonPositive();
         } else {
 
             // Hier ist type == TypeBinary.POW
@@ -479,13 +480,56 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
+    public boolean isNonPositive() {
+
+        if (!this.isConstant()) {
+            return false;
+        }
+
+        try {
+            return this.evaluate() <= 0;
+        } catch (EvaluationException e) {
+        }
+
+        if (this.type.equals(TypeBinary.PLUS)) {
+            return this.left.isNonPositive() && this.right.isNonPositive();
+        } else if (this.type.equals(TypeBinary.MINUS)) {
+            return this.left.isNonPositive() && this.right.isNonNegative();
+        } else if (this.type.equals(TypeBinary.TIMES) || this.type.equals(TypeBinary.DIV)) {
+            return this.left.isNonNegative() && this.right.isNonPositive()
+                    || this.left.isNonPositive() && this.right.isNonNegative();
+        } else {
+
+            // Hier ist type == TypeBinary.POW
+            if (this.left.isNonPositive() && this.right.isOddIntegerConstant()) {
+                return true;
+            }
+            if (this.left.isNonPositive() && this.right.isRationalConstant() 
+                    && ((BinaryOperation) this.right).getLeft().isOddIntegerConstant()
+                    && ((BinaryOperation) this.right).getRight().isOddIntegerConstant()) {
+                return true;
+            }
+            return false;
+
+        }
+
+    }
+
+    @Override
     public boolean isAlwaysNonNegative() {
 
         if (this.isNonNegative()) {
             return true;
         }
-        if (this.isSum() || this.isProduct() || this.isQuotient()) {
+        if (this.isSum()) {
             return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonNegative();
+        }
+        if (this.isDifference()) {
+            return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonPositive();
+        }
+        if (this.isProduct() || this.isQuotient()) {
+            return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonNegative()
+                    || this.left.isAlwaysNonPositive() && this.right.isAlwaysNonPositive();
         }
         if (this.isPower()) {
             return this.left.isAlwaysNonNegative() || this.right.isEvenIntegerConstant()
@@ -514,6 +558,31 @@ public class BinaryOperation extends Expression {
         }
         if (this.isPower()) {
             return this.left.isAlwaysPositive();
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
+
+        if (this.isNonPositive()) {
+            return true;
+        }
+        if (this.isSum()) {
+            return this.left.isAlwaysNonPositive() && this.right.isAlwaysNonPositive();
+        }
+        if (this.isDifference()) {
+            return this.left.isAlwaysNonPositive() && this.right.isAlwaysNonNegative();
+        }
+        if (this.isProduct() || this.isQuotient()) {
+            return this.left.isAlwaysNonNegative() && this.right.isAlwaysNonPositive()
+                    || this.left.isAlwaysNonPositive() && this.right.isAlwaysNonNegative();
+        }
+        if (this.isPower()) {
+            return this.left.isAlwaysNonPositive() && (this.right.isOddIntegerConstant()
+                    || this.right.isRationalConstant()
+                    && (((BinaryOperation) this.right).left.isOddIntegerConstant() || ((BinaryOperation) this.right).right.isOddIntegerConstant()));
         }
         return false;
 

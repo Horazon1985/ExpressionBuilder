@@ -319,16 +319,16 @@ public class Function extends Expression {
     }
 
     @Override
-    public boolean containsAlgebraicOperation(){
+    public boolean containsAlgebraicOperation() {
         /*
          Ausdrücke wie exp(ln(x)/2) (= x^(1/2)) zählen hier noch nicht zu algebraischen 
          Operationen. Sobald diese aber entsprechend vereinfacht werden, dagegen schon!
          Sinn dahinter: algebraische Umformungen müssen erst vorgenommen werden, sobald
          der Ausdruck auf dieser Form gebracht wird, nicht vorher.
-        */
+         */
         return this.left.containsAlgebraicOperation();
     }
-    
+
     @Override
     public boolean containsOperator(TypeOperator type) {
         return this.left.containsOperator(type);
@@ -535,12 +535,43 @@ public class Function extends Expression {
                 || this.type.equals(TypeFunction.arccot) || this.type.equals(TypeFunction.artanh)
                 || this.type.equals(TypeFunction.arcoth) || this.type.equals(TypeFunction.sqrt)) {
             return this.left.isNonNegative();
-        } else if (this.type.equals(TypeFunction.cosh) || this.type.equals(TypeFunction.sech)
-                || this.type.equals(TypeFunction.sqrt)) {
+        } else if (this.type.equals(TypeFunction.cosh) || this.type.equals(TypeFunction.sech)) {
+            return true;
+        } else if (this.type.equals(TypeFunction.sqrt)) {
             return this.left.isNonNegative();
-        } else {
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean isNonPositive() {
+
+        if (!this.left.isConstant()) {
             return false;
         }
+
+        try {
+            return this.evaluate() <= 0;
+        } catch (EvaluationException e) {
+        }
+
+        if (this.type.equals(TypeFunction.sgn)) {
+            return this.left.isNonPositive();
+        } else if (this.type.equals(TypeFunction.ln)) {
+            try {
+                return this.left.sub(Expression.ONE).simplify().isNonPositive();
+            } catch (EvaluationException e) {
+                return false;
+            }
+        } else if (this.type.equals(TypeFunction.sinh) || this.type.equals(TypeFunction.tanh)
+                || this.type.equals(TypeFunction.coth) || this.type.equals(TypeFunction.cosech)
+                || this.type.equals(TypeFunction.arcsin) || this.type.equals(TypeFunction.arctan)
+                || this.type.equals(TypeFunction.arccot) || this.type.equals(TypeFunction.artanh)
+                || this.type.equals(TypeFunction.arcoth) || this.type.equals(TypeFunction.sqrt)) {
+            return this.left.isNonPositive();
+        }
+        return false;
 
     }
 
@@ -586,6 +617,24 @@ public class Function extends Expression {
                 || this.type.equals(TypeFunction.arsinh) || this.type.equals(TypeFunction.artanh)
                 || this.type.equals(TypeFunction.arcoth) || this.type.equals(TypeFunction.arcosech)) {
             return this.left.isAlwaysPositive();
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
+
+        if (this.isNonPositive()) {
+            return true;
+        }
+        if (this.type.equals(TypeFunction.sgn) || this.type.equals(TypeFunction.sinh)
+                || this.type.equals(TypeFunction.tanh) || this.type.equals(TypeFunction.coth)
+                || this.type.equals(TypeFunction.arcsin) || this.type.equals(TypeFunction.arctan)
+                || this.type.equals(TypeFunction.arccot) || this.type.equals(TypeFunction.arsinh)
+                || this.type.equals(TypeFunction.artanh) || this.type.equals(TypeFunction.arcoth)
+                || this.type.equals(TypeFunction.arcosech)) {
+            return this.left.isAlwaysNonPositive();
         }
         return false;
 
@@ -652,20 +701,20 @@ public class Function extends Expression {
                         && SimplifyUtilities.difference(summandsRightOfThisWithSign, summandsLeftOfExprWithSign).isEmpty();
             } catch (EvaluationException e) {
             }
-            
+
         }
-        
+
         return expr instanceof Function && this.getType().equals(((Function) expr).getType())
                 && this.getLeft().equivalent(((Function) expr).getLeft());
-        
+
     }
 
     @Override
     public boolean antiEquivalent(Expression expr) {
-        return expr instanceof Function && ((Function) expr).type.equals(this.type) 
+        return expr instanceof Function && ((Function) expr).type.equals(this.type)
                 && this.type.isOddFunction() && this.left.antiEquivalent(((Function) expr).left);
     }
-    
+
     @Override
     public boolean hasPositiveSign() {
         return true;
@@ -680,7 +729,7 @@ public class Function extends Expression {
     }
 
     @Override
-    public int getMaximalNumberOfSummandsInExpansion(){
+    public int getMaximalNumberOfSummandsInExpansion() {
         return 1;
     }
 
@@ -970,7 +1019,7 @@ public class Function extends Expression {
     public Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException {
         return new Function(this.left.simplifyBringExpressionToCommonDenominator(type), this.type);
     }
-    
+
     @Override
     public Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException {
         return new Function(this.left.simplifyReduceDifferencesAndQuotientsAdvanced(), this.type);
@@ -1019,10 +1068,10 @@ public class Function extends Expression {
     @Override
     public Expression simplifyFunctionalRelations() throws EvaluationException {
         Function functionSimplified = new Function(this.left.simplifyFunctionalRelations(), this.type);
-        if (functionSimplified.type.equals(TypeFunction.abs)){
+        if (functionSimplified.type.equals(TypeFunction.abs)) {
             return SimplifyFunctionalRelations.reduceAbsOfQuotientIfNumeratorHasFixedSign(functionSimplified);
         }
-        if (functionSimplified.type.equals(TypeFunction.sgn)){
+        if (functionSimplified.type.equals(TypeFunction.sgn)) {
             return SimplifyFunctionalRelations.reduceSgnOfQuotientIfNumeratorHasFixedSign(functionSimplified);
         }
         return functionSimplified;

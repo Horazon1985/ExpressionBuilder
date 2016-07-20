@@ -489,9 +489,6 @@ public abstract class SolveGeneralSystemOfEquationsMethods {
         if (equationsWithOneVar.isEmpty()) {
             throw new NotAlgebraicallySolvableException();
         }
-
-        
-        
         
         // Jede der gefundenen Gleichungen muss nun gelöst werden und es werden nur die gemeinsamen Nullstellen weiterverwendet.
         ExpressionCollection solutionsOfEquation = new ExpressionCollection();

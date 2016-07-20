@@ -405,6 +405,11 @@ public class Variable extends Expression {
 
     @Override
     public boolean isNonNegative() {
+        return this.name.equals("pi");
+    }
+
+    @Override
+    public boolean isNonPositive() {
         return false;
     }
 
@@ -415,6 +420,11 @@ public class Variable extends Expression {
 
     @Override
     public boolean isAlwaysPositive() {
+        return this.name.equals("pi");
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
         return this.name.equals("pi");
     }
 

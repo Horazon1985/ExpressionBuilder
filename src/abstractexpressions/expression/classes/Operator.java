@@ -677,6 +677,28 @@ public class Operator extends Expression {
     }
 
     @Override
+    public boolean isNonPositive() {
+
+        if (!this.isConstant()) {
+            return false;
+        }
+
+        // Positivität für Fakultäten entscheiden.
+        if (this.type.equals(TypeOperator.fac)) {
+            return !isFactorialOfExpressionPositive((Expression) this.params[0]);
+        }
+
+        // Falls der Operator konstant ist -> versuchen auszuwerten.
+        try {
+            return this.evaluate() <= 0;
+        } catch (EvaluationException e) {
+        }
+
+        return false;
+
+    }
+
+    @Override
     public boolean isAlwaysNonNegative() {
 
         if (this.isNonNegative()) {
@@ -689,7 +711,8 @@ public class Operator extends Expression {
         if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
             try {
                 Expression difference = ((Expression) this.getParams()[3]).sub((Expression) this.getParams()[2]).simplify();
-                return ((Expression) this.getParams()[0]).isAlwaysNonNegative() && difference.isAlwaysNonNegative();
+                return ((Expression) this.getParams()[0]).isAlwaysNonNegative() && difference.isAlwaysNonNegative()
+                        || ((Expression) this.getParams()[0]).isAlwaysNonPositive() && difference.isAlwaysNonPositive();
             } catch (EvaluationException e) {
             }
         }
@@ -712,6 +735,24 @@ public class Operator extends Expression {
         }
         return false;
 
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
+
+        if (this.isNonPositive()) {
+            return true;
+        }
+        if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
+            try {
+                Expression difference = ((Expression) this.getParams()[3]).sub((Expression) this.getParams()[2]).simplify();
+                return ((Expression) this.getParams()[0]).isAlwaysNonNegative() && difference.isAlwaysNonPositive()
+                        || ((Expression) this.getParams()[0]).isAlwaysNonPositive() && difference.isAlwaysNonNegative();
+            } catch (EvaluationException e) {
+            }
+        }
+        return false;
+        
     }
 
     /**

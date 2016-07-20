@@ -229,6 +229,11 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean isNonPositive() {
+        return this.value.compareTo(BigDecimal.ZERO) <= 0;
+    }
+
+    @Override
     public boolean isAlwaysNonNegative() {
         return this.value.compareTo(BigDecimal.ZERO) >= 0;
     }
@@ -236,6 +241,11 @@ public class Constant extends Expression {
     @Override
     public boolean isAlwaysPositive() {
         return this.value.compareTo(BigDecimal.ZERO) > 0;
+    }
+
+    @Override
+    public boolean isAlwaysNonPositive() {
+        return this.value.compareTo(BigDecimal.ZERO) <= 0;
     }
 
     @Override

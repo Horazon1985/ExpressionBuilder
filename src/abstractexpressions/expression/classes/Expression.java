@@ -656,13 +656,7 @@ public abstract class Expression implements AbstractExpression {
      * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit
      * höchstens 0 ist. Im ungewissen Fall wird false ausgegeben.
      */
-    public boolean isNonPositive() {
-        try {
-            return (Expression.MINUS_ONE).mult(this).simplify().isNonNegative();
-        } catch (EvaluationException e) {
-            return false;
-        }
-    }
+    public abstract boolean isNonPositive();
 
     /**
      * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit > 0 ist.
@@ -696,14 +690,8 @@ public abstract class Expression implements AbstractExpression {
      * Liefert true, falls der Ausdruck definiv immer nichtpositiv ist (z.B.
      * -x^2-y^4 etc.)
      */
-    public boolean isAlwaysNonPositive() {
-        try {
-            return MINUS_ONE.mult(this).simplify().isAlwaysNonNegative();
-        } catch (EvaluationException e) {
-            return false;
-        }
-    }
-
+    public abstract boolean isAlwaysNonPositive();
+    
     /**
      * Liefert true, falls der Ausdruck definiv immer positiv ist (z.B.
      * -1-x^2-y^4 etc.)
