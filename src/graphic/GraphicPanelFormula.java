@@ -2590,7 +2590,7 @@ public class GraphicPanelFormula extends JPanel {
                     fontSize);
             drawFractionLine(g, x_0 + getWidthOfSignMinus(g, fontSize),
                     y_0 - getHeightOfExpression(g, exprNegated.getRight(), fontSize) - fontSize / 2, fontSize,
-                    Math.max(getLengthOfExpression(g, exprNegated.getLeft(), fontSize), getLengthOfExpression(g, exprNegated.getRight(), fontSize)));
+                    Math.max(getLengthOfExpression(g, exprNegated.getLeft(), fontSize), getLengthOfExpression(g, exprNegated.getRight(), fontSize)) + fontSize);
             drawExpression(g, exprNegated.getRight(),
                     x_0 + getWidthOfSignMinus(g, fontSize) + (getLengthOfExpression(g, exprNegated, fontSize) - getLengthOfExpression(g, exprNegated.getRight(), fontSize)) / 2,
                     y_0, fontSize);
