@@ -543,21 +543,27 @@ public class BinaryOperation extends Expression {
     @Override
     public boolean isAlwaysPositive() {
 
-        if (this.isNonNegative() && !this.equals(ZERO)) {
+        if (this.isPositive()) {
             return true;
         }
         if (this.isSum()) {
-            return (this.left.isAlwaysPositive() && this.right.isAlwaysNonNegative())
-                    || (this.left.isAlwaysNonNegative() && this.right.isAlwaysPositive());
+            return this.left.isAlwaysPositive() && this.right.isAlwaysNonNegative()
+                    || this.left.isAlwaysNonNegative() && this.right.isAlwaysPositive();
         }
-        if (this.isProduct()) {
-            return this.left.isAlwaysPositive() && this.right.isAlwaysPositive();
+        if (this.isDifference()) {
+            return this.left.isAlwaysPositive() && this.right.isAlwaysNonPositive()
+                    || this.left.isAlwaysNonNegative() && this.right.isAlwaysNegative();
         }
-        if (this.isQuotient()) {
-            return this.left.isAlwaysPositive() && this.right.isAlwaysPositive();
+        if (this.isProduct() || this.isQuotient()) {
+            return this.left.isAlwaysPositive() && this.right.isAlwaysPositive()
+                    || this.left.isAlwaysNegative() && this.right.isAlwaysNegative();
         }
         if (this.isPower()) {
-            return this.left.isAlwaysPositive();
+            return this.left.isAlwaysPositive() 
+                    || this.left.isAlwaysNegative() && (this.right.isEvenIntegerConstant()
+                    || this.right.isRationalConstant() 
+                    && ((BinaryOperation) this.right).getLeft().isEvenIntegerConstant()
+                    && ((BinaryOperation) this.right).getRight().isOddIntegerConstant());
         }
         return false;
 
@@ -583,6 +589,34 @@ public class BinaryOperation extends Expression {
             return this.left.isAlwaysNonPositive() && (this.right.isOddIntegerConstant()
                     || this.right.isRationalConstant()
                     && (((BinaryOperation) this.right).left.isOddIntegerConstant() || ((BinaryOperation) this.right).right.isOddIntegerConstant()));
+        }
+        return false;
+
+    }
+
+    @Override
+    public boolean isAlwaysNegative() {
+
+        if (this.isNegative()) {
+            return true;
+        }
+        if (this.isSum()) {
+            return this.left.isAlwaysNegative() && this.right.isAlwaysNonPositive()
+                    || this.left.isAlwaysNonPositive() && this.right.isAlwaysNegative();
+        }
+        if (this.isDifference()) {
+            return this.left.isAlwaysNegative() && this.right.isAlwaysNonNegative()
+                    || this.left.isAlwaysNonPositive() && this.right.isAlwaysPositive();
+        }
+        if (this.isProduct() || this.isQuotient()) {
+            return this.left.isAlwaysNegative() && this.right.isAlwaysPositive()
+                    || this.left.isAlwaysPositive() && this.right.isAlwaysNegative();
+        }
+        if (this.isPower()) {
+            return this.left.isAlwaysNegative() && (this.right.isOddIntegerConstant()
+                    || this.right.isRationalConstant() 
+                    && ((BinaryOperation) this.right).getLeft().isOddIntegerConstant()
+                    && ((BinaryOperation) this.right).getRight().isOddIntegerConstant());
         }
         return false;
 

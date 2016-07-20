@@ -429,6 +429,11 @@ public class Variable extends Expression {
     }
 
     @Override
+    public boolean isAlwaysNegative() {
+        return false;
+    }
+
+    @Override
     public boolean equals(Expression expr) {
         if (expr instanceof Variable) {
             return this.getName().equals(((Variable) expr).getName());

@@ -696,13 +696,7 @@ public abstract class Expression implements AbstractExpression {
      * Liefert true, falls der Ausdruck definiv immer positiv ist (z.B.
      * -1-x^2-y^4 etc.)
      */
-    public boolean isAlwaysNegative() {
-        try {
-            return MINUS_ONE.mult(this).simplify().isAlwaysPositive();
-        } catch (EvaluationException e) {
-            return false;
-        }
-    }
+    public abstract boolean isAlwaysNegative();
 
     /**
      * Prüft, ob der Ausdruck ein eine rationale Konstante ist.

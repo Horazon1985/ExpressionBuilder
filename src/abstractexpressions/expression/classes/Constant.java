@@ -249,6 +249,11 @@ public class Constant extends Expression {
     }
 
     @Override
+    public boolean isAlwaysNegative() {
+        return this.value.compareTo(BigDecimal.ZERO) < 0;
+    }
+
+    @Override
     public boolean equals(Expression expr) {
         return expr instanceof Constant && this.precise == ((Constant) expr).getPrecise()
                 && this.value.equals(((Constant) expr).getValue());

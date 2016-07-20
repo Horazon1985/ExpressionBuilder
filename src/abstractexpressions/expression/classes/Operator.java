@@ -729,7 +729,8 @@ public class Operator extends Expression {
         if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
             try {
                 Expression difference = ((Expression) this.getParams()[3]).sub((Expression) this.getParams()[2]).simplify();
-                return ((Expression) this.getParams()[0]).isAlwaysPositive() && difference.isAlwaysPositive();
+                return ((Expression) this.getParams()[0]).isAlwaysPositive() && difference.isAlwaysPositive()
+                        || ((Expression) this.getParams()[0]).isAlwaysNegative() && difference.isAlwaysNegative();
             } catch (EvaluationException e) {
             }
         }
@@ -753,6 +754,24 @@ public class Operator extends Expression {
         }
         return false;
         
+    }
+
+    @Override
+    public boolean isAlwaysNegative() {
+
+        if (this.isNonPositive() && !this.equals(ZERO)) {
+            return true;
+        }
+        if (this.type.equals(TypeOperator.integral) && this.params.length == 4) {
+            try {
+                Expression difference = ((Expression) this.getParams()[3]).sub((Expression) this.getParams()[2]).simplify();
+                return ((Expression) this.getParams()[0]).isAlwaysNegative() && difference.isAlwaysPositive()
+                        || ((Expression) this.getParams()[0]).isAlwaysPositive() && difference.isAlwaysNegative();
+            } catch (EvaluationException e) {
+            }
+        }
+        return false;
+
     }
 
     /**

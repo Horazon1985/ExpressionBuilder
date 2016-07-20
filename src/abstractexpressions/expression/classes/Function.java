@@ -641,6 +641,24 @@ public class Function extends Expression {
     }
 
     @Override
+    public boolean isAlwaysNegative() {
+
+        if (this.isNonPositive() && !this.equals(ZERO)) {
+            return true;
+        }
+        if (this.type.equals(TypeFunction.abs) || this.type.equals(TypeFunction.sgn)
+                || this.type.equals(TypeFunction.sinh) || this.type.equals(TypeFunction.tanh)
+                || this.type.equals(TypeFunction.coth) || this.type.equals(TypeFunction.arcsin)
+                || this.type.equals(TypeFunction.arctan) || this.type.equals(TypeFunction.arccot)
+                || this.type.equals(TypeFunction.arsinh) || this.type.equals(TypeFunction.artanh)
+                || this.type.equals(TypeFunction.arcoth) || this.type.equals(TypeFunction.arcosech)) {
+            return this.left.isAlwaysNegative();
+        }
+        return false;
+
+    }
+
+    @Override
     public boolean equals(Expression expr) {
         return expr instanceof Function && this.type.equals(((Function) expr).getType())
                 && this.getLeft().equals(((Function) expr).getLeft());

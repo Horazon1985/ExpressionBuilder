@@ -378,6 +378,11 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
+    public boolean isAlwaysNegative() {
+        return this.abstractExpression.isAlwaysNegative();
+    }
+
+    @Override
     public boolean equals(Expression expr) {
 
         if (expr instanceof SelfDefinedFunction) {
