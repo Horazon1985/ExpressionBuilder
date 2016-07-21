@@ -9,9 +9,10 @@ import lang.translator.Translator;
 public abstract class ArithmeticMethods {
 
     /**
-     * Liefert die Primfaktorzerlegung von a, falls a <= 1000000. Sonst: alle
-     * Primfaktoren (mit Vielfachheiten) von a, die <= 1000 sind.<br>
-     * VORAUSSETZUNG: a >= 0.
+     * Liefert die Primfaktorzerlegung von a, falls a &#8804; eine gewisse
+     * Schranke. Ansonsten werden womöglich nicht alle ermittelten Faktoren
+     * prim.<br>
+     * VORAUSSETZUNG: a &#8805; 0.
      */
     public static ArrayList<BigInteger> getPrimeDecomposition(BigInteger a) {
 
@@ -21,7 +22,7 @@ public abstract class ArithmeticMethods {
         } catch (EvaluationException e) {
             bound = a.abs();
         }
-        
+
         bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
 
         ArrayList<BigInteger> primeDivisors = new ArrayList<>();
@@ -31,7 +32,7 @@ public abstract class ArithmeticMethods {
         }
 
         for (int i = 1; i <= bound.intValue(); i++) {
-            if (a.compareTo(BigInteger.valueOf(i)) < 0){
+            if (a.compareTo(BigInteger.valueOf(i)) < 0) {
                 break;
             }
             if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
@@ -47,8 +48,9 @@ public abstract class ArithmeticMethods {
 
     /**
      * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls
-     * a <= 1000000. Sonst: nur Teiler <= 1000 sowie ihre Komplementärteiler
-     * ermitteln.
+     * a &#8804; eine gewisse Schranke. Ansonsten werden nur alle Teiler, welche
+     * kleiner oder gleich der Wurzel der Schranke sind, sowie ihre
+     * Komplementärteiler ermittelt.
      */
     public static ArrayList<BigInteger> getDivisors(BigInteger a) {
 
@@ -58,7 +60,7 @@ public abstract class ArithmeticMethods {
         } catch (EvaluationException e) {
             bound = a.abs();
         }
-        
+
         bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
 
         ArrayList<BigInteger> divisors = new ArrayList<>();
@@ -194,7 +196,7 @@ public abstract class ArithmeticMethods {
     }
 
     /**
-     * Gibt Bin(n, k) := n!/(k!*(n - k)!), 0 <= k <= n, zurück.
+     * Gibt Bin(n, k) := n!/(k!*(n - k)!), 0 &#8804; k &#8804; n, zurück.
      */
     public static BigInteger bin(int n, int k) {
         BigInteger result = BigInteger.ZERO;
@@ -211,7 +213,7 @@ public abstract class ArithmeticMethods {
     }
 
     /**
-     * Liefert die größte Zahl b mit b^n <= a. Falls die n-te Wurzel aus a also
+     * Liefert die größte Zahl b mit b^n &#8804; a. Falls die n-te Wurzel aus a also
      * ganzzahlig ist, gilt b^n = a.
      *
      * @throws EvaluationException

@@ -953,8 +953,8 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * In einer Summe oder Differenz, in der negative Koeffizienten auftreten,
      * so werden diese entsprechend vereinfacht. Genauer wird folgendes
-     * vereinfacht: (1) x + c*y = x - (-c)*y, falls c < 0 (2) x - c*y = x +
-     * (-c)*y, falls c < 0.
+     * vereinfacht: (1) x + c*y = x - (-c)*y, falls c &#60; 0 (2) x - c*y = x +
+     * (-c)*y, falls c &#60; 0.
      */
     public static void simplifySumsAndDifferencesWithNegativeCoefficient(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
@@ -1203,7 +1203,7 @@ public abstract class SimplifyBinaryOperationMethods {
      * Methode zum Kürzen von Leitkoeffizienten in Quotienten (für
      * reduceLeadingCoefficients), falls der Ausdruck approximiert werden soll.
      *
-     * @throws EvaluationException.
+     * @throws EvaluationException
      */
     public static void reduceLeadingCoefficientsInQuotientInApprox(ExpressionCollection factorsNumerator, ExpressionCollection factorsDenominator) throws EvaluationException {
 

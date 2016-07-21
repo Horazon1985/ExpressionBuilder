@@ -350,7 +350,7 @@ public abstract class PolynomialAlgebraMethods {
     /**
      * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
      * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
-     * |Zähler|, |Nenner| <= eine gewisse Schranke.
+     * |Zähler|, |Nenner| &#8804; eine gewisse Schranke.
      */
     public static ExpressionCollection getRationalZerosOfRationalPolynomial(Expression f, String var) {
 
@@ -374,7 +374,7 @@ public abstract class PolynomialAlgebraMethods {
     /**
      * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
      * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
-     * |Zähler|, |Nenner| <= eine gewisse Schranke.
+     * |Zähler|, |Nenner| &#8804; eine gewisse Schranke.
      */
     public static ExpressionCollection getRationalZerosOfRationalPolynomial(ExpressionCollection coefficients) {
         ExpressionCollection zeros = new ExpressionCollection();
@@ -389,7 +389,7 @@ public abstract class PolynomialAlgebraMethods {
     /**
      * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
      * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
-     * |Zähler|, |Nenner| <= eine gewisse Schranke. Diese werden der
+     * |Zähler|, |Nenner| &#8804; eine gewisse Schranke. Diese werden der
      * ExpressionCollection rationalZeros hinzugefügt. Der Rückgabewert ist das
      * normierte Ergebnis der Polynomdivision durch alle ermittelten
      * Linearfaktoren. Sind die Koeffizienten a nicht allesamt rational, so wird

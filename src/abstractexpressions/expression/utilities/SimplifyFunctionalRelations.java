@@ -149,7 +149,7 @@ public abstract class SimplifyFunctionalRelations {
     }
 
     /**
-     * Falls in expr der Ausdruck sin(x)^2 + cos(x)^2 auftaucht -> zu 1
+     * Falls in expr der Ausdruck sin(x)^2 + cos(x)^2 auftaucht, dann zu 1
      * vereinfachen.<br>
      * Beispiel: x+y+sin(a*b)^2+z+cos(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */
@@ -252,8 +252,8 @@ public abstract class SimplifyFunctionalRelations {
     }
 
     /**
-     * Falls in expr der Ausdruck cosh(x)^2 - sinh(x)^2 auftaucht -> zu 1
-     * vereinfachen. Falls in expr sinh(x)^2 - cosh(x)^2 auftaucht -> zu -1
+     * Falls in expr der Ausdruck cosh(x)^2 - sinh(x)^2 auftaucht, dann zu 1
+     * vereinfachen. Falls in expr sinh(x)^2 - cosh(x)^2 auftaucht, dann zu -1
      * vereinfachen.<br> 
      * Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */

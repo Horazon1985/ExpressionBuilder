@@ -1650,7 +1650,7 @@ public abstract class SimplifyPolynomialMethods {
      * Liefert den ggT aller Exponenten nichttrivialer Monome des Polynoms mit
      * Koeffizienten coefficients.<br>
      * BEISPIEL: Beim Polynom x^15 + 2*x^10 + 7*x^5 + 1 wird der Wert 5
-     * zurückgegeben. -> Später Substitution x^5 = t möglich.
+     * zurückgegeben.
      */
     public static int getGGTOfAllExponents(ExpressionCollection coefficients) {
         int result = 0;

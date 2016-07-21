@@ -204,7 +204,7 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
     }
 
     /**
-     * Integriert (a*x + b)/(c*x^2 + d*x + e)^n mit ganzem n >= 2 und
+     * Integriert (a*x + b)/(c*x^2 + d*x + e)^n mit ganzem n &#8805; 2 und
      * ireduziblem Nenner.<br>
      * VORAUSSETZUNG: expr ist ein unbestimmtes Integral.
      *
@@ -2004,7 +2004,8 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
      * ist. Ist f keine solche Gleichung, so wird eine
      * NotAlgebraicallyIntegrableException geworfen.
      *
-     * @throws EvaluationException, NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     * @throws NotAlgebraicallyIntegrableException
      */
     public static Expression integrateRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 
@@ -2108,7 +2109,8 @@ public abstract class SpecialIntegrationMethods extends GeneralIntegralMethods {
      * f(x^(1/n)) = 0, f = rationale Funktion. Ist f keine solche Gleichung, so
      * wird eine NotAlgebraicallyIntegrableException geworfen.
      *
-     * @throws EvaluationException, NotAlgebraicallyIntegrableException
+     * @throws EvaluationException
+     * @throws NotAlgebraicallyIntegrableException
      */
     public static Expression integrateRationalFunctionInRationalPowerOfVar(Operator expr) throws EvaluationException, NotAlgebraicallyIntegrableException {
 

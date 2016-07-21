@@ -217,8 +217,8 @@ public class Matrix extends MatrixExpression {
 
     /**
      * Gibt zurück, ob eine Matrix A = (a_{i, j}) untere Dreiecksgestalt
-     * besitzt. Dies trifft genau dann zu, wenn sie quadratisch ist und für i <
-     * j gilt a_{i, j} = 0.
+     * besitzt. Dies trifft genau dann zu, wenn sie quadratisch ist und für i
+     * &#60; j gilt a_{i, j} = 0.
      */
     public boolean isLowerTriangularMatrix() {
 
@@ -243,7 +243,7 @@ public class Matrix extends MatrixExpression {
 
     /**
      * Gibt zurück, ob eine Matrix A = (a_{i, j}) obere Dreiecksgestalt besitzt.
-     * Dies trifft genau dann zu, wenn sie quadratisch ist und für i > j gilt
+     * Dies trifft genau dann zu, wenn sie quadratisch ist und für j &#60; i gilt
      * a_{i, j} = 0.
      */
     public boolean isUpperTriangularMatrix() {
@@ -341,7 +341,7 @@ public class Matrix extends MatrixExpression {
             Expression[][] entry = new Expression[dim.width][dim.height];
             for (int i = 0; i < dim.height; i++) {
                 for (int j = 0; j < dim.width; j++) {
-                    if (i == j){
+                    if (i == j) {
                         try {
                             entry[i][j] = this.getEntry(i, j).sub(ONE).simplify();
                         } catch (EvaluationException ex) {

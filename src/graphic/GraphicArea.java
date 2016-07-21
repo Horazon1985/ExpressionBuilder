@@ -48,18 +48,6 @@ public class GraphicArea extends JTextArea {
         return this.formulas;
     }
 
-    /**
-     * Gibt die Koordinaten der linken oberen Ecke von f zurück, falls die
-     * vorliegende GraphicArea f enthält. Ansonsten wird der Punkt (-1, -1)
-     * zurückgegeben.
-     */
-    public Point getOutputCoordinate(GraphicPanelFormula f) {
-        if (this.formulas.contains(f)) {
-            return this.formulasCoordinates.get(this.formulas.indexOf(f));
-        }
-        return new Point(-1, -1);
-    }
-
     public void addComponent(ArrayList out) {
 
         GraphicPanelFormula formula = new GraphicPanelFormula();

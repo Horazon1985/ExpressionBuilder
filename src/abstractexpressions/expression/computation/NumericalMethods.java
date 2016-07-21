@@ -101,8 +101,8 @@ public abstract class NumericalMethods {
     /**
      * Sei x = argumentVar und y = functionVar. Gibt die numerische Lösung der
      * Differentialgleichung y^{(ord - 1)} = f zurück. VORAUSSETZUNG: f enthält
-     * höchstens die Variablen x, y, y', y'', ..., y^{(ord - 1)} und ord >= 1.
-     * Dies wird im Vorfeld beim Kompilieren in MathCommandCompiler
+     * höchstens die Variablen x, y, y', y'', ..., y^{(ord - 1)} und ord &#8805;
+     * 1. Dies wird im Vorfeld beim Kompilieren in MathCommandCompiler
      * sichergestellt.
      */
     public static double[][] solveDifferentialEquationByRungeKutta(Expression f, String argumentVar, String functionVar,
@@ -184,8 +184,8 @@ public abstract class NumericalMethods {
     /**
      * Approximiert das Integral über f von x_0 bis x_1 (nach der Regel von
      * Simpson). Dabei wird das Intervall [x_0, x_1] in n Schritte unterteilt.
-     * VORAUSSETZUNG: expr enthält höchstens die Variable var, x_1 >= x_0, n >=
-     * 1.
+     * VORAUSSETZUNG: expr enthält höchstens die Variable var, x_1 &#8805; x_0,
+     * n &#8805; 1.
      *
      * @throws EvaluationException
      */
@@ -296,8 +296,8 @@ public abstract class NumericalMethods {
 
     /**
      * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
-     * var2) = 0 im Bereich x_0 <= varAbsc <= x_1, y_0 <= varOrd <= y_1.
-     * VORAUSSETZUNG: f hängt nur von varAbsc und varOrd ab.
+     * var2) = 0 im Bereich x_0 &#8804; varAbsc &#8804; x_1, y_0 &#8804; varOrd
+     * &#8804; y_1. VORAUSSETZUNG: f hängt nur von varAbsc und varOrd ab.
      *
      * @throws EvaluationException
      */
@@ -368,8 +368,9 @@ public abstract class NumericalMethods {
 
     /**
      * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
-     * var2) = 0 im Bereich x_0 <= varAbsc <= x_1, y_0 <= varOrd <= y_1, z_0 <=
-     * varAppl <= z_1. VORAUSSETZUNG: f hängt nur von varAbsc, varOrd und varAppl ab.
+     * var2) = 0 im Bereich x_0 &#8804; varAbsc &#8804; x_1, y_0 &#8804; varOrd
+     * &#8804; y_1, z_0 &#8804; varAppl &#8804; z_1. VORAUSSETZUNG: f hängt nur
+     * von varAbsc, varOrd und varAppl ab.
      *
      * @throws EvaluationException
      */

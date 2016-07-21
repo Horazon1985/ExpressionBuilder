@@ -12,7 +12,7 @@ public abstract class StatisticMethods {
     /**
      * Berechnet die Koeffizienten der Regressionsgeraden zu den Punkten points
      * in der Ebene.<br>
-     * VORAUSSETZUNG: points sind alle 2x1-Matrizen und points.length >= 2.
+     * VORAUSSETZUNG: points sind alle 2x1-Matrizen und points.length &#8805; 2.
      *
      * @throws EvaluationException
      */
@@ -92,8 +92,8 @@ public abstract class StatisticMethods {
     }
 
     /**
-     * Berechnet das Minimum der i-ten Komponente von points, wenn 0 <= i <
-     * points.length. Andernfalls wird 0 zurückgegeben.<br> VORAUSSETZUNG:
+     * Berechnet das Minimum der i-ten Komponente von points, wenn 0 &#8804; i
+     * &#60; points.length. Andernfalls wird 0 zurückgegeben.<br> VORAUSSETZUNG:
      * points sind konstant und allesamt (n x 1)-Matrizen.
      *
      * @throws EvaluationException
@@ -118,7 +118,7 @@ public abstract class StatisticMethods {
     }
 
     /**
-     * Berechnet das Maximum der i-ten Komponente von points, wenn 0 <= i <
+     * Berechnet das Maximum der i-ten Komponente von points, wenn 0 &#8804; i &#60;
      * points.length. Andernfalls wird 0 zurückgegeben.<br> VORAUSSETZUNG:
      * points sind konstant und allesamt (n x 1)-Matrizen.
      *

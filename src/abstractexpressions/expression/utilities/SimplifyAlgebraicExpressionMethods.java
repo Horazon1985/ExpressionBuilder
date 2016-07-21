@@ -71,8 +71,8 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
     /**
      * Vereinfacht beispielsweise (8)^(1/2) = 2*2^(1/2), (108)^(2/3) = 9*4^(2/3)
-     * etc. Faktorisiert werden nur Faktoren <= 1000000 (da hier
-     * SolveMethods.getDivisors() benötigt wird).
+     * etc. Faktorisiert werden nur Faktoren &#8804; eine gewisse Schranke (da
+     * hier SolveMethods.getDivisors() benötigt wird).
      */
     public static Expression factorizeIntegerFactorsFromIntegerRoots(BinaryOperation expr) {
 
@@ -649,7 +649,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
      */
     private static boolean isSuitableCandidateForMakingDenominatorRational(BinaryOperation expr) {
         return (expr.isSum() || expr.isDifference())
-                && (isProductOfIntegerAndSqrtOfExpression(expr.getLeft()) && expr.getRight().isIntegerConstantOrRationalConstant() 
+                && (isProductOfIntegerAndSqrtOfExpression(expr.getLeft()) && expr.getRight().isIntegerConstantOrRationalConstant()
                 || expr.getLeft().isIntegerConstantOrRationalConstant() && isProductOfIntegerAndSqrtOfExpression(expr.getRight()));
     }
 

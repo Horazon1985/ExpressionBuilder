@@ -44,8 +44,8 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Falls in einer Summe (|) TRUE vorkommt -> alle Summanden löschen und nur
-     * in den ersten Summanden TRUE eintragen.
+     * Falls in einer Summe (|) TRUE vorkommt, dann alle Summanden löschen und
+     * nur in den ersten Summanden TRUE eintragen.
      */
     public static void findTrueInSum(LogicalExpressionCollection summands) {
         for (LogicalExpression summand : summands) {
@@ -58,7 +58,7 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Kürzt in einem Produkt (&) gleiche Faktoren.
+     * Kürzt in einem Produkt (&#38;) gleiche Faktoren.
      */
     public static void cancelMultipleFactors(LogicalExpressionCollection factors) throws EvaluationException {
 
@@ -79,7 +79,7 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Eliminiert in einem Produkt (&) TRUE.
+     * Eliminiert in einem Produkt (&#38;) TRUE.
      */
     public static void cancelTrueInProduct(LogicalExpressionCollection factors) {
 
@@ -95,8 +95,8 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Falls in einem Produkt (&) FALSE vorkommt -> alle Faktoren löschen und
-     * nur in den ersten Faktor FALSE eintragen.
+     * Falls in einem Produkt (&#38;) FALSE vorkommt, dann alle Faktoren leeren
+     * und nur in den ersten Faktor FALSE eintragen.
      */
     public static void findFalseInProduct(LogicalExpressionCollection factors) {
         for (LogicalExpression factor : factors) {
@@ -133,7 +133,7 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Falls in einer Summe a und !a vorkommen -> summands löschen und nur in
+     * Falls in einer Summe a und !a vorkommen, dann summands leeren und nur in
      * den ersten Summanden TRUE reinschreiben.
      */
     public static void collectExpressionsAndNegatedExpressionsInSum(LogicalExpressionCollection summands) throws EvaluationException {
@@ -163,8 +163,8 @@ public abstract class LogicalTrivialSimplifyMethods {
     }
 
     /**
-     * Falls in einem Produkt a und !a vorkommen -> factors löschen und nur in
-     * den ersten Faktor FALSE reinschreiben.
+     * Falls in einem Produkt a und !a vorkommen, dann alle Faktoren leeren und
+     * nur in den ersten Faktor FALSE reinschreiben.
      */
     public static void collectExpressionsAndNegatedExpressionsInProduct(LogicalExpressionCollection factors) throws EvaluationException {
 
@@ -187,7 +187,7 @@ public abstract class LogicalTrivialSimplifyMethods {
                     return;
                 }
             }
-            
+
         }
 
     }

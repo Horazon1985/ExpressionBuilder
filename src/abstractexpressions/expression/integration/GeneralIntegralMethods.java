@@ -1417,8 +1417,6 @@ public abstract class GeneralIntegralMethods {
      * Ausdruck factor alle möglichen potentiellen (sinnvollen) Substitutionen
      * und fügt diese in die HashMap setOfSubstitutions ein. Die Elemente in der
      * HashMap werden via 0, 1, 2, ..., size() - 1 durchnummeriert.
-     *
-     * @throws EvaluationException
      */
     public static ExpressionCollection getSuitableSubstitutionForIntegration(Expression factor, String var, boolean beginning) {
 

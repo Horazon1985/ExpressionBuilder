@@ -83,7 +83,7 @@ public abstract class Expression implements AbstractExpression {
 
     /**
      * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
-     * stehen. Beispiel input == "x,y,f(w,z),u,v" -> Paremeter sind dann {x, y,
+     * stehen. Beispiel input = "x,y,f(w,z),u,v". Paremeter sind dann {x, y,
      * f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von runden
      * Klammern umgeben ist, werden die Parameter getrennt.
      *
@@ -222,10 +222,16 @@ public abstract class Expression implements AbstractExpression {
         return isValidVariable(var) && Variable.create(var).getPreciseExpression() == null;
     }
 
+    /**
+     * Prüft, ob es sich bei formula um die Konstante pi handelt.
+     */
     public static boolean isPI(String formula) {
         return formula.equals("pi");
     }
 
+    /**
+     * Prüft, ob es sich bei formula um eine Binäroperation handelt.
+     */
     private static boolean isOperation(String formula) {
         return formula.equals("+") || formula.equals("-") || formula.equals("*") || formula.equals("/") || formula.equals("^");
     }
@@ -496,6 +502,14 @@ public abstract class Expression implements AbstractExpression {
 
     }
 
+    /**
+     * Gibt ein HashSet mit den Namen der Variablen zurück, die formal von der
+     * Variablen mit dem Namen varName abhängen und die im gegebenen Ausdruck
+     * vorkommen.<br>
+     * BEISPIEL: Ist varName = "y''" und der gegebene Ausdruck =
+     * "x+y'+y''''+sin(y'')", so wird ein HashSet mit den Elementen "y''" und
+     * "y''''" zurückgegeben.
+     */
     public HashSet<String> getContainedVariablesDependingOnGivenVariable(String varName) {
         HashSet<String> vars = new HashSet<>();
         HashSet<String> allVarsDependingOnGivenVariable = Variable.getVariablesDependingOnGivenVariable(varName);
@@ -509,12 +523,12 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Legt eine neue Kopie von this an.
+     * Gibt eine neue Kopie vom gegebenen Ausdruck zurück.
      */
     public abstract Expression copy();
 
     /**
-     * Liefert den Wert des zugrundeliegenden Ausdrucks unter Einsetzung aller
+     * Liefert den Wert des gegebenen Ausdrucks unter Einsetzung aller
      * Variablenwerte.
      *
      * @throws EvaluationException
@@ -523,12 +537,15 @@ public abstract class Expression implements AbstractExpression {
 
     /**
      * Fügt alle Variablen, die in dem gegebenen Ausdruck vorkommen, zum HashSet
-     * vars hinzu. Ziel: Start mit vars = {} liefert alle vorkommenden
-     * Variablen.
+     * vars hinzu.
      */
     @Override
     public abstract void addContainedVars(HashSet<String> vars);
 
+    /**
+     * Gibt ein HashSet mit allen Variablen, die in dem gegebenen Ausdruck
+     * vorkommen, zurück.
+     */
     @Override
     public HashSet<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
@@ -536,9 +553,17 @@ public abstract class Expression implements AbstractExpression {
         return vars;
     }
 
+    /**
+     * Fügt alle Variablen, denen kein Wert zugewiesen wurde und die in dem
+     * gegebenen Ausdruck vorkommen, zum HashSet vars hinzu.
+     */
     @Override
     public abstract void addContainedIndeterminates(HashSet<String> vars);
 
+    /**
+     * Gibt ein HashSet mit allen Variablen, denen kein Wert zugewiesen wurde
+     * und die in dem gegebenen Ausdruck vorkommen, zurück.
+     */
     @Override
     public HashSet<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
@@ -547,13 +572,14 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Gibt zurück, ob this die Variable var enthält.
+     * Gibt zurück, ob der gegebene Ausdruck die Variable var enthält.
      */
     @Override
     public abstract boolean contains(String var);
 
     /**
-     * Gibt zurück, ob this mindestens eine der Variable aus vars enthält.
+     * Gibt zurück, ob der gegebene Ausdruck mindestens eine der Variable aus
+     * vars enthält.
      */
     public boolean containsAtLeastOne(HashSet<String> vars) {
         for (String var : vars) {
@@ -565,141 +591,143 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Gibt zurück, ob this nichtexakte Konstanten enthält.
+     * Gibt zurück, ob der gegebene Ausdruck nichtexakte Konstanten enthält.
      */
     public abstract boolean containsApproximates();
 
     /**
-     * Gibt zurück, ob this Funktionen enthält.
+     * Gibt zurück, ob der gegebene Ausdruck Funktionen enthält.
      */
     public abstract boolean containsFunction();
 
     /**
-     * Gibt zurück, ob this Exponentialfunktionen enthält.
+     * Gibt zurück, ob der gegebene Ausdruck Exponentialfunktionen enthält.
      */
     public abstract boolean containsExponentialFunction();
 
     /**
-     * Gibt zurück, ob this trigonometrische Funktionen enthält.
+     * Gibt zurück, ob der gegebene Ausdruck trigonometrische Funktionen
+     * enthält.
      */
     public abstract boolean containsTrigonometricalFunction();
 
     /**
-     * Gibt zurück, ob this UNBESTIMMTE Integrale enthält.
+     * Gibt zurück, ob der gegebene Ausdruck unbestimmte Integrale enthält.
      */
     public abstract boolean containsIndefiniteIntegral();
 
     /**
-     * Gibt zurück, ob this Operatoren enthält.
+     * Gibt zurück, ob der gegebene Ausdruck Operatoren enthält.
      */
     public abstract boolean containsOperator();
 
     /**
-     * Gibt zurück, ob this einen Operator vom Type type enthält.
+     * Gibt zurück, ob der gegebene Ausdruck einen Operator vom Type type
+     * enthält.
      */
     public abstract boolean containsOperator(TypeOperator type);
 
     /**
-     * Gibt zurück, ob this einealgebraische Operation enthält (d.h. Exponenten
-     * von der Form p/q mit ganzen p und q und |q| >= 2).
+     * Gibt zurück, ob der gegebene Ausdruck eine algebraische Operation enthält
+     * (d.h. Exponenten von der Form p/q mit ganzen p und q und |q| &#8805; 2).
      */
     public abstract boolean containsAlgebraicOperation();
 
     /**
-     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
-     * (precise = false).
+     * Setzt alle im gegebenen Ausdruck vorkommenden Konstanten auf
+     * 'approximativ' (precise = false).
      */
     public abstract Expression turnToApproximate();
 
     /**
-     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'exakt' (precise =
-     * true).
+     * Setzt alle im gegebenen Ausdruck vorkommenden Konstanten auf 'exakt'
+     * (precise = true).
      */
     public abstract Expression turnToPrecise();
 
     /**
-     * ersetzt in einer Funktion f(x_1, ..., x_n) die Variable var durch den
-     * Ausdruck expr.
+     * Ersetzt im gegebenen Ausdruck die Variable var durch den Ausdruck expr.
      */
     public abstract Expression replaceVariable(String var, Expression expr);
 
     /**
      * Schreibt eine vom Benutzer definierte Funktion in den üblichen
-     * vordefinierten Termen aus. Beispiel: Der Benutzer definiert def(f(x) =
-     * exp(x)+x^2). Dann liefert diese Methode für den Ausdruck expr = f(u) den
-     * Ausdruck exp(u)+u^2 zurück. Technische Umsetzung: Alle Instanzen von
-     * Klassen, außer SelfDefinedFunction, werden gleich gelassen. In Instanzen
-     * von SelfDefinedFunction wird der abstrakte Ausdruck durch die konkreten
-     * Einträge ersetzt.
+     * vordefinierten Termen aus.<br>
+     * BEISPIEL: Der Benutzer definiert def(f(x) = exp(x)+x^2). Dann liefert
+     * diese Methode für den Ausdruck expr = f(u) den Ausdruck exp(u)+u^2
+     * zurück. Technische Umsetzung: Alle Instanzen von Klassen, außer
+     * SelfDefinedFunction, werden gleich gelassen. In Instanzen von
+     * SelfDefinedFunction wird im abstrakten Ausdruck jeder Parameter durch den
+     * entsprechenden konkreten Eintrag ersetzt.
      */
     public abstract Expression replaceSelfDefinedFunctionsByPredefinedFunctions();
 
     /**
-     * Differenziert eine Funktion nach der Variablen var
+     * Differenziert den gegebenen Ausdruck nach der Variablen var
      *
      * @throws EvaluationException
      */
     public abstract Expression diff(String var) throws EvaluationException;
 
     /**
-     * Methode, die liefert, ob ein Ausdruck konstant ist
+     * Gibt zurück, ob der gegebene Ausdruck konstant ist
      */
     public abstract boolean isConstant();
 
     /**
-     * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit
+     * Liefert true, falls der gegebene Ausdruck konstant ist und mit Sicherheit
      * mindestens 0 ist. Im ungewissen Fall wird false ausgegeben.
      */
     public abstract boolean isNonNegative();
 
     /**
-     * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit
+     * Liefert true, falls der gegebene Ausdruck konstant ist und mit Sicherheit
      * höchstens 0 ist. Im ungewissen Fall wird false ausgegeben.
      */
     public abstract boolean isNonPositive();
 
     /**
-     * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit > 0 ist.
-     * Im ungewissen Fall wird false ausgegeben.
+     * Liefert true, falls der gegebene Ausdruck konstant ist und mit Sicherheit
+     * &#62; 0 ist. Im ungewissen Fall wird false ausgegeben.
      */
     public boolean isPositive() {
         return this.isNonNegative() && !this.equals(ZERO);
     }
 
     /**
-     * Liefert true, falls der Ausdruck konstant ist und mit Sicherheit < 0 ist.
-     * Im ungewissen Fall wird false ausgegeben.
+     * Liefert true, falls der gegebene Ausdruck konstant ist und mit Sicherheit
+     * &#60; 0 ist. Im ungewissen Fall wird false ausgegeben.
      */
     public boolean isNegative() {
         return this.isNonPositive() && !this.equals(ZERO);
     }
 
     /**
-     * Liefert true, falls der Ausdruck definiv immer nichtnegativ ist (z.B.
-     * x^2+y^4 etc.)
+     * Liefert true, falls der gegebene Ausdruck definiv immer nichtnegativ ist
+     * (z.B. x^2+y^4 etc.)
      */
     public abstract boolean isAlwaysNonNegative();
 
     /**
-     * Liefert true, falls der Ausdruck definiv immer positiv ist (z.B.
+     * Liefert true, falls der gegebene Ausdruck definiv immer positiv ist (z.B.
      * 1+x^2+y^4 etc.)
      */
     public abstract boolean isAlwaysPositive();
 
     /**
-     * Liefert true, falls der Ausdruck definiv immer nichtpositiv ist (z.B.
-     * -x^2-y^4 etc.)
+     * Liefert true, falls der gegebene Ausdruck definiv immer nichtpositiv ist
+     * (z.B. -x^2-y^4 etc.)
      */
     public abstract boolean isAlwaysNonPositive();
-    
+
     /**
-     * Liefert true, falls der Ausdruck definiv immer positiv ist (z.B.
+     * Liefert true, falls der gegebene Ausdruck definiv immer positiv ist (z.B.
      * -1-x^2-y^4 etc.)
      */
     public abstract boolean isAlwaysNegative();
 
     /**
-     * Prüft, ob der Ausdruck ein eine rationale Konstante ist.
+     * Prüft, ob der gegebene Ausdruck ein eine rationale Konstante ist.
      */
     public boolean isRationalConstant() {
         return this.isQuotient()
@@ -708,17 +736,16 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Prüft, ob der Ausdruck eine ganzzahlige oder eine rationale Konstante
-     * ist.
+     * Prüft, ob der gegebene Ausdruck eine ganzzahlige oder eine rationale
+     * Konstante ist.
      */
     public boolean isIntegerConstantOrRationalConstant() {
         return this.isIntegerConstant() || this.isRationalConstant();
     }
 
     /**
-     * Prüft, ob eine Konstante oder ein Bruch negativ ist. Liefert true, wenn
-     * expr eine Konstante oder ein Bruch ist UND wenn expr negativ ist,
-     * ansonsten false.
+     * Prüft, ob der gegebene Ausdruck eine negative Konstante oder ein
+     * negativer Bruch ist.
      */
     public boolean isIntegerConstantOrRationalConstantNegative() {
         if (this instanceof Constant) {
@@ -732,48 +759,46 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit ganzzahligem Wert
-     * ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine ganzzahlige Konstante ist.
      */
     public boolean isIntegerConstant() {
         return this instanceof Constant && ((Constant) this).getValue().compareTo(((Constant) this).getValue().setScale(0, BigDecimal.ROUND_HALF_UP)) == 0;
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem
-     * nichtnegativen ganzzahligen Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine nichtnegative ganzzahlige
+     * Konstante ist.
      */
     public boolean isNonNegativeIntegerConstant() {
         return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) >= 0;
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem
-     * nichtpositiven ganzzahligen Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine nichtpositive ganzzahlige
+     * Konstante ist.
      */
     public boolean isNonPositiveIntegerConstant() {
         return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) <= 0;
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
-     * ganzzahligen Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine positive ganzzahlige Konstante
+     * ist.
      */
     public boolean isPositiveIntegerConstant() {
         return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) > 0;
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem negativen
-     * ganzzahligen Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine negative ganzzahlige Konstante
+     * ist.
      */
     public boolean isNegativeIntegerConstant() {
         return isIntegerConstant() && ((Constant) this).getValue().compareTo(BigDecimal.ZERO) < 0;
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit ganzzahligem
-     * ungeraden Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine ungerade Konstante ist.
      */
     public boolean isOddIntegerConstant() {
         if (this.isIntegerConstant()) {
@@ -786,8 +811,8 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
-     * ganzzahligen ungeraden Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine positive ungerade Konstante
+     * ist.
      */
     public boolean isPositiveOddIntegerConstant() {
         if (this.isIntegerConstant()) {
@@ -800,8 +825,7 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit ganzzahligem
-     * geraden Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine gerade Konstante ist.
      */
     public boolean isEvenIntegerConstant() {
         if (this.isIntegerConstant()) {
@@ -814,8 +838,7 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Liefert true genau dann, wenn this eine Konstante mit einem positiven
-     * ganzzahligen geraden Wert ist.
+     * Gibt zurück, ob der gegebene Ausdruck eine positive gerade Konstante ist.
      */
     public boolean isPositiveEvenIntegerConstant() {
         if (this.isIntegerConstant()) {
@@ -828,10 +851,11 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Hilfsmethode für writeExpression und für das Zeichnen von Ausdrücken.
-     * Gibt zurück, ob der Ausdruck mit einem negativen Vorzeichen anfängt.
-     * Beispiel: bei this = (-2)*3 wird true zurückgegeben, bei x*(-7)*5 wird
-     * false zurückgegeben.
+     * Hilfsmethode für eine toString()-Implementierung und für das Zeichnen von
+     * Ausdrücken. Gibt zurück, ob der Ausdruck mit einem negativen Vorzeichen
+     * anfängt.<br>
+     * BEISPIEL: ist der gegebene Ausdruck = (-2)*3 wird true zurückgegeben, bei
+     * x*(-7)*5 wird false zurückgegeben.
      */
     public boolean doesExpressionStartWithAMinusSign() {
 
@@ -846,7 +870,7 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Negiert den Ausdruck expr.
+     * Negiert den gegebenen Ausdruck.
      */
     public Expression negate() {
         ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(this);
@@ -862,29 +886,29 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Generierung eines Latex-Codes aus einem Ausdruck.
+     * Generierung eines Latex-Codes aus dem gegebenen Ausdruck.
      */
     public abstract String expressionToLatex();
 
     /**
-     * Liefert, ob der gegebene Ausdruck eine identische Kopie von expr
+     * Gibt zurück, ob der gegebene Ausdruck eine identische Kopie von expr
      * darstellt.
      */
     public abstract boolean equals(Expression expr);
 
     /**
-     * Liefert, ob der gegebene Ausdruck äquivalent zu dem von expr ist.
+     * Gibt zurück, ob der gegebene Ausdruck äquivalent zu dem von expr ist.
      */
     public abstract boolean equivalent(Expression expr);
 
     /**
-     * Liefert, ob der gegebene Ausdruck bis auf das Vorzeichen äquivalent zu
-     * dem von expr ist.
+     * Gibt zurück, ob der gegebene Ausdruck bis auf das Vorzeichen äquivalent
+     * zu dem von expr ist.
      */
     public abstract boolean antiEquivalent(Expression expr);
 
     /**
-     * Liefert true, wenn der Ausdruck this einen nicht-negativen Koeffizienten
+     * Liefert true, wenn der Ausdruck this einen nichtnegativen Koeffizienten
      * besitzt, falls man this als Produkt auffasst.<br>
      * BEISPIELE: (1) Für expr =2*x*(-3)*y wird false zurückgegeben, da expr,
      * welches gleich (-6)*x*y ist, einen negativen Koeffizienten besitzt.<br>
@@ -895,20 +919,20 @@ public abstract class Expression implements AbstractExpression {
     public abstract boolean hasPositiveSign();
 
     /**
-     * Ermittelt ein Maß für die "Länge" eines Ausdrucks.
+     * Ermittelt ein Maß für die "Länge" des gegebenen Ausdrucks.
      */
     public abstract int getLength();
 
     /**
-     * Ermittelt die maximale Anzahl von Summanden, die im Ausdruck vorkommen,
-     * wenn man simplifyExpand() anwendet und BEVOR man wieder zusammenfasst.
-     * Wenn die geschätzte Anzahl der Summanden größer ist als
+     * Ermittelt die maximale Anzahl von Summanden, die im gegebenen Ausdruck
+     * vorkommen, wenn man simplifyExpand() anwendet und BEVOR man wieder
+     * zusammenfasst. Wenn die geschätzte Anzahl der Summanden größer ist als
      * Integer.MAX_VALUE, wird Integer.MAX_VALUE zurückgegeben.
      */
     public abstract int getMaximalNumberOfSummandsInExpansion();
 
     /**
-     * Addiert zwei Ausdrücke.
+     * Addiert den gegebenen Ausdruck zu expr.
      */
     public Expression add(Expression expr) {
         if (this.equals(ZERO)) {
@@ -920,7 +944,9 @@ public abstract class Expression implements AbstractExpression {
         return new BinaryOperation(this, expr, TypeBinary.PLUS);
     }
 
-    //Folgende Funktionen dienen der Kürze halber.
+    /**
+     * Addiert den gegebenen Ausdruck zu a.
+     */
     public Expression add(BigDecimal a) {
         if (this.equals(ZERO)) {
             return new Constant(a);
@@ -931,6 +957,9 @@ public abstract class Expression implements AbstractExpression {
         return this.add(new Constant(a));
     }
 
+    /**
+     * Addiert den gegebenen Ausdruck zu a.
+     */
     public Expression add(BigInteger a) {
         if (this.equals(ZERO)) {
             return new Constant(a);
@@ -941,6 +970,9 @@ public abstract class Expression implements AbstractExpression {
         return this.add(new Constant(a));
     }
 
+    /**
+     * Addiert den gegebenen Ausdruck zu a.
+     */
     public Expression add(int a) {
         if (this.equals(ZERO)) {
             return new Constant(a);
@@ -952,7 +984,7 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Subtrahiert zwei Ausdrücke.
+     * Subtrahiert expr vom gegebenen Ausdruck.
      */
     public Expression sub(Expression expr) {
         if (this.equals(ZERO) && expr.equals(ZERO)) {
@@ -967,7 +999,9 @@ public abstract class Expression implements AbstractExpression {
         return new BinaryOperation(this, expr, TypeBinary.MINUS);
     }
 
-    //Folgende Funktionen dienen der Kürze halber.
+    /**
+     * Subtrahiert a vom gegebenen Ausdruck.
+     */
     public Expression sub(BigDecimal a) {
         if (this.equals(ZERO) && a.equals(BigDecimal.ZERO)) {
             return ZERO;
@@ -981,6 +1015,9 @@ public abstract class Expression implements AbstractExpression {
         return this.sub(new Constant(a));
     }
 
+    /**
+     * Subtrahiert a vom gegebenen Ausdruck.
+     */
     public Expression sub(BigInteger a) {
         if (this.equals(ZERO) && a.equals(BigInteger.ZERO)) {
             return ZERO;
@@ -994,6 +1031,9 @@ public abstract class Expression implements AbstractExpression {
         return this.sub(new Constant(a));
     }
 
+    /**
+     * Subtrahiert a vom gegebenen Ausdruck.
+     */
     public Expression sub(int a) {
         if (this.equals(ZERO) && a == 0) {
             return ZERO;
@@ -1008,7 +1048,7 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Multipliziert zwei Ausdrücke.
+     * Multipliziert den gegebenen Ausdruck mit expr.
      */
     public Expression mult(Expression expr) {
         if (this.equals(ZERO) || expr.equals(ZERO)) {
@@ -1023,48 +1063,56 @@ public abstract class Expression implements AbstractExpression {
         return new BinaryOperation(this, expr, TypeBinary.TIMES);
     }
 
-    // Folgende Funktionen dienen der Kürze halber.
-    public Expression mult(BigDecimal n) {
-        if (this.equals(ZERO) || n.equals(BigDecimal.ZERO)) {
+    /**
+     * Multipliziert den gegebenen Ausdruck mit a.
+     */
+    public Expression mult(BigDecimal a) {
+        if (this.equals(ZERO) || a.equals(BigDecimal.ZERO)) {
             return ZERO;
         }
         if (this.equals(Expression.ONE)) {
-            return new Constant(n);
+            return new Constant(a);
         }
-        if (n.equals(BigDecimal.ONE)) {
+        if (a.equals(BigDecimal.ONE)) {
             return this;
         }
-        return this.mult(new Constant(n));
-    }
-
-    public Expression mult(BigInteger n) {
-        if (this.equals(ZERO) || n.equals(BigInteger.ZERO)) {
-            return ZERO;
-        }
-        if (this.equals(Expression.ONE)) {
-            return new Constant(n);
-        }
-        if (n.equals(BigInteger.ONE)) {
-            return this;
-        }
-        return this.mult(new Constant(n));
-    }
-
-    public Expression mult(int n) {
-        if (this.equals(ZERO) || n == 0) {
-            return ZERO;
-        }
-        if (this.equals(Expression.ONE)) {
-            return new Constant(n);
-        }
-        if (n == 1) {
-            return this;
-        }
-        return this.mult(new Constant(n));
+        return this.mult(new Constant(a));
     }
 
     /**
-     * Dividiert zwei Ausdrücke.
+     * Multipliziert den gegebenen Ausdruck mit a.
+     */
+    public Expression mult(BigInteger a) {
+        if (this.equals(ZERO) || a.equals(BigInteger.ZERO)) {
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)) {
+            return new Constant(a);
+        }
+        if (a.equals(BigInteger.ONE)) {
+            return this;
+        }
+        return this.mult(new Constant(a));
+    }
+
+    /**
+     * Multipliziert den gegebenen Ausdruck mit a.
+     */
+    public Expression mult(int a) {
+        if (this.equals(ZERO) || a == 0) {
+            return ZERO;
+        }
+        if (this.equals(Expression.ONE)) {
+            return new Constant(a);
+        }
+        if (a == 1) {
+            return this;
+        }
+        return this.mult(new Constant(a));
+    }
+
+    /**
+     * Dividiert den gegebenen Ausdruck durch expr.
      */
     public Expression div(Expression expr) {
         if (expr.equals(Expression.ONE)) {
@@ -1073,39 +1121,47 @@ public abstract class Expression implements AbstractExpression {
         return new BinaryOperation(this, expr, TypeBinary.DIV);
     }
 
-    // Folgende Funktionen dienen der Kürze halber.
-    public Expression div(BigDecimal n) {
-        if (this.equals(ZERO) && !n.equals(BigDecimal.ZERO)) {
+    /**
+     * Dividiert den gegebenen Ausdruck durch a.
+     */
+    public Expression div(BigDecimal a) {
+        if (this.equals(ZERO) && !a.equals(BigDecimal.ZERO)) {
             return ZERO;
         }
-        if (n.equals(BigDecimal.ONE)) {
+        if (a.equals(BigDecimal.ONE)) {
             return this;
         }
-        return this.div(new Constant(n));
-    }
-
-    public Expression div(BigInteger n) {
-        if (this.equals(ZERO) && !n.equals(BigInteger.ZERO)) {
-            return ZERO;
-        }
-        if (n.equals(BigInteger.ONE)) {
-            return this;
-        }
-        return this.div(new Constant(n));
-    }
-
-    public Expression div(int n) {
-        if (this.equals(ZERO) && n != 0) {
-            return ZERO;
-        }
-        if (n == 1) {
-            return this;
-        }
-        return this.div(new Constant(n));
+        return this.div(new Constant(a));
     }
 
     /**
-     * Potenziert zwei Ausdrücke.
+     * Dividiert den gegebenen Ausdruck durch a.
+     */
+    public Expression div(BigInteger a) {
+        if (this.equals(ZERO) && !a.equals(BigInteger.ZERO)) {
+            return ZERO;
+        }
+        if (a.equals(BigInteger.ONE)) {
+            return this;
+        }
+        return this.div(new Constant(a));
+    }
+
+    /**
+     * Dividiert den gegebenen Ausdruck durch a.
+     */
+    public Expression div(int a) {
+        if (this.equals(ZERO) && a != 0) {
+            return ZERO;
+        }
+        if (a == 1) {
+            return this;
+        }
+        return this.div(new Constant(a));
+    }
+
+    /**
+     * Potenziert den gegebenen Ausdruck mit expr.
      */
     public Expression pow(Expression expr) {
         if (expr.equals(ZERO)) {
@@ -1120,50 +1176,69 @@ public abstract class Expression implements AbstractExpression {
         return new BinaryOperation(this, expr, TypeBinary.POW);
     }
 
-    // Folgende Funktionen dienen der Kürze halber.
-    public Expression pow(BigDecimal n) {
-        if (n.equals(BigDecimal.ZERO)) {
+    /**
+     * Potenziert den gegebenen Ausdruck mit a.
+     */
+    public Expression pow(BigDecimal a) {
+        if (a.equals(BigDecimal.ZERO)) {
             return ONE;
         }
-        if (n.equals(BigDecimal.ONE)) {
+        if (a.equals(BigDecimal.ONE)) {
             return this;
         }
-        return this.pow(new Constant(n));
+        return this.pow(new Constant(a));
     }
 
-    public Expression pow(BigInteger n) {
-        if (n.equals(BigInteger.ZERO)) {
+    /**
+     * Potenziert den gegebenen Ausdruck mit a.
+     */
+    public Expression pow(BigInteger a) {
+        if (a.equals(BigInteger.ZERO)) {
             return ONE;
         }
-        if (n.equals(BigInteger.ONE)) {
+        if (a.equals(BigInteger.ONE)) {
             return this;
         }
-        return this.pow(new Constant(n));
+        return this.pow(new Constant(a));
     }
 
-    public Expression pow(int n) {
-        if (n == 0) {
+    /**
+     * Potenziert den gegebenen Ausdruck mit a.
+     */
+    public Expression pow(int a) {
+        if (a == 0) {
             return ONE;
         }
-        if (n == 1) {
+        if (a == 1) {
             return this;
         }
-        return this.pow(new Constant(n));
+        return this.pow(new Constant(a));
     }
 
-    // Dasselbe wie pow(), nur für gebrochene Potenzen.
+    /**
+     * Potenziert den gegebenen Ausdruck mit m/n.
+     */
     public Expression pow(Expression m, Expression n) {
         return this.pow(m.div(n));
     }
 
+    /**
+     * Potenziert den gegebenen Ausdruck mit m/n.
+     */
     public Expression pow(BigDecimal m, BigDecimal n) {
         return this.pow((new Constant(m).div(new Constant(n))));
     }
 
+    /**
+     * Potenziert den gegebenen Ausdruck mit m/n.
+     */
     public Expression pow(BigInteger m, BigInteger n) {
         return this.pow((new Constant(m).div(new Constant(n))));
     }
 
+    /**
+     * Potenziert den gegebenen Ausdruck mit m/n.
+     */
     public Expression pow(int m, int n) {
         return this.pow((new Constant(m).div(new Constant(n))));
     }

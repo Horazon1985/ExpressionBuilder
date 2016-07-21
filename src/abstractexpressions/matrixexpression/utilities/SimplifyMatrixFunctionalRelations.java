@@ -95,7 +95,7 @@ public abstract class SimplifyMatrixFunctionalRelations {
     }
 
     /**
-     * Falls in expr der Ausdruck a*sin(A)^2 + a*cos(A)^2 auftaucht -> zu a*E
+     * Falls in expr der Ausdruck a*sin(A)^2 + a*cos(A)^2 auftaucht, dann zu a*E
      * vereinfachen.<br>
      * Beispiel: A+3*sin(B)^2+C+z+3*cos(B)^2 wird vereinfacht zu A + 3*E + C.
      */
@@ -180,8 +180,8 @@ public abstract class SimplifyMatrixFunctionalRelations {
     }
 
     /**
-     * Falls in matExpr der Ausdruck cosh(A)^2 - sinh(A)^2 auftaucht -> zu E
-     * vereinfachen. Falls in matExpr sinh(A)^2 - cosh(A)^2 auftaucht -> zu -E
+     * Falls in matExpr der Ausdruck cosh(A)^2 - sinh(A)^2 auftaucht, dann zu E
+     * vereinfachen. Falls in matExpr sinh(A)^2 - cosh(A)^2 auftaucht, dann zu -E
      * vereinfachen.<br>
      * Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */

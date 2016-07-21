@@ -23,7 +23,7 @@ public interface AbstractExpression {
     public HashSet<String> getContainedVars();
 
     /**
-     * Fügt dem hashSet vars alle Variablen hinzu, die in diesem abstrakten
+     * Fügt dem HashSet vars alle Variablen hinzu, die in diesem abstrakten
      * Ausdruck vorkommen.
      */
     public void addContainedIndeterminates(HashSet<String> vars);

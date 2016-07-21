@@ -28,8 +28,6 @@ public abstract class AnalysisMethods {
     /**
      * Gibt die Summe f(var = k_0) + f(var = k_0 + 1) + ... + f(var = k_1)
      * zurück.
-     *
-     * @throws EvaluationException
      */
     public static Expression sum(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
@@ -56,8 +54,6 @@ public abstract class AnalysisMethods {
     /**
      * Gibt die Summe f(var = k_0) + f(var = k_0 + 1) + ... + f(var = k_1)
      * zurück.
-     *
-     * @throws EvaluationException
      */
     public static MatrixExpression sum(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
@@ -89,8 +85,6 @@ public abstract class AnalysisMethods {
 
     /**
      * Bildet das Produkt f(var = k_0) * f(var = k_0 + 1) * ... * f(var = k_1).
-     *
-     * @throws EvaluationException
      */
     public static Expression prod(Expression f, String var, BigInteger k_0, BigInteger k_1) {
 
@@ -116,8 +110,6 @@ public abstract class AnalysisMethods {
 
     /**
      * Bildet das Produkt f(var = k_0) * f(var = k_0 + 1) * ... * f(var = k_1).
-     *
-     * @throws EvaluationException
      */
     public static MatrixExpression prod(MatrixExpression f, String var, BigInteger k_0, BigInteger k_1) {
 
@@ -146,7 +138,7 @@ public abstract class AnalysisMethods {
      * Ermittelt das Taylorpolynom vom Grad degree von y (mit Entwicklungsstelle
      * x_0), welches die DGL y^(n) = f erfüllt. VORAUSSETZUNG: expr enthält
      * höchstens zwei Variablen: var und noch eine andere; alles andere wurden
-     * beim Compilieren bereits aussortiert. Außerdem: k >= 0, ord >= 1.
+     * beim Compilieren bereits aussortiert. Außerdem: k &#8805; 0, ord &#8805; 1.
      *
      * @throws EvaluationException
      */
@@ -250,7 +242,7 @@ public abstract class AnalysisMethods {
     /**
      * Ermittelt das Taylorpolynom vom Grad degree von f (mit Entwicklungsstelle
      * x_0).<br>
-     * VORAUSSETZUNG: k >= 0, ord >= 1.
+     * VORAUSSETZUNG: k &#8805; 0, ord &#8805; 1.
      *
      * @throws EvaluationException
      */
@@ -319,7 +311,7 @@ public abstract class AnalysisMethods {
     /**
      * Ermittelt das Taylorpolynom vom Grad degree von f (mit Entwicklungsstelle
      * x_0).<br>
-     * VORAUSSETZUNG: k >= 0, ord >= 1.
+     * VORAUSSETZUNG: k &#8805; 0, ord &#8805; 1.
      *
      * @throws EvaluationException
      */
@@ -428,7 +420,7 @@ public abstract class AnalysisMethods {
     /**
      * Ermittelt die ersten n Dezimalstellen der Eulerschen Konstante e.
      *
-     * @throws ExpressionException
+     * @throws EvaluationException
      */
     public static BigDecimal getDigitsOfE(int n) throws EvaluationException {
 
@@ -463,7 +455,7 @@ public abstract class AnalysisMethods {
     /**
      * Ermittelt die ersten n Dezimalstellen der Kreiszahl pi.
      *
-     * @throws ExpressionException
+     * @throws EvaluationException
      */
     public static BigDecimal getDigitsOfPi(int n) throws EvaluationException {
 
@@ -500,8 +492,8 @@ public abstract class AnalysisMethods {
     }
 
     /**
-     * Approximation der Gammafunktion. Die Integration wird nur für 1 <= s < 2
-     * verwendet (da dann der Fehler <= 1E-16 ist), ansonsten die
+     * Approximation der Gammafunktion. Die Integration wird nur für 1 &#8804; s &#60; 2
+     * verwendet (da dann der Fehler &#8804; 1E-16 ist), ansonsten die
      * Funktionalgleichung.
      *
      * @throws EvaluationException

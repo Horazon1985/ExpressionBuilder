@@ -66,7 +66,7 @@ public abstract class OperationParser {
 
     /**
      * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
-     * stehen. Beispiel commandLine == "x,y,f(w,z),u,v" -> Paremeter sind dann
+     * stehen. Beispiel commandLine = "x,y,f(w,z),u,v". Die Paremeter sind dann
      * {x, y, f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von
      * runden Klammern umgeben ist, werden die Parameter getrennt.
      *
@@ -291,7 +291,7 @@ public abstract class OperationParser {
                             throw new ParseException(i);
                         }
                         // Optionale Parameter einlesen (es muss mindestens einer sein).
-                        for (int j = 0; j < restrictions.length; j++){
+                        for (int j = 0; j < restrictions.length; j++) {
                             restrictionsAsList.add(restrictions[j]);
                         }
 
@@ -984,11 +984,11 @@ public abstract class OperationParser {
                             + (index + 1) + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2")
                             + opName
                             + Translator.translateOutputMessage(errorMessagePrefix + "WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE");
-                    for (int i = 0; i < restrictions.size(); i++){
+                    for (int i = 0; i < restrictions.size(); i++) {
                         failureMessage += restrictions.get(i);
-                        if (i < restrictions.size() - 1){
+                        if (i < restrictions.size() - 1) {
                             failureMessage += ", ";
-                        } 
+                        }
                     }
                     throw new ExpressionException(failureMessage);
                 }

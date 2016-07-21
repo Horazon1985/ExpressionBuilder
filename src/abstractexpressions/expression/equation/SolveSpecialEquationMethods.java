@@ -455,7 +455,8 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      * Ist f keine solche Gleichung, so wird eine
      * NotAlgebraicallySolvableException geworfen.
      *
-     * @throws EvaluationException, NotAlgebraicallySolvableException
+     * @throws EvaluationException
+     * @throws NotAlgebraicallySolvableException
      */
     public static ExpressionCollection solveRationalFunctionInVarAndSqrtOfQuadraticFunctionEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
@@ -684,7 +685,8 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      * ist. Ist f keine solche Gleichung, so wird eine
      * NotAlgebraicallySolvableException geworfen.
      *
-     * @throws EvaluationException, NotAlgebraicallySolvableException
+     * @throws EvaluationException
+     * @throws NotAlgebraicallySolvableException
      */
     public static ExpressionCollection solveRationalFunctionInVarAndAnotherAlgebraicExpressionEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 

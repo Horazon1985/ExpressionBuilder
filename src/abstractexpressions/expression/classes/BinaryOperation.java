@@ -153,7 +153,7 @@ public class BinaryOperation extends Expression {
 
     @Override
     public boolean containsFunction() {
-        if (this.type.equals(TypeBinary.POW) && (!this.right.isConstant())) {
+        if (this.type.equals(TypeBinary.POW) && !this.right.isConstant()) {
             // Im diesem Fall handelt es sich (eventuell) um Exponentialfunktionen.
             return true;
         }
@@ -162,7 +162,7 @@ public class BinaryOperation extends Expression {
 
     @Override
     public boolean containsExponentialFunction() {
-        if (this.type.equals(TypeBinary.POW) && (!this.right.isConstant())) {
+        if (this.type.equals(TypeBinary.POW) && !this.right.isConstant()) {
             // Im diesem Fall handelt es sich (eventuell) um Exponentialfunktionen.
             return true;
         }

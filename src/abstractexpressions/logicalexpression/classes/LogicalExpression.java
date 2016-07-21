@@ -19,7 +19,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      * Erstellt aus einem String einen logischen Ausdruck oder wirft einen
      * Fehler.
      *
-     * @throws ExpressionException, EvaluationException
+     * @throws ExpressionException
      */
     public static LogicalExpression build(String formula, HashSet<String> vars) throws ExpressionException {
 
@@ -441,7 +441,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
     /**
      * Faktorisiert in einem logischen Ausdruck bezüglich OR, falls möglich.
-     * Beispielsweise wird a&b|a&c zu a&(b|c) vereinfacht.
+     * Beispielsweise wird a &#38; b | a &#38; c zu a &#38; (b | c) vereinfacht.
      *
      * @throws EvaluationException
      */
@@ -449,7 +449,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
     /**
      * Faktorisiert in einem logischen Ausdruck bezüglich AND, falls möglich.
-     * Beispielsweise wird (a|b)&(a|c) zu a|(b&c) vereinfacht.
+     * Beispielsweise wird (a | b) &#38; (a | c) zu a | (b &#38; c) vereinfacht.
      *
      * @throws EvaluationException
      */
@@ -612,7 +612,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
     /**
      * Standardvereinfachungsmethode allgemeiner logischer Terme. Es wird
-     * solange iteriert, bis sich nichts mehr ändert -> Der Ausdruck ist dann
+     * solange iteriert, bis sich nichts mehr ändert. Der Ausdruck ist dann
      * (weitestgehend) vereinfacht.
      */
     public LogicalExpression simplify() throws EvaluationException {
