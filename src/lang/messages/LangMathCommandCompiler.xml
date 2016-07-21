@@ -161,8 +161,8 @@
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE">
         <German> muss ein gültiger Typ sein. Zugelassene Typen sind: </German>
         <English> must be a valid type. Admissible types are: .</English>
-        <Ukrainian> має бути ???</Ukrainian>
-        <Russian> должен быть ???</Russian>
+        <Ukrainian> має бути діючим типом. Допустимими типами є: </Ukrainian>
+        <Russian> должен быть действующим типом. Допустимыми типам являются: </Russian>
     </object>
     <object id = "MCC_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
         <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
@@ -410,6 +410,12 @@
         <English>The command 'latex' must contain exactly one parameter. This parameter must consist of a chain of valid expression, which are connected by equal signs.</English>
         <Ukrainian>У команди 'latex' має бути рівно один параметр. Цей параметр має складатися з ланцюга діючих виразів, що з'єднані знаком рівності.</Ukrainian>
         <Russian>У команды 'latex' должен быть ровно один параметр. Этот параметр должен состоять из цепи действительных выражений объединенных знаком равенства.</Russian>
+    </object>
+    <object id = "MCC_GENERAL_PARAMETER_IN_LATEX_EMPTY">
+        <German>Der Ausdruck zwischen zwei Gleichheitszeichen im Parameter des Befehls 'latex' ist leer.</German>
+        <English>The expression between two equality signs in the parameter of command 'latex' is empty.</English>
+        <Ukrainian>Вираз між двома знаками рівності у параметрі команди 'latex' порожній.</Ukrainian>
+        <Russian>Выражение между двумя знаками равенства в параметре команды 'latex' пусто.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_PARAMETER_IN_LATEX">
         <German>Fehler im Parameter des Befehls 'latex': </German>
