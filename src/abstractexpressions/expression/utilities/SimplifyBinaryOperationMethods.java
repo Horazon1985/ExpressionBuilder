@@ -300,10 +300,8 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Falls expr eine rationale Zahl darstellt, wird der gekürzte Bruch,
      * welcher expr darstellt, zurückgegeben. Ansonsten wird expr zurückgegeben.
-     *
-     * @throws EvaluationException
      */
-    public static Expression rationalConstantToQuotient(BinaryOperation expr) throws EvaluationException {
+    public static Expression rationalConstantToQuotient(BinaryOperation expr) {
         if (expr.isRationalConstant() && !expr.containsApproximates()) {
             return constantToQuotient(((Constant) expr.getLeft()).getValue(), ((Constant) expr.getRight()).getValue());
         }
@@ -351,10 +349,8 @@ public abstract class SimplifyBinaryOperationMethods {
     /**
      * Falls expr einen Bruch mit negativen Nenner darstellt, so wird das
      * Minuszeichen in den Zähler verschoben. Ansonsten wird expr zurückgegeben.
-     *
-     * @throws EvaluationException
      */
-    public static Expression eliminateNegativeDenominator(BinaryOperation expr) throws EvaluationException {
+    public static Expression eliminateNegativeDenominator(BinaryOperation expr) {
 
         if (expr.isQuotient() && expr.getRight() instanceof Constant
                 && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) < 0) {

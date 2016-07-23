@@ -1243,127 +1243,219 @@ public abstract class Expression implements AbstractExpression {
         return this.pow((new Constant(m).div(new Constant(n))));
     }
 
-    // Hilfsmethoden: Bilden die entsprechenden Funktionen eines Ausdrucks.
+    /**
+     * Gibt den Betrag des Ausdrucks zurück.
+     */
     public Function abs() {
         return new Function(this, TypeFunction.abs);
     }
 
+    /**
+     * Gibt den Arkuskosinus des Ausdrucks zurück.
+     */
     public Function arccos() {
         return new Function(this, TypeFunction.arccos);
     }
 
+    /**
+     * Gibt den Arkuskosekans des Ausdrucks zurück.
+     */
     public Function arccosec() {
         return new Function(this, TypeFunction.arccosec);
     }
 
+    /**
+     * Gibt den Arkuskotangens des Ausdrucks zurück.
+     */
     public Function arccot() {
         return new Function(this, TypeFunction.arccot);
     }
 
+    /**
+     * Gibt den hyperbolichen Areakosekans des Ausdrucks zurück.
+     */
     public Function arcosech() {
         return new Function(this, TypeFunction.arcosech);
     }
 
+    /**
+     * Gibt den hyperbolichen Areakosinus des Ausdrucks zurück.
+     */
     public Function arcosh() {
         return new Function(this, TypeFunction.arcosh);
     }
 
+    /**
+     * Gibt den hyperbolichen Areakotangens des Ausdrucks zurück.
+     */
     public Function arcoth() {
         return new Function(this, TypeFunction.arcoth);
     }
 
+    /**
+     * Gibt den Arkussekans des Ausdrucks zurück.
+     */
     public Function arcsec() {
         return new Function(this, TypeFunction.arcsec);
     }
 
+    /**
+     * Gibt den Arkussinus des Ausdrucks zurück.
+     */
     public Function arcsin() {
         return new Function(this, TypeFunction.arcsin);
     }
 
+    /**
+     * Gibt den Arkustangens des Ausdrucks zurück.
+     */
     public Function arctan() {
         return new Function(this, TypeFunction.arctan);
     }
 
+    /**
+     * Gibt den hyperbolischen Areasekans des Ausdrucks zurück.
+     */
     public Function arsech() {
         return new Function(this, TypeFunction.arsech);
     }
 
+    /**
+     * Gibt den hyperbolischen Areasinus des Ausdrucks zurück.
+     */
     public Function arsinh() {
         return new Function(this, TypeFunction.arsinh);
     }
 
+    /**
+     * Gibt den hyperbolischen Areatangens des Ausdrucks zurück.
+     */
     public Function artanh() {
         return new Function(this, TypeFunction.artanh);
     }
 
+    /**
+     * Gibt den Kosinus des Ausdrucks zurück.
+     */
     public Function cos() {
         return new Function(this, TypeFunction.cos);
     }
 
+    /**
+     * Gibt den Kosekans des Ausdrucks zurück.
+     */
     public Function cosec() {
         return new Function(this, TypeFunction.cosec);
     }
 
+    /**
+     * Gibt den hyperbolischen Kosekans des Ausdrucks zurück.
+     */
     public Function cosech() {
         return new Function(this, TypeFunction.cosech);
     }
 
+    /**
+     * Gibt den hyperbolischen Kosinus des Ausdrucks zurück.
+     */
     public Function cosh() {
         return new Function(this, TypeFunction.cosh);
     }
 
+    /**
+     * Gibt den Kotangens des Ausdrucks zurück.
+     */
     public Function cot() {
         return new Function(this, TypeFunction.cot);
     }
 
+    /**
+     * Gibt den hyperbolischen Kotangens des Ausdrucks zurück.
+     */
     public Function coth() {
         return new Function(this, TypeFunction.coth);
     }
 
+    /**
+     * Gibt die Exponentialfunktion des Ausdrucks zurück.
+     */
     public Function exp() {
         return new Function(this, TypeFunction.exp);
     }
 
+    /**
+     * Gibt die Identitätsfunktion des Ausdrucks zurück.
+     */
     public Function id() {
         return new Function(this, TypeFunction.id);
     }
 
+    /**
+     * Gibt den dekadischen Logarithmus des Ausdrucks zurück.
+     */
     public Function lg() {
         return new Function(this, TypeFunction.lg);
     }
 
+    /**
+     * Gibt den natürlichen Logarithmus des Ausdrucks zurück.
+     */
     public Function ln() {
         return new Function(this, TypeFunction.ln);
     }
 
+    /**
+     * Gibt den Sekans des Ausdrucks zurück.
+     */
     public Function sec() {
         return new Function(this, TypeFunction.sec);
     }
 
+    /**
+     * Gibt den hyperbolischen Sekans des Ausdrucks zurück.
+     */
     public Function sech() {
         return new Function(this, TypeFunction.sech);
     }
 
+    /**
+     * Gibt das Signum des Ausdrucks zurück.
+     */
     public Function sgn() {
         return new Function(this, TypeFunction.sgn);
     }
 
+    /**
+     * Gibt den Sinus des Ausdrucks zurück.
+     */
     public Function sin() {
         return new Function(this, TypeFunction.sin);
     }
 
+    /**
+     * Gibt den hyperbolischen Sinus des Ausdrucks zurück.
+     */
     public Function sinh() {
         return new Function(this, TypeFunction.sinh);
     }
 
+    /**
+     * Gibt die Quadratwurzel des Ausdrucks zurück.
+     */
     public Function sqrt() {
         return new Function(this, TypeFunction.sqrt);
     }
 
+    /**
+     * Gibt den Tangens des Ausdrucks zurück.
+     */
     public Function tan() {
         return new Function(this, TypeFunction.tan);
     }
 
+    /**
+     * Gibt den hyperbolischen Tangens des Ausdrucks zurück.
+     */
     public Function tanh() {
         return new Function(this, TypeFunction.tanh);
     }
@@ -1373,89 +1465,148 @@ public abstract class Expression implements AbstractExpression {
      * Instanz einer speziellen Unterklasse von Expression mit speziellem Typ
      * ist.
      */
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Summe ist.
+     */
     public boolean isSum() {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.PLUS);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Differenz ist.
+     */
     public boolean isDifference() {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.MINUS);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck ein Produkt ist.
+     */
     public boolean isProduct() {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.TIMES);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck ein Quotient ist.
+     */
     public boolean isQuotient() {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.DIV);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Potenz ist.
+     */
     public boolean isPower() {
         return this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.POW);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Potenz mit einem ganzzahligen
+     * Exponenten ist.
+     */
     public boolean isIntegerPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Potenz mit einem positiven
+     * ganzzahligen Exponenten ist.
+     */
     public boolean isPositiveIntegerPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstant()
                 && ((Constant) ((BinaryOperation) this).getRight()).getValue().compareTo(BigDecimal.ZERO) > 0;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Potenz mit einem rationalen
+     * Exponenten ist.
+     */
     public boolean isRationalPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isRationalConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Potenz mit einem ganzzahligen
+     * oder rationalen Exponenten ist.
+     */
     public boolean isIntegerPowerOrRationalPower() {
         return this.isPower() && ((BinaryOperation) this).getRight().isIntegerConstantOrRationalConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Funktion ist.
+     */
     public boolean isFunction() {
         return this instanceof Function;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck eine Funktion vom Typ type ist.
+     */
     public boolean isFunction(TypeFunction type) {
         return this instanceof Function && ((Function) this).getType().equals(type);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck ein Operator ist.
+     */
     public boolean isOperator() {
         return this instanceof Operator;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck ein Operator vom Typ type ist.
+     */
     public boolean isOperator(TypeOperator type) {
         return this instanceof Operator && ((Operator) this).getType().equals(type);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck keine Summe ist.
+     */
     public boolean isNotSum() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.PLUS));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck keine Differenz ist.
+     */
     public boolean isNotDifference() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.MINUS));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck kein Produkt ist.
+     */
     public boolean isNotProduct() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.TIMES));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck kein Quotient ist.
+     */
     public boolean isNotQuotient() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.DIV));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Ausdruck keine Potenz ist.
+     */
     public boolean isNotPower() {
         return !(this instanceof BinaryOperation && ((BinaryOperation) this).getType().equals(TypeBinary.POW));
     }
 
     /**
-     * Einzelschritt: Triviale Vereinfachung.
+     * Führt triviale Vereinfachungen am gegebenen Ausdruck durch und gibt den
+     * vereinfachten Ausdruck zurück.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyBasic() throws EvaluationException;
 
     /**
-     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
-     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
+     * Liefert einen Ausdruck, bei dem für alle Variablen ihre zugehörigen Werte
+     * eingesetzt werden, falls diesen Werte zugeordnet wurden. Die restlichen
      * Variablen werden als Unbestimmte gelassen.
      *
      * @throws EvaluationException
@@ -1463,25 +1614,28 @@ public abstract class Expression implements AbstractExpression {
     public abstract Expression simplifyByInsertingDefinedVars() throws EvaluationException;
 
     /**
-     * Distributivgesetz für Konstanten: a*(b + c) = a*b + a*c für konstantes
-     * rationales a.
+     * Gibt den vereinfachten Ausdruck zurück, wobei die Vereinfachung gemäß dem
+     * Distributivgesetz a*(b + c) = a*b + a*c für konstante und rationale
+     * Faktoren a erfolgt.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyExpandRationalFactors() throws EvaluationException;
 
     /**
-     * Anwendung des Distributivgesetzes: a*(b + c) = a*b + a*c. Falls der
-     * Exponent bei Potenzen zu groß ist, wird der zugrundeliegende Ausdruck
-     * wieder zurückgegeben und wird nicht ausmultipliziert.
+     * Gibt den vereinfachten Ausdruck zurück, wobei die Vereinfachung gemäß dem
+     * Distributivgesetz und den binomischen Formeln erfolgt. Falls der Exponent
+     * bei auftretenden Potenzen zu groß ist, wird der zugrundeliegende
+     * Teilausdruck nicht weiter vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyExpand(TypeExpansion type) throws EvaluationException;
 
     /**
-     * Ausmultiplizieren, falls die Anzahl der zu erwartenden Summanden klein
-     * ist.
+     * Gibt den vereinfachten Ausdruck zurück, wobei die Vereinfachung gemäß dem
+     * Distributivgesetz und den binomischen Formeln erfolgt und falls die
+     * Anzahl der resultierenden Summanden klein ist.
      *
      * @throws EvaluationException
      */
@@ -1490,8 +1644,9 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Ausmultiplizieren, falls die Anzahl der zu erwartenden Summanden
-     * mittelgroß ist.
+     * Gibt den vereinfachten Ausdruck zurück, wobei die Vereinfachung gemäß dem
+     * Distributivgesetz und den binomischen Formeln erfolgt und falls die
+     * Anzahl der resultierenden Summanden mittelgroß ist.
      *
      * @throws EvaluationException
      */
@@ -1500,8 +1655,9 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Ausmultiplizieren, selbst falls die Anzahl der zu erwartenden Summanden
-     * groß ist.
+     * Gibt den vereinfachten Ausdruck zurück, wobei die Vereinfachung gemäß dem
+     * Distributivgesetz und den binomischen Formeln erfolgt, selbst wenn die
+     * Anzahl der resultierenden Summanden recht groß ist.
      *
      * @throws EvaluationException
      */
@@ -1510,50 +1666,63 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Bringt alle Brüche auf einen Nenner.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung alle
+     * Brüche auf einen Nenner gebracht werden. Der Typ type entscheidet
+     * darüber, ob die Brüche immer (ALWAYS) oder nur im Falle eines Auftretens
+     * von Doppelbrüchen (IF_MULTIPLE_FRACTION_OCCURS) erfolgt.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyBringExpressionToCommonDenominator(TypeFractionSimplification type) throws EvaluationException;
 
     /**
-     * Fasst Leitkoeffizienten in Brüchen/Differenzen zusammen.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * relativ 'trickreiche' Methoden zum Kürzen von Differenzen und Quotienten
+     * angewendet werden.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException;
 
     /**
-     * Ordnet Ketten von + und von * nach rechts.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * Ketten von + und von * nach rechts geordnet werden.
      *
      * @throws EvaluationException
      */
     public abstract Expression orderSumsAndProducts() throws EvaluationException;
 
     /**
-     * Sortiert Summen und Differenzen zu einer grpßen Differenz (...)-(...).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * verschachtelte Differenzen bzw. Quotienten zu einer Differenz bzw. einem
+     * Quotienten gemacht werden.
      *
      * @throws EvaluationException
      */
     public abstract Expression orderDifferencesAndQuotients() throws EvaluationException;
 
     /**
-     * Sammelt in einem Produkt gleiche Ausdrücke zu einem einzigen Ausdruck.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Produkten gleiche Faktoren (oder Potenzen mit gleicher Basis) zu einem
+     * einzigen Faktor (bzw. Potenz) zusammengefasst werden.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyCollectProducts() throws EvaluationException;
 
     /**
-     * Versucht möglichst viel zu faktorisieren.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Summen oder Differenzen faktorisiert wird.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyFactorize() throws EvaluationException;
 
     /**
-     * Versucht in einer Summe gleiche nichtkonstante Summanden mit
-     * verschiedenen rationalen Koeffizienten zu sammeln.<br>
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Summen wie folgt faktorisiert wird: gleiche nichtkonstante Summanden mit
+     * verschiedenen rationalen Koeffizienten werden zu einem einzigen Summanden
+     * zusammengefasst.<br>
      * BEISPIEL: (1) Für 3*x*y/7 + 3.8*x*y wird (3/7 + 3.8)*x*y zurückgegeben.
      * (2) Für 2*x*y + 5*x*z wird 2*x*y + 5*x*z zurückgegeben (es wird also
      * nichts vereinfacht).
@@ -1563,125 +1732,181 @@ public abstract class Expression implements AbstractExpression {
     public abstract Expression simplifyFactorizeAllButRationalsInSums() throws EvaluationException;
 
     /**
-     * Dasselbe wie factorizeAllButRationalsInSums(), nur für Differenzen.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Differenzen wie folgt faktorisiert wird: gleiche nichtkonstante Summanden
+     * mit verschiedenen rationalen Koeffizienten werden zu einem einzigen
+     * Summanden zusammengefasst.<br>
+     * BEISPIEL: (1) Für 3*x*y/7 - 3.8*x*y wird (3/7 - 3.8)*x*y zurückgegeben.
+     * (2) Für 2*x*y - 5*x*z wird 2*x*y - 5*x*z zurückgegeben (es wird also
+     * nichts vereinfacht).
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyFactorizeAllButRationalsInDifferences() throws EvaluationException;
 
     /**
-     * Versucht in einer Summe oder Differenz gleiche nichtkonstante Summanden
-     * mit verschiedenen rationalen Koeffizienten zu sammeln.<br>
-     * BEISPIEL: (1) Für 3*x*y/7 + 3.8*x*y wird (3/7 + 3.8)*x*y
-     * zurückgegeben.<br>
-     * (2) Für 2*x*y + 5*x*z wird 2*x*y + 5*x*z zurückgegeben (es wird also
-     * nichts vereinfacht).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Summen oder Differenzen wie folgt faktorisiert wird: gleiche
+     * nichtkonstante Summanden mit verschiedenen rationalen Koeffizienten
+     * werden zu einem einzigen Summanden zusammengefasst.<br>
+     * BEISPIEL: (1) Für 3*x*y/7 + 3.8*x*y - 2*x*y wird (3/7 + 3.8 - 2)*x*y
+     * zurückgegeben. (2) Für 2*x*y + 5*x*z wird 2*x*y + 5*x*z zurückgegeben (es
+     * wird also nichts vereinfacht).
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyFactorizeAllButRationals() throws EvaluationException;
 
     /**
-     * Kürzt Ausdrücke in einem Quotienten (...)-(...).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Quotienten gekürzt wird.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReduceQuotients() throws EvaluationException;
 
     /**
-     * Vereinfacht Potenzen.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung in
+     * Produkten oder Quotienten zulässige Potenzen auseinandergezogen werden.
+     * Eine Potenz ist <i>zulässig</i>, wenn sie entweder ganz oder rational mit
+     * ungeradem Nenner ist.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyPullApartPowers() throws EvaluationException;
 
     /**
-     * Versucht STUR, Exponenten auszumultiplizieren, etwa (x^3)^5 = x^15, aber
-     * auch (x^4)^(1/2) = x^2. Letzteres ist im Allgemeinen FALSCH, aber diese
-     * Art von Umformung wird bei Substitution bei der Integration benötigt.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung bei
+     * verschachtelten Potenzen stur versucht wird, Exponenten
+     * auszumultiplizieren.<br>
+     * BEISPIEL: (1) Der Ausdruck (x^3)^5 wird zu x^15 vereinfacht.<br>
+     * (2) Der Ausdruck (x^4)^(1/2) wird zu x^2 vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyMultiplyExponents() throws EvaluationException;
 
     /**
-     * Beachtet eine Reihe vorgegebener Funktionalgleichungen.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung eine
+     * Reihe vorgegebener Funktionalgleichungen verwendet wird.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyFunctionalRelations() throws EvaluationException;
 
     /**
-     * Sammelt Logarithmen zu einem Logarithmus.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * Logarithmen nach Möglichkeit zu einem einzigen Logarithmus
+     * zusammengefasst werden.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyCollectLogarithms() throws EvaluationException;
 
     /**
-     * Schreibt Logarithmen von Produkten/Quotienten aus zu Summen/Differenzen
-     * von Logarithmen.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * Logarithmen von Produkten oder Potenzen in Summen oder Vielfache von
+     * Logarithmen auseinandergezogen werden, sofern die Exponenten nicht gerade
+     * oder rational mit geradem Zähler sind.<br>
+     * BEISPIEL: (1) Der Ausdruck ln(x*y^3) wird zu ln(x) + 3*ln(y)
+     * vereinfacht.<br>
+     * (2) Der Ausdruck ln(x*y^2) wird zu ln(x) + ln(y^2) vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyExpandLogarithms() throws EvaluationException;
 
     /**
-     * Ersetzt allgemeine Exponentialfunktionen durch die eigentliche Definition
-     * (wichtig für Integrale!).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * allgemeine Exponentialfunktionen durch die eigentliche Definition ersetzt
+     * werden.<br>
+     * BEISPIEL: Der Ausdruck 2^x wird zu exp(x*ln(2)) vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReplaceExponentialFunctionsByDefinitions() throws EvaluationException;
 
     /**
-     * Ersetzt allgemeine Exponentialfunktionen, deren Basis bzgl var konstant
-     * ist, durch die eigentliche Definition (wichtig für Integrale!).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * allgemeine Exponentialfunktionen, deren Basis bzgl var konstant ist,
+     * durch die eigentliche Definition ersetzt werden.<br>
+     * BEISPIELE: (1) Der Ausdruck 2^x wird bei var = "x" zu exp(x*ln(2))
+     * vereinfacht.<br>
+     * (2) Der Ausdruck x^x wird bei var = "x" zu x^x vereinfacht (Vereinfachung
+     * findet also nicht statt).<br>
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException;
 
     /**
-     * Ersetzt Funktionen durch einfachere Funktionen (wichtig für Integrale!).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * trigonometrische Funktionen durch die eigentliche Definition ersetzt
+     * werden.<br>
+     * BEISPIEL: Der Ausdruck tan(x) wird zu sin(x)/cos(x) vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReplaceTrigonometricalFunctionsByDefinitions() throws EvaluationException;
 
     /**
-     * Ersetzt Funktionen durch einfachere Funktionen, wenn sie von var abhängen
-     * (wichtig für Integrale!).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * trigonometrische Funktionen, deren Argumente die Veränderliche var
+     * enthalten, durch die eigentliche Definition ersetzt werden.<br>
+     * BEISPIELE: (1) Der Ausdruck tan(x) wird bei var = "x" zu sin(x)/cos(x)
+     * vereinfacht.<br>
+     * (2) Der Ausdruck tan(a) wird bei var = "x" zu tan(a) vereinfacht
+     * (Vereinfachung findet also nicht statt).<br>
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions(String var) throws EvaluationException;
 
     /**
-     * Ersetzt Funktionen durch einfachere Funktionen (wichtig für Integrale!).
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * Sinus- und Kosinusfunktionen, deren Argumente ganzzahlige Vielfache eines
+     * anderen Ausdrucks A sind, durch Polynome in Sinus- und Kosinusfunktionen
+     * mit Argument A ersetzt werden. Außerdem werden Produkte (und Potenzen,
+     * wenn der Exponent nicht zu groß ist) von Sinus- und Kosinusfunktionen
+     * unter Verwendung entsprechender Relationen zu Summen / Differenzen
+     * vereinfacht.<br>
+     * BEISPIELE: (1) Für den Ausdruck sin(2*x) wird 2*sin(x)*cos(x)
+     * zurückgegeben.<br>
+     * (2) Für den Ausdruck sin(x)*cos(2*x) wird zurückgegeben sin(3*x)/2 -
+     * sin(x)/2.<br>
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyExpandProductsOfComplexExponentialFunctions(String var) throws EvaluationException;
 
     /**
-     * Führt eine Reihe von Vereinfachungen algebraischer Ausdrücke aus.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung eine
+     * Reihe algebraischer Relationen verwendet wird.
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyAlgebraicExpressions() throws EvaluationException;
 
     /**
-     * Entwickelt alle Klammern und sammelt äquivalente Ausdrücke wieder auf.
-     * Gibt Letzteres zurück, falls dieser (nach einer gewissen
-     * "Längenevaluierung") kürzer ist, als der ursprüngliche Ausdruck.
+     * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
+     * Folgendes probiert wird:<br>
+     * (1) Ausmultiplizieren aller Klammern und Aufsammeln äquivalenter
+     * Ausdrücke.<br>
+     * (2) Brüche werden auf einen Nenner gebracht und der Zähler wird
+     * weitestgehend vereinfacht.<br>
+     * Falls eines dieser Schritte ein 'kürzeres' Ergebnis produziert (gemessen
+     * werden die Ausdrücke mittels der Methode getLength()), so wird dieses
+     * Ergebnis zurückgegeben.<br>
+     * BEISPIELE: (1) Für den Ausdruck (1+x)^2-x^2 wird 1+2*x zurückgegeben.<br>
+     * (2) Für den Ausdruck 1-1/(1+x) wird x/(1+x) zurückgegeben.<br>
+     * (3) Für den Ausdruck (1+x)^2 wird (1+x)^2 zurückgegeben.<br>
      *
      * @throws EvaluationException
      */
     public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Terme.
+     * Gibt die 'Standardvereinfachung' allgemeiner Ausdrücke zurück.
      *
      * @throws EvaluationException
      */
@@ -1735,7 +1960,8 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Spezielle Vereinfachung allgemeiner Terme.
+     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
+     * Ausdrücke zurück.
      *
      * @throws EvaluationException
      */
@@ -1832,7 +2058,12 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Spezielle Vereinfachung allgemeiner Terme.
+     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
+     * Ausdrücke zurück. Das Argument var wird hier nur für die Methoden
+     * simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions()
+     * und
+     * simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions()
+     * verwendet, da diese var als Eingabe benötigen.
      *
      * @throws EvaluationException
      */
@@ -1959,7 +2190,8 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Spezielle Vereinfachung allgemeiner Terme.
+     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
+     * Ausdrücke zurück.
      *
      * @throws EvaluationException
      */

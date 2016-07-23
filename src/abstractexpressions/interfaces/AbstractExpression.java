@@ -11,7 +11,7 @@ public interface AbstractExpression {
     public boolean contains(String var);
 
     /**
-     * Fügt dem hashSet vars alle Variablen hinzu, die in diesem abstrakten
+     * Fügt dem HashSet vars alle Variablen hinzu, die in diesem abstrakten
      * Ausdruck vorkommen.
      */
     public void addContainedVars(HashSet<String> vars);

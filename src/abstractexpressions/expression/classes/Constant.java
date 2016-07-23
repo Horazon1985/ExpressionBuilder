@@ -20,7 +20,6 @@ public class Constant extends Expression {
     private BigDecimal value;
     private boolean precise;
 
-    // Verschiedene Konstruktoren
     public Constant(double approxValue) throws EvaluationException {
         if (Double.isNaN(approxValue) || Double.isInfinite(approxValue)) {
             throw new EvaluationException(Translator.translateOutputMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
