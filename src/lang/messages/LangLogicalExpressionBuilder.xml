@@ -30,10 +30,10 @@
     <Russian>Правая часть логического бинарного оператора пуста.</Russian>
   </object>
   <object id = "LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED">
-    <German>Folgender logischer Ausdruck/Teilausdruck kann nicht interpretiert werden: </German>
-    <English>The following logical expression/part of a logical expression cannot be interpreted: </English>
-    <Ukrainian>Наступний логічний вираз/частина логічного виразу не може бути проінтерпритована: </Ukrainian>
-    <Russian>Следующее логическое выражение/часть логического выражения не может быть проинтерпритирована: </Russian>
+    <German>Folgender logischer Ausdruck/Teilausdruck kann nicht interpretiert werden: [0]</German>
+    <English>The following logical expression/part of a logical expression cannot be interpreted: [0]</English>
+    <Ukrainian>Наступний логічний вираз/частина логічного виразу не може бути проінтерпритована: [0]</Ukrainian>
+    <Russian>Следующее логическое выражение/часть логического выражения не может быть проинтерпритирована: [0]</Russian>
   </object>
   <object id = "LEB_LogicalExpression_STACK_OVERFLOW">
     <German>Speicher voll. Die Berechnung wurde beendet.</German>

@@ -12,6 +12,13 @@ import process.Canceller;
 
 public abstract class LogicalExpression implements AbstractExpression {
 
+    private static final String LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE = "LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE";    
+    private static final String LEB_LogicalExpression_WRONG_BRACKETS = "LEB_LogicalExpression_WRONG_BRACKETS";    
+    private static final String LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY = "LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY";    
+    private static final String LEB_LogicalExpression_RIGHT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY = "LEB_LogicalExpression_RIGHT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY";    
+    private static final String LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED = "LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED";    
+    private static final String LEB_LogicalExpression_STACK_OVERFLOW = "LEB_LogicalExpression_STACK_OVERFLOW";    
+    
     public final static LogicalConstant FALSE = new LogicalConstant(false);
     public final static LogicalConstant TRUE = new LogicalConstant(true);
 
@@ -35,7 +42,7 @@ public abstract class LogicalExpression implements AbstractExpression {
         String currentChar;
 
         if (formula.equals("")) {
-            throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE));
         }
 
         for (int i = 1; i <= formulaLength; i++) {
@@ -43,7 +50,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
             // Öffnende und schließende Klammern zählen.
             if (currentChar.equals("(") && bracketCounter == 0) {
-                throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_WRONG_BRACKETS));
             }
 
             if (currentChar.equals(")")) {
@@ -82,7 +89,7 @@ public abstract class LogicalExpression implements AbstractExpression {
         }
 
         if (bracketCounter > 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_WRONG_BRACKETS));
         }
 
         // Aufteilung, falls eine Elementaroperation (=, >, |, &) vorliegt
@@ -91,10 +98,10 @@ public abstract class LogicalExpression implements AbstractExpression {
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
             if ((formulaLeft.equals("")) && (priority != 1)) {
-                throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY));
             }
             if (formulaRight.equals("")) {
-                throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_RIGHT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_RIGHT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY));
             }
 
             switch (priority) {
@@ -146,7 +153,7 @@ public abstract class LogicalExpression implements AbstractExpression {
             }
         }
 
-        throw new ExpressionException(Translator.translateOutputMessage("LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED") + formula);
+        throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED, formula));
 
     }
 
@@ -669,7 +676,7 @@ public abstract class LogicalExpression implements AbstractExpression {
             } while (!logExpr.equals(logExprSimplified));
             return logExprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("LEB_LogicalExpression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(LEB_LogicalExpression_STACK_OVERFLOW));
         }
 
     }
