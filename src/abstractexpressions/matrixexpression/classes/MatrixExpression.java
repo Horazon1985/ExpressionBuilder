@@ -17,13 +17,27 @@ import process.Canceller;
 
 public abstract class MatrixExpression implements AbstractExpression {
 
+    private static final String MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE";    
+    private static final String MEB_MatrixExpression_ROW_MISSING = "MEB_MatrixExpression_ROW_MISSING"; 
+    private static final String MEB_MatrixExpression_NO_ROWS = "MEB_MatrixExpression_NO_ROWS";
+    private static final String MEB_MatrixExpression_EMPTY_PARAMETER = "MEB_MatrixExpression_EMPTY_PARAMETER";    
+    private static final String MEB_MatrixExpression_WRONG_BRACKETS = "MEB_MatrixExpression_WRONG_BRACKETS";    
+    private static final String MEB_MatrixExpression_TWO_OPERATIONS = "MEB_MatrixExpression_TWO_OPERATIONS";    
+    private static final String MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY";    
+    private static final String MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY";    
+    private static final String MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED";    
+    private static final String MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED";    
+    private static final String MEB_MatrixExpression_NOT_A_MATRIX = "MEB_MatrixExpression_NOT_A_MATRIX";
+    private static final String MEB_MatrixExpression_STACK_OVERFLOW = "MEB_MatrixExpression_STACK_OVERFLOW";    
+    
     public final static Matrix MINUS_ONE = new Matrix(Expression.MINUS_ONE);
 
     /**
      * Falls matrix eine Matrix darstellt, so werden die einzelnen Matrixzeilen
-     * in einem Stringarray zurückgegeben. Beispiel: Bei der (2x3)-Matrix matrix
-     * = "[x+y,a,b;5,sin(y),f(u,v)]" wird das Stringarray
-     * {"x+y","a","b","5","sin(y)","f(u,v)"} zurückgegeben.
+     * in einem Stringarray zurückgegeben. Andernfalls wird eine
+     * ExpressionException geworfen.<br>
+     * BEISPIEL: Bei der (2x3)-Matrix matrix = "[x+y,a,b;5,sin(y),f(u,v)]" wird
+     * das Stringarray {"x+y,a,b","5,sin(y),f(u,v)"} zurückgegeben.
      *
      * @throws ExpressionException
      */
@@ -38,11 +52,11 @@ public abstract class MatrixExpression implements AbstractExpression {
 
         String[] rows = matrix.split(";");
         if (rows.length != numberOfRows) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_ROW_MISSING"));
+            throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_ROW_MISSING));
         }
 
         if (rows.length == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NO_ROWS"));
+            throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_NO_ROWS));
         }
         return rows;
 
@@ -50,10 +64,11 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     /**
      * Falls row eine Zeile in einer Matrix darstellt, so werden die einzelnen
-     * Matrixeinträge in einem Stringarray zurückgegeben. Beispiel: Bei der 2.
-     * Zeile row = "5,sin(y),f(u,v)" aus dem obigen Beispiel bei der
-     * Beschreibung von getRowsFromMatrix() wird das Stringarray {"5", "sin(y)",
-     * "gcd(12,15)"} zurückgegeben.
+     * Matrixeinträge in einem Stringarray zurückgegeben. Andernfalls wird eine
+     * ExpressionException geworfen.<br>
+     * BEISPIEL: Bei der 2. Zeile row = "5,sin(y),f(u,v)" aus dem obigen
+     * Beispiel bei der Beschreibung von getRowsFromMatrix() wird das
+     * Stringarray {"5", "sin(y)", "gcd(12,15)"} zurückgegeben.
      *
      * @throws ExpressionException
      */
@@ -89,14 +104,14 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
             if ((bracketsCount == 0) && (currentChar.equals(","))) {
                 if (row.substring(startPositionOfCurrentParameter, i).equals("")) {
-                    throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EMPTY_PARAMETER));
                 }
                 result.add(row.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == row.length() - 1) {
                 if (startPositionOfCurrentParameter == row.length()) {
-                    throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EMPTY_PARAMETER));
                 }
                 result.add(row.substring(startPositionOfCurrentParameter, row.length()));
             }
@@ -104,7 +119,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         if (bracketsCount != 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_WRONG_BRACKETS));
         }
 
         return result;
@@ -112,7 +127,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Erzeugt eine MatrixExpression aus formula.
+     * Erzeugt eine Matrix aus formula.
      *
      * @throws ExpressionException
      */
@@ -125,11 +140,11 @@ public abstract class MatrixExpression implements AbstractExpression {
         for (int i = 0; i < rows.length; i++) {
 
             if (rows[i].isEmpty()) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_NOT_A_MATRIX));
             }
             currentRow = getEntriesFromRow(rows[i]).toArray();
             if (currentRow.length != entry[0].length) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_NOT_A_MATRIX"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_NOT_A_MATRIX));
             }
             for (int j = 0; j < currentRow.length; j++) {
                 entry[i][j] = Expression.build((String) currentRow[j], vars);
@@ -144,7 +159,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     private static boolean isOperation(String formula) {
         return formula.equals("+") || formula.equals("-") || formula.equals("*") || formula.equals("/") || formula.equals("^");
     }
-    
+
     /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
@@ -179,13 +194,13 @@ public abstract class MatrixExpression implements AbstractExpression {
         String currentChar;
 
         if (formula.isEmpty()) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE));
         }
-        
+
         // Prüfen, ob nicht zwei Operatoren nacheinander auftreten.
         for (int i = 0; i < formulaLength - 1; i++) {
             if (isOperation(formula.substring(i, i + 1)) && isOperation(formula.substring(i + 1, i + 2))) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_MatrixExpression_TWO_OPERATIONS"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_TWO_OPERATIONS));
             }
         }
 
@@ -194,10 +209,10 @@ public abstract class MatrixExpression implements AbstractExpression {
 
             // Öffnende und schließende Klammern zählen.
             if (currentChar.equals("(") && bracketCounter == 0) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_WRONG_BRACKETS));
             }
             if (currentChar.equals("[") && squareBracketCounter == 0) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_WRONG_BRACKETS));
             }
 
             if (currentChar.equals(")")) {
@@ -234,7 +249,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         if (bracketCounter > 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_WRONG_BRACKETS));
         }
 
         // Aufteilung, falls eine Elementaroperation (-, +, *, ^) vorliegt
@@ -243,10 +258,10 @@ public abstract class MatrixExpression implements AbstractExpression {
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
             if (formulaLeft.isEmpty() && priority > 1) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY));
             }
             if (formulaRight.isEmpty()) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY));
             }
 
             //Falls der Ausdruck die Form "+A..." besitzt -> daraus "A..." machen
@@ -269,7 +284,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                         Expression exponent = Expression.build(formulaRight, vars);
                         return new MatrixPower(build(formulaLeft, vars), exponent);
                     } catch (ExpressionException e) {
-                        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED"));
+                        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED, formulaRight));
                     }
             }
         }
@@ -320,13 +335,13 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
         }
 
-        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
+        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED, formula));
 
     }
 
-    //Folgende Funktionen dienen der Kürze halber.
+    /////////////// Folgende Funktionen dienen der Kürze halber /////////////////////
     /**
-     * Generiert eine (m x n)-Nullmatrix (m Zeilen, n Spalten).
+     * Gibt die (m x n)-Nullmatrix (m Zeilen, n Spalten) zurück.
      */
     public static Matrix getZeroMatrix(int m, int n) {
 
@@ -344,7 +359,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Generiert eine (n x n)-Einheitsmatrix.
+     * Gibt die (n x n)-Einheitsmatrix zurück.
      */
     public static Matrix getId(int n) {
 
@@ -366,7 +381,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Generiert den i-ten Einheitsvektor im R^n.
+     * Gibt den i-ten Einheitsvektor im R<sup>n</sup> zurück.
      */
     public static Matrix getUnitVector(int i, int n) {
 
@@ -390,6 +405,9 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Nullmatrix ist.
+     */
     public boolean isZeroMatrix() {
 
         if (!(this instanceof Matrix)) {
@@ -408,7 +426,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt zurück, ob der vorliegende Matrizenausdruck eine Einheitsmatrix ist.
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Einheitsmatrix ist.
      */
     public boolean isId() {
 
@@ -436,7 +454,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt zurück, ob der vorliegende Matrizenausdruck ein Vielfaches einer
+     * Gibt zurück, ob der gegebene Matrizenausdruck ein Vielfaches einer
      * Einheitsmatrix ist.
      */
     public boolean isMultipleOfId() {
@@ -455,86 +473,136 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Es folgen Methoden zur Ermittlung, ob der zugrundeliegende Ausdruck eine
-     * Instanz einer speziellen Unterklasse von Expression mit speziellem Typ
-     * ist.
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Matrix ist.
      */
     public boolean isMatrix() {
         return this instanceof Matrix;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Summe ist.
+     */
     public boolean isSum() {
         return this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.PLUS);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Differenz ist.
+     */
     public boolean isDifference() {
         return this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.MINUS);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck ein Produkt ist.
+     */
     public boolean isProduct() {
         return this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.TIMES);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Potenz ist.
+     */
     public boolean isPower() {
         return this instanceof MatrixPower;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine ganzzahlige Potenz
+     * ist.
+     */
     public boolean isIntegerPower() {
         return this instanceof MatrixPower && ((MatrixPower) this).getRight().isIntegerConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine ungerade Potenz ist.
+     */
     public boolean isOddIntegerPower() {
         return this instanceof MatrixPower && ((MatrixPower) this).getRight().isOddIntegerConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine gerade Potenz ist.
+     */
     public boolean isEvenIntegerPower() {
         return this instanceof MatrixPower && ((MatrixPower) this).getRight().isEvenIntegerConstant();
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck keine Matrix ist.
+     */
     public boolean isNotMatrix() {
         return !(this instanceof Matrix);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck keine Summe ist.
+     */
     public boolean isNotSum() {
         return !(this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.PLUS));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck keine Differenz ist.
+     */
     public boolean isNotDifference() {
         return !(this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.MINUS));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck kein Produkt ist.
+     */
     public boolean isNotProduct() {
         return !(this instanceof MatrixBinaryOperation && ((MatrixBinaryOperation) this).getType().equals(TypeMatrixBinary.TIMES));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck keine Potenz ist.
+     */
     public boolean isNotPower() {
         return !(this instanceof MatrixPower);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Matrizenfunktion ist.
+     */
     public boolean isMatrixFunction() {
         return this instanceof MatrixFunction;
     }
 
+    /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Matrizenfunktion vom
+     * Typ type ist.
+     */
     public boolean isMatrixFunction(TypeMatrixFunction type) {
         return this instanceof MatrixFunction && ((MatrixFunction) this).getType().equals(type);
     }
 
-    //Addiert zwei Matrizen.
-    public MatrixExpression add(MatrixExpression a) {
-        return new MatrixBinaryOperation(this, a, TypeMatrixBinary.PLUS);
+    /**
+     * Addiert den gegebenen Matrizenausdruck zu matExpr.
+     */
+    public MatrixExpression add(MatrixExpression matExpr) {
+        return new MatrixBinaryOperation(this, matExpr, TypeMatrixBinary.PLUS);
     }
 
-    //Subtrahiert zwei Matrizen.
-    public MatrixExpression sub(MatrixExpression a) {
-        return new MatrixBinaryOperation(this, a, TypeMatrixBinary.MINUS);
+    /**
+     * Subztrahiert matExpr vom gegebenen Matrizenausdruck.
+     */
+    public MatrixExpression sub(MatrixExpression matExpr) {
+        return new MatrixBinaryOperation(this, matExpr, TypeMatrixBinary.MINUS);
     }
 
-    //Multipliziert zwei Matrizen.
-    public MatrixExpression mult(MatrixExpression a) {
-        return new MatrixBinaryOperation(this, a, TypeMatrixBinary.TIMES);
+    /**
+     * Multipliziert den gegebenen Matrizenausdruck mit matExpr von rechts.
+     */
+    public MatrixExpression mult(MatrixExpression matExpr) {
+        return new MatrixBinaryOperation(this, matExpr, TypeMatrixBinary.TIMES);
     }
 
-    //Multipliziert eine Matrix mit einem Skalar a von links.
+    /**
+     * Multipliziert den gegebenen Matrizenausdruck mit dem Skalar a von links.
+     */
     public MatrixExpression mult(Expression a) {
         if (a.equals(ONE)) {
             return this;
@@ -542,7 +610,9 @@ public abstract class MatrixExpression implements AbstractExpression {
         return new MatrixBinaryOperation(new Matrix(a), this, TypeMatrixBinary.TIMES);
     }
 
-    //Potenziert eine Matrix.
+    /**
+     * Potenziert den gegebenen Matrizenausdruck in die Potenz a.
+     */
     public MatrixExpression pow(Expression expr) {
         if (expr.equals(ONE)) {
             return this;
@@ -550,7 +620,9 @@ public abstract class MatrixExpression implements AbstractExpression {
         return new MatrixPower(this, expr);
     }
 
-    //Potenziert eine Matrix.
+    /**
+     * Potenziert den gegebenen Matrizenausdruck in die Potenz n.
+     */
     public MatrixExpression pow(int n) {
         if (n == 1) {
             return this;
@@ -558,7 +630,9 @@ public abstract class MatrixExpression implements AbstractExpression {
         return new MatrixPower(this, new Constant(n));
     }
 
-    //Potenziert eine Matrix.
+    /**
+     * Potenziert den gegebenen Matrizenausdruck in die Potenz n.
+     */
     public MatrixExpression pow(BigInteger n) {
         if (n.equals(BigInteger.ONE)) {
             return this;
@@ -566,46 +640,73 @@ public abstract class MatrixExpression implements AbstractExpression {
         return new MatrixPower(this, new Constant(n));
     }
 
+    /**
+     * Gibt die Determinante des Matrizenausdrucks zurück.
+     */
     public MatrixFunction det() {
         return new MatrixFunction(this, TypeMatrixFunction.det);
     }
 
+    /**
+     * Gibt den Kosinus des Matrizenausdrucks zurück.
+     */
     public MatrixFunction cos() {
         return new MatrixFunction(this, TypeMatrixFunction.cos);
     }
 
+    /**
+     * Gibt den hyperbolischen Kosinus des Matrizenausdrucks zurück.
+     */
     public MatrixFunction cosh() {
         return new MatrixFunction(this, TypeMatrixFunction.cosh);
     }
 
+    /**
+     * Gibt die Exponentialfunktion des Matrizenausdrucks zurück.
+     */
     public MatrixFunction exp() {
         return new MatrixFunction(this, TypeMatrixFunction.exp);
     }
 
+    /**
+     * Gibt den natürlichen Logarithmus des Matrizenausdrucks zurück.
+     */
     public MatrixFunction ln() {
         return new MatrixFunction(this, TypeMatrixFunction.ln);
     }
 
+    /**
+     * Gibt den Sinus des Matrizenausdrucks zurück.
+     */
     public MatrixFunction sin() {
         return new MatrixFunction(this, TypeMatrixFunction.sin);
     }
 
+    /**
+     * Gibt den hyperbolischen Sinus des Matrizenausdrucks zurück.
+     */
     public MatrixFunction sinh() {
         return new MatrixFunction(this, TypeMatrixFunction.sinh);
     }
 
+    /**
+     * Gibt die Spur des Matrizenausdrucks zurück.
+     */
     public MatrixFunction tr() {
         return new MatrixFunction(this, TypeMatrixFunction.tr);
     }
 
+    /**
+     * Gibt das Transponierte des Matrizenausdrucks zurück.
+     */
     public MatrixFunction trans() {
         return new MatrixFunction(this, TypeMatrixFunction.trans);
     }
 
     /**
      * Falls der Ausdruck eine 1x1-Matrix ist, so wird daraus eine Erpression
-     * erzeugt. Ansonsten wird die MatrixExpression selbst zurückgegeben. Dies
-     * ist wichtig für die Ausgabe am Ende einer Vereinfachung.
+     * erzeugt. Ansonsten wird der gegebene Matrizenausdruck wieder
+     * zurückgegeben.
      */
     public Object convertOneTimesOneMatrixToExpression() {
         if (this instanceof Matrix && ((Matrix) this).getRowNumber() == 1 && ((Matrix) this).getColumnNumber() == 1) {
@@ -616,8 +717,7 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     /**
      * Gibt die Maße der Ergebnismatrix an, oder wirft eine EvaluationException,
-     * wenn die Ergebnismatrix nicht wohldefiniert ist. Wird benötigt, um zu
-     * checken, ob gewisse Matrixoperationen wohldefiniert sind,
+     * wenn die Ergebnismatrix nicht wohldefiniert ist.
      *
      * @throws EvaluationException
      */
@@ -626,32 +726,35 @@ public abstract class MatrixExpression implements AbstractExpression {
     /**
      * Führt, falls möglich, die auftretenden algebraischen Operationen +, - und
      * * aus und gibt das Ergebnis als MatrixExpression (und falls möglich, als
-     * Matrix) zurück. Falls das Ergebnis nicht wohldefiniert ist, wird eine
-     * EvaluationException geworfen.
+     * Matrix) zurück.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyComputeMatrixOperations() throws EvaluationException;
 
     /**
-     * Gibt zurück, ob this und matExpr gleich sind.
+     * Gibt zurück, ob der gegebene Matrizenausdruck und matExpr gleich sind.
      */
     public abstract boolean equals(MatrixExpression matExpr);
 
     /**
-     * Gibt zurück, ob this und matExpr äquivalent sind.
+     * Gibt zurück, ob der gegebene Matrizenausdruck und matExpr äquivalent
+     * sind.
      */
     public abstract boolean equivalent(MatrixExpression matExpr);
 
     /**
-     * Ordnet Ketten von + und von * nach rechts.
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung Ketten von + und von * nach rechts geordnet werden.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression orderSumsAndProducts() throws EvaluationException;
 
     /**
-     * Sortiert Summen und Differenzen zu einer grpßen Differenz (...)-(...).
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung verschachtelte Differenzen zu einer Differenz umgewandelt
+     * werden.
      *
      * @throws EvaluationException
      */
@@ -669,11 +772,16 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract boolean contains(String var);
 
     /**
-     * Fügt einem HashSet alle im Matrizenausdruck vorkommenden Variablen hinzu.
+     * Fügt alle Variablen, die in dem gegebenen Matrizenausdruck vorkommen, zum
+     * HashSet vars hinzu.
      */
     @Override
     public abstract void addContainedVars(HashSet<String> vars);
 
+    /**
+     * Gibt ein HashSet mit allen Variablen, die in dem gegebenen
+     * Matrizenausdruck vorkommen, zurück.
+     */
     @Override
     public HashSet<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
@@ -681,9 +789,17 @@ public abstract class MatrixExpression implements AbstractExpression {
         return vars;
     }
 
+    /**
+     * Fügt alle Variablen, denen kein Wert zugewiesen wurde und die in dem
+     * gegebenen Matrizenausdruck vorkommen, zum HashSet vars hinzu.
+     */
     @Override
     public abstract void addContainedIndeterminates(HashSet<String> vars);
 
+    /**
+     * Gibt ein HashSet mit allen Variablen, denen kein Wert zugewiesen wurde
+     * und die in dem gegebenen Matrizenausdruck vorkommen, zurück.
+     */
     @Override
     public HashSet<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
@@ -692,29 +808,30 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
-     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'approximativ'
-     * (precise = false).
+     * Setzt alle im gegebenen Matrizenausdruck vorkommenden Konstanten auf
+     * 'approximativ' (precise = false).
      */
     public abstract MatrixExpression turnToApproximate();
 
     /**
-     * Setzt alle im Ausdruck vorkommenden Konstanten auf 'exakt' (precise =
-     * true).
+     * Setzt alle im gegebenen Matrizenausdruck vorkommenden Konstanten auf
+     * 'exakt' (precise = true).
      */
     public abstract MatrixExpression turnToPrecise();
 
     /**
-     * Gibt zurück, ob this nichtexakte Konstanten enthält.
+     * Gibt zurück, ob der gegebene Matrizenausdruck nichtexakte Konstanten
+     * enthält.
      */
     public abstract boolean containsApproximates();
 
     /**
-     * Legt eine neue Kopie von this an.
+     * Legt eine neue Kopie vom gegebenen Matrizenausdruck an.
      */
     public abstract MatrixExpression copy();
 
     /**
-     * Liefert den Wert des zugrundeliegenden Ausdrucks unter Einsetzung aller
+     * Liefert den Wert des gegebenen Ausdrucks unter Einsetzung aller
      * Variablenwerte.
      *
      * @throws EvaluationException
@@ -722,7 +839,8 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression evaluate() throws EvaluationException;
 
     /**
-     * Gibt die Ableitung eines Matrizenausdrucks nach der Variablen var zurück.
+     * Gibt die Ableitung des gegebenen Matrizenausdrucks nach der Variablen var
+     * zurück.
      */
     public abstract MatrixExpression diff(String var) throws EvaluationException;
 
@@ -733,69 +851,79 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression replaceVariable(String var, Expression expr);
 
     /**
-     * Triviale Vereinfachungen für Matrizenausdrücke.
+     * Führt triviale Vereinfachungen am gegebenen Matrizenausdruck durch und
+     * gibt den vereinfachten Ausdruck zurück.
+     *
+     * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyBasic() throws EvaluationException;
 
     /**
-     * Liefert einen Ausdruck, bei dem für alle Variablen, die in vars enthalten
-     * sind, die zugehörigen präzisen Werte eingesetzt werden. Die restlichen
-     * Variablen werden als Unbestimmte gelassen.
+     * Liefert einen Matrizenausdruck, bei dem für alle Variablen ihre
+     * zugehörigen Werte eingesetzt werden, falls diesen Werte zugeordnet
+     * wurden. Die restlichen Variablen werden als Unbestimmte gelassen.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyByInsertingDefinedVars() throws EvaluationException;
 
     /**
-     * Hier wird die Methode simplify() aus der Klasse
-     * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
-     * angewendet.
+     * Liefert einen Ausdruck, bei dem die Matrizeneinträge aus dem gegebenen
+     * Matrizenausdruck durch das Anwenden der Standardvereinfachung simplify()
+     * entstehen.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyMatrixEntries() throws EvaluationException;
 
     /**
-     * Hier wird die Methode simplify(simplifyTypes) aus der Klasse
-     * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
-     * angewendet.
+     * Liefert einen Ausdruck, bei dem die Matrizeneinträge aus dem gegebenen
+     * Matrizenausdruck durch das Anwenden der mittels simplifyTypes definierten
+     * Vereinfachung entstehen.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException;
 
     /**
-     * Sammelt in einem Produkt gleiche Ausdrücke zu einem einzigen Ausdruck.
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung in Produkten gleiche aufeinanderfolgende Faktoren (oder
+     * Potenzen mit gleicher Basis), zu einem einzigen Faktor (bzw. Potenz)
+     * zusammengefasst werden.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyCollectProducts() throws EvaluationException;
 
     /**
-     * Sammelt in einer Summe oder Differenz Skalarfaktoren.
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung in Summen oder Differenzen Skalarfaktoren faktorisiert
+     * werden.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorizeScalars() throws EvaluationException;
 
     /**
-     * Faktorisiert in einer Summe oder DIfferenz.
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung in Summen oder Differenzen faktorisiert wird.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyFactorize() throws EvaluationException;
 
     /**
-     * Hier wird die Methode simplify() aus der Klasse
-     * expressionbuilder.Expression auf jeden einzelnen Matrixeintrag
-     * angewendet.
+     * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
+     * Vereinfachung eine Reihe vorgegebener Funktionalgleichungen verwendet
+     * wird.
      *
      * @throws EvaluationException
      */
     public abstract MatrixExpression simplifyMatrixFunctionalRelations() throws EvaluationException;
 
     /**
-     * Standardvereinfachung allgemeiner Matrizenausdrücke.
+     * Gibt den Matrizenausdruck zurück, welcher durch 'Standardvereinfachung'
+     * des gegebenen Matrizenausdrucks entsteht.
      *
      * @throws EvaluationException
      */
@@ -831,13 +959,14 @@ public abstract class MatrixExpression implements AbstractExpression {
             return matExprSimplified;
 
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixExpression_STACK_OVERFLOW));
         }
 
     }
 
     /**
-     * Spezielle Vereinfachung allgemeiner Matrizenausdrücke.
+     * Gibt den Matrizenausdruck zurück, welcher durch die mittels simplifyTypes
+     * definierten Vereinfachung des gegebenen Matrizenausdrucks entsteht.
      *
      * @throws EvaluationException
      */
@@ -892,7 +1021,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             return matExprSimplified;
 
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixExpression_STACK_OVERFLOW));
         }
 
     }

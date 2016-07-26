@@ -6,7 +6,7 @@ import abstractexpressions.logicalexpression.classes.LogicalExpression;
 public abstract class LogicalSimplifyUtilities {
 
     /**
-     * Liefert den Durchschnitt von logTermsLeft und logTermsRight (mit
+     * Gibt den Durchschnitt von logTermsLeft und logTermsRight zurück (mit
      * Vielfachheiten gezählt).
      */
     public static LogicalExpressionCollection intersection(LogicalExpressionCollection logTermsLeft,
@@ -31,8 +31,8 @@ public abstract class LogicalSimplifyUtilities {
     }
 
     /**
-     * Liefert die Differenz logTermsLeft \ logTermsRight (mit Vielfachheiten
-     * gezählt).
+     * Gibt die Differenz logTermsLeft \ logTermsRight zurück (mit
+     * Vielfachheiten gezählt).
      */
     public static LogicalExpressionCollection difference(LogicalExpressionCollection logTermsLeft,
             LogicalExpressionCollection logTermsRight) {
@@ -149,7 +149,7 @@ public abstract class LogicalSimplifyUtilities {
     }
 
     /**
-     * Bildet die Summe aus allen Termen von summands
+     * Gibt die Summe aus allen Termen von summands zurück.
      */
     public static LogicalExpression produceSum(LogicalExpressionCollection summands) {
 
@@ -169,7 +169,7 @@ public abstract class LogicalSimplifyUtilities {
     }
 
     /**
-     * Bildet das Produkt aus allen Termen von factors
+     * Gibt das Produkt aus allen Termen von factors zurück.
      */
     public static LogicalExpression produceProduct(LogicalExpressionCollection factors) {
 
@@ -189,7 +189,7 @@ public abstract class LogicalSimplifyUtilities {
     }
 
     /**
-     * Bildet eine Äquivalenzkette aus allen Termen von equivTerms
+     * Gibt die Äquivalenzkette aus allen Termen von equivTerms zurück.
      */
     public static LogicalExpression produceEquivalenceChain(LogicalExpressionCollection equivTerms) {
 

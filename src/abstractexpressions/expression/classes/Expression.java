@@ -18,6 +18,19 @@ import process.Canceller;
 
 public abstract class Expression implements AbstractExpression {
 
+    private static final String EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE";    
+    private static final String EB_Expression_IS_NOT_VALID_COMMAND = "EB_Expression_IS_NOT_VALID_COMMAND";    
+    private static final String EB_Expression_MISSING_CLOSING_BRACKET = "EB_Expression_MISSING_CLOSING_BRACKET";    
+    private static final String EB_Expression_EMPTY_PARAMETER = "EB_Expression_EMPTY_PARAMETER";    
+    private static final String EB_Expression_WRONG_BRACKETS = "EB_Expression_WRONG_BRACKETS";    
+    private static final String EB_Expression_TWO_OPERATIONS = "EB_Expression_TWO_OPERATIONS";    
+    private static final String EB_Expression_WRONG_ABS_BRACKETS = "EB_Expression_WRONG_ABS_BRACKETS";    
+    private static final String EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY";    
+    private static final String EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY";    
+    private static final String EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION";    
+    private static final String EB_Expression_FORMULA_CANNOT_BE_INTERPRETED = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED";    
+    private static final String EB_Expression_STACK_OVERFLOW = "EB_Expression_STACK_OVERFLOW";    
+    
     // Sprache für Fehlermeldungen.
     private static TypeLanguage language;
 
@@ -62,17 +75,17 @@ public abstract class Expression implements AbstractExpression {
 
         //Wenn der Befehl leer ist -> Fehler.
         if (result[0].length() == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE));
         }
 
         //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
         if (result[0].length() > input.length() - 2) {
-            throw new ExpressionException(input + Translator.translateOutputMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
+            throw new ExpressionException(input + Translator.translateOutputMessage(EB_Expression_IS_NOT_VALID_COMMAND));
         }
 
         //Wenn am Ende nicht ")" steht.
         if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_MISSING_CLOSING_BRACKET", input));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_MISSING_CLOSING_BRACKET, input));
         }
 
         result[1] = input.substring(result[0].length() + 1, input.length() - 1);
@@ -127,14 +140,14 @@ public abstract class Expression implements AbstractExpression {
             }
             if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
                 if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EMPTY_PARAMETER));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
                 startPositionOfCurrentParameter = i + 1;
             }
             if (i == input.length() - 1) {
                 if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
+                    throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EMPTY_PARAMETER));
                 }
                 resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
             }
@@ -142,7 +155,7 @@ public abstract class Expression implements AbstractExpression {
         }
 
         if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_BRACKETS));
         }
 
         String[] resultParametersAsArray = new String[resultParameters.size()];
@@ -255,13 +268,13 @@ public abstract class Expression implements AbstractExpression {
         String currentChar;
 
         if (formula.isEmpty()) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE));
         }
 
         // Prüfen, ob nicht zwei Operatoren nacheinander auftreten.
         for (int i = 0; i < formulaLength - 1; i++) {
             if (isOperation(formula.substring(i, i + 1)) && isOperation(formula.substring(i + 1, i + 2))) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_TWO_OPERATIONS"));
+                throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_TWO_OPERATIONS));
             }
         }
 
@@ -270,7 +283,7 @@ public abstract class Expression implements AbstractExpression {
 
             // Öffnende und schließende Klammern zählen.
             if (currentChar.equals("(") && bracketCounter == 0) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_BRACKETS));
             }
 
             if (currentChar.equals(")")) {
@@ -295,7 +308,7 @@ public abstract class Expression implements AbstractExpression {
                 } else {
                     absBracketCounter = absBracketCounter - k;
                     if (absBracketCounter != 0) {
-                        throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+                        throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_ABS_BRACKETS));
                     }
                     break;
                 }
@@ -324,7 +337,7 @@ public abstract class Expression implements AbstractExpression {
             }
 
             if (absBracketCounter < 0) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+                throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_ABS_BRACKETS));
             }
 
             if (bracketCounter != 0 || absBracketCounter != 0) {
@@ -351,10 +364,10 @@ public abstract class Expression implements AbstractExpression {
         }
 
         if (bracketCounter > 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_BRACKETS));
         }
         if (absBracketCounter > 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_ABS_BRACKETS"));
+            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_ABS_BRACKETS));
         }
 
         // Aufteilung, falls eine Elementaroperation (-, +, /, *, ^) vorliegt
@@ -363,10 +376,10 @@ public abstract class Expression implements AbstractExpression {
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
             if (formulaLeft.isEmpty() && priority > 1) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY));
             }
             if (formulaRight.isEmpty()) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY"));
+                throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY));
             }
 
             //Falls der Ausdruck die Form "+abc..." besitzt -> daraus "abc..." machen
@@ -492,13 +505,13 @@ public abstract class Expression implements AbstractExpression {
                     return new SelfDefinedFunction(function, SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function),
                             SelfDefinedFunction.getAbstractExpressionsForSelfDefinedFunctions().get(function), exprsInArguments);
                 } else {
-                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION", function, String.valueOf(SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length)));
+                    throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION, function, String.valueOf(SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length)));
                 }
             }
 
         }
 
-        throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_FORMULA_CANNOT_BE_INTERPRETED") + formula);
+        throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_FORMULA_CANNOT_BE_INTERPRETED, formula));
 
     }
 
@@ -1695,7 +1708,7 @@ public abstract class Expression implements AbstractExpression {
     /**
      * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
      * verschachtelte Differenzen bzw. Quotienten zu einer Differenz bzw. einem
-     * Quotienten gemacht werden.
+     * Quotienten umgewandelt werden.
      *
      * @throws EvaluationException
      */
@@ -1906,7 +1919,8 @@ public abstract class Expression implements AbstractExpression {
     public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
-     * Gibt die 'Standardvereinfachung' allgemeiner Ausdrücke zurück.
+     * Gibt den Ausdruck zurück, welcher durch 'Standardvereinfachung'
+     * des gegebenen Ausdrucks entsteht.
      *
      * @throws EvaluationException
      */
@@ -1954,14 +1968,14 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Expression_STACK_OVERFLOW));
         }
 
     }
 
     /**
-     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
-     * Ausdrücke zurück.
+     * Gibt den Ausdruck zurück, welcher durch die mittels simplifyTypes
+     * definierten Vereinfachung des gegebenen Ausdrucks entsteht.
      *
      * @throws EvaluationException
      */
@@ -2052,14 +2066,14 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Expression_STACK_OVERFLOW));
         }
 
     }
 
     /**
-     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
-     * Ausdrücke zurück. Das Argument var wird hier nur für die Methoden
+     * Gibt den Ausdruck zurück, welcher durch die mittels simplifyTypes
+     * definierten Vereinfachung des gegebenen Ausdrucks entsteht. Das Argument var wird hier nur für die Methoden
      * simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions()
      * und
      * simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions()
@@ -2184,14 +2198,14 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Expression_STACK_OVERFLOW));
         }
 
     }
 
     /**
-     * Gibt die mittels simplifyTypes definierte Vereinfachung allgemeiner
-     * Ausdrücke zurück.
+     * Gibt den Ausdruck zurück, welcher durch die mittels simplifyTypes
+     * definierten Vereinfachung des gegebenen Ausdrucks entsteht. 
      *
      * @throws EvaluationException
      */
@@ -2300,7 +2314,7 @@ public abstract class Expression implements AbstractExpression {
             } while (!expr.equals(exprSimplified));
             return exprSimplified;
         } catch (java.lang.StackOverflowError e) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Expression_STACK_OVERFLOW"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Expression_STACK_OVERFLOW));
         }
 
     }

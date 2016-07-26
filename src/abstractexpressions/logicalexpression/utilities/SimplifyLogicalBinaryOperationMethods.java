@@ -10,6 +10,11 @@ import abstractexpressions.logicalexpression.classes.TypeLogicalBinary;
 
 public abstract class SimplifyLogicalBinaryOperationMethods {
 
+    /**
+     * Gibt einen logischen Ausdruck zurück, der aus logExpr durch Ausführung
+     * 'einfacher' (trivialer) Vereinfachungen entsteht, zurück. Es werden
+     * beispielsweise Vereinfachungsarten wie a AND TRUE = a verwendet.
+     */
     public static LogicalExpression trivialOperationsWithFalseTrue(LogicalBinaryOperation logExpr) {
 
         // Triviale Umformungen
@@ -18,7 +23,7 @@ public abstract class SimplifyLogicalBinaryOperationMethods {
                 && logExpr.getLeft().isConstant()) {
             return logExpr.getRight().equiv(logExpr.getLeft());
         }
-        
+
         // a>a = 1
         if (logExpr.getType().equals(TypeLogicalBinary.IMPLICATION) && logExpr.getLeft().equivalent(logExpr.getRight())) {
             return TRUE;
@@ -59,7 +64,7 @@ public abstract class SimplifyLogicalBinaryOperationMethods {
                 && logExpr.getLeft().isConstant() && logExpr.getLeft().evaluate()) {
             return logExpr.getRight().equiv(TRUE);
         }
-        
+
         // a>1 = 1
         if (logExpr.getType().equals(TypeLogicalBinary.IMPLICATION)
                 && logExpr.getRight().isConstant() && logExpr.getRight().evaluate()) {
@@ -71,7 +76,7 @@ public abstract class SimplifyLogicalBinaryOperationMethods {
                 && logExpr.getRight().isConstant() && !logExpr.getRight().evaluate()) {
             return logExpr.getLeft().equiv(FALSE);
         }
-        
+
         return logExpr;
 
     }

@@ -90,10 +90,10 @@
         <Russian>Функция '[0]' требует в точности [1] аргументов.</Russian>
     </object>
     <object id = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED">
-        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
-        <English>The following formula/part of the formula cannot be interpreted: </English>
-        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
-        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: [0]</German>
+        <English>The following formula/part of the formula cannot be interpreted: [0]</English>
+        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: [0]</Ukrainian>
+        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: [0]</Russian>
     </object>
     <object id = "EB_Expression_STACK_OVERFLOW">
         <German>Speicher voll. Die Berechnung wurde beendet.</German>

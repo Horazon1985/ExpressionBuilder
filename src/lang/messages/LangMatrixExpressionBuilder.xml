@@ -35,6 +35,12 @@
         <Ukrainian>Вираз порожній або неповний.</Ukrainian>
         <Russian>Выражение пустое либо неполное.</Russian>
     </object>
+    <object id = "MEB_MatrixExpression_TWO_OPERATIONS">
+        <German>Im Matrizenausdruck treten zwei Operationen hintereinander auf.</German>
+        <English>The matrix expression contains two operations without an argument in between.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "EB_MatrixExpression_TWO_OPERATIONS">
         <German>Im Ausdruck treten zwei Operationen hintereinander auf.</German>
         <English>The expression contains two operations without an argument in between.</English>
@@ -54,18 +60,18 @@
         <Russian>Правая часть бинарного оператора пуста.</Russian>
     </object>
     <object id = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED">
-        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
-        <English>The following formula/part of the formula cannot be interpreted: </English>
-        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
-        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: [0]</German>
+        <English>The following formula/part of the formula cannot be interpreted: [0]</English>
+        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: [0]</Ukrainian>
+        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: [0]</Russian>
     </object>
     <object id = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED">
-        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: </German>
-        <English>The following formula/part of the formula cannot be interpreted: </English>
-        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: </Ukrainian>
-        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: </Russian>
+        <German>Folgende Formel/Teil der Formel kann nicht interpretiert werden: [0]</German>
+        <English>The following formula/part of the formula cannot be interpreted: [0]</English>
+        <Ukrainian>Наступна формула/частина формули не може бути проінтерпритована: [0]</Ukrainian>
+        <Russian>Следующая формула/часть формулы не может быть проинтерпритирована: [0]</Russian>
     </object>
-    <object id = "MEB_Expression_STACK_OVERFLOW">
+    <object id = "MEB_MatrixExpression_STACK_OVERFLOW">
         <German>Speicher voll. Die Berechnung wurde beendet.</German>
         <English>Stack overflow. The computation was aborted.</English>
         <Ukrainian>Оперативна пам'ять переповнена. Обчислення було припинено.</Ukrainian>

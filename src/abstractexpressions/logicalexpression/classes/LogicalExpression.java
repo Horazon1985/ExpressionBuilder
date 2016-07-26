@@ -16,8 +16,7 @@ public abstract class LogicalExpression implements AbstractExpression {
     public final static LogicalConstant TRUE = new LogicalConstant(true);
 
     /**
-     * Erstellt aus einem String einen logischen Ausdruck oder wirft einen
-     * Fehler.
+     * Erstellt aus einem String einen logischen Ausdruck.
      *
      * @throws ExpressionException
      */
@@ -185,7 +184,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
     // Die folgenden Methoden dienen der Kürze halber.
     /**
-     * Gibt die Negation des vorliegenden logischen Ausdrucks zurück.
+     * Gibt die Negation des gegebenen logischen Ausdrucks zurück.
      */
     public LogicalExpression neg() {
         if (this.equals(TRUE)) {
@@ -198,8 +197,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Konjunktion des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck logExpr zurück.
+     * Gibt die Konjunktion des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck logExpr zurück.
      */
     public LogicalExpression and(LogicalExpression logExpr) {
         if (this.equals(FALSE) || logExpr.equals(FALSE)) {
@@ -215,8 +214,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Disjunktion des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck logExpr zurück.
+     * Gibt die Disjunktion des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck logExpr zurück.
      */
     public LogicalExpression or(LogicalExpression logExpr) {
         if (this.equals(TRUE) || logExpr.equals(TRUE)) {
@@ -232,8 +231,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Implikation des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck logExpr zurück.
+     * Gibt die Implikation des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck logExpr zurück.
      */
     public LogicalExpression impl(LogicalExpression logExpr) {
         if (this.equals(FALSE)) {
@@ -246,8 +245,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Äquivalenz des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck logExpr zurück.
+     * Gibt die Äquivalenz des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck logExpr zurück.
      */
     public LogicalExpression equiv(LogicalExpression logExpr) {
         if (this.equals(TRUE)) {
@@ -263,8 +262,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Konjunktion des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck (value != 0) zurück.
+     * Gibt die Konjunktion des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck (value != 0) zurück.
      */
     public LogicalExpression and(int value) {
         if (this.equals(FALSE) || value != 0) {
@@ -280,8 +279,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Disjunktion des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck (value != 0) zurück.
+     * Gibt die Disjunktion des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck (value != 0) zurück.
      */
     public LogicalExpression or(int value) {
         if (this.equals(TRUE) || value == 0) {
@@ -297,8 +296,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Implikation des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck (value != 0) zurück.
+     * Gibt die Implikation des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck (value != 0) zurück.
      */
     public LogicalExpression impl(int value) {
         if (this.equals(FALSE)) {
@@ -311,8 +310,8 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die Äquivalenz des vorliegenden logischen Ausdrucks mit dem
-     * logischen Ausdruck (value != 0) zurück.
+     * Gibt die Äquivalenz des gegebenen logischen Ausdrucks mit dem logischen
+     * Ausdruck (value != 0) zurück.
      */
     public LogicalExpression equiv(int value) {
         if (this.equals(TRUE)) {
@@ -328,67 +327,96 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Es folgen Methoden zur Ermittlung, ob der zugrundeliegende Ausdruck eine
-     * Instanz einer speziellen Unterklasse von Expression ist.
+     * Gibt zurück, ob der gegebene logische Ausdruck eine Negation ist.
      */
     public boolean isNeg() {
         return this instanceof LogicalUnaryOperation && ((LogicalUnaryOperation) this).getType().equals(TypeLogicalUnary.NEGATION);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck eine Konjunktion ist.
+     */
     public boolean isAnd() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.AND);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck eine Disjunktion ist.
+     */
     public boolean isOr() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.OR);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck eine Implikation ist.
+     */
     public boolean isImpl() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.IMPLICATION);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck eine Equivalenz ist.
+     */
     public boolean isEquiv() {
         return this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.EQUIVALENCE);
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck keine Negation ist.
+     */
     public boolean isNotNeg() {
         return !(this instanceof LogicalUnaryOperation && ((LogicalUnaryOperation) this).getType().equals(TypeLogicalUnary.NEGATION));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck keine Konjunktion ist.
+     */
     public boolean isNotAnd() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.AND));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck keine Disjunktion ist.
+     */
     public boolean isNotOr() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.OR));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck keine Implikation ist.
+     */
     public boolean isNotImpl() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.IMPLICATION));
     }
 
+    /**
+     * Gibt zurück, ob der gegebene logische Ausdruck keine Equivalenz ist.
+     */
     public boolean isNotEquiv() {
         return !(this instanceof LogicalBinaryOperation && ((LogicalBinaryOperation) this).getType().equals(TypeLogicalBinary.EQUIVALENCE));
     }
 
     /**
-     * Gibt eine Kopie des vorliegenden logischen Ausdrucks zurück.
+     * Gibt eine Kopie des gegebenen logischen Ausdrucks zurück.
      */
     public abstract LogicalExpression copy();
 
     /**
-     * Wertet den vorliegenden logischen Ausdrucks aus.
+     * Wertet den gegebenen logischen Ausdrucks aus.
      */
     public abstract boolean evaluate();
 
     /**
      * Fügt alle logischen Variablen, die in dem gegebenen Ausdruck vorkommen,
-     * zum HashSet vars hinzu. ZIEL: Start mit vars = {} liefert alle
-     * vorkommenden logischen Variablen.
+     * zum HashSet vars hinzu.
      */
     @Override
     public abstract void addContainedVars(HashSet vars);
 
+    /**
+     * Gibt ein HashSet mit allen logischen Variablen, die in dem gegebenen
+     * Ausdruck vorkommen, zurück.
+     */
     @Override
     public HashSet<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
@@ -396,68 +424,84 @@ public abstract class LogicalExpression implements AbstractExpression {
         return vars;
     }
 
+    /**
+     * Fügt alle logischen Variablen, die in dem gegebenen Ausdruck vorkommen
+     * und denen kein fester Wert zugewiesen wurde, zum HashSet vars hinzu.
+     */
     @Override
     public void addContainedIndeterminates(HashSet vars) {
         addContainedVars(vars);
     }
 
+    /**
+     * Gibt ein HashSet mit allen logischen Variablen, die in dem gegebenen
+     * Ausdruck vorkommen und denen kein fester Wert zugewiesen wurde, zurück.
+     */
     @Override
     public HashSet<String> getContainedIndeterminates() {
         return getContainedVars();
     }
 
     /**
-     * Gibt zurück, ob der vorliegende logische Ausdruck die logische Variable
-     * var enthält.
+     * Gibt zurück, ob der gegebene logische Ausdruck die logische Variable var
+     * enthält.
      */
     @Override
     public abstract boolean contains(String var);
 
     /**
-     * Gibt zurück, ob der vorliegende logische Ausdruck logische keine
-     * logischen Variablen enthält.
+     * Gibt zurück, ob der gegebene logische Ausdruck logische keine logischen
+     * Variablen enthält.
      */
     public abstract boolean isConstant();
 
     /**
-     * Gibt zurück, ob der vorliegende logische Ausdruck logische gleich dem
+     * Gibt zurück, ob der gegebene logische Ausdruck logische gleich dem
      * logischen Ausdruck logExpr ist.
      */
     public abstract boolean equals(LogicalExpression logExpr);
 
     /**
-     * Gibt zurück, ob der vorliegende logische Ausdruck logische äquivalent zum
+     * Gibt zurück, ob der gegebene logische Ausdruck logische äquivalent zum
      * logischen Ausdruck logExpr ist.
      */
     public abstract boolean equivalent(LogicalExpression logExpr);
 
     /**
-     * Liefert einen vereinfachten logischen Ausdruck des vorliegenden logischen
-     * Ausdrucks mittels einfacher Vereinfachungsoperationen.
+     * Gibt einen vereinfachten logischen Ausdruck des gegebenen logischen
+     * Ausdrucks zurück, wobei bei der Vereinfachung einfache
+     * Vereinfachungsoperationen eingesetzt werden.
      *
      * @throws EvaluationException
      */
     public abstract LogicalExpression simplifyBasic() throws EvaluationException;
 
     /**
-     * Faktorisiert in einem logischen Ausdruck bezüglich OR, falls möglich.
-     * Beispielsweise wird a &#38; b | a &#38; c zu a &#38; (b | c) vereinfacht.
+     * Gibt einen vereinfachten logischen Ausdruck des gegebenen logischen
+     * Ausdrucks zurück, wobei bei der Vereinfachung das Distributivgesetz
+     * verwendet wird. Letzteres bedeutet, dass in einem logischen Ausdruck
+     * bezüglich OR wie folgt faktorsiert wird, falls möglich: der logische
+     * Ausdruck a &#38; b | a &#38; c wird zu a &#38; (b | c) vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract LogicalExpression factorizeInSums() throws EvaluationException;
 
     /**
-     * Faktorisiert in einem logischen Ausdruck bezüglich AND, falls möglich.
-     * Beispielsweise wird (a | b) &#38; (a | c) zu a | (b &#38; c) vereinfacht.
+     * Gibt einen vereinfachten logischen Ausdruck des gegebenen logischen
+     * Ausdrucks zurück, wobei bei der Vereinfachung das Distributivgesetz
+     * verwendet wird. Letzteres bedeutet, dass in einem logischen Ausdruck
+     * bezüglich AND wie folgt faktorsiert wird, falls möglich: der logische
+     * Ausdruck(a | b) &#38; (a | c) wird zu a | (b &#38; c) vereinfacht.
      *
      * @throws EvaluationException
      */
     public abstract LogicalExpression factorizeInProducts() throws EvaluationException;
 
     /**
-     * Inkrementiert den Binärcounter counter um 1. Beim Überlauf wird der
-     * Counter (0, ..., 0) zurückgegeben.
+     * Inkrementiert den Binärcounter counter um 1, wobei true mit 1 und false
+     * mit 0 identifiziert wird. Beim Überlauf wird das Array {0, ..., 0}
+     * zurückgegeben.
      */
     public static boolean[] binaryCounter(boolean[] counter) {
 
@@ -475,12 +519,10 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die kanonische konjunktive Normalform des vorliegenden logischen
+     * Gibt die kanonische konjunktive Normalform des gegebenen logischen
      * Ausdrucks zurück.
-     *
-     * @throws EvaluationException
      */
-    public LogicalExpression toCCNF() throws EvaluationException {
+    public LogicalExpression toCCNF() {
 
         HashSet vars = new HashSet();
         this.addContainedVars(vars);
@@ -543,12 +585,10 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Gibt die kanonische disjunktive Normalform des vorliegenden logischen
+     * Gibt die kanonische disjunktive Normalform des gegebenen logischen
      * Ausdrucks zurück.
-     *
-     * @throws EvaluationException
      */
-    public LogicalExpression toCDNF() throws EvaluationException {
+    public LogicalExpression toCDNF() {
 
         HashSet vars = new HashSet();
         this.addContainedVars(vars);
@@ -611,9 +651,7 @@ public abstract class LogicalExpression implements AbstractExpression {
     }
 
     /**
-     * Standardvereinfachungsmethode allgemeiner logischer Terme. Es wird
-     * solange iteriert, bis sich nichts mehr ändert. Der Ausdruck ist dann
-     * (weitestgehend) vereinfacht.
+     * Gibt die 'Standardvereinfachung' allgemeiner Ausdrücke zurück.
      */
     public LogicalExpression simplify() throws EvaluationException {
 

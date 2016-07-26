@@ -252,7 +252,7 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
 
         String leftAsText, rightAsText;
 
@@ -342,9 +342,9 @@ public class BinaryOperation extends Expression {
         }
 
         return leftAsText + "^" + rightAsText;
-    
+
     }
-    
+
     @Override
     public String expressionToLatex() {
 
@@ -504,7 +504,7 @@ public class BinaryOperation extends Expression {
             if (this.left.isNonPositive() && this.right.isOddIntegerConstant()) {
                 return true;
             }
-            if (this.left.isNonPositive() && this.right.isRationalConstant() 
+            if (this.left.isNonPositive() && this.right.isRationalConstant()
                     && ((BinaryOperation) this.right).getLeft().isOddIntegerConstant()
                     && ((BinaryOperation) this.right).getRight().isOddIntegerConstant()) {
                 return true;
@@ -559,9 +559,9 @@ public class BinaryOperation extends Expression {
                     || this.left.isAlwaysNegative() && this.right.isAlwaysNegative();
         }
         if (this.isPower()) {
-            return this.left.isAlwaysPositive() 
+            return this.left.isAlwaysPositive()
                     || this.left.isAlwaysNegative() && (this.right.isEvenIntegerConstant()
-                    || this.right.isRationalConstant() 
+                    || this.right.isRationalConstant()
                     && ((BinaryOperation) this.right).getLeft().isEvenIntegerConstant()
                     && ((BinaryOperation) this.right).getRight().isOddIntegerConstant());
         }
@@ -614,7 +614,7 @@ public class BinaryOperation extends Expression {
         }
         if (this.isPower()) {
             return this.left.isAlwaysNegative() && (this.right.isOddIntegerConstant()
-                    || this.right.isRationalConstant() 
+                    || this.right.isRationalConstant()
                     && ((BinaryOperation) this.right).getLeft().isOddIntegerConstant()
                     && ((BinaryOperation) this.right).getRight().isOddIntegerConstant());
         }
@@ -1033,8 +1033,8 @@ public class BinaryOperation extends Expression {
             int exponent = ((Constant) this.right).getBigIntValue().intValue();
             int numberOfSummandsInBase = this.left.getMaximalNumberOfSummandsInExpansion();
             BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
-            
-            if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0){
+
+            if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                 return Integer.MAX_VALUE;
             }
             return numberOfSummandsInResult.intValue();
@@ -2366,7 +2366,13 @@ public class BinaryOperation extends Expression {
             exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
         } else {
             exprOptimized = expr.simplifyExpand(TypeExpansion.SHORT);
-            exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+            if (!exprOptimized.equivalent(expr)) {
+                /* 
+                Erneutes simplify(...) nur anwenden, wenn die Ausdrücke wirklich verschieden sind.
+                Sonst sind Endlosschleifen möglich! 
+                 */
+                exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+            }
         }
         if (exprOptimized.getLength() >= expr.getLength()) {
             // Dann die letzte Vereinfachung rückgängig machen.
@@ -2377,18 +2383,24 @@ public class BinaryOperation extends Expression {
         }
 
         /* 
-            Verusuch: Auf einen Nenner bringen und dann den Zähler und Nenner separat 
-            analog vereinfachen und prüfen, ob das Ergebnis kürzer ist.
+        Verusuch: Auf einen Nenner bringen und dann den Zähler und Nenner separat 
+        analog vereinfachen und prüfen, ob das Ergebnis kürzer ist.
          */
         exprOptimized = expr.simplifyBringExpressionToCommonDenominator(TypeFractionSimplification.ALWAYS);
-        exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
-        if (exprOptimized.isQuotient()) {
-            exprOptimized = ((BinaryOperation) exprOptimized).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
-                    ((BinaryOperation) exprOptimized).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
-        }
-        if (exprOptimized.getLength() < expr.getLength()) {
-            // Dann die letzte Vereinfachung rückgängig machen.
-            return exprOptimized;
+        if (!exprOptimized.equivalent(expr)) {
+            /* 
+            Erneutes simplify(...) nur anwenden, wenn die Ausdrücke wirklich verschieden sind.
+            Sonst sind Endlosschleifen möglich! 
+             */
+            exprOptimized = exprOptimized.simplify(simplifyTypesExpandAndCollectIfShorter);
+            if (exprOptimized.isQuotient()) {
+                exprOptimized = ((BinaryOperation) exprOptimized).getLeft().simplifyExpandAndCollectEquivalentsIfShorter().div(
+                        ((BinaryOperation) exprOptimized).getRight().simplifyExpandAndCollectEquivalentsIfShorter());
+            }
+            if (exprOptimized.getLength() < expr.getLength()) {
+                // Dann die letzte Vereinfachung rückgängig machen.
+                return exprOptimized;
+            }
         }
 
         return expr;

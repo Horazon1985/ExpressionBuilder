@@ -18,31 +18,31 @@ public class SelfDefinedFunction extends Expression {
     /*
      Beispiel: Die Funktionen f(x, y) = x + y und g(x, y, z) = x^2*y-z liefern
      folgende Tabellen: abstractExpressionsForSelfDefinedFunctions {f ->
-     x_ABSTRACT + y_ABSTRACT, g -> x_ABSTRACT^2-y_ABSTRACT+z_ABSTRACT}
-     varsForSelfDefinedFunctions {f -> {"x_ABSTRACT", "y_ABSTRACT"}, g ->
-     {"x_ABSTRACT", "y_ABSTRACT", "z_ABSTRACT"}}
+     U_1 + U_2, g -> U_1^2*U_2-U_3}
+     varsForSelfDefinedFunctions {f -> {"U_1", "U_2"}, g ->
+     {"U_1", "U_2", "U_3"}}
      innerExpressionsForSelfDefinedFunctions {f -> was auch immer, g -> was
      auch immer}.
      */
 
  /*
      name = Funktionsname arguments = abstrakte Funktionsargumente; das sind
-     Variablen von der Form var_ABSTRACT. Diese können beim parsen mittels
-     Expression.build NICHT eingelesen werden, denn das sind keine legalen
-     Ausdrücke. Intern können diese jedoch verarbeitet werden, falls sie
+     Variablen von der Form U_i, i = 1, 2, 3, .... Diese können beim parsen mittels
+     Expression.build NICHT eingelesen werden, denn beim Parsen wird alles zu 
+     Kleinbuchstaben. Intern können diese jedoch verarbeitet werden, falls sie
      bereits erschaffen wurden. Sie werden bei der Ausführung des Befehls
      def(Funktionsdefinition) automatisch in dieses Format konvertiert.
      expressionAbstract = abstrakter Funktionsausdruck, der die Funktion
      definiert. left = Funktionsausdrucke, die für die Variablen der Form
-     var_ABSTRACT eingesetzt werden. Beispiel: f(x_ABSTRACT, y_ABSTRACT) =
-     3*x_ABSTRACT+y_ABSTRACT^2, arguments = {"x_ABSTRACT", "y_ABSTRACT"}, left
+     var_ABSTRACT eingesetzt werden. Beispiel: f(U_1, U_2) =
+     3*U_1+U_2^2, arguments = {"U_1", "U_2"}, left
      = {x^2, sin(u*v)}. Dann: name = "f" und die Funktion hat dann den
-     Funktionsterm f = 3*x^2 + sin(u*v)^2. Zu den Hashtables werden dann die
+     Funktionsterm f = 3*x^2 + sin(u*v)^2. Zu den HashMaps werden dann die
      folgenden Einträge hinzugefügt:
      abstractExpressionsForSelfDefinedFunctions: f ->
-     3*x_ABSTRACT+y_ABSTRACT^2 innerExpressionsForSelfDefinedFunctions: f ->
+     3*U_1+U_2^2 innerExpressionsForSelfDefinedFunctions: f ->
      {x^2, sin(u*v)} (als Expressions) varsForSelfDefinedFunctions: f ->
-     {"x_ABSTRACT", "y_ABSTRACT"} BEMERKUNG: arguments und left müssen
+     {"U_1", "U_2"} BEMERKUNG: arguments und left müssen
      natürlich dieselbe Länge haben.
      */
     private String name;
@@ -113,14 +113,15 @@ public class SelfDefinedFunction extends Expression {
     }
 
     /**
-     * Entfernt eine vom Benutzer definierte Funktion mit dem Name f, falls vorhanden.
+     * Entfernt eine vom Benutzer definierte Funktion mit dem Name f, falls
+     * vorhanden.
      */
     public static void removeSelfDefinedFunction(String f) {
         abstractExpressionsForSelfDefinedFunctions.remove(f);
         argumentsForSelfDefinedFunctions.remove(f);
         innerExpressionsForSelfDefinedFunctions.remove(f);
     }
-    
+
     @Override
     public Expression copy() {
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression, this.left);
@@ -218,14 +219,14 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public boolean containsAlgebraicOperation(){
+    public boolean containsAlgebraicOperation() {
         boolean containsAlgebraicOperation = false;
         for (int i = 0; i < this.left.length; i++) {
             containsAlgebraicOperation = containsAlgebraicOperation || this.left[i].containsAlgebraicOperation();
         }
         return containsAlgebraicOperation || this.abstractExpression.containsOperator();
     }
-    
+
     @Override
     public Expression turnToApproximate() {
         Expression[] resultLeft = new Expression[this.left.length];
@@ -431,7 +432,7 @@ public class SelfDefinedFunction extends Expression {
         // Explizites Ausschreiben notwendig!
         return false;
     }
-    
+
     @Override
     public boolean hasPositiveSign() {
         return this.abstractExpression.hasPositiveSign();
@@ -448,7 +449,7 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public int getMaximalNumberOfSummandsInExpansion(){
+    public int getMaximalNumberOfSummandsInExpansion() {
         return 1;
     }
 
@@ -492,7 +493,7 @@ public class SelfDefinedFunction extends Expression {
         }
         return new SelfDefinedFunction(this.name, this.arguments, this.abstractExpression.simplifyBringExpressionToCommonDenominator(type), resultLeft);
     }
-    
+
     @Override
     public Expression simplifyReduceDifferencesAndQuotientsAdvanced() throws EvaluationException {
         Expression[] resultLeft = new Expression[this.left.length];
