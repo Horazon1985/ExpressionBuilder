@@ -38,8 +38,8 @@
     <object id = "EB_Expression_TWO_OPERATIONS">
         <German>Im Ausdruck treten zwei Operationen hintereinander auf.</German>
         <English>The expression contains two operations without an argument in between.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Вираз містить дві операції без аргумента між ними.</Ukrainian>
+        <Russian>Выражение содержит две операции без аргумента между ними.</Russian>
     </object>
     <object id = "EB_Expression_IS_NOT_VALID_COMMAND">
         <German> ist kein gültiger Befehl oder Operator.</German>
