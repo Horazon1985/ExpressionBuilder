@@ -3,6 +3,8 @@ package abstractexpressions.expression.computation;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
+import graphic.GraphicPanelImplicit3D;
+import graphic.GraphicPanelImplicit3D.MarchingCube;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
@@ -302,7 +304,7 @@ public abstract class NumericalMethods {
      * @throws EvaluationException
      */
     public static ArrayList<double[]> solveImplicitEquation2D(Expression f, String varAbsc, String varOrd,
-            double x_0, double x_1, double y_0, double y_1) throws EvaluationException {
+            double xStart, double xEnd, double yStart, double yEnd) throws EvaluationException {
 
         ArrayList<double[]> solutionsOfImplicitEquation = new ArrayList<>();
 
@@ -310,24 +312,24 @@ public abstract class NumericalMethods {
         double valueAtCurrentPoint, valueAtNextPoint;
         double[] solution;
         for (int i = 0; i < 500; i++) {
-            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 500);
-            Variable.setValue(varOrd, y_0);
+            Variable.setValue(varAbsc, xStart + i * (xEnd - xStart) / 500);
+            Variable.setValue(varOrd, yStart);
             try {
                 valueAtNextPoint = f.evaluate();
                 for (int j = 0; j < 500; j++) {
                     valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(varOrd, y_0 + (j + 1) * (y_1 - y_0) / 500);
+                    Variable.setValue(varOrd, yStart + (j + 1) * (yEnd - yStart) / 500);
                     valueAtNextPoint = f.evaluate();
                     if (valueAtCurrentPoint == 0) {
                         solution = new double[2];
-                        solution[0] = x_0 + i * (x_1 - x_0) / 500;
-                        solution[1] = y_0 + j * (y_1 - y_0) / 500;
+                        solution[0] = xStart + i * (xEnd - xStart) / 500;
+                        solution[1] = yStart + j * (yEnd - yStart) / 500;
                         solutionsOfImplicitEquation.add(solution);
                     } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
                         solution = new double[2];
-                        solution[0] = x_0 + i * (x_1 - x_0) / 500;
-                        solution[1] = y_0 + (j * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
-                                + (j + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
+                        solution[0] = xStart + i * (xEnd - xStart) / 500;
+                        solution[1] = yStart + (j * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
+                                + (j + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (yEnd - yStart) / 500;
                         solutionsOfImplicitEquation.add(solution);
                     }
                 }
@@ -337,24 +339,24 @@ public abstract class NumericalMethods {
 
         // Entlangtasten an horizontalen Niveaulinien.
         for (int i = 0; i < 500; i++) {
-            Variable.setValue(varAbsc, x_0);
-            Variable.setValue(varOrd, y_0 + i * (y_1 - y_0) / 500);
+            Variable.setValue(varAbsc, xStart);
+            Variable.setValue(varOrd, yStart + i * (yEnd - yStart) / 500);
             try {
                 valueAtNextPoint = f.evaluate();
                 for (int j = 0; j < 500; j++) {
                     valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(varAbsc, x_0 + (j + 1) * (x_1 - x_0) / 500);
+                    Variable.setValue(varAbsc, xStart + (j + 1) * (xEnd - xStart) / 500);
                     valueAtNextPoint = f.evaluate();
                     if (valueAtCurrentPoint == 0) {
                         solution = new double[2];
-                        solution[0] = x_0 + j * (x_1 - x_0) / 500;
-                        solution[1] = y_0 + i * (y_1 - y_0) / 500;
+                        solution[0] = xStart + j * (xEnd - xStart) / 500;
+                        solution[1] = yStart + i * (yEnd - yStart) / 500;
                         solutionsOfImplicitEquation.add(solution);
                     } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
                         solution = new double[2];
-                        solution[0] = x_0 + j * (x_1 - x_0) / 500;
-                        solution[1] = y_0 + (i * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
-                                + (i + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
+                        solution[0] = xStart + j * (xEnd - xStart) / 500;
+                        solution[1] = yStart + (i * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
+                                + (i + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (yEnd - yStart) / 500;
                         solutionsOfImplicitEquation.add(solution);
                     }
                 }
@@ -366,53 +368,53 @@ public abstract class NumericalMethods {
 
     }
 
-    /**
-     * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
-     * var2) = 0 im Bereich x_0 &#8804; varAbsc &#8804; x_1, y_0 &#8804; varOrd
-     * &#8804; y_1, z_0 &#8804; varAppl &#8804; z_1. VORAUSSETZUNG: f hängt nur
-     * von varAbsc, varOrd und varAppl ab.
-     *
-     * @throws EvaluationException
-     */
-    public static ArrayList<double[]> solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
-            double x_0, double x_1, double y_0, double y_1, double z_0, double z_1) throws EvaluationException {
+    public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
+            double xStart, double xEnd, double yStart, double yEnd, double zStart, double zEnd) {
 
-        ArrayList<double[]> solutionsOfImplicitEquation = new ArrayList<>();
+        int numberOfIntervals = 20;
 
-        double valueAtCurrentPoint, valueAtNextPoint;
-        double[] solution;
-        for (int i = 0; i < 50; i++) {
-            Variable.setValue(varAbsc, x_0 + i * (x_1 - x_0) / 50);
-            Variable.setValue(varOrd, y_0);
-            try {
-                for (int j = 0; j < 50; j++) {
-                    Variable.setValue(varOrd, y_0 + j * (y_1 - y_0) / 50);
-                    valueAtNextPoint = f.evaluate();
-                    for (int k = 0; k < 50; k++) {
-                        valueAtCurrentPoint = valueAtNextPoint;
-                        Variable.setValue(varAppl, z_0 + (k + 1) * (z_1 - z_0) / 50);
-                        valueAtNextPoint = f.evaluate();
-                        if (valueAtCurrentPoint == 0) {
-                            solution = new double[3];
-                            solution[0] = x_0 + i * (x_1 - x_0) / 50;
-                            solution[1] = y_0 + j * (y_1 - y_0) / 50;
-                            solution[2] = z_0 + k * (z_1 - z_0) / 50;
-                            solutionsOfImplicitEquation.add(solution);
-                        } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
-                            solution = new double[3];
-                            solution[0] = x_0 + i * (x_1 - x_0) / 50;
-                            solution[1] = y_0 + j * (y_1 - y_0) / 50;
-                            solution[2] = z_0 + (k * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
-                                    + (k + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (y_1 - y_0) / 500;
-                            solutionsOfImplicitEquation.add(solution);
-                        }
+        MarchingCube[][][] cubes = new GraphicPanelImplicit3D.MarchingCube[numberOfIntervals][numberOfIntervals][numberOfIntervals];
+        MarchingCube cube;
+
+        boolean[][][] innerPoints = new boolean[numberOfIntervals + 1][numberOfIntervals + 1][numberOfIntervals + 1];
+
+        for (int i = 0; i <= numberOfIntervals; i++) {
+            for (int j = 0; j <= numberOfIntervals; j++) {
+                for (int k = 0; k <= numberOfIntervals; k++) {
+
+                    Variable.setValue(varAbsc, xStart + i * (xEnd - xStart));
+                    Variable.setValue(varOrd, yStart + j * (yEnd - yStart));
+                    Variable.setValue(varAppl, zStart + k * (zEnd - zStart));
+                    try {
+                        innerPoints[i][j][k] = f.evaluate() <= 0;
+                    } catch (EvaluationException e) {
                     }
+
                 }
-            } catch (EvaluationException e) {
             }
         }
 
-        return solutionsOfImplicitEquation;
+        for (int i = 0; i < numberOfIntervals; i++) {
+            for (int j = 0; j < numberOfIntervals; j++) {
+                for (int k = 0; k < numberOfIntervals; k++) {
+
+                    cube = new GraphicPanelImplicit3D.MarchingCube();
+                    for (int p = 0; p < 2; p++) {
+                        for (int q = 0; q < 2; q++) {
+                            for (int r = 0; r < 2; r++) {
+                                if (innerPoints[i + p][j + q][k + r]) {
+                                    cube.addInnerVertex(new Boolean[]{p == 0, q == 0, r == 0});
+                                }
+                            }
+                        }
+                    }
+                    cubes[i][j][k] = cube;
+
+                }
+            }
+        }
+
+        return cubes;
 
     }
 

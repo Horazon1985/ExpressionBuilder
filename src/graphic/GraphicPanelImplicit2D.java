@@ -268,7 +268,7 @@ public class GraphicPanelImplicit2D extends JPanel implements Exportable {
         }
     }
     
-    public void drawGraph2D(ArrayList<double[]> implicitGraph2D, Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
+    public void drawGraphImplicit2D(ArrayList<double[]> implicitGraph2D, Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
         this.implicitGraph2D = implicitGraph2D;
         computeScreenSizes(exprAbscStart, exprAbscEnd, exprOrdStart, exprOrdEnd);
         repaint();
