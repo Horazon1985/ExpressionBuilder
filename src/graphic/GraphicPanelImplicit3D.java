@@ -17,16 +17,20 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import lang.translator.Translator;
 
 public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportable {
 
-    //Parameter für 3D-Graphen
-    //Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
+    /**
+     * Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
+     */
     private boolean isRotating;
-    // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
+    /**
+     * Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
+     */
     private String varAbsc, varOrd;
     private Expression expr;
 
@@ -156,9 +160,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         private static boolean areNeighbors(Boolean[] firstVertex, Boolean[] secondVertex) {
-            return getNeighboringVertex(firstVertex, 0).equals(secondVertex)
-                    || getNeighboringVertex(firstVertex, 1).equals(secondVertex)
-                    || getNeighboringVertex(firstVertex, 2).equals(secondVertex);
+            return Arrays.equals(getNeighboringVertex(firstVertex, 0), secondVertex)
+                    || Arrays.equals(getNeighboringVertex(firstVertex, 1), secondVertex)
+                    || Arrays.equals(getNeighboringVertex(firstVertex, 2), secondVertex);
         }
 
         public boolean containsNoInnerPoints() {
@@ -298,7 +302,69 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     }
 
     public enum PolygonVertexCoordinate {
+
         ZERO, HALF, ONE;
+    }
+
+    public class Polygon implements Comparable {
+
+        ArrayList<Double[]> vertices = new ArrayList<>();
+
+        public Polygon(Double[]... vertexCoordinates) {
+            this.vertices.addAll(Arrays.asList(vertexCoordinates));
+        }
+
+        @Override
+        public int compareTo(Object o) {
+            
+            if (!(o instanceof Polygon)){
+                // Dieser Fall tritt nicht auf.
+                return 0;
+            }
+
+            if (angle <= 90) {
+                
+                
+
+            } else if (angle <= 180) {
+
+            } else if (angle <= 270) {
+
+            } else {
+
+            }
+            
+            return 0;
+
+        }
+
+        private double getCenterCoordinateX() {
+            double centerX = 0;
+            for (Double[] vertex : this.vertices) {
+                centerX += vertex[0];
+            }
+            centerX = centerX / this.vertices.size();
+            return centerX;
+        }
+
+        private double getCenterCoordinateY() {
+            double centerY = 0;
+            for (Double[] vertex : this.vertices) {
+                centerY += vertex[1];
+            }
+            centerY = centerY / this.vertices.size();
+            return centerY;
+        }
+
+        private double getCenterCoordinateZ() {
+            double centerZ = 0;
+            for (Double[] vertex : this.vertices) {
+                centerZ += vertex[2];
+            }
+            centerZ = centerZ / this.vertices.size();
+            return centerZ;
+        }
+
     }
 
     public static class MarchingCubeWithPolygons {
@@ -346,7 +412,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         private void addPolygonOfAnIsolatedVertex(Boolean[] vertex) {
             ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
-            polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, 
+            polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
                 convertToPolygonVertexCoordinate(vertex[1]), convertToPolygonVertexCoordinate(vertex[2])});
             polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex[0]),
                 PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex[2])});
@@ -403,13 +469,13 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         private void computePolygonsInCaseOfIsolatedEdges(MarchingCube cube) {
             ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
-            if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(1))){
+            if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(1))) {
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(1));
                 addPolygonOfAnEdge(innerVertices.get(2), innerVertices.get(3));
-            } else if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(2))){
+            } else if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(2))) {
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(2));
                 addPolygonOfAnEdge(innerVertices.get(1), innerVertices.get(3));
-            } else if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(3))){
+            } else if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(3))) {
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(3));
                 addPolygonOfAnEdge(innerVertices.get(1), innerVertices.get(2));
             }
@@ -421,13 +487,13 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         private void computePolygonsInCaseOfIsolatedEdgeAndIsolatedVertex(MarchingCube cube) {
             ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
-            if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(0))){
+            if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(0))) {
                 addPolygonOfAnIsolatedVertex(innerVertices.get(0));
                 addPolygonOfAnEdge(innerVertices.get(1), innerVertices.get(2));
-            } else if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(1))){
+            } else if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(1))) {
                 addPolygonOfAnIsolatedVertex(innerVertices.get(1));
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(2));
-            } else if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(2))){
+            } else if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(2))) {
                 addPolygonOfAnIsolatedVertex(innerVertices.get(2));
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(1));
             }
@@ -802,59 +868,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     }
 
     /**
-     * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
-     * kann Voraussetzung: maxX, maxY sind bekannt!
+     * Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die
+     * graphische Darstellung.
      */
-//    private double[][][] convertGraphsToCoarserGraphs() {
-//
-//        int numberOfIntervalsAlongAbsc = this.graph3D.length;
-//        int numberOfIntervalsAlongOrd = this.graph3D[0].length;
-//
-//        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (this.graph3D[numberOfIntervalsAlongAbsc - 1][0][0] - this.graph3D[0][0][0]) / this.maxX) {
-//            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (this.graph3D[numberOfIntervalsAlongAbsc - 1][0][0] - this.graph3D[0][0][0]) / this.maxX);
-//            if (numberOfIntervalsAlongAbsc < 1) {
-//                numberOfIntervalsAlongAbsc = 1;
-//            }
-//        }
-//        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (this.graph3D[0][numberOfIntervalsAlongOrd - 1][1] - graph3D[0][0][1]) / this.maxY) {
-//            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (this.graph3D[0][numberOfIntervalsAlongOrd - 1][1] - graph3D[0][0][1]) / this.maxY);
-//            if (numberOfIntervalsAlongOrd < 1) {
-//                numberOfIntervalsAlongOrd = 1;
-//            }
-//        }
-//
-//        double[][][] graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
-//        this.graph3DAreDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
-//
-//        int currentIndexI, currentIndexJ;
-//
-//        for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-//
-//            if (this.graph3D.length <= numberOfIntervalsAlongAbsc) {
-//                currentIndexI = i;
-//            } else {
-//                currentIndexI = (int) (i * ((double) this.graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
-//            }
-//
-//            for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-//                if (this.graph3D[0].length <= numberOfIntervalsAlongOrd) {
-//                    currentIndexJ = j;
-//                } else {
-//                    currentIndexJ = (int) (j * ((double) this.graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
-//                }
-//                graph3DForGraphic[i][j][0] = this.graph3D[currentIndexI][currentIndexJ][0];
-//                graph3DForGraphic[i][j][1] = this.graph3D[currentIndexI][currentIndexJ][1];
-//                graph3DForGraphic[i][j][2] = this.graph3D[currentIndexI][currentIndexJ][2];
-//                // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
-//                this.graph3DAreDefined[i][j] = !(Double.isNaN(this.graph3D[currentIndexI][currentIndexJ][2]) || Double.isInfinite(this.graph3D[currentIndexI][currentIndexJ][2]));
-//            }
-//
-//        }
-//
-//        return graph3DForGraphic;
-//
-//    }
-    //Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die graphische Darstellung
     private int[] convertToPixel(double x, double y, double z, double bigRadius, double smallRadius, double height, double angle) {
 
         double angleAbsc = getGraphicalAngle(bigRadius, smallRadius, angle);
@@ -865,54 +881,54 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             angleOrd = getGraphicalAngle(bigRadius, smallRadius, angle - 90);
         }
 
-        //pixels sind die Pixelkoordinaten für die Graphische Darstellung von (x, y, z)
+        // pixel bildet die Pixelkoordinaten für die Graphische Darstellung von (x, y, z)
         int[] pixel = new int[2];
 
-        //Berechnung von pixels[0]
+        // Berechnung von pixels[0]
         double x_1, x_2;
 
         if (angleAbsc == 0) {
-            x_1 = bigRadius * x / maxX;
+            x_1 = bigRadius * x / this.maxX;
             x_2 = 0;
         } else if (angleAbsc == 90) {
             x_1 = 0;
-            x_2 = bigRadius * y / maxY;
+            x_2 = bigRadius * y / this.maxY;
         } else if (angleAbsc == 180) {
-            x_1 = -bigRadius * x / maxX;
+            x_1 = -bigRadius * x / this.maxX;
             x_2 = 0;
         } else if (angleAbsc == 270) {
             x_1 = 0;
-            x_2 = -bigRadius * y / maxY;
+            x_2 = -bigRadius * y / this.maxY;
         } else if (angleAbsc < 90) {
-            x_1 = (x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = (y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
+            x_1 = (x / this.maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
+            x_2 = (y / this.maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
         } else if (angleAbsc < 180) {
-            x_1 = -(x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = (y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
+            x_1 = -(x / this.maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
+            x_2 = (y / this.maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
         } else if (angleAbsc < 270) {
-            x_1 = -(x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = -(y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
+            x_1 = -(x / this.maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
+            x_2 = -(y / this.maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
         } else {
-            x_1 = (x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = -(y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
+            x_1 = (x / this.maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
+            x_2 = -(y / this.maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
         }
 
         pixel[0] = (int) (250 + x_1 + x_2);
 
-        //Berechnung von pixels[1]
+        // Berechnung von pixel[1]
         double y_1, y_2, y_3;
 
         if (angleAbsc == 0) {
             y_1 = 0;
-            y_2 = -smallRadius * y / maxY;
+            y_2 = -smallRadius * y / this.maxY;
         } else if (angleAbsc == 90) {
-            y_1 = smallRadius * x / maxX;
+            y_1 = smallRadius * x / this.maxX;
             y_2 = 0;
         } else if (angleAbsc == 180) {
             y_1 = 0;
-            y_2 = smallRadius * y / maxY;
+            y_2 = smallRadius * y / this.maxY;
         } else if (angleAbsc == 270) {
-            y_1 = -smallRadius * x / maxX;
+            y_1 = -smallRadius * x / this.maxX;
             y_2 = 0;
         } else {
             y_1 = x_1 * Math.tan(angleAbsc * Math.PI / 180);
@@ -920,7 +936,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         //maximaler Funktionswert (also max_z) soll h Pixel betragen
-        y_3 = -height * z / maxZ;
+        y_3 = -height * z / this.maxZ;
         pixel[1] = (int) (250 + y_1 + y_2 + y_3);
 
         return pixel;
@@ -930,12 +946,12 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void drawInfinitesimalTangentPolygone(Graphics g, Color c, Point... points) {
+    private void drawInfinitesimalTangentPolygone(Graphics g, Color c, ArrayList<Point> points) {
 
-        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
-        tangent.moveTo(points[0].x, points[0].y);
-        for (int i = 1; i < points.length; i++) {
-            tangent.lineTo(points[i].x, points[i].y);
+        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, points.size());
+        tangent.moveTo(points.get(0).x, points.get(0).y);
+        for (int i = 1; i < points.size(); i++) {
+            tangent.lineTo(points.get(i).x, points.get(i).y);
         }
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
@@ -995,8 +1011,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         double maxValueAbsc = this.maxX;
-        double maxValueOrd =  this.maxY;
-        double maxValueAppl =  this.maxZ;
+        double maxValueOrd = this.maxY;
+        double maxValueAppl = this.maxZ;
 
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
@@ -1026,9 +1042,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 270) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(this.varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varOrd) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -1093,8 +1109,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         double maxValueAbsc = this.maxX;
-        double maxValueOrd =  this.maxY;
-        double maxValueAppl =  this.maxZ;
+        double maxValueOrd = this.maxY;
+        double maxValueAppl = this.maxZ;
 
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
@@ -1124,47 +1140,47 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 90) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(this.varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varOrd) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, expZ));
+        int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = -maxValueAbsc;
             lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = -maxValueAbsc;
             lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle > 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         //Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (maxValueOrd / Math.pow(10, expY));
+        bound = (int) (maxValueOrd / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
+        while (i * Math.pow(10, this.expY) <= maxValueOrd) {
             lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = i * Math.pow(10, expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = maxValueAppl;
             lineLevel[1][0] = -maxValueAbsc;
-            lineLevel[1][1] = i * Math.pow(10, expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
@@ -1172,10 +1188,10 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -1191,8 +1207,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         double maxValueAbsc = this.maxX;
-        double maxValueOrd =  this.maxY;
-        double maxValueAppl =  this.maxZ;
+        double maxValueOrd = this.maxY;
+        double maxValueAppl = this.maxZ;
 
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
@@ -1222,9 +1238,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle >= 180) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varAbsc) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -1234,20 +1250,20 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = maxValueAbsc;
             lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = -maxValueAbsc;
             lineLevel[1][1] = -maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle > 180) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
@@ -1255,14 +1271,14 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = -maxValueOrd;
             lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
@@ -1271,10 +1287,10 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 180) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -1290,8 +1306,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         double maxValueAbsc = this.maxX;
-        double maxValueOrd =  this.maxY;
-        double maxValueAppl =  this.maxZ;
+        double maxValueOrd = this.maxY;
+        double maxValueAppl = this.maxZ;
 
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
@@ -1321,9 +1337,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
         if (angle <= 90) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varAbsc) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -1333,34 +1349,34 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = -maxValueAbsc;
             lineLevel[0][1] = maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = maxValueAbsc;
             lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle < 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = maxValueOrd;
             lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
@@ -1369,10 +1385,10 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle <= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -1384,8 +1400,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     private void drawLevelsBottom(Graphics g, double angle) {
 
         double maxValueAbsc = this.maxX;
-        double maxValueOrd =  this.maxY;
-        double maxValueAppl =  this.maxZ;
+        double maxValueOrd = this.maxY;
+        double maxValueAppl = this.maxZ;
 
         //Zunächst den Rahmen auf dem Boden zeichnen
         double[][] border = new double[4][3];
@@ -1422,11 +1438,11 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         int bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         int i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = -maxValueOrd;
             lineLevel[0][2] = -maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
@@ -1442,12 +1458,12 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         bound = (int) (maxValueOrd / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
+        while (i * Math.pow(10, this.expY) <= maxValueOrd) {
             lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = i * Math.pow(10, expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = -maxValueAppl;
             lineLevel[1][0] = maxValueAbsc;
-            lineLevel[1][1] = i * Math.pow(10, expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
@@ -1484,9 +1500,33 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private void drawSingleMarchingCube(Graphics g, double bigRadius, double smallRadius, double height, double angle, int i, int j, int k) {
+    private ArrayList<Integer> getOrderingForDraw(MarchingCubeForComputation cube) {
 
-        // TO DO.
+        ArrayList<Integer> ordering = new ArrayList<>();
+
+        return ordering;
+
+    }
+
+    private void drawSingleMarchingCube(Graphics g, int i, int j, int k) {
+        ArrayList<Integer> ordering = getOrderingForDraw(this.cubesForComputation[i][j][k]);
+        drawSingleMarchingCube(g, i, j, k, ordering);
+    }
+
+    private void drawSingleMarchingCube(Graphics g, int i, int j, int k, ArrayList<Integer> ordering) {
+
+        int[] pixel;
+        ArrayList<Point> polygon;
+        for (Integer index : ordering) {
+            polygon = new ArrayList<>();
+            for (Double[] polygonVerexCoordinates : this.cubesForComputation[i][j][k].getPolygonVertexCoordinates().get(index)) {
+                pixel = convertToPixel(polygonVerexCoordinates[0], polygonVerexCoordinates[1], polygonVerexCoordinates[2],
+                        this.bigRadius, this.smallRadius, this.height, this.angle);
+                polygon.add(new Point(pixel[0], pixel[1]));
+            }
+            drawInfinitesimalTangentPolygone(g, this.color, polygon);
+        }
+
     }
 
     /**
@@ -1626,7 +1666,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         this.implicitGraph3D = implicitGraph3D;
         computeScreenSizes(x_0, x_1, y_0, y_1, z_0, z_1);
         MarchingCubeWithPolygons[][][] cubesWithPolygons = convertToMarchingCubesWithPolygones(implicitGraph3D);
-        this.cubesForComputation = convertToMarchingCubesForComputation(cubesWithPolygons, 
+        this.cubesForComputation = convertToMarchingCubesForComputation(cubesWithPolygons,
                 x_0.evaluate(), x_1.evaluate(), y_0.evaluate(), y_1.evaluate(), z_0.evaluate(), z_1.evaluate());
         repaint();
     }

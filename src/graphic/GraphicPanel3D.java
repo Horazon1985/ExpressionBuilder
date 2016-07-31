@@ -26,10 +26,10 @@ import lang.translator.Translator;
 
 public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
-    //Parameter für 3D-Graphen
-    //Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
+    // Parameter für 3D-Graphen
+    // Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
     private boolean isRotating;
-    // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
+    // Variablennamen für die Achsen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
     private final ArrayList<Expression> exprs = new ArrayList<>();
     // Array, indem die Punkte am Graphen gespeichert sind

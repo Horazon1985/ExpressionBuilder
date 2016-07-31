@@ -1819,11 +1819,9 @@ public abstract class Expression implements AbstractExpression {
     /**
      * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
      * Logarithmen von Produkten oder Potenzen in Summen oder Vielfache von
-     * Logarithmen auseinandergezogen werden, sofern die Exponenten nicht gerade
-     * oder rational mit geradem Zähler sind.<br>
-     * BEISPIEL: (1) Der Ausdruck ln(x*y^3) wird zu ln(x) + 3*ln(y)
-     * vereinfacht.<br>
-     * (2) Der Ausdruck ln(x*y^2) wird zu ln(x) + ln(y^2) vereinfacht.
+     * Logarithmen auseinandergezogen werden.<br>
+     * BEISPIEL: Der Ausdruck ln(x*y^3) wird zu ln(x) + 3*ln(y)
+     * vereinfacht.
      *
      * @throws EvaluationException
      */
