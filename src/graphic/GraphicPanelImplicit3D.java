@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import lang.translator.Translator;
@@ -29,16 +30,14 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
      */
     private boolean isRotating;
     /**
-     * Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
+     * Variablennamen für 3D-Graphen: Absc = Abszisse, Ord = Ordinate, Appl = Applikate.
      */
-    private String varAbsc, varOrd;
-    private Expression expr;
+    private String varAbsc, varOrd, varAppl;
+    private ArrayList<Expression> exprs = new ArrayList<>();
 
     private MarchingCube[][][] implicitGraph3D;
     private MarchingCubeForComputation[][][] cubesForComputation;
-    private Color color;
-    // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
-    private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
+    private Color color = new Color(170, 170, 70);
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -95,6 +94,33 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         public void addInnerVertex(Boolean[] vertex) {
             this.innerVertices.add(vertex);
+        }
+        
+        @Override
+        public String toString(){
+            String cube = "[";
+            for (int i = 0; i < this.innerVertices.size(); i++){
+                cube += "(";
+                if (this.innerVertices.get(i)[0] == false){
+                    cube += "0,";
+                } else {
+                    cube += "1,";
+                }
+                if (this.innerVertices.get(i)[1] == false){
+                    cube += "0,";
+                } else {
+                    cube += "1,";
+                }
+                if (this.innerVertices.get(i)[2] == false){
+                    cube += "0)";
+                } else {
+                    cube += "1)";
+                }
+                if (i < this.innerVertices.size()){
+                    cube = cube + ", ";
+                }
+            }
+            return cube + "]";
         }
 
         public void switchPoints() {
@@ -308,6 +334,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     public class Polygon implements Comparable {
 
+        double lengthOfAmbientCube;
         ArrayList<Double[]> vertices = new ArrayList<>();
 
         public Polygon(Double[]... vertexCoordinates) {
@@ -315,26 +342,128 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         @Override
+        public String toString(){
+            String cube = "[";
+            for (int i = 0; i < this.vertices.size(); i++){
+                cube += "(" + this.vertices.get(i)[0] + ", " + this.vertices.get(i)[1] + ", " + this.vertices.get(i)[2] + ")";
+                if (i < this.vertices.size()){
+                    cube = cube + ", ";
+                }
+            }
+            return cube + "]";
+        }
+        
+        public ArrayList<Double[]> getVertices() {
+            return this.vertices;
+        }
+
+        public Double[] getVertex(int i) {
+            return this.vertices.get(i);
+        }
+
+        public void setLengthOfAmbientCube(double length) {
+            this.lengthOfAmbientCube = length;
+        }
+
+        public void add(Double[] vertex) {
+            this.vertices.add(vertex);
+        }
+
+        @Override
         public int compareTo(Object o) {
-            
-            if (!(o instanceof Polygon)){
+
+            if (!(o instanceof Polygon)) {
                 // Dieser Fall tritt nicht auf.
                 return 0;
             }
 
+            Polygon p = (Polygon) o;
+
             if (angle <= 90) {
-                
-                
+
+                if (verticalAngle <= 45) {
+                    if (getCenterCoordinateY() >= p.getCenterCoordinateY()) {
+                        return -1;
+                    }
+                    return 1;
+                } else {
+                    double centerY = getCenterCoordinateY();
+                    double centerYOfP = p.getCenterCoordinateY();
+                    if (Math.abs(centerY - centerYOfP) <= this.lengthOfAmbientCube / 10) {
+                        if (getCenterCoordinateZ() >= p.getCenterCoordinateZ()) {
+                            return 1;
+                        }
+                        return -1;
+                    }
+                    if (getCenterCoordinateY() >= p.getCenterCoordinateY()) {
+                        return -1;
+                    }
+                    return 1;
+                }
 
             } else if (angle <= 180) {
 
+                if (verticalAngle <= 45) {
+                    if (getCenterCoordinateX() <= p.getCenterCoordinateX()) {
+                        return -1;
+                    }
+                    return 1;
+                } else {
+                    double centerX = getCenterCoordinateX();
+                    double centerXOfP = p.getCenterCoordinateX();
+                    if (Math.abs(centerX - centerXOfP) <= this.lengthOfAmbientCube / 10) {
+                        if (getCenterCoordinateZ() >= p.getCenterCoordinateZ()) {
+                            return 1;
+                        }
+                        return -1;
+                    }
+                    if (getCenterCoordinateX() <= p.getCenterCoordinateX()) {
+                        return -1;
+                    }
+                    return 1;
+                }
+
             } else if (angle <= 270) {
 
-            } else {
+                if (verticalAngle <= 45) {
+                    if (getCenterCoordinateY() <= p.getCenterCoordinateY()) {
+                        return -1;
+                    }
+                    return 1;
+                } else {
+                    double centerY = getCenterCoordinateY();
+                    double centerYOfP = p.getCenterCoordinateY();
+                    if (Math.abs(centerY - centerYOfP) <= this.lengthOfAmbientCube / 10) {
+                        if (getCenterCoordinateZ() >= p.getCenterCoordinateZ()) {
+                            return 1;
+                        }
+                        return -1;
+                    }
+                    if (getCenterCoordinateY() <= p.getCenterCoordinateY()) {
+                        return -1;
+                    }
+                    return 1;
+                }
 
+            } else if (verticalAngle <= 45) {
+                if (getCenterCoordinateX() >= p.getCenterCoordinateX()) {
+                    return -1;
+                }
+                return 1;
+            } else {
+                double centerX = getCenterCoordinateX();
+                double centerXOfP = p.getCenterCoordinateX();
+                if (Math.abs(centerX - centerXOfP) <= this.lengthOfAmbientCube / 10) {
+                    if (getCenterCoordinateZ() >= p.getCenterCoordinateZ()) {
+                        return 1;
+                    }
+                    return -1;
+                }
+                if (getCenterCoordinateX() >= p.getCenterCoordinateX()) {
+                    return -1;
+                }
+                return 1;
             }
-            
-            return 0;
 
         }
 
@@ -535,23 +664,35 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    public static class MarchingCubeForComputation {
+    public class MarchingCubeForComputation {
 
-        private final ArrayList<ArrayList<Double[]>> polygonVertexCoordinates = new ArrayList<>();
+        private final ArrayList<Polygon> polygons = new ArrayList<>();
 
-        public ArrayList<ArrayList<Double[]>> getPolygonVertexCoordinates() {
-            return this.polygonVertexCoordinates;
+        public ArrayList<Polygon> getPolygons() {
+            return this.polygons;
+        }
+        
+        @Override
+        public String toString(){
+            String cube = "[";
+            for (int i = 0; i < this.polygons.size(); i++){
+                cube += this.polygons.get(i).toString();
+                if (i < this.polygons.size()){
+                    cube = cube + ", ";
+                }
+            }
+            return cube + "]";
         }
 
         public void computePolygons(MarchingCubeWithPolygons cube, double x_0, double x_1, double y_0, double y_1, double z_0, double z_1) {
 
             ArrayList<ArrayList<PolygonVertexCoordinate[]>> polygonVertices = cube.getPolygonVertices();
 
-            ArrayList<Double[]> polygonCoordinates;
+            Polygon polygonWithCoordinates;
             double x, y, z;
 
             for (ArrayList<PolygonVertexCoordinate[]> polygon : polygonVertices) {
-                polygonCoordinates = new ArrayList<>();
+                polygonWithCoordinates = new Polygon();
                 for (PolygonVertexCoordinate[] vertices : polygon) {
                     switch (vertices[0]) {
                         case ZERO:
@@ -583,9 +724,10 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                         default:
                             z = z_1;
                     }
-                    polygonCoordinates.add(new Double[]{x, y, z});
+                    polygonWithCoordinates.add(new Double[]{x, y, z});
+                    polygonWithCoordinates.setLengthOfAmbientCube(x_1 - x_0);
                 }
-                this.polygonVertexCoordinates.add(polygonCoordinates);
+                this.polygons.add(polygonWithCoordinates);
             }
 
         }
@@ -683,11 +825,11 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    public Expression getExpressions() {
-        return this.expr;
+    public ArrayList<Expression> getExpressions() {
+        return this.exprs;
     }
 
-    public Color getColors() {
+    public Color getColor() {
         return this.color;
     }
 
@@ -719,28 +861,20 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         this.presentationMode = presentationMode;
     }
 
-    public void setExpression(Expression expr) {
-        this.expr = expr;
-        setColor();
-    }
-
-    public void addExpression(Expression expr) {
-        this.expr.add(expr);
-        setColor();
-    }
-
-    private void setColor() {
-        this.color = fixedColors[0];
+    public void setExpressions(Expression... exprs) {
+        this.exprs = new ArrayList<>();
+        this.exprs.addAll(Arrays.asList(exprs));
     }
 
     public void setIsRotating(boolean isRotating) {
         this.isRotating = isRotating;
     }
 
-    public void setParameters(String varAbsc, String varOrd, double bigRadius, double heightProjection, double angle,
+    public void setParameters(String varAbsc, String varOrd, String varAppl, double bigRadius, double heightProjection, double angle,
             double verticalAngle) {
         this.varAbsc = varAbsc;
         this.varOrd = varOrd;
+        this.varAppl = varAppl;
         this.heightProjection = heightProjection;
         this.bigRadius = bigRadius;
         this.smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
@@ -1500,130 +1634,76 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private ArrayList<Integer> getOrderingForDraw(MarchingCubeForComputation cube) {
+    private void drawMarchingCubesForComputation(Graphics g) {
 
-        ArrayList<Integer> ordering = new ArrayList<>();
+        if (angle <= 90) {
 
-        return ordering;
+            for (int i = 0; i < this.cubesForComputation.length; i++) {
+                for (int j = 0; j < this.cubesForComputation[0].length; j++) {
+                    for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
+                        drawSingleMarchingCube(g, i, this.cubesForComputation[0].length - 1 - j, k);
+                    }
+                }
+            }
 
+        } else if (angle <= 180) {
+
+            for (int i = 0; i < this.cubesForComputation.length; i++) {
+                for (int j = 0; j < this.cubesForComputation[0].length; j++) {
+                    for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
+                        drawSingleMarchingCube(g, i, j, k);
+                    }
+                }
+            }
+            
+        } else if (angle <= 270) {
+
+            for (int i = 0; i < this.cubesForComputation.length; i++) {
+                for (int j = 0; j < this.cubesForComputation[0].length; j++) {
+                    for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
+                        drawSingleMarchingCube(g, this.cubesForComputation.length - 1 - i, j, k);
+                    }
+                }
+            }
+            
+        } else {
+
+            for (int i = 0; i < this.cubesForComputation.length; i++) {
+                for (int j = 0; j < this.cubesForComputation[0].length; j++) {
+                    for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
+                        drawSingleMarchingCube(g, this.cubesForComputation.length - 1 - i, this.cubesForComputation[0].length - 1 - j, k);
+                    }
+                }
+            }
+            
+        }
+
+    }
+
+    private void sortPolygonsForDraw(MarchingCubeForComputation cube) {
+        Collections.sort(cube.getPolygons());
     }
 
     private void drawSingleMarchingCube(Graphics g, int i, int j, int k) {
-        ArrayList<Integer> ordering = getOrderingForDraw(this.cubesForComputation[i][j][k]);
-        drawSingleMarchingCube(g, i, j, k, ordering);
-    }
-
-    private void drawSingleMarchingCube(Graphics g, int i, int j, int k, ArrayList<Integer> ordering) {
 
         int[] pixel;
         ArrayList<Point> polygon;
-        for (Integer index : ordering) {
+
+        MarchingCubeForComputation cube = this.cubesForComputation[i][j][k];
+        sortPolygonsForDraw(cube);
+        
+        for (Polygon p : cube.getPolygons()){
             polygon = new ArrayList<>();
-            for (Double[] polygonVerexCoordinates : this.cubesForComputation[i][j][k].getPolygonVertexCoordinates().get(index)) {
+            for (Double[] polygonVerexCoordinates : p.getVertices()){
                 pixel = convertToPixel(polygonVerexCoordinates[0], polygonVerexCoordinates[1], polygonVerexCoordinates[2],
                         this.bigRadius, this.smallRadius, this.height, this.angle);
                 polygon.add(new Point(pixel[0], pixel[1]));
             }
             drawInfinitesimalTangentPolygone(g, this.color, polygon);
         }
-
+        
     }
 
-    /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
-     * Achsen)
-     */
-//    private void drawGraphFromGraph3DForGraphic(Graphics g, double minExpr, double maxExpr,
-//            double bigRadius, double smallRadius, double height, double angle) {
-//
-//        int numberOfIntervalsAlongAbsc = 0;
-//        int numberOfIntervalsAlongOrd = 0;
-//
-//        // Anzahl der Intervalle für das Zeichnen ermitteln.
-//        if (this.graph3DForGraphic.length > 0) {
-//            numberOfIntervalsAlongAbsc = this.graph3DForGraphic.length - 1;
-//            numberOfIntervalsAlongOrd = this.graph3DForGraphic[0].length - 1;
-//        }
-//
-//        // Dann können keine Graphen gezeichnet werden.
-//        if (numberOfIntervalsAlongAbsc == 0 || numberOfIntervalsAlongOrd == 0) {
-//            return;
-//        }
-//
-//        //Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
-//        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-//        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
-//            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-//                graphicalGraph[i][j] = convertToPixel(this.graph3DForGraphic[i][j][0], this.graph3DForGraphic[i][j][1],
-//                        this.graph3DForGraphic[i][j][2], bigRadius, smallRadius, height, angle);
-//            }
-//        }
-//
-//        /*
-//         Jetzt wird der Graph, abhängig vom Winkel angle, gezeichnet. Es muss
-//         deshalb nach dem Winkel unterschieden werden, da der Graph stets "von
-//         hinten nach vorne" gezeichnet werden soll. Voraussetzung: 0 <= angle
-//         < 360
-//         */
-//        if (angle <= 90) {
-//
-//            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-//                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-//                    Color c = computeColor(this.color, minExpr, maxExpr, this.graph3DForGraphic[i][numberOfIntervalsAlongOrd - j - 1][2]);
-//                    // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-//                    drawInfinitesimalTangentSpace(graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j - 1][1],
-//                            graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-//                            graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i + 1][numberOfIntervalsAlongOrd - j][1],
-//                            graphicalGraph[i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[i][numberOfIntervalsAlongOrd - j][1],
-//                            g, c);
-//                }
-//            }
-//
-//        } else if (angle <= 180) {
-//
-//            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-//                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-//                    Color c = computeColor(this.color, minExpr, maxExpr, this.graph3DForGraphic[i][j][2]);
-//                    // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-//                    drawInfinitesimalTangentSpace(graphicalGraph[i][j][0], graphicalGraph[i][j][1],
-//                            graphicalGraph[i + 1][j][0], graphicalGraph[i + 1][j][1],
-//                            graphicalGraph[i + 1][j + 1][0], graphicalGraph[i + 1][j + 1][1],
-//                            graphicalGraph[i][j + 1][0], graphicalGraph[i][j + 1][1],
-//                            g, c);
-//                }
-//            }
-//
-//        } else if (angle <= 270) {
-//
-//            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-//                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-//                    Color c = computeColor(this.color, minExpr, maxExpr, this.graph3DForGraphic[numberOfIntervalsAlongAbsc - i - 1][j][2]);
-//                    // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-//                    drawInfinitesimalTangentSpace(graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][j][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][j + 1][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
-//                            g, c);
-//                }
-//            }
-//
-//        } else {
-//
-//            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-//                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-//                    Color c = computeColor(this.color, minExpr, maxExpr, this.graph3DForGraphic[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
-//                    // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-//                    drawInfinitesimalTangentSpace(graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
-//                            graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
-//                            g, c);
-//                }
-//            }
-//
-//        }
-//
-//    }
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen.
      */
@@ -1651,14 +1731,12 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             return;
         }
         computeExpXExpYExpZ();
-//        this.graph3DForGraphic = convertGraphsToCoarserGraphs();
 
         drawLevelsOnEast(g, angle);
         drawLevelsOnSouth(g, angle);
         drawLevelsOnWest(g, angle);
         drawLevelsOnNorth(g, angle);
         drawLevelsBottom(g, angle);
-//        drawGraphFromGraph3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
 
     }
 
@@ -1674,19 +1752,19 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawImplicitGraph3D(g, angle);
+        drawImplicitGraph3D(g, this.angle);
     }
 
     @Override
     public void run() {
-        while (isRotating) {
+        while (this.isRotating) {
 
-            angle = angle + 1;
-            if (angle >= 360) {
-                angle = angle - 360;
+            this.angle = this.angle + 1;
+            if (this.angle >= 360) {
+                this.angle = this.angle - 360;
             }
-            if (angle < 0) {
-                angle = angle + 360;
+            if (this.angle < 0) {
+                this.angle = this.angle + 360;
             }
             try {
                 Thread.sleep(50);

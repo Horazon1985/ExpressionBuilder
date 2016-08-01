@@ -371,7 +371,7 @@ public abstract class NumericalMethods {
     public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
             double xStart, double xEnd, double yStart, double yEnd, double zStart, double zEnd) {
 
-        int numberOfIntervals = 20;
+        int numberOfIntervals = 5;
 
         MarchingCube[][][] cubes = new GraphicPanelImplicit3D.MarchingCube[numberOfIntervals][numberOfIntervals][numberOfIntervals];
         MarchingCube cube;
