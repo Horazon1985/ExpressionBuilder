@@ -116,7 +116,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 } else {
                     cube += "1)";
                 }
-                if (i < this.innerVertices.size()){
+                if (i < this.innerVertices.size() - 1){
                     cube = cube + ", ";
                 }
             }
@@ -346,7 +346,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             String cube = "[";
             for (int i = 0; i < this.vertices.size(); i++){
                 cube += "(" + this.vertices.get(i)[0] + ", " + this.vertices.get(i)[1] + ", " + this.vertices.get(i)[2] + ")";
-                if (i < this.vertices.size()){
+                if (i < this.vertices.size() - 1){
                     cube = cube + ", ";
                 }
             }
@@ -677,7 +677,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             String cube = "[";
             for (int i = 0; i < this.polygons.size(); i++){
                 cube += this.polygons.get(i).toString();
-                if (i < this.polygons.size()){
+                if (i < this.polygons.size() - 1){
                     cube = cube + ", ";
                 }
             }
@@ -904,24 +904,25 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     private MarchingCubeForComputation[][][] convertToMarchingCubesForComputation(MarchingCubeWithPolygons[][][] cubes,
             double x_0, double x_1, double y_0, double y_1, double z_0, double z_1) {
 
-        MarchingCubeForComputation[][][] cubesWithCoordinates = new MarchingCubeForComputation[cubes.length][cubes[0].length][cubes[0][0].length];
+        MarchingCubeForComputation[][][] cubesForComputation = new MarchingCubeForComputation[cubes.length][cubes[0].length][cubes[0][0].length];
 
-        int numberOfIntervalsX = cubes.length - 1;
-        int numberOfIntervalsY = cubes[0].length - 1;
-        int numberOfIntervalsZ = cubes[0][0].length - 1;
+        int numberOfIntervalsX = cubes.length;
+        int numberOfIntervalsY = cubes[0].length;
+        int numberOfIntervalsZ = cubes[0][0].length;
 
         for (int i = 0; i < cubes.length; i++) {
             for (int j = 0; j < cubes[0].length; j++) {
                 for (int k = 0; k < cubes[0][0].length; k++) {
-                    cubesWithCoordinates[i][j][k] = new MarchingCubeForComputation();
-                    cubesWithCoordinates[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / (numberOfIntervalsX), x_0 + (i + 1) * (x_1 - x_0) / (numberOfIntervalsX),
+                    cubesForComputation[i][j][k] = new MarchingCubeForComputation();
+                    cubesForComputation[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / (numberOfIntervalsX), x_0 + (i + 1) * (x_1 - x_0) / (numberOfIntervalsX),
                             y_0 + j * (y_1 - y_0) / (numberOfIntervalsY), y_0 + (j + 1) * (y_1 - y_0) / (numberOfIntervalsY),
                             z_0 + k * (z_1 - z_0) / (numberOfIntervalsZ), z_0 + (k + 1) * (z_1 - z_0) / (numberOfIntervalsZ));
+                    System.out.println("(" + i + "," + j + "," + k + "): " + cubesForComputation[i][j][k]);
                 }
             }
         }
 
-        return cubesWithCoordinates;
+        return cubesForComputation;
 
     }
 
@@ -1138,9 +1139,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
      * Voraussetzung: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
      * sind bekannt/initialisiert.
      */
-    private void drawLevelsOnEast(Graphics g, double angle) {
+    private void drawLevelsOnEast(Graphics g) {
 
-        if ((angle >= 0) && (angle <= 180)) {
+        if (this.angle >= 0 && this.angle <= 180) {
             return;
         }
 
@@ -1166,7 +1167,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, this.angle);
         }
 
         //Rahmen zeichnen
@@ -1196,8 +1197,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle > 270) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
@@ -1219,8 +1220,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 270) {
@@ -1236,9 +1237,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private void drawLevelsOnWest(Graphics g, double angle) {
+    private void drawLevelsOnWest(Graphics g) {
 
-        if ((angle >= 180) && (angle <= 360)) {
+        if (this.angle >= 180 && this.angle <= 360) {
             return;
         }
 
@@ -1264,7 +1265,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, this.angle);
         }
 
         //Rahmen zeichnen
@@ -1294,8 +1295,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle > 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
@@ -1317,8 +1318,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 90) {
@@ -1334,9 +1335,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private void drawLevelsOnSouth(Graphics g, double angle) {
+    private void drawLevelsOnSouth(Graphics g) {
 
-        if ((angle <= 90) || (angle >= 270)) {
+        if (this.angle <= 90 || this.angle >= 270) {
             return;
         }
 
@@ -1362,7 +1363,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, this.angle);
         }
 
         //Rahmen zeichnen
@@ -1392,8 +1393,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle > 180) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
@@ -1416,8 +1417,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 180) {
@@ -1433,9 +1434,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private void drawLevelsOnNorth(Graphics g, double angle) {
+    private void drawLevelsOnNorth(Graphics g) {
 
-        if ((angle >= 90) && (angle <= 270)) {
+        if (this.angle >= 90 && this.angle <= 270) {
             return;
         }
 
@@ -1461,7 +1462,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, this.angle);
         }
 
         //Rahmen zeichnen
@@ -1491,8 +1492,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if ((angle < 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
@@ -1514,8 +1515,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle <= 90) {
@@ -1531,7 +1532,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private void drawLevelsBottom(Graphics g, double angle) {
+    private void drawLevelsBottom(Graphics g) {
 
         double maxValueAbsc = this.maxX;
         double maxValueOrd = this.maxY;
@@ -1580,8 +1581,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1600,8 +1601,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, this.angle);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, this.angle);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1707,7 +1708,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen.
      */
-    private void drawImplicitGraph3D(Graphics g, double angle) {
+    private void drawImplicitGraph3D(Graphics g) {
 
         //Zunächst Hintergrund zeichnen.
         switch (backgroundColorMode) {
@@ -1732,11 +1733,12 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
         computeExpXExpYExpZ();
 
-        drawLevelsOnEast(g, angle);
-        drawLevelsOnSouth(g, angle);
-        drawLevelsOnWest(g, angle);
-        drawLevelsOnNorth(g, angle);
-        drawLevelsBottom(g, angle);
+        drawLevelsOnEast(g);
+        drawLevelsOnSouth(g);
+        drawLevelsOnWest(g);
+        drawLevelsOnNorth(g);
+        drawLevelsBottom(g);
+        drawMarchingCubesForComputation(g);
 
     }
 
@@ -1752,7 +1754,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawImplicitGraph3D(g, this.angle);
+        drawImplicitGraph3D(g);
     }
 
     @Override

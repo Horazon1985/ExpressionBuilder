@@ -382,9 +382,9 @@ public abstract class NumericalMethods {
             for (int j = 0; j <= numberOfIntervals; j++) {
                 for (int k = 0; k <= numberOfIntervals; k++) {
 
-                    Variable.setValue(varAbsc, xStart + i * (xEnd - xStart));
-                    Variable.setValue(varOrd, yStart + j * (yEnd - yStart));
-                    Variable.setValue(varAppl, zStart + k * (zEnd - zStart));
+                    Variable.setValue(varAbsc, xStart + i * (xEnd - xStart) / numberOfIntervals);
+                    Variable.setValue(varOrd, yStart + j * (yEnd - yStart) / numberOfIntervals);
+                    Variable.setValue(varAppl, zStart + k * (zEnd - zStart) / numberOfIntervals);
                     try {
                         innerPoints[i][j][k] = f.evaluate() <= 0;
                     } catch (EvaluationException e) {
@@ -409,6 +409,7 @@ public abstract class NumericalMethods {
                         }
                     }
                     cubes[i][j][k] = cube;
+                    System.out.println("(" + i + "," + j + "," + k + "): " + cube);
 
                 }
             }
