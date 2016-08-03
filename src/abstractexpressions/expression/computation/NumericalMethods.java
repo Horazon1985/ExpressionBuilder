@@ -371,7 +371,7 @@ public abstract class NumericalMethods {
     public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
             double xStart, double xEnd, double yStart, double yEnd, double zStart, double zEnd) {
 
-        int numberOfIntervals = 5;
+        int numberOfIntervals = 40;
 
         MarchingCube[][][] cubes = new GraphicPanelImplicit3D.MarchingCube[numberOfIntervals][numberOfIntervals][numberOfIntervals];
         MarchingCube cube;
@@ -403,7 +403,7 @@ public abstract class NumericalMethods {
                         for (int q = 0; q < 2; q++) {
                             for (int r = 0; r < 2; r++) {
                                 if (innerPoints[i + p][j + q][k + r]) {
-                                    cube.addInnerVertex(new Boolean[]{p == 0, q == 0, r == 0});
+                                    cube.addInnerVertex(new Boolean[]{p == 1, q == 1, r == 1});
                                 }
                             }
                         }

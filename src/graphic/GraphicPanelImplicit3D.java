@@ -143,16 +143,23 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         private static Boolean[] getNeighboringVertex(Boolean[] vertex, int axe) {
             if (axe == 0) {
-                return new Boolean[]{!vertex[0], vertex[1], !vertex[2]};
+                return new Boolean[]{!vertex[0], vertex[1], vertex[2]};
             }
             if (axe == 1) {
-                return new Boolean[]{vertex[0], !vertex[1], !vertex[2]};
+                return new Boolean[]{vertex[0], !vertex[1], vertex[2]};
             }
             return new Boolean[]{vertex[0], vertex[1], !vertex[2]};
         }
 
         private boolean isInnerPoint(Boolean[] vertex) {
-            return this.innerVertices.contains(vertex);
+            for (Boolean[] innerVertex: this.innerVertices){
+                if (innerVertex[0].booleanValue() == vertex[0].booleanValue() 
+                        && innerVertex[1].booleanValue() == vertex[1].booleanValue() 
+                        && innerVertex[2].booleanValue() == vertex[2].booleanValue()){
+                    return true;
+                }
+            }
+            return false;
         }
 
         private boolean isInnerPointAndIsolatedVertex(Boolean[] vertex) {
@@ -186,9 +193,15 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         private static boolean areNeighbors(Boolean[] firstVertex, Boolean[] secondVertex) {
-            return Arrays.equals(getNeighboringVertex(firstVertex, 0), secondVertex)
-                    || Arrays.equals(getNeighboringVertex(firstVertex, 1), secondVertex)
-                    || Arrays.equals(getNeighboringVertex(firstVertex, 2), secondVertex);
+            return !firstVertex[0].booleanValue() == secondVertex[0].booleanValue() 
+                    && firstVertex[1].booleanValue() == secondVertex[1].booleanValue()
+                    && firstVertex[2].booleanValue() == secondVertex[2].booleanValue()
+                    || firstVertex[0].booleanValue() == secondVertex[0].booleanValue() 
+                    && !firstVertex[1].booleanValue() == secondVertex[1].booleanValue()
+                    && firstVertex[2].booleanValue() == secondVertex[2].booleanValue()
+                    || firstVertex[0].booleanValue() == secondVertex[0].booleanValue() 
+                    && firstVertex[1].booleanValue() == secondVertex[1].booleanValue()
+                    && !firstVertex[2].booleanValue() == secondVertex[2].booleanValue();
         }
 
         public boolean containsNoInnerPoints() {
@@ -558,32 +571,32 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
             ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
-            if ((boolean) vertex_1[0] != (boolean) vertex_2[0]) {
+            if (vertex_1[0].booleanValue() != vertex_2[0].booleanValue()) {
                 polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]),
-                    PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.HALF});
+                    convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
                 polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]),
-                    PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO});
+                    PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]),
-                    PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO});
+                    PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
                 polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]),
-                    PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.HALF});
-            } else if ((boolean) vertex_1[1] != (boolean) vertex_2[1]) {
-                polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO,
+                    convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
+            } else if (vertex_1[1].booleanValue() != vertex_2[1].booleanValue()) {
+                polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]),
                     convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
-                    convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.ZERO});
+                    convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
-                    convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.ZERO});
-                polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO,
+                    convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
+                polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]),
                     convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
-            } else if ((boolean) vertex_1[2] != (boolean) vertex_2[2]) {
-                polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO,
+            } else if (vertex_1[2].booleanValue() != vertex_2[2].booleanValue()) {
+                polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]),
                     PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
-                    PolygonVertexCoordinate.ZERO, convertToPolygonVertexCoordinate(vertex_1[2])});
+                    convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
-                    PolygonVertexCoordinate.ZERO, convertToPolygonVertexCoordinate(vertex_2[2])});
-                polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO,
+                    convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
+                polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]),
                     PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
             }
 
@@ -633,17 +646,23 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
             ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
-            if ((boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(1)[0] == (boolean) innerVertices.get(2)[0] == (boolean) innerVertices.get(3)[0]) {
+            if ((boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(1)[0] 
+                    && (boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(2)[0] 
+                    && (boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(3)[0]) {
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.ZERO});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.ONE});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.ONE});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.ZERO});
-            } else if ((boolean) innerVertices.get(0)[1] == (boolean) innerVertices.get(1)[1] == (boolean) innerVertices.get(2)[1] == (boolean) innerVertices.get(3)[1]) {
+            } else if ((boolean) innerVertices.get(0)[1] == (boolean) innerVertices.get(1)[1] 
+                    && (boolean) innerVertices.get(0)[1] == (boolean) innerVertices.get(2)[1] 
+                    && (boolean) innerVertices.get(0)[1] == (boolean) innerVertices.get(3)[1]) {
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ONE});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ONE});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.HALF, PolygonVertexCoordinate.ZERO});
-            } else if ((boolean) innerVertices.get(0)[2] == (boolean) innerVertices.get(1)[2] == (boolean) innerVertices.get(2)[2] == (boolean) innerVertices.get(3)[2]) {
+            } else if ((boolean) innerVertices.get(0)[2] == (boolean) innerVertices.get(1)[2] 
+                    && (boolean) innerVertices.get(0)[2] == (boolean) innerVertices.get(2)[2] 
+                    && (boolean) innerVertices.get(0)[2] == (boolean) innerVertices.get(3)[2]) {
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.HALF});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ZERO, PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.HALF});
                 polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.ONE, PolygonVertexCoordinate.HALF});
@@ -891,6 +910,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         for (int i = 0; i < cubes.length; i++) {
             for (int j = 0; j < cubes[0].length; j++) {
                 for (int k = 0; k < cubes[0][0].length; k++) {
+                    if (i == 3 && j == 2 && k == 3){
+                        double x = 1;
+                    }
                     cubesWithPolygons[i][j][k] = new MarchingCubeWithPolygons();
                     cubesWithPolygons[i][j][k].computePolygons(cubes[i][j][k]);
                 }
@@ -914,9 +936,9 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             for (int j = 0; j < cubes[0].length; j++) {
                 for (int k = 0; k < cubes[0][0].length; k++) {
                     cubesForComputation[i][j][k] = new MarchingCubeForComputation();
-                    cubesForComputation[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / (numberOfIntervalsX), x_0 + (i + 1) * (x_1 - x_0) / (numberOfIntervalsX),
-                            y_0 + j * (y_1 - y_0) / (numberOfIntervalsY), y_0 + (j + 1) * (y_1 - y_0) / (numberOfIntervalsY),
-                            z_0 + k * (z_1 - z_0) / (numberOfIntervalsZ), z_0 + (k + 1) * (z_1 - z_0) / (numberOfIntervalsZ));
+                    cubesForComputation[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / numberOfIntervalsX, x_0 + (i + 1) * (x_1 - x_0) / numberOfIntervalsX,
+                            y_0 + j * (y_1 - y_0) / numberOfIntervalsY, y_0 + (j + 1) * (y_1 - y_0) / numberOfIntervalsY,
+                            z_0 + k * (z_1 - z_0) / numberOfIntervalsZ, z_0 + (k + 1) * (z_1 - z_0) / numberOfIntervalsZ);
                     System.out.println("(" + i + "," + j + "," + k + "): " + cubesForComputation[i][j][k]);
                 }
             }
@@ -1083,6 +1105,10 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
      */
     private void drawInfinitesimalTangentPolygone(Graphics g, Color c, ArrayList<Point> points) {
 
+        if (points.isEmpty()){
+            return;
+        }
+        
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, points.size());
         tangent.moveTo(points.get(0).x, points.get(0).y);
         for (int i = 1; i < points.size(); i++) {
