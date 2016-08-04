@@ -38,7 +38,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     private MarchingCube[][][] implicitGraph3D;
     private MarchingCubeForComputation[][][] cubesForComputation;
-    private Color color = new Color(170, 170, 70);
+    private final Color color = new Color(170, 100, 70);
 
     private double zoomfactor;
     private double maxX, maxY, maxZ;
@@ -156,7 +156,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             this.innerVertices = switchedVertices;
         }
 
-        private static Boolean[] getNeighboringVertex(Boolean[] vertex, int axe) {
+        public static Boolean[] getNeighboringVertex(Boolean[] vertex, int axe) {
             if (axe == 0) {
                 return new Boolean[]{!vertex[0], vertex[1], vertex[2]};
             }
@@ -610,22 +610,22 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
                 if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{vertex_1[0], !vertex_1[1], !vertex_1[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
-                    fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    fourthPointInSquare = new Boolean[]{vertex_2[0], !vertex_2[1], !vertex_2[2]};
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
-                    fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    fourthPointInSquare = new Boolean[]{vertex_3[0], !vertex_3[1], !vertex_3[2]};
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                 }
             } else if (vertex_1[1].booleanValue() == vertex_2[1].booleanValue() && vertex_1[1].booleanValue() == vertex_3[1].booleanValue()) {
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
@@ -633,22 +633,22 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
                 if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_1[0], vertex_1[1], !vertex_1[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
-                    fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    fourthPointInSquare = new Boolean[]{!vertex_2[0], vertex_2[1],! vertex_2[2]};
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
-                    fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    fourthPointInSquare = new Boolean[]{!vertex_3[0], vertex_3[1], !vertex_3[2]};
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                 }
             } else if (vertex_1[2].booleanValue() == vertex_2[2].booleanValue() && vertex_1[2].booleanValue() == vertex_3[2].booleanValue()) {
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
@@ -656,22 +656,22 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
                 if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_1[0], !vertex_1[1], vertex_1[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
                 } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
                     fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
-                    polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
+                    polygonRectangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                 }
             }
 
@@ -680,7 +680,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         }
 
-        private PolygonVertexCoordinate[] getMiddlePoint(Boolean[] vertex_1, Boolean[] vertex_2) {
+        private static PolygonVertexCoordinate[] getMiddlePoint(Boolean[] vertex_1, Boolean[] vertex_2) {
             PolygonVertexCoordinate[] middlePoint = new PolygonVertexCoordinate[3];
             if (vertex_1[0].booleanValue() != vertex_2[0].booleanValue()) {
                 middlePoint[0] = PolygonVertexCoordinate.HALF;
@@ -811,6 +811,39 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
         private void computePolygonsInCaseOfTetraeder(MarchingCube cube) {
 
+            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+
+            Boolean[] vertex_1 = innerVertices.get(0);
+            Boolean[] vertex_2 = innerVertices.get(1);
+            Boolean[] vertex_3 = innerVertices.get(2);
+            Boolean[] vertex_4 = innerVertices.get(3);
+            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+
+            if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3) && MarchingCube.areNeighbors(vertex_1, vertex_4)) {
+                this.polygonVertices.add(getHexagonInFrontOfVertex(vertex_1));
+            } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3) && MarchingCube.areNeighbors(vertex_2, vertex_4)) {
+                this.polygonVertices.add(getHexagonInFrontOfVertex(vertex_2));
+            } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2) && MarchingCube.areNeighbors(vertex_3, vertex_4)) {
+                this.polygonVertices.add(getHexagonInFrontOfVertex(vertex_3));
+            } else if (MarchingCube.areNeighbors(vertex_4, vertex_1) && MarchingCube.areNeighbors(vertex_4, vertex_2) && MarchingCube.areNeighbors(vertex_4, vertex_3)) {
+                this.polygonVertices.add(getHexagonInFrontOfVertex(vertex_4));
+            }
+
+        }
+
+        private ArrayList<PolygonVertexCoordinate[]> getHexagonInFrontOfVertex(Boolean[] vertex) {
+            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 0), 1));
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 0), 2));
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 2), 0));
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 2), 1));
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 1), 2));
+            polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 1), 0));
+            return polygon;
+        }
+        
+        private static PolygonVertexCoordinate[] getNeighboringMiddlePoint(Boolean[] vertex, int axe){
+            return getMiddlePoint(vertex, MarchingCube.getNeighboringVertex(vertex, axe));
         }
 
         private void computePolygonsInCaseOfAFourChain(MarchingCube cube) {
@@ -1110,7 +1143,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                     cubesForComputation[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / numberOfIntervalsX, x_0 + (i + 1) * (x_1 - x_0) / numberOfIntervalsX,
                             y_0 + j * (y_1 - y_0) / numberOfIntervalsY, y_0 + (j + 1) * (y_1 - y_0) / numberOfIntervalsY,
                             z_0 + k * (z_1 - z_0) / numberOfIntervalsZ, z_0 + (k + 1) * (z_1 - z_0) / numberOfIntervalsZ);
-                    System.out.println("(" + i + "," + j + "," + k + "): " + cubesForComputation[i][j][k]);
+//                    System.out.println("(" + i + "," + j + "," + k + "): " + cubesForComputation[i][j][k]);
                 }
             }
         }
@@ -1808,7 +1841,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     }
 
-    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
+    private Color computeColor(Color groundColor, double minZ, double maxZ, double height) {
 
         Color c;
         int red, green, blue;
@@ -1817,13 +1850,13 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         int g = groundColor.getGreen();
         int b = groundColor.getBlue();
 
-        if (minExpr == maxExpr) {
+        if (minZ == maxZ) {
             red = r;
             green = g;
             blue = b;
         } else {
             red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
+            green = g + (int) ((255 - g) * (height - minZ) / (maxZ - minZ));
             blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
         }
 
@@ -1834,32 +1867,37 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
 
     private void drawMarchingCubesForComputation(Graphics g) {
 
-        if (angle <= 90) {
+        Color c;
+        
+        if (this.angle <= 90) {
 
             for (int i = 0; i < this.cubesForComputation.length; i++) {
                 for (int j = 0; j < this.cubesForComputation[0].length; j++) {
                     for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
-                        drawSingleMarchingCube(g, i, this.cubesForComputation[0].length - 1 - j, k);
+                        c = computeColor(this.color, this.minZ, this.maxZ, this.minZ + k * (this.maxZ - this.minZ) / this.cubesForComputation[0][0].length);
+                        drawSingleMarchingCube(g, c, i, this.cubesForComputation[0].length - 1 - j, k);
                     }
                 }
             }
 
-        } else if (angle <= 180) {
+        } else if (this.angle <= 180) {
 
             for (int i = 0; i < this.cubesForComputation.length; i++) {
                 for (int j = 0; j < this.cubesForComputation[0].length; j++) {
                     for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
-                        drawSingleMarchingCube(g, i, j, k);
+                        c = computeColor(this.color, this.minZ, this.maxZ, this.minZ + k * (this.maxZ - this.minZ) / this.cubesForComputation[0][0].length);
+                        drawSingleMarchingCube(g, c, i, j, k);
                     }
                 }
             }
 
-        } else if (angle <= 270) {
+        } else if (this.angle <= 270) {
 
             for (int i = 0; i < this.cubesForComputation.length; i++) {
                 for (int j = 0; j < this.cubesForComputation[0].length; j++) {
                     for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
-                        drawSingleMarchingCube(g, this.cubesForComputation.length - 1 - i, j, k);
+                        c = computeColor(this.color, this.minZ, this.maxZ, this.minZ + k * (this.maxZ - this.minZ) / this.cubesForComputation[0][0].length);
+                        drawSingleMarchingCube(g, c, this.cubesForComputation.length - 1 - i, j, k);
                     }
                 }
             }
@@ -1869,7 +1907,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             for (int i = 0; i < this.cubesForComputation.length; i++) {
                 for (int j = 0; j < this.cubesForComputation[0].length; j++) {
                     for (int k = 0; k < this.cubesForComputation[0][0].length; k++) {
-                        drawSingleMarchingCube(g, this.cubesForComputation.length - 1 - i, this.cubesForComputation[0].length - 1 - j, k);
+                        c = computeColor(this.color, this.minZ, this.maxZ, this.minZ + k * (this.maxZ - this.minZ) / this.cubesForComputation[0][0].length);
+                        drawSingleMarchingCube(g, c, this.cubesForComputation.length - 1 - i, this.cubesForComputation[0].length - 1 - j, k);
                     }
                 }
             }
@@ -1882,7 +1921,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         Collections.sort(cube.getPolygons());
     }
 
-    private void drawSingleMarchingCube(Graphics g, int i, int j, int k) {
+    private void drawSingleMarchingCube(Graphics g, Color c, int i, int j, int k) {
 
         int[] pixel;
         ArrayList<Point> polygon;
@@ -1897,7 +1936,7 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                         this.bigRadius, this.smallRadius, this.height, this.angle);
                 polygon.add(new Point(pixel[0], pixel[1]));
             }
-            drawInfinitesimalTangentPolygone(g, this.color, polygon);
+            drawInfinitesimalTangentPolygone(g, c, polygon);
         }
 
     }
