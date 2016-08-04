@@ -582,7 +582,6 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         private void computePolygonsInCaseOfIsolatedInnerPoints(MarchingCube cube) {
-            System.out.println("Würfel: " + cube);
             for (Boolean[] vertex : cube.getInnerVertices()) {
                 addPolygonOfAnIsolatedVertex(vertex);
             }
@@ -600,28 +599,28 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         private void addPolygonOfAnIsolatedTriangle(Boolean[] vertex_1, Boolean[] vertex_2, Boolean[] vertex_3) {
-            
+
             ArrayList<PolygonVertexCoordinate[]> polygonTriangle = new ArrayList<>();
             ArrayList<PolygonVertexCoordinate[]> polygonRectangle = new ArrayList<>();
             Boolean[] fourthPointInSquare;
-            
+
             if (vertex_1[0].booleanValue() == vertex_2[0].booleanValue() && vertex_1[0].booleanValue() == vertex_3[0].booleanValue()) {
                 polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
-                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)){
+                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{vertex_1[0], !vertex_1[1], !vertex_1[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[1]), convertToPolygonVertexCoordinate(vertex_2[2])});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)){
+                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[1]), convertToPolygonVertexCoordinate(vertex_3[2])});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)){
+                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
                     fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[1]), convertToPolygonVertexCoordinate(vertex_1[2])});
@@ -632,19 +631,19 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
-                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)){
+                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_1[0], vertex_1[1], !vertex_1[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_2[2])});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)){
+                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_3[2])});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)){
+                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
                     fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), PolygonVertexCoordinate.HALF, convertToPolygonVertexCoordinate(vertex_1[2])});
@@ -655,19 +654,19 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
                 polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
-                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)){
+                if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_1[0], !vertex_1[1], vertex_1[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_2));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_2[0]), convertToPolygonVertexCoordinate(vertex_2[1]), PolygonVertexCoordinate.HALF});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)){
+                } else if (MarchingCube.areNeighbors(vertex_2, vertex_1) && MarchingCube.areNeighbors(vertex_2, vertex_3)) {
                     fourthPointInSquare = new Boolean[]{!vertex_2[0], !vertex_2[1], vertex_2[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_3[0]), convertToPolygonVertexCoordinate(vertex_3[1]), PolygonVertexCoordinate.HALF});
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_3));
-                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)){
+                } else if (MarchingCube.areNeighbors(vertex_3, vertex_1) && MarchingCube.areNeighbors(vertex_3, vertex_2)) {
                     fourthPointInSquare = new Boolean[]{!vertex_3[0], !vertex_3[1], vertex_3[2]};
                     polygonTriangle.add(getMiddlePoint(fourthPointInSquare, vertex_1));
                     polygonTriangle.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]), convertToPolygonVertexCoordinate(vertex_1[1]), PolygonVertexCoordinate.HALF});
@@ -680,14 +679,14 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
             this.polygonVertices.add(polygonRectangle);
 
         }
-        
-        private PolygonVertexCoordinate[] getMiddlePoint(Boolean[] vertex_1, Boolean[] vertex_2){
+
+        private PolygonVertexCoordinate[] getMiddlePoint(Boolean[] vertex_1, Boolean[] vertex_2) {
             PolygonVertexCoordinate[] middlePoint = new PolygonVertexCoordinate[3];
-            if (vertex_1[0].booleanValue() != vertex_2[0].booleanValue()){
+            if (vertex_1[0].booleanValue() != vertex_2[0].booleanValue()) {
                 middlePoint[0] = PolygonVertexCoordinate.HALF;
                 middlePoint[1] = convertToPolygonVertexCoordinate(vertex_1[1]);
                 middlePoint[2] = convertToPolygonVertexCoordinate(vertex_1[2]);
-            } else if (vertex_1[1].booleanValue() != vertex_2[1].booleanValue()){
+            } else if (vertex_1[1].booleanValue() != vertex_2[1].booleanValue()) {
                 middlePoint[0] = convertToPolygonVertexCoordinate(vertex_1[0]);
                 middlePoint[1] = PolygonVertexCoordinate.HALF;
                 middlePoint[2] = convertToPolygonVertexCoordinate(vertex_1[2]);
@@ -760,7 +759,8 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         }
 
         private void computePolygonsInCaseOfIsolatedTrangle(MarchingCube cube) {
-
+            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            addPolygonOfAnIsolatedTriangle(innerVertices.get(0), innerVertices.get(1), innerVertices.get(2));
         }
 
         private void computePolygonsInCaseOfIsolatedEdgeAndIsolatedVertex(MarchingCube cube) {
@@ -820,7 +820,6 @@ public class GraphicPanelImplicit3D extends JPanel implements Runnable, Exportab
         private void computePolygonsInCaseOfIsolatedTrangleAndIsolatedVertex(MarchingCube cube) {
 
             ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
             Boolean[] vertex_1 = innerVertices.get(0);
             Boolean[] vertex_2 = innerVertices.get(1);
