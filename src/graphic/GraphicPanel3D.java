@@ -6,29 +6,21 @@ import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
 import lang.translator.Translator;
 
-public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
+public class GraphicPanel3D extends AbstractGraphicPanel3D implements Runnable {
 
     // Parameter für 3D-Graphen
-    // Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
-    private boolean isRotating;
     // Variablennamen für die Achsen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
     private final ArrayList<Expression> exprs = new ArrayList<>();
@@ -47,33 +39,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
-    private double zoomfactor;
-    private double maxX, maxY, maxZ;
-    private int expX, expY, expZ;
-
-    //Radien für die Grundellipse
-    private double bigRadius, smallRadius;
-    private double height, heightProjection;
-    /*
-     Neigungswinkel des Graphen: angle = horizontaler Winkel (er wird
-     inkrementiert, wenn der Graph im Uhrzeigersinn rotiert) verticalAngle =
-     Winkel, unter dem man die dritte Achse sieht. 0 = man schaut seitlich auf
-     den Graphen, 90 = man schaut von oben auf den Graphen.
-     */
-    private double angle, verticalAngle;
-    /*
-     Die boolsche Variable isAngleMeant ist true <-> der aktuelle Winkel
-     (welcher durch das Auslösen eines MouseEvent verändert wird) ist angle.
-     Ansonsten verticalAngle.
-     */
-    private boolean isAngleMeant = true;
-    private Point lastMousePosition;
-
     private PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
     private BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
 
-    private static final Color backgroundColorBright = Color.white;
-    private static final Color backgroundColorDark = Color.black;
     private static final Color gridColorWholeGraphBright = Color.black;
     private static final Color gridColorWholeGraphDark = Color.green;
     private static final Color gridColorGridOnlyBright = Color.black;
@@ -92,91 +60,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     public GraphicPanel3D() {
-        isRotating = false;
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    isAngleMeant = true;
-                    lastMousePosition = e.getPoint();
-                }
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    isAngleMeant = false;
-                    lastMousePosition = e.getPoint();
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-
-        addMouseMotionListener(new MouseMotionListener() {
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (isAngleMeant) {
-                    angle += (lastMousePosition.x - e.getPoint().x) * 0.5;
-
-                    if (angle >= 360) {
-                        angle = angle - 360;
-                    }
-                    if (angle < 0) {
-                        angle = angle + 360;
-                    }
-
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                } else {
-                    verticalAngle -= (lastMousePosition.y - e.getPoint().y) * 0.3;
-
-                    if (verticalAngle >= 90) {
-                        verticalAngle = 90;
-                    }
-                    if (verticalAngle < 1) {
-                        verticalAngle = 1;
-                    }
-
-                    smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
-                    height = heightProjection * Math.cos(verticalAngle / 180 * Math.PI);
-
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                }
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-        });
-
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                // Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
-                if (((e.getWheelRotation() >= 0) && (zoomfactor < 10))
-                        || ((e.getWheelRotation() <= 0) && (zoomfactor > 0.1))) {
-                    maxX *= Math.pow(1.1, e.getWheelRotation());
-                    maxY *= Math.pow(1.1, e.getWheelRotation());
-                    maxZ *= Math.pow(1.1, e.getWheelRotation());
-                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
-                    repaint();
-                }
-            }
-        });
-
+        super();
     }
 
     public ArrayList<Expression> getExpressions() {
@@ -189,14 +73,6 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     public boolean getIsRotating() {
         return this.isRotating;
-    }
-
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
-        return instructions;
     }
 
     public BackgroundColorMode getBackgroundColorMode() {
@@ -319,51 +195,6 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     }
 
     /**
-     * Voraussetzung: graph3D ist bereits initialisiert (bzw. mit
-     * Funktionswerten gefüllt), maxX, maxY, maxZ sind bekannt/initialisiert.
-     */
-    private void computeExpXExpYExpZ() {
-
-        this.expX = 0;
-        this.expY = 0;
-        this.expZ = 0;
-
-        if (this.maxX >= 1) {
-            while (this.maxX / Math.pow(10, this.expX) >= 1) {
-                this.expX++;
-            }
-            this.expX--;
-        } else {
-            while (this.maxX / Math.pow(10, this.expX) < 1) {
-                this.expX--;
-            }
-        }
-
-        if (this.maxY >= 1) {
-            while (this.maxY / Math.pow(10, this.expY) >= 1) {
-                this.expY++;
-            }
-            this.expY--;
-        } else {
-            while (this.maxY / Math.pow(10, this.expY) < 1) {
-                this.expY--;
-            }
-        }
-
-        if (this.maxZ >= 1) {
-            while (this.maxZ / Math.pow(10, this.expZ) >= 1) {
-                this.expZ++;
-            }
-            this.expZ--;
-        } else {
-            while (this.maxZ / Math.pow(10, this.expZ) < 1) {
-                this.expZ--;
-            }
-        }
-
-    }
-
-    /**
      * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck expr.
      *
      * @throws EvaluationException
@@ -411,39 +242,23 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    //Berechnet aus dem Winkel "angle" den Winkel, welcher in der graphischen Darstellung auftaucht
-    private double getGraphicalAngle(double bigRadius, double smallRadius, double angle) {
-        //Vorausgesetzt: 0 <= real_angle < 360
-        if ((angle == 0) || (angle == 90) || (angle == 180) || (angle == 270)) {
-            return angle;
-        } else if (angle < 90) {
-            return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI;
-        } else if (angle < 180) {
-            return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 180;
-        } else if (angle < 270) {
-            return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 180;
-        } else {
-            return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 360;
-        }
-    }
-
     /**
      * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
      * kann Voraussetzung: maxX, maxY sind bekannt!
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongAbsc = graphs3D.get(0).length;
-        int numberOfIntervalsAlongOrd = graphs3D.get(0)[0].length;
+        int numberOfIntervalsAlongAbsc = this.graphs3D.get(0).length;
+        int numberOfIntervalsAlongOrd = this.graphs3D.get(0)[0].length;
 
-        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX) {
-            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - graphs3D.get(0)[0][0][0]) / maxX);
+        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (this.graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - this.graphs3D.get(0)[0][0][0]) / this.maxX) {
+            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (this.graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - this.graphs3D.get(0)[0][0][0]) / this.maxX);
             if (numberOfIntervalsAlongAbsc < 1) {
                 numberOfIntervalsAlongAbsc = 1;
             }
         }
-        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY) {
-            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - graphs3D.get(0)[0][0][1]) / maxY);
+        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (this.graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - this.graphs3D.get(0)[0][0][1]) / this.maxY) {
+            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (this.graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - this.graphs3D.get(0)[0][0][1]) / this.maxY);
             if (numberOfIntervalsAlongOrd < 1) {
                 numberOfIntervalsAlongOrd = 1;
             }
@@ -493,79 +308,6 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    //Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die graphische Darstellung
-    private int[] convertToPixel(double x, double y, double z, double bigRadius, double smallRadius, double height, double angle) {
-
-        double angleAbsc = getGraphicalAngle(bigRadius, smallRadius, angle);
-        double angleOrd;
-        if (angle < 90) {
-            angleOrd = getGraphicalAngle(bigRadius, smallRadius, angle + 270);
-        } else {
-            angleOrd = getGraphicalAngle(bigRadius, smallRadius, angle - 90);
-        }
-
-        //pixels sind die Pixelkoordinaten für die Graphische Darstellung von (x, y, z)
-        int[] pixel = new int[2];
-
-        //Berechnung von pixels[0]
-        double x_1, x_2;
-
-        if (angleAbsc == 0) {
-            x_1 = bigRadius * x / maxX;
-            x_2 = 0;
-        } else if (angleAbsc == 90) {
-            x_1 = 0;
-            x_2 = bigRadius * y / maxY;
-        } else if (angleAbsc == 180) {
-            x_1 = -bigRadius * x / maxX;
-            x_2 = 0;
-        } else if (angleAbsc == 270) {
-            x_1 = 0;
-            x_2 = -bigRadius * y / maxY;
-        } else if (angleAbsc < 90) {
-            x_1 = (x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = (y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
-        } else if (angleAbsc < 180) {
-            x_1 = -(x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = (y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
-        } else if (angleAbsc < 270) {
-            x_1 = -(x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = -(y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
-        } else {
-            x_1 = (x / maxX) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleAbsc * Math.PI / 180) / smallRadius, 2));
-            x_2 = -(y / maxY) * bigRadius / Math.sqrt(1 + Math.pow(bigRadius * Math.tan(angleOrd * Math.PI / 180) / smallRadius, 2));
-        }
-
-        pixel[0] = (int) (250 + x_1 + x_2);
-
-        //Berechnung von pixels[1]
-        double y_1, y_2, y_3;
-
-        if (angleAbsc == 0) {
-            y_1 = 0;
-            y_2 = -smallRadius * y / maxY;
-        } else if (angleAbsc == 90) {
-            y_1 = smallRadius * x / maxX;
-            y_2 = 0;
-        } else if (angleAbsc == 180) {
-            y_1 = 0;
-            y_2 = smallRadius * y / maxY;
-        } else if (angleAbsc == 270) {
-            y_1 = -smallRadius * x / maxX;
-            y_2 = 0;
-        } else {
-            y_1 = x_1 * Math.tan(angleAbsc * Math.PI / 180);
-            y_2 = x_2 * Math.tan(angleOrd * Math.PI / 180);
-        }
-
-        //maximaler Funktionswert (also max_z) soll h Pixel betragen
-        y_3 = -height * z / maxZ;
-        pixel[1] = (int) (250 + y_1 + y_2 + y_3);
-
-        return pixel;
-
-    }
-
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
@@ -580,12 +322,12 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
 
-        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+        if (this.presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
             g2.setPaint(c);
             g2.fill(tangent);
         }
 
-        switch (backgroundColorMode) {
+        switch (this.backgroundColorMode) {
             case BRIGHT:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:
@@ -647,9 +389,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      * Voraussetzung: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
      * sind bekannt/initialisiert.
      */
-    private void drawLevelsOnEast(Graphics g, double minExpr, double maxExpr, double angle) {
+    private void drawLevelsOnEast(Graphics g, double minExpr, double maxExpr) {
 
-        if ((angle >= 0) && (angle <= 180)) {
+        if (this.angle >= 0 && this.angle <= 180) {
             return;
         }
 
@@ -675,7 +417,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
         }
 
         //Rahmen zeichnen
@@ -684,10 +426,10 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
-        if (angle >= 270) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+        if (this.angle >= 270) {
+            g.drawString(this.varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varOrd) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -705,11 +447,11 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 270) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
+            if (this.angle > 270 && (i + 1) * Math.pow(10, this.expZ) <= maxValueAppl) {
                 g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
@@ -728,11 +470,11 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (angle >= 270) {
+            if (this.angle >= 270) {
                 g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
                 g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
@@ -745,9 +487,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    private void drawLevelsOnWest(Graphics g, double minExpr, double maxExpr, double angle) {
+    private void drawLevelsOnWest(Graphics g, double minExpr, double maxExpr) {
 
-        if ((angle >= 180) && (angle <= 360)) {
+        if (this.angle >= 180 && this.angle <= 360) {
             return;
         }
 
@@ -773,7 +515,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
         }
 
         //Rahmen zeichnen
@@ -782,59 +524,59 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
-        if (angle >= 90) {
-            g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+        if (this.angle >= 90) {
+            g.drawString(this.varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varOrd) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (maxValueAppl / Math.pow(10, expZ));
+        int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = -maxValueAbsc;
             lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = -maxValueAbsc;
             lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle > 90 && (i + 1) * Math.pow(10, this.expZ) <= maxValueAppl) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         //Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (maxValueOrd / Math.pow(10, expY));
+        bound = (int) (maxValueOrd / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
+        while (i * Math.pow(10, this.expY) <= maxValueOrd) {
             lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = i * Math.pow(10, expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = maxValueAppl;
             lineLevel[1][0] = -maxValueAbsc;
-            lineLevel[1][1] = i * Math.pow(10, expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (angle >= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -843,9 +585,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    private void drawLevelsOnSouth(Graphics g, double minExpr, double maxExpr, double angle) {
+    private void drawLevelsOnSouth(Graphics g, double minExpr, double maxExpr) {
 
-        if ((angle <= 90) || (angle >= 270)) {
+        if (this.angle <= 90 || this.angle >= 270) {
             return;
         }
 
@@ -871,7 +613,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
         }
 
         //Rahmen zeichnen
@@ -880,10 +622,10 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
-        if (angle >= 180) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+        if (this.angle >= 180) {
+            g.drawString(this.varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varAbsc) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -893,20 +635,20 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = maxValueAbsc;
             lineLevel[0][1] = -maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = -maxValueAbsc;
             lineLevel[1][1] = -maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle > 180) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle > 180 && (i + 1) * Math.pow(10, this.expZ) <= maxValueAppl) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
@@ -914,26 +656,26 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = -maxValueOrd;
             lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = -maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (angle >= 180) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle >= 180) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -942,9 +684,9 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    private void drawLevelsOnNorth(Graphics g, double minExpr, double maxExpr, double angle) {
+    private void drawLevelsOnNorth(Graphics g, double minExpr, double maxExpr) {
 
-        if ((angle >= 90) && (angle <= 270)) {
+        if (this.angle >= 90 && this.angle <= 270) {
             return;
         }
 
@@ -970,7 +712,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
         }
 
         //Rahmen zeichnen
@@ -979,10 +721,10 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
         g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
         //Achse beschriften
-        if (angle <= 90) {
-            g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+        if (this.angle <= 90) {
+            g.drawString(this.varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
         } else {
-            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            g.drawString(this.varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(this.varAbsc) - 10, borderPixels[0][1] + 15);
         }
 
         //horizontale Niveaulinien zeichnen
@@ -992,46 +734,46 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         int bound = (int) (maxValueAppl / Math.pow(10, this.expZ));
         int i = -bound;
 
-        while (i * Math.pow(10, expZ) <= maxValueAppl) {
+        while (i * Math.pow(10, this.expZ) <= maxValueAppl) {
             lineLevel[0][0] = -maxValueAbsc;
             lineLevel[0][1] = maxValueOrd;
-            lineLevel[0][2] = i * Math.pow(10, expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = maxValueAbsc;
             lineLevel[1][1] = maxValueOrd;
-            lineLevel[1][2] = i * Math.pow(10, expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if ((angle < 90) && ((i + 1) * Math.pow(10, this.expZ) <= maxValueAppl)) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle < 90 && (i + 1) * Math.pow(10, this.expZ) <= maxValueAppl) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         //Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (maxValueAbsc / Math.pow(10, expX));
+        bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = maxValueOrd;
             lineLevel[0][2] = maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (angle <= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle <= 90) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -1040,7 +782,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
     }
 
-    private void drawLevelsBottom(Graphics g, double minExpr, double maxExpr, double angle) {
+    private void drawLevelsBottom(Graphics g, double minExpr, double maxExpr) {
 
         double maxValueAbsc = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
         double maxValueOrd = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
@@ -1064,7 +806,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         border[3][2] = -maxValueAppl;
 
         for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2], this.bigRadius, this.smallRadius, this.height, angle);
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
         }
 
         //Rahmen zeichnen
@@ -1081,16 +823,16 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         int bound = (int) (maxValueAbsc / Math.pow(10, this.expX));
         int i = -bound;
 
-        while (i * Math.pow(10, expX) <= maxValueAbsc) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
+        while (i * Math.pow(10, this.expX) <= maxValueAbsc) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = -maxValueOrd;
             lineLevel[0][2] = -maxValueAppl;
-            lineLevel[1][0] = i * Math.pow(10, expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = maxValueOrd;
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1101,16 +843,16 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         bound = (int) (maxValueOrd / Math.pow(10, this.expY));
         i = -bound;
 
-        while (i * Math.pow(10, expY) <= maxValueOrd) {
+        while (i * Math.pow(10, this.expY) <= maxValueOrd) {
             lineLevel[0][0] = -maxValueAbsc;
-            lineLevel[0][1] = i * Math.pow(10, expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = -maxValueAppl;
             lineLevel[1][0] = maxValueAbsc;
-            lineLevel[1][1] = i * Math.pow(10, expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -maxValueAppl;
 
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2], this.bigRadius, this.smallRadius, this.height, angle);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2], this.bigRadius, this.smallRadius, this.height, angle);
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
@@ -1180,8 +922,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
      * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
      * Achsen)
      */
-    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr,
-            double bigRadius, double smallRadius, double height, double angle) {
+    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
 
         int numberOfIntervalsAlongAbsc = 0;
         int numberOfIntervalsAlongOrd = 0;
@@ -1209,7 +950,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
                 for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
                     graphicalGraph[i][j] = convertToPixel(this.graphs3DForGraphic.get(k)[i][j][0], this.graphs3DForGraphic.get(k)[i][j][1],
-                            this.graphs3DForGraphic.get(k)[i][j][2], bigRadius, smallRadius, height, angle);
+                            this.graphs3DForGraphic.get(k)[i][j][2]);
                 }
             }
             graphicalGraphs.add(graphicalGraph);
@@ -1225,7 +966,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
         Double heightOfCentersOfInfinitesimalTangentSpace;
         ArrayList<Integer> indices;
 
-        if (angle <= 90) {
+        if (this.angle <= 90) {
 
             for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
@@ -1258,7 +999,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
             }
 
-        } else if (angle <= 180) {
+        } else if (this.angle <= 180) {
 
             for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
@@ -1291,7 +1032,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
 
             }
 
-        } else if (angle <= 270) {
+        } else if (this.angle <= 270) {
 
             for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
 
@@ -1403,7 +1144,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen.
      */
-    private void drawGraph3D(Graphics g, double angle) {
+    private void drawGraph3D(Graphics g) {
 
         //Zunächst Hintergrund zeichnen.
         switch (backgroundColorMode) {
@@ -1474,12 +1215,12 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
             }
         }
 
-        drawLevelsOnEast(g, minExpr, maxExpr, angle);
-        drawLevelsOnSouth(g, minExpr, maxExpr, angle);
-        drawLevelsOnWest(g, minExpr, maxExpr, angle);
-        drawLevelsOnNorth(g, minExpr, maxExpr, angle);
-        drawLevelsBottom(g, minExpr, maxExpr, angle);
-        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr, bigRadius, smallRadius, height, angle);
+        drawLevelsOnEast(g, minExpr, maxExpr);
+        drawLevelsOnSouth(g, minExpr, maxExpr);
+        drawLevelsOnWest(g, minExpr, maxExpr);
+        drawLevelsOnNorth(g, minExpr, maxExpr);
+        drawLevelsBottom(g, minExpr, maxExpr);
+        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr);
 
     }
 
@@ -1502,36 +1243,7 @@ public class GraphicPanel3D extends JPanel implements Runnable, Exportable {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawGraph3D(g, angle);
-    }
-
-    @Override
-    public void run() {
-        while (isRotating) {
-
-            angle = angle + 1;
-            if (angle >= 360) {
-                angle = angle - 360;
-            }
-            if (angle < 0) {
-                angle = angle + 360;
-            }
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-            }
-            repaint();
-
-        }
-    }
-
-    // Grafikexport.
-    @Override
-    public void export(String filePath) throws IOException {
-        BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        paintComponent(g);
-        ImageIO.write(bi, "PNG", new File(filePath));
+        drawGraph3D(g);
     }
 
 }

@@ -409,7 +409,6 @@ public abstract class NumericalMethods {
                         }
                     }
                     cubes[i][j][k] = cube;
-//                    System.out.println("(" + i + "," + j + "," + k + "): " + cube);
 
                 }
             }
