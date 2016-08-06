@@ -9,7 +9,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
-public class AbstractGraphicPanel3D extends AbstractGraphicPanel implements Runnable {
+public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implements Runnable {
 
     // Parameter für 3D-Graphen
     // Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.

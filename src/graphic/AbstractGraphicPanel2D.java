@@ -1,5 +1,5 @@
 package graphic;
 
-public class AbstractGraphicPanel2D extends AbstractGraphicPanel {
+public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     
 }

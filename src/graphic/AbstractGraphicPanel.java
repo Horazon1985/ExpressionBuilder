@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-public class AbstractGraphicPanel extends JPanel implements Exportable {
+public abstract class AbstractGraphicPanel extends JPanel implements Exportable {
     
     // Grafikexport.
     @Override
