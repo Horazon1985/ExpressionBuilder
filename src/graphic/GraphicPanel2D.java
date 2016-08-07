@@ -6,25 +6,18 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
 import abstractexpressions.matrixexpression.classes.Matrix;
-import lang.translator.Translator;
 
-public class GraphicPanel2D extends JPanel implements Exportable {
+public class GraphicPanel2D extends AbstractGraphicPanel2D {
 
     // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
     private String varAbsc, varOrd;
@@ -37,18 +30,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     private ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> graphs2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
-
-    final static Color[] fixedColors = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
-
-    private double axeCenterX, axeCenterY;
-    private double maxX, maxY;
-    private int expX, expY;
-
-    private boolean movable = false;
-
-    private double[][] specialPoints;
-
-    private Point lastMousePosition;
 
     public GraphicPanel2D() {
 
@@ -131,28 +112,12 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         return this.graphs2D;
     }
 
-    public double getAxeCenterX() {
-        return this.axeCenterX;
-    }
-
-    public double getAxeCenterY() {
-        return this.axeCenterY;
-    }
-
     public ArrayList<Color> getColors() {
         return this.colors;
     }
 
     public ArrayList<Expression> getExpressions() {
         return this.exprs;
-    }
-
-    public ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
-        return instructions;
     }
 
     public void setVarAbsc(String varAbsc) {
@@ -162,31 +127,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     public void setVars(String varAbsc, String varOrd) {
         this.varAbsc = varAbsc;
         this.varOrd = varOrd;
-    }
-
-    public void setSpecialPoints(double[][] specialPoints) {
-        this.specialPoints = specialPoints;
-    }
-
-    /**
-     * VORAUSSETZUNG: specialPoints sind allesamt (2x1)-Matrizen.
-     */
-    public void setSpecialPoints(Matrix[] specialPoints) throws EvaluationException {
-        this.specialPoints = new double[specialPoints.length][2];
-        for (int i = 0; i < specialPoints.length; i++) {
-            this.specialPoints[i][0] = specialPoints[i].getEntry(0, 0).evaluate();
-            this.specialPoints[i][1] = specialPoints[i].getEntry(1, 0).evaluate();
-        }
-    }
-
-    /**
-     * Ist specialPointsExist == true, so werden die speziellen Punkte gleich
-     * belassen, andernfalls auf null gesetzt.
-     */
-    public void setSpecialPoints(boolean specialPointsExist) {
-        if (!specialPointsExist) {
-            this.specialPoints = null;
-        }
     }
 
     public void setExpressions(ArrayList<Expression> exprs) {
@@ -361,44 +301,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
     }
 
     /**
-     * Voraussetzung: graph ist bereits initialisiert (bzw. mit Funktionswerten
-     * gefüllt). maxX, maxY sind bekannt/initialisiert.
-     */
-    private void computeExpXExpY() {
-
-        /*
-         Markierungen an den Achsen anbringen; exp_x = max. Exponent einer
-         10er-Potenz, die kleiner als der größte x-Wert ist exp_y = min.
-         Exponent einer 10er-Potenz, die kleiner als der größte y-Wert ist
-         */
-        this.expX = 0;
-        this.expY = 0;
-
-        if (this.maxX >= 1) {
-            while (this.maxX / Math.pow(10, this.expX) >= 1) {
-                this.expX++;
-            }
-            this.expX--;
-        } else {
-            while (this.maxX / Math.pow(10, this.expX) < 1) {
-                this.expX--;
-            }
-        }
-
-        if (this.maxY >= 1) {
-            while (this.maxY / Math.pow(10, this.expY) >= 1) {
-                this.expY++;
-            }
-            this.expY--;
-        } else {
-            while (this.maxY / Math.pow(10, this.expY) < 1) {
-                this.expY--;
-            }
-        }
-
-    }
-
-    /**
      * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.
      * Voraussetzung: expr wurde mittels setExpression gesetzt.
      *
@@ -472,31 +374,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
         return result;
 
-    }
-
-    /**
-     * Berechnet aus Punktkoordinaten (x, y) Koordjnaten (x', y') für die
-     * graphische Darstellung Voraussetzung: maxX, maxY sind bekannt (und nicht
-     * 0).
-     */
-    private int[] convertToPixel(double x, double y) {
-
-        int[] pixel = new int[2];
-        pixel[0] = 250 + (int) Math.round(250 * (x - axeCenterX) / maxX);
-        pixel[1] = 250 - (int) Math.round(250 * (y - axeCenterY) / maxY);
-        return pixel;
-
-    }
-
-    /**
-     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
-     * Nachkommastellenfehler.
-     */
-    private BigDecimal roundAxisEntries(int m, int k) {
-        if (k >= 0) {
-            return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
-        }
-        return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
     }
 
     /**
@@ -616,22 +493,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
         g.drawString("f(" + varAbsc + ")", 250 - (int) (250 * axeCenterX / maxX) - 5 - g.getFontMetrics().stringWidth("f(" + varAbsc + ")"), 20);
     }
 
-    /**
-     * Zeichnet rote Punkte an wichtigen Stellen (etwa Markierung von
-     * Nullstellen etc.)
-     */
-    private void drawSpecialPoints(Graphics g, double[][] specialPoints) {
-        g.setColor(Color.red);
-        if (specialPoints == null) {
-            return;
-        }
-        int[][] specialPointsCoordinates = new int[specialPoints.length][2];
-        for (int i = 0; i < specialPoints.length; i++) {
-            specialPointsCoordinates[i] = convertToPixel(specialPoints[i][0], specialPoints[i][1]);
-            g.fillOval(specialPointsCoordinates[i][0] - 3, specialPointsCoordinates[i][1] - 3, 7, 7);
-        }
-    }
-
     private void drawGraphs2D(Graphics g) {
 
         // Weißen Hintergrund zeichnen.
@@ -727,15 +588,6 @@ public class GraphicPanel2D extends JPanel implements Exportable {
 
         drawSpecialPoints(g, this.specialPoints);
 
-    }
-
-    // Grafikexport.
-    @Override
-    public void export(String filePath) throws IOException {
-        BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        paintComponent(g);
-        ImageIO.write(bi, "PNG", new File(filePath));
     }
 
 }
