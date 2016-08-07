@@ -6,19 +6,13 @@ import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import lang.translator.Translator;
 
-public class GraphicPanel3D extends AbstractGraphicPanel3D implements Runnable {
+public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
     // Parameter für 3D-Graphen
     // Variablennamen für die Achsen: Absc = Abszisse, Ord = Ordinate.
@@ -39,25 +33,10 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D implements Runnable {
     // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
-    private PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
-    private BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
-
     private static final Color gridColorWholeGraphBright = Color.black;
     private static final Color gridColorWholeGraphDark = Color.green;
     private static final Color gridColorGridOnlyBright = Color.black;
     private static final Color gridColorGridOnlyDark = Color.green;
-
-    public enum BackgroundColorMode {
-
-        BRIGHT, DARK;
-
-    }
-
-    public enum PresentationMode {
-
-        WHOLE_GRAPH, GRID_ONLY;
-
-    }
 
     public GraphicPanel3D() {
         super();
@@ -69,26 +48,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D implements Runnable {
 
     public ArrayList<Color> getColors() {
         return this.colors;
-    }
-
-    public boolean getIsRotating() {
-        return this.isRotating;
-    }
-
-    public BackgroundColorMode getBackgroundColorMode() {
-        return this.backgroundColorMode;
-    }
-    
-    public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
-        this.backgroundColorMode = backgroundColorMode;
-    }
-
-    public PresentationMode getPresentationMode() {
-        return this.presentationMode;
-    }
-    
-    public void setPresentationMode(PresentationMode presentationMode) {
-        this.presentationMode = presentationMode;
     }
 
     public void setExpressions(ArrayList<Expression> exprs) {
@@ -122,10 +81,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D implements Runnable {
 
     private Color generateColor() {
         return new Color((int) (70 + 100 * Math.random()), (int) (100 * Math.random()), (int) (70 + 100 * Math.random()));
-    }
-
-    public void setIsRotating(boolean isRotating) {
-        this.isRotating = isRotating;
     }
 
     public void setParameters(String varAbsc, String varOrd, double bigRadius, double heightProjection, double angle,

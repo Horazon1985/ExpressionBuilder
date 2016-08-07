@@ -39,6 +39,45 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected double maxX, maxY, maxZ;
     protected int expX, expY, expZ;
     
+    protected PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
+    protected BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
+
+    public enum BackgroundColorMode {
+
+        BRIGHT, DARK;
+
+    }
+
+    public enum PresentationMode {
+
+        WHOLE_GRAPH, GRID_ONLY;
+
+    }
+
+    public BackgroundColorMode getBackgroundColorMode() {
+        return this.backgroundColorMode;
+    }
+    
+    public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
+        this.backgroundColorMode = backgroundColorMode;
+    }
+
+    public PresentationMode getPresentationMode() {
+        return this.presentationMode;
+    }
+    
+    public void setPresentationMode(PresentationMode presentationMode) {
+        this.presentationMode = presentationMode;
+    }
+
+    public boolean getIsRotating() {
+        return this.isRotating;
+    }
+    
+    public void setIsRotating(boolean isRotating) {
+        this.isRotating = isRotating;
+    }
+
     public AbstractGraphicPanel3D() {
         this.isRotating = false;
         addMouseListener(new MouseListener() {
