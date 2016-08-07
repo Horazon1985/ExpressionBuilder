@@ -5,25 +5,17 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
-import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import lang.translator.Translator;
 
-public class GraphicPanelPolar extends JPanel implements Exportable {
+public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
-    //Parameter für 2D-Graphen
+    // Parameter für 2D-Graphen
     private String var;
 
     /*
@@ -35,17 +27,8 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
-    final static Color[] fixedColors = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
-
     private double zoomfactor, zoomfactorX, zoomfactorY;
-    private double axeCenterX, axeCenterY;
-    private double maxX, maxY;
-    private int expX, expY;
-
-    private boolean movable = false;
-
-    private Point lastMousePosition;
-
+    
     public GraphicPanelPolar() {
 
         addMouseListener(new MouseListener() {
@@ -127,28 +110,12 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
         });
     }
 
-    public double getAxeCenterX() {
-        return this.axeCenterX;
-    }
-
-    public double getAxeCenterY() {
-        return this.axeCenterY;
-    }
-
     public ArrayList<Color> getColors() {
         return this.colors;
     }
 
     public ArrayList<Expression> getExpressions() {
         return this.exprs;
-    }
-
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
-        return instructions;
     }
 
     public void setVar(String var) {
@@ -180,6 +147,8 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
 
     /**
      * Voraussetzung: expr und var sind bereits gesetzt.
+     * 
+     * @throws EvaluationException
      */
     public void computeScreenSizes(Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
 
@@ -234,44 +203,6 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
             // 30 % Rand lassen!
             this.maxX = this.maxX * 1.3;
             this.maxY = this.maxY * 1.3;
-        }
-
-    }
-
-    /**
-     * Voraussetzung: graph ist bereits initialisiert (bzw. mit Funktionswerten
-     * gefüllt). max_x, max_y sind bekannt/initialisiert.
-     */
-    private void computeExpXExpY() {
-
-        /**
-         * Markierungen an den Achsen anbringen; exp_x = max. Exponent einer
-         * 10er-Potenz, die kleiner als der größte x-Wert ist exp_y = min.
-         * Exponent einer 10er-Potenz, die kleiner als der größte y-Wert ist
-         */
-        this.expX = 0;
-        this.expY = 0;
-
-        if (this.maxX >= 1) {
-            while (this.maxX / Math.pow(10, this.expX) >= 1) {
-                this.expX++;
-            }
-            this.expX--;
-        } else {
-            while (this.maxX / Math.pow(10, this.expX) < 1) {
-                this.expX--;
-            }
-        }
-
-        if (this.maxY >= 1) {
-            while (this.maxY / Math.pow(10, this.expY) >= 1) {
-                this.expY++;
-            }
-            this.expY--;
-        } else {
-            while (this.maxY / Math.pow(10, this.expY) < 1) {
-                this.expY--;
-            }
         }
 
     }
@@ -333,49 +264,27 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
 
     }
 
-    /**
-     * Berechnet aus Punktkoordinaten (x, y) Koordjnaten (x', y') für die
-     * graphische Darstellung Voraussetzung: max_x, max_y sind bekannt (und
-     * nicht 0).
-     */
-    private int[] convertToPixel(double x, double y) {
-
-        int[] pixel = new int[2];
-        pixel[0] = 250 + (int) Math.round(250 * (x - axeCenterX) / maxX);
-        pixel[1] = 250 - (int) Math.round(250 * (y - axeCenterY) / maxY);
-        return pixel;
-
-    }
-
-    //Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen Nachkommastellenfehler.
-    private BigDecimal roundAxisEntries(int m, int k) {
-        if (k >= 0) {
-            return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
-        }
-        return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
-    }
-
     private void drawAxesAndLines(Graphics g) {
         g.setColor(Color.lightGray);
 
         int linePosition;
-        int k = (int) (axeCenterX * Math.pow(10, -expX));
+        int k = (int) (this.axeCenterX * Math.pow(10, -this.expX));
 
-        //x-Niveaulinien zeichnen
-        linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+        // x-Niveaulinien zeichnen
+        linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
 
         while (linePosition <= 500) {
 
             if (k != 0) {
-                linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+                linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
                 g.drawLine(linePosition, 0, linePosition, 500);
 
-                if ((250 * axeCenterY / maxY - 3 <= 248) && (250 * axeCenterY / maxY - 3 >= -230)) {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * axeCenterY / maxY) - 3);
-                } else if (250 * axeCenterY / maxY - 3 > 248) {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 495);
+                if (250 * this.axeCenterY / this.maxY - 3 <= 248 && 250 * this.axeCenterY / this.maxY - 3 >= -230) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                } else if (250 * axeCenterY / this.maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
                 } else {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 20);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
                 }
 
             }
@@ -384,21 +293,21 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
 
         }
 
-        k = (int) (axeCenterX * Math.pow(10, -expX)) - 1;
-        linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+        k = (int) (this.axeCenterX * Math.pow(10, -this.expX)) - 1;
+        linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
 
         while (linePosition >= 0) {
 
             if (k != 0) {
-                linePosition = convertToPixel(k * Math.pow(10, expX), 0)[0];
+                linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
                 g.drawLine(linePosition, 0, linePosition, 500);
 
-                if ((250 * axeCenterY / maxY - 3 <= 248) && (250 * axeCenterY / maxY - 3 >= -230)) {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * axeCenterY / maxY) - 3);
-                } else if (250 * axeCenterY / maxY - 3 > 248) {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 495);
+                if (250 * this.axeCenterY / this.maxY - 3 <= 248 && 250 * this.axeCenterY / this.maxY - 3 >= -230) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                } else if (250 * this.axeCenterY / this.maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
                 } else {
-                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 20);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
                 }
 
             }
@@ -407,55 +316,55 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
 
         }
 
-        //y-Niveaulinien zeichnen
-        k = (int) (axeCenterY * Math.pow(10, -expY));
-        linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+        // y-Niveaulinien zeichnen
+        k = (int) (this.axeCenterY * Math.pow(10, -this.expY));
+        linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
 
         while (linePosition >= 0) {
-            linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+            linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
             g.drawLine(0, linePosition, 500, linePosition);
 
-            if ((250 * axeCenterX / maxX - 3 >= -225) && (250 * axeCenterX / maxX - 3 <= 245)) {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * axeCenterX / maxX) + 3, linePosition - 3);
-            } else if (250 * axeCenterX / maxX - 3 >= -225) {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 5, linePosition - 3);
+            if (250 * this.axeCenterX / this.maxX - 3 >= -225 && 250 * this.axeCenterX / this.maxX - 3 <= 245) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+            } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 475, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
             }
 
             k++;
 
         }
 
-        k = (int) (axeCenterY * Math.pow(10, -expY)) - 1;
-        linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+        k = (int) (this.axeCenterY * Math.pow(10, -this.expY)) - 1;
+        linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
 
         while (linePosition <= 500) {
-            linePosition = convertToPixel(0, k * Math.pow(10, expY))[1];
+            linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
             g.drawLine(0, linePosition, 500, linePosition);
 
-            if ((250 * axeCenterX / maxX - 3 >= -225) && (250 * axeCenterX / maxX - 3 <= 245)) {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * axeCenterX / maxX) + 3, linePosition - 3);
-            } else if (250 * axeCenterX / maxX - 3 >= -225) {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 5, linePosition - 3);
+            if (250 * this.axeCenterX / this.maxX - 3 >= -225 && 250 * this.axeCenterX / this.maxX - 3 <= 245) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+            } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 475, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
             }
 
             k--;
 
         }
 
-        //Achsen inkl. Achsenbezeichnungen eintragen
-        //Achsen
+        // Achsen inkl. Achsenbezeichnungen eintragen
+        // Achsen
         g.setColor(Color.black);
-        g.drawLine(0, 250 + (int) (250 * axeCenterY / maxY), 500, 250 + (int) (250 * axeCenterY / maxY));
-        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX), 500);
-        //Achsenpfeile
-        g.drawLine(500, 250 + (int) (250 * axeCenterY / maxY), 494, 250 + (int) (250 * axeCenterY / maxY) - 3);
-        g.drawLine(500, 250 + (int) (250 * axeCenterY / maxY), 494, 250 + (int) (250 * axeCenterY / maxY) + 3);
-        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX) + 3, 6);
-        g.drawLine(250 - (int) (250 * axeCenterX / maxX), 0, 250 - (int) (250 * axeCenterX / maxX) - 3, 6);
+        g.drawLine(0, 250 + (int) (250 * this.axeCenterY / this.maxY), 500, 250 + (int) (250 * this.axeCenterY / this.maxY));
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX), 500);
+        // Achsenpfeile
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) + 3);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, 6);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) - 3, 6);
         /**
          * Achsenbeschriftung WICHTIG: In der Prozedur drawString werden die
          * Achsenbeschriftung derart eingetragen, dass (1) Die Beschriftung der
@@ -464,8 +373,8 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
          * Hierzu müssen die Pixellängen der gezeichneten Strings ausgerechnet
          * werden (mittels g.getFontMetrics().stringWidth()).
          */
-        g.drawString("x", 500 - 5 - g.getFontMetrics().stringWidth("x"), 250 + (int) (250 * axeCenterY / maxY) + 15);
-        g.drawString("y", 250 - (int) (250 * axeCenterX / maxX) - 5 - g.getFontMetrics().stringWidth("y"), 20);
+        g.drawString("x", 500 - 5 - g.getFontMetrics().stringWidth("x"), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+        g.drawString("y", 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - g.getFontMetrics().stringWidth("y"), 20);
     }
 
     public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
@@ -503,19 +412,19 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
 
             g.setColor(this.colors.get(i));
 
-            if (polarGraph2D.get(i).length > 1) {
+            if (this.polarGraph2D.get(i).length > 1) {
 
                 HashMap<Integer, int[][]> graphicalGraph = convertGraphToGraphicalGraph();
                 for (int j = 0; j < graphicalGraph.get(i).length - 1; j++) {
-                    if (!Double.isNaN(polarGraph2D.get(i)[j][1]) && !Double.isInfinite(polarGraph2D.get(i)[j][1])
-                            && !Double.isNaN(polarGraph2D.get(i)[j + 1][1]) && !Double.isInfinite(polarGraph2D.get(i)[j + 1][1])) {
+                    if (!Double.isNaN(this.polarGraph2D.get(i)[j][1]) && !Double.isInfinite(this.polarGraph2D.get(i)[j][1])
+                            && !Double.isNaN(this.polarGraph2D.get(i)[j + 1][1]) && !Double.isInfinite(this.polarGraph2D.get(i)[j + 1][1])) {
 
-                        if ((axeCenterY + maxY < polarGraph2D.get(i)[j][1]) && (axeCenterY - maxY > polarGraph2D.get(i)[j + 1][1])) {
+                        if (this.axeCenterY + this.maxY < this.polarGraph2D.get(i)[j][1] && this.axeCenterY - this.maxY > this.polarGraph2D.get(i)[j + 1][1]) {
                             g.drawLine(graphicalGraph.get(i)[j][0], 0, graphicalGraph.get(i)[j + 1][0], 500);
-                        } else if ((axeCenterY - maxY > polarGraph2D.get(i)[j][1]) && (axeCenterY + maxY < polarGraph2D.get(i)[j + 1][1])) {
+                        } else if (this.axeCenterY - this.maxY > this.polarGraph2D.get(i)[j][1] && this.axeCenterY + this.maxY < this.polarGraph2D.get(i)[j + 1][1]) {
                             g.drawLine(graphicalGraph.get(i)[j][0], 500, graphicalGraph.get(i)[j + 1][0], 0);
-                        } else if ((axeCenterY + 2 * maxY >= polarGraph2D.get(i)[j][1]) && (axeCenterY - 2 * maxY <= polarGraph2D.get(i)[j][1])
-                                && (axeCenterY + 2 * maxY >= polarGraph2D.get(i)[j + 1][1]) && (axeCenterY - 2 * maxY <= polarGraph2D.get(i)[j + 1][1])) {
+                        } else if (this.axeCenterY + 2 * this.maxY >= this.polarGraph2D.get(i)[j][1] && this.axeCenterY - 2 * this.maxY <= this.polarGraph2D.get(i)[j][1]
+                                && this.axeCenterY + 2 * this.maxY >= this.polarGraph2D.get(i)[j + 1][1] && this.axeCenterY - 2 * this.maxY <= this.polarGraph2D.get(i)[j + 1][1]) {
                             g.drawLine(graphicalGraph.get(i)[j][0], graphicalGraph.get(i)[j][1], graphicalGraph.get(i)[j + 1][0], graphicalGraph.get(i)[j + 1][1]);
                         }
 
@@ -538,15 +447,6 @@ public class GraphicPanelPolar extends JPanel implements Exportable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGraphPolar(g);
-    }
-
-    // Grafikexport.
-    @Override
-    public void export(String filePath) throws IOException {
-        BufferedImage bi = new BufferedImage(500, 500, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = bi.createGraphics();
-        paintComponent(g);
-        ImageIO.write(bi, "PNG", new File(filePath));
     }
 
 }
