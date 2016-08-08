@@ -24,6 +24,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
     private final Color color = Color.blue;
     
     public GraphicPanelImplicit2D() {
+        super();
     }
     
     public Color getColor() {

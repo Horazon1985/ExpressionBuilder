@@ -6,16 +6,8 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
-import lang.translator.Translator;
 
 public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
@@ -28,80 +20,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
     private final Color color = Color.blue;
 
     public GraphicPanelVectorField2D() {
-
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    lastMousePosition = e.getPoint();
-                    movable = true;
-                } else {
-                    lastMousePosition = e.getPoint();
-                    movable = false;
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-
-        addMouseMotionListener(new MouseMotionListener() {
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (movable) {
-                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
-                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                } else {
-                    maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-                    maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                }
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-        });
-
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                maxX *= Math.pow(1.1, e.getWheelRotation());
-                maxY *= Math.pow(1.1, e.getWheelRotation());
-
-                /*
-                     Vorbeugende Maßnahme: Falls der Wert
-                     axe_center_x*Math.pow(10,-exp_x) oder
-                     axe_center_y*Math.pow(10,-exp_y) zu groß ist, so ist der
-                     maximale Zoom-Grad erreicht! -> Keine weitere
-                     Vergrößerung mehr.
-                 */
-                if (Math.abs(axeCenterX * Math.pow(10, -expX)) >= 500000000 || Math.abs(axeCenterY * Math.pow(10, -expY)) >= 500000000) {
-                    maxX /= Math.pow(1.1, e.getWheelRotation());
-                    maxY /= Math.pow(1.1, e.getWheelRotation());
-                    computeExpXExpY();
-                }
-
-                repaint();
-            }
-        });
+        super(100000000,0.00000001);
     }
 
     public Color getColor() {
@@ -110,14 +29,6 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
     public ArrayList<double[]> getvectorField() {
         return this.vectorField2D;
-    }
-
-    public double getAxeCenterX() {
-        return this.axeCenterX;
-    }
-
-    public double getAxeCenterY() {
-        return this.axeCenterY;
     }
 
     public Matrix getVectorFieldExpression() {
@@ -140,7 +51,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
+    private void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
 
         double varAbscStart = exprAbscStart.evaluate();
         double varAbscEnd = exprAbscEnd.evaluate();
@@ -436,13 +347,16 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
     }
 
     public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression[] vectorFieldComponents) throws EvaluationException {
+        this.zoomfactor = 1;
+        this.zoomfactorX = 1;
+        this.zoomfactorY = 1;
         setVectorFieldExpression(vectorFieldComponents);
         computeScreenSizes(x_0, x_1, y_0, y_1);
         expressionToVectorField(x_0, x_1, y_0, y_1);
         drawVectorField2D();
     }
 
-    public void drawVectorField2D() {
+    private void drawVectorField2D() {
         repaint();
     }
 

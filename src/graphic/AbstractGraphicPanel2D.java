@@ -5,6 +5,11 @@ import exceptions.EvaluationException;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import lang.translator.Translator;
@@ -22,6 +27,89 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     protected double[][] specialPoints;
 
     protected Point lastMousePosition;
+    protected double zoomfactor, zoomfactorX, zoomfactorY;
+
+    public AbstractGraphicPanel2D() {
+    }
+    
+    public AbstractGraphicPanel2D(final double maxZoomfactor, final double minZoomfactor) {
+        
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    lastMousePosition = e.getPoint();
+                    movable = true;
+                } else {
+                    lastMousePosition = e.getPoint();
+                    movable = false;
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (movable) {
+                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
+                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
+                    lastMousePosition = e.getPoint();
+                    repaint();
+                } else {
+                    if (lastMousePosition.x - e.getPoint().x >= 0 && zoomfactorX < maxZoomfactor
+                            || lastMousePosition.x - e.getPoint().x <= 0 && zoomfactorX > minZoomfactor) {
+                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
+                        zoomfactorX = zoomfactorX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
+                    }
+                    if (lastMousePosition.y - e.getPoint().y >= 0 && zoomfactorY < maxZoomfactor
+                            || lastMousePosition.y - e.getPoint().y <= 0 && zoomfactorY > minZoomfactor) {
+                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
+                        zoomfactorY = zoomfactorY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
+                    }
+                    lastMousePosition = e.getPoint();
+                    repaint();
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+            }
+        });
+
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
+                if ((e.getWheelRotation() >= 0 && zoomfactor < maxZoomfactor)
+                        || (e.getWheelRotation() <= 0 && zoomfactor > minZoomfactor)) {
+                    maxX *= Math.pow(1.1, e.getWheelRotation());
+                    maxY *= Math.pow(1.1, e.getWheelRotation());
+                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
+                    computeExpXExpY();
+                    repaint();
+                }
+
+                repaint();
+            }
+        });
+    }
 
     public void setSpecialPoints(double[][] specialPoints) {
         this.specialPoints = specialPoints;

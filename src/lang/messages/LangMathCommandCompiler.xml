@@ -687,7 +687,7 @@
         <Ukrainian>Перший параметр команди 'plotcurve3d' має бути тривимірним вектором.</Ukrainian>
         <Russian>Первый параметр команды 'plotcurve3d' должен быть трёхмерным вектором.</Russian>
     </object>
-    <object id = "MCC_NOT ENOUGH_PARAMETERS_IN_PLOTPOLAR">
+    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_PLOTPOLAR">
         <German>Zu wenig Parameter im Befehl 'plotpolar'.</German>
         <English>Not enough parameters in command 'plotpolar'.</English>
         <Ukrainian>Недостатньо параметрів у команди 'plotpolar'.</Ukrainian>

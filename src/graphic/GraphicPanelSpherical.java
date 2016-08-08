@@ -73,11 +73,6 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         setColors();
     }
 
-    public void addExpression(Expression expr) {
-        this.exprs.add(expr);
-        setColors();
-    }
-
     private void setColors() {
         int numberOfColors = Math.max(this.exprs.size(), this.sphericalGraphs3D.size());
         this.colors.clear();

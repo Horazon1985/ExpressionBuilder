@@ -5,11 +5,6 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,87 +22,8 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
-    private double zoomfactor, zoomfactorX, zoomfactorY;
-    
     public GraphicPanelPolar() {
-
-        addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    lastMousePosition = e.getPoint();
-                    movable = true;
-                } else {
-                    lastMousePosition = e.getPoint();
-                    movable = false;
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-
-        addMouseMotionListener(new MouseMotionListener() {
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (movable) {
-                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
-                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                } else {
-                    if ((lastMousePosition.x - e.getPoint().x >= 0 && zoomfactorX < 10)
-                            || (lastMousePosition.x - e.getPoint().x <= 0 && zoomfactorX > 0.1)) {
-                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-                        zoomfactorX = zoomfactorX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-                    }
-                    if ((lastMousePosition.y - e.getPoint().y >= 0 && zoomfactorY < 10)
-                            || (lastMousePosition.y - e.getPoint().y <= 0 && zoomfactorY > 0.1)) {
-                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-                        zoomfactorY = zoomfactorY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-                    }
-                    lastMousePosition = e.getPoint();
-                    repaint();
-                }
-            }
-
-            @Override
-            public void mouseMoved(MouseEvent e) {
-            }
-        });
-
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                /**
-                 * Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
-                 */
-                if (((e.getWheelRotation() >= 0) && (zoomfactor < 10))
-                        || ((e.getWheelRotation() <= 0) && (zoomfactor > 0.1))) {
-                    maxX *= Math.pow(1.1, e.getWheelRotation());
-                    maxY *= Math.pow(1.1, e.getWheelRotation());
-                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
-                    computeExpXExpY();
-                    repaint();
-                }
-
-                repaint();
-            }
-        });
+        super(10,0.1);
     }
 
     public ArrayList<Color> getColors() {
@@ -139,18 +55,12 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         }
     }
 
-    public void clearExpressionAndGraph() {
-        this.exprs.clear();
-        this.polarGraph2D.clear();
-        this.colors.clear();
-    }
-
     /**
      * Voraussetzung: expr und var sind bereits gesetzt.
      * 
      * @throws EvaluationException
      */
-    public void computeScreenSizes(Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
+    private void computeScreenSizes(Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
 
         double phi_0 = exprPhi_0.evaluate();
         double phi_1 = exprPhi_1.evaluate();
@@ -213,7 +123,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void expressionToGraph(double phiStart, double phiEnd) throws EvaluationException {
+    private void expressionToGraph(double phiStart, double phiEnd) throws EvaluationException {
 
         this.polarGraph2D.clear();
         double[][] pointsOnGraphs;
