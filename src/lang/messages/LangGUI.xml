@@ -275,6 +275,12 @@
         <Ukrainian>Графік </Ukrainian>
         <Russian>График </Russian>
     </object>
+    <object id = "GUI_LegendGUI_PARAMETRIZED_SURFACE">
+        <German>Fläche </German>
+        <English>Surface </English>
+        <Ukrainian>Поверхня </Ukrainian>
+        <Russian>Поверхность </Russian>
+    </object>
     <object id = "GUI_LegendGUI_VECTORFIELD">
         <German>Vektorfeld </German>
         <English>Vector field </English>

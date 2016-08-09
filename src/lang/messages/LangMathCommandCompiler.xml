@@ -693,6 +693,12 @@
         <Ukrainian>Недостатньо параметрів у команди 'plotpolar'.</Ukrainian>
         <Russian>Недостаточно параметров у команды 'plotpolar'.</Russian>
     </object>
+    <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTVECTORFIELD2D">
+        <German>Im Befehl 'plotivectorfield2d' müssen genau sieben Parameter stehen.</German>
+        <English>The command 'plotivectorfield2d' must contain exactly one parameter.</English>
+        <Ukrainian>У команди 'plotivectorfield2d' має бути рівно сім параметрів.</Ukrainian>
+        <Russian>У команды 'plotivectorfield2d' должны быть ровно семь параметров.</Russian>
+    </object>
      <object id = "MCC_WRONG_NUMBER_OF_INDETERMINATES_IN_PLOTVECTORFIELD2D">
         <German>Die Ausdrücke im Befehl 'plotvectorfield2d' dürfen höchstens die Veränderlichen [0] und [1] enthalten. Diese enthalten jedoch weitere Veränderliche.</German>
         <English>The expressions in command 'plotvectorfield2d' must contain at most the variables [0] and [1]. But they contain further variables.</English>

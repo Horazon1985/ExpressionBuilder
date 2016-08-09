@@ -1,11 +1,14 @@
 package graphic;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
@@ -14,7 +17,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     // Parameter für 3D-Graphen
     // Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
     protected boolean isRotating;
-    
+
     //Radien für die Grundellipse
     protected double bigRadius, smallRadius;
     protected double height, heightProjection;
@@ -35,10 +38,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected Point lastMousePosition;
 
     protected double zoomfactor;
-    
+
+    protected double axeCenterX, axeCenterY;
     protected double maxX, maxY, maxZ;
     protected int expX, expY, expZ;
-    
+
     protected PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
     protected BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
 
@@ -57,7 +61,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     public BackgroundColorMode getBackgroundColorMode() {
         return this.backgroundColorMode;
     }
-    
+
     public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
         this.backgroundColorMode = backgroundColorMode;
     }
@@ -65,7 +69,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     public PresentationMode getPresentationMode() {
         return this.presentationMode;
     }
-    
+
     public void setPresentationMode(PresentationMode presentationMode) {
         this.presentationMode = presentationMode;
     }
@@ -73,7 +77,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     public boolean getIsRotating() {
         return this.isRotating;
     }
-    
+
     public void setIsRotating(boolean isRotating) {
         this.isRotating = isRotating;
     }
@@ -165,7 +169,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         });
 
     }
-    
+
     protected void computeExpXExpYExpZ() {
 
         this.expX = 0;
@@ -206,10 +210,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         }
 
     }
-    
+
     /**
-     * Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die graphische Darstellung
-     */ 
+     * Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die
+     * graphische Darstellung
+     */
     protected int[] convertToPixel(double x, double y, double z) {
 
         double angleAbsc = getGraphicalAngle(this.bigRadius, this.smallRadius, this.angle);
@@ -281,10 +286,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         return pixel;
 
     }
-    
+
     /**
-     * Berechnet aus dem Winkel "angle" den Winkel, welcher in der graphischen Darstellung auftaucht
-     */ 
+     * Berechnet aus dem Winkel "angle" den Winkel, welcher in der graphischen
+     * Darstellung auftaucht
+     */
     private double getGraphicalAngle(double bigRadius, double smallRadius, double angle) {
         //Vorausgesetzt: 0 <= real_angle < 360
         if ((angle == 0) || (angle == 90) || (angle == 180) || (angle == 270)) {
@@ -299,7 +305,499 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 360;
         }
     }
-    
+
+    /**
+     * Die folgenden vier Prozeduren zeichnen Niveaulinien am Rand des Graphen.
+     * Voraussetzung: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * sind bekannt/initialisiert.
+     */
+    protected void drawLevelsOnEast(Graphics g, String varAbsc, String varOrd, String varAppl) {
+
+        if (this.angle >= 0 && this.angle <= 180) {
+            return;
+        }
+
+        g.setColor(Color.GRAY);
+        double[][] border = new double[4][3];
+        int[][] borderPixels = new int[4][2];
+
+        border[0][0] = this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = this.maxX;
+        border[1][1] = -this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = this.maxY;
+        border[3][2] = -this.maxZ;
+
+        for (int i = 0; i < 4; i++) {
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
+        }
+
+        // Rahmen zeichnen
+        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
+        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
+        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
+        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
+        // Achse beschriften
+        if (this.angle >= 270) {
+            if (varOrd == null) {
+                g.drawString("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            } else {
+                g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            }
+        } else if (varOrd == null) {
+            g.drawString("2. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
+        } else {
+            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+        }
+
+        // Horizontale Niveaulinien zeichnen
+        double[][] lineLevel = new double[2][3];
+        int[][] lineLevelPixels = new int[2][2];
+
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
+        int i = -bound;
+
+        while (i * Math.pow(10, this.expZ) <= this.maxZ) {
+            lineLevel[0][0] = this.maxX;
+            lineLevel[0][1] = this.maxY;
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = -this.maxY;
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle > 270 && (i + 1) * Math.pow(10, this.expZ) <= this.maxZ) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+        // Niveaulinien bzgl. der zweiten Achse zeichnen
+        bound = (int) (this.maxY / Math.pow(10, this.expY));
+        i = -bound;
+
+        while (i * Math.pow(10, this.expY) <= this.maxY) {
+            lineLevel[0][0] = this.maxX;
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle >= 270) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
+                        lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+    }
+
+    protected void drawLevelsOnWest(Graphics g, String varAbsc, String varOrd, String varAppl) {
+
+        if (this.angle >= 180 && this.angle <= 360) {
+            return;
+        }
+
+        g.setColor(Color.GRAY);
+        double[][] border = new double[4][3];
+        int[][] borderPixels = new int[4][2];
+
+        border[0][0] = -this.maxX;
+        border[0][1] = -this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = -this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
+
+        for (int i = 0; i < 4; i++) {
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
+        }
+
+        // Rahmen zeichnen
+        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
+        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
+        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
+        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
+        // Achse beschriften
+        if (this.angle >= 90) {
+            if (varOrd == null) {
+                g.drawString("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            } else {
+                g.drawString(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            }
+        } else if (varOrd == null) {
+            g.drawString("2. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
+        } else {
+            g.drawString(varOrd, borderPixels[0][0] - g.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+        }
+
+        // Horizontale Niveaulinien zeichnen
+        double[][] lineLevel = new double[2][3];
+        int[][] lineLevelPixels = new int[2][2];
+
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
+        int i = -bound;
+
+        while (i * Math.pow(10, this.expZ) <= this.maxZ) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
+            lineLevel[1][0] = -this.maxX;
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle > 90 && (i + 1) * Math.pow(10, this.expZ) <= this.maxZ) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+        // Niveaulinien bzgl. der zweiten Achse zeichnen
+        bound = (int) (this.maxY / Math.pow(10, this.expY));
+        i = -bound;
+
+        while (i * Math.pow(10, this.expY) <= this.maxY) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = -this.maxX;
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle >= 90) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
+                        lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+    }
+
+    protected void drawLevelsOnSouth(Graphics g, String varAbsc, String varOrd, String varAppl) {
+
+        if (this.angle <= 90 || this.angle >= 270) {
+            return;
+        }
+
+        g.setColor(Color.GRAY);
+        double[][] border = new double[4][3];
+        int[][] borderPixels = new int[4][2];
+
+        border[0][0] = this.maxX;
+        border[0][1] = -this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = -this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
+
+        for (int i = 0; i < 4; i++) {
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
+        }
+
+        // Rahmen zeichnen
+        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
+        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
+        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
+        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
+        // Achse beschriften
+        if (this.angle >= 180) {
+            if (varAbsc == null) {
+                g.drawString("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            } else {
+                g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            }
+        } else if (varAbsc == null) {
+            g.drawString("1. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
+        } else {
+            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+        }
+
+        // Horizontale Niveaulinien zeichnen
+        double[][] lineLevel = new double[2][3];
+        int[][] lineLevelPixels = new int[2][2];
+
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
+        int i = -bound;
+
+        while (i * Math.pow(10, expZ) <= this.maxZ) {
+            lineLevel[0][0] = this.maxX;
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
+            lineLevel[1][0] = -this.maxX;
+            lineLevel[1][1] = -this.maxY;
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle > 180 && (i + 1) * Math.pow(10, this.expZ) <= this.maxZ) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            }
+
+            i++;
+
+        }
+
+        // Niveaulinien bzgl. der ersten Achse zeichnen
+        bound = (int) (this.maxX / Math.pow(10, this.expX));
+        i = -bound;
+
+        while (i * Math.pow(10, expX) <= this.maxX) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
+            lineLevel[1][1] = -this.maxY;
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle >= 180) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
+                        lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+    }
+
+    protected void drawLevelsOnNorth(Graphics g, String varAbsc, String varOrd, String varAppl) {
+
+        if (this.angle >= 90 && this.angle <= 270) {
+            return;
+        }
+
+        g.setColor(Color.GRAY);
+        double[][] border = new double[4][3];
+        int[][] borderPixels = new int[4][2];
+
+        border[0][0] = -this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = this.maxZ;
+        border[1][0] = this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = this.maxZ;
+        border[2][0] = this.maxX;
+        border[2][1] = this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = -this.maxX;
+        border[3][1] = this.maxY;
+        border[3][2] = -this.maxZ;
+
+        for (int i = 0; i < 4; i++) {
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
+        }
+
+        // Rahmen zeichnen
+        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
+        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
+        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
+        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
+        // Achse beschriften
+        if (this.angle <= 90) {
+            if (varAbsc == null) {
+                g.drawString("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            } else {
+                g.drawString(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+            }
+        } else if (varAbsc == null) {
+            g.drawString("1. axis", borderPixels[0][0] - g.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
+        } else {
+            g.drawString(varAbsc, borderPixels[0][0] - g.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+        }
+
+        // Horizontale Niveaulinien zeichnen
+        double[][] lineLevel = new double[2][3];
+        int[][] lineLevelPixels = new int[2][2];
+
+        int bound = (int) (this.maxZ / Math.pow(10, this.expZ));
+        int i = -bound;
+
+        while (i * Math.pow(10, expZ) <= this.maxZ) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = this.maxY;
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle < 90 && (i + 1) * Math.pow(10, this.expZ) <= this.maxZ) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+        // Niveaulinien bzgl. der ersten Achse zeichnen
+        bound = (int) (this.maxX / Math.pow(10, this.expX));
+        i = -bound;
+
+        while (i * Math.pow(10, this.expX) <= this.maxX) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
+            lineLevel[0][1] = this.maxY;
+            lineLevel[0][2] = this.maxZ;
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+            if (this.angle <= 90) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
+                        lineLevelPixels[0][1]);
+            }
+
+            i++;
+        }
+
+    }
+
+    protected void drawLevelsBottom(Graphics g) {
+
+        //Zunächst den Rahmen auf dem Boden zeichnen
+        double[][] border = new double[4][3];
+        int[][] borderPixels = new int[4][2];
+
+        border[0][0] = this.maxX;
+        border[0][1] = this.maxY;
+        border[0][2] = -this.maxZ;
+        border[1][0] = -this.maxX;
+        border[1][1] = this.maxY;
+        border[1][2] = -this.maxZ;
+        border[2][0] = -this.maxX;
+        border[2][1] = -this.maxY;
+        border[2][2] = -this.maxZ;
+        border[3][0] = this.maxX;
+        border[3][1] = -this.maxY;
+        border[3][2] = -this.maxZ;
+
+        for (int i = 0; i < 4; i++) {
+            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
+        }
+
+        // Rahmen zeichnen
+        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
+        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
+        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
+        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
+
+        // Horizontale Niveaulinien zeichnen
+        double[][] lineLevel = new double[2][3];
+        int[][] lineLevelPixels = new int[2][2];
+
+        // Horizontale x-Niveaulinien zeichnen
+        int bound = (int) (this.maxX / Math.pow(10, this.expX));
+        int i = -bound;
+
+        while (i * Math.pow(10, this.expX) <= this.maxX) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
+            lineLevel[0][1] = -this.maxY;
+            lineLevel[0][2] = -this.maxZ;
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
+            lineLevel[1][1] = this.maxY;
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+
+            i++;
+        }
+
+        //horizontale y-Niveaulinien zeichnen
+        bound = (int) (this.maxY / Math.pow(10, this.expY));
+        i = -bound;
+
+        while (i * Math.pow(10, this.expY) <= this.maxY) {
+            lineLevel[0][0] = -this.maxX;
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
+            lineLevel[0][2] = -this.maxZ;
+            lineLevel[1][0] = this.maxX;
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
+            lineLevel[1][2] = -this.maxZ;
+
+            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
+            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
+
+            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
+
+            i++;
+        }
+
+    }
+
+    /**
+     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
+     * Nachkommastellenfehler.
+     */
+    protected BigDecimal roundAxisEntries(int m, int k) {
+        if (k >= 0) {
+            return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
+        }
+        return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
+    }
+
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
@@ -307,7 +805,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
         return instructions;
     }
-    
+
     @Override
     public void run() {
         while (this.isRotating) {
@@ -327,6 +825,5 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
         }
     }
-    
-    
+
 }

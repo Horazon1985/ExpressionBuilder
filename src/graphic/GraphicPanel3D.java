@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -326,17 +325,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         g2.setPaint(Color.black);
         g2.draw(tangent);
 
-    }
-
-    /**
-     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
-     * Nachkommastellenfehler.
-     */
-    private BigDecimal roundAxisEntries(int m, int k) {
-        if (k >= 0) {
-            return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
-        }
-        return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
     }
 
     /**

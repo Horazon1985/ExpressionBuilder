@@ -6,19 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import javax.imageio.ImageIO;
-import lang.translator.Translator;
 
 public class GraphicPanelVectorField3D extends AbstractGraphicPanel3D {
 
@@ -178,14 +166,6 @@ public class GraphicPanelVectorField3D extends AbstractGraphicPanel3D {
         }
         return resultGraphicalVectorField3D;
 
-    }
-
-    //Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen Nachkommastellenfehler.
-    private BigDecimal roundAxisEntries(int m, int k) {
-        if (k >= 0) {
-            return new BigDecimal(m).multiply(BigDecimal.TEN.pow(k));
-        }
-        return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
     }
 
     /**
@@ -564,81 +544,6 @@ public class GraphicPanelVectorField3D extends AbstractGraphicPanel3D {
                         - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
-
-            i++;
-        }
-
-    }
-
-    private void drawLevelsBottom(Graphics g) {
-
-        // Zunächst den Rahmen auf dem Boden zeichnen
-        double[][] border = new double[4][3];
-        int[][] borderPixels = new int[4][2];
-
-        border[0][0] = this.maxX;
-        border[0][1] = this.maxY;
-        border[0][2] = -this.maxZ;
-        border[1][0] = -this.maxX;
-        border[1][1] = this.maxY;
-        border[1][2] = -this.maxZ;
-        border[2][0] = -this.maxX;
-        border[2][1] = -this.maxY;
-        border[2][2] = -this.maxZ;
-        border[3][0] = this.maxX;
-        border[3][1] = -this.maxY;
-        border[3][2] = -this.maxZ;
-
-        for (int i = 0; i < 4; i++) {
-            borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
-        }
-
-        // Rahmen zeichnen
-        g.drawLine(borderPixels[0][0], borderPixels[0][1], borderPixels[1][0], borderPixels[1][1]);
-        g.drawLine(borderPixels[1][0], borderPixels[1][1], borderPixels[2][0], borderPixels[2][1]);
-        g.drawLine(borderPixels[2][0], borderPixels[2][1], borderPixels[3][0], borderPixels[3][1]);
-        g.drawLine(borderPixels[3][0], borderPixels[3][1], borderPixels[0][0], borderPixels[0][1]);
-
-        // Horizontale Niveaulinien zeichnen
-        double[][] lineLevel = new double[2][3];
-        int[][] lineLevelPixels = new int[2][2];
-
-        // Horizontale x-Niveaulinien zeichnen
-        int bound = (int) (this.maxX / Math.pow(10, this.expX));
-        int i = -bound;
-
-        while (i * Math.pow(10, expX) <= this.maxX) {
-            lineLevel[0][0] = i * Math.pow(10, expX);
-            lineLevel[0][1] = -this.maxY;
-            lineLevel[0][2] = -this.maxZ;
-            lineLevel[1][0] = i * Math.pow(10, expX);
-            lineLevel[1][1] = this.maxY;
-            lineLevel[1][2] = -this.maxZ;
-
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
-
-            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-
-            i++;
-        }
-
-        // Horizontale y-Niveaulinien zeichnen
-        bound = (int) (this.maxY / Math.pow(10, this.expY));
-        i = -bound;
-
-        while (i * Math.pow(10, this.expY) <= this.maxY) {
-            lineLevel[0][0] = -this.maxX;
-            lineLevel[0][1] = i * Math.pow(10, this.expY);
-            lineLevel[0][2] = -this.maxZ;
-            lineLevel[1][0] = this.maxX;
-            lineLevel[1][1] = i * Math.pow(10, this.expY);
-            lineLevel[1][2] = -this.maxZ;
-
-            lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
-            lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
-
-            g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
 
             i++;
         }
