@@ -15,24 +15,37 @@ import lang.translator.Translator;
 public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implements Runnable {
 
     // Parameter für 3D-Graphen
-    // Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
+    /**
+     * Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
+     */
     protected boolean isRotating;
 
-    //Radien für die Grundellipse
-    protected double bigRadius, smallRadius;
-    protected double height, heightProjection;
-    /*
-     Neigungswinkel des Graphen: angle = horizontaler Winkel (er wird
-     inkrementiert, wenn der Graph im Uhrzeigersinn rotiert) verticalAngle =
-     Winkel, unter dem man die dritte Achse sieht. 0 = man schaut seitlich auf
-     den Graphen, 90 = man schaut von oben auf den Graphen.
+    /**
+     * Großer Radius für die Grundellipse
      */
-    protected double angle, verticalAngle;
+    protected double bigRadius;
+    /**
+     * Kleiner Radius für die Grundellipse
+     */
+    protected double smallRadius;
 
-    /*
-     Die boolsche Variable isAngleMeant ist true <-> der aktuelle Winkel
-     (welcher durch das Auslösen eines MouseEvent verändert wird) ist angle.
-     Ansonsten verticalAngle.
+    protected double height, heightProjection;
+    /**
+     * Horizontaler Winkel des Graphen gegen den Uhrzeigersinn (er wird
+     * inkrementiert, wenn der Graph im Uhrzeigersinn rotiert).
+     */
+    protected double angle;
+    /**
+     * Der Winkel, unter dem man die dritte Achse sieht. Ist der Wert man gleich
+     * 0, so schaut man seitlich auf den Graphen. Ist der Wert 90, so schaut man
+     * von oben auf den Graphen.
+     */
+    protected double verticalAngle;
+
+    /**
+     * Der boolsche Wert von isAngleMeant ist genau dann true, wenn der aktuelle
+     * Winkel, welcher durch das Auslösen eines MouseEvent verändert wird, angle
+     * ist. Ansonsten ist es verticalAngle.
      */
     protected boolean isAngleMeant = true;
     protected Point lastMousePosition;
@@ -43,8 +56,8 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected double maxX, maxY, maxZ;
     protected int expX, expY, expZ;
 
-    protected PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
-    protected BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
+    protected static PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
+    protected static BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
 
     public enum BackgroundColorMode {
 
@@ -58,20 +71,20 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
-    public BackgroundColorMode getBackgroundColorMode() {
-        return this.backgroundColorMode;
+    public static BackgroundColorMode getBackgroundColorMode() {
+        return backgroundColorMode;
     }
 
-    public void setBackgroundColorMode(BackgroundColorMode backgroundColorMode) {
-        this.backgroundColorMode = backgroundColorMode;
+    public static void setBackgroundColorMode(BackgroundColorMode bgColorMode) {
+        backgroundColorMode = bgColorMode;
     }
 
-    public PresentationMode getPresentationMode() {
-        return this.presentationMode;
+    public static PresentationMode getPresentationMode() {
+        return presentationMode;
     }
 
-    public void setPresentationMode(PresentationMode presentationMode) {
-        this.presentationMode = presentationMode;
+    public static void setPresentationMode(PresentationMode prMode) {
+        presentationMode = prMode;
     }
 
     public boolean getIsRotating() {
@@ -307,8 +320,8 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     }
 
     /**
-     * Die folgenden vier Prozeduren zeichnen Niveaulinien am Rand des Graphen.
-     * Voraussetzung: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * Zeichnet Niveaulinien am östlichen Rand des Graphen.<br>
+     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
      * sind bekannt/initialisiert.
      */
     protected void drawLevelsOnEast(Graphics g, String varAbsc, String varOrd, String varAppl) {
@@ -411,6 +424,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
+    /**
+     * Zeichnet Niveaulinien am westlichen Rand des Graphen.<br>
+     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * sind bekannt/initialisiert.
+     */
     protected void drawLevelsOnWest(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
         if (this.angle >= 180 && this.angle <= 360) {
@@ -511,6 +529,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
+    /**
+     * Zeichnet Niveaulinien am südlichen Rand des Graphen.<br>
+     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * sind bekannt/initialisiert.
+     */
     protected void drawLevelsOnSouth(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
         if (this.angle <= 90 || this.angle >= 270) {
@@ -612,6 +635,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
+    /**
+     * Zeichnet Niveaulinien am nördlichen Rand des Graphen.<br>
+     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * sind bekannt/initialisiert.
+     */
     protected void drawLevelsOnNorth(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
         if (this.angle >= 90 && this.angle <= 270) {
@@ -712,6 +740,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
+    /**
+     * Zeichnet Niveaulinien am Boden des Graphen.<br>
+     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * sind bekannt/initialisiert.
+     */
     protected void drawLevelsBottom(Graphics g) {
 
         //Zunächst den Rahmen auf dem Boden zeichnen
