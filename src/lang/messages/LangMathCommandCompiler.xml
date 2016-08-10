@@ -694,28 +694,28 @@
         <Russian>1. параметр команды 'plotsurface' должен быть действительным матричным выражением.</Russian>
     </object>
     <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTSURFACE">
-        <German>Im Befehl 'plotsurface' müssen genau sieben Parameter stehen.</German>
-        <English>The command 'plotsurface' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'plotsurface' має бути рівно сім параметрів.</Ukrainian>
-        <Russian>У команды 'plotsurface' должны быть ровно семь параметров.</Russian>
+        <German>Der Matrizenausdrücke im Befehl 'plotsurface' darf höchstens zwei Veränderliche enthalten. Diese enthalten jedoch insgesamt [0] Veränderliche.</German>
+        <English>The matrix expression in command 'plotsurface' may contain at most two variables. They contain [0] variables.</English>
+        <Ukrainian>??? у команді 'plotsurface' мають містити не більше двох змінних. Вони містять [0] змінних.</Ukrainian>
+        <Russian>Матричное выражение в команде 'plotsurface' должны содержать не более двух переменных. Они содержат [0] переменных.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_VARIABLE_PARAMETER_IN_PLOTSURFACE">
-        <German>Im Befehl 'plotsurface' müssen genau sieben Parameter stehen.</German>
-        <English>The command 'plotsurface' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'plotsurface' має бути рівно сім параметрів.</Ukrainian>
-        <Russian>У команды 'plotsurface' должны быть ровно семь параметров.</Russian>
+        <German>Der [0]. Parameter im Befehl 'plotsurface' muss eine gültige Veränderliche sein.</German>
+        <English>The [0]. parameter in command 'plotsurface' must be a valid variable.</English>
+        <Ukrainian>[0]. параметр команди 'plotsurface' має бути діючою змінною.</Ukrainian>
+        <Russian>[0]. параматр команды 'plotsurface' должен быть действительной переменной.</Russian>
     </object>
     <object id = "MCC_VARIABLES_MUST_BE_PAIRWISE_DIFFERENT_IN_PLOTSURFACE">
-        <German>Im Befehl 'plotsurface' müssen genau sieben Parameter stehen.</German>
-        <English>The command 'plotsurface' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'plotsurface' має бути рівно сім параметрів.</Ukrainian>
-        <Russian>У команды 'plotsurface' должны быть ровно семь параметров.</Russian>
+        <German>Die Veränderlichen im Befehl 'plotsurface' müssen paarweise verschieden sein.</German>
+        <English>The variables in command 'plotsurface' must be pairwise different.</English>
+        <Ukrainian>Змінні у команді 'plotsurface' мають бути попрарно різними.</Ukrainian>
+        <Russian>Переменные в команде 'plotsurface' должны попарно отличаться.</Russian>
     </object>
     <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSURFACE">
-        <German>Im Befehl 'plotsurface' müssen genau sieben Parameter stehen.</German>
-        <English>The command 'plotsurface' must contain exactly one parameter.</English>
-        <Ukrainian>У команди 'plotsurface' має бути рівно сім параметрів.</Ukrainian>
-        <Russian>У команды 'plotsurface' должны быть ровно семь параметров.</Russian>
+        <German>Die Veränderliche [0] darf nicht in dem Matrizenausdruck im Befehl 'plotsurface' vorkommen.</German>
+        <English>The variable [0] is not allowed to occur in the matrix expression in command 'plotsurface'.</English>
+        <Ukrainian>Змінна [0] не повинна зустрічатися у ??? команди 'plotsurface'.</Ukrainian>
+        <Russian>Переменная [0] не должна встречаться в матричном выражении команды 'plotsurface'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTSURFACE">
         <German>Der [0]. Parameter im Befehl 'plotsurface' muss eine reelle Zahl sein.</German>
