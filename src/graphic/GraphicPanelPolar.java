@@ -10,20 +10,20 @@ import java.util.HashMap;
 
 public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
-    // Parameter für 2D-Graphen
+    /**
+     * Parametervariable für den Winkel in den Polarkoordinaten.
+     */
     private String var;
 
-    /*
-     Es können sich mehrere Graphen jn graph2D befinden. Auf dje einzelnen
-     Graphen kann dann jeweils über dje Keys 0, 1, 2, ..., this.graph.size() -
-     1 zugegriffen werden.
+    /**
+     * Funktionsterme für Graphen.
      */
     private final ArrayList<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
     public GraphicPanelPolar() {
-        super(10,0.1);
+        super(10, 0.1);
     }
 
     public ArrayList<Color> getColors() {
@@ -56,8 +56,9 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Voraussetzung: expr und var sind bereits gesetzt.
-     * 
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: expr und var ist bereits initialisiert.
+     *
      * @throws EvaluationException
      */
     private void computeScreenSizes(Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
@@ -71,13 +72,13 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         double globalMaxY = Double.NaN;
 
         double x, y;
-        for (int i = 0; i < exprs.size(); i++) {
+        for (int i = 0; i < this.exprs.size(); i++) {
             for (int j = 0; j < 100; j++) {
 
                 Variable.setValue(this.var, phi_0 + j * (phi_1 - phi_0) / 100);
                 try {
-                    x = exprs.get(i).evaluate() * Math.cos(phi_0 + j * (phi_1 - phi_0) / 100);
-                    y = exprs.get(i).evaluate() * Math.sin(phi_0 + j * (phi_1 - phi_0) / 100);
+                    x = this.exprs.get(i).evaluate() * Math.cos(phi_0 + j * (phi_1 - phi_0) / 100);
+                    y = this.exprs.get(i).evaluate() * Math.sin(phi_0 + j * (phi_1 - phi_0) / 100);
                 } catch (EvaluationException e) {
                     x = Double.NaN;
                     y = Double.NaN;
@@ -118,8 +119,9 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.
-     * Voraussetzung: expr wurde mittels setExpression gesetzt.
+     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in
+     * exprs.<br>
+     * VORAUSSETZUNG: exprs ist initialisiert.
      *
      * @throws EvaluationException
      */
@@ -152,8 +154,8 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Graphen. Voraussetzung:
-     * max_x, max_y sind bekannt!
+     * Berechnet die Pixelkoordinaten des (gröberen) Graphen.<br>
+     * VORAUSSETZUNG: maxX und maxY sind sind bereits initialisiert.
      */
     private HashMap<Integer, int[][]> convertGraphToGraphicalGraph() {
 
@@ -174,6 +176,11 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
     }
 
+    /**
+     * Hauptmethode zum Zeichnen von Graphen in Polarkoordinaten.
+     *
+     * @throws EvaluationException
+     */
     public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;

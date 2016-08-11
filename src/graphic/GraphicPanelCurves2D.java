@@ -9,9 +9,13 @@ import java.util.ArrayList;
 
 public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
-    //Parameter für 2D-Graphen
+    /**
+     * Parametervariable für die parametrisierte Kurve.
+     */
     private String var;
-    // expr[0] und expr[1] sind die Komponenten in der Kurvendarstellung.
+    /**
+     * expr[0] und expr[1] sind die Komponenten in der Kurvendarstellung.
+     */ 
     private Expression[] expr = new Expression[2];
     private final ArrayList<double[]> curve2D = new ArrayList<>();
 
@@ -33,8 +37,9 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Voraussetzung: expr und var sind bereits gesetzt.
-     * 
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: expr und var ist bereits initialisiert.
+     *
      * @throws EvaluationException
      */
     private void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
@@ -52,8 +57,8 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
             Variable.setValue(this.var, t_0 + i * (t_1 - t_0) / 100);
             try {
-                x = expr[0].evaluate();
-                y = expr[1].evaluate();
+                x = this.expr[0].evaluate();
+                y = this.expr[1].evaluate();
             } catch (EvaluationException e) {
                 x = Double.NaN;
                 y = Double.NaN;
@@ -102,8 +107,8 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.
-     * Voraussetzung: expr wurde mittels setExpression gesetzt.
+     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.<br>
+     * VORAUSSETZUNG: expr wurde mittels setExpression gesetzt.
      *
      * @throws EvaluationException
      */
@@ -174,17 +179,15 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Graphen. Voraussetzung:
-     * max_x, max_y sind bekannt!
+     * Berechnet die Pixelkoordinaten des (gröberen) Graphen.<br> 
+     * VORAUSSETZUNG: curve2D ist bereits initialisiert.
      */
     private int[][] convertCurveToGraphicalCurve(Graphics g) {
-
         int[][] result = new int[this.curve2D.size()][2];
         for (int i = 0; i < this.curve2D.size(); i++) {
             result[i] = convertToPixel(this.curve2D.get(i)[0], this.curve2D.get(i)[1]);
         }
         return result;
-
     }
 
     private void drawCurve2D(Graphics g) {
@@ -211,6 +214,11 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
     }
 
+    /**
+     * Hauptmethode zum Zeichnen einer parametrisierten Kurve.
+     *
+     * @throws EvaluationException
+     */
     public void drawCurve2D(Expression t_0, Expression t_1, Expression[] expr) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;

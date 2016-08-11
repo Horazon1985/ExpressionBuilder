@@ -347,7 +347,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen von Graphen.
+     * Hauptmethode zum Zeichnen von Graphen in kartesischen Koordinaten.
      *
      * @throws EvaluationException
      */
@@ -362,8 +362,8 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen eines Graphen graph, welcher numerisch
-     * ermittelt wurde.
+     * Hauptmethode zum Zeichnen des Graphen graph, welcher numerisch ermittelt
+     * wurde.
      *
      * @throws EvaluationException
      */

@@ -11,13 +11,16 @@ import abstractexpressions.matrixexpression.classes.Matrix;
 
 public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
+    /**
+     * Funktionsvorschrift für das Vektorfeld als (2x1)-Matrix.
+     */
     private Matrix vectorFieldExpr;
     private final ArrayList<double[]> vectorField2D = new ArrayList<>();
 
     private final Color color = Color.blue;
 
     public GraphicPanelVectorField2D() {
-        super(100000000,0.00000001);
+        super(100000000, 0.00000001);
     }
 
     public Color getColor() {
@@ -44,7 +47,9 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Voraussetzung: vectorFieldExpr, varAbsc und varOrd sind bereits gesetzt.
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: vectorFieldExpr, varAbsc und varOrd sind bereits
+     * initialisiert.
      *
      * @throws EvaluationException
      */
@@ -63,8 +68,9 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.
-     * Voraussetzung: expr wurde mittels setExpression gesetzt.
+     * Berechnet die Gitterpunkte für den Graphen des Vektorfeldes aus dem
+     * Matrizenausdruck vectorFieldExpr.<br>
+     * VORAUSSETZUNG: vectorFieldExpr ist bereits initialisiert.
      *
      * @throws EvaluationException
      */
@@ -127,8 +133,8 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Vektorfeldes.
-     * Voraussetzung: maxX, maxY sind bekannt!
+     * Berechnet die Pixelkoordinaten des (gröberen) Vektorfeldes.<br>
+     * VORAUSSETZUNG: maxX und maxY sind bereits initialisiert.
      */
     private ArrayList<int[]> convertVectorFieldToGraphicalVectorField() {
 
@@ -215,6 +221,11 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
     }
 
+    /**
+     * Hauptmethode zum Zeichnen eines Vektorfeldes in kartesischen Koordinaten.
+     *
+     * @throws EvaluationException
+     */
     public void drawVectorField2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression[] vectorFieldComponents) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;

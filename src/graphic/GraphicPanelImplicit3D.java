@@ -992,6 +992,9 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         this.minX = -this.maxX;
         this.minY = -this.maxY;
         this.minZ = -this.maxZ;
+        this.maxXOrigin = this.maxX;
+        this.maxYOrigin = this.maxY;
+        this.maxZOrigin = this.maxZ;
     }
 
     /**
@@ -1147,17 +1150,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
      */
     private void drawImplicitGraph3D(Graphics g) {
 
-        //Zunächst Hintergrund zeichnen.
-        switch (backgroundColorMode) {
-            case BRIGHT:
-                g.setColor(Color.white);
-                break;
-            case DARK:
-                g.setColor(Color.black);
-                break;
-        }
-        g.fillRect(0, 0, 500, 500);
-
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
          Hintergrund zeichnen und beenden. GRUND: Zu Beginn wird sofort
@@ -1168,7 +1160,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         if (this.implicitGraph3D.length == 0) {
             return;
         }
-        computeExpXExpYExpZ();
 
         drawLevelsOnEast(g, this.varAbsc, this.varOrd, this.varAppl);
         drawLevelsOnSouth(g, this.varAbsc, this.varOrd, this.varAppl);

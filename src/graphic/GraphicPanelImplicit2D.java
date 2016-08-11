@@ -68,7 +68,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    private void drawImplicitGraph2D(Graphics g, String varAbsc, String varOrd) {
+    private void drawImplicitGraph2D(Graphics g) {
         g.setColor(this.color);
         int[] pixelsOfImplicitGraph;
         for (double[] point : this.implicitGraph2D) {
@@ -92,7 +92,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawImplicitGraph2D(g, this.varAbsc, this.varOrd);
+        drawImplicitGraph2D(g);
     }
 
 }

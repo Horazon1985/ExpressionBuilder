@@ -138,6 +138,10 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
             this.maxZ = this.maxZ * 1.3;
         }
 
+        this.maxXOrigin = this.maxX;
+        this.maxYOrigin = this.maxY;
+        this.maxZOrigin = this.maxZ;
+
     }
 
     /**
@@ -315,17 +319,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
      */
     private void drawSurface(Graphics g) {
 
-        // Zunächst Hintergrund zeichnen.
-        switch (backgroundColorMode) {
-            case BRIGHT:
-                g.setColor(Color.white);
-                break;
-            case DARK:
-                g.setColor(Color.black);
-                break;
-        }
-        g.fillRect(0, 0, 500, 500);
-
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
          Hintergrund zeichnen und beenden. GRUND: Zu Beginn wird sofort
@@ -336,7 +329,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         if (this.surfaceGraph3D.length == 0) {
             return;
         }
-        computeExpXExpYExpZ();
         this.surfaceGraph3DForGraphic = convertGraphsToCoarserGraphs();
 
         /*

@@ -149,6 +149,10 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
             this.maxZ = 1;
         }
 
+        this.maxXOrigin = this.maxX;
+        this.maxYOrigin = this.maxY;
+        this.maxZOrigin = this.maxZ;
+
     }
 
     /**
@@ -573,17 +577,6 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
      */
     private void drawCylindricalGraph3D(Graphics g) {
 
-        //Zunächst Hintergrund zeichnen.
-        switch (backgroundColorMode) {
-            case BRIGHT:
-                g.setColor(Color.white);
-                break;
-            case DARK:
-                g.setColor(Color.black);
-                break;
-        }
-        g.fillRect(0, 0, 500, 500);
-
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
          Hintergrund zeichnen und beenden. GRUND: Zu Beginn wird sofort
@@ -594,7 +587,6 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         if (this.cylindricalGraphs3D.isEmpty()) {
             return;
         }
-        computeExpXExpYExpZ();
         this.cylindricalGraphs3DForGraphic = convertGraphsToCoarserGraphs();
 
         /*

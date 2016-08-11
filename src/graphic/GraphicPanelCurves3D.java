@@ -112,6 +112,10 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
             this.maxZ = this.maxZ * 1.3;
         }
 
+        this.maxXOrigin = this.maxX;
+        this.maxYOrigin = this.maxY;
+        this.maxZOrigin = this.maxZ;
+        
     }
 
     /**
@@ -209,10 +213,6 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
      */
     private void drawCurve3D(Graphics g) {
 
-        //Zunächst weißen Hintergrund zeichnen.
-        g.setColor(Color.white);
-        g.fillRect(0, 0, 500, 500);
-
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
          Hintergrund zeichnen und beenden. GRUND: Zu Beginn wird sofort
@@ -223,8 +223,6 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
         if (this.curve3D.size() <= 1) {
             return;
         }
-
-        computeExpXExpYExpZ();
 
         drawLevelsOnEast(g, null, null, null);
         drawLevelsOnSouth(g, null, null, null);
