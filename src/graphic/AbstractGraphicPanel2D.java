@@ -14,7 +14,22 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
+/**
+ * Abstrakte Oberklasse aller Grafikklassen für zweidimensionale Grafiken.
+ */
 public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
+
+    /**
+     * Variablenname für 2D-Graphen: varAbsc = Abszissenname, varOrd =
+     * Ordinatenname.
+     */
+    protected String varAbsc = null;
+
+    /**
+     * Variablenname für 2D-Graphen: varAbsc = Abszissenname, varOrd =
+     * Ordinatenname.
+     */
+    protected String varOrd = null;
 
     final static Color[] fixedColors = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
 
@@ -31,9 +46,9 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     public AbstractGraphicPanel2D() {
     }
-    
+
     public AbstractGraphicPanel2D(final double maxZoomfactor, final double minZoomfactor) {
-        
+
         addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -130,6 +145,10 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         }
     }
 
+    /**
+     * Liefert eine ArrayList mit Bedienungsanweisungen für zweidimensionale
+     * Grafiken.
+     */
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
@@ -139,8 +158,17 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     }
 
     /**
-     * VORAUSSETZUNG: der Graph ist bereits initialisiert (bzw. mit
-     * Funktionswerten gefüllt). maxX, maxY sind bekannt/initialisiert.
+     * Erzeugt eine neue Zufallsfarbe.
+     */
+    protected Color generateColor() {
+        return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+    }
+
+    /**
+     * Berechnet die Attribute expX bzw. expY, die größten Exponenten für eine
+     * Zehnerpotenz, die kleiner oder gleich maxX bzw. maxY sind. VORAUSSETZUNG:
+     * der Graph ist bereits initialisiert (und mit Funktionswerten gefüllt).
+     * Die Attribute maxX und maxY sind initialisiert.
      */
     protected void computeExpXExpY() {
 
@@ -175,11 +203,11 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         }
 
     }
-    
+
     /**
      * Berechnet aus Punktkoordinaten (x, y) Koordinaten (x', y') für die
-     * graphische Darstellung Voraussetzung: maxX, maxY sind bekannt (und nicht
-     * 0).
+     * graphische Darstellung.<br>
+     * VORAUSSETZUNG: maxX und maxY sind initialisiert und nicht 0.
      */
     protected int[] convertToPixel(double x, double y) {
         int[] pixel = new int[2];
@@ -189,8 +217,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     }
 
     /**
-     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
-     * Nachkommastellenfehler.
+     * Gibt den Achseneintrag m*10^(-k) zurück.
      */
     protected BigDecimal roundAxisEntries(int m, int k) {
         if (k >= 0) {
@@ -200,8 +227,136 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     }
 
     /**
-     * Zeichnet rote Punkte an wichtigen Stellen (etwa Markierung von
-     * Nullstellen etc.)
+     * Zeichnet die Achsen und die grauen Niveaulinien. Die horizontale Achse
+     * wird mit varAbsc beschriftet, die vertikale Achse mit varOrd, falls
+     * varOrd nicht null ist. Ist varOrd == null, so wird die vertikale Achse
+     * mit f(varAbsc) beschriftet. f steht hierbei stellvertretend für eine
+     * allgemeine Funktion.
+     */
+    protected void drawAxesAndLines(Graphics g) {
+        g.setColor(Color.lightGray);
+
+        int linePosition;
+        int k = (int) (this.axeCenterX * Math.pow(10, -this.expX));
+
+        // x-Niveaulinien zeichnen
+        linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
+
+        while (linePosition <= 500) {
+
+            if (k != 0) {
+                linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
+                g.drawLine(linePosition, 0, linePosition, 500);
+
+                if ((250 * this.axeCenterY / this.maxY - 3 <= 248) && (250 * this.axeCenterY / this.maxY - 3 >= -230)) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                } else if (250 * this.axeCenterY / this.maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
+                } else {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
+                }
+
+            }
+
+            k++;
+
+        }
+
+        k = (int) (this.axeCenterX * Math.pow(10, -this.expX)) - 1;
+        linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
+
+        while (linePosition >= 0) {
+
+            if (k != 0) {
+                linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
+                g.drawLine(linePosition, 0, linePosition, 500);
+
+                if ((250 * this.axeCenterY / this.maxY - 3 <= 248) && (250 * this.axeCenterY / this.maxY - 3 >= -230)) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                } else if (250 * this.axeCenterY / this.maxY - 3 > 248) {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
+                } else {
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
+                }
+
+            }
+
+            k--;
+
+        }
+
+        // y-Niveaulinien zeichnen
+        k = (int) (this.axeCenterY * Math.pow(10, -this.expY));
+        linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
+
+        while (linePosition >= 0) {
+            linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
+            g.drawLine(0, linePosition, 500, linePosition);
+
+            if ((250 * this.axeCenterX / this.maxX - 3 >= -225) && (250 * this.axeCenterX / this.maxX - 3 <= 245)) {
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+            } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
+            }
+
+            k++;
+
+        }
+
+        k = (int) (this.axeCenterY * Math.pow(10, -this.expY)) - 1;
+        linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
+
+        while (linePosition <= 500) {
+            linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
+            g.drawLine(0, linePosition, 500, linePosition);
+
+            if ((250 * this.axeCenterX / this.maxX - 3 >= -225) && (250 * this.axeCenterX / this.maxX - 3 <= 245)) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+            } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
+            } else {
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
+            }
+
+            k--;
+
+        }
+
+        // Achsen inkl. Achsenbezeichnungen eintragen
+        // Achsen
+        g.setColor(Color.black);
+        g.drawLine(0, 250 + (int) (250 * this.axeCenterY / this.maxY), 500, 250 + (int) (250 * this.axeCenterY / this.maxY));
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX), 500);
+        // Achsenpfeile
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) + 3);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, 6);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) - 3, 6);
+        /*
+         Achsenbeschriftung. WICHTIG: In der Prozedur drawString werden die
+         Achsenbeschriftung derart eingetragen, dass (1) Die Beschriftung der
+         Variablen var innerhalb des Bildschirms liegt (5 px) (2) Die
+         Beschriftung f(var) links von der vertikalen Achse liegt (5 px)
+         Hierzu müssen die Pixellängen der gezeichneten Strings ausgerechnet
+         werden (mittels g.getFontMetrics().stringWidth()).
+         */
+        if (this.varAbsc == null) {
+            g.drawString("1. axis", 500 - 5 - g.getFontMetrics().stringWidth("1. axis"), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+        } else {
+            g.drawString(this.varAbsc, 500 - 5 - g.getFontMetrics().stringWidth(this.varAbsc), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+        }
+        if (this.varOrd == null) {
+            g.drawString("2. axis", 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - g.getFontMetrics().stringWidth("2. axis"), 20);
+        } else {
+            g.drawString(this.varOrd, 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - g.getFontMetrics().stringWidth(this.varOrd), 20);
+        }
+    }
+
+    /**
+     * Zeichnet rote Punkte an gegebenen Stellen specialPoints (etwa Markierung
+     * von Nullstellen etc).
      */
     protected void drawSpecialPoints(Graphics g, double[][] specialPoints) {
         g.setColor(Color.red);
@@ -213,6 +368,23 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
             specialPointsCoordinates[i] = convertToPixel(specialPoints[i][0], specialPoints[i][1]);
             g.fillOval(specialPointsCoordinates[i][0] - 3, specialPointsCoordinates[i][1] - 3, 7, 7);
         }
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        /*
+        Folgende "Vorarbeit" benötigt jede 2D-Grafikart: Weißen Hintergrund
+        zeichnen, Markierungen an den Achsen berechnen und Niveaulinien 
+        und Achsen zeichnen. 
+        */
+        // Weißen Hintergrund zeichnen.
+        g.setColor(Color.white);
+        g.fillRect(0, 0, 500, 500);
+        // Markierungen an den Achsen berechnen.
+        computeExpXExpY();
+        // Niveaulinien und Achsen zeichnen
+        drawAxesAndLines(g);
     }
     
 }

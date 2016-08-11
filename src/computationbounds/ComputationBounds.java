@@ -64,6 +64,10 @@ public abstract class ComputationBounds {
         BOUND_NUMERIC_MAX_OPERATOR_NORM_TO_COMPUTE_MATRIX_FUNCTION = getBound("BOUND_NUMERIC_MAX_OPERATOR_NORM_TO_COMPUTE_MATRIX_FUNCTION");
     }
 
+    /**
+     * Gibt zu einer gegebenen boundId die entsprechende Berechnungsschranke
+     * zurück, die in der Bounds.xml festgelegt ist.
+     */
     public static int getBound(String boundId) {
 
         try {

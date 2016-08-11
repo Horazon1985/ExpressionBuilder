@@ -48,6 +48,10 @@ public class GraphicArea extends JTextArea {
         return this.formulas;
     }
 
+    /**
+     * Fügt Elemente von out nacheinander der gegebenen Instanz von GraphicArea
+     * hinzu.
+     */
     public void addComponent(ArrayList out) {
 
         GraphicPanelFormula formula = new GraphicPanelFormula();
@@ -70,6 +74,10 @@ public class GraphicArea extends JTextArea {
 
     }
 
+    /**
+     * Fügt Elemente von out nacheinander der gegebenen Instanz von GraphicArea
+     * hinzu.
+     */
     public void addComponent(Object... out) {
 
         GraphicPanelFormula formula = new GraphicPanelFormula();
@@ -92,6 +100,11 @@ public class GraphicArea extends JTextArea {
 
     }
 
+    /**
+     * Richtet, nachdem f zur gegebenen Instanz von GraphicArea hinzugefügt
+     * wurde, f korrekt aus, so dass es (mit einem Padding) unterhalb aller
+     * zuvor ausgerichteten Ausgaben positioniert wird.
+     */
     public void setPosition(GraphicPanelFormula f) {
 
         if (this.formulasCoordinates.isEmpty()) {
@@ -111,6 +124,11 @@ public class GraphicArea extends JTextArea {
 
     }
 
+    /**
+     * Berechnet die Maße der gegebenen Instanz von GraphicArea neu. Dies wird
+     * benötigt, wenn eine Ausgabe breiter oder tiefer positioniert wird, als
+     * die aktuellen Maße zulassen.
+     */
     public void updateSize() {
 
         GraphicPanelFormula formula;
@@ -128,6 +146,9 @@ public class GraphicArea extends JTextArea {
 
     }
 
+    /**
+     * Entfernt alle Ausgaben von der gegegebenen Instanz von GraphicArea.
+     */
     public void clearArea() {
         this.formulas.clear();
         this.formulasCoordinates.clear();

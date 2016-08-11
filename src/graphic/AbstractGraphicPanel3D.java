@@ -12,9 +12,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
+/**
+ * Abstrakte Oberklasse aller Grafikklassen für dreidimensionale Grafiken.
+ */
 public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implements Runnable {
 
-    // Parameter für 3D-Graphen
     /**
      * Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
      */
@@ -183,6 +185,13 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     }
 
+    /**
+     * Berechnet die Attribute expX bzw. expY bzw. expZ, die größten Exponenten
+     * für eine Zehnerpotenz, die kleiner oder gleich maxX bzw. maxY bzw. maxZ
+     * sind. VORAUSSETZUNG: der Graph ist bereits initialisiert (und mit
+     * Funktionswerten gefüllt). Die Attribute maxX, maxY und maxZ sind
+     * initialisiert.
+     */
     protected void computeExpXExpYExpZ() {
 
         this.expX = 0;
@@ -226,7 +235,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     /**
      * Berechnet aus Punktkoordinaten (x, y, z) Koordinaten (x', y') für die
-     * graphische Darstellung
+     * graphische Darstellung.
      */
     protected int[] convertToPixel(double x, double y, double z) {
 
@@ -238,10 +247,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             angleOrd = getGraphicalAngle(this.bigRadius, this.smallRadius, this.angle - 90);
         }
 
-        //pixels sind die Pixelkoordinaten für die Graphische Darstellung von (x, y, z)
+        // pixel sind die Pixelkoordinaten für die Graphische Darstellung von (x, y, z)
         int[] pixel = new int[2];
 
-        //Berechnung von pixels[0]
+        // Berechnung von pixels[0]
         double x_1, x_2;
 
         if (angleAbsc == 0) {
@@ -272,7 +281,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
         pixel[0] = (int) (250 + x_1 + x_2);
 
-        //Berechnung von pixels[1]
+        // Berechnung von pixel[1]
         double y_1, y_2, y_3;
 
         if (angleAbsc == 0) {
@@ -292,7 +301,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             y_2 = x_2 * Math.tan(angleOrd * Math.PI / 180);
         }
 
-        //maximaler Funktionswert (also max_z) soll h Pixel betragen
+        /* 
+        Maximaler Funktionswert (also maxZ) soll h Pixel betragen. Deshalb die 
+        folgende Skalierung.
+         */
         y_3 = -this.height * z / this.maxZ;
         pixel[1] = (int) (250 + y_1 + y_2 + y_3);
 
@@ -301,11 +313,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     }
 
     /**
-     * Berechnet aus dem Winkel "angle" den Winkel, welcher in der graphischen
-     * Darstellung auftaucht
+     * Berechnet aus dem Winkelattribut angle den Winkel, welcher in der
+     * graphischen Darstellung auftaucht, und gibt diesen zurück.
      */
     private double getGraphicalAngle(double bigRadius, double smallRadius, double angle) {
-        //Vorausgesetzt: 0 <= real_angle < 360
+        // Voraussetzung: 0 <= angle < 360
         if ((angle == 0) || (angle == 90) || (angle == 180) || (angle == 270)) {
             return angle;
         } else if (angle < 90) {
@@ -314,15 +326,14 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 180;
         } else if (angle < 270) {
             return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 180;
-        } else {
-            return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 360;
         }
+        return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 360;
     }
 
     /**
      * Zeichnet Niveaulinien am östlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
-     * sind bekannt/initialisiert.
+     * sind initialisiert.
      */
     protected void drawLevelsOnEast(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
@@ -427,7 +438,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Zeichnet Niveaulinien am westlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
-     * sind bekannt/initialisiert.
+     * sind initialisiert.
      */
     protected void drawLevelsOnWest(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
@@ -532,7 +543,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Zeichnet Niveaulinien am südlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
-     * sind bekannt/initialisiert.
+     * sind initialisiert.
      */
     protected void drawLevelsOnSouth(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
@@ -638,7 +649,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Zeichnet Niveaulinien am nördlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
-     * sind bekannt/initialisiert.
+     * sind initialisiert.
      */
     protected void drawLevelsOnNorth(Graphics g, String varAbsc, String varOrd, String varAppl) {
 
@@ -743,11 +754,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Zeichnet Niveaulinien am Boden des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
-     * sind bekannt/initialisiert.
+     * sind initialisiert.
      */
     protected void drawLevelsBottom(Graphics g) {
 
-        //Zunächst den Rahmen auf dem Boden zeichnen
+        // Zunächst den Rahmen auf dem Boden zeichnen
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
 
@@ -798,7 +809,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             i++;
         }
 
-        //horizontale y-Niveaulinien zeichnen
+        // Horizontale y-Niveaulinien zeichnen
         bound = (int) (this.maxY / Math.pow(10, this.expY));
         i = -bound;
 
@@ -821,8 +832,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     }
 
     /**
-     * Berechnet den Achseneintrag m*10^(-k) ohne den Double-typischen
-     * Nachkommastellenfehler.
+     * Gibt den Achseneintrag m*10^(-k) zurück.
      */
     protected BigDecimal roundAxisEntries(int m, int k) {
         if (k >= 0) {
@@ -831,6 +841,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         return new BigDecimal(m).divide(BigDecimal.TEN.pow(-k));
     }
 
+    /**
+     * Liefert eine ArrayList mit Bedienungsanweisungen für dreidimensionale
+     * Grafiken.
+     */
     public static ArrayList<String> getInstructions() {
         ArrayList<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));

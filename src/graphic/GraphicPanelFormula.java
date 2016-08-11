@@ -109,7 +109,6 @@ public class GraphicPanelFormula extends JPanel {
         return this.backgroundColor.equals(BACKGROUND_COLOR_MARKED);
     }
 
-    // MouseListener-Methoden
     private void setMarked() {
         this.backgroundColor = BACKGROUND_COLOR_MARKED;
         repaint();
