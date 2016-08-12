@@ -26,9 +26,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
     private double minS, maxS, minT, maxT;
 
-    private static final Color gridColorGridOnlyBright = Color.black;
-    private static final Color gridColorGridOnlyDark = Color.green;
-
     public GraphicPanelSurface() {
         super();
     }
@@ -247,30 +244,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         }
 
         g2.draw(tangent);
-
-    }
-
-    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
-
-        Color c;
-        int red, green, blue;
-
-        int r = groundColor.getRed();
-        int g = groundColor.getGreen();
-        int b = groundColor.getBlue();
-
-        if (minExpr == maxExpr) {
-            red = r;
-            green = g;
-            blue = b;
-        } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-        }
-
-        c = new Color(red, green, blue);
-        return c;
 
     }
 

@@ -26,11 +26,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
     private double minX, minY, minZ;
 
-    private static final Color gridColorWholeGraphBright = Color.black;
-    private static final Color gridColorWholeGraphDark = Color.green;
-    private static final Color gridColorGridOnlyBright = Color.black;
-    private static final Color gridColorGridOnlyDark = Color.green;
-
     public GraphicPanelImplicit3D(){
         super();
     }
@@ -1043,30 +1038,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         }
 
         g2.draw(tangent);
-
-    }
-
-    private Color computeColor(Color groundColor, double minZ, double maxZ, double height) {
-
-        Color c;
-        int red, green, blue;
-
-        int r = groundColor.getRed();
-        int g = groundColor.getGreen();
-        int b = groundColor.getBlue();
-
-        if (minZ == maxZ) {
-            red = r;
-            green = g;
-            blue = b;
-        } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minZ) / (maxZ - minZ));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-        }
-
-        c = new Color(red, green, blue);
-        return c;
 
     }
 

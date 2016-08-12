@@ -13,13 +13,20 @@ import java.util.HashMap;
 
 public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
-    private String varAbsc, varOrd;
+    /**
+     * Variablenname für 3D-Graphen: varAbsc = Abszissenname.
+     */
+    private String varAbsc; 
+    /**
+     * Variablenname für 3D-Graphen: varOrd = Ordinatenname.
+     */
+    private String varOrd;
     private final ArrayList<Expression> exprs = new ArrayList<>();
     private ArrayList<double[][][]> graphs3D = new ArrayList<>();
     /**
-     * "Vergröberte Version" von Graph3D (GRUND: beim Herauszoomen dürfen die
-     * Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
-     * werden).
+     * "Vergröberte Version" von Graphs3D (GRUND: beim Herauszoomen dürfen die
+     * Plättchen am Graphen nicht so klein sein. Deshalb muss der Graph etwas
+     * vergröbert werden).
      */
     private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
     private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
@@ -27,11 +34,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     private final ArrayList<Color> colors = new ArrayList<>();
 
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
-
-    private static final Color gridColorWholeGraphBright = Color.black;
-    private static final Color gridColorWholeGraphDark = Color.green;
-    private static final Color gridColorGridOnlyBright = Color.black;
-    private static final Color gridColorGridOnlyDark = Color.green;
 
     public GraphicPanel3D() {
         super();
@@ -266,7 +268,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen.
+     * Zeichnet ein (tangentiales) viereckiges Plättchen eines 3D-Graphen.
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
@@ -311,30 +313,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
     }
 
-    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
-
-        Color c;
-        int red, green, blue;
-
-        int r = groundColor.getRed();
-        int g = groundColor.getGreen();
-        int b = groundColor.getBlue();
-
-        if (minExpr == maxExpr) {
-            red = r;
-            green = g;
-            blue = b;
-        } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-        }
-
-        c = new Color(red, green, blue);
-        return c;
-
-    }
-
     /**
      * Berechnet die Höhe des Schwerpunktes eines Tangentialplättchens, falls es
      * definiert ist.
@@ -369,8 +347,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
-     * Achsen).
+     * Zeichnet alle 3D-Graphen in kartesischen Koordinaten.
      */
     private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
 
@@ -592,7 +569,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen von 3D-Graphen.
+     * Hauptmethode zum Zeichnen von 3D-Graphen in kartesischen Koordinaten.
      */
     private void drawGraph3D(Graphics g) {
 
@@ -662,6 +639,9 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
     }
 
+    /**
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in kartesischen Koordinaten.
+     */
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(x_0, x_1, y_0, y_1);

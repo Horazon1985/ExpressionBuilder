@@ -15,12 +15,19 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     private String var;
     /**
      * expr[0] und expr[1] sind die Komponenten in der Kurvendarstellung.
-     */ 
+     */
     private Expression[] expr = new Expression[2];
+    /**
+     * Der Graph der 2D-Kurve, gegeben durch seine (numerisch berechneten)
+     * Punkte. Die Punkte, welche durch die Elemente im ArrayList gegeben sind,
+     * werden durch ein Double-Array mit genau zwei Elementen angegeben und die
+     * benachbarten ArrayList-Elemente werden beim Zeichnen miteinander
+     * verbunden.
+     */
     private final ArrayList<double[]> curve2D = new ArrayList<>();
 
     public GraphicPanelCurves2D() {
-        super(10,0.1);
+        super(10, 0.1);
     }
 
     public Expression[] getExpressions() {
@@ -107,8 +114,9 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in expr.<br>
-     * VORAUSSETZUNG: expr wurde mittels setExpression gesetzt.
+     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in
+     * expr.<br>
+     * VORAUSSETZUNG: expr ist initialisiert.
      *
      * @throws EvaluationException
      */
@@ -153,10 +161,8 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
                 if (t > t_1) {
                     t = t_1;
                 }
-            } else {
-                if (t < t_1) {
-                    t = t_1;
-                }
+            } else if (t < t_1) {
+                t = t_1;
             }
 
             Variable.setValue(var, t);
@@ -179,7 +185,7 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Graphen.<br> 
+     * Berechnet die Pixelkoordinaten des (gröberen) Graphen.<br>
      * VORAUSSETZUNG: curve2D ist bereits initialisiert.
      */
     private int[][] convertCurveToGraphicalCurve(Graphics g) {
@@ -228,7 +234,7 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
         expressionToGraph(t_0, t_1);
         drawCurve2D();
     }
-    
+
     private void drawCurve2D() {
         repaint();
     }

@@ -34,9 +34,6 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
     private double minPhi, maxPhi, minTau, maxTau;
 
-    private static final Color gridColorGridOnlyBright = Color.black;
-    private static final Color gridColorGridOnlyDark = Color.green;
-
     public GraphicPanelSpherical() {
         super();
     }
@@ -267,7 +264,7 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
+            int x_3, int y_3, int x_4, int y_4, Graphics g) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
         tangent.moveTo(x_1, y_1);
@@ -287,30 +284,6 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         }
 
         g2.draw(tangent);
-
-    }
-
-    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
-
-        Color c;
-        int red, green, blue;
-
-        int r = groundColor.getRed();
-        int g = groundColor.getGreen();
-        int b = groundColor.getBlue();
-
-        if (minExpr == maxExpr) {
-            red = r;
-            green = g;
-            blue = b;
-        } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-        }
-
-        c = new Color(red, green, blue);
-        return c;
 
     }
 
@@ -414,13 +387,12 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.sphericalGraphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -447,13 +419,12 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.sphericalGraphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -480,13 +451,12 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.sphericalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -513,13 +483,12 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.sphericalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                                g);
 
                     }
 

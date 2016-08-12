@@ -62,6 +62,11 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected static PresentationMode presentationMode = PresentationMode.WHOLE_GRAPH;
     protected static BackgroundColorMode backgroundColorMode = BackgroundColorMode.BRIGHT;
 
+    protected static final Color gridColorWholeGraphBright = Color.black;
+    protected static final Color gridColorWholeGraphDark = Color.green;
+    protected static final Color gridColorGridOnlyBright = Color.black;
+    protected static final Color gridColorGridOnlyDark = Color.green;
+
     public enum BackgroundColorMode {
 
         BRIGHT, DARK;
@@ -231,6 +236,34 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
                 this.expZ--;
             }
         }
+
+    }
+
+    /**
+     * Berechnet die Farbe eines kleinen Graphenplättchens in Abhängigkeit von
+     * seiner Position auf der z-Achse.
+     */
+    protected Color computeColor(Color groundColor, double minZ, double maxZ, double height) {
+
+        Color c;
+        int red, green, blue;
+
+        int r = groundColor.getRed();
+        int g = groundColor.getGreen();
+        int b = groundColor.getBlue();
+
+        if (minZ == maxZ) {
+            red = r;
+            green = g;
+            blue = b;
+        } else {
+            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
+            green = g + (int) ((255 - g) * (height - minZ) / (maxZ - minZ));
+            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
+        }
+
+        c = new Color(red, green, blue);
+        return c;
 
     }
 
@@ -448,7 +481,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         }
 
         System.out.println("maxValueAbsc = " + this.maxX + ", " + "maxValueOrd = " + this.maxY + ", " + "maxValueAppl = " + this.maxZ);
-        
+
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];
@@ -892,5 +925,5 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         // Markierungen an den Achsen berechnen.
         computeExpXExpYExpZ();
     }
-    
+
 }

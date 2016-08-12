@@ -13,29 +13,29 @@ import java.util.HashMap;
 
 public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
-    //Parameter für 3D-Graphen
-    // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
-    private String varR, varPhi;
+    /**
+     * Variablenname für 3D-Graphen: varR = Radiusname.
+     */
+    private String varR;
+    /**
+     * Variablenname für 3D-Graphen: varPhi = Winkelname.
+     */
+    private String varPhi;
     private final ArrayList<Expression> exprs = new ArrayList<>();
-    //Array, indem die Punkte am Graphen gespeichert sind
     private ArrayList<double[][][]> cylindricalGraphs3D = new ArrayList<>();
-    /*
-     "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
-     Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
-     werden).
+    /**
+     * "Vergröberte Version" von cylindricalGraphs3D (GRUND: beim Herauszoomen dürfen die
+     * Plättchen am Graphen nicht so klein sein. Deshalb muss der Graph etwas
+     * vergröbert werden).
      */
     private ArrayList<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
-    //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private ArrayList<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
-    // Grundfarben für die einzelnen Graphen.
+
     private final ArrayList<Color> colors = new ArrayList<>();
-    // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
+
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
     private double minR, maxR, minPhi, maxPhi;
-    
-    private static final Color gridColorGridOnlyBright = Color.black;
-    private static final Color gridColorGridOnlyDark = Color.green;
 
     public GraphicPanelCylindrical() {
         super();
@@ -96,8 +96,10 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Voraussetzung: graphs sind bereits alle initialisiert (bzw. mit
-     * Funktionswerten gefüllt).
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: exprs, varR und varPhi sind bereits initialisiert.
+     *
+     * @throws EvaluationException
      */
     private void computeMaxXMaxYMaxZ() {
 
@@ -156,7 +158,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck expr.
+     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck exprs.
      *
      * @throws EvaluationException
      */
@@ -212,8 +214,9 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
-     * kann Voraussetzung: maxX, maxY sind bekannt!
+     * Gibt (eventuell) etwas gröbere Graphen zurück, damit sie gezeichnet
+     * werden können.<br>
+     * VORAUSSETZUNG: minR, maxR, minPhi und maxPhi sind initialisiert.
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
@@ -266,10 +269,10 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
+     * Zeichnet ein (tangentiales) viereckiges Plättchen eines 3D-Graphen.
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
+            int x_3, int y_3, int x_4, int y_4, Graphics g) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
         tangent.moveTo(x_1, y_1);
@@ -289,30 +292,6 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         }
 
         g2.draw(tangent);
-
-    }
-
-    private Color computeColor(Color groundColor, double minExpr, double maxExpr, double height) {
-
-        Color c;
-        int red, green, blue;
-
-        int r = groundColor.getRed();
-        int g = groundColor.getGreen();
-        int b = groundColor.getBlue();
-
-        if (minExpr == maxExpr) {
-            red = r;
-            green = g;
-            blue = b;
-        } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minExpr) / (maxExpr - minExpr));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-        }
-
-        c = new Color(red, green, blue);
-        return c;
 
     }
 
@@ -350,8 +329,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
-     * Achsen)
+     * Zeichnet alle 3D-Graphen in Zylinderkoordinaten.
      */
     private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
 
@@ -416,13 +394,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -449,13 +426,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -482,13 +458,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -515,13 +490,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     for (int k = 0; k < indices.size(); k++) {
 
-                        Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.cylindricalGraphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
                         drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
                                 graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                                g);
 
                     }
 
@@ -573,7 +547,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen von 3D-Graphen.
+     * Hauptmethode zum Zeichnen von 3D-Graphen in Zylinderkoordinaten.
      */
     private void drawCylindricalGraph3D(Graphics g) {
 
@@ -643,6 +617,9 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
     }
 
+    /**
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in Zylinderkoordinaten.
+     */
     public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);

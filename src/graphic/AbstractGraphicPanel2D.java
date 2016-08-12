@@ -20,14 +20,12 @@ import lang.translator.Translator;
 public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     /**
-     * Variablenname für 2D-Graphen: varAbsc = Abszissenname, varOrd =
-     * Ordinatenname.
+     * Variablenname für 2D-Graphen: varAbsc = Abszissenname.
      */
     protected String varAbsc = null;
 
     /**
-     * Variablenname für 2D-Graphen: varAbsc = Abszissenname, varOrd =
-     * Ordinatenname.
+     * Variablenname für 2D-Graphen: varOrd = Ordinatenname.
      */
     protected String varOrd = null;
 
@@ -377,7 +375,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         Folgende "Vorarbeit" benötigt jede 2D-Grafikart: Weißen Hintergrund
         zeichnen, Markierungen an den Achsen berechnen und Niveaulinien 
         und Achsen zeichnen. 
-        */
+         */
         // Weißen Hintergrund zeichnen.
         g.setColor(Color.white);
         g.fillRect(0, 0, 500, 500);
@@ -386,5 +384,5 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         // Niveaulinien und Achsen zeichnen
         drawAxesAndLines(g);
     }
-    
+
 }

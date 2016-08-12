@@ -9,15 +9,20 @@ import java.util.ArrayList;
 
 public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
 
-    //Parameter für 3D-Graphen
-    //Variablennamen der ersten und der zweiten Achse
+    /**
+     * Parametervariable für die parametrisierte Kurve.
+     */
     private String var;
-    //Array, indem die Punkte am Graphen gespeichert sind
+    /**
+     * expr[0] und expr[1] sind die Komponenten in der Kurvendarstellung.
+     */ 
     private Expression[] exprs = new Expression[3];
-    /*
-     "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
-     Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
-     werden).
+    /**
+     * Der Graph der 3D-Kurve, gegeben durch seine (numerisch berechneten)
+     * Punkte. Die Punkte, welche durch die Elemente im ArrayList gegeben sind,
+     * werden durch ein Double-Array mit genau drei Elementen angegeben und die
+     * benachbarten ArrayList-Elemente werden beim Zeichnen miteinander
+     * verbunden.
      */
     private final ArrayList<double[]> curve3D = new ArrayList<>();
 
@@ -46,7 +51,10 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Voraussetzung: expr, var_1 und var_2 sind bereits gesetzt.
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: expr und var sind bereits initialisiert.
+     *
+     * @throws EvaluationException
      */
     private void computeScreenSizes(Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
@@ -119,7 +127,9 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck expr.
+     * Berechnet die Gitterpunkte für die Graphen aus den Ausdrücken in
+     * expr.<br>
+     * VORAUSSETZUNG: expr ist initialisiert.
      *
      * @throws EvaluationException
      */
@@ -195,17 +205,15 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Berechnet die Pixelkoordinaten des (gröberen) Graphen. Voraussetzung:
-     * max_x, max_y sind bekannt!
+     * Berechnet die Pixelkoordinaten des (gröberen) Graphen.<br>
+     * VORAUSSETZUNG: curve3D ist bereits initialisiert.
      */
     private int[][] convertCurveToGraphicalCurve(Graphics g) {
-
         int[][] result = new int[this.curve3D.size()][2];
         for (int i = 0; i < this.curve3D.size(); i++) {
             result[i] = convertToPixel(this.curve3D.get(i)[0], this.curve3D.get(i)[1], this.curve3D.get(i)[2]);
         }
         return result;
-
     }
 
     /**
