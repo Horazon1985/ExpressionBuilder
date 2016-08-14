@@ -480,8 +480,6 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             return;
         }
 
-        System.out.println("maxValueAbsc = " + this.maxX + ", " + "maxValueOrd = " + this.maxY + ", " + "maxValueAppl = " + this.maxZ);
-
         g.setColor(Color.GRAY);
         double[][] border = new double[4][3];
         int[][] borderPixels = new int[4][2];

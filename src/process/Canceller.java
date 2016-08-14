@@ -5,7 +5,9 @@ import lang.translator.Translator;
 
 public abstract class Canceller {
 
-    // IDs für Fehlertexte.
+    /**
+     * Id für den Fehlertext, dass eine Berechnung abgebrochen wurde.
+     */
     private static String MCC_COMPUTATION_ABORTED = "MCC_COMPUTATION_ABORTED";
     
     private Canceller() {
@@ -13,6 +15,7 @@ public abstract class Canceller {
 
     /**
      * Bricht den aktuellen Thread ab und wirft einen entsprechenden Fehler.
+     * 
      * @throws CancellationException
      */
     public static void interruptComputationIfNeeded() {

@@ -13,23 +13,28 @@ import java.util.HashMap;
 
 public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
-    //Parameter für 3D-Graphen
-    // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
-    private String varPhi, varTau;
+    /**
+     * Variablenname für 3D-Graphen: varPhi = Name des horizintalen Winkels,
+     * gemessen von der positiven x-Achse aus.
+     */
+    private String varPhi;
+    /**
+     * Variablenname für 3D-Graphen: varPhi = Name des vertikalen Winkels,
+     * gemessen von der positiven z-Achse aus.
+     */
+    private String varTau;
     private final ArrayList<Expression> exprs = new ArrayList<>();
-    //Array, indem die Punkte am Graphen gespeichert sind
     private ArrayList<double[][][]> sphericalGraphs3D = new ArrayList<>();
-    /*
-     "Vergröberte Version" von Graph3D (GRUND: beim herauszoomen dürfen die
-     Plättchen am Graphen nicht so klein sein -> Graph muss etwas vergröbert
-     werden).
+    /**
+     * "Vergröberte Version" von sphericalGraphs3D (GRUND: beim Herauszoomen
+     * dürfen die Plättchen am Graphen nicht so klein sein. Deshalb muss der
+     * Graph etwas vergröbert werden).
      */
     private ArrayList<double[][][]> sphericalGraphs3DForGraphic = new ArrayList<>();
-    //Gibt an, ob der Funktionswert an der betreffenden Stelle definiert ist.
     private ArrayList<boolean[][]> sphericalGraphs3DAreDefined = new ArrayList<>();
-    // Grundfarben für die einzelnen Graphen.
+
     private final ArrayList<Color> colors = new ArrayList<>();
-    // Fixe Grundfarben für die ersten Graphen. Danach werden die Farben per Zufall generiert.
+
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
     private double minPhi, maxPhi, minTau, maxTau;
@@ -88,8 +93,10 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Voraussetzung: graphs sind bereits alle initialisiert (bzw. mit
-     * Funktionswerten gefüllt).
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: exprs, varPhi und varTau sind bereits initialisiert.
+     *
+     * @throws EvaluationException
      */
     private void computeMaxXMaxYMaxZ() {
 
@@ -207,8 +214,9 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
-     * kann Voraussetzung: maxX, maxY sind bekannt!
+     * Gibt (eventuell) etwas gröbere Graphen zurück, damit sie gezeichnet
+     * werden können.<br>
+     * VORAUSSETZUNG: minPhi, maxPhi, minTau und maxTau sind initialisiert.
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
@@ -261,7 +269,7 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
+     * Zeichnet ein (tangentiales) viereckiges Plättchen eines 3D-Graphen.
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g) {
@@ -321,10 +329,9 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
-     * Achsen)
+     * Zeichnet alle 3D-Graphen in Kugelkoordinaten.
      */
-    private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
+    private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g) {
 
         int numberOfIntervalsAlongAbsc = 0;
         int numberOfIntervalsAlongOrd = 0;
@@ -540,9 +547,9 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen von 3D-Graphen.
+     * Hauptmethode zum Zeichnen von 3D-Graphen in Kugelkoordinaten.
      */
-    private void drawCylindricalGraph3D(Graphics g) {
+    private void drawSphericalGraph3D(Graphics g) {
 
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
@@ -606,30 +613,33 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         drawLevelsOnWest(g, null, null, null);
         drawLevelsOnNorth(g, null, null, null);
         drawLevelsBottom(g);
-        drawGraphsFromCylindricalGraphs3DForGraphic(g, minExpr, maxExpr);
+        drawGraphsFromCylindricalGraphs3DForGraphic(g);
 
     }
 
-    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
+    /**
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in Kugelkoordinaten.
+     */
+    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
-        drawCylindricalGraphs3D();
+        drawSphericalGraphs3D();
     }
 
-    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
-        drawCylindricalGraphs3D();
+        drawSphericalGraphs3D();
     }
 
-    private void drawCylindricalGraphs3D() {
+    private void drawSphericalGraphs3D() {
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawCylindricalGraph3D(g);
+        drawSphericalGraph3D(g);
     }
 
 }

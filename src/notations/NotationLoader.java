@@ -26,6 +26,10 @@ public abstract class NotationLoader {
         SELFDEFINEDFUNCTION_VAR = getVarName("SELFDEFINEDFUNCTION_VAR");
     }
 
+    /**
+     * Gibt den Variablennamen entsprechend dem Input-Parameter varName zurück.
+     * Diese sind in der xml-Datei NotationConfig.xml definiert.
+     */
     public static String getVarName(String varName) {
 
         // XML-Datei öffnen.

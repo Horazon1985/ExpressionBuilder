@@ -331,7 +331,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     /**
      * Zeichnet alle 3D-Graphen in Zylinderkoordinaten.
      */
-    private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
+    private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g) {
 
         int numberOfIntervalsAlongAbsc = 0;
         int numberOfIntervalsAlongOrd = 0;
@@ -613,12 +613,13 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         drawLevelsOnWest(g, null, null, null);
         drawLevelsOnNorth(g, null, null, null);
         drawLevelsBottom(g);
-        drawGraphsFromCylindricalGraphs3DForGraphic(g, minExpr, maxExpr);
+        drawGraphsFromCylindricalGraphs3DForGraphic(g);
 
     }
 
     /**
-     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in Zylinderkoordinaten.
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in
+     * Zylinderkoordinaten.
      */
     public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);

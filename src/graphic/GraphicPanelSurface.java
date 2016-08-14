@@ -11,15 +11,23 @@ import java.util.ArrayList;
 
 public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
-    // Parameter für 3D-Graphen
-    // Variablennamen für 2D-Graphen: Absc = Abszisse, Ord = Ordinate.
-    private String varS, varT;
-    private Expression[] exprs = new Expression[2];
-    // Array, indem die Punkte am Graphen gespeichert sind
+    /**
+     * Variablenname für 3D-Graphen: varS = Name des ersten Parameters.
+     */
+    private String varS;
+    /**
+     * Variablenname für 3D-Graphen: varS = Name des zweiten Parameters.
+     */
+    private String varT;
+    /**
+     * exprs[0], exprs[1] und exprs[2] sind die Komponenten in der
+     * Flächendarstellung.
+     */
+    private Expression[] expr = new Expression[3];
     private double[][][] surfaceGraph3D;
     private double[][][] surfaceGraph3DForGraphic;
     private boolean[][] surfaceGraph3DIsDefined;
-    
+
     private final ArrayList<Color> colors = new ArrayList<>();
 
     private final Color color = new Color(170, 170, 70);
@@ -31,22 +39,22 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     }
 
     public Expression[] getExpressions() {
-        return this.exprs;
+        return this.expr;
     }
 
     public ArrayList<Color> getColors() {
-        if (this.colors.isEmpty()){
+        if (this.colors.isEmpty()) {
             this.colors.add(Color.BLUE);
         }
         return this.colors;
     }
-    
+
     public Color getColor() {
         return this.color;
     }
 
     public void setExpressions(Expression[] exprs) {
-        this.exprs = exprs;
+        this.expr = exprs;
     }
 
     public void setParameters(String varS, String varT, double bigRadius, double heightProjection, double angle,
@@ -63,8 +71,10 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Voraussetzung: graphs sind bereits alle initialisiert (bzw. mit
-     * Funktionswerten gefüllt).
+     * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
+     * VOLRAUSSETZUNG: expr, varS und varT sind bereits initialisiert.
+     *
+     * @throws EvaluationException
      */
     private void computeScreenSizes(Expression exprS_0, Expression exprS_1, Expression exprT_0, Expression exprT_1) throws EvaluationException {
 
@@ -84,9 +94,9 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
                 Variable.setValue(this.varS, s_0 + i * (s_1 - s_0) / 100);
                 Variable.setValue(this.varT, t_0 + j * (t_1 - t_0) / 100);
                 try {
-                    x = exprs[0].evaluate();
-                    y = exprs[1].evaluate();
-                    z = exprs[2].evaluate();
+                    x = expr[0].evaluate();
+                    y = expr[1].evaluate();
+                    z = expr[2].evaluate();
                 } catch (EvaluationException e) {
                     x = Double.NaN;
                     y = Double.NaN;
@@ -142,7 +152,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck expr.
+     * Berechnet die Gitterpunkte für den 3D-Graphen aus den Ausdrücken in expr.
      *
      * @throws EvaluationException
      */
@@ -161,9 +171,9 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
                 Variable.setValue(this.varS, this.minS + (this.maxS - this.minS) * i / 100);
                 Variable.setValue(this.varT, this.minT + (this.maxT - this.minT) * j / 100);
                 try {
-                    this.surfaceGraph3D[i][j][0] = this.exprs[0].evaluate();
-                    this.surfaceGraph3D[i][j][1] = this.exprs[1].evaluate();
-                    this.surfaceGraph3D[i][j][2] = this.exprs[2].evaluate();
+                    this.surfaceGraph3D[i][j][0] = this.expr[0].evaluate();
+                    this.surfaceGraph3D[i][j][1] = this.expr[1].evaluate();
+                    this.surfaceGraph3D[i][j][2] = this.expr[2].evaluate();
                     this.surfaceGraph3DIsDefined[i][j] = true;
                 } catch (EvaluationException e) {
                     this.surfaceGraph3D[i][j][0] = Double.NaN;
@@ -174,14 +184,15 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
             }
         }
 
-        //Zeichenbereich berechnen.
+        // Zeichenbereich berechnen.
         computeScreenSizes(exprS_0, exprS_1, exprT_0, exprT_1);
 
     }
 
     /**
-     * Macht die Lösung (eventuell) etwas gröber, damit sie gezeichnet werden
-     * kann Voraussetzung: maxX, maxY sind bekannt!
+     * Gibt (eventuell) einen etwas gröberen Graphen zurück, damit dieser
+     * gezeichnet werden können.<br>
+     * VORAUSSETZUNG: minS, maxS, minT und maxT sind initialisiert.
      */
     private double[][][] convertGraphsToCoarserGraphs() {
 
@@ -221,7 +232,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
+     * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
             int x_3, int y_3, int x_4, int y_4, Graphics g) {
@@ -248,10 +259,9 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet den ganzen 3D-Graphen bei Übergabe der Pixelkoordinaten (mit
-     * Achsen)
+     * Zeichnet die parametrisierte Fläche.
      */
-    private void drawSurfaceFromSurfaceForGraphic(Graphics g, double minExpr, double maxExpr) {
+    private void drawSurfaceFromSurfaceForGraphic(Graphics g) {
 
         if (this.surfaceGraph3DForGraphic.length == 0) {
             return;
@@ -336,16 +346,22 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         drawLevelsOnWest(g, null, null, null);
         drawLevelsOnNorth(g, null, null, null);
         drawLevelsBottom(g);
-        drawSurfaceFromSurfaceForGraphic(g, minExpr, maxExpr);
+        drawSurfaceFromSurfaceForGraphic(g);
 
     }
 
+    /**
+     * Öffentliche Hauptmethode zum Zeichnen einer parametrisierten Fläche.
+     */
     public void drawSurface(Expression s_0, Expression s_1, Expression t_0, Expression t_1, Expression[] exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(s_0, s_1, t_0, t_1);
         drawSurface();
     }
 
+    /**
+     * Hauptmethode zum Zeichnen einer parametrisierten Fläche.
+     */
     private void drawSurface() {
         repaint();
     }

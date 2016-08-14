@@ -11,6 +11,10 @@ import org.w3c.dom.NodeList;
 
 public abstract class Translator {
 
+    /**
+     * Gibt eine Meldung entsprechend der exceptionId und der eingestellten
+     * Sprache zurück.
+     */
     private static String translateMessage(String exceptionId) {
 
         // Die entsprechende XML-Datei öffnen.
@@ -77,12 +81,17 @@ public abstract class Translator {
 
     }
 
+    /**
+     * Gibt eine Meldung entsprechend der exceptionId und der eingestellten
+     * Sprache zurück, wobei Tokens der Form [0], [1], [2], ... nacheinander
+     * durch die Parameter params ersetzt werden.
+     */
     public static String translateOutputMessage(String messageId, Object... params) {
         String message = translateMessage(messageId);
         String token;
-        for (int i = 0; i < params.length; i++){
+        for (int i = 0; i < params.length; i++) {
             token = "[" + i + "]";
-            while (message.contains(token)){
+            while (message.contains(token)) {
                 message = message.substring(0, message.indexOf(token)) + params[i].toString() + message.substring(message.indexOf(token) + token.length());
             }
         }

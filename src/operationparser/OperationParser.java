@@ -65,10 +65,14 @@ public abstract class OperationParser {
     }
 
     /**
-     * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
-     * stehen. Beispiel commandLine = "x,y,f(w,z),u,v". Die Paremeter sind dann
-     * {x, y, f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von
-     * runden Klammern umgeben ist, werden die Parameter getrennt.
+     * Gibt ein String-Array zurück, in dem die einzelnen Parameter, welche in
+     * input enthalten und durch ein Komma getrennt sind, stehen. Nach einem
+     * eingelesenen Komma, welches NICHT von runden Klammern umgeben ist, werden
+     * die Parameter getrennt.<br>
+     * VORAUSSETZUNG: im String input stehen NUR die Parameter, getrennt durch
+     * ein Komma.<br>
+     * BEISPIEL input = "x,y,f(w,z),u,v". Die Paremeter sind dann {x, y, f(w,
+     * z), u, v}.
      *
      * @throws ExpressionException
      */
@@ -137,6 +141,13 @@ public abstract class OperationParser {
 
     }
 
+    /**
+     * Gibt für ein Pattern pattern das entsprechende Objekt der Klasse
+     * ParseResultPattern zurück, wenn möglich. Ansonst wird eine
+     * ExpressionException geworfen.
+     *
+     * @throws ExpressionException
+     */
     public static ParseResultPattern getResultPattern(String pattern) throws ExpressionException {
 
         String[] opAndArgs = getOperationAndArguments(pattern);
