@@ -14,6 +14,7 @@ import abstractexpressions.logicalexpression.classes.LogicalExpression;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixOperator;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
+import java.util.Arrays;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
@@ -302,9 +303,7 @@ public abstract class OperationParser {
                             throw new ParseException(i);
                         }
                         // Optionale Parameter einlesen (es muss mindestens einer sein).
-                        for (int j = 0; j < restrictions.length; j++) {
-                            restrictionsAsList.add(restrictions[j]);
-                        }
+                        restrictionsAsList.addAll(Arrays.asList(restrictions));
 
                         if (restrictionsAsList.isEmpty()) {
                             // Restriktionen MÜSSEN vorhanden sein.
@@ -359,6 +358,15 @@ public abstract class OperationParser {
 
     }
 
+    /**
+     * Gibt eine ArrayList mit Einschränkungsparametern zurück, falls der
+     * gegebene Parameter ein (abstrakter) Ausdruck ist. Das Array mit den
+     * Einschränkungen muss genau die Länge zwei haben und entweder
+     * Integer-Zahlen (als Strings) enthalten, oder den String "none". Der erste
+     * Parameter gibt die Mindestanzahl an Variablen im Ausdruck vor, der zweite
+     * die Höchstzahl. Die Einschränkung "none" bedeutet jeweils, dass keine
+     * Einschränkung vorliegt.
+     */
     private static ArrayList<String> getRestrictionList(String[] restrictions, int index) {
 
         ArrayList<String> restrictionsAsList = new ArrayList<>();
@@ -775,7 +783,8 @@ public abstract class OperationParser {
     }
 
     /**
-     * Parsen mathematischer Standardoperatoren.
+     * Parsen von Standardbefehlen (also Befehlen, zu denen ein Pattern
+     * existiert, welches eine Instanz der Klasse ParseResultPattern ist).
      */
     public static Command parseDefaultCommand(String commandName, String[] parameter, String pattern) throws ExpressionException {
 
@@ -960,6 +969,11 @@ public abstract class OperationParser {
 
     }
 
+    /**
+     * Gibt den zu den Eingabeparametern zugehörigen Operationsparameter zurück.
+     *
+     * @throws ExpressionException
+     */
     private static Object getOperationParameter(String opName, String parameter, HashSet<String> vars, ParamType type, ArrayList<String> restrictions, int index, Class cls) throws ExpressionException {
 
         /* 
