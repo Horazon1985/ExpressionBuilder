@@ -54,8 +54,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     protected double zoomfactor;
 
-    protected double axeCenterX, axeCenterY;
+    protected double axeCenterX, axeCenterY, axeCenterZ;
+    protected double minX, minY, minZ;
     protected double maxX, maxY, maxZ;
+    protected double minXOrigin, minYOrigin, minZOrigin;
     protected double maxXOrigin, maxYOrigin, maxZOrigin;
     protected int expX, expY, expZ;
 
@@ -204,35 +206,39 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         this.expY = 0;
         this.expZ = 0;
 
-        if (this.maxX >= 1) {
-            while (this.maxX / Math.pow(10, this.expX) >= 1) {
+        double distanceX = this.maxX - this.axeCenterX;
+        double distanceY = this.maxY - this.axeCenterY;
+        double distanceZ = this.maxZ - this.axeCenterZ;
+        
+        if (distanceX >= 1) {
+            while (distanceX / Math.pow(10, this.expX) >= 1) {
                 this.expX++;
             }
             this.expX--;
         } else {
-            while (this.maxX / Math.pow(10, this.expX) < 1) {
+            while (distanceX / Math.pow(10, this.expX) < 1) {
                 this.expX--;
             }
         }
 
-        if (this.maxY >= 1) {
-            while (this.maxY / Math.pow(10, this.expY) >= 1) {
+        if (distanceY >= 1) {
+            while (distanceY / Math.pow(10, this.expY) >= 1) {
                 this.expY++;
             }
             this.expY--;
         } else {
-            while (this.maxY / Math.pow(10, this.expY) < 1) {
+            while (distanceY / Math.pow(10, this.expY) < 1) {
                 this.expY--;
             }
         }
 
-        if (this.maxZ >= 1) {
-            while (this.maxZ / Math.pow(10, this.expZ) >= 1) {
+        if (distanceZ >= 1) {
+            while (distanceZ / Math.pow(10, this.expZ) >= 1) {
                 this.expZ++;
             }
             this.expZ--;
         } else {
-            while (this.maxZ / Math.pow(10, this.expZ) < 1) {
+            while (distanceZ / Math.pow(10, this.expZ) < 1) {
                 this.expZ--;
             }
         }
@@ -288,29 +294,29 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         double x_1, x_2;
 
         if (angleAbsc == 0) {
-            x_1 = this.bigRadius * x / this.maxX;
+            x_1 = this.bigRadius * (x - this.axeCenterX) / this.maxX;
             x_2 = 0;
         } else if (angleAbsc == 90) {
             x_1 = 0;
-            x_2 = this.bigRadius * y / this.maxY;
+            x_2 = this.bigRadius * (y - this.axeCenterY) / this.maxY;
         } else if (angleAbsc == 180) {
-            x_1 = -this.bigRadius * x / this.maxX;
+            x_1 = -this.bigRadius * (x - this.axeCenterX) / this.maxX;
             x_2 = 0;
         } else if (angleAbsc == 270) {
             x_1 = 0;
-            x_2 = -this.bigRadius * y / this.maxY;
+            x_2 = -this.bigRadius * (y - this.axeCenterY) / this.maxY;
         } else if (angleAbsc < 90) {
-            x_1 = (x / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
-            x_2 = (y / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
+            x_1 = ((x - this.axeCenterX) / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
+            x_2 = ((y - this.axeCenterY) / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
         } else if (angleAbsc < 180) {
-            x_1 = -(x / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
-            x_2 = (y / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
+            x_1 = -((x - this.axeCenterX) / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
+            x_2 = ((y - this.axeCenterY) / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
         } else if (angleAbsc < 270) {
-            x_1 = -(x / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
-            x_2 = -(y / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
+            x_1 = -((x - this.axeCenterX) / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
+            x_2 = -((y - this.axeCenterY) / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
         } else {
-            x_1 = (x / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
-            x_2 = -(y / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
+            x_1 = ((x - this.axeCenterX) / this.maxX) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleAbsc * Math.PI / 180) / this.smallRadius, 2));
+            x_2 = -((y - this.axeCenterY) / this.maxY) * this.bigRadius / Math.sqrt(1 + Math.pow(this.bigRadius * Math.tan(angleOrd * Math.PI / 180) / this.smallRadius, 2));
         }
 
         pixel[0] = (int) (250 + x_1 + x_2);
@@ -320,15 +326,15 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
         if (angleAbsc == 0) {
             y_1 = 0;
-            y_2 = -this.smallRadius * y / this.maxY;
+            y_2 = -this.smallRadius * (y - this.axeCenterY) / this.maxY;
         } else if (angleAbsc == 90) {
-            y_1 = this.smallRadius * x / this.maxX;
+            y_1 = this.smallRadius * (x - this.axeCenterX) / this.maxX;
             y_2 = 0;
         } else if (angleAbsc == 180) {
             y_1 = 0;
-            y_2 = this.smallRadius * y / this.maxY;
+            y_2 = this.smallRadius * (y - this.axeCenterY) / this.maxY;
         } else if (angleAbsc == 270) {
-            y_1 = -this.smallRadius * x / this.maxX;
+            y_1 = -this.smallRadius * (x - this.axeCenterX) / this.maxX;
             y_2 = 0;
         } else {
             y_1 = x_1 * Math.tan(angleAbsc * Math.PI / 180);
@@ -339,7 +345,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         Maximaler Funktionswert (also maxZ) soll h Pixel betragen. Deshalb die 
         folgende Skalierung.
          */
-        y_3 = -this.height * z / this.maxZ;
+        y_3 = -this.height * (z - this.axeCenterZ) / this.maxZ;
         pixel[1] = (int) (250 + y_1 + y_2 + y_3);
 
         return pixel;
@@ -366,7 +372,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
     /**
      * Zeichnet Niveaulinien am östlichen Rand des Graphen.<br>
-     * VORAUSSETZUNG: maxX, maxY, maxZ, bigRadius, smallRadius, height, angle
+     * VORAUSSETZUNG: maxX, maxY, maxZ, ..., bigRadius, smallRadius, height, angle
      * sind initialisiert.
      */
     protected void drawLevelsOnEast(Graphics g, String varAbsc, String varOrd, String varAppl) {
@@ -384,13 +390,17 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         border[0][2] = this.maxZOrigin;
         border[1][0] = this.maxXOrigin;
         border[1][1] = -this.maxYOrigin;
+//        border[1][1] = this.minYOrigin;
         border[1][2] = this.maxZOrigin;
         border[2][0] = this.maxXOrigin;
         border[2][1] = -this.maxYOrigin;
         border[2][2] = -this.maxZOrigin;
+//        border[2][1] = this.minYOrigin;
+//        border[2][2] = this.minZOrigin;
         border[3][0] = this.maxXOrigin;
         border[3][1] = this.maxYOrigin;
         border[3][2] = -this.maxZOrigin;
+//        border[3][2] = this.minZOrigin;
 
         for (int i = 0; i < 4; i++) {
             borderPixels[i] = convertToPixel(border[i][0], border[i][1], border[i][2]);
@@ -420,6 +430,8 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
         int bound = (int) (this.maxZOrigin / Math.pow(10, this.expZ));
         int i = -bound;
+//        int bound = (int) (this.minZOrigin / Math.pow(10, this.expZ));
+//        int i = bound;
 
         while (i * Math.pow(10, this.expZ) <= this.maxZOrigin) {
             lineLevel[0][0] = this.maxXOrigin;
@@ -427,6 +439,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = this.maxXOrigin;
             lineLevel[1][1] = -this.maxYOrigin;
+//            lineLevel[1][1] = this.minYOrigin;
             lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
@@ -443,6 +456,8 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         // Niveaulinien bzgl. der zweiten Achse zeichnen
         bound = (int) (this.maxYOrigin / Math.pow(10, this.expY));
         i = -bound;
+//        bound = (int) (this.minYOrigin / Math.pow(10, this.expY));
+//        i = bound;
 
         while (i * Math.pow(10, this.expY) <= this.maxYOrigin) {
             lineLevel[0][0] = this.maxXOrigin;
@@ -451,6 +466,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             lineLevel[1][0] = this.maxXOrigin;
             lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = -this.maxZOrigin;
+//            lineLevel[1][2] = this.minZOrigin;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);

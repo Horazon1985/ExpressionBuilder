@@ -16,7 +16,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     /**
      * Variablenname für 3D-Graphen: varAbsc = Abszissenname.
      */
-    private String varAbsc; 
+    private String varAbsc;
     /**
      * Variablenname für 3D-Graphen: varOrd = Ordinatenname.
      */
@@ -99,36 +99,42 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
      *
      * @throws EvaluationException
      */
-    private void computeMaxXMaxYMaxZ() {
+    private void computeScreenSizes() {
 
         if (this.graphs3D.isEmpty()) {
 
+            this.minX = -1;
+            this.minY = -1;
+            this.minZ = -1;
             this.maxX = 1;
             this.maxY = 1;
             this.maxZ = 1;
 
         } else {
 
-            double globalMaxX = 0, globalMaxY = 0, globalMaxZ = 0;
-
             for (int k = 0; k < this.graphs3D.size(); k++) {
 
                 if (this.graphs3D.get(0).length == 0) {
                     continue;
                 }
-                globalMaxX = Math.max(globalMaxX, Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0])));
-                globalMaxY = Math.max(globalMaxY, Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1])));
+                this.minX = this.graphs3D.get(0)[0][0][0];
+                this.minY = this.graphs3D.get(0)[0][0][1];
+//                this.maxX = this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0];
+//                this.maxY = this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1];
+                this.maxX = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
+                this.maxY = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
+                this.minZ = 0;
+                this.maxZ = 0;
 
                 for (int i = 0; i <= this.graphs3D.get(k).length - 1; i++) {
                     for (int j = 0; j <= this.graphs3D.get(k)[0].length - 1; j++) {
                         if (graphs3DAreDefined.get(k)[i][j]) {
-                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.graphs3D.get(k)[i][j][2]));
+                            this.minZ = Math.min(this.minZ, this.graphs3D.get(k)[i][j][2]);
+//                            this.maxZ = Math.max(this.maxZ, this.graphs3D.get(k)[i][j][2]);
+                            this.maxZ = Math.max(this.maxZ, Math.abs(this.graphs3D.get(k)[i][j][2]));
                         }
                     }
                 }
-                this.maxX = globalMaxX;
-                this.maxY = globalMaxY;
-                this.maxZ = globalMaxZ;
                 // 30 % Rand auf der z-Achse lassen!
                 this.maxZ = this.maxZ * 1.3;
 
@@ -136,19 +142,29 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
         }
 
-        if (this.maxX == 0) {
-            this.maxX = 1;
+        if (this.minX == this.maxX) {
+            this.minX = this.minX - 1;
+            this.maxX = this.maxX + 1;
         }
-        if (this.maxY == 0) {
-            this.maxY = 1;
+        if (this.minY == this.maxY) {
+            this.minY = this.minY - 1;
+            this.maxY = this.maxY + 1;
         }
-        if (this.maxZ == 0) {
-            this.maxZ = 1;
+        if (this.minZ == this.maxZ) {
+            this.minZ = this.minZ - 1;
+            this.maxZ = this.maxZ + 1;
         }
 
+        this.minXOrigin = this.minX;
+        this.minYOrigin = this.minY;
+        this.minZOrigin = this.minZ;
         this.maxXOrigin = this.maxX;
         this.maxYOrigin = this.maxY;
         this.maxZOrigin = this.maxZ;
+
+        this.axeCenterX = (this.minX + this.maxX) / 2;
+        this.axeCenterY = (this.minY + this.maxY) / 2;
+        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
 
     }
 
@@ -196,7 +212,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         }
 
         // Zeichenbereich berechnen.
-        computeMaxXMaxYMaxZ();
+        computeScreenSizes();
 
     }
 
@@ -640,7 +656,8 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in kartesischen Koordinaten.
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in kartesischen
+     * Koordinaten.
      */
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
