@@ -73,113 +73,9 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
      * VOLRAUSSETZUNG: expr, varS und varT sind bereits initialisiert.
-     *
-     * @throws EvaluationException
      */
-    private void computeScreenSizes(Expression exprS_0, Expression exprS_1, Expression exprT_0, Expression exprT_1) throws EvaluationException {
-
-        double s_0 = exprS_0.evaluate();
-        double s_1 = exprS_1.evaluate();
-        double t_0 = exprT_0.evaluate();
-        double t_1 = exprT_1.evaluate();
-
-        this.minX = Double.NaN;
-        this.minY = Double.NaN;
-        this.minZ = Double.NaN;
-        this.maxX = Double.NaN;
-        this.maxY = Double.NaN;
-        this.maxZ = Double.NaN;
-
-        double x, y, z;
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
-
-                Variable.setValue(this.varS, s_0 + i * (s_1 - s_0) / 100);
-                Variable.setValue(this.varT, t_0 + j * (t_1 - t_0) / 100);
-                try {
-                    x = expr[0].evaluate();
-                    y = expr[1].evaluate();
-                    z = expr[2].evaluate();
-                } catch (EvaluationException e) {
-                    x = Double.NaN;
-                    y = Double.NaN;
-                    z = Double.NaN;
-                }
-
-                if (!Double.isNaN(x) && !Double.isInfinite(x) && !Double.isNaN(y) && !Double.isInfinite(y)
-                        && !Double.isNaN(z) && !Double.isInfinite(z)) {
-                    if (Double.isNaN(this.minX)) {
-                        this.minX = x;
-                        this.maxX = x;
-                    } else {
-                        this.minX = Math.min(this.minX, x);
-                        this.maxX = Math.max(this.maxX, x);
-                    }
-                    if (Double.isNaN(this.minY)) {
-                        this.minY = y;
-                        this.maxY = y;
-                    } else {
-                        this.minY = Math.min(this.minY, y);
-                        this.maxY = Math.max(this.maxY, y);
-                    }
-                    if (Double.isNaN(this.minZ)) {
-                        this.minZ = z;
-                        this.maxZ = z;
-                    } else {
-                        this.minZ = Math.min(this.minZ, z);
-                        this.maxZ = Math.max(this.maxZ, z);
-                    }
-                }
-            }
-        }
-
-        if (Double.isNaN(this.minX) || Double.isInfinite(this.minX) || Double.isNaN(this.maxX) || Double.isInfinite(this.maxX)
-                || Double.isNaN(this.minY) || Double.isInfinite(this.minY) || Double.isNaN(this.maxY) || Double.isInfinite(this.maxY)
-                || Double.isNaN(this.minZ) || Double.isInfinite(this.minZ) || Double.isNaN(this.maxZ) || Double.isInfinite(this.maxZ)) {
-            this.minX = -1;
-            this.minY = -1;
-            this.minZ = -1;
-            this.maxX = 1;
-            this.maxY = 1;
-            this.maxZ = 1;
-        }
-
-        // Falls alle Komponenten konstant sind.
-        if (this.minX == this.maxX) {
-            this.maxX = this.maxX + 1;
-            this.minX = this.minX - 1;
-        }
-        if (this.minY == this.maxY) {
-            this.maxY = this.maxY + 1;
-            this.minY = this.minY - 1;
-        }
-        if (this.minZ == this.maxZ) {
-            this.maxZ = this.maxZ + 1;
-            this.minZ = this.minZ - 1;
-        }
-
-        // 30 % Rand auf jeder der Achsen lassen!
-        this.maxX = this.maxX + 0.3 * (this.maxX - this.minX);
-        this.minX = this.minX - 0.3 * (this.maxX - this.minX);
-        this.maxY = this.maxY + 0.3 * (this.maxY - this.minY);
-        this.minY = this.minY - 0.3 * (this.maxY - this.minY);
-        this.maxZ = this.maxZ + 0.3 * (this.maxZ - this.minZ);
-        this.minZ = this.minZ - 0.3 * (this.maxZ - this.minZ);
-
-        this.minXOrigin = this.minX;
-        this.minYOrigin = this.minY;
-        this.minZOrigin = this.minZ;
-        this.maxXOrigin = this.maxX;
-        this.maxYOrigin = this.maxY;
-        this.maxZOrigin = this.maxZ;
-
-        this.axeCenterX = (this.minX + this.maxX) / 2;
-        this.axeCenterY = (this.minY + this.maxY) / 2;
-        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
-        this.axeCenterXOrigin = this.axeCenterX;
-        this.axeCenterYOrigin = this.axeCenterY;
-        this.axeCenterZOrigin = this.axeCenterZ;
-
+    private void computeScreenSizes() {
+        super.computeScreenSizes(this.surfaceGraph3D, true, true, true);
     }
 
     /**
@@ -216,7 +112,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         }
 
         // Zeichenbereich berechnen.
-        computeScreenSizes(exprS_0, exprS_1, exprT_0, exprT_1);
+        computeScreenSizes();
 
     }
 

@@ -166,9 +166,9 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
         double h;
 
         Expression[] tangentVector = new Expression[3];
-        tangentVector[0] = this.exprs[0].diff(var).simplify();
-        tangentVector[1] = this.exprs[1].diff(var).simplify();
-        tangentVector[2] = this.exprs[2].diff(var).simplify();
+        tangentVector[0] = this.exprs[0].diff(this.var).simplify();
+        tangentVector[1] = this.exprs[1].diff(this.var).simplify();
+        tangentVector[2] = this.exprs[2].diff(this.var).simplify();
 
         // Der Graph der Kurve soll aus maximal 10000 Teilstrecken bestehen.
         for (int i = 0; i < 10000; i++) {

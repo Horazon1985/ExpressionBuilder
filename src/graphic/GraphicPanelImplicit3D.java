@@ -965,7 +965,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
                     cubesForComputation[i][j][k].computePolygons(cubes[i][j][k], x_0 + i * (x_1 - x_0) / numberOfIntervalsX, x_0 + (i + 1) * (x_1 - x_0) / numberOfIntervalsX,
                             y_0 + j * (y_1 - y_0) / numberOfIntervalsY, y_0 + (j + 1) * (y_1 - y_0) / numberOfIntervalsY,
                             z_0 + k * (z_1 - z_0) / numberOfIntervalsZ, z_0 + (k + 1) * (z_1 - z_0) / numberOfIntervalsZ);
-//                    System.out.println("(" + i + "," + j + "," + k + "): " + cubesForComputation[i][j][k]);
                 }
             }
         }
@@ -993,14 +992,12 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         this.maxXOrigin = this.maxX;
         this.maxYOrigin = this.maxY;
         this.maxZOrigin = this.maxZ;
-        
         this.axeCenterX = (this.minX + this.maxX) / 2;
         this.axeCenterY = (this.minY + this.maxY) / 2;
         this.axeCenterZ = (this.minZ + this.maxZ) / 2;
         this.axeCenterXOrigin = this.axeCenterX;
         this.axeCenterYOrigin = this.axeCenterY;
         this.axeCenterZOrigin = this.axeCenterZ;
-        
     }
 
     /**
