@@ -96,76 +96,9 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
      * VOLRAUSSETZUNG: graphs3D ist bereits initialisiert.
-     *
-     * @throws EvaluationException
      */
     private void computeScreenSizes() {
-
-        if (this.graphs3D.isEmpty()) {
-
-            this.minX = -1;
-            this.minY = -1;
-            this.minZ = -1;
-            this.maxX = 1;
-            this.maxY = 1;
-            this.maxZ = 1;
-
-        } else {
-
-            for (int k = 0; k < this.graphs3D.size(); k++) {
-
-                if (this.graphs3D.get(0).length == 0) {
-                    continue;
-                }
-                this.minX = this.graphs3D.get(0)[0][0][0];
-                this.minY = this.graphs3D.get(0)[0][0][1];
-//                this.maxX = this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0];
-//                this.maxY = this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1];
-                this.maxX = Math.max(Math.abs(this.graphs3D.get(0)[0][0][0]), Math.abs(this.graphs3D.get(0)[this.graphs3D.get(0).length - 1][0][0]));
-                this.maxY = Math.max(Math.abs(this.graphs3D.get(0)[0][0][1]), Math.abs(this.graphs3D.get(0)[0][this.graphs3D.get(0)[0].length - 1][1]));
-                this.minZ = 0;
-                this.maxZ = 0;
-
-                for (int i = 0; i <= this.graphs3D.get(k).length - 1; i++) {
-                    for (int j = 0; j <= this.graphs3D.get(k)[0].length - 1; j++) {
-                        if (graphs3DAreDefined.get(k)[i][j]) {
-                            this.minZ = Math.min(this.minZ, this.graphs3D.get(k)[i][j][2]);
-//                            this.maxZ = Math.max(this.maxZ, this.graphs3D.get(k)[i][j][2]);
-                            this.maxZ = Math.max(this.maxZ, Math.abs(this.graphs3D.get(k)[i][j][2]));
-                        }
-                    }
-                }
-                // 30 % Rand auf der z-Achse lassen!
-                this.maxZ = this.maxZ * 1.3;
-
-            }
-
-        }
-
-        if (this.minX == this.maxX) {
-            this.minX = this.minX - 1;
-            this.maxX = this.maxX + 1;
-        }
-        if (this.minY == this.maxY) {
-            this.minY = this.minY - 1;
-            this.maxY = this.maxY + 1;
-        }
-        if (this.minZ == this.maxZ) {
-            this.minZ = this.minZ - 1;
-            this.maxZ = this.maxZ + 1;
-        }
-
-        this.minXOrigin = this.minX;
-        this.minYOrigin = this.minY;
-        this.minZOrigin = this.minZ;
-        this.maxXOrigin = this.maxX;
-        this.maxYOrigin = this.maxY;
-        this.maxZOrigin = this.maxZ;
-
-        this.axeCenterX = (this.minX + this.maxX) / 2;
-        this.axeCenterY = (this.minY + this.maxY) / 2;
-        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
-
+        super.computeMaxXMaxYMaxZ(this.graphs3D, false, false, true);
     }
 
     /**
@@ -223,20 +156,13 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongAbsc = this.graphs3D.get(0).length;
-        int numberOfIntervalsAlongOrd = this.graphs3D.get(0)[0].length;
+        int numberOfIntervals = (int) (50 * this.zoomfactor);
 
-        if (numberOfIntervalsAlongAbsc > 1.35 * 20 * (this.graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - this.graphs3D.get(0)[0][0][0]) / this.maxX) {
-            numberOfIntervalsAlongAbsc = (int) (1.35 * 20 * (this.graphs3D.get(0)[numberOfIntervalsAlongAbsc - 1][0][0] - this.graphs3D.get(0)[0][0][0]) / this.maxX);
-            if (numberOfIntervalsAlongAbsc < 1) {
-                numberOfIntervalsAlongAbsc = 1;
-            }
+        if (numberOfIntervals > 50) {
+            numberOfIntervals = 50;
         }
-        if (numberOfIntervalsAlongOrd > 1.35 * 20 * (this.graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - this.graphs3D.get(0)[0][0][1]) / this.maxY) {
-            numberOfIntervalsAlongOrd = (int) (1.35 * 20 * (this.graphs3D.get(0)[0][numberOfIntervalsAlongOrd - 1][1] - this.graphs3D.get(0)[0][0][1]) / this.maxY);
-            if (numberOfIntervalsAlongOrd < 1) {
-                numberOfIntervalsAlongOrd = 1;
-            }
+        if (numberOfIntervals < 2) {
+            numberOfIntervals = 2;
         }
 
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
@@ -246,24 +172,24 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         this.graphs3DAreDefined.clear();
         for (double[][][] graph3D : this.graphs3D) {
 
-            graph3DForGraphic = new double[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd][3];
-            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongAbsc][numberOfIntervalsAlongOrd];
+            graph3DForGraphic = new double[numberOfIntervals][numberOfIntervals][3];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervals][numberOfIntervals];
 
             int currentIndexI, currentIndexJ;
 
-            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+            for (int i = 0; i < numberOfIntervals; i++) {
 
-                if (graph3D.length <= numberOfIntervalsAlongAbsc) {
+                if (graph3D.length <= numberOfIntervals) {
                     currentIndexI = i;
                 } else {
-                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongAbsc - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervals - 1));
                 }
 
-                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-                    if (graph3D[0].length <= numberOfIntervalsAlongOrd) {
+                for (int j = 0; j < numberOfIntervals; j++) {
+                    if (graph3D[0].length <= numberOfIntervals) {
                         currentIndexJ = j;
                     } else {
-                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongOrd - 1));
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervals - 1));
                     }
                     graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
                     graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];

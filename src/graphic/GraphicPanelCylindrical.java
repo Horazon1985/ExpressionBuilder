@@ -24,9 +24,9 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     private final ArrayList<Expression> exprs = new ArrayList<>();
     private ArrayList<double[][][]> cylindricalGraphs3D = new ArrayList<>();
     /**
-     * "Vergröberte Version" von cylindricalGraphs3D (GRUND: beim Herauszoomen dürfen die
-     * Plättchen am Graphen nicht so klein sein. Deshalb muss der Graph etwas
-     * vergröbert werden).
+     * "Vergröberte Version" von cylindricalGraphs3D (GRUND: beim Herauszoomen
+     * dürfen die Plättchen am Graphen nicht so klein sein. Deshalb muss der
+     * Graph etwas vergröbert werden).
      */
     private ArrayList<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
     private ArrayList<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
@@ -98,63 +98,9 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
      * VOLRAUSSETZUNG: exprs, varR und varPhi sind bereits initialisiert.
-     *
-     * @throws EvaluationException
      */
-    private void computeMaxXMaxYMaxZ() {
-
-        if (this.cylindricalGraphs3D.isEmpty()) {
-
-            this.maxX = 1;
-            this.maxY = 1;
-            this.maxZ = 1;
-
-        } else {
-
-            double globalMaxX = 0, globalMaxY = 0, globalMaxZ = 0;
-
-            for (int k = 0; k < this.cylindricalGraphs3D.size(); k++) {
-
-                if (this.cylindricalGraphs3D.get(0).length == 0) {
-                    continue;
-                }
-
-                for (int i = 0; i < this.cylindricalGraphs3D.get(k).length; i++) {
-                    for (int j = 0; j < this.cylindricalGraphs3D.get(k)[0].length; j++) {
-                        globalMaxX = Math.max(globalMaxX, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][0]));
-                        globalMaxY = Math.max(globalMaxY, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][1]));
-                        if (cylindricalGraphs3DAreDefined.get(k)[i][j]) {
-                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.cylindricalGraphs3D.get(k)[i][j][2]));
-                        }
-                    }
-                }
-
-                this.maxX = globalMaxX;
-                this.maxY = globalMaxY;
-                this.maxZ = globalMaxZ;
-                // 30 % Rand auf jeder der Achsen lassen!
-                this.maxX = this.maxX * 1.3;
-                this.maxY = this.maxY * 1.3;
-                this.maxZ = this.maxZ * 1.3;
-
-            }
-
-        }
-
-        if (this.maxX == 0) {
-            this.maxX = 1;
-        }
-        if (this.maxY == 0) {
-            this.maxY = 1;
-        }
-        if (this.maxZ == 0) {
-            this.maxZ = 1;
-        }
-
-        this.maxXOrigin = this.maxX;
-        this.maxYOrigin = this.maxY;
-        this.maxZOrigin = this.maxZ;
-
+    private void computeScreenSizes() {
+        super.computeMaxXMaxYMaxZ(this.cylindricalGraphs3D, true, true, true);
     }
 
     /**
@@ -180,7 +126,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
          100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle.
          */
         int numberOfIntervalsAlongPhi = (int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI));
-        for (Expression expr : exprs) {
+        for (Expression expr : this.exprs) {
 
             singleGraph = new double[101][numberOfIntervalsAlongPhi + 1][3];
             singleGraphIsDefined = new boolean[101][numberOfIntervalsAlongPhi + 1];
@@ -208,8 +154,8 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
         }
 
-        //Zeichenbereich berechnen.
-        computeMaxXMaxYMaxZ();
+        // Zeichenbereich berechnen.
+        computeScreenSizes();
 
     }
 
@@ -220,9 +166,22 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongR = Math.min(100, (int) (30 * (this.maxR - this.minR) / (this.maxR * this.zoomfactor)));
+        int numberOfIntervalsAlongR = (int) (50 * this.zoomfactor);
+        if (numberOfIntervalsAlongR > 50) {
+            numberOfIntervalsAlongR = 50;
+        }
+        if (numberOfIntervalsAlongR < 2) {
+            numberOfIntervalsAlongR = 2;
+        }
+        
         // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
-        int numberOfIntervalsAlongPhi = Math.min((int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI)), (int) (100 / this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI)));
+        int numberOfIntervalsAlongPhi = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
+        if (numberOfIntervalsAlongPhi > this.cylindricalGraphs3D.get(0)[0].length - 1) {
+            numberOfIntervalsAlongPhi = this.cylindricalGraphs3D.get(0)[0].length - 1;
+        }
+        if (numberOfIntervalsAlongPhi < 2) {
+            numberOfIntervalsAlongPhi = 2;
+        }
 
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 

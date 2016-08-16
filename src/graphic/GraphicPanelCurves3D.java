@@ -61,9 +61,12 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
 
-        double globalMaxX = Double.NaN;
-        double globalMaxY = Double.NaN;
-        double globalMaxZ = Double.NaN;
+        this.minX = Double.NaN;
+        this.minY = Double.NaN;
+        this.minZ = Double.NaN;
+        this.maxX = Double.NaN;
+        this.maxY = Double.NaN;
+        this.maxZ = Double.NaN;
 
         double x, y, z;
         for (int i = 0; i < 100; i++) {
@@ -81,48 +84,69 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
 
             if (!Double.isNaN(x) && !Double.isInfinite(x) && !Double.isNaN(y) && !Double.isInfinite(y)
                     && !Double.isNaN(z) && !Double.isInfinite(z)) {
-                if (Double.isNaN(globalMaxX)) {
-                    globalMaxX = Math.abs(x);
-                    globalMaxY = Math.abs(y);
-                    globalMaxZ = Math.abs(z);
+                if (Double.isNaN(this.maxX)) {
+                    this.minX = x;
+                    this.minY = y;
+                    this.minZ = z;
+                    this.maxX = x;
+                    this.maxY = y;
+                    this.maxZ = z;
                 } else {
-                    globalMaxX = Math.max(globalMaxX, Math.abs(x));
-                    globalMaxY = Math.max(globalMaxY, Math.abs(y));
-                    globalMaxZ = Math.max(globalMaxZ, Math.abs(z));
+                    this.minX = Math.min(this.minX, x);
+                    this.minY = Math.min(this.minY, y);
+                    this.minZ = Math.min(this.minZ, z);
+                    this.maxX = Math.max(this.maxX, x);
+                    this.maxY = Math.max(this.maxY, y);
+                    this.maxZ = Math.max(this.maxZ, z);
                 }
             }
         }
 
-        if (Double.isNaN(globalMaxX) || Double.isInfinite(globalMaxX) || Double.isNaN(globalMaxY) || Double.isInfinite(globalMaxY)
-                || Double.isNaN(globalMaxZ) || Double.isInfinite(globalMaxZ)) {
+        if (Double.isNaN(this.minX) || Double.isInfinite(this.minX) || Double.isNaN(this.maxX) || Double.isInfinite(this.maxX)
+                || Double.isNaN(this.minY) || Double.isInfinite(this.minY) || Double.isNaN(this.maxY) || Double.isInfinite(this.maxY)
+                || Double.isNaN(this.minZ) || Double.isInfinite(this.minZ) || Double.isNaN(this.maxZ) || Double.isInfinite(this.maxZ)) {
+            this.minX = -1;
+            this.minY = -1;
+            this.minZ = -1;
             this.maxX = 1;
             this.maxY = 1;
             this.maxZ = 1;
         } else {
-            this.maxX = globalMaxX;
-            this.maxY = globalMaxY;
-            this.maxZ = globalMaxZ;
-
             // Falls alle expr.get(i) konstant sind.
-            if (this.maxX == 0) {
-                this.maxX = 1;
+            if (this.minX == this.maxX) {
+                this.minX = this.minX - 1;
+                this.maxX = this.maxX + 1;
             }
-            if (this.maxY == 0) {
-                this.maxY = 1;
+            if (this.minY == this.maxY) {
+                this.minY = this.minY - 1;
+                this.maxY = this.maxY + 1;
             }
-            if (this.maxZ == 0) {
-                this.maxZ = 1;
+            if (this.minZ == this.maxZ) {
+                this.minZ = this.minZ - 1;
+                this.maxZ = this.maxZ + 1;
             }
-
             // 30 % Rand lassen!
-            this.maxX = this.maxX * 1.3;
-            this.maxY = this.maxY * 1.3;
-            this.maxZ = this.maxZ * 1.3;
+            this.maxX = this.maxX + 0.3*(this.maxX - this.minX);
+            this.minX = this.minX - 0.3*(this.maxX - this.minX);
+            this.maxY = this.maxY + 0.3*(this.maxY - this.minY);
+            this.minY = this.minY - 0.3*(this.maxY - this.minY);
+            this.maxZ = this.maxZ + 0.3*(this.maxZ - this.minZ);
+            this.minZ = this.minZ - 0.3*(this.maxZ - this.minZ);
         }
 
+        this.minXOrigin = this.minX;
+        this.minYOrigin = this.minY;
+        this.minZOrigin = this.minZ;
         this.maxXOrigin = this.maxX;
         this.maxYOrigin = this.maxY;
         this.maxZOrigin = this.maxZ;
+        
+        this.axeCenterX = (this.minX + this.maxX) / 2;
+        this.axeCenterY = (this.minY + this.maxY) / 2;
+        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
+        this.axeCenterXOrigin = this.axeCenterX;
+        this.axeCenterYOrigin = this.axeCenterY;
+        this.axeCenterZOrigin = this.axeCenterZ;
         
     }
 

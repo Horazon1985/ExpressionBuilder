@@ -95,63 +95,9 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
      * VOLRAUSSETZUNG: exprs, varPhi und varTau sind bereits initialisiert.
-     *
-     * @throws EvaluationException
      */
-    private void computeMaxXMaxYMaxZ() {
-
-        if (this.sphericalGraphs3D.isEmpty()) {
-
-            this.maxX = 1;
-            this.maxY = 1;
-            this.maxZ = 1;
-
-        } else {
-
-            double globalMaxX = 0, globalMaxY = 0, globalMaxZ = 0;
-
-            for (int k = 0; k < this.sphericalGraphs3D.size(); k++) {
-
-                if (this.sphericalGraphs3D.get(0).length == 0) {
-                    continue;
-                }
-
-                for (int i = 0; i < this.sphericalGraphs3D.get(k).length; i++) {
-                    for (int j = 0; j < this.sphericalGraphs3D.get(k)[0].length; j++) {
-                        globalMaxX = Math.max(globalMaxX, Math.abs(this.sphericalGraphs3D.get(k)[i][j][0]));
-                        globalMaxY = Math.max(globalMaxY, Math.abs(this.sphericalGraphs3D.get(k)[i][j][1]));
-                        if (sphericalGraphs3DAreDefined.get(k)[i][j]) {
-                            globalMaxZ = Math.max(globalMaxZ, Math.abs(this.sphericalGraphs3D.get(k)[i][j][2]));
-                        }
-                    }
-                }
-
-                this.maxX = globalMaxX;
-                this.maxY = globalMaxY;
-                this.maxZ = globalMaxZ;
-                // 30 % Rand auf jeder der Achsen lassen!
-                this.maxX = this.maxX * 1.3;
-                this.maxY = this.maxY * 1.3;
-                this.maxZ = this.maxZ * 1.3;
-
-            }
-
-        }
-
-        if (this.maxX == 0) {
-            this.maxX = 1;
-        }
-        if (this.maxY == 0) {
-            this.maxY = 1;
-        }
-        if (this.maxZ == 0) {
-            this.maxZ = 1;
-        }
-
-        this.maxXOrigin = this.maxX;
-        this.maxYOrigin = this.maxY;
-        this.maxZOrigin = this.maxZ;
-
+    private void computeScreenSizes() {
+        super.computeMaxXMaxYMaxZ(this.sphericalGraphs3D, true, true, true);
     }
 
     /**
@@ -173,20 +119,22 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         double[][][] singleGraph;
         boolean[][] singleGraphIsDefined;
         /*
-         Entlang r wird in 100 Intervalle unterteilt, entlang phi in 
-         100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle.
+         Entlang phi wird in 100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle 
+         unterteilt, entlang tau in 100 * (this.maxTau - this.minTau) / (2 * Math.PI) 
+         Intervalle.
          */
-        int numberOfIntervalsAlongPhi = (int) (100 * (this.maxTau - this.minTau) / (2 * Math.PI));
-        for (Expression expr : exprs) {
+        int numberOfIntervalsAlongPhi = (int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI));
+        int numberOfIntervalsAlongTau = (int) (100 * (this.maxTau - this.minTau) / (2 * Math.PI));
+        for (Expression expr : this.exprs) {
 
-            singleGraph = new double[101][numberOfIntervalsAlongPhi + 1][3];
-            singleGraphIsDefined = new boolean[101][numberOfIntervalsAlongPhi + 1];
+            singleGraph = new double[numberOfIntervalsAlongPhi + 1][numberOfIntervalsAlongTau + 1][3];
+            singleGraphIsDefined = new boolean[numberOfIntervalsAlongPhi + 1][numberOfIntervalsAlongTau + 1];
             Variable.setValue(this.varPhi, this.minPhi);
             Variable.setValue(this.varTau, this.minTau);
-            for (int i = 0; i <= 100; i++) {
-                for (int j = 0; j <= numberOfIntervalsAlongPhi; j++) {
-                    currentPhi = this.minPhi + (this.maxPhi - this.minPhi) * i / 100;
-                    currentTau = this.minTau + (this.maxTau - this.minTau) * j / numberOfIntervalsAlongPhi;
+            for (int i = 0; i <= numberOfIntervalsAlongPhi; i++) {
+                for (int j = 0; j <= numberOfIntervalsAlongTau; j++) {
+                    currentPhi = this.minPhi + (this.maxPhi - this.minPhi) * i / numberOfIntervalsAlongPhi;
+                    currentTau = this.minTau + (this.maxTau - this.minTau) * j / numberOfIntervalsAlongTau;
                     Variable.setValue(this.varPhi, currentPhi);
                     Variable.setValue(this.varTau, currentTau);
                     try {
@@ -208,8 +156,8 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
         }
 
-        //Zeichenbereich berechnen.
-        computeMaxXMaxYMaxZ();
+        // Zeichenbereich berechnen.
+        computeScreenSizes();
 
     }
 
@@ -220,9 +168,22 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
      */
     private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongR = Math.min(100, (int) (30 * (this.maxPhi - this.minPhi) / (this.maxPhi * this.zoomfactor)));
+        int numberOfIntervalsAlongPhi = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
         // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
-        int numberOfIntervalsAlongPhi = Math.min((int) (100 * (this.maxTau - this.minTau) / (2 * Math.PI)), (int) (100 / this.zoomfactor * (this.maxTau - this.minTau) / (2 * Math.PI)));
+        if (numberOfIntervalsAlongPhi > this.sphericalGraphs3D.get(0).length - 1) {
+            numberOfIntervalsAlongPhi = this.sphericalGraphs3D.get(0).length - 1;
+        }
+        if (numberOfIntervalsAlongPhi < 2){
+            numberOfIntervalsAlongPhi = 2;
+        }
+        int numberOfIntervalsAlongTau = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
+        // Zur Erinnerung: Einschränkung ist maxTau - minTau <= 10 * 2 * pi.
+        if (numberOfIntervalsAlongTau > this.sphericalGraphs3D.get(0)[0].length - 1) {
+            numberOfIntervalsAlongTau = this.sphericalGraphs3D.get(0)[0].length - 1;
+        }
+        if (numberOfIntervalsAlongTau < 2){
+            numberOfIntervalsAlongTau = 2;
+        }
 
         ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
 
@@ -231,24 +192,24 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         this.sphericalGraphs3DAreDefined.clear();
         for (double[][][] graph3D : this.sphericalGraphs3D) {
 
-            graph3DForGraphic = new double[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi][3];
-            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi];
+            graph3DForGraphic = new double[numberOfIntervalsAlongPhi][numberOfIntervalsAlongTau][3];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongPhi][numberOfIntervalsAlongTau];
 
             int currentIndexI, currentIndexJ;
 
-            for (int i = 0; i < numberOfIntervalsAlongR; i++) {
+            for (int i = 0; i < numberOfIntervalsAlongPhi; i++) {
 
-                if (graph3D.length <= numberOfIntervalsAlongR) {
+                if (graph3D.length <= numberOfIntervalsAlongPhi) {
                     currentIndexI = i;
                 } else {
-                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongR - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongPhi - 1));
                 }
 
-                for (int j = 0; j < numberOfIntervalsAlongPhi; j++) {
-                    if (graph3D[0].length <= numberOfIntervalsAlongPhi) {
+                for (int j = 0; j < numberOfIntervalsAlongTau; j++) {
+                    if (graph3D[0].length <= numberOfIntervalsAlongTau) {
                         currentIndexJ = j;
                     } else {
-                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongPhi - 1));
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongTau - 1));
                     }
                     graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
                     graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];

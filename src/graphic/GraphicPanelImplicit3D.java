@@ -981,15 +981,26 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
      */
     private void computeScreenSizes(Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd,
             Expression exprApplStart, Expression exprApplEnd) throws EvaluationException {
-        this.maxX = Math.max(Math.abs(exprAbscStart.evaluate()), Math.abs(exprAbscEnd.evaluate()));
-        this.maxY = Math.max(Math.abs(exprOrdStart.evaluate()), Math.abs(exprOrdEnd.evaluate()));
-        this.maxZ = Math.max(Math.abs(exprApplStart.evaluate()), Math.abs(exprApplEnd.evaluate()));
-        this.minX = -this.maxX;
-        this.minY = -this.maxY;
-        this.minZ = -this.maxZ;
+        this.minX = exprAbscStart.evaluate();
+        this.minY = exprOrdStart.evaluate();
+        this.minZ = exprApplStart.evaluate();
+        this.maxX = exprAbscEnd.evaluate();
+        this.maxY = exprOrdEnd.evaluate();
+        this.maxZ = exprApplEnd.evaluate();
+        this.minXOrigin = this.minX;
+        this.minYOrigin = this.minY;
+        this.minZOrigin = this.minZ;
         this.maxXOrigin = this.maxX;
         this.maxYOrigin = this.maxY;
         this.maxZOrigin = this.maxZ;
+        
+        this.axeCenterX = (this.minX + this.maxX) / 2;
+        this.axeCenterY = (this.minY + this.maxY) / 2;
+        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
+        this.axeCenterXOrigin = this.axeCenterX;
+        this.axeCenterYOrigin = this.axeCenterY;
+        this.axeCenterZOrigin = this.axeCenterZ;
+        
     }
 
     /**

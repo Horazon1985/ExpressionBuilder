@@ -83,9 +83,12 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         double t_0 = exprT_0.evaluate();
         double t_1 = exprT_1.evaluate();
 
-        double globalMaxX = Double.NaN;
-        double globalMaxY = Double.NaN;
-        double globalMaxZ = Double.NaN;
+        this.minX = Double.NaN;
+        this.minY = Double.NaN;
+        this.minZ = Double.NaN;
+        this.maxX = Double.NaN;
+        this.maxY = Double.NaN;
+        this.maxZ = Double.NaN;
 
         double x, y, z;
         for (int i = 0; i < 100; i++) {
@@ -105,49 +108,77 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
                 if (!Double.isNaN(x) && !Double.isInfinite(x) && !Double.isNaN(y) && !Double.isInfinite(y)
                         && !Double.isNaN(z) && !Double.isInfinite(z)) {
-                    if (Double.isNaN(globalMaxX)) {
-                        globalMaxX = Math.abs(x);
-                        globalMaxY = Math.abs(y);
-                        globalMaxZ = Math.abs(z);
+                    if (Double.isNaN(this.minX)) {
+                        this.minX = x;
+                        this.maxX = x;
                     } else {
-                        globalMaxX = Math.max(globalMaxX, Math.abs(x));
-                        globalMaxY = Math.max(globalMaxY, Math.abs(y));
-                        globalMaxZ = Math.max(globalMaxZ, Math.abs(z));
+                        this.minX = Math.min(this.minX, x);
+                        this.maxX = Math.max(this.maxX, x);
+                    }
+                    if (Double.isNaN(this.minY)) {
+                        this.minY = y;
+                        this.maxY = y;
+                    } else {
+                        this.minY = Math.min(this.minY, y);
+                        this.maxY = Math.max(this.maxY, y);
+                    }
+                    if (Double.isNaN(this.minZ)) {
+                        this.minZ = z;
+                        this.maxZ = z;
+                    } else {
+                        this.minZ = Math.min(this.minZ, z);
+                        this.maxZ = Math.max(this.maxZ, z);
                     }
                 }
             }
         }
 
-        if (Double.isNaN(globalMaxX) || Double.isInfinite(globalMaxX) || Double.isNaN(globalMaxY) || Double.isInfinite(globalMaxY)
-                || Double.isNaN(globalMaxZ) || Double.isInfinite(globalMaxZ)) {
+        if (Double.isNaN(this.minX) || Double.isInfinite(this.minX) || Double.isNaN(this.maxX) || Double.isInfinite(this.maxX)
+                || Double.isNaN(this.minY) || Double.isInfinite(this.minY) || Double.isNaN(this.maxY) || Double.isInfinite(this.maxY)
+                || Double.isNaN(this.minZ) || Double.isInfinite(this.minZ) || Double.isNaN(this.maxZ) || Double.isInfinite(this.maxZ)) {
+            this.minX = -1;
+            this.minY = -1;
+            this.minZ = -1;
             this.maxX = 1;
             this.maxY = 1;
             this.maxZ = 1;
-        } else {
-            this.maxX = globalMaxX;
-            this.maxY = globalMaxY;
-            this.maxZ = globalMaxZ;
-
-            // Falls alle expr.get(i) konstant sind.
-            if (this.maxX == 0) {
-                this.maxX = 1;
-            }
-            if (this.maxY == 0) {
-                this.maxY = 1;
-            }
-            if (this.maxZ == 0) {
-                this.maxZ = 1;
-            }
-
-            // 30 % Rand lassen!
-            this.maxX = this.maxX * 1.3;
-            this.maxY = this.maxY * 1.3;
-            this.maxZ = this.maxZ * 1.3;
         }
 
+        // Falls alle Komponenten konstant sind.
+        if (this.minX == this.maxX) {
+            this.maxX = this.maxX + 1;
+            this.minX = this.minX - 1;
+        }
+        if (this.minY == this.maxY) {
+            this.maxY = this.maxY + 1;
+            this.minY = this.minY - 1;
+        }
+        if (this.minZ == this.maxZ) {
+            this.maxZ = this.maxZ + 1;
+            this.minZ = this.minZ - 1;
+        }
+
+        // 30 % Rand auf jeder der Achsen lassen!
+        this.maxX = this.maxX + 0.3 * (this.maxX - this.minX);
+        this.minX = this.minX - 0.3 * (this.maxX - this.minX);
+        this.maxY = this.maxY + 0.3 * (this.maxY - this.minY);
+        this.minY = this.minY - 0.3 * (this.maxY - this.minY);
+        this.maxZ = this.maxZ + 0.3 * (this.maxZ - this.minZ);
+        this.minZ = this.minZ - 0.3 * (this.maxZ - this.minZ);
+
+        this.minXOrigin = this.minX;
+        this.minYOrigin = this.minY;
+        this.minZOrigin = this.minZ;
         this.maxXOrigin = this.maxX;
         this.maxYOrigin = this.maxY;
         this.maxZOrigin = this.maxZ;
+
+        this.axeCenterX = (this.minX + this.maxX) / 2;
+        this.axeCenterY = (this.minY + this.maxY) / 2;
+        this.axeCenterZ = (this.minZ + this.maxZ) / 2;
+        this.axeCenterXOrigin = this.axeCenterX;
+        this.axeCenterYOrigin = this.axeCenterY;
+        this.axeCenterZOrigin = this.axeCenterZ;
 
     }
 
@@ -194,29 +225,35 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
      * gezeichnet werden können.<br>
      * VORAUSSETZUNG: minS, maxS, minT und maxT sind initialisiert.
      */
-    private double[][][] convertGraphsToCoarserGraphs() {
+    private double[][][] convertGraphToCoarserGraph() {
 
-        int numberOfIntervalsAlongS = Math.min(100, (int) (30 * (this.maxS - this.minS) / (this.maxS * this.zoomfactor)));
-        int numberOfIntervalsAlongT = Math.min((int) (100 * (this.maxT - this.minT) / (2 * Math.PI)), (int) (100 / this.zoomfactor * (this.maxT - this.minT) / (2 * Math.PI)));
+        int numberOfIntervals = (int) (50 * this.zoomfactor);
 
-        double[][][] graph3DForGraphic = new double[numberOfIntervalsAlongS][numberOfIntervalsAlongT][3];
-        boolean[][] coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongS][numberOfIntervalsAlongT];
+        if (numberOfIntervals > 50) {
+            numberOfIntervals = 50;
+        }
+        if (numberOfIntervals < 2) {
+            numberOfIntervals = 2;
+        }
+        
+        double[][][] graph3DForGraphic = new double[numberOfIntervals][numberOfIntervals][3];
+        boolean[][] coarserGraph3DIsDefined = new boolean[numberOfIntervals][numberOfIntervals];
 
         int currentIndexI, currentIndexJ;
 
-        for (int i = 0; i < numberOfIntervalsAlongS; i++) {
+        for (int i = 0; i < numberOfIntervals; i++) {
 
-            if (this.surfaceGraph3D.length <= numberOfIntervalsAlongS) {
+            if (this.surfaceGraph3D.length <= numberOfIntervals) {
                 currentIndexI = i;
             } else {
-                currentIndexI = (int) (i * ((double) this.surfaceGraph3D.length - 1) / (numberOfIntervalsAlongS - 1));
+                currentIndexI = (int) (i * ((double) this.surfaceGraph3D.length - 1) / (numberOfIntervals - 1));
             }
 
-            for (int j = 0; j < numberOfIntervalsAlongT; j++) {
-                if (this.surfaceGraph3D[0].length <= numberOfIntervalsAlongT) {
+            for (int j = 0; j < numberOfIntervals; j++) {
+                if (this.surfaceGraph3D[0].length <= numberOfIntervals) {
                     currentIndexJ = j;
                 } else {
-                    currentIndexJ = (int) (j * ((double) this.surfaceGraph3D[0].length - 1) / (numberOfIntervalsAlongT - 1));
+                    currentIndexJ = (int) (j * ((double) this.surfaceGraph3D[0].length - 1) / (numberOfIntervals - 1));
                 }
                 graph3DForGraphic[i][j][0] = this.surfaceGraph3D[currentIndexI][currentIndexJ][0];
                 graph3DForGraphic[i][j][1] = this.surfaceGraph3D[currentIndexI][currentIndexJ][1];
@@ -312,7 +349,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         if (this.surfaceGraph3D.length == 0) {
             return;
         }
-        this.surfaceGraph3DForGraphic = convertGraphsToCoarserGraphs();
+        this.surfaceGraph3DForGraphic = convertGraphToCoarserGraph();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um
