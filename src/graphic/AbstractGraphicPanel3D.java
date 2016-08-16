@@ -203,7 +203,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.
      */
-    protected void computeMaxXMaxYMaxZ(ArrayList<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
+    protected void computeScreenSizes(ArrayList<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
 
         if (graphs.isEmpty()) {
 
@@ -311,62 +311,42 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Berechnet die Maße Darstellungsbereichs eines einzelnen Graphen.
      */
-    protected void computeMaxXMaxYMaxZ(double[][][] graph, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
+    protected void computeScreenSizes(double[][][] graph, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
         ArrayList<double[][][]> graphs = new ArrayList<>();
         graphs.add(graph);
-        computeMaxXMaxYMaxZ(graphs, paddingForX, paddingForY, paddingForZ);
+        computeScreenSizes(graphs, paddingForX, paddingForY, paddingForZ);
     }
 
     /**
      * Berechnet die Attribute expX bzw. expY bzw. expZ, die größten Exponenten
      * für eine Zehnerpotenz, die kleiner oder gleich maxX bzw. maxY bzw. maxZ
-     * sind. VORAUSSETZUNG: der Graph ist bereits initialisiert (und mit
-     * Funktionswerten gefüllt). Die Attribute maxX, maxY und maxZ sind
+     * sind.<br>
+     * VORAUSSETZUNG: der Graph ist bereits initialisiert (und mit
+     * Funktionswerten gefüllt). Die Attribute maxX, maxY, maxZ, ... sind
      * initialisiert.
      */
     protected void computeExpXExpYExpZ() {
-
-        this.expX = 0;
-        this.expY = 0;
-        this.expZ = 0;
-
-        double distanceX = this.maxX - this.axeCenterX;
-        double distanceY = this.maxY - this.axeCenterY;
-        double distanceZ = this.maxZ - this.axeCenterZ;
-
-        if (distanceX >= 1) {
-            while (distanceX / Math.pow(10, this.expX) >= 1) {
-                this.expX++;
+        this.expX = getSuitableExponent((this.maxXOrigin - this.minXOrigin) / this.zoomfactor);
+        this.expY = getSuitableExponent((this.maxYOrigin - this.minYOrigin) / this.zoomfactor);
+        this.expZ = getSuitableExponent((this.maxZOrigin - this.minZOrigin) / this.zoomfactor);
+    }
+    
+    private static int getSuitableExponent(double a){
+        if (a == 0){
+            return 0;
+        }
+        int exponent = 0;
+        if (a >= 1) {
+            while (a / Math.pow(10, exponent) >= 1) {
+                exponent++;
             }
-            this.expX--;
+            exponent--;
         } else {
-            while (distanceX / Math.pow(10, this.expX) < 1) {
-                this.expX--;
+            while (a / Math.pow(10, exponent) < 1) {
+                exponent--;
             }
         }
-
-        if (distanceY >= 1) {
-            while (distanceY / Math.pow(10, this.expY) >= 1) {
-                this.expY++;
-            }
-            this.expY--;
-        } else {
-            while (distanceY / Math.pow(10, this.expY) < 1) {
-                this.expY--;
-            }
-        }
-
-        if (distanceZ >= 1) {
-            while (distanceZ / Math.pow(10, this.expZ) >= 1) {
-                this.expZ++;
-            }
-            this.expZ--;
-        } else {
-            while (distanceZ / Math.pow(10, this.expZ) < 1) {
-                this.expZ--;
-            }
-        }
-
+        return exponent;
     }
 
     /**
@@ -549,38 +529,38 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (this.minZOrigin / Math.pow(10, -this.expZ));
-        int i = bound + 1;
+        int bound = (int) (this.minZOrigin / Math.pow(10, this.expZ));
+        int i = bound;
 
-        while (i * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
+        while (i * Math.pow(10, this.expZ) <= this.maxZOrigin) {
             lineLevel[0][0] = this.maxXOrigin;
             lineLevel[0][1] = this.maxYOrigin;
-            lineLevel[0][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = this.maxXOrigin;
             lineLevel[1][1] = this.minYOrigin;
-            lineLevel[1][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (this.angle > 270 && (i + 1) * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle > 270) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         // Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (this.minYOrigin / Math.pow(10, -this.expY));
-        i = bound + 1;
+        bound = (int) (this.minYOrigin / Math.pow(10, this.expY));
+        i = bound;
 
-        while (i * Math.pow(10, -this.expY) <= this.maxYOrigin) {
+        while (i * Math.pow(10, this.expY) <= this.maxYOrigin) {
             lineLevel[0][0] = this.maxXOrigin;
-            lineLevel[0][1] = i * Math.pow(10, -this.expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = this.maxZOrigin;
             lineLevel[1][0] = this.maxXOrigin;
-            lineLevel[1][1] = i * Math.pow(10, -this.expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = this.minZOrigin;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
@@ -588,10 +568,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (this.angle >= 270) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, -this.expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -654,38 +634,38 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (this.minZOrigin / Math.pow(10, -this.expZ));
-        int i = bound + 1;
+        int bound = (int) (this.minZOrigin / Math.pow(10, this.expZ));
+        int i = bound;
 
-        while (i * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
+        while (i * Math.pow(10, this.expZ) <= this.maxZOrigin) {
             lineLevel[0][0] = this.minXOrigin;
             lineLevel[0][1] = this.minYOrigin;
-            lineLevel[0][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = this.minXOrigin;
             lineLevel[1][1] = this.maxYOrigin;
-            lineLevel[1][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (this.angle > 90 && (i + 1) * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle > 90) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         // Niveaulinien bzgl. der zweiten Achse zeichnen
-        bound = (int) (this.minYOrigin / Math.pow(10, -this.expY));
-        i = bound + 1;
+        bound = (int) (this.minYOrigin / Math.pow(10, this.expY));
+        i = bound;
 
-        while (i * Math.pow(10, -this.expY) <= this.maxYOrigin) {
+        while (i * Math.pow(10, this.expY) <= this.maxYOrigin) {
             lineLevel[0][0] = this.minXOrigin;
-            lineLevel[0][1] = i * Math.pow(10, -this.expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = this.maxZOrigin;
             lineLevel[1][0] = this.minXOrigin;
-            lineLevel[1][1] = i * Math.pow(10, -this.expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = this.minZOrigin;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
@@ -693,10 +673,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (this.angle >= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expY)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, -this.expY))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -759,23 +739,23 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (this.minZOrigin / Math.pow(10, -this.expZ));
-        int i = bound + 1;
+        int bound = (int) (this.minZOrigin / Math.pow(10, this.expZ));
+        int i = bound;
 
-        while (i * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
+        while (i * Math.pow(10, this.expZ) <= this.maxZOrigin) {
             lineLevel[0][0] = this.maxXOrigin;
             lineLevel[0][1] = this.minYOrigin;
-            lineLevel[0][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = this.minXOrigin;
             lineLevel[1][1] = this.minYOrigin;
-            lineLevel[1][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (this.angle > 180 && (i + 1) * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle > 180) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
@@ -783,14 +763,14 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         }
 
         // Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (this.minXOrigin / Math.pow(10, -this.expX));
-        i = bound + 1;
+        bound = (int) (this.minXOrigin / Math.pow(10, this.expX));
+        i = bound;
 
-        while (i * Math.pow(10, -this.expX) <= this.maxXOrigin) {
-            lineLevel[0][0] = i * Math.pow(10, -this.expX);
+        while (i * Math.pow(10, this.expX) <= this.maxXOrigin) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = this.minYOrigin;
             lineLevel[0][2] = this.maxZOrigin;
-            lineLevel[1][0] = i * Math.pow(10, -this.expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = this.minYOrigin;
             lineLevel[1][2] = this.minZOrigin;
 
@@ -799,10 +779,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (this.angle >= 180) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expX)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, -this.expX))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -865,37 +845,37 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         double[][] lineLevel = new double[2][3];
         int[][] lineLevelPixels = new int[2][2];
 
-        int bound = (int) (this.minZOrigin / Math.pow(10, -this.expZ));
-        int i = bound + 1;
+        int bound = (int) (this.minZOrigin / Math.pow(10, this.expZ));
+        int i = bound;
 
-        while (i * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
+        while (i * Math.pow(10, this.expZ) <= this.maxZOrigin) {
             lineLevel[0][0] = this.minXOrigin;
             lineLevel[0][1] = this.maxYOrigin;
-            lineLevel[0][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[0][2] = i * Math.pow(10, this.expZ);
             lineLevel[1][0] = this.maxXOrigin;
             lineLevel[1][1] = this.maxYOrigin;
-            lineLevel[1][2] = i * Math.pow(10, -this.expZ);
+            lineLevel[1][2] = i * Math.pow(10, this.expZ);
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);
             lineLevelPixels[1] = convertToPixel(lineLevel[1][0], lineLevel[1][1], lineLevel[1][2]);
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
-            if (this.angle < 90 && (i + 1) * Math.pow(10, -this.expZ) <= this.maxZOrigin) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+            if (this.angle < 90) {
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expZ)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             }
 
             i++;
         }
 
         // Niveaulinien bzgl. der ersten Achse zeichnen
-        bound = (int) (this.minXOrigin / Math.pow(10, -this.expX));
-        i = bound + 1;
+        bound = (int) (this.minXOrigin / Math.pow(10, this.expX));
+        i = bound;
 
-        while (i * Math.pow(10, -this.expX) <= this.maxXOrigin) {
-            lineLevel[0][0] = i * Math.pow(10, -this.expX);
+        while (i * Math.pow(10, this.expX) <= this.maxXOrigin) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = this.maxYOrigin;
             lineLevel[0][2] = this.maxZOrigin;
-            lineLevel[1][0] = i * Math.pow(10, -this.expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = this.maxYOrigin;
             lineLevel[1][2] = this.minZOrigin;
 
@@ -904,10 +884,10 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
 
             g.drawLine(lineLevelPixels[0][0], lineLevelPixels[0][1], lineLevelPixels[1][0], lineLevelPixels[1][1]);
             if (this.angle <= 90) {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
-                g.drawString(String.valueOf(roundAxisEntries(i, -this.expX)), lineLevelPixels[0][0]
-                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, -this.expX))) - 5,
+                g.drawString(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
+                        - g.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -955,14 +935,14 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         int[][] lineLevelPixels = new int[2][2];
 
         // Horizontale x-Niveaulinien zeichnen
-        int bound = (int) (this.minXOrigin / Math.pow(10, -this.expX));
-        int i = bound + 1;
+        int bound = (int) (this.minXOrigin / Math.pow(10, this.expX));
+        int i = bound;
 
-        while (i * Math.pow(10, -this.expX) <= this.maxXOrigin) {
-            lineLevel[0][0] = i * Math.pow(10, -this.expX);
+        while (i * Math.pow(10, this.expX) <= this.maxXOrigin) {
+            lineLevel[0][0] = i * Math.pow(10, this.expX);
             lineLevel[0][1] = this.minYOrigin;
             lineLevel[0][2] = this.minZOrigin;
-            lineLevel[1][0] = i * Math.pow(10, -this.expX);
+            lineLevel[1][0] = i * Math.pow(10, this.expX);
             lineLevel[1][1] = this.maxYOrigin;
             lineLevel[1][2] = this.minZOrigin;
 
@@ -975,15 +955,15 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         }
 
         // Horizontale y-Niveaulinien zeichnen
-        bound = (int) (this.minYOrigin / Math.pow(10, -this.expY));
-        i = bound + 1;
+        bound = (int) (this.minYOrigin / Math.pow(10, this.expY));
+        i = bound;
 
-        while (i * Math.pow(10, -this.expY) <= this.maxYOrigin) {
+        while (i * Math.pow(10, this.expY) <= this.maxYOrigin) {
             lineLevel[0][0] = this.minXOrigin;
-            lineLevel[0][1] = i * Math.pow(10, -this.expY);
+            lineLevel[0][1] = i * Math.pow(10, this.expY);
             lineLevel[0][2] = this.minZOrigin;
             lineLevel[1][0] = this.maxXOrigin;
-            lineLevel[1][1] = i * Math.pow(10, -this.expY);
+            lineLevel[1][1] = i * Math.pow(10, this.expY);
             lineLevel[1][2] = this.minZOrigin;
 
             lineLevelPixels[0] = convertToPixel(lineLevel[0][0], lineLevel[0][1], lineLevel[0][2]);

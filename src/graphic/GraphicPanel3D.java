@@ -98,7 +98,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
      * VOLRAUSSETZUNG: graphs3D ist bereits initialisiert.
      */
     private void computeScreenSizes() {
-        super.computeMaxXMaxYMaxZ(this.graphs3D, false, false, true);
+        super.computeScreenSizes(this.graphs3D, false, false, true);
     }
 
     /**

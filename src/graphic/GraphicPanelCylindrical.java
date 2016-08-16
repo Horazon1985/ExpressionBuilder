@@ -100,7 +100,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
      * VOLRAUSSETZUNG: exprs, varR und varPhi sind bereits initialisiert.
      */
     private void computeScreenSizes() {
-        super.computeMaxXMaxYMaxZ(this.cylindricalGraphs3D, true, true, true);
+        super.computeScreenSizes(this.cylindricalGraphs3D, true, true, true);
     }
 
     /**

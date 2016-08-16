@@ -97,7 +97,7 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
      * VOLRAUSSETZUNG: exprs, varPhi und varTau sind bereits initialisiert.
      */
     private void computeScreenSizes() {
-        super.computeMaxXMaxYMaxZ(this.sphericalGraphs3D, true, true, true);
+        super.computeScreenSizes(this.sphericalGraphs3D, true, true, true);
     }
 
     /**
