@@ -270,34 +270,34 @@
         <Russian>Графики:</Russian>
     </object>
     <object id = "GUI_LegendGUI_GRAPH">
-        <German>Graph </German>
-        <English>Graph </English>
-        <Ukrainian>Графік </Ukrainian>
-        <Russian>График </Russian>
+        <German>Graph [0]: [1] </German>
+        <English>Graph [0]: [1] </English>
+        <Ukrainian>Графік [0]: [1] </Ukrainian>
+        <Russian>График [0]: [1] </Russian>
     </object>
     <object id = "GUI_LegendGUI_PARAMETRIZED_SURFACE">
-        <German>Fläche </German>
-        <English>Surface </English>
-        <Ukrainian>Поверхня </Ukrainian>
-        <Russian>Поверхность </Russian>
+        <German>Fläche: [0]</German>
+        <English>Surface: [0]</English>
+        <Ukrainian>Поверхня: [0]</Ukrainian>
+        <Russian>Поверхность: [0]</Russian>
     </object>
     <object id = "GUI_LegendGUI_VECTORFIELD">
-        <German>Vektorfeld </German>
-        <English>Vector field </English>
-        <Ukrainian>векторне поле</Ukrainian>
-        <Russian>векторное поле</Russian>
+        <German>Vektorfeld: [0]</German>
+        <English>Vector field: [0]</English>
+        <Ukrainian>векторне поле: [0]</Ukrainian>
+        <Russian>векторное поле: [0]</Russian>
     </object>
     <object id = "GUI_LegendGUI_EQUATION_OF_IMPLICIT_FUNCTION">
-        <German>Gleichung der implizit gegebenen Funktion: </German>
-        <English>Equation of the implicitly given function: </English>
-        <Ukrainian>Рівняння неявно заданої функції: </Ukrainian>
-        <Russian>Уравнение неявно заданной функции: </Russian>
+        <German>Gleichung der implizit gegebenen Funktion: [0] = [1]</German>
+        <English>Equation of the implicitly given function: [0] = [1]</English>
+        <Ukrainian>Рівняння неявно заданої функції: [0] = [1]</Ukrainian>
+        <Russian>Уравнение неявно заданной функции: [0] = [1]</Russian>
     </object>
     <object id = "GUI_LegendGUI_PARAMETERIZED_CURVE">
-        <German>Parametrisierte Kurve: </German>
-        <English>Parameterized curve: </English>
-        <Ukrainian>Параметризована крива: </Ukrainian>
-        <Russian>Параметризованная кривая: </Russian>
+        <German>Parametrisierte Kurve: [0]</German>
+        <English>Parameterized curve: [0]</English>
+        <Ukrainian>Параметризована крива: [0]</Ukrainian>
+        <Russian>Параметризованная кривая: [0]</Russian>
     </object>
     <!-- ComputingDialogGUI -->    
     <object id = "GUI_ComputingDialogGUI_COMPUTING">

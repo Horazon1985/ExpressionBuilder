@@ -180,14 +180,14 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
             for (int i = 0; i < numberOfIntervals; i++) {
 
                 if (graph3D.length <= numberOfIntervals) {
-                    currentIndexI = i;
+                    currentIndexI = graph3D.length - 1;
                 } else {
                     currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervals - 1));
                 }
 
                 for (int j = 0; j < numberOfIntervals; j++) {
                     if (graph3D[0].length <= numberOfIntervals) {
-                        currentIndexJ = j;
+                        currentIndexJ = graph3D[0].length - 1;
                     } else {
                         currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervals - 1));
                     }
@@ -223,12 +223,12 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
 
-        if (this.presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
             g2.setPaint(c);
             g2.fill(tangent);
         }
 
-        switch (this.backgroundColorMode) {
+        switch (backgroundColorMode) {
             case BRIGHT:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:

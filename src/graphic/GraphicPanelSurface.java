@@ -7,7 +7,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
@@ -44,7 +47,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
     public ArrayList<Color> getColors() {
         if (this.colors.isEmpty()) {
-            this.colors.add(Color.BLUE);
+            this.colors.add(this.color);
         }
         return this.colors;
     }
@@ -131,25 +134,25 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         if (numberOfIntervals < 2) {
             numberOfIntervals = 2;
         }
-        
-        double[][][] graph3DForGraphic = new double[numberOfIntervals][numberOfIntervals][3];
-        boolean[][] coarserGraph3DIsDefined = new boolean[numberOfIntervals][numberOfIntervals];
+
+        double[][][] graph3DForGraphic = new double[numberOfIntervals + 1][numberOfIntervals + 1][3];
+        boolean[][] coarserGraph3DIsDefined = new boolean[numberOfIntervals + 1][numberOfIntervals + 1];
 
         int currentIndexI, currentIndexJ;
 
-        for (int i = 0; i < numberOfIntervals; i++) {
+        for (int i = 0; i <= numberOfIntervals; i++) {
 
             if (this.surfaceGraph3D.length <= numberOfIntervals) {
-                currentIndexI = i;
+                currentIndexI = this.surfaceGraph3D.length - 1;
             } else {
-                currentIndexI = (int) (i * ((double) this.surfaceGraph3D.length - 1) / (numberOfIntervals - 1));
+                currentIndexI = (int) (i * ((double) this.surfaceGraph3D.length - 1) / numberOfIntervals);
             }
 
-            for (int j = 0; j < numberOfIntervals; j++) {
+            for (int j = 0; j <= numberOfIntervals; j++) {
                 if (this.surfaceGraph3D[0].length <= numberOfIntervals) {
-                    currentIndexJ = j;
+                    currentIndexJ = this.surfaceGraph3D[0].length - 1;
                 } else {
-                    currentIndexJ = (int) (j * ((double) this.surfaceGraph3D[0].length - 1) / (numberOfIntervals - 1));
+                    currentIndexJ = (int) (j * ((double) this.surfaceGraph3D[0].length - 1) / numberOfIntervals);
                 }
                 graph3DForGraphic[i][j][0] = this.surfaceGraph3D[currentIndexI][currentIndexJ][0];
                 graph3DForGraphic[i][j][1] = this.surfaceGraph3D[currentIndexI][currentIndexJ][1];
@@ -160,6 +163,50 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
         }
 
+        this.graph = (ArrayList<TangentPolygon>[][]) Array.newInstance(new ArrayList<TangentPolygon>().getClass(), numberOfIntervals, numberOfIntervals);
+        TangentPolygon polygon;
+        int indexI, indexJ;
+        double centerX, centerY;
+        for (int i = 0; i < numberOfIntervals; i++) {
+            for (int j = 0; j < numberOfIntervals; j++) {
+
+                polygon = new TangentPolygon();
+                if (coarserGraph3DIsDefined[i][j]) {
+                    polygon.addPoint(graph3DForGraphic[i][j]);
+                }
+                if (coarserGraph3DIsDefined[i + 1][j]) {
+                    polygon.addPoint(graph3DForGraphic[i + 1][j]);
+                }
+                if (coarserGraph3DIsDefined[i + 1][j + 1]) {
+                    polygon.addPoint(graph3DForGraphic[i + 1][j + 1]);
+                }
+                if (coarserGraph3DIsDefined[i][j + 1]) {
+                    polygon.addPoint(graph3DForGraphic[i][j + 1]);
+                }
+                centerX = polygon.getCenterX();
+                centerY = polygon.getCenterY();
+                indexI = (int) (numberOfIntervals * (centerX - this.minX) / (this.maxX - this.minX));
+                indexJ = (int) (numberOfIntervals * (centerY - this.minY) / (this.maxY - this.minY));
+                if (0 <= indexI && indexI < numberOfIntervals && 0 <= indexJ && indexJ < numberOfIntervals) {
+                    if (this.graph[indexI][indexJ] == null) {
+                        this.graph[indexI][indexJ] = new ArrayList<>();
+                    }
+                    this.graph[indexI][indexJ].add(polygon);
+                }
+
+            }
+        }
+
+        // In jedem Segment die einzelnen Tangentialplättchen der Höhe nach sortieren.
+        for (int i = 0; i < numberOfIntervals; i++) {
+            for (int j = 0; j < numberOfIntervals; j++) {
+                if (this.graph[i][j] == null) {
+                    this.graph[i][j] = new ArrayList<>();
+                }
+                Collections.sort(this.graph[i][j]);
+            }
+        }
+
         return graph3DForGraphic;
 
     }
@@ -168,7 +215,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
      * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
      */
     private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, int x_4, int y_4, Graphics g) {
+            int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
 
         GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
         tangent.moveTo(x_1, y_1);
@@ -178,12 +225,82 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         tangent.closePath();
         Graphics2D g2 = (Graphics2D) g;
 
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+            g2.setPaint(c);
+            g2.fill(tangent);
+        }
+
         switch (backgroundColorMode) {
             case BRIGHT:
-                g2.setPaint(gridColorGridOnlyBright);
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphBright);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyBright);
+                        break;
+                }
                 break;
             case DARK:
-                g2.setPaint(gridColorGridOnlyDark);
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphDark);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyDark);
+                        break;
+                }
+                break;
+        }
+
+        g2.draw(tangent);
+
+    }
+
+    /**
+     * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
+     */
+    private void drawInfinitesimalTangentSpace(TangentPolygon p, Graphics g, Color c) {
+
+        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, p.getPoints().size());
+        if (p.getPoints().isEmpty()) {
+            return;
+        }
+
+        int[] pixel = convertToPixel(p.getPoints().get(0)[0], p.getPoints().get(0)[1], p.getPoints().get(0)[2]);
+        tangent.moveTo(pixel[0], pixel[1]);
+        for (int k = 1; k < p.getPoints().size(); k++) {
+            pixel = convertToPixel(p.getPoints().get(k)[0], p.getPoints().get(k)[1], p.getPoints().get(k)[2]);
+            tangent.lineTo(pixel[0], pixel[1]);
+        }
+        tangent.closePath();
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+            g2.setPaint(c);
+            g2.fill(tangent);
+        }
+
+        switch (backgroundColorMode) {
+            case BRIGHT:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphBright);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyBright);
+                        break;
+                }
+                break;
+            case DARK:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphDark);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyDark);
+                        break;
+                }
                 break;
         }
 
@@ -201,8 +318,8 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         }
 
         // Anzahl der Intervalle für das Zeichnen ermitteln.
-        int numberOfIntervalsAlongAbsc = surfaceGraph3DForGraphic.length - 1;
-        int numberOfIntervalsAlongOrd = surfaceGraph3DForGraphic[0].length - 1;
+        int numberOfIntervalsAlongAbsc = this.graph.length - 1;
+        int numberOfIntervalsAlongOrd = this.graph[0].length - 1;
 
         // Dann können keine Graphen gezeichnet werden.
         if (numberOfIntervalsAlongAbsc == 0 || numberOfIntervalsAlongOrd == 0) {
@@ -210,6 +327,13 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         }
 
         // Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
+//        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
+//        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
+//            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
+//                graphicalGraph[i][j] = convertToPixel(this.surfaceGraph3DForGraphic[i][j][0], this.surfaceGraph3DForGraphic[i][j][1],
+//                        this.surfaceGraph3DForGraphic[i][j][2]);
+//            }
+//        }
         int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
         for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
             for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
@@ -218,14 +342,70 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
             }
         }
 
-        for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
-            for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
-                drawInfinitesimalTangentSpace(graphicalGraph[i][j][0], graphicalGraph[i][j][1],
-                        graphicalGraph[i + 1][j][0], graphicalGraph[i + 1][j][1],
-                        graphicalGraph[i + 1][j + 1][0], graphicalGraph[i + 1][j + 1][1],
-                        graphicalGraph[i][j + 1][0], graphicalGraph[i][j + 1][1],
-                        g);
+        if (this.angle <= 90) {
+
+            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+
+                    if (this.graph[i][numberOfIntervalsAlongOrd - j - 1].isEmpty()) {
+                        continue;
+                    }
+                    for (int k = 0; k < this.graph[i][numberOfIntervalsAlongOrd - j - 1].size(); k++) {
+                        Color c = computeColor(this.color, this.minZOrigin, this.maxZOrigin, this.graph[i][numberOfIntervalsAlongOrd - j - 1].get(k).getCenterZ());
+                        drawInfinitesimalTangentSpace(this.graph[i][numberOfIntervalsAlongOrd - j - 1].get(k), g, c);
+                    }
+
+                }
             }
+
+        } else if (this.angle <= 180) {
+
+            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+
+                    if (this.graph[i][j].isEmpty()) {
+                        continue;
+                    }
+                    for (int k = 0; k < this.graph[i][j].size(); k++) {
+                        Color c = computeColor(this.color, this.minZ, this.maxZ, this.graph[i][j].get(k).getCenterZ());
+                        drawInfinitesimalTangentSpace(this.graph[i][j].get(k), g, c);
+                    }
+
+                }
+            }
+
+        } else if (this.angle <= 270) {
+
+            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+
+                    if (this.graph[numberOfIntervalsAlongAbsc - i - 1][j].isEmpty()) {
+                        continue;
+                    }
+                    for (int k = 0; k < this.graph[numberOfIntervalsAlongAbsc - i - 1][j].size(); k++) {
+                        Color c = computeColor(this.color, this.minZ, this.maxZ, this.graph[numberOfIntervalsAlongAbsc - i - 1][j].get(k).getCenterZ());
+                        drawInfinitesimalTangentSpace(this.graph[numberOfIntervalsAlongAbsc - i - 1][j].get(k), g, c);
+                    }
+
+                }
+            }
+
+        } else {
+
+            for (int i = 0; i < numberOfIntervalsAlongAbsc; i++) {
+                for (int j = 0; j < numberOfIntervalsAlongOrd; j++) {
+
+                    if (this.graph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].isEmpty()) {
+                        continue;
+                    }
+                    for (int k = 0; k < this.graph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].size(); k++) {
+                        Color c = computeColor(this.color, this.minZ, this.maxZ, this.graph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].get(k).getCenterZ());
+                        drawInfinitesimalTangentSpace(this.graph[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].get(k), g, c);
+                    }
+
+                }
+            }
+
         }
 
     }

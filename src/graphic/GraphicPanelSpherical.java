@@ -200,14 +200,14 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
             for (int i = 0; i < numberOfIntervalsAlongPhi; i++) {
 
                 if (graph3D.length <= numberOfIntervalsAlongPhi) {
-                    currentIndexI = i;
+                    currentIndexI = graph3D.length - 1;
                 } else {
                     currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongPhi - 1));
                 }
 
                 for (int j = 0; j < numberOfIntervalsAlongTau; j++) {
                     if (graph3D[0].length <= numberOfIntervalsAlongTau) {
-                        currentIndexJ = j;
+                        currentIndexJ = graph3D[0].length - 1;
                     } else {
                         currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongTau - 1));
                     }

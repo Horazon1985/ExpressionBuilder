@@ -10,6 +10,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import lang.translator.Translator;
 
 /**
@@ -69,6 +70,101 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected static final Color gridColorWholeGraphDark = Color.green;
     protected static final Color gridColorGridOnlyBright = Color.black;
     protected static final Color gridColorGridOnlyDark = Color.green;
+
+    protected ArrayList<TangentPolygon>[][] graph;
+    /**
+     * Standardwert für die Anzahl der Unterteilungen des zu zeichnenden
+     * Bereichs der x,y-Ebene entlang x und y. Wird mit Veränderung des
+     * Zoomfaktors angepasst.
+     */
+    protected int intervals = 50;
+
+    public static class TangentPolygon implements Comparable<TangentPolygon> {
+
+        private ArrayList<double[]> points = new ArrayList<>();
+
+        public ArrayList<double[]> getPoints() {
+            return points;
+        }
+
+        public void setPoints(ArrayList<double[]> points) {
+            this.points = points;
+        }
+
+        public void setPoints(double[]... points) {
+            this.points.addAll(Arrays.asList(points));
+        }
+
+        public void addPoint(double[] point) {
+            this.points.add(point);
+        }
+
+        public double getCenterX() {
+            double center = 0;
+            if (!this.points.isEmpty()) {
+                for (double[] point : this.points) {
+                    center += point[0];
+                }
+                center = center / this.points.size();
+            }
+            return center;
+        }
+
+        public double getCenterY() {
+            double center = 0;
+            if (!this.points.isEmpty()) {
+                for (double[] point : this.points) {
+                    center += point[1];
+                }
+                center = center / this.points.size();
+            }
+            return center;
+        }
+
+        public double getCenterZ() {
+            double center = 0;
+            if (!this.points.isEmpty()) {
+                for (double[] point : this.points) {
+                    center += point[2];
+                }
+                center = center / this.points.size();
+            }
+            return center;
+        }
+
+        @Override
+        public int compareTo(TangentPolygon polygon) {
+            double centerZ = getCenterZ();
+            double centerZPolygon = polygon.getCenterZ();
+            if (centerZ < centerZPolygon) {
+                return 1;
+            }
+            if (centerZ > centerZPolygon) {
+                return -1;
+            }
+            return 0;
+        }
+
+        @Override
+        public String toString() {
+            String polygon = "[";
+            for (int i = 0; i < this.points.size(); i++) {
+                polygon += "(";
+                for (int j = 0; j < this.points.get(i).length; j++) {
+                    polygon += this.points.get(i)[j];
+                    if (j < this.points.get(i).length - 1) {
+                        polygon += ", ";
+                    }
+                }
+                polygon += ")";
+                if (i < this.points.size() - 1) {
+                    polygon += ", ";
+                }
+            }
+            return polygon + "]";
+        }
+
+    }
 
     public enum BackgroundColorMode {
 
@@ -193,6 +289,16 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
                     axeCenterY *= Math.pow(1.1, e.getWheelRotation());
                     axeCenterZ *= Math.pow(1.1, e.getWheelRotation());
                     zoomfactor *= Math.pow(1.1, e.getWheelRotation());
+
+                    intervals = (int) (50 * zoomfactor);
+
+                    if (intervals > 50) {
+                        intervals = 50;
+                    }
+                    if (intervals < 2) {
+                        intervals = 2;
+                    }
+
                     repaint();
                 }
             }
@@ -330,9 +436,9 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         this.expY = getSuitableExponent((this.maxYOrigin - this.minYOrigin) / this.zoomfactor);
         this.expZ = getSuitableExponent((this.maxZOrigin - this.minZOrigin) / this.zoomfactor);
     }
-    
-    private static int getSuitableExponent(double a){
-        if (a == 0){
+
+    private static int getSuitableExponent(double a) {
+        if (a == 0) {
             return 0;
         }
         int exponent = 0;
@@ -355,7 +461,6 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
      */
     protected Color computeColor(Color groundColor, double minZ, double maxZ, double height) {
 
-        Color c;
         int red, green, blue;
 
         int r = groundColor.getRed();
@@ -372,8 +477,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
         }
 
-        c = new Color(red, green, blue);
-        return c;
+        return new Color(red, green, blue);
 
     }
 

@@ -173,7 +173,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         if (numberOfIntervalsAlongR < 2) {
             numberOfIntervalsAlongR = 2;
         }
-        
+
         // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
         int numberOfIntervalsAlongPhi = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
         if (numberOfIntervalsAlongPhi > this.cylindricalGraphs3D.get(0)[0].length - 1) {
@@ -198,14 +198,14 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
             for (int i = 0; i < numberOfIntervalsAlongR; i++) {
 
                 if (graph3D.length <= numberOfIntervalsAlongR) {
-                    currentIndexI = i;
+                    currentIndexI = graph3D.length - 1;
                 } else {
                     currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongR - 1));
                 }
 
                 for (int j = 0; j < numberOfIntervalsAlongPhi; j++) {
                     if (graph3D[0].length <= numberOfIntervalsAlongPhi) {
-                        currentIndexJ = j;
+                        currentIndexJ = graph3D[0].length - 1;
                     } else {
                         currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongPhi - 1));
                     }
