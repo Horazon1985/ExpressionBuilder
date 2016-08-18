@@ -166,7 +166,7 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
      * werden können.<br>
      * VORAUSSETZUNG: minPhi, maxPhi, minTau und maxTau sind initialisiert.
      */
-    private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
+    private void convertGraphsToCoarserGraphs() {
 
         int numberOfIntervalsAlongPhi = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
         // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
@@ -185,7 +185,7 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
             numberOfIntervalsAlongTau = 2;
         }
 
-        ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
+        this.sphericalGraphs3DForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
@@ -220,12 +220,10 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
             }
 
-            graphsForGraphic.add(graph3DForGraphic);
+            this.sphericalGraphs3DForGraphic.add(graph3DForGraphic);
             this.sphericalGraphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
-
-        return graphsForGraphic;
 
     }
 
@@ -522,7 +520,8 @@ public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
         if (this.sphericalGraphs3D.isEmpty()) {
             return;
         }
-        this.sphericalGraphs3DForGraphic = convertGraphsToCoarserGraphs();
+        
+        convertGraphsToCoarserGraphs();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um

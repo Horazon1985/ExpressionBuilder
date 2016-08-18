@@ -154,7 +154,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
      * werden können.<br>
      * VORAUSSETZUNG: maxX, maxY und maxZ sind initialisiert.
      */
-    private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
+    private void convertGraphsToCoarserGraphs() {
 
         int numberOfIntervals = (int) (50 * this.zoomfactor);
 
@@ -165,7 +165,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
             numberOfIntervals = 2;
         }
 
-        ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
+        this.graphs3DForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
@@ -200,12 +200,10 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
             }
 
-            graphsForGraphic.add(graph3DForGraphic);
+            this.graphs3DForGraphic.add(graph3DForGraphic);
             this.graphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
-
-        return graphsForGraphic;
 
     }
 
@@ -525,7 +523,8 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         if (this.graphs3D.isEmpty()) {
             return;
         }
-        this.graphs3DForGraphic = convertGraphsToCoarserGraphs();
+        
+        convertGraphsToCoarserGraphs();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um

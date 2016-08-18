@@ -164,7 +164,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
      * werden können.<br>
      * VORAUSSETZUNG: minR, maxR, minPhi und maxPhi sind initialisiert.
      */
-    private ArrayList<double[][][]> convertGraphsToCoarserGraphs() {
+    private void convertGraphsToCoarserGraphs() {
 
         int numberOfIntervalsAlongR = (int) (50 * this.zoomfactor);
         if (numberOfIntervalsAlongR > 50) {
@@ -183,7 +183,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
             numberOfIntervalsAlongPhi = 2;
         }
 
-        ArrayList<double[][][]> graphsForGraphic = new ArrayList<>();
+        this.cylindricalGraphs3DForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
@@ -218,12 +218,10 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
             }
 
-            graphsForGraphic.add(graph3DForGraphic);
+            this.cylindricalGraphs3DForGraphic.add(graph3DForGraphic);
             this.cylindricalGraphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
-
-        return graphsForGraphic;
 
     }
 
@@ -520,7 +518,8 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         if (this.cylindricalGraphs3D.isEmpty()) {
             return;
         }
-        this.cylindricalGraphs3DForGraphic = convertGraphsToCoarserGraphs();
+        
+        convertGraphsToCoarserGraphs();
 
         /*
          Ermittelt den kleinsten und den größten Funktionswert Notwendig, um

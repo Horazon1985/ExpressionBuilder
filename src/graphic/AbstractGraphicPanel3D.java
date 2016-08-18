@@ -2,12 +2,14 @@ package graphic;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.GeneralPath;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,7 +73,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected static final Color gridColorGridOnlyBright = Color.black;
     protected static final Color gridColorGridOnlyDark = Color.green;
 
-    protected ArrayList<TangentPolygon>[][] graph;
+    protected ArrayList<TangentPolygon>[][] abstractGraph3D;
     /**
      * Standardwert für die Anzahl der Unterteilungen des zu zeichnenden
      * Bereichs der x,y-Ebene entlang x und y. Wird mit Veränderung des
@@ -432,9 +434,9 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
      * initialisiert.
      */
     protected void computeExpXExpYExpZ() {
-        this.expX = getSuitableExponent((this.maxXOrigin - this.minXOrigin) / this.zoomfactor);
-        this.expY = getSuitableExponent((this.maxYOrigin - this.minYOrigin) / this.zoomfactor);
-        this.expZ = getSuitableExponent((this.maxZOrigin - this.minZOrigin) / this.zoomfactor);
+        this.expX = getSuitableExponent((Math.max(Math.abs(this.maxXOrigin), Math.abs(this.minXOrigin))) / this.zoomfactor);
+        this.expY = getSuitableExponent((Math.max(Math.abs(this.maxYOrigin), Math.abs(this.minYOrigin))) / this.zoomfactor);
+        this.expZ = getSuitableExponent((Math.max(Math.abs(this.maxZOrigin), Math.abs(this.minZOrigin))) / this.zoomfactor);
     }
 
     private static int getSuitableExponent(double a) {
@@ -579,6 +581,57 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         return Math.atan(smallRadius * Math.tan(angle * Math.PI / 180) / bigRadius) * 180 / Math.PI + 360;
     }
 
+    /**
+     * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
+     */
+    protected void drawInfinitesimalTangentSpace(TangentPolygon p, Graphics g, Color c) {
+
+        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, p.getPoints().size());
+        if (p.getPoints().isEmpty()) {
+            return;
+        }
+
+        int[] pixel = convertToPixel(p.getPoints().get(0)[0], p.getPoints().get(0)[1], p.getPoints().get(0)[2]);
+        tangent.moveTo(pixel[0], pixel[1]);
+        for (int k = 1; k < p.getPoints().size(); k++) {
+            pixel = convertToPixel(p.getPoints().get(k)[0], p.getPoints().get(k)[1], p.getPoints().get(k)[2]);
+            tangent.lineTo(pixel[0], pixel[1]);
+        }
+        tangent.closePath();
+        Graphics2D g2 = (Graphics2D) g;
+
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+            g2.setPaint(c);
+            g2.fill(tangent);
+        }
+
+        switch (backgroundColorMode) {
+            case BRIGHT:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphBright);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyBright);
+                        break;
+                }
+                break;
+            case DARK:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        g2.setPaint(gridColorWholeGraphDark);
+                        break;
+                    case GRID_ONLY:
+                        g2.setPaint(gridColorGridOnlyDark);
+                        break;
+                }
+                break;
+        }
+
+        g2.draw(tangent);
+
+    }
+    
     /**
      * Zeichnet Niveaulinien am östlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, ..., bigRadius, smallRadius, height,
