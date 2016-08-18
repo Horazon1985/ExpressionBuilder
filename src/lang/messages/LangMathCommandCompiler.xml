@@ -528,8 +528,8 @@
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTIMPLICIT2D">
         <German>Im Befehl 'plotimplicit2d' muss genau ein Parameter stehen. Dieser muss eine gültige Gleichung in höchstens zwei Veränderlichen sein.</German>
         <English>The command 'plotimplicit2d' must contain exactly one parameter. This parameter must be a valid equation in at most two variables.</English>
-        <Ukrainian>У команди 'plotimplicit2d' має бути рівно один параметр. ???</Ukrainian>
-        <Russian>У команды 'plotimplicit2d' должен быть ровно один параметр. ???</Russian>
+        <Ukrainian>У команди 'plotimplicit2d' має бути рівно один параметр. Цей параметр має бути діючим виразом щонайбільше у двох змінних.</Ukrainian>
+        <Russian>У команды 'plotimplicit2d' должен быть ровно один параметр. Этот параметр должен быть выражением максимум в двух переменных.</Russian>
     </object>
     <object id = "MCC_FIRST_PARAMETER_IN_PLOTIMPLICIT2D_MUST_BE_A_VALID_EQUATION">
         <German>Der [0]. Parameter im Befehl 'plotimplicit2d' muss kleiner sein als der [1]. Parameter.</German>
@@ -570,8 +570,8 @@
     <object id = "MCC_WRONG_NUMBER_OF_PARAMETERS_IN_PLOTIMPLICIT3D">
         <German>Im Befehl 'plotimplicit3d' muss genau ein Parameter stehen. Dieser muss eine gültige Gleichung in höchstens drei Veränderlichen sein.</German>
         <English>The command 'plotimplicit3d' must contain exactly one parameter. This parameter must be a valid equation in at most three variables.</English>
-        <Ukrainian>У команди 'plotimplicit3d' має бути рівно один параметр. ???</Ukrainian>
-        <Russian>У команды 'plotimplicit3d' должен быть ровно один параметр. ???</Russian>
+        <Ukrainian>У команди 'plotimplicit3d' має бути рівно один параметр. Цей параметр має бути діючим виразом щонайбільше у трьох змінних.</Ukrainian>
+        <Russian>У команды 'plotimplicit3d' должен быть ровно один параметр. Этот параметр должен быть выражением максимум в трёх переменных.</Russian>
     </object>
     <object id = "MCC_FIRST_PARAMETER_IN_PLOTIMPLICIT3D_MUST_BE_A_VALID_EQUATION">
         <German>Der [0]. Parameter im Befehl 'plotimplicit3d' muss kleiner sein als der [1]. Parameter.</German>
@@ -694,10 +694,10 @@
         <Russian>1. параметр команды 'plotsurface' должен быть действительным матричным выражением.</Russian>
     </object>
     <object id = "MCC_WRONG_NUMBER_OF_VARIABLES_IN_PLOTSURFACE">
-        <German>Der Matrizenausdrücke im Befehl 'plotsurface' darf höchstens zwei Veränderliche enthalten. Diese enthalten jedoch insgesamt [0] Veränderliche.</German>
-        <English>The matrix expression in command 'plotsurface' may contain at most two variables. They contain [0] variables.</English>
-        <Ukrainian>??? у команді 'plotsurface' мають містити не більше двох змінних. Вони містять [0] змінних.</Ukrainian>
-        <Russian>Матричное выражение в команде 'plotsurface' должны содержать не более двух переменных. Они содержат [0] переменных.</Russian>
+        <German>Der Matrizenausdruck im Befehl 'plotsurface' darf höchstens zwei Veränderliche enthalten. Dieser enthält jedoch insgesamt [0] Veränderliche.</German>
+        <English>The matrix expression in command 'plotsurface' may contain at most two variables. It contain [0] variables.</English>
+        <Ukrainian>Матричний вираз у команді 'plotsurface' має містити не більше двох змінних. Він містить [0] змінних.</Ukrainian>
+        <Russian>Матричное выражение в команде 'plotsurface' должно содержать не более двух переменных. Оно содержит [0] переменных.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_VARIABLE_PARAMETER_IN_PLOTSURFACE">
         <German>Der [0]. Parameter im Befehl 'plotsurface' muss eine gültige Veränderliche sein.</German>
@@ -714,7 +714,7 @@
     <object id = "MCC_VARIABLE_NOT_ALLOWED_TO_OCCUR_IN_FUNCTION_IN_PLOTSURFACE">
         <German>Die Veränderliche [0] darf nicht in dem Matrizenausdruck im Befehl 'plotsurface' vorkommen.</German>
         <English>The variable [0] is not allowed to occur in the matrix expression in command 'plotsurface'.</English>
-        <Ukrainian>Змінна [0] не повинна зустрічатися у ??? команди 'plotsurface'.</Ukrainian>
+        <Ukrainian>Змінна [0] не повинна зустрічатися у матричному виразі команди 'plotsurface'.</Ukrainian>
         <Russian>Переменная [0] не должна встречаться в матричном выражении команды 'plotsurface'.</Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_LIMIT_PARAMETER_IN_PLOTSURFACE">
