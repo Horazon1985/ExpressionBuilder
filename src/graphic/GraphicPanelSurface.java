@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 public class GraphicPanelSurface extends AbstractGraphicPanel3D {
@@ -124,7 +123,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
      * gezeichnet werden können.<br>
      * VORAUSSETZUNG: minS, maxS, minT und maxT sind initialisiert.
      */
-    private double[][][] convertGraphToCoarserGraph() {
+    private void convertGraphToCoarserGraph() {
 
         int numberOfIntervals = (int) (50 * this.zoomfactor);
 
@@ -135,7 +134,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
             numberOfIntervals = 2;
         }
 
-        double[][][] graph3DForGraphic = new double[numberOfIntervals + 1][numberOfIntervals + 1][3];
+        this.surfaceGraph3DForGraphic = new double[numberOfIntervals + 1][numberOfIntervals + 1][3];
         boolean[][] coarserGraph3DIsDefined = new boolean[numberOfIntervals + 1][numberOfIntervals + 1];
 
         int currentIndexI, currentIndexJ;
@@ -154,9 +153,9 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
                 } else {
                     currentIndexJ = (int) (j * ((double) this.surfaceGraph3D[0].length - 1) / numberOfIntervals);
                 }
-                graph3DForGraphic[i][j][0] = this.surfaceGraph3D[currentIndexI][currentIndexJ][0];
-                graph3DForGraphic[i][j][1] = this.surfaceGraph3D[currentIndexI][currentIndexJ][1];
-                graph3DForGraphic[i][j][2] = this.surfaceGraph3D[currentIndexI][currentIndexJ][2];
+                this.surfaceGraph3DForGraphic[i][j][0] = this.surfaceGraph3D[currentIndexI][currentIndexJ][0];
+                this.surfaceGraph3DForGraphic[i][j][1] = this.surfaceGraph3D[currentIndexI][currentIndexJ][1];
+                this.surfaceGraph3DForGraphic[i][j][2] = this.surfaceGraph3D[currentIndexI][currentIndexJ][2];
                 // Prüft, ob der Funktionswert this.graph3D[i][j][2] definiert ist.
                 coarserGraph3DIsDefined[i][j] = !(Double.isNaN(this.surfaceGraph3D[currentIndexI][currentIndexJ][2]) || Double.isInfinite(this.surfaceGraph3D[currentIndexI][currentIndexJ][2]));
             }
@@ -172,16 +171,16 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
                 polygon = new TangentPolygon();
                 if (coarserGraph3DIsDefined[i][j]) {
-                    polygon.addPoint(graph3DForGraphic[i][j]);
+                    polygon.addPoint(this.surfaceGraph3DForGraphic[i][j]);
                 }
                 if (coarserGraph3DIsDefined[i + 1][j]) {
-                    polygon.addPoint(graph3DForGraphic[i + 1][j]);
+                    polygon.addPoint(this.surfaceGraph3DForGraphic[i + 1][j]);
                 }
                 if (coarserGraph3DIsDefined[i + 1][j + 1]) {
-                    polygon.addPoint(graph3DForGraphic[i + 1][j + 1]);
+                    polygon.addPoint(this.surfaceGraph3DForGraphic[i + 1][j + 1]);
                 }
                 if (coarserGraph3DIsDefined[i][j + 1]) {
-                    polygon.addPoint(graph3DForGraphic[i][j + 1]);
+                    polygon.addPoint(this.surfaceGraph3DForGraphic[i][j + 1]);
                 }
                 centerX = polygon.getCenterX();
                 centerY = polygon.getCenterY();
@@ -206,54 +205,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
                 Collections.sort(this.graph[i][j]);
             }
         }
-
-        return graph3DForGraphic;
-
-    }
-
-    /**
-     * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
-     */
-    private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
-
-        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
-        tangent.moveTo(x_1, y_1);
-        tangent.lineTo(x_2, y_2);
-        tangent.lineTo(x_3, y_3);
-        tangent.lineTo(x_4, y_4);
-        tangent.closePath();
-        Graphics2D g2 = (Graphics2D) g;
-
-        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
-            g2.setPaint(c);
-            g2.fill(tangent);
-        }
-
-        switch (backgroundColorMode) {
-            case BRIGHT:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphBright);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyBright);
-                        break;
-                }
-                break;
-            case DARK:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphDark);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyDark);
-                        break;
-                }
-                break;
-        }
-
-        g2.draw(tangent);
 
     }
 
@@ -324,22 +275,6 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         // Dann können keine Graphen gezeichnet werden.
         if (numberOfIntervalsAlongAbsc == 0 || numberOfIntervalsAlongOrd == 0) {
             return;
-        }
-
-        // Koordinaten der einzelnen Graphen in graphische Koordinaten umwandeln
-//        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-//        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
-//            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-//                graphicalGraph[i][j] = convertToPixel(this.surfaceGraph3DForGraphic[i][j][0], this.surfaceGraph3DForGraphic[i][j][1],
-//                        this.surfaceGraph3DForGraphic[i][j][2]);
-//            }
-//        }
-        int[][][] graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
-        for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
-            for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-                graphicalGraph[i][j] = convertToPixel(this.surfaceGraph3DForGraphic[i][j][0], this.surfaceGraph3DForGraphic[i][j][1],
-                        this.surfaceGraph3DForGraphic[i][j][2]);
-            }
         }
 
         if (this.angle <= 90) {
@@ -425,34 +360,8 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         if (this.surfaceGraph3D.length == 0) {
             return;
         }
-        this.surfaceGraph3DForGraphic = convertGraphToCoarserGraph();
 
-        /*
-         Ermittelt den kleinsten und den größten Funktionswert Notwendig, um
-         das Farbspektrum im 3D-Graphen zu berechnen!
-         */
-        double minExpr = Double.NaN;
-        double maxExpr = Double.NaN;
-
-        // Zunächst wird geprüft, ob mindestens ein Graph IRGENDWO definiert ist
-        for (int i = 0; i < this.surfaceGraph3DForGraphic.length; i++) {
-            for (int j = 0; j < this.surfaceGraph3DForGraphic[0].length; j++) {
-                if (this.surfaceGraph3DIsDefined[i][j]) {
-                    minExpr = this.surfaceGraph3DForGraphic[i][j][2];
-                    maxExpr = this.surfaceGraph3DForGraphic[i][j][2];
-                    break;
-                }
-            }
-        }
-
-        for (int i = 0; i < this.surfaceGraph3DForGraphic.length; i++) {
-            for (int j = 0; j < this.surfaceGraph3DForGraphic[0].length; j++) {
-                if (this.surfaceGraph3DIsDefined[i][j]) {
-                    minExpr = Math.min(minExpr, this.surfaceGraph3DForGraphic[i][j][2]);
-                    maxExpr = Math.max(maxExpr, this.surfaceGraph3DForGraphic[i][j][2]);
-                }
-            }
-        }
+        convertGraphToCoarserGraph();
 
         drawLevelsOnEast(g, null, null, null);
         drawLevelsOnSouth(g, null, null, null);
