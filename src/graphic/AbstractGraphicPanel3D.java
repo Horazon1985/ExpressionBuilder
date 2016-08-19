@@ -474,9 +474,18 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
             green = g;
             blue = b;
         } else {
-            red = r - (int) (60 * Math.sin(this.angle / 180 * Math.PI));
-            green = g + (int) ((255 - g) * (height - minZ) / (maxZ - minZ));
-            blue = b + (int) (60 * Math.sin(this.angle / 180 * Math.PI));
+            red = Math.min(255, r - (int) (60 * Math.sin(this.angle / 180 * Math.PI)));
+            green = Math.min(255, g + (int) ((255 - g) * (height - minZ) / (maxZ - minZ)));
+            blue = Math.min(255, b + (int) (60 * Math.sin(this.angle / 180 * Math.PI)));
+        }
+        if (r < 0) {
+            r = 0;
+        }
+        if (g < 0) {
+            g = 0;
+        }
+        if (b < 0) {
+            b = 0;
         }
 
         return new Color(red, green, blue);
@@ -631,7 +640,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
         g2.draw(tangent);
 
     }
-    
+
     /**
      * Zeichnet Niveaulinien am östlichen Rand des Graphen.<br>
      * VORAUSSETZUNG: maxX, maxY, maxZ, ..., bigRadius, smallRadius, height,
