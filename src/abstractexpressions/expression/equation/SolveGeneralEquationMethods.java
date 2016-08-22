@@ -525,8 +525,11 @@ public abstract class SolveGeneralEquationMethods {
             throw new NotAlgebraicallySolvableException();
         }
 
-        Function functionF = (Function) f;
-        TypeFunction type = functionF.getType();
+        TypeFunction type = ((Function) f).getType();
+
+        if (!g.isFunction(type) && g.contains(var)) {
+            throw new NotAlgebraicallySolvableException();
+        }
 
         if (type.equals(TypeFunction.abs)) {
             return solveEquationAbs(((Function) f).getLeft(), g, var);
@@ -553,7 +556,7 @@ public abstract class SolveGeneralEquationMethods {
         } else if (type.equals(TypeFunction.cosh)) {
             return solveEquationCosh(((Function) f).getLeft(), g, var);
         } else if (type.equals(TypeFunction.sech)) {
-            return solveEquationSec(((Function) f).getLeft(), g, var);
+            return solveEquationSech(((Function) f).getLeft(), g, var);
         }
 
         // Ansonsten ist f eine bijektive Funktion
@@ -607,7 +610,7 @@ public abstract class SolveGeneralEquationMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
-        if (g instanceof Function && ((Function) g).getType().equals(type)) {
+        if (g.isFunction(type)) {
             try {
                 zeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
                 if (zeros.isEmpty()) {
@@ -640,7 +643,7 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection zeros = new ExpressionCollection();
         ExpressionCollection zerosPositive, zerosNegative;
 
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.abs)) {
+        if (g.isFunction(TypeFunction.abs)) {
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
                 zerosNegative = solveGeneralEquation(argument, Expression.MINUS_ONE.mult(((Function) g).getLeft()), var);
@@ -710,7 +713,7 @@ public abstract class SolveGeneralEquationMethods {
 
         ExpressionCollection zeros = new ExpressionCollection();
 
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.exp)) {
+        if (g.isFunction(TypeFunction.exp)) {
             try {
                 zeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
                 if (zeros.isEmpty()) {
@@ -822,7 +825,7 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection zerosNegative;
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.cosh)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
@@ -882,7 +885,7 @@ public abstract class SolveGeneralEquationMethods {
         ExpressionCollection zerosNegative;
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.sech)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
@@ -943,7 +946,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.sin)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
@@ -1011,7 +1014,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.cos)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
@@ -1077,7 +1080,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.tan)) {
 
             try {
                 possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(Expression.PI.mult(Variable.create(K))), var);
@@ -1133,7 +1136,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.cot)) {
 
             try {
                 possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(Expression.PI.mult(Variable.create(K))), var);
@@ -1191,7 +1194,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.sec)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
@@ -1257,7 +1260,7 @@ public abstract class SolveGeneralEquationMethods {
         String K = getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
-        if (g instanceof Function && ((Function) g).getType().equals(TypeFunction.sin)) {
+        if (g.isFunction(TypeFunction.cosec)) {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
