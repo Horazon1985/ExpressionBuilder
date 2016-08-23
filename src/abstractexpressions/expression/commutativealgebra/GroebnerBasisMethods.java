@@ -418,17 +418,21 @@ public abstract class GroebnerBasisMethods {
             if (this.monomials.size() != f.monomials.size()) {
                 return false;
             }
-            for (int i = 0; i < this.monomials.size(); i++) {
-                for (int j = 0; j < f.monomials.size(); j++) {
-                    if (this.monomials.get(i).equivalentToMonomial(f.monomials.get(j))) {
-                        this.monomials.remove(i);
-                        f.monomials.remove(j);
+            
+            MultiPolynomial thisCopy = this.copy();
+            MultiPolynomial fCopy = f.copy();
+            
+            for (int i = 0; i < thisCopy.monomials.size(); i++) {
+                for (int j = 0; j < fCopy.monomials.size(); j++) {
+                    if (thisCopy.monomials.get(i).equivalentToMonomial(fCopy.monomials.get(j))) {
+                        thisCopy.monomials.remove(i);
+                        fCopy.monomials.remove(j);
                         i--;
                         break;
                     }
                 }
             }
-            return this.monomials.isEmpty() && f.monomials.isEmpty();
+            return thisCopy.monomials.isEmpty() && fCopy.monomials.isEmpty();
         }
 
         public MultiPolynomial multiplyWithMonomial(Monomial m) throws EvaluationException {
@@ -648,12 +652,12 @@ public abstract class GroebnerBasisMethods {
     public static ArrayList<MultiPolynomial> getNormalizedReducedGroebnerBasis(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
 
         // Vereinfachungsmodus setzen.
-        if (isMultiPolynomialFamilyRational(polynomials)){
+        if (isMultiPolynomialFamilyRational(polynomials)) {
             simplifyCase = SimplifyCase.RATIONAL_CASE;
         } else {
             simplifyCase = SimplifyCase.GENERAL_CASE;
         }
-        
+
         ArrayList<MultiPolynomial> groebnerBasis = new ArrayList<>();
         ArrayList<MultiPolynomial> groebnerBasisAfterBuchbergerAlgorithmStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {
@@ -700,13 +704,15 @@ public abstract class GroebnerBasisMethods {
         for (int i = 0; i < polynomials.size(); i++) {
             for (int j = i + 1; j < polynomials.size(); j++) {
                 SPolynomial = getSyzygyPolynomial(polynomials.get(i), polynomials.get(j));
+                // S-Polynom soweit es geht mittels der bestehenden Polynome reduzieren.
                 SPolynomial = reduce(SPolynomial, polynomials);
                 if (!SPolynomial.isZero()) {
                     polynomialsAfterStep.add(SPolynomial);
+                    return polynomialsAfterStep;
                 }
             }
         }
-
+        
         return polynomialsAfterStep;
 
     }

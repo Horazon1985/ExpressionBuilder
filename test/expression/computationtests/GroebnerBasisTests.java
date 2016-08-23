@@ -15,6 +15,7 @@ import abstractexpressions.expression.utilities.ExpressionCollection;
 import abstractexpressions.expression.utilities.SimplifyMultiPolynomialMethods;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
@@ -81,7 +82,7 @@ public class GroebnerBasisTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void multiPolynomialToPolynomialTest1() {
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
@@ -93,7 +94,7 @@ public class GroebnerBasisTests {
         assertTrue(coefficients.get(2).equals(TWO.mult(Variable.create("y").pow(5)).add(ONE)));
         assertTrue(coefficients.get(3).equals(TWO.div(THREE).mult(Variable.create("y"))));
     }
-    
+
     @Test
     public void multiPolynomialToPolynomialTest2() {
         GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
@@ -102,7 +103,7 @@ public class GroebnerBasisTests {
         assertTrue(coefficients.getBound() == 1);
         assertTrue(coefficients.get(0).equals(f.toExpression()));
     }
-    
+
     @Test
     public void getLeadingMonomialWithRespectToLexTest1() {
         GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
@@ -263,6 +264,37 @@ public class GroebnerBasisTests {
                     new Monomial(new Constant(-1521).div(4), 0, 0));
             MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(new Constant(-4).div(195), 0, 3),
                     new Monomial(new Constant(-94).div(195), 0, 1));
+            assertTrue(groebnerBasis.size() == 2);
+            assertTrue(groebnerBasis.get(0).equivalentToMultiPolynomial(groebnerBasisElementOne));
+            assertTrue(groebnerBasis.get(1).equivalentToMultiPolynomial(groebnerBasisElementTwo));
+        } catch (EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void getGroebnerBasisTest3() {
+        // f = x^3*y^2 + x*y - 78, g = -y + x^2*y^3 - 105 bzgl. LEX. Gröbnerbasis = {y^4 + 133/4*y^2 - 1521/4, x - 4/195y^3 - 94/195y}
+        GroebnerBasisMethods.setTermOrdering(GroebnerBasisMethods.TermOrderings.LEX);
+        GroebnerBasisMethods.setMonomialVars(new String[]{"x", "y"});
+        MultiPolynomial f = new MultiPolynomial(new Monomial(ONE, 3, 2), new Monomial(ONE, 1, 1),
+                new Monomial(new Constant(-78), 0, 0));
+        MultiPolynomial g = new MultiPolynomial(new Monomial(MINUS_ONE, 0, 1), new Monomial(ONE, 2, 3),
+                new Monomial(new Constant(-105), 0, 0));
+        try {
+            ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisMethods.getNormalizedReducedGroebnerBasis(f, g);
+            MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(new Constant(-67075577).div(90294750), 0, 1),
+                    new Monomial(new Constant(32992312).div(BigInteger.valueOf(4740474375L)), 0, 2),
+                    new Monomial(new Constant(-181621).div(BigInteger.valueOf(1354421250)), 0, 4),
+                    new Monomial(new Constant(66448723).div(BigInteger.valueOf(9480948750L)), 0, 3),
+                    new Monomial(ONE, 1, 0),
+                    new Monomial(new Constant(-10711).div(BigInteger.valueOf(859950)), 0, 0));
+            MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(new Constant(-4725).div(869), 0, 1),
+                    new Monomial(new Constant(-165375).div(869), 0, 0),
+                    new Monomial(ONE, 0, 5),
+                    new Monomial(new Constant(-107).div(6083), 0, 4),
+                    new Monomial(new Constant(-421).div(6083), 0, 3),
+                    new Monomial(new Constant(-3195).div(869), 0, 2));
             assertTrue(groebnerBasis.size() == 2);
             assertTrue(groebnerBasis.get(0).equivalentToMultiPolynomial(groebnerBasisElementOne));
             assertTrue(groebnerBasis.get(1).equivalentToMultiPolynomial(groebnerBasisElementTwo));
