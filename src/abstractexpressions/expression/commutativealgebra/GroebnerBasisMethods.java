@@ -669,6 +669,7 @@ public abstract class GroebnerBasisMethods {
         do {
             groebnerBasis = groebnerBasisAfterBuchbergerAlgorithmStep;
             groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis);
+            System.out.println(groebnerBasis.size());
         } while (groebnerBasis.size() != groebnerBasisAfterBuchbergerAlgorithmStep.size());
 
         // Reduzieren.

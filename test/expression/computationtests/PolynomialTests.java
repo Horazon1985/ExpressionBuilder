@@ -552,20 +552,21 @@ public class PolynomialTests {
         }
     }
 
-//    @Test
-//    public void decomposePolynomialBySolvoingPolynomialSystemTest() {
-//        /* 
-//         Zerlegung von f = x^4+5*x^3+21*x^2+35*x+50 = (x^2+2*x+5)*(x^2+3*x+10) in irreduzible Faktoren.
-//         */
-//        try {
-//            f = Expression.build("x^4+5*x^3+21*x^2+35*x+50", null);
-//            expectedFactorizationOfF = Expression.build("(x^2+2*x+5)*(x^2+3*x+10)", null);
-//            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
-//            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
-//        } catch (ExpressionException | EvaluationException e) {
-//            fail(e.getMessage());
-//        }
-//    }
+    @Test
+    public void decomposePolynomialBySolvoingPolynomialSystemTest() {
+        /* 
+         Zerlegung von f = x^4+5*x^3+21*x^2+35*x+50 = (x^2+2*x+5)*(x^2+3*x+10) in irreduzible Faktoren.
+         */
+        try {
+            f = Expression.build("x^4+5*x^3+21*x^2+35*x+50", null);
+            expectedFactorizationOfF = Expression.build("(x^2+2*x+5)*(x^2+3*x+10)", null);
+            f = SimplifyPolynomialMethods.decomposePolynomialInIrreducibleFactors(f, "x");
+            Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest1() {
         /* 
