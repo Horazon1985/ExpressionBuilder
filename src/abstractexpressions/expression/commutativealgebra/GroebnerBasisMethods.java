@@ -666,10 +666,10 @@ public abstract class GroebnerBasisMethods {
         }
 
         // Gröbnerbasis berechnen.
+        ArrayList<int[]> indexPairsWhichReduceToZero = new ArrayList<>();
         do {
             groebnerBasis = groebnerBasisAfterBuchbergerAlgorithmStep;
-            groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis);
-            System.out.println(groebnerBasis.size());
+            groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis, indexPairsWhichReduceToZero);
         } while (groebnerBasis.size() != groebnerBasisAfterBuchbergerAlgorithmStep.size());
 
         // Reduzieren.
@@ -694,7 +694,7 @@ public abstract class GroebnerBasisMethods {
         return getNormalizedReducedGroebnerBasis(polynomialsAsArrayList);
     }
 
-    private static ArrayList<MultiPolynomial> buchbergerAlgorithmSingleStep(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    private static ArrayList<MultiPolynomial> buchbergerAlgorithmSingleStep(ArrayList<MultiPolynomial> polynomials, ArrayList<int[]> indexPairsWhichReduceToZero) throws EvaluationException {
 
         ArrayList<MultiPolynomial> polynomialsAfterStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {
@@ -704,18 +704,32 @@ public abstract class GroebnerBasisMethods {
         MultiPolynomial SPolynomial;
         for (int i = 0; i < polynomials.size(); i++) {
             for (int j = i + 1; j < polynomials.size(); j++) {
+                if (containsIndexPair(indexPairsWhichReduceToZero, i, j)){
+                    continue;
+                }
                 SPolynomial = getSyzygyPolynomial(polynomials.get(i), polynomials.get(j));
                 // S-Polynom soweit es geht mittels der bestehenden Polynome reduzieren.
                 SPolynomial = reduce(SPolynomial, polynomials);
                 if (!SPolynomial.isZero()) {
                     polynomialsAfterStep.add(SPolynomial);
                     return polynomialsAfterStep;
+                } else { 
+                    indexPairsWhichReduceToZero.add(new int[]{i, j});
                 }
             }
         }
         
         return polynomialsAfterStep;
 
+    }
+    
+    private static boolean containsIndexPair(ArrayList<int[]> indexPairs, int i, int j){
+        for (int[] pair : indexPairs){
+            if (pair.length == 2 && pair[0] == i && pair[1] == j){
+                return true;
+            }
+        }
+        return false;
     }
 
     private static ArrayList<MultiPolynomial> reduceGroebnerBasisSystem(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
