@@ -17,4 +17,7 @@
   <object id = "SELFDEFINEDFUNCTION_VAR">
     <value>U</value>
   </object>
+  <object id = "AXIS_VAR">
+    <value>Y</value>
+  </object>
 </objects>

@@ -138,7 +138,8 @@ public abstract class AnalysisMethods {
      * Ermittelt das Taylorpolynom vom Grad degree von y (mit Entwicklungsstelle
      * x_0), welches die DGL y^(n) = f erfüllt. VORAUSSETZUNG: expr enthält
      * höchstens zwei Variablen: var und noch eine andere; alles andere wurden
-     * beim Compilieren bereits aussortiert. Außerdem: k &#8805; 0, ord &#8805; 1.
+     * beim Compilieren bereits aussortiert. Außerdem: k &#8805; 0, ord &#8805;
+     * 1.
      *
      * @throws EvaluationException
      */
@@ -394,14 +395,69 @@ public abstract class AnalysisMethods {
                 result = result.add(factor.mult(Variable.create(var).sub(point.get(var))));
             }
 
-            f = f.simplifyByInsertingDefinedVars().simplify();
+            Expression functionValueAtPoint = f.simplifyByInsertingDefinedVars().simplify();
 
             // Wichtig: allen Variablen, die in point vorkommen, wieder zu Unbestimmten machen.
             for (String var : vars) {
                 Variable.setPreciseExpression(var, null);
             }
 
-            return f.add(result).simplify();
+            return functionValueAtPoint.add(result).simplify();
+        } catch (EvaluationException e) {
+            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
+        } finally {
+            /* 
+             Egal, ob die Berechnung des Tangentialraumes erfolgreich war oder nicht,
+             die Variablen, welchen ein fester Wert zugeordnet wurde, müssen wieder 
+             zu Unbestimmten werden.
+             */
+            for (String var : vars) {
+                Variable.setPreciseExpression(var, null);
+            }
+        }
+
+    }
+
+    /**
+     * Ermittelt die Gleichung des Tangentialraumes an den Graphen der Funktion
+     * Y = f. VORAUSSETZUNG: x_0.size = Anzahl der Variablen in expr. Dies ist
+     * aber stets der Fall, da es andernfalls bereits im Vorfeld aussortiert
+     * wurde.
+     *
+     * @throws EvaluationException
+     */
+    public static HashMap<String, Expression> getNormalLineParametrization(Expression f, HashMap<String, Expression> point)
+            throws EvaluationException {
+
+        HashSet<String> vars = f.getContainedIndeterminates();
+
+        HashMap<String, Expression> normalLineParametrization = new HashMap<>();
+        Expression partialDerivativeAtPoint;
+
+        // Alle Variablen auf die Werte setzen, die dem Punkt x_0 entsprechen.
+        for (String var : vars) {
+            Variable.setPreciseExpression(var, point.get(var));
+        }
+
+        try {
+            // Funktionswert im Punkt point berechnen.
+            Expression functionValueAtPoint = f.simplifyByInsertingDefinedVars().simplify();
+            
+            normalLineParametrization.put(NotationLoader.AXIS_VAR, Variable.create(NotationLoader.FREE_REAL_PARAMETER_VAR));
+
+            for (String var : vars) {
+                partialDerivativeAtPoint = f.diff(var);
+                partialDerivativeAtPoint = partialDerivativeAtPoint.simplifyByInsertingDefinedVars().simplify();
+                normalLineParametrization.put(var, functionValueAtPoint.mult(partialDerivativeAtPoint).add(
+                        point.get(var)).sub(partialDerivativeAtPoint.mult(NotationLoader.FREE_REAL_PARAMETER_VAR)).simplify());
+            }
+
+            // Wichtig: allen Variablen, die in point vorkommen, wieder zu Unbestimmten machen.
+            for (String var : vars) {
+                Variable.setPreciseExpression(var, null);
+            }
+
+            return normalLineParametrization;
         } catch (EvaluationException e) {
             throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
         } finally {
@@ -492,8 +548,8 @@ public abstract class AnalysisMethods {
     }
 
     /**
-     * Approximation der Gammafunktion. Die Integration wird nur für 1 &#8804; s &#60; 2
-     * verwendet (da dann der Fehler &#8804; 1E-16 ist), ansonsten die
+     * Approximation der Gammafunktion. Die Integration wird nur für 1 &#8804; s
+     * &#60; 2 verwendet (da dann der Fehler &#8804; 1E-16 ist), ansonsten die
      * Funktionalgleichung.
      *
      * @throws EvaluationException

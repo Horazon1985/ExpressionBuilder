@@ -423,6 +423,48 @@
         <Ukrainian>Помилка у параметрі команди 'latex': </Ukrainian>
         <Russian>Ошибка в параметре команды 'latex': </Russian>
     </object>
+    <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_NORMAL">
+        <German>Zu wenig Parameter im Befehl 'normal'.</German>
+        <English>Not enough parameters in command 'normal'.</English>
+        <Ukrainian>Недостатньо параметрів у команди 'normal'.</Ukrainian>
+        <Russian>Недостаточно параметров у команды 'normal'.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_1_PARAMETER_IN_NORMAL">
+        <German>Der 1. Parameter im Befehl 'normal' muss ein gültiger Ausdruck sein. Gemeldeter Fehler: </German>
+        <English>The 1. parameter in command 'normal' must be a valid expression. Reported error: </English>
+        <Ukrainian>1. параметр команди 'normal' має бути діючим виразом. Повідомлення про помилку: </Ukrainian>
+        <Russian>1. Параматр команды 'normal' должен быть действительным выражением. Сообщение об ошибке: </Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_NORMAL">
+        <German>Der [0]. Parameter im Befehl 'normal' muss von der Form 'VARIABLE = WERT' sein, wobei die Veränderliche VARIABLE im Ausdruck vorkommen muss.</German>
+        <English>The [0]. parameter in command 'normal' must be of the form 'VARIABLE = VALUE', where VARIABLE is a variable, which must be contained in the expression.</English>
+        <Ukrainian>[0]. параметр команди 'normal' має бути у формі 'VARIABLE = VALUE', де VARIABLE - змінною, що міститься у виразі.</Ukrainian>
+        <Russian>[0]. параметр команды 'normal' должен быть в форме 'VARIABLE = VALUE', где VARIABLE - переменная, которая входит в выражении.</Russian>
+    </object>
+    <object id = "MCC_NOT_A_VALID_VARIABLE_IN_NORMAL">
+        <German>[0] ist keine gültige Veränderliche.</German>
+        <English>[0] is not a valid variable.</English>
+        <Ukrainian>[0] не є діючою змінною.</Ukrainian>
+        <Russian>[0] не является действительной переменной.</Russian>
+    </object>
+    <object id = "MCC_WRONG_FORM_OF_GENERAL_POINT_PARAMETER_IN_NORMAL">
+        <German>Der Veränderlichen im [0]. Parameter im Befehl 'normal' muss eine reelle Zahl zugewiesen werden.</German>
+        <English>To the variable in the [0]. parameter in command 'normal' must be assigned a real number.</English>
+        <Ukrainian>Змінній у [0]. параметрі команди 'normal' має бути присвоєне дійсне число.</Ukrainian>
+        <Russian>Переменной в [0]. параметре команды 'normal' должно быть присвоено вещественное число.</Russian>
+    </object>
+    <object id = "MCC_VARIABLES_OCCUR_TWICE_IN_NORMAL">
+        <German>Die Veränderliche [0] tritt doppelt auf.</German>
+        <English>The variable [0] occurs twice in parameters.</English>
+        <Ukrainian>Змінна [0] зустрічаться двічі у параметрах.</Ukrainian>
+        <Russian>Переменная [0] встречается дважды в параметрах.</Russian>
+    </object>
+    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_NORMAL">
+        <German>Die Veränderliche [0] muss in den Parametern vorkommen.</German>
+        <English>The variable [0] must occur in parameters.</English>
+        <Ukrainian>Змінна [0] має бути у параметррах.</Ukrainian>
+        <Russian>Переменная [0] должна быть в параметрах.</Russian>
+    </object>
     <object id = "MCC_ENTER_SMALLER_NUMBER_IN_PI">
         <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
         <English>Please choose a smaller number of digits.</English>
@@ -1121,10 +1163,10 @@
         <Russian>1. Параматр команды 'tangent' должен быть действительным выражением. Сообщение об ошибке: </Russian>
     </object>
     <object id = "MCC_WRONG_FORM_OF_GENERAL_PARAMETER_IN_TANGENT">
-        <German>Der [0]. Parameter muss von der Form 'VARIABLE = WERT' sein, wobei die Veränderliche VARIABLE im Ausdruck vorkommen muss.</German>
-        <English>The [0]. parameter must be of the form 'VARIABLE = VALUE', where VARIABLE is a variable, which must be contained in the expression.</English>
-        <Ukrainian>[0]. параметр має бути у формі 'VARIABLE = VALUE', де VARIABLE - змінною, що міститься у виразі.</Ukrainian>
-        <Russian>[0]. параметр должен быть в форме 'VARIABLE = VALUE', где VARIABLE - переменная, которая входит в выражении.</Russian>
+        <German>Der [0]. Parameter im Befehl 'tangent' muss von der Form 'VARIABLE = WERT' sein, wobei die Veränderliche VARIABLE im Ausdruck vorkommen muss.</German>
+        <English>The [0]. parameter in command 'tangent' must be of the form 'VARIABLE = VALUE', where VARIABLE is a variable, which must be contained in the expression.</English>
+        <Ukrainian>[0]. параметр команди 'tangent' має бути у формі 'VARIABLE = VALUE', де VARIABLE - змінною, що міститься у виразі.</Ukrainian>
+        <Russian>[0]. параметр команды 'tangent' должен быть в форме 'VARIABLE = VALUE', где VARIABLE - переменная, которая входит в выражении.</Russian>
     </object>
     <object id = "MCC_NOT_A_VALID_VARIABLE_IN_TANGENT">
         <German>[0] ist keine gültige Veränderliche.</German>
@@ -1349,6 +1391,24 @@
         <Ukrainian>[0]. параметр команди 'extrema' має бути меншим ніж [1]. параметр.</Ukrainian>
         <Russian>[0]. параметр команды 'extrema' должен быть меньше чем [1]. параметр.</Russian>
     </object>
+    <object id = "MCC_PARAMETRIZATION_OF_NORMAL_SPACE_1">
+        <German>Parametrisierung der Normalen an den Graphen von Y = </German>
+        <English>Parametrization of the normal line to the graph of Y = </English>
+        <Ukrainian>??? до графіка Y = </Ukrainian>
+        <Russian>??? к графику Y = </Russian>
+    </object>
+    <object id = "MCC_PARAMETRIZATION_OF_NORMAL_SPACE_2">
+        <German> im Punkt </German>
+        <English> in the point </English>
+        <Ukrainian> в точці </Ukrainian>
+        <Russian> в точке </Russian>
+    </object>
+    <object id = "MCC_IS_FREE_VARIABLE_IN_NORMAL">
+        <German>[0] ist eine freie Veränderliche.</German>
+        <English>[0] is a free variable.</English>
+        <Ukrainian>[0] є вільною змінною.</Ukrainian>
+        <Russian>[0] является свободной переменной.</Russian>
+    </object>
     <object id = "MCC_DIGITS_OF_PI">
         <German>Kreiszahl pi auf [0] Stellen gerundet: </German>
         <English>Constant pi rounded to [0] digits: </English>
@@ -1539,7 +1599,7 @@
     </object>
     <object id = "MCC_EQUATION_OF_TANGENT_SPACE_1">
         <German>Gleichung des Tangentialraumes an den Graphen von Y = </German>
-        <English>Equation of the tangent space to the graph of Y = </English>
+        <English>Equation of the tangent space of the graph of Y = </English>
         <Ukrainian>Рівняння дотичного простору до графіка Y = </Ukrainian>
         <Russian>Уравнение касательного порстранства к графику Y = </Russian>
     </object>

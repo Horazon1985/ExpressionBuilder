@@ -271,7 +271,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightBelowCommonCenter = (2 * fontSize) / 5;
         int heightBeyondCommonCenter = (3 * fontSize) / 5;
 
-        if (c.getTypeCommand().equals(TypeCommand.tangent)) {
+        if (c.getTypeCommand().equals(TypeCommand.normal) || c.getTypeCommand().equals(TypeCommand.tangent)) {
 
             // Höhen über und unter dem Zentrum von der Funktionsgleichung ermitteln.
             int heightParameter = getHeightOfExpression(g, (Expression) params[0], fontSize);
@@ -342,11 +342,12 @@ public class GraphicPanelFormula extends JPanel {
         int heightParameterCenter;
         /*
          Zuerst eine Ausnahme behandeln: wenn c.typeCommand ==
-         TypeCommand.TANGENT ist. Dann ist params[0] eine Instanz von
+         TypeCommand.normal oder == TypeCommand.tangent ist. 
+         Dann ist params[0] eine Instanz von
          Expression und params[1] eine Instanz von
          HashMap<String, Expression>.
          */
-        if (c.getTypeCommand().equals(TypeCommand.tangent)) {
+        if (c.getTypeCommand().equals(TypeCommand.normal) || c.getTypeCommand().equals(TypeCommand.tangent)) {
 
             heightParameterCenter = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
 
@@ -459,6 +460,7 @@ public class GraphicPanelFormula extends JPanel {
                     }
                 }
                 break;
+            case normal:
             case tangent:
                 // Die Gesamtlänge aller Kommata und aller "="-Zeichen hinzuaddieren.
                 resultLength = resultLength + ((HashMap) params[1]).size() * (g.getFontMetrics().stringWidth(", ") + getWidthOfSignEquals(g, fontSize));
@@ -4082,11 +4084,14 @@ public class GraphicPanelFormula extends JPanel {
             case def:
                 drawCommandDef(g, c, x_0, y_0, fontSize);
                 break;
+            case normal:
+                drawCommandsNormalOrTangent(g, c, x_0, y_0, fontSize);
+                break;
             case latex:
                 drawCommandLatex(g, c, x_0, y_0, fontSize);
                 break;
             case tangent:
-                drawCommandTangent(g, c, x_0, y_0, fontSize);
+                drawCommandsNormalOrTangent(g, c, x_0, y_0, fontSize);
                 break;
             default:
                 drawCommandDefault(g, c, x_0, y_0, fontSize);
@@ -4243,7 +4248,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawCommandTangent(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommandsNormalOrTangent(Graphics g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 

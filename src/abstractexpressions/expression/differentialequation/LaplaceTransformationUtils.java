@@ -21,6 +21,17 @@ public abstract class LaplaceTransformationUtils {
 
     public static Expression getLaplaceTransformation(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
 
+        // Zunächst Linearkombinationen behandfeln.
+        try {
+            return getLaplaceTransformationOfSumsAndDifferences(f, var, transVar);
+        } catch (LaplaceTransformationNotComputableException e) {
+        }
+        try {
+            return getLaplaceTransformationOfScalarMultiples(f, var, transVar);
+        } catch (LaplaceTransformationNotComputableException e) {
+        }
+
+        // Nun spezielle Funktionstypen behandeln.
         try {
             return getLaplaceTransformationIfFunctionIsConstant(f, var, transVar);
         } catch (LaplaceTransformationNotComputableException e) {
@@ -47,11 +58,83 @@ public abstract class LaplaceTransformationUtils {
     }
 
     /**
+     * L(f<sub>1</sub> + ... + f<sub>n</sub>) = L(f<sub>1</sub>) + ... +
+     * L(f<sub>n</sub>).
+     *
+     * @throws LaplaceTransformationNotComputableException
+     */
+    private static Expression getLaplaceTransformationOfSumsAndDifferences(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+
+        if (f.isNotSum() && f.isNotDifference()) {
+            throw new LaplaceTransformationNotComputableException();
+        }
+
+        Expression fTransformedLeft = ZERO;
+        Expression fTransformedRight = ZERO;
+
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
+
+        for (Expression summand : summandsLeft) {
+            fTransformedLeft = fTransformedLeft.add(getLaplaceTransformation(summand, var, transVar));
+        }
+
+        for (Expression summand : summandsRight) {
+            fTransformedRight = fTransformedRight.add(getLaplaceTransformation(summand, var, transVar));
+        }
+
+        return fTransformedLeft.sub(fTransformedRight);
+
+    }
+
+    /**
+     * L(c * f) = c * L(f) für reelles c.
+     *
+     * @throws LaplaceTransformationNotComputableException
+     */
+    private static Expression getLaplaceTransformationOfScalarMultiples(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+
+        if (f.isNotProduct() && f.isNotQuotient()) {
+            throw new LaplaceTransformationNotComputableException();
+        }
+
+        Expression constantFactorsNumerator = ONE;
+        Expression constantFactorsDenominator = ONE;
+
+        ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+        ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+
+        for (int i = 0; i < factorsNumerator.getBound(); i++) {
+            if (!factorsNumerator.get(i).contains(var)) {
+                constantFactorsNumerator.mult(factorsNumerator.get(i));
+                factorsNumerator.put(i, null);
+
+            }
+        }
+
+        for (int i = 0; i < factorsDenominator.getBound(); i++) {
+            if (!factorsDenominator.get(i).contains(var)) {
+                constantFactorsDenominator.mult(factorsDenominator.get(i));
+                factorsDenominator.put(i, null);
+
+            }
+        }
+
+        if (constantFactorsNumerator.equals(ONE) && constantFactorsDenominator.equals(ONE)) {
+            throw new LaplaceTransformationNotComputableException();
+        }
+
+        return constantFactorsNumerator.div(constantFactorsDenominator).mult(
+                getLaplaceTransformation(SimplifyUtilities.produceQuotient(factorsNumerator, factorsDenominator), var, transVar));
+
+    }
+
+    /**
      * L(c) = c/p, p = transVar.
      *
      * @throws LaplaceTransformationNotComputableException
      */
-    public static Expression getLaplaceTransformationIfFunctionIsConstant(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+    private static Expression getLaplaceTransformationIfFunctionIsConstant(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
         if (!f.contains(var)) {
             return f.div(Variable.create(transVar));
         }
@@ -63,7 +146,7 @@ public abstract class LaplaceTransformationUtils {
      *
      * @throws LaplaceTransformationNotComputableException
      */
-    public static Expression getLaplaceTransformationIfFunctionIsIntgerPower(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+    private static Expression getLaplaceTransformationIfFunctionIsIntgerPower(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
 
         ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
         ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
@@ -92,7 +175,7 @@ public abstract class LaplaceTransformationUtils {
      *
      * @throws LaplaceTransformationNotComputableException
      */
-    public static Expression getLaplaceTransformationIfFunctionIsExponentialInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+    private static Expression getLaplaceTransformationIfFunctionIsExponentialInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
 
         if (!f.isFunction(TypeFunction.exp)) {
             throw new LaplaceTransformationNotComputableException();
@@ -115,13 +198,13 @@ public abstract class LaplaceTransformationUtils {
         throw new LaplaceTransformationNotComputableException();
 
     }
-    
+
     /**
      * L(sin(a*t + b)) = a/(p^2 + a^2), t = var, p = transVar.
      *
      * @throws LaplaceTransformationNotComputableException
      */
-    public static Expression getLaplaceTransformationIfFunctionIsSineInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+    private static Expression getLaplaceTransformationIfFunctionIsSineInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
 
         if (!f.isFunction(TypeFunction.sin)) {
             throw new LaplaceTransformationNotComputableException();
@@ -147,7 +230,7 @@ public abstract class LaplaceTransformationUtils {
      *
      * @throws LaplaceTransformationNotComputableException
      */
-    public static Expression getLaplaceTransformationIfFunctionIsCosineInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
+    private static Expression getLaplaceTransformationIfFunctionIsCosineInLinearFunction(Expression f, String var, String transVar) throws LaplaceTransformationNotComputableException {
 
         if (!f.isFunction(TypeFunction.cos)) {
             throw new LaplaceTransformationNotComputableException();

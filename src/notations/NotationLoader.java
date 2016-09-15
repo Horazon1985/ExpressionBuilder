@@ -16,6 +16,7 @@ public abstract class NotationLoader {
     public static final String FREE_REAL_PARAMETER_VAR;
     public static final String FREE_INTEGRATION_CONSTANT_VAR;
     public static final String SELFDEFINEDFUNCTION_VAR;
+    public static final String AXIS_VAR;
 
     static {
         SUBSTITUTION_VAR = getVarName("SUBSTITUTION_VAR");
@@ -24,6 +25,7 @@ public abstract class NotationLoader {
         FREE_REAL_PARAMETER_VAR = getVarName("FREE_REAL_PARAMETER_VAR");
         FREE_INTEGRATION_CONSTANT_VAR = getVarName("FREE_INTEGRATION_CONSTANT_VAR");
         SELFDEFINEDFUNCTION_VAR = getVarName("SELFDEFINEDFUNCTION_VAR");
+        AXIS_VAR = getVarName("AXIS_VAR");
     }
 
     /**

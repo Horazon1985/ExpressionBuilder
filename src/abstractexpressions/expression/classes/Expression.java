@@ -995,6 +995,13 @@ public abstract class Expression implements AbstractExpression {
         }
         return this.add(new Constant(a));
     }
+    
+    /**
+     * Addiert die Variable mit dem Namen var zum gegebenen Ausdruck.
+     */
+    public Expression add(String var) {
+        return this.add(Variable.create(var));
+    }
 
     /**
      * Subtrahiert expr vom gegebenen Ausdruck.
@@ -1058,6 +1065,13 @@ public abstract class Expression implements AbstractExpression {
             return this;
         }
         return this.sub(new Constant(a));
+    }
+
+    /**
+     * Subtrahiert vom gegebenen Ausdruck die Variable mit dem Namen var.
+     */
+    public Expression sub(String var) {
+        return this.sub(Variable.create(var));
     }
 
     /**
@@ -1125,6 +1139,13 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
+     * Multipliziert den gegebenen Ausdruck mit der Variablen mit dem Namen var.
+     */
+    public Expression mult(String var) {
+        return this.mult(Variable.create(var));
+    }
+
+    /**
      * Dividiert den gegebenen Ausdruck durch expr.
      */
     public Expression div(Expression expr) {
@@ -1171,6 +1192,13 @@ public abstract class Expression implements AbstractExpression {
             return this;
         }
         return this.div(new Constant(a));
+    }
+
+    /**
+     * Dividiert den gegebenen Ausdruck durch die Variablen mit dem Namen var.
+     */
+    public Expression div(String var) {
+        return this.div(Variable.create(var));
     }
 
     /**
@@ -1226,6 +1254,13 @@ public abstract class Expression implements AbstractExpression {
             return this;
         }
         return this.pow(new Constant(a));
+    }
+
+    /**
+     * Potenziert den gegebenen Ausdruck mit der Variablen mit dem Namen var.
+     */
+    public Expression pow(String var) {
+        return this.pow(Variable.create(var));
     }
 
     /**
