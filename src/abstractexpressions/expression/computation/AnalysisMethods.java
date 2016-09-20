@@ -20,6 +20,7 @@ import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import java.awt.Dimension;
 import java.math.BigInteger;
+import java.util.Set;
 import lang.translator.Translator;
 import notations.NotationLoader;
 
@@ -378,7 +379,7 @@ public abstract class AnalysisMethods {
     public static Expression getTangentSpace(Expression f, HashMap<String, Expression> point)
             throws EvaluationException {
 
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = point.keySet();
 
         Expression result = ZERO;
         Expression factor;
@@ -429,7 +430,7 @@ public abstract class AnalysisMethods {
     public static HashMap<String, Expression> getNormalLineParametrization(Expression f, HashMap<String, Expression> point)
             throws EvaluationException {
 
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = point.keySet();
 
         HashMap<String, Expression> normalLineParametrization = new HashMap<>();
         Expression partialDerivativeAtPoint;

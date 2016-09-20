@@ -459,12 +459,6 @@
         <Ukrainian>Змінна [0] зустрічаться двічі у параметрах.</Ukrainian>
         <Russian>Переменная [0] встречается дважды в параметрах.</Russian>
     </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_NORMAL">
-        <German>Die Veränderliche [0] muss in den Parametern vorkommen.</German>
-        <English>The variable [0] must occur in parameters.</English>
-        <Ukrainian>Змінна [0] має бути у параметррах.</Ukrainian>
-        <Russian>Переменная [0] должна быть в параметрах.</Russian>
-    </object>
     <object id = "MCC_ENTER_SMALLER_NUMBER_IN_PI">
         <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
         <English>Please choose a smaller number of digits.</English>
@@ -1185,12 +1179,6 @@
         <English>The variable [0] occurs twice in parameters.</English>
         <Ukrainian>Змінна [0] зустрічаться двічі у параметрах.</Ukrainian>
         <Russian>Переменная [0] встречается дважды в параметрах.</Russian>
-    </object>
-    <object id = "MCC_VARIABLE_MUST_OCCUR_IN_TANGENT">
-        <German>Die Veränderliche [0] muss in den Parametern vorkommen.</German>
-        <English>The variable [0] must occur in parameters.</English>
-        <Ukrainian>Змінна [0] має бути у параметррах.</Ukrainian>
-        <Russian>Переменная [0] должна быть в параметрах.</Russian>
     </object>
     <object id = "MCC_NOT_ENOUGH_PARAMETERS_IN_TAYLORDIFFEQ">
         <German>Zu wenig Parameter im Befehl 'taylordiffeq'.</German>
