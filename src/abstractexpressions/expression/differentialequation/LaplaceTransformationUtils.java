@@ -200,7 +200,7 @@ public abstract class LaplaceTransformationUtils {
     }
 
     /**
-     * L(sin(a*t + b)) = a/(p^2 + a^2), t = var, p = transVar.
+     * L(sin(a*t)) = a/(p^2 + a^2), t = var, p = transVar.
      *
      * @throws LaplaceTransformationNotComputableException
      */
@@ -226,7 +226,7 @@ public abstract class LaplaceTransformationUtils {
     }
 
     /**
-     * L(cos(a*t + b)) = p/(p^2 + a^2), t = var, p = transVar.
+     * L(cos(a*t)) = p/(p^2 + a^2), t = var, p = transVar.
      *
      * @throws LaplaceTransformationNotComputableException
      */
