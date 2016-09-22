@@ -1382,8 +1382,8 @@
     <object id = "MCC_PARAMETRIZATION_OF_NORMAL_SPACE_1">
         <German>Parametrisierung der Normalen an den Graphen von Y = </German>
         <English>Parametrization of the normal line to the graph of Y = </English>
-        <Ukrainian>??? до графіка Y = </Ukrainian>
-        <Russian>??? к графику Y = </Russian>
+        <Ukrainian>Параметризація нормалі до до графіка Y = </Ukrainian>
+        <Russian>Параметризация нормали к графику Y = </Russian>
     </object>
     <object id = "MCC_PARAMETRIZATION_OF_NORMAL_SPACE_2">
         <German> im Punkt </German>
