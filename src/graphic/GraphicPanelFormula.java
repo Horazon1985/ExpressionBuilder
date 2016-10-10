@@ -656,6 +656,15 @@ public class GraphicPanelFormula extends JPanel {
             Object[] params = ((MatrixOperator) matExpr).getParams();
 
             switch (((MatrixOperator) matExpr).getType()) {
+                case cross:
+
+                    int result = 0;
+                    int heightOfCenter = getHeightOfCenterOfMatrixExpression(g, matExpr, fontSize);
+                    for (Object param : params) {
+                        result = Math.max(result, getHeightOfMatrixExpression(g, (MatrixExpression) param, fontSize) - heightOfCenter);
+                    }
+                    return result + heightOfCenter;
+
                 case diff:
                     if (params.length == 2) {
 
@@ -783,6 +792,13 @@ public class GraphicPanelFormula extends JPanel {
         Object[] params = ((MatrixOperator) matExpr).getParams();
 
         switch (((MatrixOperator) matExpr).getType()) {
+            case cross: {
+                int result = 0;
+                for (Object param : params) {
+                    result = Math.max(result, getHeightOfMatrixExpression(g, (MatrixExpression) param, fontSize));
+                }
+                return result;
+            }
             case diff:
                 if (params.length == 2) {
                     return Math.max((3 * fontSize) / 2, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[0], fontSize));
@@ -826,25 +842,25 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfCenterOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
+    private int getHeightOfCenterOfMatrixRow(Graphics g, Expression[] rowEntries, int fontSize) {
 
         setFont(g, fontSize);
 
         int result = (2 * fontSize) / 5;
-        for (int i = 0; i < row.length; i++) {
-            result = Math.max(result, getHeightOfCenterOfExpression(g, row[i], fontSize));
+        for (Expression rowEntry : rowEntries) {
+            result = Math.max(result, getHeightOfCenterOfExpression(g, rowEntry, fontSize));
         }
         return result;
 
     }
 
-    private int getLengthOfMatrixColumn(Graphics g, Expression[] column, int fontSize) {
+    private int getLengthOfMatrixColumn(Graphics g, Expression[] columnEntries, int fontSize) {
 
         setFont(g, fontSize);
 
         int result = 0;
-        for (int i = 0; i < column.length; i++) {
-            result = Math.max(result, getLengthOfExpression(g, column[i], fontSize));
+        for (Expression columnEntry : columnEntries) {
+            result = Math.max(result, getLengthOfExpression(g, columnEntry, fontSize));
         }
         return result;
 
@@ -855,8 +871,8 @@ public class GraphicPanelFormula extends JPanel {
         // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
         Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
         if (matExprConverted instanceof Expression) {
-            Expression expr = (Expression) matExprConverted;
-            if (expr.isSum() || expr.isDifference() || (expr instanceof Constant && expr.isNegative())) {
+            Expression exprConverted = (Expression) matExprConverted;
+            if (exprConverted.isSum() || exprConverted.isDifference() || (exprConverted instanceof Constant && exprConverted.isNegative())) {
                 return getLengthOfExpression(g, (Expression) matExprConverted, fontSize) + 2 * getWidthOfBracket(fontSize);
             }
             return getLengthOfExpression(g, (Expression) matExprConverted, fontSize);
@@ -956,6 +972,16 @@ public class GraphicPanelFormula extends JPanel {
         Object[] params = matOperator.getParams();
 
         switch (matOperator.getType()) {
+            case cross: {
+
+                int result = 0;
+                for (Object param : params) {
+                    result += getLengthOfMatrixExpression(g, (MatrixExpression) param, fontSize);
+                }
+                // Rechts und links muss ein Padding von fontSize / 2 um jedes "x"-Symbol gelassen werden.
+                return result + (params.length - 1) * (getWidthOfSignCross(g, fontSize) + fontSize);
+
+            }
             case diff: {
 
                 int result;
@@ -2009,6 +2035,11 @@ public class GraphicPanelFormula extends JPanel {
         return g.getFontMetrics().stringWidth("\u03C3");
     }
 
+    private int getWidthOfSignCross(Graphics g, int fontSize) {
+        setFont(g, fontSize);
+        return g.getFontMetrics().stringWidth("\u2A2F");
+    }
+
     private int getWidthOfSignDelta(Graphics g, int fontSize) {
         setFont(g, fontSize);
         return g.getFontMetrics().stringWidth("\u0394");
@@ -2201,6 +2232,11 @@ public class GraphicPanelFormula extends JPanel {
     private void drawSignSmallSigma(Graphics g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         g.drawString("\u03C3", x_0, y_0);
+    }
+
+    private void drawSignCross(Graphics g, int x_0, int y_0, int fontSize) {
+        setFont(g, fontSize);
+        g.drawString("\u00D7", x_0, y_0);
     }
 
     private void drawSignDelta(Graphics g, int x_0, int y_0, int fontSize) {
@@ -3682,7 +3718,9 @@ public class GraphicPanelFormula extends JPanel {
          Unicodes: SIGMA = \u03A3, PI = \u03A0, INT = \u222B, sqrt = \u221A,
          LAPLACE (DELTA) = \u0394, DEL (PARTIAL) = \u2202.
          */
-        if (matOperator.getType().equals(TypeMatrixOperator.diff)) {
+        if (matOperator.getType().equals(TypeMatrixOperator.cross)) {
+            drawMatrixOperatorCross(g, matOperator, x_0, y_0, fontSize);
+        } else if (matOperator.getType().equals(TypeMatrixOperator.diff)) {
             drawMatrixOperatorDiff(g, matOperator, x_0, y_0, fontSize);
         } else if (matOperator.getType().equals(TypeMatrixOperator.integral)) {
             drawMatrixOperatorInt(g, matOperator, x_0, y_0, fontSize);
@@ -3694,6 +3732,27 @@ public class GraphicPanelFormula extends JPanel {
             drawMatrixOperatorSum(g, matOperator, x_0, y_0, fontSize);
         } else {
             drawMatrixOperatorDefault(g, matOperator, x_0, y_0, fontSize);
+        }
+
+    }
+
+    private void drawMatrixOperatorCross(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+
+        setFont(g, fontSize);
+
+        Object[] params = matOperator.getParams();
+        int heightCenter = getHeightOfCenterOfMatrixExpression(g, matOperator, fontSize);
+        int heightCenterOfVector;
+        int distanceFromBeginning = 0;
+
+        for (int i = 0; i < params.length; i++) {
+            heightCenterOfVector = getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) params[i], fontSize);
+            drawMatrixExpression(g, (MatrixExpression) params[i], x_0 + distanceFromBeginning, y_0 - (heightCenter - heightCenterOfVector), fontSize);
+            distanceFromBeginning += getLengthOfMatrixExpression(g, (MatrixExpression) params[i], fontSize) + fontSize / 2;
+            if (i < params.length - 1) {
+                drawSignCross(g, x_0 + distanceFromBeginning, y_0 - (heightCenter - 2 * fontSize / 5), fontSize);
+                distanceFromBeginning += fontSize / 2;
+            }
         }
 
     }

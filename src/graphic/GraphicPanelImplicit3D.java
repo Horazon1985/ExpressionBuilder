@@ -926,9 +926,6 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         for (int i = 0; i < cubes.length; i++) {
             for (int j = 0; j < cubes[0].length; j++) {
                 for (int k = 0; k < cubes[0][0].length; k++) {
-                    if (i == 6 && j == 10 && k == 10) {
-                        double x = 1;
-                    }
                     /* 
                     Falls es mehr als 4 innere Punkte gibt: innere und äußere Punkte 
                     vertauschen und Polygone berechnen. Danach wieder zurücktauschen.

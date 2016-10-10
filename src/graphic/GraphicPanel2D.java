@@ -404,5 +404,9 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         drawSpecialPoints(g, this.specialPoints);
 
     }
+    
+    protected void drawMousePointOnGraph(){
+    
+    }
 
 }

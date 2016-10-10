@@ -3,7 +3,7 @@ package abstractexpressions.expression.computation;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import graphic.GraphicPanelImplicit3D;
+import graphic.GraphicPanelImplicit2D.MarchingSquare;
 import graphic.GraphicPanelImplicit3D.MarchingCube;
 import java.util.ArrayList;
 import lang.translator.Translator;
@@ -368,12 +368,54 @@ public abstract class NumericalMethods {
 
     }
 
+    public static MarchingSquare[][] solveImplicitEquation2D2(Expression f, String varAbsc, String varOrd,
+            double xStart, double xEnd, double yStart, double yEnd) {
+
+        int numberOfIntervals = 5;
+
+        MarchingSquare[][] squares = new MarchingSquare[numberOfIntervals][numberOfIntervals];
+        MarchingSquare square;
+
+        Double[][] innerPoints = new Double[numberOfIntervals + 1][numberOfIntervals + 1];
+
+        for (int i = 0; i <= numberOfIntervals; i++) {
+            for (int j = 0; j <= numberOfIntervals; j++) {
+
+                Variable.setValue(varAbsc, xStart + i * (xEnd - xStart) / numberOfIntervals);
+                Variable.setValue(varOrd, yStart + j * (yEnd - yStart) / numberOfIntervals);
+                try {
+                    innerPoints[i][j] = f.evaluate();
+                } catch (EvaluationException e) {
+                    innerPoints[i][j] = Double.NaN;
+                }
+
+            }
+        }
+
+        for (int i = 0; i < numberOfIntervals; i++) {
+            for (int j = 0; j < numberOfIntervals; j++) {
+
+                square = new MarchingSquare();
+                for (int p = 0; p < 2; p++) {
+                    for (int q = 0; q < 2; q++) {                      
+                        square.setVertexValue(p, q, innerPoints[p + i][q + j]);
+                    }
+                }
+                squares[i][j] = square;
+
+            }
+        }
+
+        return squares;
+
+    }
+
     public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
             double xStart, double xEnd, double yStart, double yEnd, double zStart, double zEnd) {
 
         int numberOfIntervals = 50;
 
-        MarchingCube[][][] cubes = new GraphicPanelImplicit3D.MarchingCube[numberOfIntervals][numberOfIntervals][numberOfIntervals];
+        MarchingCube[][][] cubes = new MarchingCube[numberOfIntervals][numberOfIntervals][numberOfIntervals];
         MarchingCube cube;
 
         boolean[][][] innerPoints = new boolean[numberOfIntervals + 1][numberOfIntervals + 1][numberOfIntervals + 1];
@@ -398,7 +440,7 @@ public abstract class NumericalMethods {
             for (int j = 0; j < numberOfIntervals; j++) {
                 for (int k = 0; k < numberOfIntervals; k++) {
 
-                    cube = new GraphicPanelImplicit3D.MarchingCube();
+                    cube = new MarchingCube();
                     for (int p = 0; p < 2; p++) {
                         for (int q = 0; q < 2; q++) {
                             for (int r = 0; r < 2; r++) {

@@ -237,5 +237,9 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         super.paintComponent(g);
         drawGraphPolar(g);
     }
+    
+    protected void drawMousePointOnGraph(){
+    
+    }
 
 }

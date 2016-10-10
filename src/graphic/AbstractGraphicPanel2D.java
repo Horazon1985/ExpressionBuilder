@@ -37,6 +37,8 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     protected boolean movable = false;
 
+    protected boolean pointsAreShowable = false;
+    
     protected double[][] specialPoints;
 
     protected Point lastMousePosition;
@@ -124,6 +126,14 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         });
     }
 
+    public boolean getPointsAreShowable() {
+        return this.pointsAreShowable;
+    }
+    
+    public void setPointsAreShowable(boolean pointsAreShowable) {
+        this.pointsAreShowable = pointsAreShowable;
+    }
+    
     public void setSpecialPoints(double[][] specialPoints) {
         this.specialPoints = specialPoints;
     }
@@ -209,11 +219,18 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
      */
     protected int[] convertToPixel(double x, double y) {
         int[] pixel = new int[2];
-        pixel[0] = 250 + (int) Math.round(250 * (x - axeCenterX) / maxX);
-        pixel[1] = 250 - (int) Math.round(250 * (y - axeCenterY) / maxY);
+        pixel[0] = 250 + (int) Math.round(250 * (x - this.axeCenterX) / this.maxX);
+        pixel[1] = 250 - (int) Math.round(250 * (y - this.axeCenterY) / this.maxY);
         return pixel;
     }
 
+    /**
+     * Berechnet den euklidischen Abstand zweier Punkte (in Pixeln).
+     */
+    protected int computeDistanceOfPixels(int[] pixelStart, int[] pixelEnd){
+        return (int) Math.sqrt(Math.pow(pixelStart[0] - pixelEnd[0], 2) + Math.pow(pixelStart[0] - pixelEnd[0], 2));
+    }
+    
     /**
      * Gibt den Achseneintrag m*10^(-k) zurück.
      */
@@ -368,6 +385,8 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         }
     }
 
+    protected abstract void drawMousePointOnGraph();
+    
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

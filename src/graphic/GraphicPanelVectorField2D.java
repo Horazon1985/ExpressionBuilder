@@ -265,4 +265,12 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
     }
 
+    protected void drawMousePointOnGraph(){
+        if (!this.pointsAreShowable){
+            return;
+        }
+        
+    
+    }
+    
 }
