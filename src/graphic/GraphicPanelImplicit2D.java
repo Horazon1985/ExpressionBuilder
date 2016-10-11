@@ -54,14 +54,14 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
         @Override
         public String toString() {
-            return "[" + this.vertexValues[0][0] + this.vertexValues[0][1] + this.vertexValues[1][0] + this.vertexValues[1][1] + "]";
+            return "[" + this.vertexValues[0][0] + ", " + this.vertexValues[0][1] + ", " + this.vertexValues[1][0] + ", " + this.vertexValues[1][1] + "]";
         }
 
         public int getNumberOfInnerVertices() {
             int number = 0;
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
-                    if (this.vertexValues[i][j] < 0) {
+                    if (this.vertexValues[i][j] <= 0) {
                         number++;
                     }
                 }
@@ -111,9 +111,6 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
     private void drawMarchingSquares(Graphics g) {
         for (int i = 0; i < this.implicitGraph2D.length; i++) {
             for (int j = 0; j < this.implicitGraph2D.length; j++) {
-                if (i == 2 && j == 3){
-                    System.out.println("");
-                }
                 drawSingleMarchingSquare(g, i, j);
             }
         }
@@ -141,7 +138,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
             } else if (squareVertexValues[1][0] >= 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
                 pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[0][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[1][1]));
+                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[0][1] >= 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
@@ -150,52 +147,52 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else {
                 vertexCoordinates = getCoordinates(i + 1, j + 1);
-                pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]));
+                pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]), vertexCoordinates[1]);
+                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
         } else if (square.getNumberOfInnerVertices() <= 2) {
-            if (squareVertexValues[0][0] < 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
+            if (squareVertexValues[0][0] <= 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
                 vertexCoordinates = getCoordinates(i, j);
                 pixel = convertToPixel(vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][0], squareVertexValues[1][0]), vertexCoordinates[1]);
                 pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][0], squareVertexValues[0][1]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
-            if (squareVertexValues[1][0] < 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
+            if (squareVertexValues[1][0] <= 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
                 pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[0][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[1][1]));
+                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
-            if (squareVertexValues[0][1] < 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
+            if (squareVertexValues[0][1] <= 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
                 pixel = convertToPixel(vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][1], squareVertexValues[1][1]), vertexCoordinates[1]);
                 pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[0][0]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
-            if (squareVertexValues[1][1] < 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
+            if (squareVertexValues[1][1] <= 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
                 vertexCoordinates = getCoordinates(i + 1, j + 1);
-                pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]));
+                pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]), vertexCoordinates[1]);
+                pixelNext = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
             // Behandlung aller Fälle, in denen eine isolierte Kante vorliegt.
-            if (squareVertexValues[0][0] < 0 && squareVertexValues[1][0] < 0) {
+            if (squareVertexValues[0][0] <= 0 && squareVertexValues[1][0] <= 0) {
                 vertexCoordinates = getCoordinates(i, j);
                 pixel = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][0], squareVertexValues[0][1]));
                 pixelNext = convertToPixel(vertexCoordinates[0] + deltaX, vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]));
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
-            } else if (squareVertexValues[0][0] < 0 && squareVertexValues[0][1] < 0) {
+            } else if (squareVertexValues[0][0] <= 0 && squareVertexValues[0][1] <= 0) {
                 vertexCoordinates = getCoordinates(i, j);
                 pixel = convertToPixel(vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][0], squareVertexValues[1][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]), vertexCoordinates[1] + deltaY);
+                pixelNext = convertToPixel(vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][1], squareVertexValues[1][1]), vertexCoordinates[1] + deltaY);
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
-            } else if (squareVertexValues[1][0] < 0 && squareVertexValues[1][1] < 0) {
+            } else if (squareVertexValues[1][0] <= 0 && squareVertexValues[1][1] <= 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
                 pixel = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[0][0]), vertexCoordinates[1]);
-                pixelNext = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]), vertexCoordinates[1] + deltaY);
+                pixelNext = convertToPixel(vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]), vertexCoordinates[1] + deltaY);
                 g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
-            } else if (squareVertexValues[0][1] < 0 && squareVertexValues[1][1] < 0) {
+            } else if (squareVertexValues[0][1] <= 0 && squareVertexValues[1][1] <= 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
                 pixel = convertToPixel(vertexCoordinates[0], vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[0][0]));
                 pixelNext = convertToPixel(vertexCoordinates[0] + deltaX, vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]));

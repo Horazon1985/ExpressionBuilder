@@ -299,79 +299,13 @@ public abstract class NumericalMethods {
     /**
      * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
      * var2) = 0 im Bereich x_0 &#8804; varAbsc &#8804; x_1, y_0 &#8804; varOrd
-     * &#8804; y_1. VORAUSSETZUNG: f hängt nur von varAbsc und varOrd ab.
-     *
-     * @throws EvaluationException
+     * &#8804; y_1.<br> 
+     * VORAUSSETZUNG: f hängt nur von varAbsc und varOrd ab.
      */
-    public static ArrayList<double[]> solveImplicitEquation2D(Expression f, String varAbsc, String varOrd,
-            double xStart, double xEnd, double yStart, double yEnd) throws EvaluationException {
-
-        ArrayList<double[]> solutionsOfImplicitEquation = new ArrayList<>();
-
-        // Entlangtasten an vertikalen Niveaulinien.
-        double valueAtCurrentPoint, valueAtNextPoint;
-        double[] solution;
-        for (int i = 0; i < 500; i++) {
-            Variable.setValue(varAbsc, xStart + i * (xEnd - xStart) / 500);
-            Variable.setValue(varOrd, yStart);
-            try {
-                valueAtNextPoint = f.evaluate();
-                for (int j = 0; j < 500; j++) {
-                    valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(varOrd, yStart + (j + 1) * (yEnd - yStart) / 500);
-                    valueAtNextPoint = f.evaluate();
-                    if (valueAtCurrentPoint == 0) {
-                        solution = new double[2];
-                        solution[0] = xStart + i * (xEnd - xStart) / 500;
-                        solution[1] = yStart + j * (yEnd - yStart) / 500;
-                        solutionsOfImplicitEquation.add(solution);
-                    } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
-                        solution = new double[2];
-                        solution[0] = xStart + i * (xEnd - xStart) / 500;
-                        solution[1] = yStart + (j * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
-                                + (j + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (yEnd - yStart) / 500;
-                        solutionsOfImplicitEquation.add(solution);
-                    }
-                }
-            } catch (EvaluationException e) {
-            }
-        }
-
-        // Entlangtasten an horizontalen Niveaulinien.
-        for (int i = 0; i < 500; i++) {
-            Variable.setValue(varAbsc, xStart);
-            Variable.setValue(varOrd, yStart + i * (yEnd - yStart) / 500);
-            try {
-                valueAtNextPoint = f.evaluate();
-                for (int j = 0; j < 500; j++) {
-                    valueAtCurrentPoint = valueAtNextPoint;
-                    Variable.setValue(varAbsc, xStart + (j + 1) * (xEnd - xStart) / 500);
-                    valueAtNextPoint = f.evaluate();
-                    if (valueAtCurrentPoint == 0) {
-                        solution = new double[2];
-                        solution[0] = xStart + j * (xEnd - xStart) / 500;
-                        solution[1] = yStart + i * (yEnd - yStart) / 500;
-                        solutionsOfImplicitEquation.add(solution);
-                    } else if (valueAtCurrentPoint * valueAtNextPoint < 0) {
-                        solution = new double[2];
-                        solution[0] = xStart + j * (xEnd - xStart) / 500;
-                        solution[1] = yStart + (i * Math.abs(valueAtNextPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))
-                                + (i + 1) * Math.abs(valueAtCurrentPoint) / (Math.abs(valueAtCurrentPoint) + Math.abs(valueAtNextPoint))) * (yEnd - yStart) / 500;
-                        solutionsOfImplicitEquation.add(solution);
-                    }
-                }
-            } catch (EvaluationException e) {
-            }
-        }
-
-        return solutionsOfImplicitEquation;
-
-    }
-
-    public static MarchingSquare[][] solveImplicitEquation2D2(Expression f, String varAbsc, String varOrd,
+    public static MarchingSquare[][] solveImplicitEquation2D(Expression f, String varAbsc, String varOrd,
             double xStart, double xEnd, double yStart, double yEnd) {
 
-        int numberOfIntervals = 5;
+        int numberOfIntervals = 100;
 
         MarchingSquare[][] squares = new MarchingSquare[numberOfIntervals][numberOfIntervals];
         MarchingSquare square;
