@@ -52,6 +52,11 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
             }
         }
 
+        public boolean isZeroSquare() {
+            return this.vertexValues[0][0] == 0 && this.vertexValues[0][1] == 0
+                    && this.vertexValues[1][0] == 0 && this.vertexValues[1][1] == 0;
+        }
+
         @Override
         public String toString() {
             return "[" + this.vertexValues[0][0] + ", " + this.vertexValues[0][1] + ", " + this.vertexValues[1][0] + ", " + this.vertexValues[1][1] + "]";
@@ -121,6 +126,15 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         int[] pixel, pixelNext;
         MarchingSquare square = this.implicitGraph2D[i][j];
         Double[][] squareVertexValues = this.implicitGraph2D[i][j].getVertexValues();
+
+        /* 
+        Sonderfall: Alle Ecken haben die Werte 0. Dann soll das Rechteck 
+        komplett gefüllt werden.
+         */
+        if (square.isZeroSquare()) {
+            drawSingleZeroMarchingSquare(g, i, j);
+            return;
+        }
 
         int numberOfIntervalsAlongX = this.implicitGraph2D.length;
         int numberOfIntervalsAlongY = this.implicitGraph2D[0].length;
@@ -203,6 +217,21 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
     }
 
+    /**
+     * Füllt das Rechteck an der Position (i, j) vollständig mit der Farbe des
+     * Graphen aus.
+     */
+    private void drawSingleZeroMarchingSquare(Graphics g, int i, int j) {
+        int numberOfIntervalsAlongX = this.implicitGraph2D.length;
+        int numberOfIntervalsAlongY = this.implicitGraph2D[0].length;
+        double deltaX = 2 * this.maxX / numberOfIntervalsAlongX;
+        double deltaY = 2 * this.maxY / numberOfIntervalsAlongY;
+        double[] vertexCoordinates = getCoordinates(i, j);
+        int[] bottomLeft = convertToPixel(vertexCoordinates[0], vertexCoordinates[1]);
+        int[] topRight = convertToPixel(vertexCoordinates[0] + deltaX, vertexCoordinates[1] + deltaY);
+        g.fillRect(bottomLeft[0], bottomLeft[1], topRight[0] - bottomLeft[0], bottomLeft[1] - topRight[1]);
+    }
+
     private double[] getCoordinates(int i, int j) {
         double[] coordinates = new double[2];
         coordinates[0] = this.axeCenterX - this.maxX + 2 * i * this.maxX / this.implicitGraph2D.length;
@@ -210,10 +239,13 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         return coordinates;
     }
 
-    private double getFactor(double value_1, double value_2) {
-        return Math.abs(value_1) / (Math.abs(value_1) + Math.abs(value_2));
+    private double getFactor(double valueOne, double valueTwo) {
+        if (valueOne == 0 && valueTwo == 0) {
+            return 0;
+        }
+        return Math.abs(valueOne) / (Math.abs(valueOne) + Math.abs(valueTwo));
     }
-    
+
     /**
      * Hauptmethode zum Zeichnen eines Graphen einer implizit gegebenen
      * Funktion, die von der öffentlichen Methode drawImplicitGraph2D(...)
@@ -224,11 +256,6 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
     private void drawImplicitGraph2D(Graphics g) {
         g.setColor(this.color);
         drawMarchingSquares(g);
-//        int[] pixelsOfImplicitGraph;
-//        for (double[] point : this.implicitGraph) {
-//            pixelsOfImplicitGraph = convertToPixel(point[0], point[1]);
-//            g.drawLine(pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1], pixelsOfImplicitGraph[0], pixelsOfImplicitGraph[1]);
-//        }
     }
 
     /**
@@ -242,7 +269,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         computeScreenSizes(exprAbscStart, exprAbscEnd, exprOrdStart, exprOrdEnd);
         repaint();
     }
-    
+
     /**
      * Hauptmethode zum Zeichnen eines Graphen einer implizit gegebenen
      * Funktion.
