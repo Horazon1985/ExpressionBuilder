@@ -795,7 +795,7 @@ public class GraphicPanelFormula extends JPanel {
             case cross: {
                 int result = 0;
                 for (Object param : params) {
-                    result = Math.max(result, getHeightOfMatrixExpression(g, (MatrixExpression) param, fontSize));
+                    result = Math.max(result, getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) param, fontSize));
                 }
                 return result;
             }
@@ -985,7 +985,6 @@ public class GraphicPanelFormula extends JPanel {
             case diff: {
 
                 int result;
-
                 if (params.length == 2) {
 
                     result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
@@ -3751,9 +3750,9 @@ public class GraphicPanelFormula extends JPanel {
             distanceFromBeginning += getLengthOfMatrixExpression(g, (MatrixExpression) params[i], fontSize) + fontSize / 2;
             if (i < params.length - 1) {
                 drawSignCross(g, x_0 + distanceFromBeginning, y_0 - (heightCenter - 2 * fontSize / 5), fontSize);
-                distanceFromBeginning += fontSize / 2;
+                distanceFromBeginning += getWidthOfSignCross(g, fontSize) + fontSize / 2;
             }
-        }
+        } 
 
     }
 
