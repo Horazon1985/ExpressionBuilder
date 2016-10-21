@@ -47,8 +47,8 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     public void setColors() {
         int numberOfColors = Math.max(this.exprs.size(), this.polarGraph2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
-            if (i < AbstractGraphicPanel2D.fixedColors.length) {
-                this.colors.add(GraphicPanelPolar.fixedColors[i]);
+            if (i < AbstractGraphicPanel2D.FIXED_COLORS.length) {
+                this.colors.add(GraphicPanelPolar.FIXED_COLORS[i]);
             } else {
                 this.colors.add(generateColor());
             }
@@ -238,7 +238,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         drawGraphPolar(g);
     }
     
-    protected void drawMousePointOnGraph(){
+    protected void drawMousePointOnGraph(Graphics g){
     
     }
 

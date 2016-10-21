@@ -78,8 +78,8 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         int numberOfColors = Math.max(this.exprs.size(), this.graphs2D.size());
         this.colors.clear();
         for (int i = 0; i < numberOfColors; i++) {
-            if (i < fixedColors.length) {
-                this.colors.add(fixedColors[i]);
+            if (i < FIXED_COLORS.length) {
+                this.colors.add(FIXED_COLORS[i]);
             } else {
                 this.colors.add(generateColor());
             }
@@ -402,11 +402,53 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         convertGraphToGraphicalGraph();
 
         drawSpecialPoints(g, this.specialPoints);
+        drawMousePointOnGraph(g);
 
     }
-    
-    protected void drawMousePointOnGraph(){
-    
+
+    protected void drawMousePointOnGraph(Graphics g) {
+        int lowerPixelBoundX = Math.max(0, this.mouseCoordinateX - 10);
+        int upperPixelBoundX = Math.min(this.getWidth(), this.mouseCoordinateX + 10);
+
+        System.out.println(this.mouseCoordinateX + ", " + this.mouseCoordinateY);
+
+        Integer indexOfGraph = null;
+        Integer pixelX = null;
+        Integer pixelY = null;
+
+        double functionValue;
+        int functionValueAsPixel, distance;
+        Integer lowestDistance = null;
+
+        for (int i = lowerPixelBoundX + 10; i <= upperPixelBoundX - 10; i++) {
+            for (int j = 0; j < this.exprs.size(); j++) {
+                try {
+                    Variable.setValue(this.varAbsc, convertToEuclideanCoordinateX(i));
+                    functionValue = this.exprs.get(j).evaluate();
+                    functionValueAsPixel = convertToPixelY(functionValue);
+                    distance = computeDistanceOfPixels(new int[]{this.mouseCoordinateX, this.mouseCoordinateY},
+                            new int[]{i, functionValueAsPixel});
+                    System.out.println("Von: " + this.mouseCoordinateX + "," + this.mouseCoordinateY + " nach "
+                            + i + ", " + functionValueAsPixel);
+                    System.out.println("distance = " + distance);
+                    if (distance <= 10) {
+                        if (lowestDistance == null || distance < lowestDistance) {
+                            lowestDistance = distance;
+                            indexOfGraph = j;
+                            pixelX = i;
+                            pixelY = functionValueAsPixel;
+                        }
+                    }
+                } catch (EvaluationException e) {
+                    // Nichts tun.
+                }
+            }
+        }
+
+        if (indexOfGraph != null) {
+            drawCirclePoint(g, pixelX, pixelY);
+        }
+
     }
 
 }

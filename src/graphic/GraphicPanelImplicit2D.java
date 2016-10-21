@@ -19,8 +19,6 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
     private MarchingSquare[][] implicitGraph2D;
 
-    private ArrayList<double[]> implicitGraph = new ArrayList<>();
-
     private final Color color = Color.blue;
 
     public GraphicPanelImplicit2D() {
@@ -270,26 +268,25 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         repaint();
     }
 
-    /**
-     * Hauptmethode zum Zeichnen eines Graphen einer implizit gegebenen
-     * Funktion.
-     *
-     * @throws EvaluationException
-     */
-    public void drawImplicitGraph2D(ArrayList<double[]> implicitGraph2D, Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
-        this.implicitGraph = implicitGraph2D;
-        computeScreenSizes(exprAbscStart, exprAbscEnd, exprOrdStart, exprOrdEnd);
-        repaint();
-    }
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawImplicitGraph2D(g);
     }
 
-    protected void drawMousePointOnGraph() {
+    protected void drawMousePointOnGraph(Graphics g) {
 
+    }
+    
+    private int[] getIndexPair(int x, int y){
+        int[] indices = new int[4];
+        int indexX = (x * this.implicitGraph2D.length)/ 500;
+        int indexY = (x * this.implicitGraph2D[0].length)/ 500;
+        indices[0] = Math.max(0, indexX - 2);
+        indices[1] = Math.min(this.implicitGraph2D.length - 1, indexX + 2);
+        indices[2] = Math.max(0, indexY - 2);
+        indices[3] = Math.min(this.implicitGraph2D[0].length - 1, indexY + 2);
+        return indices;
     }
 
 }

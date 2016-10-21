@@ -245,7 +245,7 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
         drawCurve2D(g);
     }
 
-    protected void drawMousePointOnGraph(){
+    protected void drawMousePointOnGraph(Graphics g){
     
     }
     
