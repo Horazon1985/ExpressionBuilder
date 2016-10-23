@@ -406,11 +406,10 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
 
     }
 
+    @Override
     protected void drawMousePointOnGraph(Graphics g) {
         int lowerPixelBoundX = Math.max(0, this.mouseCoordinateX - 10);
         int upperPixelBoundX = Math.min(this.getWidth(), this.mouseCoordinateX + 10);
-
-        System.out.println(this.mouseCoordinateX + ", " + this.mouseCoordinateY);
 
         Integer indexOfGraph = null;
         Integer pixelX = null;
@@ -420,7 +419,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         int functionValueAsPixel, distance;
         Integer lowestDistance = null;
 
-        for (int i = lowerPixelBoundX + 10; i <= upperPixelBoundX - 10; i++) {
+        for (int i = lowerPixelBoundX; i <= upperPixelBoundX; i++) {
             for (int j = 0; j < this.exprs.size(); j++) {
                 try {
                     Variable.setValue(this.varAbsc, convertToEuclideanCoordinateX(i));
@@ -428,9 +427,6 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
                     functionValueAsPixel = convertToPixelY(functionValue);
                     distance = computeDistanceOfPixels(new int[]{this.mouseCoordinateX, this.mouseCoordinateY},
                             new int[]{i, functionValueAsPixel});
-                    System.out.println("Von: " + this.mouseCoordinateX + "," + this.mouseCoordinateY + " nach "
-                            + i + ", " + functionValueAsPixel);
-                    System.out.println("distance = " + distance);
                     if (distance <= 10) {
                         if (lowestDistance == null || distance < lowestDistance) {
                             lowestDistance = distance;
@@ -446,7 +442,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         }
 
         if (indexOfGraph != null) {
-            drawCirclePoint(g, pixelX, pixelY);
+            drawCirclePoint(g, pixelX, pixelY, true);
         }
 
     }

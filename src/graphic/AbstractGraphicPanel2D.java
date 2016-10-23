@@ -11,6 +11,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
@@ -231,7 +232,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     }
 
     protected int convertToPixelY(double y) {
-        return 250 + (int) Math.round(250 * (y - this.axeCenterY) / this.maxY);
+        return 250 - (int) Math.round(250 * (y - this.axeCenterY) / this.maxY);
     }
 
     /**
@@ -244,13 +245,13 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     }
 
     protected double convertToEuclideanCoordinateX(int x) {
-        return ((x - 250) * this.maxX + this.axeCenterX) / 250;
+        return ((x - 250) * this.maxX) / 250 + this.axeCenterX;
     }
-    
+
     protected double convertToEuclideanCoordinateY(int y) {
-        return ((y - 250) * this.maxY + this.axeCenterY) / 250;
+        return ((250 - y) * this.maxY) / 250 + this.axeCenterY;
     }
-    
+
     /**
      * Berechnet den euklidischen Abstand zweier Punkte (in Pixeln).
      */
@@ -331,7 +332,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         k = (int) (this.axeCenterY * Math.pow(10, -this.expY));
         linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
 
-        while (linePosition <= 500) {
+        while (linePosition >= 0) {
             linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
             g.drawLine(0, linePosition, 500, linePosition);
 
@@ -350,7 +351,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         k = (int) (this.axeCenterY * Math.pow(10, -this.expY)) - 1;
         linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
 
-        while (linePosition >= 0) {
+        while (linePosition <= 500) {
             linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
             g.drawLine(0, linePosition, 500, linePosition);
 
@@ -416,9 +417,32 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
      * Zeichnet einen roten Punkt an der Stelle (x, y), wobei x und y die
      * Pixelkoordinaten des Punktes sind.
      */
-    protected void drawCirclePoint(Graphics g, int x, int y) {
+    protected void drawCirclePoint(Graphics g, int x, int y, boolean printCoordinates) {
         g.setColor(Color.red);
         g.fillOval(x - 3, y - 3, 7, 7);
+        if (!printCoordinates) {
+            return;
+        }
+        g.setColor(Color.black);
+        String coordinates = "(" + roundCoordinate(convertToEuclideanCoordinateX(x), 2) + ", "
+                + roundCoordinate(convertToEuclideanCoordinateY(y), 2) + ")";
+        int length = g.getFontMetrics().stringWidth(coordinates);
+        if (x >= length) {
+            if (y >= 20) {
+                g.drawString(coordinates, x - length, y - 5);
+            } else {
+                g.drawString(coordinates, x - length, y + 20);
+            }
+        } else if (y >= 20) {
+            g.drawString(coordinates, x, y - 5);
+        } else {
+            g.drawString(coordinates, x, y + 20);
+        }
+    }
+
+    private static BigDecimal roundCoordinate(double value, int digits) {
+        return BigDecimal.valueOf(value).multiply(BigDecimal.TEN.pow(digits)).setScale(
+                0, BigDecimal.ROUND_HALF_UP).divide(BigDecimal.TEN.pow(digits));
     }
 
     protected abstract void drawMousePointOnGraph(Graphics g);
