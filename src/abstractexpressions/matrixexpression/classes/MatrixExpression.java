@@ -480,6 +480,13 @@ public abstract class MatrixExpression implements AbstractExpression {
     }
 
     /**
+     * Gibt zurück, ob der gegebene Matrizenausdruck eine Matrix ist.
+     */
+    public boolean isMatrix(int m, int n) {
+        return this instanceof Matrix && ((Matrix) this).getDimension().equals(new Dimension(n, m));
+    }
+
+    /**
      * Gibt zurück, ob der gegebene Matrizenausdruck eine Summe ist.
      */
     public boolean isSum() {

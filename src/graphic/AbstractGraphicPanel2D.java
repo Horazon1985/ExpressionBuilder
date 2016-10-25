@@ -11,7 +11,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
@@ -38,7 +37,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     protected boolean movable = false;
 
-    protected boolean pointsAreShowable = false;
+    protected boolean pointsAreShowable = true;
     protected int mouseCoordinateX = -1;
     protected int mouseCoordinateY = -1;
 
@@ -437,6 +436,29 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
             g.drawString(coordinates, x, y - 5);
         } else {
             g.drawString(coordinates, x, y + 20);
+        }
+    }
+
+    /**
+     * Zeichnet einen Vektorpfeil für den Vektor [a; b] an der Stelle (x, y),
+     * wobei x und y die Pixelkoordinaten des Punktes sind.
+     */
+    protected void drawVectorArrow(Graphics g, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
+        g.setColor(Color.black);
+        String coordinates = "(" + roundCoordinate(convertToEuclideanCoordinateX(endPointVectorX), 2) + ", "
+                + roundCoordinate(convertToEuclideanCoordinateY(endPointVectorY), 2) + ")";
+        int length = g.getFontMetrics().stringWidth(coordinates);
+        g.drawLine(x, y, endPointVectorX, endPointVectorY);
+        if (endPointVectorX >= length) {
+            if (endPointVectorY >= 20) {
+                g.drawString(coordinates, endPointVectorX - length, endPointVectorY - 5);
+            } else {
+                g.drawString(coordinates, endPointVectorX - length, endPointVectorY + 20);
+            }
+        } else if (endPointVectorY >= 20) {
+            g.drawString(coordinates, endPointVectorX, endPointVectorY - 5);
+        } else {
+            g.drawString(coordinates, endPointVectorX, endPointVectorY + 20);
         }
     }
 

@@ -8,6 +8,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
+import abstractexpressions.matrixexpression.classes.MatrixExpression;
 
 public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
@@ -263,14 +264,26 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         }
         convertVectorFieldToGraphicalVectorField();
 
+        if (this.pointsAreShowable) {
+            drawMousePointOnGraph(g);
+        }
+
     }
 
-    protected void drawMousePointOnGraph(Graphics g){
-        if (!this.pointsAreShowable){
-            return;
+    protected void drawMousePointOnGraph(Graphics g) {
+        Variable.setValue(this.varAbsc, convertToEuclideanCoordinateX(this.mouseCoordinateX));
+        Variable.setValue(this.varOrd, convertToEuclideanCoordinateY(this.mouseCoordinateY));
+        try {
+            MatrixExpression vector = this.vectorFieldExpr.evaluate();
+            if (vector.isMatrix(2, 1)) {
+                int endPointVectorX = convertToPixelX(((Matrix) vector).getEntry(0, 0).add(this.varAbsc).evaluate());
+                int endPointVectorY = convertToPixelY(((Matrix) vector).getEntry(1, 0).add(this.varOrd).evaluate());
+                drawCirclePoint(g, this.mouseCoordinateX, this.mouseCoordinateY, true);
+                drawVectorArrow(g, this.mouseCoordinateX, this.mouseCoordinateY, endPointVectorX, endPointVectorY, true);
+            }
+        } catch (EvaluationException e) {
+            // Nichts tun.
         }
-        
-    
     }
-    
+
 }
