@@ -174,7 +174,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
                 g.drawLine(vectorArrow[0], vectorArrow[1], vectorArrow[2], vectorArrow[3]);
                 // Pfeilspitze zeichnen.
                 angle = getAngleOfVector(vectorArrow[0], vectorArrow[1], vectorArrow[2], vectorArrow[3]);
-                drawArrow(g, vectorArrow[2], vectorArrow[3], 5, angle);
+                drawVectorArrow(g, vectorArrow[2], vectorArrow[3], 5, angle);
 
             }
         }
@@ -211,15 +211,6 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         }
         return Math.atan(y / x) + Math.PI;
 
-    }
-
-    private void drawArrow(Graphics g, int x, int y, int length, double angleOfArrow) {
-        if (angleOfArrow == -1) {
-            return;
-        }
-        double angleForLeftArrowPart = angleOfArrow - Math.PI / 4, angleForRightArrowPart = angleOfArrow + Math.PI / 4;
-        g.drawLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
-        g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
     }
 
     /**
@@ -279,7 +270,9 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
                 int endPointVectorX = convertToPixelX(((Matrix) vector).getEntry(0, 0).add(this.varAbsc).evaluate());
                 int endPointVectorY = convertToPixelY(((Matrix) vector).getEntry(1, 0).add(this.varOrd).evaluate());
                 drawCirclePoint(g, this.mouseCoordinateX, this.mouseCoordinateY, true);
-                drawVectorArrow(g, this.mouseCoordinateX, this.mouseCoordinateY, endPointVectorX, endPointVectorY, true);
+                drawVectorLine(g, this.mouseCoordinateX, this.mouseCoordinateY, endPointVectorX, endPointVectorY, true);
+                double angle = getAngleOfVector(this.mouseCoordinateX, this.mouseCoordinateY, endPointVectorX, endPointVectorY);
+                drawVectorArrow(g, endPointVectorX, endPointVectorY, 5, angle);
             }
         } catch (EvaluationException e) {
             // Nichts tun.

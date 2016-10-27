@@ -443,7 +443,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
      * Zeichnet einen Vektorpfeil für den Vektor [a; b] an der Stelle (x, y),
      * wobei x und y die Pixelkoordinaten des Punktes sind.
      */
-    protected void drawVectorArrow(Graphics g, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
+    protected void drawVectorLine(Graphics g, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
         g.setColor(Color.black);
         String coordinates = "(" + roundCoordinate(convertToEuclideanCoordinateX(endPointVectorX), 2) + ", "
                 + roundCoordinate(convertToEuclideanCoordinateY(endPointVectorY), 2) + ")";
@@ -462,6 +462,15 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         }
     }
 
+    protected void drawVectorArrow(Graphics g, int x, int y, int length, double angleOfArrow) {
+        if (angleOfArrow == -1) {
+            return;
+        }
+        double angleForLeftArrowPart = angleOfArrow - Math.PI / 4, angleForRightArrowPart = angleOfArrow + Math.PI / 4;
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
+    }
+    
     private static BigDecimal roundCoordinate(double value, int digits) {
         return BigDecimal.valueOf(value).multiply(BigDecimal.TEN.pow(digits)).setScale(
                 0, BigDecimal.ROUND_HALF_UP).divide(BigDecimal.TEN.pow(digits));

@@ -1525,10 +1525,7 @@ public abstract class SolveGeneralEquationMethods {
 
         // Fall: f ist eine rationale Funktion in trigonometrischen Funktionen.
         try {
-            ExpressionCollection zeros = SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
-            if (!zeros.isEmpty() || zeros == ALL_REALS || zeros == NO_SOLUTIONS) {
-                return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
-            }
+            return SolveSpecialEquationMethods.solveTrigonometricalEquation(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
 
@@ -1544,6 +1541,12 @@ public abstract class SolveGeneralEquationMethods {
         } catch (NotAlgebraicallySolvableException e) {
         }
 
+        // Fall: f = Summe von Radikalen.
+        try {
+            return SolveSpecialEquationMethods.solveSumOfRadicalsEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+        
         /*
          Fall: f besitzt Brüche. Dann alles mit dem Hauptnenner
          ausmultiplizieren und prüfen, ob es Lösungen gibt.

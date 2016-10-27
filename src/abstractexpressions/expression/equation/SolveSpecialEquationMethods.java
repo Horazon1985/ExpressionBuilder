@@ -9,6 +9,7 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
+import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import enums.TypeSimplify;
@@ -21,8 +22,11 @@ import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import exceptions.MathToolException;
 import exceptions.NotAlgebraicallySolvableException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMethods {
 
@@ -76,7 +80,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesRationalExponentialEquation.add(TypeSimplify.simplify_expand_logarithms);
         simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_sums_and_products);
-        
+
         simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.order_difference_and_division);
         simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.order_sums_and_products);
         simplifyTypesRationalTrigonometricalEquation.add(TypeSimplify.simplify_basic);
@@ -111,7 +115,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_collect_logarithms);
         simplifyTypesAlgebraicEquation.add(TypeSimplify.simplify_replace_trigonometrical_functions_by_definitions);
     }
-    
+
     // Exponentialgleichungen.
     /**
      * Hauptmethode zum Lösen von Exponentialgleichungen f = 0. Ist f keine
@@ -692,7 +696,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
         Expression algebraicTerm, radicand, exponent;
         try {
-            algebraicTerm = getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(f, var);
+            algebraicTerm = getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunctionOrThrowException(f, var);
             if (!algebraicTerm.isRationalPower()) {
                 throw new NotAlgebraicallySolvableException();
             }
@@ -755,7 +759,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
 
     }
 
-    private static Expression getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunction(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
+    private static Expression getAlgebraicTermIfFunctionIsRationalFunctionInVarAndAnotherAlgebraicFunctionOrThrowException(Expression f, String var) throws NotRationalFunctionInVarAndAnotherAlgebraicFunctionException {
 
         ExpressionCollection setOfSubstitutions = new ExpressionCollection();
         addSuitableSubstitutionForSolvingAlgebraicEquations(f, var, setOfSubstitutions);
@@ -796,6 +800,123 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         } else if (f.contains(var) && f.isPower() && ((BinaryOperation) f).getRight().isRationalConstant()) {
             setOfSubstitutions.add(f);
         }
+    }
+
+    //////////////////////// Gleichungen mit Radikalen /////////////////////////
+    /**
+     * TO DO.
+     *
+     * @throws EvaluationException
+     * @throws NotAlgebraicallySolvableException
+     */
+    public static ExpressionCollection solveSumOfRadicalsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
+
+        // Fall: f(x)^(1/3) + g(x)^(1/3) = h(x)
+        try {
+            return solveSumOfTwoCubicRootsEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+
+        throw new NotAlgebraicallySolvableException();
+
+    }
+
+    private static Expression[] getSeparationInRadicalsAndNonRadicals(Expression f, String var, List<Integer> roots) throws NotAlgebraicallySolvableException {
+
+        Expression rootPartLeft = ZERO;
+        Expression rootPartRight = ZERO;
+        Expression nonRootPartLeft = ZERO;
+        Expression nonRootPartRight = ZERO;
+
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
+
+        for (Expression summand : summandsLeft) {
+            for (int n : roots) {
+                try {
+                    getRadicand(summand, var, n);
+                    rootPartLeft = rootPartLeft.add(summand);
+                } catch (NotAlgebraicallySolvableException e) {
+                    nonRootPartLeft = nonRootPartLeft.add(summand);
+                }
+
+            }
+        }
+        for (Expression summand : summandsRight) {
+            for (int n : roots) {
+                try {
+                    getRadicand(summand, var, n);
+                    rootPartRight = rootPartRight.add(summand);
+                } catch (NotAlgebraicallySolvableException e) {
+                    nonRootPartRight = nonRootPartRight.add(summand);
+                }
+
+            }
+        }
+
+        try {
+            return new Expression[]{rootPartLeft.sub(rootPartRight).simplify(), nonRootPartLeft.sub(nonRootPartRight).simplify()};
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallySolvableException();
+        }
+
+    }
+
+    private static Expression[] getRadicalsInCaseOfSumOfTwoCubicRoots(Expression f, String var) throws NotAlgebraicallySolvableException {
+        ExpressionCollection summands = SimplifyUtilities.getSummands(f);
+        if (summands.getBound() != 2) {
+            throw new NotAlgebraicallySolvableException();
+        }
+        return new Expression[]{getRadicand(summands.get(0), var, 3), getRadicand(summands.get(1), var, 3)};
+    }
+
+    private static Expression getRadicand(Expression f, String var, int n) throws NotAlgebraicallySolvableException {
+        try {
+            if (f.isNotProduct() && f.isNotQuotient()) {
+                return getRadicandInCaseOfPureRoot(f, var, n).simplify();
+            }
+            if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)) {
+                return getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n).mult(((BinaryOperation) f).getLeft().pow(n)).simplify();
+            }
+            if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
+                return getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n).mult(((BinaryOperation) f).getRight().pow(n)).simplify();
+            }
+            if (f.isQuotient() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
+                return getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n).div(((BinaryOperation) f).getRight().pow(n)).simplify();
+            }
+        } catch (EvaluationException e) {
+        }
+        throw new NotAlgebraicallySolvableException();
+    }
+
+    private static Expression getRadicandInCaseOfPureRoot(Expression f, String var, int n) throws NotAlgebraicallySolvableException {
+        if (f.isPower() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)
+                && ((BinaryOperation) f).getRight().isRationalConstant()
+                && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(new Constant(n))
+                && ((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft().isPositiveIntegerConstant()) {
+            return ((BinaryOperation) f).getLeft().pow(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft());
+        }
+        throw new NotAlgebraicallySolvableException();
+    }
+
+    private static ExpressionCollection solveSumOfTwoCubicRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
+
+        List<Integer> roots = new ArrayList<>();
+        roots.add(3);
+        Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
+
+        Expression[] radicals = getRadicalsInCaseOfSumOfTwoCubicRoots(separation[0], var);
+        Expression rightSide = MINUS_ONE.mult(separation[1]).simplify();
+
+        /*
+        Die Gleichung f(x)^(1/3) + g(x)^(1/3) = h(x) ist äquivalent zur
+        Gleichung (h^3 - f - g)^3 - 27fgh^3 = 0.
+         */
+        Expression newEquation = rightSide.pow(3).sub(radicals[0].add(radicals[1])).pow(3).sub(
+                new Constant(27).mult(radicals[0]).mult(radicals[1]).mult(rightSide.pow(3)));
+
+        return solveZeroEquation(newEquation, var);
+
     }
 
 }
