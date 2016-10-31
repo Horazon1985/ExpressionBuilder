@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
@@ -125,6 +126,19 @@ public class SolveSpecialEquationMethodsTests {
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(new Constant(5).ln().div(Variable.create("a").ln())));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void solveAlgebraicEquationTest1() {
+        try {
+            // Test: (7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5 = 0. Lösung x = 1
+            Expression f = Expression.build("(7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5", null);
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(ONE));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

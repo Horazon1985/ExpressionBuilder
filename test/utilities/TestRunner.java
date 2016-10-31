@@ -19,7 +19,7 @@ import substitutiontests.SubstitutionTests;
 
 public class TestRunner {
 
-    private static final ArrayList<Class> testClasses = new ArrayList<>();
+    private static final ArrayList<Class> TEST_CLASSES = new ArrayList<>();
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -31,27 +31,27 @@ public class TestRunner {
 
     @Before
     public void initTestClasses() throws Exception {
-        testClasses.add(AlgebraicMethodsTests.class);
-        testClasses.add(GroebnerBasisTests.class);
-        testClasses.add(SolveSpecialDifferentialEquationTests.class);
-        testClasses.add(SolveGeneralEquationMethodsTests.class);
-        testClasses.add(IntegrationTests.class);
-        testClasses.add(PolynomialTests.class);
-        testClasses.add(SimplifyExpLogTests.class);
-        testClasses.add(SimplifyOperatorTests.class);
-        testClasses.add(SolveGeneralEquationSystemTests.class);
-        testClasses.add(SolveGeneralDifferentialEquationTests.class);
-        testClasses.add(SolveSpecialEquationMethodsTests.class);
-        testClasses.add(ExpressionCollectionTests.class);
-        testClasses.add(GeneralSimplifyExpressionTests.class);
-        testClasses.add(SimplifyUtilitiesTests.class);
-        testClasses.add(GeneralLogicalTests.class);
-        testClasses.add(GeneralSimplifyLogicalExpressionTests.class);
-        testClasses.add(LinearAlgebraTests.class);
-        testClasses.add(MatrixFunctionTests.class);
-        testClasses.add(GeneralMatrixTests.class);
-        testClasses.add(ParseTests.class);
-        testClasses.add(SubstitutionTests.class);
+        TEST_CLASSES.add(AlgebraicMethodsTests.class);
+        TEST_CLASSES.add(GroebnerBasisTests.class);
+        TEST_CLASSES.add(SolveSpecialDifferentialEquationTests.class);
+        TEST_CLASSES.add(SolveGeneralEquationMethodsTests.class);
+        TEST_CLASSES.add(IntegrationTests.class);
+        TEST_CLASSES.add(PolynomialTests.class);
+        TEST_CLASSES.add(SimplifyExpLogTests.class);
+        TEST_CLASSES.add(SimplifyOperatorTests.class);
+        TEST_CLASSES.add(SolveGeneralEquationSystemTests.class);
+        TEST_CLASSES.add(SolveGeneralDifferentialEquationTests.class);
+        TEST_CLASSES.add(SolveSpecialEquationMethodsTests.class);
+        TEST_CLASSES.add(ExpressionCollectionTests.class);
+        TEST_CLASSES.add(GeneralSimplifyExpressionTests.class);
+        TEST_CLASSES.add(SimplifyUtilitiesTests.class);
+        TEST_CLASSES.add(GeneralLogicalTests.class);
+        TEST_CLASSES.add(GeneralSimplifyLogicalExpressionTests.class);
+        TEST_CLASSES.add(LinearAlgebraTests.class);
+        TEST_CLASSES.add(MatrixFunctionTests.class);
+        TEST_CLASSES.add(GeneralMatrixTests.class);
+        TEST_CLASSES.add(ParseTests.class);
+        TEST_CLASSES.add(SubstitutionTests.class);
     }
 
     @Test
@@ -59,7 +59,7 @@ public class TestRunner {
         Constructor constructor;
         Object obj;
         int numberOfSuccessfulTests = 0, numberOfFailedTests = 0;
-        for (Class cls : testClasses) {
+        for (Class cls : TEST_CLASSES) {
             try {
                 constructor = cls.getConstructor();
             } catch (NoSuchMethodException | SecurityException ex) {
