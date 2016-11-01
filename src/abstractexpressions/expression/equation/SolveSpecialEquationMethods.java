@@ -811,7 +811,13 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
      */
     public static ExpressionCollection solveSumOfRadicalsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
-        // Fall: f(x)^(1/3) + g(x)^(1/3) = h(x)
+        // Fall: a(x)*f(x)^(1/2) + b(x)*g(x)^(1/2) - h(x) = 0.
+        try {
+            return solveSumOfTwoSquareRootsEquation(f, var);
+        } catch (NotAlgebraicallySolvableException e) {
+        }
+
+        // Fall: f(x)^(1/3) + g(x)^(1/3) - h(x) = 0.
         try {
             return solveSumOfTwoCubicRootsEquation(f, var);
         } catch (NotAlgebraicallySolvableException e) {
@@ -863,11 +869,21 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     }
 
     private static Expression[][] getFactorsAndRadicandsInCaseOfSumOfTwoSquareRoots(Expression f, String var) throws NotAlgebraicallySolvableException {
-        ExpressionCollection summands = SimplifyUtilities.getSummands(f);
-        if (summands.getBound() != 2) {
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
+        if (summandsLeft.getBound() + summandsRight.getBound() != 2) {
             throw new NotAlgebraicallySolvableException();
         }
-        return new Expression[][]{getFactorAndRadicand(summands.get(0), var, 2), getFactorAndRadicand(summands.get(1), var, 2)};
+        if (f.isSum()) {
+            return new Expression[][]{getFactorAndRadicand(summandsLeft.get(0), var, 2), getFactorAndRadicand(summandsLeft.get(1), var, 2)};
+        }
+        Expression[] factorAndRadicandRight = getFactorAndRadicand(summandsRight.get(0), var, 2);
+        try {
+            factorAndRadicandRight[0] = MINUS_ONE.mult(factorAndRadicandRight[0]).simplify();
+            return new Expression[][]{getFactorAndRadicand(summandsLeft.get(0), var, 2), factorAndRadicandRight};
+        } catch (EvaluationException e) {
+            throw new NotAlgebraicallySolvableException();
+        }
     }
 
     private static Expression[] getRadicandsInCaseOfSumOfTwoCubicRoots(Expression f, String var) throws NotAlgebraicallySolvableException {
@@ -918,14 +934,14 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var)
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()), 
-                getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n)};
+                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
+                    getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n)};
             }
             if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var)
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()), 
-                getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n)};
+                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
+                    getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n)};
             }
         } catch (EvaluationException e) {
         }
@@ -948,7 +964,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         roots.add(2);
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
 
-        Expression[][] factorsAndRadicands = getFactorsAndRadicandsInCaseOfSumOfTwoSquareRoots(f, var);
+        Expression[][] factorsAndRadicands = getFactorsAndRadicandsInCaseOfSumOfTwoSquareRoots(separation[0], var);
         Expression rightSide = MINUS_ONE.mult(separation[1]).simplify();
 
         /*
@@ -958,16 +974,15 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         Expression newEquation = rightSide.pow(3).sub(factorsAndRadicands[0][0].pow(2).mult(factorsAndRadicands[0][1]).add(
                 factorsAndRadicands[1][0].pow(2).mult(factorsAndRadicands[1][1]))).pow(2).sub(
                 new Constant(4).mult(factorsAndRadicands[0][0].pow(2)).mult(factorsAndRadicands[1][0].pow(2)).mult(
-                        factorsAndRadicands[0][1]).mult(factorsAndRadicands[1][1]));
+                factorsAndRadicands[0][1]).mult(factorsAndRadicands[1][1]));
 
         ExpressionCollection solutionsOfNewEquation = solveZeroEquation(newEquation, var);
-        
+
         // TODO: Korrekte Lösungen filtern.
-        
         return solutionsOfNewEquation;
-        
+
     }
-    
+
     private static ExpressionCollection solveSumOfTwoCubicRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         List<Integer> roots = new ArrayList<>();

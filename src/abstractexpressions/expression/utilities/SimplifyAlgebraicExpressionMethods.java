@@ -314,7 +314,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
         } else {
 
             indexOfNextDigitToBeIncreased = 1;
-            while (counter[indexOfNextDigitToBeIncreased] == 0 && indexOfNextDigitToBeIncreased < k) {
+            while (counter[indexOfNextDigitToBeIncreased] == 0 && indexOfNextDigitToBeIncreased < counter.length) {
                 indexOfNextDigitToBeIncreased++;
             }
 

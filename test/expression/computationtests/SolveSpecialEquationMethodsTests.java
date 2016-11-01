@@ -5,6 +5,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
@@ -134,7 +135,7 @@ public class SolveSpecialEquationMethodsTests {
     @Test
     public void solveAlgebraicEquationTest1() {
         try {
-            // Test: (7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5 = 0. Lösung x = 1
+            // Test: (7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5 = 0. Lösung x = 1.
             Expression f = Expression.build("(7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
@@ -142,6 +143,19 @@ public class SolveSpecialEquationMethodsTests {
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void solveAlgebraicEquationTest2() {
+//        try {
+//            // Test: x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1 = 0. Lösung x = 3.
+//            Expression f = Expression.build("x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1", null);
+//            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+//            assertTrue(zeros.getBound() == 1);
+//            assertTrue(zeros.containsExpression(THREE));
+//        } catch (ExpressionException | EvaluationException e) {
+//            fail(e.getMessage());
+//        }
     }
     
 }
