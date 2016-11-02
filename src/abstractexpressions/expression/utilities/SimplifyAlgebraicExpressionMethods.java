@@ -958,7 +958,7 @@ public abstract class SimplifyAlgebraicExpressionMethods {
 
         for (int i = 0; i < factorsDenominator.getBound(); i++) {
             if (factorsDenominator.get(i) != null) {
-                resultFactorsNumerator.add(factorsDenominator.get(i));
+                resultFactorsDenominator.add(factorsDenominator.get(i));
             }
         }
 

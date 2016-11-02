@@ -761,9 +761,8 @@ public abstract class PolynomialAlgebraMethods {
         BigInteger m = findExponentForPolynomialSubstitutionByRoots(f, var);
         if (m.compareTo(BigInteger.ONE) > 0) {
 
-            ExpressionCollection zeros = new ExpressionCollection();
             Expression fSubstituted = substituteVariableByPowerOfVariable(f, var, m).simplify();
-            zeros = solvePolynomialEquation(SimplifyPolynomialMethods.getPolynomialCoefficients(fSubstituted, var), var);
+            ExpressionCollection zeros = solvePolynomialEquation(SimplifyPolynomialMethods.getPolynomialCoefficients(fSubstituted, var), var);
             if (m.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ZERO) == 0) {
 
                 ExpressionCollection zerosAfterResubstitution = new ExpressionCollection();

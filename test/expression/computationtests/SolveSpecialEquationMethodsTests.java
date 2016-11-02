@@ -147,15 +147,15 @@ public class SolveSpecialEquationMethodsTests {
 
     @Test
     public void solveAlgebraicEquationTest2() {
-//        try {
-//            // Test: x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1 = 0. Lösung x = 3.
-//            Expression f = Expression.build("x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1", null);
-//            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
-//            assertTrue(zeros.getBound() == 1);
-//            assertTrue(zeros.containsExpression(THREE));
-//        } catch (ExpressionException | EvaluationException e) {
-//            fail(e.getMessage());
-//        }
+        try {
+            // Test: x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1 = 0. Lösung x = 3.
+            Expression f = Expression.build("x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1", null);
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(THREE));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
     }
     
 }

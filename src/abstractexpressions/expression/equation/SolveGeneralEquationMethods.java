@@ -80,7 +80,6 @@ public abstract class SolveGeneralEquationMethods {
      */
     protected static ExpressionCollection solveGeneralEquation(Expression f, Expression g, String var) throws EvaluationException {
 
-//        System.out.println(solveTries + ": Löse allg. Gl. " + f.writeExpression() + " = " + g.writeExpression());
         if (solveTries <= 0) {
             return new ExpressionCollection();
         }
@@ -1453,7 +1452,6 @@ public abstract class SolveGeneralEquationMethods {
      */
     protected static ExpressionCollection solveZeroEquation(Expression f, String var) throws EvaluationException {
 
-//        System.out.println(solveTries + ": Löse Nullgl. " + f.writeExpression() + " = 0");
         if (solveTries <= 0) {
             return new ExpressionCollection();
         }
