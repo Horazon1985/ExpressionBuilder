@@ -817,7 +817,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             return solveSumOfOneArbitraryRootEquation(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
-        
+
         // Fall: a(x)*f(x)^(1/2) + b(x)*g(x)^(1/2) - h(x) = 0.
         try {
             return solveSumOfTwoSquareRootsEquation(f, var);
@@ -851,25 +851,41 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
 
         for (Expression summand : summandsLeft) {
-            for (int n : roots) {
+            if (roots == null) {
                 try {
-                    getRadicand(summand, var, n);
+                    getFactorAndRadicand(summand, var, null);
                     rootPartLeft = rootPartLeft.add(summand);
                 } catch (NotAlgebraicallySolvableException e) {
                     nonRootPartLeft = nonRootPartLeft.add(summand);
                 }
-
+            } else {
+                for (int n : roots) {
+                    try {
+                        getFactorAndRadicand(summand, var, n);
+                        rootPartLeft = rootPartLeft.add(summand);
+                    } catch (NotAlgebraicallySolvableException e) {
+                        nonRootPartLeft = nonRootPartLeft.add(summand);
+                    }
+                }
             }
         }
         for (Expression summand : summandsRight) {
-            for (int n : roots) {
+            if (roots == null) {
                 try {
-                    getRadicand(summand, var, n);
+                    getFactorAndRadicand(summand, var, null);
                     rootPartRight = rootPartRight.add(summand);
                 } catch (NotAlgebraicallySolvableException e) {
                     nonRootPartRight = nonRootPartRight.add(summand);
                 }
-
+            } else {
+                for (int n : roots) {
+                    try {
+                        getFactorAndRadicand(summand, var, n);
+                        rootPartRight = rootPartRight.add(summand);
+                    } catch (NotAlgebraicallySolvableException e) {
+                        nonRootPartRight = nonRootPartRight.add(summand);
+                    }
+                }
             }
         }
 
@@ -897,6 +913,15 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         } catch (EvaluationException e) {
             throw new NotAlgebraicallySolvableException();
         }
+    }
+
+    private static Expression[][] getFactorsAndRadicandsInCaseOfSumOfOneArbitraryRoot(Expression f, String var) throws NotAlgebraicallySolvableException {
+        ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
+        if (summandsLeft.getBound() + summandsRight.getBound() != 1) {
+            throw new NotAlgebraicallySolvableException();
+        }
+        return new Expression[][]{getFactorAndRadicand(summandsLeft.get(0), var, null)};
     }
 
     private static Expression[][] getFactorsAndRadicandsInCaseOfSumOfSquareRootAndCubicRoot(Expression f, String var) throws NotAlgebraicallySolvableException {
@@ -935,61 +960,68 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         }
     }
 
-    private static Expression getRadicand(Expression f, String var, int n) throws NotAlgebraicallySolvableException {
+    private static Expression[] getFactorAndRadicand(Expression f, String var, Integer n) throws NotAlgebraicallySolvableException {
         try {
             if (f.isNotProduct() && f.isNotQuotient()) {
-                return getRadicandInCaseOfPureRoot(f, var, n).simplify();
+                if (n == null) {
+                    return new Expression[]{ONE, getRadicandInCaseOfPureRoot(f, var, n).simplify(), getRootDegreeInCaseOfPureRoot(f, var)};
+                } else {
+                    return new Expression[]{ONE, getRadicandInCaseOfPureRoot(f, var, n).simplify()};
+                }
             }
             if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)) {
-                return getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n).mult(((BinaryOperation) f).getLeft().pow(n)).simplify();
+                if (n == null) {
+                    return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n), 
+                        getRootDegreeInCaseOfPureRoot(((BinaryOperation) f).getRight(), var)};
+                } else {
+                    return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n)};
+                }
             }
             if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n).mult(((BinaryOperation) f).getRight().pow(n)).simplify();
+                if (n == null) {
+                    return new Expression[]{((BinaryOperation) f).getRight(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n),
+                        getRootDegreeInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var)};
+                } else {
+                    return new Expression[]{((BinaryOperation) f).getRight(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n)};
+                }
             }
             if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var)
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n).div(((BinaryOperation) f).getRight().pow(n)).simplify();
+                if (n == null) {
+                    return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
+                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n),
+                        getRootDegreeInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var)};
+                } else {
+                    return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
+                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n)};
+                }
             }
             if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var)
                     && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n).div(((BinaryOperation) f).getRight().pow(n)).simplify();
+                if (n == null) {
+                    return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
+                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n),
+                        getRootDegreeInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var)};
+                } else {
+                    return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
+                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n)};
+                }
             }
         } catch (EvaluationException e) {
         }
         throw new NotAlgebraicallySolvableException();
     }
 
-    private static Expression[] getFactorAndRadicand(Expression f, String var, int n) throws NotAlgebraicallySolvableException {
-        try {
-            if (f.isNotProduct() && f.isNotQuotient()) {
-                return new Expression[]{ONE, getRadicandInCaseOfPureRoot(f, var, n).simplify()};
+    private static Expression getRadicandInCaseOfPureRoot(Expression f, String var, Integer n) throws NotAlgebraicallySolvableException {
+        if (n == null) {
+            if (f.isPower() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)
+                    && ((BinaryOperation) f).getRight().isRationalConstant()) {
+                return ((BinaryOperation) f).getLeft().pow(((BinaryOperation) ((BinaryOperation) f).getRight()).getLeft());
             }
-            if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)) {
-                return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n)};
-            }
-            if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return new Expression[]{((BinaryOperation) f).getRight(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n)};
-            }
-            if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
-                    && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var)
-                    && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
-                    getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n)};
-            }
-            if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
-                    && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var)
-                    && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                return new Expression[]{((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
-                    getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n)};
-            }
-        } catch (EvaluationException e) {
+            throw new NotAlgebraicallySolvableException();
         }
-        throw new NotAlgebraicallySolvableException();
-    }
-
-    private static Expression getRadicandInCaseOfPureRoot(Expression f, String var, int n) throws NotAlgebraicallySolvableException {
         if (f.isPower() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)
                 && ((BinaryOperation) f).getRight().isRationalConstant()
                 && ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight().equals(new Constant(n))
@@ -999,14 +1031,55 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         throw new NotAlgebraicallySolvableException();
     }
 
-    private static ExpressionCollection solveSumOfOneArbitraryRootEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
-        
-        
-    
+    private static Expression getRootDegreeInCaseOfPureRoot(Expression f, String var) throws NotAlgebraicallySolvableException {
+        if (f.isPower() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)
+                && ((BinaryOperation) f).getRight().isRationalConstant()) {
+            return ((BinaryOperation) ((BinaryOperation) f).getRight()).getRight();
+        }
         throw new NotAlgebraicallySolvableException();
-        
     }
     
+    private static ExpressionCollection solveSumOfOneArbitraryRootEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
+
+        Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, null);
+
+        Expression[][] factorsAndRadicands = getFactorsAndRadicandsInCaseOfSumOfOneArbitraryRoot(separation[0], var);
+        Expression rightSide = MINUS_ONE.mult(separation[1]).simplify();
+
+        /*
+        Die Gleichung a*g(x)^(1/n) = h(x) ist äquivalent zur
+        Gleichung h^n - a^n*g = 0.
+         */
+        Expression a = factorsAndRadicands[0][0];
+        Expression g = factorsAndRadicands[0][1];
+        Expression n = factorsAndRadicands[0][2];
+        Expression newEquation = rightSide.pow(n).sub(a.pow(n).mult(g));
+
+        ExpressionCollection solutionsOfNewEquation = solveZeroEquation(newEquation, var);
+
+        if (n.isOddIntegerConstant()) {
+            return solutionsOfNewEquation;
+        }
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        Expression valueAtZero;
+
+        // Korrekte Lösungen filtern.
+        for (Expression solution : solutionsOfNewEquation) {
+
+            valueAtZero = g.replaceVariable(var, solution).simplify();
+            if (!valueAtZero.isAlwaysNonNegative()) {
+                continue;
+            }
+
+            solutions.add(solution);
+
+        }
+
+        return solutions;
+
+    }
+
     private static ExpressionCollection solveSumOfTwoSquareRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         List<Integer> roots = new ArrayList<>();
@@ -1065,14 +1138,12 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         roots.add(3);
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
 
-        Expression[][] radicals = getFactorsAndRadicandsInCaseOfSumOfSquareRootAndCubicRoot(separation[0], var);
+        Expression[][] factorsAndRadicands = getFactorsAndRadicandsInCaseOfSumOfSquareRootAndCubicRoot(separation[0], var);
         Expression rightSide = MINUS_ONE.mult(separation[1]).simplify();
-        
+
         // TO DO.
-        
-        
         throw new NotAlgebraicallySolvableException();
-        
+
     }
 
     private static ExpressionCollection solveSumOfTwoCubicRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {

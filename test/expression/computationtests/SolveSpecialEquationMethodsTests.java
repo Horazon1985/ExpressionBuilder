@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.THREE;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.utilities.ExpressionCollection;
@@ -153,6 +154,19 @@ public class SolveSpecialEquationMethodsTests {
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(THREE));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void solveAlgebraicEquationTest3() {
+        try {
+            // Test: x^2+(x^3+1)*(3*x^5+x+30)^(1/7)-(x^4+6) = 0. Lösung x = 2.
+            Expression f = Expression.build("x^2+(x^3+1)*(3*x^5+x+30)^(1/7)-(x^4+6)", null);
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(TWO));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
