@@ -749,6 +749,9 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         ExpressionCollection zeros = new ExpressionCollection();
         // Rücksubstitution!
         for (Expression zero : zerosInSubstitutionVar) {
+            if (zero == null){
+                continue;
+            }
             try {
                 zeros.add(zerosOfAlgebraicTermMinusSubstVar.get(0).replaceVariable(substVar, zero).simplify());
             } catch (EvaluationException e) {
