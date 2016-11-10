@@ -129,14 +129,14 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
         double h;
 
         Expression[] tangentVector = new Expression[2];
-        tangentVector[0] = this.expr[0].diff(var).simplify();
-        tangentVector[1] = this.expr[1].diff(var).simplify();
+        tangentVector[0] = this.expr[0].diff(this.var).simplify();
+        tangentVector[1] = this.expr[1].diff(this.var).simplify();
 
         // Der Graph der Kurve soll aus maximal 10000 Teilstrecken bestehen.
         for (int i = 0; i < 10000; i++) {
 
             double[] pointOnCurve = new double[2];
-            Variable.setValue(var, t);
+            Variable.setValue(this.var, t);
             try {
                 /*
                  h wird nun passend ermittelt, so dass die Distanz zwischen
@@ -165,7 +165,7 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
                 t = t_1;
             }
 
-            Variable.setValue(var, t);
+            Variable.setValue(this.var, t);
             try {
                 pointOnCurve[0] = this.expr[0].evaluate();
                 pointOnCurve[1] = this.expr[1].evaluate();
@@ -243,10 +243,76 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawCurve2D(g);
+        if (this.pointsAreShowable) {
+            drawMousePointOnGraph(g);
+        }
     }
 
-    protected void drawMousePointOnGraph(Graphics g){
-    
+    protected void drawMousePointOnGraph(Graphics g) {
+
+        int coarseIndexWithNearestDistance = -1;
+
+        int currentIndex;
+        for (int i = 0; i < 50; i++) {
+            currentIndex = Math.max((i * this.curve2D.size()) / 50, this.curve2D.size() - 1);
+            if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(currentIndex)[0], this.curve2D.get(currentIndex)[1]),
+                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY}) < 50) {
+                if (coarseIndexWithNearestDistance == -1) {
+                    coarseIndexWithNearestDistance = currentIndex;
+                } else if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(currentIndex)[0], this.curve2D.get(currentIndex)[1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                        < computeDistanceOfPixels(convertToPixel(this.curve2D.get(coarseIndexWithNearestDistance)[0], this.curve2D.get(coarseIndexWithNearestDistance)[1]),
+                                new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                    coarseIndexWithNearestDistance = currentIndex;
+                }
+            }
+
+        }
+
+        if (coarseIndexWithNearestDistance == -1) {
+            return;
+        }
+
+        int indexLeft, indexRight;
+
+        indexLeft = Math.max(0, coarseIndexWithNearestDistance - this.curve2D.size() / 50);
+        indexRight = Math.min(this.curve2D.size() - 1, coarseIndexWithNearestDistance + this.curve2D.size() / 50);
+
+        int[] pixel;
+        int indexWithMinimalDistance;
+        
+        if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(indexLeft)[0], this.curve2D.get(indexLeft)[1]),
+                new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                < computeDistanceOfPixels(convertToPixel(this.curve2D.get(indexRight)[0], this.curve2D.get(indexRight)[1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+
+            indexWithMinimalDistance = coarseIndexWithNearestDistance;
+            for (int i = coarseIndexWithNearestDistance; i >= indexLeft; i--) {
+                if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(i)[0], this.curve2D.get(i)[1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                        < computeDistanceOfPixels(convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]),
+                                new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                    indexWithMinimalDistance = i;
+                }
+            }
+
+        } else {
+
+            indexWithMinimalDistance = coarseIndexWithNearestDistance;
+            for (int i = coarseIndexWithNearestDistance; i <= indexRight; i++) {
+                if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(i)[0], this.curve2D.get(i)[1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                        < computeDistanceOfPixels(convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]),
+                                new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                    indexWithMinimalDistance = i;
+                }
+            }
+
+        }
+
+        pixel = convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]);
+        drawCirclePoint(g, pixel[0], pixel[1], true);
+        
     }
-    
+
 }

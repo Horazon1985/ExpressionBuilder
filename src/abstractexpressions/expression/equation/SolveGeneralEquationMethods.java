@@ -42,6 +42,7 @@ public abstract class SolveGeneralEquationMethods {
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
     private static final HashSet<TypeSimplify> simplifyTypesEquation = new HashSet<>();
+    private static final HashSet<TypeSimplify> simplifyTypesExpandedEquation = new HashSet<>();
 
     static {
         simplifyTypesEquation.add(TypeSimplify.order_difference_and_division);
@@ -60,6 +61,23 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypesEquation.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypesEquation.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesEquation.add(TypeSimplify.simplify_collect_logarithms);
+        
+        simplifyTypesExpandedEquation.add(TypeSimplify.order_difference_and_division);
+        simplifyTypesExpandedEquation.add(TypeSimplify.order_sums_and_products);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_basic);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_expand_powerful);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_expand_rational_factors);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_pull_apart_powers);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_collect_products);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_reduce_quotients);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_multiply_exponents);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_algebraic_expressions);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_functional_relations);
+        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_collect_logarithms);
     }
 
     /**
@@ -1544,7 +1562,7 @@ public abstract class SolveGeneralEquationMethods {
             return SolveSpecialEquationMethods.solveSumOfRadicalsEquation(f, var);
         } catch (NotAlgebraicallySolvableException e) {
         }
-        
+
         /*
          Fall: f besitzt Brüche. Dann alles mit dem Hauptnenner
          ausmultiplizieren und prüfen, ob es Lösungen gibt.
@@ -1612,6 +1630,16 @@ public abstract class SolveGeneralEquationMethods {
             }
         }
 
+        /*
+         Nächster Versuch: In f werden alle Klammern ausmultipliziert. Wenn sich 
+         die Ergebnisfunktion von der vorherigen unterscheidet, dann soll versucht
+         werden, die neue Gleichung zu lösen.
+         */
+//        Expression fExpanded = f.simplify(simplifyTypesExpandedEquation);
+//        if (!f.equals(fExpanded)){
+//            return solveZeroEquation(fExpanded, var);
+//        }
+        
         return zeros;
 
     }
