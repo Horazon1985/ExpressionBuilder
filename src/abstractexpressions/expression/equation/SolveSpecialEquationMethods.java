@@ -749,7 +749,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         ExpressionCollection zeros = new ExpressionCollection();
         // Rücksubstitution!
         for (Expression zero : zerosInSubstitutionVar) {
-            if (zero == null){
+            if (zero == null) {
                 continue;
             }
             try {
@@ -861,11 +861,20 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                 } catch (NotAlgebraicallySolvableException e) {
                     nonRootPartLeft = nonRootPartLeft.add(summand);
                 }
+            } else if (roots.isEmpty()) {
+                try {
+                    getFactorAndRadicand(summand, var, null);
+                    throw new NotAlgebraicallySolvableException();
+                } catch (NotAlgebraicallySolvableException e) {
+                    nonRootPartLeft = nonRootPartLeft.add(summand);
+                }
             } else {
                 for (int n : roots) {
                     try {
                         getFactorAndRadicand(summand, var, n);
                         rootPartLeft = rootPartLeft.add(summand);
+                        roots.remove(Integer.valueOf(n));
+                        break;
                     } catch (NotAlgebraicallySolvableException e) {
                         nonRootPartLeft = nonRootPartLeft.add(summand);
                     }
@@ -880,11 +889,20 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                 } catch (NotAlgebraicallySolvableException e) {
                     nonRootPartRight = nonRootPartRight.add(summand);
                 }
+            } else if (roots.isEmpty()) {
+                try {
+                    getFactorAndRadicand(summand, var, null);
+                    throw new NotAlgebraicallySolvableException();
+                } catch (NotAlgebraicallySolvableException e) {
+                    nonRootPartRight = nonRootPartRight.add(summand);
+                }
             } else {
                 for (int n : roots) {
                     try {
                         getFactorAndRadicand(summand, var, n);
                         rootPartRight = rootPartRight.add(summand);
+                        roots.remove(Integer.valueOf(n));
+                        break;
                     } catch (NotAlgebraicallySolvableException e) {
                         nonRootPartRight = nonRootPartRight.add(summand);
                     }
@@ -974,7 +992,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             }
             if (f.isProduct() && SimplifyRationalFunctionMethods.isRationalFunction(((BinaryOperation) f).getLeft(), var)) {
                 if (n == null) {
-                    return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n), 
+                    return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n),
                         getRootDegreeInCaseOfPureRoot(((BinaryOperation) f).getRight(), var)};
                 } else {
                     return new Expression[]{((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n)};
@@ -1041,7 +1059,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         }
         throw new NotAlgebraicallySolvableException();
     }
-    
+
     private static ExpressionCollection solveSumOfOneArbitraryRootEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, null);
@@ -1086,6 +1104,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     private static ExpressionCollection solveSumOfTwoSquareRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         List<Integer> roots = new ArrayList<>();
+        roots.add(2);
         roots.add(2);
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
 
@@ -1138,6 +1157,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     private static ExpressionCollection solveSumOfSquareRootAndCubicRootEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         List<Integer> roots = new ArrayList<>();
+        roots.add(2);
         roots.add(3);
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
 
@@ -1152,6 +1172,7 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
     private static ExpressionCollection solveSumOfTwoCubicRootsEquation(Expression f, String var) throws EvaluationException, NotAlgebraicallySolvableException {
 
         List<Integer> roots = new ArrayList<>();
+        roots.add(3);
         roots.add(3);
         Expression[] separation = getSeparationInRadicalsAndNonRadicals(f, var, roots);
 
