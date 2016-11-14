@@ -1635,10 +1635,10 @@ public abstract class SolveGeneralEquationMethods {
          die Ergebnisfunktion von der vorherigen unterscheidet, dann soll versucht
          werden, die neue Gleichung zu lösen.
          */
-//        Expression fExpanded = f.simplify(simplifyTypesExpandedEquation);
-//        if (!f.equals(fExpanded)){
-//            return solveZeroEquation(fExpanded, var);
-//        }
+        Expression fExpanded = f.simplify(simplifyTypesExpandedEquation);
+        if (!f.equals(fExpanded)){
+            return solveZeroEquation(fExpanded, var);
+        }
         
         return zeros;
 

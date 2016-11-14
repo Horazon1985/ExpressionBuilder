@@ -188,6 +188,19 @@ public class SolveSpecialEquationMethodsTests {
    @Test
     public void solveAlgebraicEquationTest5() {
         try {
+            // Test: x*(2+x)^(1/2)-(x-1)^(1/3) - 3 = 0. Lösung x = 2.
+            Expression f = Expression.build("x*(2+x)^(1/2)-(x-1)^(1/3) - 3", null);
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(TWO));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+   @Test
+    public void solveAlgebraicEquationTest6() {
+        try {
             // Test: (x+(x^3+1)^(1/3))^2-(1+x^2) = 0. Lösung x = 2.
             Expression f = Expression.build("(x+(x^3+1)^(1/3))^2-(1+x^2)", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
