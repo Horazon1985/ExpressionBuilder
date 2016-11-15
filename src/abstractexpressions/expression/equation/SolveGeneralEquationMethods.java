@@ -62,16 +62,15 @@ public abstract class SolveGeneralEquationMethods {
         simplifyTypesEquation.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesEquation.add(TypeSimplify.simplify_collect_logarithms);
         
+
         simplifyTypesExpandedEquation.add(TypeSimplify.order_difference_and_division);
         simplifyTypesExpandedEquation.add(TypeSimplify.order_sums_and_products);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_basic);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_by_inserting_defined_vars);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_expand_powerful);
-        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_expand_rational_factors);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_pull_apart_powers);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_collect_products);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypesExpandedEquation.add(TypeSimplify.simplify_bring_expression_to_common_denominator);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_reduce_quotients);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_multiply_exponents);
         simplifyTypesExpandedEquation.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);

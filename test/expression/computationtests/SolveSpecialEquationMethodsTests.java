@@ -201,6 +201,19 @@ public class SolveSpecialEquationMethodsTests {
    @Test
     public void solveAlgebraicEquationTest6() {
         try {
+            // Test: (12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5 = 0. Lösung x = 1/2.
+            Expression f = Expression.build("(12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5", null);
+            ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(ONE.div(TWO)));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
+   @Test
+    public void solveAlgebraicEquationTest7() {
+        try {
             // Test: (x+(x^3+1)^(1/3))^2-(1+x^2) = 0. Lösung x = 2.
             Expression f = Expression.build("(x+(x^3+1)^(1/3))^2-(1+x^2)", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");

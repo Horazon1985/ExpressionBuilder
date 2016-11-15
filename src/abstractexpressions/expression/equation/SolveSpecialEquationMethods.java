@@ -878,6 +878,8 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
 
+        boolean isRadicalSummand;
+
         for (Expression summand : summandsLeft) {
             if (roots == null) {
                 try {
@@ -894,16 +896,21 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                     nonRootPartLeft = nonRootPartLeft.add(summand);
                 }
             } else {
+                isRadicalSummand = false;
                 for (int n : roots) {
                     try {
                         getFactorAndRadicand(summand, var, n);
+                        isRadicalSummand = true;
                         rootPartLeft = rootPartLeft.add(summand);
                         roots.remove(Integer.valueOf(n));
                         break;
                     } catch (NotAlgebraicallySolvableException e) {
-                        nonRootPartLeft = nonRootPartLeft.add(summand);
                     }
                 }
+                if (!isRadicalSummand) {
+                    nonRootPartLeft = nonRootPartLeft.add(summand);
+                }
+
             }
         }
         for (Expression summand : summandsRight) {
@@ -922,15 +929,19 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
                     nonRootPartRight = nonRootPartRight.add(summand);
                 }
             } else {
+                isRadicalSummand = false;
                 for (int n : roots) {
                     try {
                         getFactorAndRadicand(summand, var, n);
+                        isRadicalSummand = true;
                         rootPartRight = rootPartRight.add(summand);
                         roots.remove(Integer.valueOf(n));
                         break;
                     } catch (NotAlgebraicallySolvableException e) {
-                        nonRootPartRight = nonRootPartRight.add(summand);
                     }
+                }
+                if (!isRadicalSummand) {
+                    nonRootPartRight = nonRootPartRight.add(summand);
                 }
             }
         }
@@ -977,7 +988,11 @@ public abstract class SolveSpecialEquationMethods extends SolveGeneralEquationMe
             throw new NotAlgebraicallySolvableException();
         }
         if (f.isSum()) {
-            return new RadicalSummandData[]{getFactorAndRadicand(summandsLeft.get(0), var, 2), getFactorAndRadicand(summandsLeft.get(1), var, 3)};
+            try {
+                return new RadicalSummandData[]{getFactorAndRadicand(summandsLeft.get(0), var, 2), getFactorAndRadicand(summandsLeft.get(1), var, 3)};
+            } catch (NotAlgebraicallySolvableException e) {
+                return new RadicalSummandData[]{getFactorAndRadicand(summandsLeft.get(1), var, 2), getFactorAndRadicand(summandsLeft.get(0), var, 3)};
+            }
         }
         try {
             RadicalSummandData factorAndRadicandRight = getFactorAndRadicand(summandsRight.get(0), var, 2);
