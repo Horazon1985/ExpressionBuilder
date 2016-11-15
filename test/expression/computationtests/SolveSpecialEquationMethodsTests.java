@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
@@ -204,8 +205,9 @@ public class SolveSpecialEquationMethodsTests {
             // Test: (12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5 = 0. Lösung x = 1/2.
             Expression f = Expression.build("(12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5", null);
             ExpressionCollection zeros = SolveGeneralEquationMethods.solveEquation(f, ZERO, "x");
-            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.getBound() >= 2);
             assertTrue(zeros.containsExpression(ONE.div(TWO)));
+            assertTrue(zeros.containsExpression(MINUS_ONE.div(TWO)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
