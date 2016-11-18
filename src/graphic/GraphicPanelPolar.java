@@ -236,10 +236,117 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGraphPolar(g);
+        drawMousePointOnGraph(g);
     }
-    
-    protected void drawMousePointOnGraph(Graphics g){
-    
+
+    @Override
+    protected void drawMousePointOnGraph(Graphics g) {
+
+        int[] minimalDistances = new int[this.polarGraph2D.size()];
+        int[] indicesInPolarGraphWithMinimalDistance = new int[this.polarGraph2D.size()];
+        for (int i = 0; i < indicesInPolarGraphWithMinimalDistance.length; i++) {
+            indicesInPolarGraphWithMinimalDistance[i] = -1;
+        }
+
+        int coarseIndexWithNearestDistance = -1;
+        int currentIndex;
+
+        for (int i = 0; i < this.polarGraph2D.size(); i++) {
+
+            for (int j = 0; j < 50; j++) {
+                currentIndex = Math.min((j * this.polarGraph2D.get(i).length) / 50, this.polarGraph2D.get(i).length - 1);
+                if (computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[currentIndex][0], this.polarGraph2D.get(i)[currentIndex][1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY}) < 5 * MOUSE_DISTANCE_FOR_SHOWING_POINT) {
+                    if (coarseIndexWithNearestDistance == -1) {
+                        coarseIndexWithNearestDistance = currentIndex;
+                    } else if (computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[currentIndex][0], this.polarGraph2D.get(i)[currentIndex][1]),
+                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                            < computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[coarseIndexWithNearestDistance][0],
+                                    this.polarGraph2D.get(i)[coarseIndexWithNearestDistance][1]),
+                                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                        coarseIndexWithNearestDistance = currentIndex;
+                    }
+                }
+
+            }
+
+            if (coarseIndexWithNearestDistance == -1) {
+                minimalDistances[i] = -1;
+                continue;
+            }
+
+            int indexLeft, indexRight;
+
+            indexLeft = Math.max(0, coarseIndexWithNearestDistance - this.polarGraph2D.get(i).length / 50);
+            indexRight = Math.min(this.polarGraph2D.get(i).length - 1, coarseIndexWithNearestDistance + this.polarGraph2D.get(i).length / 50);
+
+            if (computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indexLeft][0],
+                    this.polarGraph2D.get(i)[indexLeft][1]),
+                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                    < computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indexRight][0],
+                            this.polarGraph2D.get(i)[indexRight][1]),
+                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+
+                indicesInPolarGraphWithMinimalDistance[i] = coarseIndexWithNearestDistance;
+                minimalDistances[i] = computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indexLeft][0], this.polarGraph2D.get(i)[indexLeft][1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
+
+                for (int j = coarseIndexWithNearestDistance; j >= indexLeft; j--) {
+                    if (computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[j][0],
+                            this.polarGraph2D.get(i)[j][1]),
+                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                            < computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indicesInPolarGraphWithMinimalDistance[i]][0],
+                                    this.polarGraph2D.get(i)[indicesInPolarGraphWithMinimalDistance[i]][1]),
+                                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                        indicesInPolarGraphWithMinimalDistance[i] = j;
+                        minimalDistances[i] = computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[j][0], this.polarGraph2D.get(i)[j][1]),
+                                new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
+                    }
+                }
+
+            } else {
+
+                indicesInPolarGraphWithMinimalDistance[i] = coarseIndexWithNearestDistance;
+                minimalDistances[i] = computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indexRight][0], this.polarGraph2D.get(i)[indexRight][1]),
+                        new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
+                for (int j = coarseIndexWithNearestDistance; j <= indexRight; j++) {
+                    if (computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[j][0], this.polarGraph2D.get(i)[j][1]),
+                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY})
+                            < computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[indicesInPolarGraphWithMinimalDistance[i]][0],
+                                    this.polarGraph2D.get(i)[indicesInPolarGraphWithMinimalDistance[i]][1]),
+                                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
+                        indicesInPolarGraphWithMinimalDistance[i] = j;
+                        minimalDistances[i] = computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[j][0], this.polarGraph2D.get(i)[j][1]),
+                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
+                    }
+                }
+
+            }
+
+        }
+
+        int indexInPolarGraphWithMinimalDistance = -1;
+        int polarGraphIndexWithMinimalDistance = -1;
+        int minimalDistance = -1;
+        for (int i = 0; i < minimalDistances.length; i++) {
+            if (minimalDistances[i] == -1) {
+                continue;
+            }
+            if (minimalDistance == -1 || minimalDistances[i] < minimalDistance) {
+                minimalDistance = minimalDistances[i];
+                polarGraphIndexWithMinimalDistance = i;
+                indexInPolarGraphWithMinimalDistance = indicesInPolarGraphWithMinimalDistance[i];
+            }
+        }
+
+        if (minimalDistance == -1 || minimalDistance > MOUSE_DISTANCE_FOR_SHOWING_POINT) {
+            return;
+        }
+
+        int[] pixel = convertToPixel(this.polarGraph2D.get(polarGraphIndexWithMinimalDistance)[indexInPolarGraphWithMinimalDistance][0],
+                this.polarGraph2D.get(polarGraphIndexWithMinimalDistance)[indexInPolarGraphWithMinimalDistance][1]);
+        drawCirclePoint(g, pixel[0], pixel[1], true);
+
     }
 
 }

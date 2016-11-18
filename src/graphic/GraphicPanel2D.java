@@ -411,8 +411,8 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
     @Override
     protected void drawMousePointOnGraph(Graphics g) {
         
-        int lowerPixelBoundX = Math.max(0, this.mouseCoordinateX - 10);
-        int upperPixelBoundX = Math.min(this.getWidth(), this.mouseCoordinateX + 10);
+        int lowerPixelBoundX = Math.max(0, this.mouseCoordinateX - MOUSE_DISTANCE_FOR_SHOWING_POINT);
+        int upperPixelBoundX = Math.min(this.getWidth(), this.mouseCoordinateX + MOUSE_DISTANCE_FOR_SHOWING_POINT);
 
         Integer indexOfGraph = null;
         Integer pixelX = null;
@@ -430,7 +430,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
                     functionValueAsPixel = convertToPixelY(functionValue);
                     distance = computeDistanceOfPixels(new int[]{this.mouseCoordinateX, this.mouseCoordinateY},
                             new int[]{i, functionValueAsPixel});
-                    if (distance <= 10) {
+                    if (distance <= MOUSE_DISTANCE_FOR_SHOWING_POINT) {
                         if (lowestDistance == null || distance < lowestDistance) {
                             lowestDistance = distance;
                             indexOfGraph = j;

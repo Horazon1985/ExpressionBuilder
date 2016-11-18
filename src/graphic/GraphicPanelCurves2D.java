@@ -248,15 +248,16 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
         }
     }
 
+    @Override
     protected void drawMousePointOnGraph(Graphics g) {
 
         int coarseIndexWithNearestDistance = -1;
 
         int currentIndex;
         for (int i = 0; i < 50; i++) {
-            currentIndex = Math.max((i * this.curve2D.size()) / 50, this.curve2D.size() - 1);
+            currentIndex = Math.min((i * this.curve2D.size()) / 50, this.curve2D.size() - 1);
             if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(currentIndex)[0], this.curve2D.get(currentIndex)[1]),
-                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY}) < 50) {
+                    new int[]{this.mouseCoordinateX, this.mouseCoordinateY}) < 5 * MOUSE_DISTANCE_FOR_SHOWING_POINT) {
                 if (coarseIndexWithNearestDistance == -1) {
                     coarseIndexWithNearestDistance = currentIndex;
                 } else if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(currentIndex)[0], this.curve2D.get(currentIndex)[1]),
@@ -310,6 +311,11 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
         }
 
+        if (computeDistanceOfPixels(convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]),
+                new int[]{this.mouseCoordinateX, this.mouseCoordinateY}) > MOUSE_DISTANCE_FOR_SHOWING_POINT){
+            return;
+        }
+        
         pixel = convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]);
         drawCirclePoint(g, pixel[0], pixel[1], true);
         

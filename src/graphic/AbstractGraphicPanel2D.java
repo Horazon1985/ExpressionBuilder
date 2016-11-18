@@ -29,8 +29,6 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
      */
     protected String varOrd = null;
 
-    final static Color[] FIXED_COLORS = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
-
     protected double axeCenterX, axeCenterY;
     protected double maxX, maxY;
     protected int expX, expY;
@@ -46,6 +44,10 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
     protected Point lastMousePosition;
     protected double zoomfactor, zoomfactorX, zoomfactorY;
 
+    protected final static Color[] FIXED_COLORS = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
+    protected final static int MOUSE_DISTANCE_FOR_SHOWING_POINT = 10;
+    
+    
     public AbstractGraphicPanel2D() {
     }
 
