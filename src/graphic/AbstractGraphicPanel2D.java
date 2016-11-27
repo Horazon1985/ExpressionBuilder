@@ -46,9 +46,23 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     protected final static Color[] FIXED_COLORS = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
     protected final static int MOUSE_DISTANCE_FOR_SHOWING_POINT = 10;
-    
-    
+
     public AbstractGraphicPanel2D() {
+        
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseCoordinateX = e.getPoint().x;
+                mouseCoordinateY = e.getPoint().y;
+                repaint();
+            }
+        });
+        
     }
 
     public AbstractGraphicPanel2D(final double maxZoomfactor, final double minZoomfactor) {
@@ -177,6 +191,10 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
      */
     protected Color generateColor() {
         return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+    }
+
+    protected int[] getMouseCoordinates() {
+        return new int[]{this.mouseCoordinateX, this.mouseCoordinateY};
     }
 
     /**
@@ -472,7 +490,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         g.drawLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
         g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
     }
-    
+
     private static BigDecimal roundCoordinate(double value, int digits) {
         return BigDecimal.valueOf(value).multiply(BigDecimal.TEN.pow(digits)).setScale(
                 0, BigDecimal.ROUND_HALF_UP).divide(BigDecimal.TEN.pow(digits));
