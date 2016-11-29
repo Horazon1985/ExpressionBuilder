@@ -402,7 +402,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         convertGraphToGraphicalGraph();
 
         drawSpecialPoints(g, this.specialPoints);
-        if (this.pointsAreShowable) {
+        if (pointsAreShowable) {
             drawMousePointOnGraph(g);
         }
 

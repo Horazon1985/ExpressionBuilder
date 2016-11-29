@@ -243,7 +243,7 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawCurve2D(g);
-        if (this.pointsAreShowable) {
+        if (pointsAreShowable) {
             drawMousePointOnGraph(g);
         }
     }

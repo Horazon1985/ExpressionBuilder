@@ -255,7 +255,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         }
         convertVectorFieldToGraphicalVectorField();
 
-        if (this.pointsAreShowable) {
+        if (pointsAreShowable) {
             drawMousePointOnGraph(g);
         }
 

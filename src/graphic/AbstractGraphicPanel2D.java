@@ -35,7 +35,7 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     protected boolean movable = false;
 
-    protected boolean pointsAreShowable = true;
+    protected static boolean pointsAreShowable = true;
     protected int mouseCoordinateX = -1;
     protected int mouseCoordinateY = -1;
 
@@ -147,12 +147,12 @@ public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
         });
     }
 
-    public boolean getPointsAreShowable() {
-        return this.pointsAreShowable;
+    public static boolean getPointsAreShowable() {
+        return pointsAreShowable;
     }
 
-    public void setPointsAreShowable(boolean pointsAreShowable) {
-        this.pointsAreShowable = pointsAreShowable;
+    public static void setPointsAreShowable(boolean showable) {
+        pointsAreShowable = showable;
     }
 
     public void setSpecialPoints(double[][] specialPoints) {

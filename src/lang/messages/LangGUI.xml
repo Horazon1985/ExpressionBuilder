@@ -411,10 +411,10 @@
         <Russian>Отмена</Russian>
     </object>
     <object id = "GUI_GraphicOptionsDialogGUI_GRAPHIC_OPTIONS_GROUP_NAME">
-        <German>Grafikoptionen für 3D-Graphen</German>
-        <English>Graphic options for 3D-graphs</English>
-        <Ukrainian>Опції для тривимірних графіків</Ukrainian>
-        <Russian>Опции для трёхмерных графиков</Russian>
+        <German>Grafikoptionen für 2D- und 3D-Graphen</German>
+        <English>Graphic options for 2D- and 3D-graphs</English>
+        <Ukrainian>Опції для двовимірних та тривимірних графіків</Ukrainian>
+        <Russian>Опции для двумерных и трёхмерных графиков</Russian>
     </object>
     <object id = "GUI_GraphicOptionsDialogGUI_BACKGROUNDCOLOR_OPTION_BRIGHT">
         <German>Hintergrundfarbe: Weiß</German>
@@ -439,6 +439,18 @@
         <English>Presentation: Grid only</English>
         <Ukrainian>Зображення: Тільки решітка</Ukrainian>
         <Russian>Изображение: Только решётка</Russian>
+    </object>
+    <object id = "GUI_GraphicOptionsDialogGUI_SHOW_CURSOR_ON_GRAPH">
+        <German>Mauscursor an Graphen zeigen</German>
+        <English>Show mouse cursor on graphs</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
+    <object id = "GUI_GraphicOptionsDialogGUI_DO_NOT_SHOW_CURSOR_ON_GRAPH">
+        <German>Mauscursor an Graphen nicht zeigen</German>
+        <English>No mouse cursor on graphs</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
     </object>
     <!-- OutputDetailsGUI -->    
     <object id = "GUI_OutputDetailsGUI_INFO">

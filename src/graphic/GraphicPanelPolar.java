@@ -236,7 +236,9 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGraphPolar(g);
-        drawMousePointOnGraph(g);
+        if (pointsAreShowable) {
+            drawMousePointOnGraph(g);
+        }
     }
 
     @Override
@@ -317,7 +319,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
                                     new int[]{this.mouseCoordinateX, this.mouseCoordinateY})) {
                         indicesInPolarGraphWithMinimalDistance[i] = j;
                         minimalDistances[i] = computeDistanceOfPixels(convertToPixel(this.polarGraph2D.get(i)[j][0], this.polarGraph2D.get(i)[j][1]),
-                            new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
+                                new int[]{this.mouseCoordinateX, this.mouseCoordinateY});
                     }
                 }
 
