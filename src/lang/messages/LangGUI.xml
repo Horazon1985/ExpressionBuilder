@@ -443,14 +443,14 @@
     <object id = "GUI_GraphicOptionsDialogGUI_SHOW_CURSOR_ON_GRAPH">
         <German>Mauscursor an Graphen zeigen</German>
         <English>Show mouse cursor on graphs</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Показувати курсор миші на графіку</Ukrainian>
+        <Russian>Показывать курсор мыши на графике</Russian>
     </object>
     <object id = "GUI_GraphicOptionsDialogGUI_DO_NOT_SHOW_CURSOR_ON_GRAPH">
         <German>Mauscursor an Graphen nicht zeigen</German>
         <English>No mouse cursor on graphs</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Не показувати курсор миші на графіку</Ukrainian>
+        <Russian>Не показывать курсор мыши на графике</Russian>
     </object>
     <!-- OutputDetailsGUI -->    
     <object id = "GUI_OutputDetailsGUI_INFO">
