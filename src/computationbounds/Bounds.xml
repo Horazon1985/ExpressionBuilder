@@ -49,7 +49,7 @@
     <value>4</value>
   </object>
   <object id = "BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM">
-    <value>4</value>
+    <value>10</value>
   </object>
   <object id = "BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT">
     <value>1000</value>

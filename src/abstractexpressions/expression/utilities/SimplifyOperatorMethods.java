@@ -330,11 +330,80 @@ public abstract class SimplifyOperatorMethods {
                 break;
             case 4:
                 coefficients.add(ZERO);
-                coefficients.add(MINUS_ONE);
+                coefficients.add(MINUS_ONE.div(30));
                 coefficients.add(ZERO);
-                coefficients.add(ONE.div(3));
+                coefficients.add(ONE.div(THREE));
                 coefficients.add(ONE.div(TWO));
                 coefficients.add(ONE.div(5));
+                break;
+            case 5:
+                coefficients.add(ZERO);
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE.div(12));
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(5).div(12));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(6));
+                break;
+            case 6:
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(42));
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE.div(6));
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(7));
+                break;
+            case 7:
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(12));
+                coefficients.add(ZERO);
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(-7).div(24));
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(7).div(12));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(8));
+                break;
+            case 8:
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE.div(30));
+                coefficients.add(ZERO);
+                coefficients.add(TWO.div(9));
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(-7).div(15));
+                coefficients.add(ZERO);
+                coefficients.add(TWO.div(THREE));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(9));
+                break;
+            case 9:
+                coefficients.add(ZERO);
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(-3).div(20));
+                coefficients.add(ZERO);
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(-7).div(10));
+                coefficients.add(ZERO);
+                coefficients.add(THREE.div(4));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(10));
+                break;
+            case 10:
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(5).div(66));
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE.div(TWO));
+                coefficients.add(ZERO);
+                coefficients.add(ONE);
+                coefficients.add(ZERO);
+                coefficients.add(MINUS_ONE);
+                coefficients.add(ZERO);
+                coefficients.add(new Constant(5).div(6));
+                coefficients.add(ONE.div(TWO));
+                coefficients.add(ONE.div(11));
                 break;
             default:
                 break;
@@ -347,9 +416,6 @@ public abstract class SimplifyOperatorMethods {
     private static Expression getPolynomialFromCoefficients(ArrayList<Expression> coefficients, String var) {
         Expression polynomial = ZERO;
         for (int i = 0; i < coefficients.size(); i++) {
-            if (coefficients.get(i).equals(ZERO)) {
-                continue;
-            }
             polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
         }
         return polynomial;
