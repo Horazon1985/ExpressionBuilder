@@ -14,6 +14,8 @@ import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
+import exceptions.EvaluationException;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -295,19 +297,19 @@ public abstract class SimplifyOperatorMethods {
             n = ((Constant) ((BinaryOperation) summand).getRight()).getBigIntValue().intValue();
         }
 
-        ArrayList<Expression> coefficients = getPolynomialCoefficientsForSumsOfPowersOfIntegers(n);
-        Expression abstractPolynomial = getPolynomialFromCoefficients(coefficients, var);
+        ExpressionCollection coefficients = getPolynomialCoefficientsForSumsOfPowersOfIntegers(n);
+        Expression abstractPolynomial = SimplifyPolynomialMethods.getPolynomialFromCoefficients(coefficients, var);
         return abstractPolynomial.replaceVariable(var, upperLimit).sub(abstractPolynomial.replaceVariable(var, lowerLimit.sub(ONE)));
 
     }
 
-    private static ArrayList<Expression> getPolynomialCoefficientsForSumsOfPowersOfIntegers(int n) {
+    private static ExpressionCollection getPolynomialCoefficientsForSumsOfPowersOfIntegers(int n) {
 
         if (n <= 0 || n > ComputationBounds.BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM) {
-            return new ArrayList<>();
+            return new ExpressionCollection();
         }
 
-        ArrayList<Expression> coefficients = new ArrayList<>();
+        ExpressionCollection coefficients = new ExpressionCollection();
 
         switch (n) {
             case 1:
@@ -406,19 +408,56 @@ public abstract class SimplifyOperatorMethods {
                 coefficients.add(ONE.div(11));
                 break;
             default:
-                break;
+                coefficients = getCoefficientsForPolynomialSumExpression(n);
         }
 
         return coefficients;
 
     }
 
-    private static Expression getPolynomialFromCoefficients(ArrayList<Expression> coefficients, String var) {
-        Expression polynomial = ZERO;
-        for (int i = 0; i < coefficients.size(); i++) {
-            polynomial = polynomial.add(coefficients.get(i).mult(Variable.create(var).pow(i)));
+    private static ExpressionCollection getCoefficientsForPolynomialSumExpression(int n) {
+
+        if (n <= 1 || n > ComputationBounds.BOUND_OPERATOR_MAX_DEGREE_OF_POLYNOMIAL_INSIDE_SUM) {
+            return new ExpressionCollection();
         }
-        return polynomial;
+
+        ExpressionCollection coefficients = new ExpressionCollection();
+
+        try {
+            coefficients.put(n + 1, ONE.div(n + 1));
+            coefficients.put(n, ONE.div(TWO));
+            coefficients.put(0, ZERO);
+
+            Expression currentCoefficient;
+            for (int i = n - 1; i > 0; i--) {
+                currentCoefficient = ZERO;
+                for (int j = 0; j < n + 1 - i; j++) {
+                    if (j % 2 == 0) {
+                        currentCoefficient = currentCoefficient.add(getBinomialCoefficient(i + 1 + j, j + 2).mult(coefficients.get(i + 1 + j)));
+                    } else {
+                        currentCoefficient = currentCoefficient.sub(getBinomialCoefficient(i + 1 + j, j + 2).mult(coefficients.get(i + 1 + j)));
+                    }
+                }
+                currentCoefficient = currentCoefficient.div(i).simplify();
+                coefficients.put(i, currentCoefficient);
+            }
+            return coefficients;
+        } catch (EvaluationException e) {
+            // Sollte eigentlich NIE vorkommen.
+            return new ExpressionCollection();
+        }
+
+    }
+
+    private static Expression getBinomialCoefficient(int n, int k) {
+        if (n < 0 || k < 0 || k > n) {
+            return ZERO;
+        }
+        BigInteger binCoeff = BigInteger.ONE;
+        for (int i = 1; i <= k; i++) {
+            binCoeff = binCoeff.multiply(BigInteger.valueOf(n - i + 1)).divide(BigInteger.valueOf(i));
+        }
+        return new Constant(binCoeff);
     }
 
     /**
@@ -443,7 +482,8 @@ public abstract class SimplifyOperatorMethods {
     }
 
     /**
-     * Vereinfacht: sum(log(f(k)), k, m, n) = log(prod(f(k), k, m, n)), mit log = lg, ln.
+     * Vereinfacht: sum(log(f(k)), k, m, n) = log(prod(f(k), k, m, n)), mit log
+     * = lg, ln.
      */
     public static Expression simplifySumOfLogarithmicFunctions(Expression summand, String var, Expression lowerLimit, Expression upperLimit, TypeFunction logType) {
         if (!summand.isFunction(logType)) {
