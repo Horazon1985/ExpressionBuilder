@@ -399,6 +399,18 @@
         <Ukrainian>[0]. парамер оператора 'mod' має бути цілим числом.</Ukrainian>
         <Russian>[0]. параметр оператора 'mod' должен быть целым числом.</Russian>
     </object>
+    <object id = "EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER">
+        <German>Der [0]. Parameter im Operator 'modpow' muss eine ganze Zahl sein.</German>
+        <English>The [0]. parameter in operator 'modpow' must be an integer.</English>
+        <Ukrainian>[0]. парамер оператора 'modpow' має бути цілим числом.</Ukrainian>
+        <Russian>[0]. параметр оператора 'modpow' должен быть целым числом.</Russian>
+    </object>
+    <object id = "EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER">
+        <German>Der Ausdruck [0] ist keine ganze Zahl.</German>
+        <English>The expression [0] is not an integer.</English>
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>
+    </object>
     <object id = "EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS">
         <German>Die Anzahl der eingesetzten Funktionen muss mit der Anzahl der Parameter der Funktion übereinstimmen.</German>
         <English>The number of functions plugged in must be equal to the number of parameters of the function.</English>

@@ -10,6 +10,8 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
 import abstractexpressions.expression.integration.GeneralIntegralMethods;
+import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.utilities.SimplifyUtilities;
 import enums.TypeFractionSimplification;
 import exceptions.CancellationException;
 import java.lang.reflect.Field;
@@ -45,6 +47,7 @@ public class Operator extends Expression {
     public static final String PATTERN_MIN = "min(expr,expr+)";
     public static final String PATTERN_MOD = "mod(expr,expr)";
     public static final String PATTERN_MU = "mu(expr+)";
+    public static final String PATTERN_MODPOW = "modpow(expr,expr,expr)";
     public static final String PATTERN_PROD = "prod(expr,indet(!2,!3),expr,expr)";
     public static final String PATTERN_SIGMA = "sigma(expr+)";
     public static final String PATTERN_SUM = "sum(expr,indet(!2,!3),expr,expr)";
@@ -152,7 +155,7 @@ public class Operator extends Expression {
             }
         }
 
-        throw new ExpressionException("EB_Operator_INVALID_OPERATOR");
+        throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_INVALID_OPERATOR"));
 
     }
 
@@ -230,6 +233,9 @@ public class Operator extends Expression {
         }
         if (this.getType().equals(TypeOperator.mod)) {
             return simplifyBasicMod().evaluate();
+        }
+        if (this.getType().equals(TypeOperator.modpow)) {
+            return simplifyBasicModPow().evaluate();
         }
         if (this.getType().equals(TypeOperator.prod)) {
             return simplifyBasicProd().evaluate();
@@ -753,7 +759,7 @@ public class Operator extends Expression {
             }
         }
         return false;
-        
+
     }
 
     @Override
@@ -1061,7 +1067,7 @@ public class Operator extends Expression {
     }
 
     @Override
-    public int getMaximalNumberOfSummandsInExpansion(){
+    public int getMaximalNumberOfSummandsInExpansion() {
         return 1;
     }
 
@@ -1445,7 +1451,7 @@ public class Operator extends Expression {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
-            } else if (arguments[i].isConstant()) {
+            } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER", i + 1));
             }
         }
@@ -1467,8 +1473,7 @@ public class Operator extends Expression {
             }
         }
 
-        Object[] resultParamsAsArray = new Object[1];
-        return new Operator(this.type, resultParams.toArray(resultParamsAsArray));
+        return ArithmeticMethods.gcdSimplifyTrivial(resultParams);
 
     }
 
@@ -1553,7 +1558,7 @@ public class Operator extends Expression {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
-            } else if (arguments[i].isConstant()) {
+            } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER", i + 1));
             }
         }
@@ -1575,8 +1580,7 @@ public class Operator extends Expression {
             }
         }
 
-        Object[] resultParamsAsArray = new Object[1];
-        return new Operator(this.type, resultParams.toArray(resultParamsAsArray));
+        return ArithmeticMethods.lcmSimplifyTrivial(resultParams);
 
     }
 
@@ -1601,9 +1605,7 @@ public class Operator extends Expression {
         }
 
         Expression[] exprsPrevious = new Expression[exprs.length - 1];
-        for (int i = 0; i < exprs.length - 1; i++) {
-            exprsPrevious[i] = exprs[i];
-        }
+        System.arraycopy(exprs, 0, exprsPrevious, 0, exprs.length - 1);
 
         Expression maxPrevious = getMaxExplicitly(exprsPrevious);
         return maxPrevious.add(exprs[exprs.length - 1]).div(2).add(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
@@ -1631,9 +1633,7 @@ public class Operator extends Expression {
         }
 
         Expression[] exprsPrevious = new Expression[exprs.length - 1];
-        for (int i = 0; i < exprs.length - 1; i++) {
-            exprsPrevious[i] = exprs[i];
-        }
+        System.arraycopy(exprs, 0, exprsPrevious, 0, exprs.length - 1);
 
         Expression maxPrevious = getMinExplicitly(exprsPrevious);
         return maxPrevious.add(exprs[exprs.length - 1]).div(2).sub(maxPrevious.sub(exprs[exprs.length - 1]).abs().div(2));
@@ -1654,7 +1654,7 @@ public class Operator extends Expression {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
-            } else if (arguments[i].isConstant()) {
+            } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER", i + 1));
             }
         }
@@ -1663,9 +1663,90 @@ public class Operator extends Expression {
             Constant resultMod = new Constant(ArithmeticMethods.mod(integerArguments.get(0), integerArguments.get(1)));
             return resultMod;
         }
+        if (isIntegerValuedArithmeticExpression(arguments[0]) && arguments[1].equals(ONE)) {
+            // Spezialfall: a mod 1 = 0.
+            return ZERO;
+        }
+        if (isIntegerValuedArithmeticExpression(arguments[1]) && arguments[1].isAlwaysNegative()) {
+            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
+        }
 
-        return new Operator(this.type, arguments);
+        return new Operator(this.type, arguments, this.precise);
 
+    }
+
+    /**
+     * Vereinfacht den modpow-Operator, soweit es möglich ist.
+     *
+     * @throws EvaluationException
+     */
+    @SimplifyOperator(type = TypeOperator.modpow)
+    private Expression simplifyBasicModPow() throws EvaluationException {
+        Expression[] arguments = new Expression[3];
+        ArrayList<BigInteger> integerArguments = new ArrayList<>();
+        for (int i = 0; i < this.params.length; i++) {
+            arguments[i] = ((Expression) this.params[i]).simplify();
+            if (arguments[i].isIntegerConstant()) {
+                integerArguments.add(((Constant) arguments[i]).getBigIntValue());
+            } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
+                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER", i + 1));
+            }
+        }
+
+        if (integerArguments.isEmpty()) {
+            return new Operator(this.type, arguments, this.precise);
+        }
+
+        if (integerArguments.size() == this.params.length) {
+            return new Constant(ArithmeticMethods.modpow(integerArguments.get(0), integerArguments.get(1), integerArguments.get(2)));
+        }
+
+        Expression base = arguments[0];
+        Expression exponent = arguments[1];
+
+        if (!isIntegerValuedArithmeticExpression(base.pow(exponent))) {
+            throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER",
+                    base.pow(exponent)));
+        }
+
+        return new Operator(TypeOperator.mod, new Expression[]{arguments[0].pow(arguments[1]), arguments[2]}, this.precise);
+    }
+
+    private static boolean isIntegerValuedArithmeticExpression(Expression expr) {
+        if (!expr.isConstant()) {
+            return false;
+        }
+        if (expr.isIntegerConstant()) {
+            return true;
+        }
+        if (expr.isSum()) {
+            ExpressionCollection summands = SimplifyUtilities.getSummands(expr);
+            for (Expression summand : summands) {
+                if (!isIntegerValuedArithmeticExpression(summand)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        if (expr.isProduct()) {
+            ExpressionCollection factors = SimplifyUtilities.getFactors(expr);
+            for (Expression factor : factors) {
+                if (!isIntegerValuedArithmeticExpression(factor)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        if (expr.isDifference()) {
+            return isIntegerValuedArithmeticExpression(((BinaryOperation) expr).getLeft())
+                    && isIntegerValuedArithmeticExpression(((BinaryOperation) expr).getRight());
+        }
+        if (expr.isPower()) {
+            return isIntegerValuedArithmeticExpression(((BinaryOperation) expr).getLeft())
+                    && isIntegerValuedArithmeticExpression(((BinaryOperation) expr).getRight())
+                    && ((BinaryOperation) expr).getRight().isNonNegative();
+        }
+        return false;
     }
 
     /**

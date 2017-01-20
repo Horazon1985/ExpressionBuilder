@@ -1,5 +1,11 @@
 package abstractexpressions.expression.computation;
 
+import abstractexpressions.expression.classes.Constant;
+import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Operator;
+import abstractexpressions.expression.classes.TypeOperator;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import java.math.BigInteger;
@@ -125,11 +131,11 @@ public abstract class ArithmeticMethods {
         if (a.length == 1) {
             return a[0];
         } else {
-            BigInteger[] a_rest = new BigInteger[a.length - 1];
+            BigInteger[] aRest = new BigInteger[a.length - 1];
             for (int i = 1; i < a.length; i++) {
-                a_rest[i - 1] = a[i];
+                aRest[i - 1] = a[i];
             }
-            return a[0].gcd(gcd(a_rest));
+            return a[0].gcd(gcd(aRest));
         }
 
     }
@@ -139,28 +145,41 @@ public abstract class ArithmeticMethods {
         return gcd(a.toArray(result));
     }
 
+    public static Expression gcdSimplifyTrivial(ArrayList<Expression> a) {
+        for (Expression argument : a) {
+            if (argument.isIntegerConstant() && ((Constant) argument).getBigIntValue().abs().equals(BigInteger.ONE)) {
+                return ONE;
+            }
+        }
+        return new Operator(TypeOperator.gcd, a.toArray(new Object[1]));
+    }
+
     /**
      * Gibt den kgV von a und b zurück.
      */
     public static BigInteger lcm(BigInteger a, BigInteger b) {
+        if (a.equals(BigInteger.ZERO) && b.equals(BigInteger.ZERO)) {
+            return BigInteger.ZERO;
+        }
         return a.multiply(b).divide(a.gcd(b)).abs();
     }
 
     public static BigInteger lcm(BigInteger[] a) {
 
-        if (a.length == 1) {
-            return a[0].abs();
-        } else if (a.length == 2) {
-            return a[0].multiply(a[1]).divide(gcd(a)).abs();
-        } else {
-            BigInteger[] aRest = new BigInteger[a.length - 1];
-            for (int i = 1; i < a.length; i++) {
-                aRest[i - 1] = a[i];
-            }
-            BigInteger[] aReduced = new BigInteger[2];
-            aReduced[0] = a[0];
-            aReduced[1] = lcm(aRest);
-            return lcm(aReduced);
+        switch (a.length) {
+            case 1:
+                return a[0].abs();
+            case 2:
+                return lcm(a[0], a[1]);
+            default:
+                BigInteger[] aRest = new BigInteger[a.length - 1];
+                for (int i = 1; i < a.length; i++) {
+                    aRest[i - 1] = a[i];
+                }
+                BigInteger[] aReduced = new BigInteger[2];
+                aReduced[0] = a[0];
+                aReduced[1] = lcm(aRest);
+                return lcm(aReduced);
         }
 
     }
@@ -168,6 +187,20 @@ public abstract class ArithmeticMethods {
     public static BigInteger lcm(ArrayList<BigInteger> a) {
         BigInteger[] result = new BigInteger[a.size()];
         return lcm(a.toArray(result));
+    }
+
+    public static Expression lcmSimplifyTrivial(ArrayList<Expression> a) {
+        for (int i = 0; i < a.size(); i++) {
+            if (a.size() > 1 && a.get(i).isIntegerConstant() 
+                    && ((Constant) a.get(i)).getBigIntValue().abs().equals(BigInteger.ONE)) {
+                a.remove(i);
+                i--;
+            }
+            if (a.get(i).equals(ZERO)) {
+                return ZERO;
+            }
+        }
+        return new Operator(TypeOperator.gcd, a.toArray(new Object[1]));
     }
 
     /**
@@ -180,6 +213,16 @@ public abstract class ArithmeticMethods {
             throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
         }
         return a.mod(m);
+    }
+
+    public static BigInteger modpow(BigInteger a, BigInteger b, BigInteger m) throws EvaluationException {
+        if (b.compareTo(BigInteger.ZERO) <= 0) {
+            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MODPOW_IS_NON_POSITIVE"));
+        }
+        if (m.compareTo(BigInteger.ZERO) <= 0) {
+            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_THIRD_PARAMETER_IN_MODPOW_IS_NON_POSITIVE"));
+        }
+        return a.modPow(b, m);
     }
 
     /**
@@ -213,8 +256,8 @@ public abstract class ArithmeticMethods {
     }
 
     /**
-     * Liefert die größte Zahl b mit b^n &#8804; a. Falls die n-te Wurzel aus a also
-     * ganzzahlig ist, gilt b^n = a.
+     * Liefert die größte Zahl b mit b^n &#8804; a. Falls die n-te Wurzel aus a
+     * also ganzzahlig ist, gilt b^n = a.
      *
      * @throws EvaluationException
      */
