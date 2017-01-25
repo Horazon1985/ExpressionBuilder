@@ -1671,7 +1671,7 @@ public class Operator extends Expression {
             throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
         }
 
-        return new Operator(this.type, arguments, this.precise);
+        return new Operator(this.type, arguments);
 
     }
 
@@ -1845,7 +1845,7 @@ public class Operator extends Expression {
             arguments[i] = ((Expression) this.params[i]).simplifyBasic();
         }
 
-        Expression mu = new Operator(TypeOperator.mu, arguments);
+        Expression mu = new Operator(TypeOperator.mu, arguments, this.precise);
         Expression result = ZERO;
         for (Expression argument : arguments) {
             result = result.add(argument.sub(mu).pow(2));
@@ -1949,7 +1949,7 @@ public class Operator extends Expression {
             arguments[i] = ((Expression) this.params[i]).simplifyBasic();
         }
 
-        Expression mu = new Operator(TypeOperator.mu, arguments);
+        Expression mu = new Operator(TypeOperator.mu, arguments, this.precise);
         Expression result = ZERO;
         for (Expression argument : arguments) {
             result = result.add(argument.sub(mu).pow(2));

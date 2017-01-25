@@ -408,8 +408,8 @@
     <object id = "EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER">
         <German>Der Ausdruck [0] ist keine ganze Zahl.</German>
         <English>The expression [0] is not an integer.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>
+        <Ukrainian>Вираз [0] не є цілим числом.</Ukrainian>
+        <Russian>Выражение [0] не является целым числом.</Russian>
     </object>
     <object id = "EB_SelfDefinedFunction_INCORRECT_NUMBER_OF_INSERTED_FUNCTIONS">
         <German>Die Anzahl der eingesetzten Funktionen muss mit der Anzahl der Parameter der Funktion übereinstimmen.</German>
