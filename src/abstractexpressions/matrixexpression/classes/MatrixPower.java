@@ -7,12 +7,12 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
-import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixBinaryOperationMethods;
+import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsUtils;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixBinaryOperationUtils;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionalRelations;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
 import lang.translator.Translator;
 
 public class MatrixPower extends MatrixExpression {
@@ -177,8 +177,8 @@ public class MatrixPower extends MatrixExpression {
         }
         
         // Potenzen disgonalisierbarer Matrizen
-        if (this.left.isMatrix() && EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) this.left)) {
-            return SimplifyMatrixBinaryOperationMethods.simplifyPowerOfDiagonalizableMatrix((Matrix) this.left, this.right);
+        if (this.left.isMatrix() && EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) this.left)) {
+            return SimplifyMatrixBinaryOperationUtils.simplifyPowerOfDiagonalizableMatrix((Matrix) this.left, this.right);
         }
         
         return matExprSimplified;
@@ -387,7 +387,7 @@ public class MatrixPower extends MatrixExpression {
         MatrixExpression matExpr = new MatrixPower(this.left.simplifyMatrixFunctionalRelations(), this.right);
         MatrixExpression matExprSimplified;
 
-        matExprSimplified = SimplifyMatrixFunctionalRelations.simplifyDoublePowers(matExpr);
+        matExprSimplified = SimplifyMatrixFunctionalRelationsUtils.simplifyDoublePowers(matExpr);
         if (!matExprSimplified.equals(matExpr)) {
             return matExprSimplified;
         }

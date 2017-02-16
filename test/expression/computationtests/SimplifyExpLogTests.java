@@ -3,9 +3,9 @@ package expression.computationtests;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
-import abstractexpressions.expression.utilities.ExpressionCollection;
-import abstractexpressions.expression.utilities.SimplifyExpLog;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyExpLogUtils;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -34,7 +34,7 @@ public class SimplifyExpLogTests {
             Expression f = Expression.build("a*exp(x)*b*exp(y^2)", new HashSet<String>());
             Expression g = Expression.build("a*exp(x+y^2)*b", new HashSet<String>());
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-            SimplifyExpLog.collectExponentialFunctionsInProduct(factors);
+            SimplifyExpLogUtils.collectExponentialFunctionsInProduct(factors);
             Expression fNew = SimplifyUtilities.produceProduct(factors);
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException e){
@@ -49,7 +49,7 @@ public class SimplifyExpLogTests {
             Expression g = Expression.build("(a*exp(x+y^2-z)*b)/(c*d)", new HashSet<String>());
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
-            SimplifyExpLog.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
+            SimplifyExpLogUtils.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferencesAndQuotients();
             g = g.orderDifferencesAndQuotients();
             Assert.assertTrue(fNew.equivalent(g));

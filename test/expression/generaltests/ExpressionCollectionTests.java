@@ -7,7 +7,7 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.basic.ExpressionCollection;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertFalse;

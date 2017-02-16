@@ -10,9 +10,9 @@ import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.utilities.ExpressionCollection;
-import abstractexpressions.expression.utilities.SimplifyAlgebraicExpressionMethods;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyAlgebraicExpressionUtils;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import java.util.HashSet;
 import notations.NotationLoader;
 
@@ -534,7 +534,7 @@ public abstract class SubstitutionUtilities {
             } catch (NotSubstitutableException e) {
             }
         }
-        if (!k.isIntegerConstantOrRationalConstant() || !SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(k) || k.equals(ZERO)) {
+        if (!k.isIntegerConstantOrRationalConstant() || !SimplifyAlgebraicExpressionUtils.isAdmissibleExponent(k) || k.equals(ZERO)) {
             for (int i = 0; i < factorsDenominatorF.getBound(); i++) {
                 try {
                     k = getExponentIfIsPositiveIntegerPower(firstNonConstantFactorInSubstitution, factorsDenominatorF.get(i)).simplify();
@@ -546,7 +546,7 @@ public abstract class SubstitutionUtilities {
                 }
             }
         }
-        if (!k.isIntegerConstantOrRationalConstant() || !SimplifyAlgebraicExpressionMethods.isAdmissibleExponent(k) || k.equals(ZERO)) {
+        if (!k.isIntegerConstantOrRationalConstant() || !SimplifyAlgebraicExpressionUtils.isAdmissibleExponent(k) || k.equals(ZERO)) {
             ExpressionCollection substitutedFactorsLeft = new ExpressionCollection();
             ExpressionCollection substitutedFactorsRight = new ExpressionCollection();
             Expression substitutedFactor;

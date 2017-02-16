@@ -1,7 +1,7 @@
 package abstractexpressions.matrixexpression.classes;
 
 import abstractexpressions.annotations.SimplifyMatrixOperator;
-import abstractexpressions.expression.computation.AnalysisMethods;
+import abstractexpressions.expression.computation.AnalysisUtils;
 import computationbounds.ComputationBounds;
 import enums.TypeSimplify;
 import exceptions.EvaluationException;
@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Iterator;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixOperatorMethods;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixOperatorUtils;
 import exceptions.CancellationException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -967,7 +967,7 @@ public class MatrixOperator extends MatrixExpression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man das Produkt explizit ausschreiben.
-                return AnalysisMethods.prod(factor, (String) this.params[1], lowerLimit, upperLimit);
+                return AnalysisUtils.prod(factor, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }
@@ -1040,7 +1040,7 @@ public class MatrixOperator extends MatrixExpression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
-                return AnalysisMethods.sum(summand, (String) this.params[1], lowerLimit, upperLimit);
+                return AnalysisUtils.sum(summand, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }
@@ -1052,7 +1052,7 @@ public class MatrixOperator extends MatrixExpression {
 
         // Summen von Summen oder Differenzen aufteilen.
         if (summand.isSum() || summand.isDifference()) {
-            return SimplifyMatrixOperatorMethods.splitSumOfSumsOrDifferences((MatrixBinaryOperation) summand, (String) this.params[1],
+            return SimplifyMatrixOperatorUtils.splitSumOfSumsOrDifferences((MatrixBinaryOperation) summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 

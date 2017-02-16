@@ -1,13 +1,13 @@
 package abstractexpressions.expression.classes;
 
-import abstractexpressions.expression.utilities.ExpressionCollection;
+import abstractexpressions.expression.basic.ExpressionCollection;
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
-import abstractexpressions.expression.utilities.SimplifyExpLog;
-import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
-import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
-import abstractexpressions.expression.utilities.SimplifyTrigonometry;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.SimplifyExpLogUtils;
+import abstractexpressions.expression.basic.SimplifyFunctionUtils;
+import abstractexpressions.expression.basic.SimplifyFunctionalRelationsUtils;
+import abstractexpressions.expression.basic.SimplifyTrigonometryUtils;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.math.BigDecimal;
@@ -761,56 +761,56 @@ public class Function extends Expression {
         Expression functionSimplified;
 
         // Konstante Funktionswerte im Approximationsmodus approximieren.
-        functionSimplified = SimplifyFunctionMethods.approxConstantExpression(function);
+        functionSimplified = SimplifyFunctionUtils.approxConstantExpression(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Prüfen, ob gewisse Funktionswerte definiert sind.
-        functionSimplified = SimplifyFunctionMethods.checkIfFunctionValueDefined(function);
+        functionSimplified = SimplifyFunctionUtils.checkIfFunctionValueDefined(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // id(x) zu x vereinfachen
-        functionSimplified = SimplifyFunctionMethods.simplifyIdentity(function);
+        functionSimplified = SimplifyFunctionUtils.simplifyIdentity(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Kompositionen bestimmter Funktionen vereinfachen.
-        functionSimplified = SimplifyFunctionMethods.simplifyCompositionOfTwoFunctions(this.type, argumentSimplified);
+        functionSimplified = SimplifyFunctionUtils.simplifyCompositionOfTwoFunctions(this.type, argumentSimplified);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Logarithmen und Exponentialfunktionen behandeln.
-        functionSimplified = SimplifyExpLog.reduceExpOfSumsOfLn(function);
+        functionSimplified = SimplifyExpLogUtils.reduceExpOfSumsOfLn(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyExpLog.reduceExpOfDifferencesOfLn(function);
+        functionSimplified = SimplifyExpLogUtils.reduceExpOfDifferencesOfLn(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyExpLog.reduceLnOfProductsOfExp(function);
+        functionSimplified = SimplifyExpLogUtils.reduceLnOfProductsOfExp(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyExpLog.reduceLnOfQuotientsOfExp(function);
+        functionSimplified = SimplifyExpLogUtils.reduceLnOfQuotientsOfExp(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyExpLog.reduceLgOfProductsOfPowersOf10(function);
+        functionSimplified = SimplifyExpLogUtils.reduceLgOfProductsOfPowersOf10(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyExpLog.reduceLgOfQuotientsOfPowersOf10(function);
+        functionSimplified = SimplifyExpLogUtils.reduceLgOfQuotientsOfPowersOf10(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
@@ -820,18 +820,18 @@ public class Function extends Expression {
          Versucht, in einfachen Fällen den Betrag genau anzugeben (d.h. zu
          entscheiden, ob |x| = x oder ob |x| = -x gilt).
          */
-        functionSimplified = SimplifyFunctionMethods.computeAbsIfExpressionIsConstant(function);
+        functionSimplified = SimplifyFunctionUtils.computeAbsIfExpressionIsConstant(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Falls das Argument immer negativ oder immer nichtnegativ ist, dann einfach das Argument zurückgeben.
-        functionSimplified = SimplifyFunctionMethods.computeAbsIfExpressionIsAlwaysNonNegative(function);
+        functionSimplified = SimplifyFunctionUtils.computeAbsIfExpressionIsAlwaysNonNegative(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyFunctionMethods.computeAbsIfExpressionIsAlwaysNonPositive(function);
+        functionSimplified = SimplifyFunctionUtils.computeAbsIfExpressionIsAlwaysNonPositive(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
@@ -840,65 +840,65 @@ public class Function extends Expression {
          Versucht, in einfachen Fällen das Signum genau anzugeben (d.h. zu
          entscheiden, ob sgn(x) = 1, 0 oder -1 gilt).
          */
-        functionSimplified = SimplifyFunctionMethods.computeSgnIfExpressionIsConstant(function);
+        functionSimplified = SimplifyFunctionUtils.computeSgnIfExpressionIsConstant(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyFunctionMethods.computeSgnIfExpressionIsAlwaysPositive(function);
+        functionSimplified = SimplifyFunctionUtils.computeSgnIfExpressionIsAlwaysPositive(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyFunctionMethods.computeSgnIfExpressionIsAlwaysNegative(function);
+        functionSimplified = SimplifyFunctionUtils.computeSgnIfExpressionIsAlwaysNegative(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Gerade Potenzen aus Produkten in abs() herausziehen
-        functionSimplified = SimplifyFunctionalRelations.takeEvenPowersOutOfProductsInAbs(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.takeEvenPowersOutOfProductsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Gerade Potenzen aus Quotienten in abs() herausziehen
-        functionSimplified = SimplifyFunctionalRelations.takeEvenPowersOutOfQuotientsInAbs(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.takeEvenPowersOutOfQuotientsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Konstanten aus Produkten in abs() herausziehen.
-        functionSimplified = SimplifyFunctionalRelations.takeConstantsOutOfProductsInAbs(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.takeConstantsOutOfProductsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Konstanten aus Quotienten in abs() herausziehen.
-        functionSimplified = SimplifyFunctionalRelations.takeConstantsOutOfQuotientsInAbs(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.takeConstantsOutOfQuotientsInAbs(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Gerade Potenzen in Produkten in sgn() beseitigen
-        functionSimplified = SimplifyFunctionalRelations.removeSpecialPowersInProductsInSgn(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.removeSpecialPowersInProductsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Gerade Potenzen in Quotienten in sgn() beseitigen
-        functionSimplified = SimplifyFunctionalRelations.removeSpecialPowersInQuotientsInSgn(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.removeSpecialPowersInQuotientsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Konstanten aus Produkten in sgn() beseitigen.
-        functionSimplified = SimplifyFunctionalRelations.removeConstantsInProductsInSgn(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.removeConstantsInProductsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
 
         // Konstanten aus Quotienten in sgn() beseitigen.
-        functionSimplified = SimplifyFunctionalRelations.removeConstantsInQuotientsInSgn(function);
+        functionSimplified = SimplifyFunctionalRelationsUtils.removeConstantsInQuotientsInSgn(function);
         if (!functionSimplified.equals(this)) {
             return functionSimplified;
         }
@@ -907,7 +907,7 @@ public class Function extends Expression {
          Anwendung der Funktionalgleichung f(-x) = -f(x) bzw. f(-x) = f(x) für
          bestimmte Funktionen f. Beispielsweise wird cos(-x) = cos(x) etc.
          */
-        functionSimplified = SimplifyFunctionMethods.simplifySymetricAndAntisymmetricFunctions(function);
+        functionSimplified = SimplifyFunctionUtils.simplifySymetricAndAntisymmetricFunctions(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
@@ -916,13 +916,13 @@ public class Function extends Expression {
          Vereinfachung bestimmter Funktionswerte f(0). Beispielsweise wird
          sin(0) = 0, cos(0) = 1, exp(0) = 1 etc.
          */
-        functionSimplified = SimplifyFunctionMethods.simplifySpecialValuesOfFunctions(function);
+        functionSimplified = SimplifyFunctionUtils.simplifySpecialValuesOfFunctions(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Subtraktion ganzer Vielfacher von Pi in Argumenten von trigonometrischen Funtionen.
-        functionSimplified = SimplifyTrigonometry.reduceSineCosineSecansCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
+        functionSimplified = SimplifyTrigonometryUtils.reduceSineCosineSecansCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
@@ -930,85 +930,85 @@ public class Function extends Expression {
         /* Identitäten von der Bauart sin(x+pi/2) = cos(x), sin(x+3*pi/2) = -cos(x) etc.
          Funktionstypen hierfür: sin, cos, sec, cosec.
          */
-        functionSimplified = SimplifyTrigonometry.interchangeSineWithCosineAndSecansWithCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
+        functionSimplified = SimplifyTrigonometryUtils.interchangeSineWithCosineAndSecansWithCosecansIfArgumentContainsSummandOfMultipleOfPi(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
-        functionSimplified = SimplifyTrigonometry.reduceTangentCotangentIfArgumentContainsSummandOfMultipleOfPi(function);
+        functionSimplified = SimplifyTrigonometryUtils.reduceTangentCotangentIfArgumentContainsSummandOfMultipleOfPi(function);
         if (!functionSimplified.equals(function)) {
             return functionSimplified;
         }
 
         // Vereinfachung von speziellen konstanten trigonometrischen Ausdrücken.
         if (function.getType().equals(TypeFunction.sin)) {
-            functionSimplified = SimplifyTrigonometry.reduceSine(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceSine(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.cos)) {
-            functionSimplified = SimplifyTrigonometry.reduceCosine(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceCosine(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.tan)) {
-            functionSimplified = SimplifyTrigonometry.reduceTangent(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceTangent(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.cot)) {
-            functionSimplified = SimplifyTrigonometry.reduceCotangent(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceCotangent(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.sec)) {
-            functionSimplified = SimplifyTrigonometry.reduceSecans(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceSecans(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.cosec)) {
-            functionSimplified = SimplifyTrigonometry.reduceCosecans(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceCosecans(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arcsin)) {
-            functionSimplified = SimplifyTrigonometry.reduceArcsine(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArcsine(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arccos)) {
-            functionSimplified = SimplifyTrigonometry.reduceArccosine(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArccosine(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arctan)) {
-            functionSimplified = SimplifyTrigonometry.reduceArctangent(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArctangent(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arccot)) {
-            functionSimplified = SimplifyTrigonometry.reduceArccotangent(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArccotangent(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arcsec)) {
-            functionSimplified = SimplifyTrigonometry.reduceArcsecans(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArcsecans(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
         }
         if (function.getType().equals(TypeFunction.arccosec)) {
-            functionSimplified = SimplifyTrigonometry.reduceArccosecans(function);
+            functionSimplified = SimplifyTrigonometryUtils.reduceArccosecans(function);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
@@ -1087,10 +1087,10 @@ public class Function extends Expression {
     public Expression simplifyFunctionalRelations() throws EvaluationException {
         Function functionSimplified = new Function(this.left.simplifyFunctionalRelations(), this.type);
         if (functionSimplified.type.equals(TypeFunction.abs)) {
-            return SimplifyFunctionalRelations.reduceAbsOfQuotientIfNumeratorHasFixedSign(functionSimplified);
+            return SimplifyFunctionalRelationsUtils.reduceAbsOfQuotientIfNumeratorHasFixedSign(functionSimplified);
         }
         if (functionSimplified.type.equals(TypeFunction.sgn)) {
-            return SimplifyFunctionalRelations.reduceSgnOfQuotientIfNumeratorHasFixedSign(functionSimplified);
+            return SimplifyFunctionalRelationsUtils.reduceSgnOfQuotientIfNumeratorHasFixedSign(functionSimplified);
         }
         return functionSimplified;
     }
@@ -1121,17 +1121,17 @@ public class Function extends Expression {
         if (this.type.equals(TypeFunction.lg) || this.type.equals(TypeFunction.ln)) {
 
             // Vereinfacht ln(1/x) zu -ln(x) und lg(1/x) zu -lg(x).
-            Expression functionSimplified = SimplifyExpLog.reduceLogarithmOfReciprocal(function.getLeft(), this.type);
+            Expression functionSimplified = SimplifyExpLogUtils.reduceLogarithmOfReciprocal(function.getLeft(), this.type);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
 
-            functionSimplified = SimplifyExpLog.expandLogarithms(function.getLeft(), this.type);
+            functionSimplified = SimplifyExpLogUtils.expandLogarithms(function.getLeft(), this.type);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }
 
-            functionSimplified = SimplifyExpLog.expandLogarithmOfProduct(function.getLeft(), this.type);
+            functionSimplified = SimplifyExpLogUtils.expandLogarithmOfProduct(function.getLeft(), this.type);
             if (!functionSimplified.equals(function)) {
                 return functionSimplified;
             }

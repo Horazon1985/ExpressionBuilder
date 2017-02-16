@@ -2,7 +2,7 @@ package abstractexpressions.expression.classes;
 
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
-import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
+import abstractexpressions.expression.basic.SimplifyBinaryOperationUtils;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -288,7 +288,7 @@ public class Constant extends Expression {
     @Override
     public Expression simplifyBasic() throws EvaluationException {
         if (this.precise) {
-            return SimplifyBinaryOperationMethods.constantToQuotient(this.value, BigDecimal.ONE);
+            return SimplifyBinaryOperationUtils.constantToQuotient(this.value, BigDecimal.ONE);
         }
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
             throw new EvaluationException(Translator.translateOutputMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));

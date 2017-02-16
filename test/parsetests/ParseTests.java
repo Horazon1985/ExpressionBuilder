@@ -4,8 +4,6 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
-import command.Command;
-import command.TypeCommand;
 import java.util.ArrayList;
 import operationparser.OperationParser;
 import operationparser.ParameterPattern;

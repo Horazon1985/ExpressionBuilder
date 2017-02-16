@@ -1,18 +1,18 @@
 package abstractexpressions.expression.classes;
 
-import abstractexpressions.expression.computation.ArithmeticMethods;
+import abstractexpressions.expression.computation.ArithmeticUtils;
 import computationbounds.ComputationBounds;
 import enums.TypeExpansion;
 import enums.TypeSimplify;
 import exceptions.EvaluationException;
-import abstractexpressions.expression.utilities.ExpressionCollection;
-import abstractexpressions.expression.utilities.SimplifyAlgebraicExpressionMethods;
-import abstractexpressions.expression.utilities.SimplifyBinaryOperationMethods;
-import abstractexpressions.expression.utilities.SimplifyExpLog;
-import abstractexpressions.expression.utilities.SimplifyFunctionMethods;
-import abstractexpressions.expression.utilities.SimplifyFunctionalRelations;
-import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyAlgebraicExpressionUtils;
+import abstractexpressions.expression.basic.SimplifyBinaryOperationUtils;
+import abstractexpressions.expression.basic.SimplifyExpLogUtils;
+import abstractexpressions.expression.basic.SimplifyFunctionUtils;
+import abstractexpressions.expression.basic.SimplifyFunctionalRelationsUtils;
+import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -1032,7 +1032,7 @@ public class BinaryOperation extends Expression {
                 && ((Constant) this.right).getBigIntValue().compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL)) <= 0) {
             int exponent = ((Constant) this.right).getBigIntValue().intValue();
             int numberOfSummandsInBase = this.left.getMaximalNumberOfSummandsInExpansion();
-            BigInteger numberOfSummandsInResult = ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
+            BigInteger numberOfSummandsInResult = ArithmeticUtils.factorial(numberOfSummandsInBase - 1 + exponent).divide(ArithmeticUtils.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticUtils.factorial(exponent)));
 
             if (numberOfSummandsInResult.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
                 return Integer.MAX_VALUE;
@@ -1062,14 +1062,14 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = new ExpressionCollection();
 
             // Nullen in Summen beseitigen.
-            SimplifyBinaryOperationMethods.removeZerosInSums(summandsLeft);
+            SimplifyBinaryOperationUtils.removeZerosInSums(summandsLeft);
 
             // Summanden mit negativen Koeffizienten in den Subtrahenden bringen.
-            SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (this.isConstant() && this.containsApproximates()) {
-                SimplifyBinaryOperationMethods.computeSumIfApprox(summandsLeft, summandsRight);
+                SimplifyBinaryOperationUtils.computeSumIfApprox(summandsLeft, summandsRight);
             }
 
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
@@ -1083,7 +1083,7 @@ public class BinaryOperation extends Expression {
             expr = (BinaryOperation) exprLeftAndRightSimplified;
 
             // Triviale Umformungen
-            Expression exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInDifferenceWithZeroOne(expr);
+            Expression exprSimplified = SimplifyBinaryOperationUtils.trivialOperationsInDifferenceWithZeroOne(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
@@ -1092,14 +1092,14 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(exprSimplified);
 
             // Brüche subtrahieren
-            SimplifyBinaryOperationMethods.subtractFractions(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.subtractFractions(summandsLeft, summandsRight);
 
             // Summanden mit negativen Koeffizienten in den in jeweils anderen Teil herübertragen.
-            SimplifyBinaryOperationMethods.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifySumsAndDifferencesWithNegativeCoefficient(summandsLeft, summandsRight);
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (this.isConstant() && this.containsApproximates()) {
-                return SimplifyBinaryOperationMethods.computeDifferenceIfApprox(SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
+                return SimplifyBinaryOperationUtils.computeDifferenceIfApprox(SimplifyUtilities.produceDifference(summandsLeft, summandsRight));
             }
 
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
@@ -1117,20 +1117,20 @@ public class BinaryOperation extends Expression {
             }
 
             // Falls Nullen in Produkten auftauchen: 0 zurückgeben.
-            SimplifyBinaryOperationMethods.reduceProductWithZeroToZero(factors);
+            SimplifyBinaryOperationUtils.reduceProductWithZeroToZero(factors);
 
             // Einsen in Produkten beseitigen.
-            SimplifyBinaryOperationMethods.removeOnesInProducts(factors);
+            SimplifyBinaryOperationUtils.removeOnesInProducts(factors);
 
             /* 
              Falls in den Faktoren Summen / Differenzen auftauchen, in denen die 
              Summanden alle negatives Vorzeichen besitzen: -1 ausklammern!
              */
-            SimplifyBinaryOperationMethods.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factors, new ExpressionCollection());
+            SimplifyBinaryOperationUtils.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factors, new ExpressionCollection());
 
             // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (this.isConstant() && this.containsApproximates()) {
-                SimplifyBinaryOperationMethods.computeProductIfApprox(factors);
+                SimplifyBinaryOperationUtils.computeProductIfApprox(factors);
             }
 
             return SimplifyUtilities.produceProduct(factors);
@@ -1145,38 +1145,38 @@ public class BinaryOperation extends Expression {
             Expression exprSimplified;
 
             // Triviale Umformungen
-            exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInQuotientWithZeroOne(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.trivialOperationsInQuotientWithZeroOne(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
 
             // Division durch 0 im Approximationsmodus ausschließen, sonst dividieren.
-            exprSimplified = SimplifyBinaryOperationMethods.computeReciprocalInApprox(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.computeReciprocalInApprox(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
 
             // Negatives Vorzeichen aus dem Nenner in den Zähler bringen.
-            exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfDenominatorInFraction(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.takeMinusSignOutOfDenominatorInFraction(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
 
             // Rationale Konstanten zu einem Bruch machen (etwa 0.74/0.2 = 37/10)
-            exprSimplified = SimplifyBinaryOperationMethods.rationalConstantToQuotient(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.rationalConstantToQuotient(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
 
             // Negative Zähler eliminieren.
-            exprSimplified = SimplifyBinaryOperationMethods.eliminateNegativeDenominator(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.eliminateNegativeDenominator(expr);
             if (!exprSimplified.equals(expr)) {
                 return exprSimplified;
             }
 
             // Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
             if (expr.isConstant() && expr.containsApproximates()) {
-                return SimplifyBinaryOperationMethods.computeQuotientIfApprox(expr);
+                return SimplifyBinaryOperationUtils.computeQuotientIfApprox(expr);
             }
 
             /* 
@@ -1186,7 +1186,7 @@ public class BinaryOperation extends Expression {
              */
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(expr);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
-            SimplifyBinaryOperationMethods.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factorsEnumerator, factorsDenominator);
+            SimplifyBinaryOperationUtils.pullMinusSignFromProductOrQuotientsWithCompleteNegativeSums(factorsEnumerator, factorsDenominator);
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
 
         }
@@ -1199,7 +1199,7 @@ public class BinaryOperation extends Expression {
          werden. Daher, wenn expr eine ungerade Wurzeln darstellt: negatives
          Vorzeichen rausschaffen!
          */
-        Expression exprSimplified = SimplifyBinaryOperationMethods.computeOddRootOfNegativeConstantsInApprox(this);
+        Expression exprSimplified = SimplifyBinaryOperationUtils.computeOddRootOfNegativeConstantsInApprox(this);
         if (!exprSimplified.equals(this)) {
             return exprSimplified;
         }
@@ -1212,25 +1212,25 @@ public class BinaryOperation extends Expression {
 
         // Nun folgen Vereinfachungen von Potenzen und Wurzeln konstanter Ausdrücke, soweit möglich.
         // Berechnung ganzzahliger Potenzen ganzer Zahlen.
-        exprSimplified = SimplifyBinaryOperationMethods.computePowersOfIntegers(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.computePowersOfIntegers(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Berechnung ganzzahliger Potenzen von Brüchen.
-        exprSimplified = SimplifyBinaryOperationMethods.computePowersOfFractions(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.computePowersOfFractions(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Triviale Umformungen
-        exprSimplified = SimplifyBinaryOperationMethods.trivialOperationsInPowerWithZeroOne(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.trivialOperationsInPowerWithZeroOne(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Macht z.B. (5/7)^(4/3) = (5/7)*(5/7)^(1/3) = 5*(5/7)^(1/3)/7
-        exprSimplified = SimplifyBinaryOperationMethods.separateIntegerPowersOfRationalConstants(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.separateIntegerPowersOfRationalConstants(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -1239,74 +1239,74 @@ public class BinaryOperation extends Expression {
          Negative Vorzeichen in der Basis eliminieren, wenn Exponent die Form m/n mit m gerade und n ungerade besitzt.
          Sind m und n beide ungerade, so wird das Vorzeichen herausgezogen. 
          */
-        exprSimplified = SimplifyBinaryOperationMethods.takeMinusSignOutOfOddRoots(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.takeMinusSignOutOfOddRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Prüfen, ob Wurzeln gerader Ordnung aus negativen Konstanten gezogen werden.
-        exprSimplified = SimplifyBinaryOperationMethods.checkNegativityOfBaseInRootsOfEvenDegree(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.checkNegativityOfBaseInRootsOfEvenDegree(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Versuchen, Wurzeln (z.B. in Quotienten oder von ganzen Zahlen) zum Teil exakt anzugeben.
-        exprSimplified = SimplifyBinaryOperationMethods.tryTakePartialRootsPrecisely(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.tryTakePartialRootsPrecisely(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Versuchen, ganzzahlige Anteile von Exponenten abzuspalten.
-        exprSimplified = SimplifyBinaryOperationMethods.separateIntegerPowersOfRationalConstants(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.separateIntegerPowersOfRationalConstants(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Vereinfache Potenzen von Quotienten, falls im Zähler oder im Nenner ganze Zahlen auftauchen.
-        exprSimplified = SimplifyBinaryOperationMethods.simplifyPowerOfQuotient(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.simplifyPowerOfQuotient(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Vereinfacht: (a/b)^(-k) = (b/a)^k
-        exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfQuotientsToReciprocal(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.negativePowersOfQuotientsToReciprocal(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Vereinfacht Folgendes (1/x)^y = 1/x^y.
-        exprSimplified = SimplifyBinaryOperationMethods.simplifyPowersOfReciprocals(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.simplifyPowersOfReciprocals(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Negative Potenzen in den Nenner: x^y = 1/x^(-y), falls y < 0. 
-        exprSimplified = SimplifyBinaryOperationMethods.negativePowersOfExpressionsToReciprocal(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.negativePowersOfExpressionsToReciprocal(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // (a^x)^y = a^(x*y)
-        exprSimplified = SimplifyBinaryOperationMethods.simplifyDoublePowers(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.simplifyDoublePowers(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // exp(x)^y = exp(x*y)
-        exprSimplified = SimplifyBinaryOperationMethods.simplifyPowersOfExpFunction(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.simplifyPowersOfExpFunction(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Vereinfacht Potenzen von Beträgen.
-        exprSimplified = SimplifyBinaryOperationMethods.simplifyPowersOfAbs(expr);
+        exprSimplified = SimplifyBinaryOperationUtils.simplifyPowersOfAbs(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Schließlich: Falls der Ausdruck konstant ist und approximiert wird, direkt auswerten.
         if (expr.isConstant() && expr.containsApproximates()) {
-            return SimplifyBinaryOperationMethods.computePowerIfApprox(expr);
+            return SimplifyBinaryOperationUtils.computePowerIfApprox(expr);
         }
 
         return expr;
@@ -1388,12 +1388,12 @@ public class BinaryOperation extends Expression {
     @Override
     public Expression simplifyExpand(TypeExpansion type) throws EvaluationException {
 
-        Expression expr = this, exprExpanded = SimplifyBinaryOperationMethods.simplifySingleExpand(this, type);
+        Expression expr = this, exprExpanded = SimplifyBinaryOperationUtils.simplifySingleExpand(this, type);
 
         // Es wird solange ausmultipliziert, bis keine weitere Ausmultiplikation mehr möglich ist.
         while (!expr.equals(exprExpanded)) {
             expr = exprExpanded.copy();
-            exprExpanded = SimplifyBinaryOperationMethods.simplifySingleExpand(expr, type);
+            exprExpanded = SimplifyBinaryOperationUtils.simplifySingleExpand(expr, type);
         }
 
         return expr;
@@ -1437,12 +1437,12 @@ public class BinaryOperation extends Expression {
             return expr;
         }
 
-        Expression exprSimplified = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator(expr);
+        Expression exprSimplified = SimplifyBinaryOperationUtils.bringExpressionToCommonDenominator(expr);
 
         // Es wird solange auf einen Nenner gebracht, bis dies nicht mehr möglich ist.
         while (!expr.equals(exprSimplified)) {
             expr = exprSimplified.copy();
-            exprSimplified = SimplifyBinaryOperationMethods.bringExpressionToCommonDenominator(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.bringExpressionToCommonDenominator(expr);
         }
 
         return expr;
@@ -1504,7 +1504,7 @@ public class BinaryOperation extends Expression {
              Prüft, ob man beispielsweise flgendermaßen kürzen kann: 10*x*(1/6 + y/14)
              = 5*x*(1/3 + y/7).
              */
-            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(factors);
+            SimplifyBinaryOperationUtils.pullGCDOfCoefficientsInProducts(factors);
 
             return SimplifyUtilities.produceProduct(factors);
         } else if (this.isPower()) {
@@ -1533,8 +1533,8 @@ public class BinaryOperation extends Expression {
         // Nun das eigentliche Kürzen!
         if (this.isDifference()) {
 
-            SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifferenceInApprox(termsLeft, termsRight);
-            SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInDifference(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceLeadingCoefficientsInDifferenceInApprox(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceLeadingCoefficientsInDifference(termsLeft, termsRight);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(termsLeft, termsRight);
@@ -1542,50 +1542,50 @@ public class BinaryOperation extends Expression {
         } else {
 
             // Vereinfachungen, bei den im Quotienten die FAKTOREN im Zähler und Nenner eine Rolle spielen.
-            SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInQuotientInApprox(termsLeft, termsRight);
-            SimplifyBinaryOperationMethods.reduceLeadingCoefficientsInQuotient(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceLeadingCoefficientsInQuotientInApprox(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceLeadingCoefficientsInQuotient(termsLeft, termsRight);
 
             /*
              Prüft, ob man beispielsweise flgendermaßen kürzen kann: x*(10*a +
              25*b)*y/(35*c - 20*d) = x*(2*a + 5*b)*y/(7*c - 4*d).
              */
-            SimplifyBinaryOperationMethods.reduceGCDInQuotient(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceGCDInQuotient(termsLeft, termsRight);
 
             /*
              Prüft im Zähler und im Nenner, ob man beispielsweise flgendermaßen 
              kürzen kann: 10*x*(1/6 + y/14) = 5*x*(1/3 + y/7).
              */
-            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(termsLeft);
-            SimplifyBinaryOperationMethods.pullGCDOfCoefficientsInProducts(termsRight);
+            SimplifyBinaryOperationUtils.pullGCDOfCoefficientsInProducts(termsLeft);
+            SimplifyBinaryOperationUtils.pullGCDOfCoefficientsInProducts(termsRight);
 
             /*
              Prüft, ob sich ganze Ausdrücke zu einer Konstanten kürzen lassen,
              etwa (5*a + 7*b)/(15*a + 21*b) = 1/3, (x - 3*y)/(12*y - 4*x) =
              -1/4 etc.
              */
-            SimplifyBinaryOperationMethods.reduceFactorsInNumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceFactorsInNumeratorAndFactorInDenominatorToConstant(termsLeft, termsRight);
 
             /*
              Prüft, ob sich (ganzzahlige Potenzen von) Ausdrücken aus Brüchen kürzen lassen, d.h. ob z.B. 
              (x^2*y + z*x^3)/(2*x - x^4) zu (x*y + z*x^2)/(2 - x^3) vereinfacht werden kann.
              */
-            SimplifyBinaryOperationMethods.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceSameExpressionInAllSummandsInQuotient(termsLeft, termsRight);
 
             /*
              Prüft, ob für RATIONALE Polynome (von nicht allzu hohem Grad) im Zähler und Nenner gekürzt werden können.
              */
-            SimplifyBinaryOperationMethods.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reducePolynomialFactorsInNumeratorAndDenominatorByGCD(termsLeft, termsRight);
 
             /*
              Prüft, ob bei (ganzzahlige Potenzen von) Ausdrücken aus Brüchen prinzipiell gekürzt werden kann, z. B. wird
              (ab^3+a^2)/(b^3+a) zu a gekürzt.
              */
-            SimplifyBinaryOperationMethods.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceGeneralFractionToNonFractionInQuotient(termsLeft, termsRight);
 
             /*
             Kürzen von Fakultäten mit ganzzahligen Differenzen (z.B. (x+3)!/x! = (x+1)*(x+2)*(x+3))
              */
-            SimplifyBinaryOperationMethods.reduceFactorialsInQuotients(termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.reduceFactorialsInQuotients(termsLeft, termsRight);
 
             return SimplifyUtilities.produceQuotient(termsLeft, termsRight);
 
@@ -1606,7 +1606,7 @@ public class BinaryOperation extends Expression {
             Expression result = ZERO;
             ExpressionCollection summands = SimplifyUtilities.getSummands(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2+x+3+y+sin(1) wird zu 5+sin(1)+x+y
-            summands = SimplifyBinaryOperationMethods.collectConstantsAndConstantExpressionsInSum(summands);
+            summands = SimplifyBinaryOperationUtils.collectConstantsAndConstantExpressionsInSum(summands);
 
             for (int i = summands.getBound() - 1; i >= 0; i--) {
                 if (summands.get(i) == null) {
@@ -1628,7 +1628,7 @@ public class BinaryOperation extends Expression {
             Expression result = ONE;
             ExpressionCollection factors = SimplifyUtilities.getFactors(this);
             // Sammelt Konstanten im ersten Summanden. Beispiel: 2*x*3*y*sin(1) wird zu 6*sin(1)*x*y
-            factors = SimplifyBinaryOperationMethods.collectConstantsAndConstantExpressionsInProduct(factors);
+            factors = SimplifyBinaryOperationUtils.collectConstantsAndConstantExpressionsInProduct(factors);
 
             for (int i = factors.getBound() - 1; i >= 0; i--) {
                 if (factors.get(i) == null) {
@@ -1658,7 +1658,7 @@ public class BinaryOperation extends Expression {
 
         if (this.isSum() || this.isDifference()) {
 
-            SimplifyBinaryOperationMethods.orderDifference(this, termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.orderDifference(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
@@ -1669,7 +1669,7 @@ public class BinaryOperation extends Expression {
 
         } else if (this.isProduct() || this.isQuotient()) {
 
-            SimplifyBinaryOperationMethods.orderQuotient(this, termsLeft, termsRight);
+            SimplifyBinaryOperationUtils.orderQuotient(this, termsLeft, termsRight);
             for (int i = 0; i < termsLeft.getBound(); i++) {
                 termsLeft.put(i, termsLeft.get(i).orderDifferencesAndQuotients());
             }
@@ -1710,7 +1710,7 @@ public class BinaryOperation extends Expression {
             factors.put(i, factors.get(i).simplifyCollectProducts());
         }
 
-        SimplifyBinaryOperationMethods.collectFactorsInProduct(factors);
+        SimplifyBinaryOperationUtils.collectFactorsInProduct(factors);
         return SimplifyUtilities.produceProduct(factors);
 
     }
@@ -1726,8 +1726,8 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyFactorize());
             }
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeAntiEquivalentExpressionsInSums(summands);
-            SimplifyBinaryOperationMethods.simplifyFactorizeInSums(summands);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAntiEquivalentExpressionsInSums(summands);
+            SimplifyBinaryOperationUtils.simplifyFactorizeInSums(summands);
             return SimplifyUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -1736,8 +1736,8 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
-            SimplifyBinaryOperationMethods.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifyFactorizeInDifferences(summandsLeft, summandsRight);
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
@@ -1779,7 +1779,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Eigentliche Faktorisierung.
-        SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);
+        SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsInSums(summands);
         // Ergebnis bilden.
         return SimplifyUtilities.produceSum(summands);
 
@@ -1817,7 +1817,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Eigentliche Faktorisierung.
-        SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
+        SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
         // Ergebnis bilden.
         return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
@@ -1834,8 +1834,8 @@ public class BinaryOperation extends Expression {
                 summands.put(i, summands.get(i).simplifyFactorizeAllButRationals());
             }
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInSums(summands);
-            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInSums(summands);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsInSums(summands);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInSums(summands);
             return SimplifyUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -1845,8 +1845,8 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(expr);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
             // Eigentliche Faktorisierung.
-            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
-            SimplifyBinaryOperationMethods.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsInDifferences(summandsLeft, summandsRight);
+            SimplifyBinaryOperationUtils.simplifyFactorizeAllButRationalsForAntiEquivalentExpressionsInDifferences(summandsLeft, summandsRight);
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
@@ -1896,7 +1896,7 @@ public class BinaryOperation extends Expression {
         }
 
         // Eigentliches Kürzen.
-        SimplifyBinaryOperationMethods.simplifyReduceFactorsInQuotients(factorsEnumerator, factorsDenominator);
+        SimplifyBinaryOperationUtils.simplifyReduceFactorsInQuotients(factorsEnumerator, factorsDenominator);
         // Ergebnis bilden.
         return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
 
@@ -1939,12 +1939,12 @@ public class BinaryOperation extends Expression {
         Expression expr = this.left.simplifyPullApartPowers().pow(this.right.simplifyPullApartPowers());
         Expression exprSimplified;
 
-        exprSimplified = SimplifyExpLog.splitPowersInProduct(expr);
+        exprSimplified = SimplifyExpLogUtils.splitPowersInProduct(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
-        exprSimplified = SimplifyExpLog.splitPowersInQuotient(expr);
+        exprSimplified = SimplifyExpLogUtils.splitPowersInQuotient(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -2008,17 +2008,17 @@ public class BinaryOperation extends Expression {
             }
 
             // sinh(x) + cosh(x) = exp(x)
-            SimplifyFunctionalRelations.sumOfTwoFunctions(summands, TypeFunction.sinh, TypeFunction.cosh, TypeFunction.exp);
+            SimplifyFunctionalRelationsUtils.sumOfTwoFunctions(summands, TypeFunction.sinh, TypeFunction.cosh, TypeFunction.exp);
             //cos(x)^2 + sin(x)^2 = 1
-            SimplifyFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);
+            SimplifyFunctionalRelationsUtils.reduceSumOfSquaresOfSineAndCosine(summands);
             //1 + tan(x)^2 = sec(x)^2
-            SimplifyFunctionalRelations.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.tan, TypeFunction.sec);
+            SimplifyFunctionalRelationsUtils.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.tan, TypeFunction.sec);
             //1 + cot(x)^2 = cosec(x)^2
-            SimplifyFunctionalRelations.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.cot, TypeFunction.cosec);
+            SimplifyFunctionalRelationsUtils.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.cot, TypeFunction.cosec);
             //1 + sinh(x)^2 = cosh(x)^2
-            SimplifyFunctionalRelations.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.sinh, TypeFunction.cosh);
+            SimplifyFunctionalRelationsUtils.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.sinh, TypeFunction.cosh);
             //1 + cosech(x)^2 = coth(x)^2
-            SimplifyFunctionalRelations.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.cosech, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.reduceOnePlusFunctionSquareToFunctionSquare(summands, TypeFunction.cosech, TypeFunction.coth);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
@@ -2038,25 +2038,25 @@ public class BinaryOperation extends Expression {
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
             //cosh(x) - sinh(x) = exp(-x) bzw. sinh(x) - cosh(x) = -exp(-x)
-            SimplifyFunctionalRelations.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
+            SimplifyFunctionalRelationsUtils.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
             //cosh(x)^2 - sinh(x)^2 = 1 bzw. sinh(x)^2 - cosh(x)^2 = -1
-            SimplifyFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
+            SimplifyFunctionalRelationsUtils.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
             //1 - tanh(x)^2 = sech(x)^2 bzw. tanh(x)^2 - 1 = -sech(x)^2
-            SimplifyFunctionalRelations.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.tanh, TypeFunction.sech);
+            SimplifyFunctionalRelationsUtils.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.tanh, TypeFunction.sech);
             //1 - sech(x)^2 = tanh(x)^2 bzw. sech(x)^2 - 1 = -tanh(x)^2
-            SimplifyFunctionalRelations.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sech, TypeFunction.tanh);
+            SimplifyFunctionalRelationsUtils.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sech, TypeFunction.tanh);
             //1 - sin(x)^2 = cos(x)^2 bzw. sin(x)^2 - 1 = -cos(x)^2
-            SimplifyFunctionalRelations.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sin, TypeFunction.cos);
+            SimplifyFunctionalRelationsUtils.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sin, TypeFunction.cos);
             //1 - cos(x)^2 = sin(x)^2 bzw. cos(x)^2 - 1 = -sin(x)^2
-            SimplifyFunctionalRelations.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cos, TypeFunction.sin);
+            SimplifyFunctionalRelationsUtils.reduceOneMinusFunctionSquareToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cos, TypeFunction.sin);
             //cosh(x)^2 - 1 = sinh(x)^2 bzw. 1 - cosh(x)^2 = -sinh(x)^2
-            SimplifyFunctionalRelations.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cosh, TypeFunction.sinh);
+            SimplifyFunctionalRelationsUtils.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cosh, TypeFunction.sinh);
             //coth(x)^2 - 1 = cosech(x)^2 bzw. 1 - coth(x)^2 = -cosech(x)^2
-            SimplifyFunctionalRelations.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.coth, TypeFunction.cosech);
+            SimplifyFunctionalRelationsUtils.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.coth, TypeFunction.cosech);
             //sec(x)^2 - 1 = tan(x)^2 bzw. 1 - sec(x)^2 = -tan(x)^2
-            SimplifyFunctionalRelations.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sec, TypeFunction.tan);
+            SimplifyFunctionalRelationsUtils.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.sec, TypeFunction.tan);
             //cosec(x)^2 - 1 = cot(x)^2 bzw. 1 - cosec(x)^2 = -cot(x)^2
-            SimplifyFunctionalRelations.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cosec, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.reduceFunctionSquareMinusOneToFunctionSquare(summandsLeft, summandsRight, TypeFunction.cosec, TypeFunction.cot);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
@@ -2072,59 +2072,59 @@ public class BinaryOperation extends Expression {
             }
 
             //Potenzen von rationalen Zahlen sammeln
-            SimplifyExpLog.collectPowersOfRationalsWithSameExponentInProduct(factors);
+            SimplifyExpLogUtils.collectPowersOfRationalsWithSameExponentInProduct(factors);
             //Exponentialfunktionen sammeln
-            SimplifyExpLog.collectExponentialFunctionsInProduct(factors);
+            SimplifyExpLogUtils.collectExponentialFunctionsInProduct(factors);
             //Produkte von Beträgen zu einem einzigen Betrag machen
-            SimplifyFunctionalRelations.pullTogetherProductsOfMultiplicativeFunctions(factors, TypeFunction.abs);
+            SimplifyFunctionalRelationsUtils.pullTogetherProductsOfMultiplicativeFunctions(factors, TypeFunction.abs);
             //Produkte von Signum zu einem einzigen Signum machen
-            SimplifyFunctionalRelations.pullTogetherProductsOfMultiplicativeFunctions(factors, TypeFunction.sgn);
+            SimplifyFunctionalRelationsUtils.pullTogetherProductsOfMultiplicativeFunctions(factors, TypeFunction.sgn);
             //x*sgn(x) = abs(x)
-            SimplifyFunctionalRelations.reduceProductOfIdAndSgnToAbs(factors);
+            SimplifyFunctionalRelationsUtils.reduceProductOfIdAndSgnToAbs(factors);
             //abs(x)^k*sgn(x)^k = x^k (genauer = id(x)^k)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.abs, TypeFunction.sgn, TypeFunction.id);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.abs, TypeFunction.sgn, TypeFunction.id);
             //cos(x)*tan(x) = sin(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cos, TypeFunction.tan, TypeFunction.sin);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cos, TypeFunction.tan, TypeFunction.sin);
             //sin(x)*sec(x) = tan(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sin, TypeFunction.sec, TypeFunction.tan);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sin, TypeFunction.sec, TypeFunction.tan);
             //sin(x)*cot(x) = cos(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sin, TypeFunction.cot, TypeFunction.cos);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sin, TypeFunction.cot, TypeFunction.cos);
             //cos(x)*cosec(x) = cot(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cos, TypeFunction.cosec, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cos, TypeFunction.cosec, TypeFunction.cot);
             //sec(x)*cot(x) = cosec(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sec, TypeFunction.cot, TypeFunction.cosec);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sec, TypeFunction.cot, TypeFunction.cosec);
             //cosec(x)*tan(x) = sec(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cosec, TypeFunction.tan, TypeFunction.sec);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cosec, TypeFunction.tan, TypeFunction.sec);
             //cosh(x)*tanh(x) = sinh(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cosh, TypeFunction.tanh, TypeFunction.sinh);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cosh, TypeFunction.tanh, TypeFunction.sinh);
             //sinh(x)*sech(x) = tanh(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sinh, TypeFunction.sech, TypeFunction.tanh);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sinh, TypeFunction.sech, TypeFunction.tanh);
             //sinh(x)*coth(x) = cosh(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sinh, TypeFunction.coth, TypeFunction.cosh);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sinh, TypeFunction.coth, TypeFunction.cosh);
             //cosh(x)*cosech(x) = coth(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cosh, TypeFunction.cosech, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cosh, TypeFunction.cosech, TypeFunction.coth);
             //sech(x)*coth(x) = cosech(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.sech, TypeFunction.coth, TypeFunction.cosech);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.sech, TypeFunction.coth, TypeFunction.cosech);
             //cosec(x)*tan(x) = sec(x)
-            SimplifyFunctionalRelations.productOfTwoFunctions(factors, TypeFunction.cosech, TypeFunction.tanh, TypeFunction.sech);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctions(factors, TypeFunction.cosech, TypeFunction.tanh, TypeFunction.sech);
             //sin(x)*cosec(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.sin, TypeFunction.cosec);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.sin, TypeFunction.cosec);
             //cos(x)*sec(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.cos, TypeFunction.sec);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.cos, TypeFunction.sec);
             //tan(x)*cot(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.tan, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.tan, TypeFunction.cot);
             //sinh(x)*cosech(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.sinh, TypeFunction.cosech);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.sinh, TypeFunction.cosech);
             //cosh(x)*sech(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.cosh, TypeFunction.sech);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.cosh, TypeFunction.sech);
             //tanh(x)*coth(x) = 1
-            SimplifyFunctionalRelations.productOfTwoFunctionsEqualsOne(factors, TypeFunction.tanh, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsEqualsOne(factors, TypeFunction.tanh, TypeFunction.coth);
             //sin(x)*cos(x) = sin(2*x)/2
-            SimplifyFunctionalRelations.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sin, TypeFunction.cos);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sin, TypeFunction.cos);
             //sinh(x)*cosh(x) = sinh(2*x)/2
-            SimplifyFunctionalRelations.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sinh, TypeFunction.cosh);
+            SimplifyFunctionalRelationsUtils.productOfTwoFunctionsToFunctionOfDoubleArgument(factors, TypeFunction.sinh, TypeFunction.cosh);
             // x!*(-1-x)! = x/sin(pi*x) (Ergänzungssatz)
-            SimplifyFunctionalRelations.collectFactorialsInProductByReflectionFormula(factors);
+            SimplifyFunctionalRelationsUtils.collectFactorialsInProductByReflectionFormula(factors);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceProduct(factors);
@@ -2144,75 +2144,75 @@ public class BinaryOperation extends Expression {
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(expr);
 
             //Potenzen von rationalen Zahlen sammeln
-            SimplifyExpLog.collectPowersOfRationalsWithSameExponentInQuotient(factorsEnumerator, factorsDenominator);
+            SimplifyExpLogUtils.collectPowersOfRationalsWithSameExponentInQuotient(factorsEnumerator, factorsDenominator);
             //Exponentialfunktionen sammeln
-            SimplifyExpLog.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
+            SimplifyExpLogUtils.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             //Bringt allgemeine nichtkonstante Exponentialfunktionen aus dem Nenner in den Zähler
-            SimplifyExpLog.bringNonConstantExponentialFunctionsToNumerator(factorsEnumerator, factorsDenominator);
+            SimplifyExpLogUtils.bringNonConstantExponentialFunctionsToNumerator(factorsEnumerator, factorsDenominator);
             //Logarithmen zur Basis 10 zu rationalen Zahlen kürzen
-            SimplifyExpLog.simplifyQuotientsOfLogarithms(factorsEnumerator, factorsDenominator, TypeFunction.lg);
+            SimplifyExpLogUtils.simplifyQuotientsOfLogarithms(factorsEnumerator, factorsDenominator, TypeFunction.lg);
             //Logarithmen zur Basis e zu rationalen Zahlen kürzen
-            SimplifyExpLog.simplifyQuotientsOfLogarithms(factorsEnumerator, factorsDenominator, TypeFunction.ln);
+            SimplifyExpLogUtils.simplifyQuotientsOfLogarithms(factorsEnumerator, factorsDenominator, TypeFunction.ln);
             //Quotienten von Beträgen zu einem einzigen Betrag machen
-            SimplifyFunctionalRelations.pullTogetherQuotientsOfMultiplicativeFunctions(factorsEnumerator, factorsDenominator, TypeFunction.abs);
+            SimplifyFunctionalRelationsUtils.pullTogetherQuotientsOfMultiplicativeFunctions(factorsEnumerator, factorsDenominator, TypeFunction.abs);
             //Quotienten von Signum zu einem einzigen Signum machen
-            SimplifyFunctionalRelations.pullTogetherQuotientsOfMultiplicativeFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sgn);
+            SimplifyFunctionalRelationsUtils.pullTogetherQuotientsOfMultiplicativeFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sgn);
             //sin(x)/cos(x) = tan(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.cos, TypeFunction.tan);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.cos, TypeFunction.tan);
             //cos(x)/sin(x) = cot(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.sin, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.sin, TypeFunction.cot);
             //tan(x)/sin(x) = sec(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.tan, TypeFunction.sin, TypeFunction.sec);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.tan, TypeFunction.sin, TypeFunction.sec);
             //cot(x)/cos(x) = cosec(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cot, TypeFunction.cos, TypeFunction.cosec);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cot, TypeFunction.cos, TypeFunction.cosec);
             //sin(x)/tan(x) = cos(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.tan, TypeFunction.cos);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.tan, TypeFunction.cos);
             //cos(x)/cot(x) = sin(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.cot, TypeFunction.sin);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.cot, TypeFunction.sin);
             //sec(x)/cosec(x) = tan(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sec, TypeFunction.cosec, TypeFunction.tan);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sec, TypeFunction.cosec, TypeFunction.tan);
             //cosec(x)/sec(x) = cot(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosec, TypeFunction.sec, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosec, TypeFunction.sec, TypeFunction.cot);
             //sinh(x)/cosh(x) = tanh(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.cosh, TypeFunction.tanh);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.cosh, TypeFunction.tanh);
             //cosh(x)/sinh(x) = coth(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.sinh, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.sinh, TypeFunction.coth);
             //tanh(x)/sinh(x) = sech(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.tanh, TypeFunction.sinh, TypeFunction.sech);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.tanh, TypeFunction.sinh, TypeFunction.sech);
             //coth(x)/cosh(x) = cosech(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.coth, TypeFunction.cosh, TypeFunction.cosech);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.coth, TypeFunction.cosh, TypeFunction.cosech);
             //sinh(x)/tanh(x) = cosh(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.tanh, TypeFunction.cosh);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.tanh, TypeFunction.cosh);
             //cosh(x)/coth(x) = sinh(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.coth, TypeFunction.sinh);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.coth, TypeFunction.sinh);
             //sech(x)/cosech(x) = tanh(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sech, TypeFunction.cosech, TypeFunction.tanh);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.sech, TypeFunction.cosech, TypeFunction.tanh);
             //cosech(x)/sech(x) = coth(x)
-            SimplifyFunctionalRelations.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosech, TypeFunction.sech, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.quotientOfTwoFunctions(factorsEnumerator, factorsDenominator, TypeFunction.cosech, TypeFunction.sech, TypeFunction.coth);
             //1/sin(x) = cosec(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.cosec);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sin, TypeFunction.cosec);
             //1/cos(x) = sec(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.sec);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cos, TypeFunction.sec);
             //1/tan(x) = cot(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.tan, TypeFunction.cot);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.tan, TypeFunction.cot);
             //1/cot(x) = tan(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cot, TypeFunction.tan);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cot, TypeFunction.tan);
             //1/sec(x) = cos(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sec, TypeFunction.cos);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sec, TypeFunction.cos);
             //1/cosec(x) = sin(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosec, TypeFunction.sin);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosec, TypeFunction.sin);
             //1/sinh(x) = cosech(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.cosech);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sinh, TypeFunction.cosech);
             //1/cosh(x) = sech(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.sech);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosh, TypeFunction.sech);
             //1/tanh(x) = coth(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.tanh, TypeFunction.coth);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.tanh, TypeFunction.coth);
             //1/coth(x) = tanh(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.coth, TypeFunction.tanh);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.coth, TypeFunction.tanh);
             //1/sech(x) = cosh(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sech, TypeFunction.cosh);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.sech, TypeFunction.cosh);
             //1/cosech(x) = sinh(x)
-            SimplifyFunctionalRelations.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosech, TypeFunction.sinh);
+            SimplifyFunctionalRelationsUtils.reciprocalOfFunction(factorsEnumerator, factorsDenominator, TypeFunction.cosech, TypeFunction.sinh);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator);
@@ -2228,17 +2228,17 @@ public class BinaryOperation extends Expression {
             }
             expr = (BinaryOperation) simplifiedPower;
 
-            exprSimplified = SimplifyBinaryOperationMethods.reducePowerOfTenAndSumsOfLog10(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.reducePowerOfTenAndSumsOfLog10(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
 
-            exprSimplified = SimplifyBinaryOperationMethods.reducePowerOfTenAndDifferencesOfLog10(expr);
+            exprSimplified = SimplifyBinaryOperationUtils.reducePowerOfTenAndDifferencesOfLog10(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
 
-            exprSimplified = SimplifyFunctionMethods.powerOfSgn(expr);
+            exprSimplified = SimplifyFunctionUtils.powerOfSgn(expr);
             if (!exprSimplified.equals(this)) {
                 return exprSimplified;
             }
@@ -2413,11 +2413,11 @@ public class BinaryOperation extends Expression {
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(this);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(this);
         // Faktoren vor Logarithmusfunktionen zur Basis 10 in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.lg);
-        SimplifyExpLog.pullFactorsIntoLogarithms(summandsRight, TypeFunction.lg);
+        SimplifyExpLogUtils.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.lg);
+        SimplifyExpLogUtils.pullFactorsIntoLogarithms(summandsRight, TypeFunction.lg);
         // Faktoren vor Logarithmusfunktionen zur Basis e in die Logarithmen hineinziehen.
-        SimplifyExpLog.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.ln);
-        SimplifyExpLog.pullFactorsIntoLogarithms(summandsRight, TypeFunction.ln);
+        SimplifyExpLogUtils.pullFactorsIntoLogarithms(summandsLeft, TypeFunction.ln);
+        SimplifyExpLogUtils.pullFactorsIntoLogarithms(summandsRight, TypeFunction.ln);
         Expression expr = SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
 
         if (expr.isSum()) {
@@ -2429,9 +2429,9 @@ public class BinaryOperation extends Expression {
             }
 
             //Logarithmusfunktionen zur Basis 10 in einer Summe sammeln
-            SimplifyExpLog.collectLogarithmsInSum(summands, TypeFunction.lg);
+            SimplifyExpLogUtils.collectLogarithmsInSum(summands, TypeFunction.lg);
             //Logarithmusfunktionen zur Basis e in einer Summe sammeln
-            SimplifyExpLog.collectLogarithmsInSum(summands, TypeFunction.ln);
+            SimplifyExpLogUtils.collectLogarithmsInSum(summands, TypeFunction.ln);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceSum(summands);
@@ -2445,9 +2445,9 @@ public class BinaryOperation extends Expression {
             summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr);
 
             //Logarithmusfunktionen zur Basis 10 in einer Differenz sammeln
-            SimplifyExpLog.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.lg);
+            SimplifyExpLogUtils.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.lg);
             //Logarithmusfunktionen zur Basis e in einer Differenz sammeln
-            SimplifyExpLog.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.ln);
+            SimplifyExpLogUtils.collectLogarithmsInDifference(summandsLeft, summandsRight, TypeFunction.ln);
 
             // Ergebnis bilden.
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);
@@ -2669,7 +2669,7 @@ public class BinaryOperation extends Expression {
         if (f.isFunction()) {
             return (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos)
                     || f.isFunction(TypeFunction.sin))
-                    && SimplifyPolynomialMethods.isLinearPolynomial(((Function) f).getLeft(), var);
+                    && SimplifyPolynomialUtils.isLinearPolynomial(((Function) f).getLeft(), var);
         }
         if (f instanceof Operator) {
             return !f.contains(var);
@@ -2725,8 +2725,7 @@ public class BinaryOperation extends Expression {
                     && numberOfSummandsInBaseAsBigInt.compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) <= 0) {
                 int numberOfSummandsInBase = numberOfSummandsInBaseAsBigInt.intValue();
                 // Anzahl der Summanden in (a_1 + ... + a_n)^k ist (n - 1 + k)!/[(n - 1)! * k!]
-                return ArithmeticMethods.factorial(numberOfSummandsInBase - 1 + exponent).divide(
-                        ArithmeticMethods.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticMethods.factorial(exponent)));
+                return ArithmeticUtils.factorial(numberOfSummandsInBase - 1 + exponent).divide(ArithmeticUtils.factorial(numberOfSummandsInBase - 1).multiply(ArithmeticUtils.factorial(exponent)));
             }
         } else if (f.isFunction(TypeFunction.exp) || f.isFunction(TypeFunction.cos) || f.isFunction(TypeFunction.sin)) {
             return BigInteger.ONE;
@@ -2747,13 +2746,13 @@ public class BinaryOperation extends Expression {
 
         if (n % 2 == 0) {
             for (int i = 0; i < n / 2; i++) {
-                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                result = result.add(new Constant(ArithmeticUtils.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
-            result = result.add(new Constant(ArithmeticMethods.bin(n, n / 2)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+            result = result.add(new Constant(ArithmeticUtils.bin(n, n / 2)).div(new Constant(BigInteger.valueOf(2).pow(n))));
         } else {
             for (int i = 0; i <= (n - 1) / 2; i++) {
-                result = result.add(new Constant(ArithmeticMethods.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                result = result.add(new Constant(ArithmeticUtils.bin(n, i)).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
         }
@@ -2774,15 +2773,15 @@ public class BinaryOperation extends Expression {
         if (n % 2 == 0) {
             m = n / 2;
             for (int i = 0; i < m; i++) {
-                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticUtils.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).cos()).div(
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
-            result = result.add(new Constant(ArithmeticMethods.bin(n, m)).div(new Constant(BigInteger.valueOf(2).pow(n))));
+            result = result.add(new Constant(ArithmeticUtils.bin(n, m)).div(new Constant(BigInteger.valueOf(2).pow(n))));
         } else {
             // n = 2 * m + 1 ist ungerade.
             m = (n - 1) / 2;
             for (int i = 0; i <= m; i++) {
-                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticMethods.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).sin()).div(
+                result = result.add(new Constant(BigInteger.valueOf(-1).pow(m + i).multiply(ArithmeticUtils.bin(n, i))).mult(new Constant(n - 2 * i).mult(argument).sin()).div(
                         new Constant(BigInteger.valueOf(2).pow(n - 1))));
             }
         }
@@ -2972,37 +2971,37 @@ public class BinaryOperation extends Expression {
          3+2*2^(1/2)). Maximal erlaubte Potenz ist <= einer bestimmten
          Schranke.
          */
-        exprSimplified = SimplifyAlgebraicExpressionMethods.expandAlgebraicExpressionsByBinomial(expr, ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.expandAlgebraicExpressionsByBinomial(expr, ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Faktorisiert ganze Faktoren aus Radikalen mit ganzzahligem Radikanden
-        exprSimplified = SimplifyAlgebraicExpressionMethods.factorizeIntegerFactorsFromIntegerRoots(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.factorizeIntegerFactorsFromIntegerRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Faktorisiert rationale Faktoren aus Radikalen mit rationalem Radikanden
-        exprSimplified = SimplifyAlgebraicExpressionMethods.factorizeRationalFactorsFromRationalRoots(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.factorizeRationalFactorsFromRationalRoots(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Sammelt mehrere Wurzeln im Produkt zu einer Wurzel zusammen.
-        exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRootInProducts(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.collectVariousRootsToOneCommonRootInProducts(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Sammelt mehrere Wurzeln im Quotienten zu einer Wurzel zusammen.
-        exprSimplified = SimplifyAlgebraicExpressionMethods.collectVariousRootsToOneCommonRootInQuotients(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.collectVariousRootsToOneCommonRootInQuotients(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Wendet sinnvoll Rationalisierung des Nenners an.
-        exprSimplified = SimplifyAlgebraicExpressionMethods.makeFactorsInDenominatorRational(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.makeFactorsInDenominatorRational(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
@@ -3012,13 +3011,13 @@ public class BinaryOperation extends Expression {
          der Form x + 3*y^(5/2) und x - 3*y^(5/2) auftauchen (-> neuer Faktor
          ist x^2 - 9*y^5).
          */
-        exprSimplified = SimplifyAlgebraicExpressionMethods.collectFactorsByThirdBinomialFormula(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.collectFactorsByThirdBinomialFormula(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }
 
         // Versucht, Ausdrücke der Form (a+b*c^(1/2))^(1/n), n >= 2, als d+e*c^(1/2) darzustellen, wenn möglich (a, b, c, d, e rational).
-        exprSimplified = SimplifyAlgebraicExpressionMethods.computeRootFromDegreeTwoElementsOverRationals(expr);
+        exprSimplified = SimplifyAlgebraicExpressionUtils.computeRootFromDegreeTwoElementsOverRationals(expr);
         if (!exprSimplified.equals(expr)) {
             return exprSimplified;
         }

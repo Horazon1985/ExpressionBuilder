@@ -10,9 +10,9 @@ import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.utilities.ExpressionCollection;
-import abstractexpressions.expression.utilities.SimplifyPolynomialMethods;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import exceptions.EvaluationException;
 import exceptions.LaplaceTransformationNotComputableException;
 import java.math.BigInteger;
@@ -182,9 +182,9 @@ public abstract class LaplaceTransformationUtils {
         }
 
         Expression argument = ((Function) f).getLeft();
-        if (SimplifyPolynomialMethods.isLinearPolynomial(argument, var)) {
+        if (SimplifyPolynomialUtils.isLinearPolynomial(argument, var)) {
             try {
-                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(argument, var);
+                ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(argument, var);
                 if (coefficients.getBound() == 2) {
                     if (coefficients.get(0).equals(ZERO)) {
                         return ONE.div(Variable.create(transVar).sub(coefficients.get(1)));
@@ -211,9 +211,9 @@ public abstract class LaplaceTransformationUtils {
         }
 
         Expression argument = ((Function) f).getLeft();
-        if (SimplifyPolynomialMethods.isLinearPolynomial(argument, var)) {
+        if (SimplifyPolynomialUtils.isLinearPolynomial(argument, var)) {
             try {
-                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(argument, var);
+                ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(argument, var);
                 if (coefficients.getBound() == 2 && coefficients.get(0).equals(ZERO)) {
                     return coefficients.get(1).div(Variable.create(transVar).pow(2).add(coefficients.get(1).pow(2)));
                 }
@@ -237,9 +237,9 @@ public abstract class LaplaceTransformationUtils {
         }
 
         Expression argument = ((Function) f).getLeft();
-        if (SimplifyPolynomialMethods.isLinearPolynomial(argument, var)) {
+        if (SimplifyPolynomialUtils.isLinearPolynomial(argument, var)) {
             try {
-                ExpressionCollection coefficients = SimplifyPolynomialMethods.getPolynomialCoefficients(argument, var);
+                ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(argument, var);
                 if (coefficients.getBound() == 2 && coefficients.get(0).equals(ZERO)) {
                     return Variable.create(transVar).div(Variable.create(transVar).pow(2).add(coefficients.get(1).pow(2)));
                 }

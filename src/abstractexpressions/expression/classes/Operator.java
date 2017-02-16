@@ -1,17 +1,17 @@
 package abstractexpressions.expression.classes;
 
 import abstractexpressions.annotations.SimplifyOperator;
-import abstractexpressions.expression.computation.AnalysisMethods;
-import abstractexpressions.expression.computation.ArithmeticMethods;
-import abstractexpressions.expression.computation.NumericalMethods;
+import abstractexpressions.expression.computation.AnalysisUtils;
+import abstractexpressions.expression.computation.ArithmeticUtils;
+import abstractexpressions.expression.computation.NumericalUtils;
 import computationbounds.ComputationBounds;
 import enums.TypeExpansion;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
-import abstractexpressions.expression.utilities.SimplifyOperatorMethods;
-import abstractexpressions.expression.integration.GeneralIntegralMethods;
-import abstractexpressions.expression.utilities.ExpressionCollection;
-import abstractexpressions.expression.utilities.SimplifyUtilities;
+import abstractexpressions.expression.basic.SimplifyOperatorUtils;
+import abstractexpressions.expression.integration.GeneralIntegralUtils;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import enums.TypeFractionSimplification;
 import exceptions.CancellationException;
 import java.lang.reflect.Field;
@@ -188,7 +188,7 @@ public class Operator extends Expression {
 
             Expression expr = this.simplifyBasicFac();
             if (expr instanceof Operator && ((Operator) expr).getType().equals(TypeOperator.fac)) {
-                return AnalysisMethods.Gamma(((Expression) this.params[0]).evaluate() + 1);
+                return AnalysisUtils.Gamma(((Expression) this.params[0]).evaluate() + 1);
             }
             return expr.evaluate();
 
@@ -215,8 +215,8 @@ public class Operator extends Expression {
                      */
                     double a = ((Expression) this.params[2]).evaluate();
                     double b = ((Expression) this.params[3]).evaluate();
-                    double result = NumericalMethods.integrateBySimpson((Expression) ((Operator) expr).getParams()[0], (String) this.params[1], a, b, 1000);
-                    double betterResult = NumericalMethods.integrateBySimpson((Expression) ((Operator) expr).getParams()[0], (String) this.params[1], a, b, 2000);
+                    double result = NumericalUtils.integrateBySimpson((Expression) ((Operator) expr).getParams()[0], (String) this.params[1], a, b, 1000);
+                    double betterResult = NumericalUtils.integrateBySimpson((Expression) ((Operator) expr).getParams()[0], (String) this.params[1], a, b, 2000);
                     double almostPreciseResult = 16 / ((double) 15) * betterResult - 1 / ((double) 15) * result;
                     return almostPreciseResult;
                 }
@@ -1405,7 +1405,7 @@ public class Operator extends Expression {
                 throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
             }
             if (argumentRoundedDown.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL)) <= 0) {
-                Constant result = new Constant(ArithmeticMethods.factorial(argumentRoundedDown.intValue()));
+                Constant result = new Constant(ArithmeticUtils.factorial(argumentRoundedDown.intValue()));
                 result.setPrecise(this.precise);
                 return result;
             }
@@ -1414,7 +1414,7 @@ public class Operator extends Expression {
             if (this.precise) {
                 return this;
             }
-            return new Constant(AnalysisMethods.Gamma(((Expression) this.params[0]).evaluate() + 1));
+            return new Constant(AnalysisUtils.Gamma(((Expression) this.params[0]).evaluate() + 1));
         }
 
     }
@@ -1433,7 +1433,7 @@ public class Operator extends Expression {
         Expression endPoint = ((Expression) this.params[3]).simplify();
         int degree = (int) this.params[4];
 
-        return AnalysisMethods.getFourierPolynomial(f, var, startPoint, endPoint, degree);
+        return AnalysisUtils.getFourierPolynomial(f, var, startPoint, endPoint, degree);
 
     }
 
@@ -1460,7 +1460,7 @@ public class Operator extends Expression {
             return new Operator(this.type, arguments);
         }
 
-        Constant resultGCD = new Constant(ArithmeticMethods.gcd(integerArguments));
+        Constant resultGCD = new Constant(ArithmeticUtils.gcd(integerArguments));
         if (this.params.length == integerArguments.size()) {
             return resultGCD;
         }
@@ -1473,7 +1473,7 @@ public class Operator extends Expression {
             }
         }
 
-        return ArithmeticMethods.gcdSimplifyTrivial(resultParams);
+        return ArithmeticUtils.gcdSimplifyTrivial(resultParams);
 
     }
 
@@ -1486,11 +1486,11 @@ public class Operator extends Expression {
     private Expression simplifyBasicInt() throws EvaluationException {
 
         if (this.params.length == 2) {
-            return GeneralIntegralMethods.integrateIndefinite(this);
+            return GeneralIntegralUtils.integrateIndefinite(this);
         }
 
         if (this.precise && this.params.length == 4) {
-            return GeneralIntegralMethods.integrateDefinite(this);
+            return GeneralIntegralUtils.integrateDefinite(this);
         }
 
         if (!this.precise && this.params.length == 4) {
@@ -1504,8 +1504,8 @@ public class Operator extends Expression {
                     // Falls keine Parameter im Integranden auftauchen -> Integral approximativ berechnen.
                     double lowerLimit = ((Expression) params[2]).evaluate();
                     double upperLimit = ((Expression) params[3]).evaluate();
-                    double result = NumericalMethods.integrateBySimpson(expr, (String) params[1], lowerLimit, upperLimit, 1000);
-                    double betterResult = NumericalMethods.integrateBySimpson(expr, (String) params[1], lowerLimit, upperLimit, 2000);
+                    double result = NumericalUtils.integrateBySimpson(expr, (String) params[1], lowerLimit, upperLimit, 1000);
+                    double betterResult = NumericalUtils.integrateBySimpson(expr, (String) params[1], lowerLimit, upperLimit, 2000);
                     double almostPreciseResult = 16 / ((double) 15) * betterResult - 1 / ((double) 15) * result;
                     return new Constant(almostPreciseResult);
                 }
@@ -1567,7 +1567,7 @@ public class Operator extends Expression {
             return new Operator(this.type, arguments);
         }
 
-        Constant resultLCM = new Constant(ArithmeticMethods.lcm(integerArguments));
+        Constant resultLCM = new Constant(ArithmeticUtils.lcm(integerArguments));
         if (this.params.length == integerArguments.size()) {
             return resultLCM;
         }
@@ -1580,7 +1580,7 @@ public class Operator extends Expression {
             }
         }
 
-        return ArithmeticMethods.lcmSimplifyTrivial(resultParams);
+        return ArithmeticUtils.lcmSimplifyTrivial(resultParams);
 
     }
 
@@ -1660,7 +1660,7 @@ public class Operator extends Expression {
         }
 
         if (integerArguments.size() == 2) {
-            Constant resultMod = new Constant(ArithmeticMethods.mod(integerArguments.get(0), integerArguments.get(1)));
+            Constant resultMod = new Constant(ArithmeticUtils.mod(integerArguments.get(0), integerArguments.get(1)));
             return resultMod;
         }
         if (isIntegerValuedArithmeticExpression(arguments[0]) && arguments[1].equals(ONE)) {
@@ -1698,7 +1698,7 @@ public class Operator extends Expression {
         }
 
         if (integerArguments.size() == this.params.length) {
-            return new Constant(ArithmeticMethods.modpow(integerArguments.get(0), integerArguments.get(1), integerArguments.get(2)));
+            return new Constant(ArithmeticUtils.modpow(integerArguments.get(0), integerArguments.get(1), integerArguments.get(2)));
         }
 
         Expression base = arguments[0];
@@ -1788,7 +1788,7 @@ public class Operator extends Expression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
-                return AnalysisMethods.prod(factor, (String) this.params[1], lowerLimit, upperLimit);
+                return AnalysisUtils.prod(factor, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }
@@ -1800,25 +1800,25 @@ public class Operator extends Expression {
 
         // Produkte von Produkten oder Quotienten aufteilen.
         if (factor.isProduct() || factor.isQuotient()) {
-            return SimplifyOperatorMethods.splitProductsOfProductsOrQuotients((BinaryOperation) factor, (String) this.params[1],
+            return SimplifyOperatorUtils.splitProductsOfProductsOrQuotients((BinaryOperation) factor, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
         // Konstante (rationale) Potenzen herausziehen mit ungeradem Nenner.
         if (factor.isPower() && !((BinaryOperation) factor).getRight().contains((String) this.params[1])) {
-            return SimplifyOperatorMethods.takeConstantExponentsOutOfProducts((BinaryOperation) factor, (String) this.params[1],
+            return SimplifyOperatorUtils.takeConstantExponentsOutOfProducts((BinaryOperation) factor, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
         // Falls die Faktoren Potenzen sind, wo die Basis von der Indexvariablen nicht abhängen.
         if (factor.isPower() && !((BinaryOperation) factor).getLeft().contains((String) this.params[1])) {
-            return SimplifyOperatorMethods.simplifyProductWithConstantBase((BinaryOperation) factor, (String) this.params[1],
+            return SimplifyOperatorUtils.simplifyProductWithConstantBase((BinaryOperation) factor, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
         // Falls die Faktoren Exponentialfunktionen sind.
         if (factor.isFunction(TypeFunction.exp)) {
-            return SimplifyOperatorMethods.simplifyProductOfExponentialFunctions(factor, (String) this.params[1],
+            return SimplifyOperatorUtils.simplifyProductOfExponentialFunctions(factor, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
@@ -1872,7 +1872,7 @@ public class Operator extends Expression {
                     BigInteger.valueOf(ComputationBounds.BOUND_OPERATOR_MAX_NUMBER_OF_MEMBERS_IN_SUM_OR_PRODUCT)) <= 0) {
 
                 // Dann kann man die Summe explizit ausschreiben.
-                return AnalysisMethods.sum(summand, (String) this.params[1], lowerLimit, upperLimit);
+                return AnalysisUtils.sum(summand, (String) this.params[1], lowerLimit, upperLimit);
 
             }
         }
@@ -1884,28 +1884,28 @@ public class Operator extends Expression {
 
         // Summen von Summen oder Differenzen aufteilen.
         if (summand.isSum() || summand.isDifference()) {
-            return SimplifyOperatorMethods.splitSumOfSumsOrDifferences((BinaryOperation) summand, (String) this.params[1],
+            return SimplifyOperatorUtils.splitSumOfSumsOrDifferences((BinaryOperation) summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
         // Konstante Faktoren im Zähler und Nenner der Summanden herausziehen.
         if (summand.isProduct() || summand.isQuotient()) {
-            return SimplifyOperatorMethods.takeConstantsOutOfSums((BinaryOperation) summand, (String) this.params[1],
+            return SimplifyOperatorUtils.takeConstantsOutOfSums((BinaryOperation) summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3]);
         }
 
         // Falls die Summanden Logarithmusfunktionen sind.
         if (summand.isFunction(TypeFunction.lg)) {
-            return SimplifyOperatorMethods.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
+            return SimplifyOperatorUtils.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3], TypeFunction.lg);
         }
         if (summand.isFunction(TypeFunction.ln)) {
-            return SimplifyOperatorMethods.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
+            return SimplifyOperatorUtils.simplifySumOfLogarithmicFunctions(summand, (String) this.params[1],
                     (Expression) this.params[2], (Expression) this.params[3], TypeFunction.ln);
         }
 
         // Summen von Potenzen ganzer Zahlen explizit berechnen.
-        Expression simplifiedOperator = SimplifyOperatorMethods.simplifySumOfPowersOfIntegers(summand, (String) this.params[1],
+        Expression simplifiedOperator = SimplifyOperatorUtils.simplifySumOfPowersOfIntegers(summand, (String) this.params[1],
                 (Expression) this.params[2], (Expression) this.params[3]);
         if (!simplifiedOperator.equals(this)) {
             return simplifiedOperator;
@@ -1932,7 +1932,7 @@ public class Operator extends Expression {
         Expression f = (Expression) this.params[0];
         Expression centerPoint = (Expression) this.params[2];
         int degree = (int) this.params[3];
-        return AnalysisMethods.getTaylorPolynomial(f, (String) this.params[1], centerPoint, degree);
+        return AnalysisUtils.getTaylorPolynomial(f, (String) this.params[1], centerPoint, degree);
 
     }
 

@@ -2,8 +2,8 @@ package expression.computationtests;
 
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
-import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods;
-import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsMethods.SolutionType;
+import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils;
+import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils.SolutionType;
 import java.util.ArrayList;
 import exceptions.ExpressionException;
 import exceptions.NotAlgebraicallySolvableException;
@@ -38,7 +38,7 @@ public class SolveGeneralEquationSystemTests {
             vars.add("y");
             ArrayList<Expression[]> solutions;
             try {
-                solutions = SolveGeneralSystemOfEquationsMethods.solvePolynomialSystemOfEquations(new Expression[]{f, g}, vars, SolutionType.ALL);
+                solutions = SolveGeneralSystemOfEquationsUtils.solvePolynomialSystemOfEquations(new Expression[]{f, g}, vars, SolutionType.ALL);
                 assertTrue(solutions.size() == 2);
                 assertTrue(solutions.get(0)[0].equals(new Constant(2)));
                 assertTrue(solutions.get(0)[1].equals(new Constant(3)));
@@ -63,7 +63,7 @@ public class SolveGeneralEquationSystemTests {
             vars.add("y");
             ArrayList<Expression[]> solutions;
             try {
-                solutions = SolveGeneralSystemOfEquationsMethods.solveGeneralSystemOfEquations(new Expression[]{f, g, h}, vars);
+                solutions = SolveGeneralSystemOfEquationsUtils.solveGeneralSystemOfEquations(new Expression[]{f, g, h}, vars);
                 assertTrue(solutions.size() == 1);
                 assertTrue(solutions.get(0)[0].equals(new Constant(8)));
                 assertTrue(solutions.get(0)[1].equals(new Constant(2)));
@@ -88,7 +88,7 @@ public class SolveGeneralEquationSystemTests {
             vars.add("z");
             ArrayList<Expression[]> solutions;
             try {
-                solutions = SolveGeneralSystemOfEquationsMethods.solveGeneralSystemOfEquations(new Expression[]{f, g, h}, vars);
+                solutions = SolveGeneralSystemOfEquationsUtils.solveGeneralSystemOfEquations(new Expression[]{f, g, h}, vars);
                 // Lösungen sind zu komplex, hier wird nur die Anzahl geprüft.
                 assertTrue(solutions.size() == 8);
             } catch (NotAlgebraicallySolvableException e) {

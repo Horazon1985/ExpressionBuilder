@@ -5,8 +5,8 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsAlgorithms;
-import abstractexpressions.matrixexpression.computation.GaussAlgorithm;
+import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsUtils;
+import abstractexpressions.matrixexpression.computation.GaussAlgorithmUtils;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import org.junit.AfterClass;
@@ -35,7 +35,7 @@ public class LinearAlgebraTests {
         try {
             MatrixExpression m = MatrixExpression.build("[2,3;-1,6]", null);
             Assert.assertTrue(m instanceof Matrix);
-            Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
+            Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -47,7 +47,7 @@ public class LinearAlgebraTests {
             // Diese Matrix besitzt drei verschiedene Eigenwerte, aber sehr komplizierte.
             MatrixExpression m = MatrixExpression.build("[1,2,3;4,3,2;1,2,5]", null);
             Assert.assertTrue(m instanceof Matrix);
-            Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
+            Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -58,7 +58,7 @@ public class LinearAlgebraTests {
         try {
             MatrixExpression m = MatrixExpression.build("[1,2;0,1]", null);
             Assert.assertTrue(m instanceof Matrix);
-            Assert.assertFalse(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
+            Assert.assertFalse(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -69,7 +69,7 @@ public class LinearAlgebraTests {
         try {
             MatrixExpression m = MatrixExpression.build("[3,-2;2,-3]", null);
             Assert.assertTrue(m instanceof Matrix);
-            Assert.assertTrue(EigenvaluesEigenvectorsAlgorithms.isMatrixDiagonalizable((Matrix) m));
+            Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
@@ -117,7 +117,7 @@ public class LinearAlgebraTests {
             Expression[] expectedSolution = new Expression[]{new Constant(1), new Constant(2), new Constant(7)};
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
-            Expression[] solution = GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+            Expression[] solution = GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
             Assert.assertTrue(solution.length == 3);
             Assert.assertTrue(solution[0].equals(expectedSolution[0]));
             Assert.assertTrue(solution[1].equals(expectedSolution[1]));
@@ -139,7 +139,7 @@ public class LinearAlgebraTests {
                 Variable.create("T_0")};
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
-            Expression[] solution = GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+            Expression[] solution = GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
             Assert.assertTrue(solution.length == 5);
             Assert.assertTrue(solution[0].equals(expectedSolution[0]));
             Assert.assertTrue(solution[1].equals(expectedSolution[1]));
@@ -158,7 +158,7 @@ public class LinearAlgebraTests {
             MatrixExpression b = MatrixExpression.build("[-1;-4;4]", null);
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
-            Assert.assertTrue(GaussAlgorithm.solveLinearSystemOfEquations((Matrix) m, (Matrix) b) == GaussAlgorithm.NO_SOLUTIONS);
+            Assert.assertTrue(GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b) == GaussAlgorithmUtils.NO_SOLUTIONS);
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

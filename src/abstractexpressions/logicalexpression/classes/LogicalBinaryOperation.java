@@ -2,10 +2,10 @@ package abstractexpressions.logicalexpression.classes;
 
 import exceptions.EvaluationException;
 import java.util.HashSet;
-import abstractexpressions.logicalexpression.utilities.LogicalExpressionCollection;
-import abstractexpressions.logicalexpression.utilities.LogicalSimplifyUtilities;
-import abstractexpressions.logicalexpression.utilities.LogicalTrivialSimplifyMethods;
-import abstractexpressions.logicalexpression.utilities.SimplifyLogicalBinaryOperationMethods;
+import abstractexpressions.logicalexpression.basic.LogicalExpressionCollection;
+import abstractexpressions.logicalexpression.basic.LogicalSimplifyUtilities;
+import abstractexpressions.logicalexpression.basic.LogicalTrivialSimplifyUtils;
+import abstractexpressions.logicalexpression.basic.SimplifyLogicalBinaryOperationUtils;
 import lang.translator.Translator;
 
 public class LogicalBinaryOperation extends LogicalExpression {
@@ -189,10 +189,10 @@ public class LogicalBinaryOperation extends LogicalExpression {
                 summands.put(i, summands.get(i).simplifyBasic());
             }
 
-            LogicalTrivialSimplifyMethods.findTrueInSum(summands);
-            LogicalTrivialSimplifyMethods.cancelFalseInSum(summands);
-            LogicalTrivialSimplifyMethods.cancelMultipleSummands(summands);
-            LogicalTrivialSimplifyMethods.collectExpressionsAndNegatedExpressionsInSum(summands);
+            LogicalTrivialSimplifyUtils.findTrueInSum(summands);
+            LogicalTrivialSimplifyUtils.cancelFalseInSum(summands);
+            LogicalTrivialSimplifyUtils.cancelMultipleSummands(summands);
+            LogicalTrivialSimplifyUtils.collectExpressionsAndNegatedExpressionsInSum(summands);
 
             logExprSimplified = LogicalSimplifyUtilities.produceSum(summands);
             if (!this.equals(logExprSimplified)) {
@@ -209,10 +209,10 @@ public class LogicalBinaryOperation extends LogicalExpression {
                 factors.put(i, factors.get(i).simplifyBasic());
             }
 
-            LogicalTrivialSimplifyMethods.findFalseInProduct(factors);
-            LogicalTrivialSimplifyMethods.cancelTrueInProduct(factors);
-            LogicalTrivialSimplifyMethods.cancelMultipleFactors(factors);
-            LogicalTrivialSimplifyMethods.collectExpressionsAndNegatedExpressionsInProduct(factors);
+            LogicalTrivialSimplifyUtils.findFalseInProduct(factors);
+            LogicalTrivialSimplifyUtils.cancelTrueInProduct(factors);
+            LogicalTrivialSimplifyUtils.cancelMultipleFactors(factors);
+            LogicalTrivialSimplifyUtils.collectExpressionsAndNegatedExpressionsInProduct(factors);
 
             logExprSimplified = LogicalSimplifyUtilities.produceProduct(factors);
             if (!this.equals(logExprSimplified)) {
@@ -229,7 +229,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
                 equivTerms.put(i, equivTerms.get(i).simplifyBasic());
             }
 
-            LogicalTrivialSimplifyMethods.cancelDoubleTermsInEquivalenceChain(equivTerms);
+            LogicalTrivialSimplifyUtils.cancelDoubleTermsInEquivalenceChain(equivTerms);
 
             logExprSimplified = LogicalSimplifyUtilities.produceEquivalenceChain(equivTerms);
             if (!this.equals(logExprSimplified)) {
@@ -242,7 +242,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
         LogicalBinaryOperation logExpr = new LogicalBinaryOperation(this.getLeft().simplifyBasic(), this.getRight().simplifyBasic(), this.getType());
 
         // Triviale Umformungen mit 0 und 1.
-        logExprSimplified = SimplifyLogicalBinaryOperationMethods.trivialOperationsWithFalseTrue(logExpr);
+        logExprSimplified = SimplifyLogicalBinaryOperationUtils.trivialOperationsWithFalseTrue(logExpr);
         if (!logExprSimplified.equals(logExpr)) {
             return logExprSimplified;
         }

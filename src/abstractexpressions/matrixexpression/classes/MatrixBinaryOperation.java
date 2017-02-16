@@ -8,10 +8,10 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
 import java.awt.Dimension;
 import java.util.HashSet;
-import abstractexpressions.matrixexpression.utilities.MatrixExpressionCollection;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixBinaryOperationMethods;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixFunctionalRelations;
-import abstractexpressions.matrixexpression.utilities.SimplifyMatrixUtilities;
+import abstractexpressions.matrixexpression.basic.MatrixExpressionCollection;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixBinaryOperationUtils;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
+import abstractexpressions.matrixexpression.basic.SimplifyMatrixUtilities;
 import lang.translator.Translator;
 
 public class MatrixBinaryOperation extends MatrixExpression {
@@ -455,10 +455,10 @@ public class MatrixBinaryOperation extends MatrixExpression {
             }
 
             // Nullmatrizen in Summen beseitigen.
-            SimplifyMatrixBinaryOperationMethods.removeZeroMatrixInSum(summands);
+            SimplifyMatrixBinaryOperationUtils.removeZeroMatrixInSum(summands);
 
             // Sammelt Matrizen im ersten Summanden. Beispiel: [2]+exp([x])+[3]+[sin(1)] wird zu [5+sin(1)]+exp([x])
-            SimplifyMatrixBinaryOperationMethods.collectMatricesInSum(summands);
+            SimplifyMatrixBinaryOperationUtils.collectMatricesInSum(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
@@ -466,7 +466,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
             MatrixExpression matExpr = new MatrixBinaryOperation(this.left.simplifyMatrixFunctionalRelations(), this.right.simplifyMatrixFunctionalRelations(), this.type);
 
-            MatrixExpression matExprSimplified = SimplifyMatrixBinaryOperationMethods.trivialOperationsInDifferenceWithZeroIdMatrices(matExpr);
+            MatrixExpression matExprSimplified = SimplifyMatrixBinaryOperationUtils.trivialOperationsInDifferenceWithZeroIdMatrices(matExpr);
             if (!matExprSimplified.equals(matExpr)) {
                 return matExprSimplified;
             }
@@ -475,7 +475,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(matExpr);
 
             // Sammelt Matrizen im ersten Summanden des Minuenden. Beispiel: ([7]+exp([x]))-([3]+[sin(1)]) wird zu [4-sin(1)]+exp([x])
-            SimplifyMatrixBinaryOperationMethods.collectMatricesInDifference(summandsLeft, summandsRight);
+            SimplifyMatrixBinaryOperationUtils.collectMatricesInDifference(summandsLeft, summandsRight);
 
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
@@ -489,19 +489,19 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
             MatrixExpression matExpr = SimplifyMatrixUtilities.produceProduct(factors);
             // Falls Vielfache von Id in Produkten auftauchen, dann als 1x1-Faktor nach vorne ziehen.
-            matExpr = SimplifyMatrixBinaryOperationMethods.factorizeMultiplesOfId(matExpr);
+            matExpr = SimplifyMatrixBinaryOperationUtils.factorizeMultiplesOfId(matExpr);
 
             factors = SimplifyMatrixUtilities.getFactors(matExpr);
 
             // Falls Nullmatrizen in Produkten auftauchen, dann nur Nullmatrix zurückgeben.
-            SimplifyMatrixBinaryOperationMethods.reduceZeroProductToZero(factors);
+            SimplifyMatrixBinaryOperationUtils.reduceZeroProductToZero(factors);
             // Identitätsmatrizen in Produkten beseitigen.
-            SimplifyMatrixBinaryOperationMethods.removeIdInProduct(factors);
+            SimplifyMatrixBinaryOperationUtils.removeIdInProduct(factors);
             /* 
              Sammelt aufeinanderfolgende Matrizen in einem Produkt. 
              Beispiel: [2]*exp([x])*[3]*[sin(1)] wird [2]*exp([x])*[3*sin(1)]
              */
-            SimplifyMatrixBinaryOperationMethods.collectMatricesInProduct(factors);
+            SimplifyMatrixBinaryOperationUtils.collectMatricesInProduct(factors);
 
             return SimplifyMatrixUtilities.produceProduct(factors);
 
@@ -563,7 +563,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 summands.put(i, summands.get(i).simplifyFactorizeScalars());
             }
             // Skalare Faktoren faktorisieren.
-            SimplifyMatrixBinaryOperationMethods.factorizeScalarsInSum(summands);
+            SimplifyMatrixBinaryOperationUtils.factorizeScalarsInSum(summands);
             return SimplifyMatrixUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -572,7 +572,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(matExpr);
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(matExpr);
             // Skalare Faktoren faktorisieren.
-            SimplifyMatrixBinaryOperationMethods.factorizeScalarsInDifference(summandsLeft, summandsRight);
+            SimplifyMatrixBinaryOperationUtils.factorizeScalarsInDifference(summandsLeft, summandsRight);
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
@@ -601,7 +601,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 summands.put(i, summands.get(i).simplifyFactorize());
             }
             // Faktorisierung in Summen.
-            SimplifyMatrixBinaryOperationMethods.factorizeInSum(summands);
+            SimplifyMatrixBinaryOperationUtils.factorizeInSum(summands);
             return SimplifyMatrixUtilities.produceSum(summands);
 
         } else if (this.isDifference()) {
@@ -610,7 +610,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection summandsLeft = SimplifyMatrixUtilities.getSummandsLeftInMatrixExpression(matExpr);
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(matExpr);
             // Faktorisierung in Differenzen.
-            SimplifyMatrixBinaryOperationMethods.factorizeInDifference(summandsLeft, summandsRight);
+            SimplifyMatrixBinaryOperationUtils.factorizeInDifference(summandsLeft, summandsRight);
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
         } else if (this.isProduct()) {
@@ -645,9 +645,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
             }
 
             // cos(A)^2 + sin(A)^2 = E
-            SimplifyMatrixFunctionalRelations.reduceSumOfSquaresOfSineAndCosine(summands);
+            SimplifyMatrixFunctionalRelationsUtils.reduceSumOfSquaresOfSineAndCosine(summands);
             // cosh(A) + sinh(A) = exp(A)
-            SimplifyMatrixFunctionalRelations.reduceSinhPlusCoshToExp(summands);
+            SimplifyMatrixFunctionalRelationsUtils.reduceSinhPlusCoshToExp(summands);
 
             return SimplifyMatrixUtilities.produceSum(summands);
 
@@ -664,9 +664,9 @@ public class MatrixBinaryOperation extends MatrixExpression {
             MatrixExpressionCollection summandsRight = SimplifyMatrixUtilities.getSummandsRightInMatrixExpression(simplifiedDifference);
 
             // cosh(A) - sinh(A) = exp(-A) bzw. sinh(A) - cosh(A) = -exp(-A)
-            SimplifyMatrixFunctionalRelations.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
+            SimplifyMatrixFunctionalRelationsUtils.reduceCoshMinusSinhToExp(summandsLeft, summandsRight);
             // cosh(A)^2 - sinh(A)^2 = E bzw. sinh(A)^2 - cosh(A)^2 = -E
-            SimplifyMatrixFunctionalRelations.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
+            SimplifyMatrixFunctionalRelationsUtils.reduceDifferenceOfSquaresOfHypSineAndHypCosine(summandsLeft, summandsRight);
 
             return SimplifyMatrixUtilities.produceDifference(summandsLeft, summandsRight);
 
