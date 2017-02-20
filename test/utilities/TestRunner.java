@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import substitutiontests.SubstitutionTests;
 
@@ -68,7 +69,7 @@ public class TestRunner {
             }
             try {
                 obj = constructor.newInstance(new Object[]{});
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 System.err.println("Cound not create an object of the class " + cls.toString());
                 continue;
             }
@@ -87,13 +88,13 @@ public class TestRunner {
                 if (method.getAnnotation(BeforeClass.class) != null) {
                     try {
                         method.invoke(obj);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     }
                 }
             }
 
             for (Method test : methods) {
-                if (test.getAnnotation(Test.class) != null) {
+                if (test.getAnnotation(Test.class) != null && test.getAnnotation(Ignore.class) == null) {
                     try {
                         System.out.println("Execution of test " + test.getName() + " begins ...");
                         if (beforeMethod != null) {
@@ -103,7 +104,7 @@ public class TestRunner {
                         test.invoke(obj);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         numberOfFailedTests++;
                         System.err.println("Execution of test " + test.getName() + ": failed.");
                     }
@@ -115,7 +116,7 @@ public class TestRunner {
                 if (method.getAnnotation(AfterClass.class) != null) {
                     try {
                         method.invoke(obj);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                     }
                 }
             }
