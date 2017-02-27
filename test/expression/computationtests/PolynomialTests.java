@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
+import utilities.TestUtilities;
 
 public class PolynomialTests {
 
@@ -38,6 +39,7 @@ public class PolynomialTests {
             f = Expression.build("(1+x)^2-(x-1)^2", null);
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(0, 4);
+            TestUtilities.printResult(coefficientsExpected, coefficients);
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -50,6 +52,7 @@ public class PolynomialTests {
             f = Expression.build("(1/2+x)^3-x^2", null);
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(ONE.div(8), THREE.div(4), ONE.div(TWO), ONE);
+            TestUtilities.printResult(coefficientsExpected, coefficients);
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -62,6 +65,7 @@ public class PolynomialTests {
             f = Expression.build("(2+x/3)^3+(1+x)^5-3*x^5", null);
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(9, 9, "32/3", "271/27", 5, -2);
+            TestUtilities.printResult(coefficientsExpected, coefficients);
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -71,42 +75,49 @@ public class PolynomialTests {
     @Test
     public void periodicCoefficientsTest1() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 1, -4);
+        TestUtilities.printResult(3, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 3);
     }
 
     @Test
     public void periodicCoefficientsTest2() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 7, -4);
+        TestUtilities.printResult(6, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 6);
     }
 
     @Test
     public void periodicCoefficientsEmptyTest() {
         ExpressionCollection c = new ExpressionCollection();
+        TestUtilities.printResult(0, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 0);
     }
 
     @Test
     public void antiperiodicCoefficientsTest1() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, -2, -1, 4, 2, 1, -4);
+        TestUtilities.printResult(3, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 3);
     }
 
     @Test
     public void antiperiodicCoefficientsTest2() {
         ExpressionCollection c = new ExpressionCollection(5, 1, -5, -1, 5, 1, -5, -1);
+        TestUtilities.printResult(2, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 2);
     }
 
     @Test
     public void antiperiodicCoefficientsTest3() {
         ExpressionCollection c = new ExpressionCollection(4, 3, -8, 2);
+        TestUtilities.printResult(4, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 4);
     }
 
     @Test
     public void antiperiodicCoefficientsEmptyTest() {
         ExpressionCollection c = new ExpressionCollection();
+        TestUtilities.printResult(0, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 0);
     }
 
@@ -121,6 +132,8 @@ public class PolynomialTests {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection(new Constant(-557).div(3750), ONE.div(375), new Constant(13).div(25), TWO.div(5));
             ExpressionCollection expectedRest = new ExpressionCollection(new Constant(74443).div(7500), new Constant(11531).div(1875));
+            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
+                    new Object[]{divisionResult[0], divisionResult[1]});
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -139,6 +152,8 @@ public class PolynomialTests {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection();
             ExpressionCollection expectedRest = new ExpressionCollection(1, 0, 5, 3);
+            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
+                    new Object[]{divisionResult[0], divisionResult[1]});
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -158,6 +173,8 @@ public class PolynomialTests {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection(ONE.div(2), 1, 0, -2, 1);
             ExpressionCollection expectedRest = new ExpressionCollection();
+            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
+                    new Object[]{divisionResult[0], divisionResult[1]});
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -176,6 +193,7 @@ public class PolynomialTests {
             g = Expression.build("3+13*x+7*x^2+x^3", null);
             ggT = Expression.build("3+x", null);
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
+            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -194,6 +212,7 @@ public class PolynomialTests {
             g = Expression.build("x^5+4*x^3-(256+48*x^2+64*x)", null);
             ggT = Expression.build("64+20*x^2+x^4+32*x+4*x^3", null);
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
+            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -215,6 +234,7 @@ public class PolynomialTests {
             ExpressionCollection coefficientsG = SimplifyPolynomialUtils.getPolynomialCoefficients(g, "z");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialUtils.getGGTOfPolynomials(coefficientsF, coefficientsG);
             Expression expectedResult = SimplifyPolynomialUtils.getPolynomialFromCoefficients(expectedResultCoefficients, "z");
+            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -232,6 +252,7 @@ public class PolynomialTests {
             ExpressionCollection coefficientsG = SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialUtils.getGGTOfPolynomials(coefficientsF, coefficientsG);
             Expression expectedResult = SimplifyPolynomialUtils.getPolynomialFromCoefficients(expectedResultCoefficients, "x");
+            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -246,6 +267,7 @@ public class PolynomialTests {
             g = Expression.build("2*x^2+4*x-18", null);
             ggT = ONE;
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
+            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equals(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -259,6 +281,8 @@ public class PolynomialTests {
             f = Expression.build("x^2+3*x+2", null);
             g = Expression.build("x^2+4*x+3", null);
             Expression[] expectedResult = SimplifyPolynomialUtils.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
+            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
+                    new Object[]{MINUS_ONE, ONE});
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equals(MINUS_ONE));
             Assert.assertTrue(expectedResult[1].equals(ONE));
@@ -277,6 +301,9 @@ public class PolynomialTests {
             f = Expression.build("8+16*x+10*x^2+2*x^3", null);
             g = Expression.build("60+95*x+40*x^2+5*x^3", null);
             Expression[] expectedResult = SimplifyPolynomialUtils.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
+            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
+                    new Object[]{SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8)),
+                        SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))});
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8))));
             Assert.assertTrue(expectedResult[1].equivalent(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))));
@@ -296,6 +323,9 @@ public class PolynomialTests {
             g = Expression.build("x^2+1", null);
             h = Expression.build("x^2", null);
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
+            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
+                    new Object[]{Expression.build("(-1)/2+(1/2)*x", null),
+                        Expression.build("1+((-1)/2)*x", null)});
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(-1)/2+(1/2)*x", null)));
             Assert.assertTrue(expectedResult[1].equivalent(Expression.build("1+((-1)/2)*x", null)));
@@ -315,6 +345,9 @@ public class PolynomialTests {
             g = Expression.build("x^2+4*x+3", null);
             h = Expression.build("x^3+x^2", null);
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
+            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
+                    new Object[]{Expression.build("3*x", null),
+                        Expression.build("(-2)*x", null)});
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(Expression.build("3*x", null)));
             Assert.assertTrue(expectedResult[1].equivalent(Expression.build("(-2)*x", null)));
@@ -334,6 +367,7 @@ public class PolynomialTests {
             g = Expression.build("x^2+4*x+3", null);
             h = Expression.build("x^4", null);
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
+            TestUtilities.printResults(expectedResult, new Expression[]{});
             Assert.assertTrue(expectedResult.length == 0);
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -348,6 +382,7 @@ public class PolynomialTests {
             f = Expression.build("x^5-7", null);
             expectedFactorizationOfF = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+(7^(1/5)*(1+5^(1/2))*x)/2)*((x^2+7^(2/5))-(7^(1/5)*(5^(1/2)-1)*x)/2)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -361,6 +396,7 @@ public class PolynomialTests {
             f = Expression.build("x^4+1", null);
             expectedFactorizationOfF = Expression.build("(x^2+2^(1/2)*x+1)*((x^2+1)-2^(1/2)*x)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -374,6 +410,7 @@ public class PolynomialTests {
             f = Expression.build("x^3+1", null);
             expectedFactorizationOfF = Expression.build("(x+1)*((1+x^2)-x)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -387,6 +424,7 @@ public class PolynomialTests {
             f = Expression.build("1+x+x^2+x^3+x^4", null);
             expectedFactorizationOfF = Expression.build("((1+x^2)+((1-5^(1/2))*x)/2)*(1+x^2+((5^(1/2)+1)*x)/2)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -400,6 +438,7 @@ public class PolynomialTests {
             f = Expression.build("1+x+x^2+x^3+x^4+x^5", null);
             expectedFactorizationOfF = Expression.build("(1+x)*((1+x^2)-x)*(1+x+x^2)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -413,6 +452,7 @@ public class PolynomialTests {
             f = Expression.build("4*x^5+3*x^4+25*x^3+4*x^2+3*x+25", null);
             expectedFactorizationOfF = Expression.build("4*(x^2+(3*x)/4+25/4)*(1+x)*((1+x^2)-x)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -426,6 +466,7 @@ public class PolynomialTests {
             f = Expression.build("12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8", null);
             expectedFactorizationOfF = Expression.build("(12+2*x+x^2)*((1+x^6)-x^3)", null);
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x").orderDifferencesAndQuotients();
+            TestUtilities.printResult(expectedFactorizationOfF, f);
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -566,7 +607,7 @@ public class PolynomialTests {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void decomposePolynomialIntoSquarefreeFactorsTest1() {
         /* 

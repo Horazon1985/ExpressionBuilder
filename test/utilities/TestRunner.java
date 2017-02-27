@@ -61,6 +61,10 @@ public class TestRunner {
         Object obj;
         int numberOfSuccessfulTests = 0, numberOfFailedTests = 0;
         for (Class cls : TEST_CLASSES) {
+            if (cls.getAnnotation(Ignore.class) != null) {
+                System.out.println("Test class " + cls.toString() + " will be ignored.");
+                continue;
+            }
             try {
                 constructor = cls.getConstructor();
             } catch (NoSuchMethodException | SecurityException ex) {
