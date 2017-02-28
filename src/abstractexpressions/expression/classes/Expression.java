@@ -254,6 +254,15 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
+    public static Expression build(String formula) throws ExpressionException {
+        return build(formula, null);
+    }
+    
+    /**
+     * Hauptmethode zum Erstellen einer Expression aus einem String.
+     *
+     * @throws ExpressionException
+     */
     public static Expression build(String formula, HashSet<String> vars) throws ExpressionException {
 
         // Leerzeichen beseitigen und alles zu Kleinbuchstaben machen

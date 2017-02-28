@@ -54,8 +54,10 @@ public class TestUtilities {
             } else {
                 System.out.println("\033[31m Expected result: " + expected.toString());
             }
+        } else if (expected.equals(result)) {
+            System.out.println("\033[32m Expected result:" + expected.toString());
         } else {
-            System.out.println("Expected result: " + expected.toString());
+            System.out.println("\033[31m Expected result: " + expected.toString());
         }
 
         System.out.println("Result: " + result.toString());
@@ -111,8 +113,10 @@ public class TestUtilities {
                     } else {
                         System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
                     }
+                } else if (expectedResults[i].equals(results[i])) {
+                    System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
                 } else {
-                    System.out.println("Expected result: " + expectedResults[i].toString());
+                    System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
                 }
 
                 System.out.println("Result: " + results[i].toString());

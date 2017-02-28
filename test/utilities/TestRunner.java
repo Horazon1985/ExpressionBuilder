@@ -35,14 +35,14 @@ public class TestRunner {
         TEST_CLASSES.add(AlgebraicMethodsTests.class);
         TEST_CLASSES.add(GroebnerBasisTests.class);
         TEST_CLASSES.add(SolveSpecialDifferentialEquationTests.class);
-        TEST_CLASSES.add(SolveGeneralEquationMethodsTests.class);
+        TEST_CLASSES.add(SolveGeneralEquationTests.class);
         TEST_CLASSES.add(IntegrationTests.class);
         TEST_CLASSES.add(PolynomialTests.class);
         TEST_CLASSES.add(SimplifyExpLogTests.class);
         TEST_CLASSES.add(SimplifyOperatorTests.class);
         TEST_CLASSES.add(SolveGeneralEquationSystemTests.class);
         TEST_CLASSES.add(SolveGeneralDifferentialEquationTests.class);
-        TEST_CLASSES.add(SolveSpecialEquationMethodsTests.class);
+        TEST_CLASSES.add(SolveSpecialEquationTests.class);
         TEST_CLASSES.add(ExpressionCollectionTests.class);
         TEST_CLASSES.add(GeneralSimplifyExpressionTests.class);
         TEST_CLASSES.add(SimplifyUtilitiesTests.class);

@@ -53,9 +53,9 @@ public class IntegrationTests {
     public void computeIntegralOfPolynomialTest() {
         // int(x^3/7+x^2-5,x) = x^4/28+x^3/3-5*x.
         try {
-            f = Expression.build("int(x^3/7+x^2-5,x)", null);
+            f = Expression.build("int(x^3/7+x^2-5,x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("((x^(3+1)/(3+1))/7+x^(2+1)/(2+1))-5*x", null);
+            Expression expectedResult = Expression.build("((x^(3+1)/(3+1))/7+x^(2+1)/(2+1))-5*x");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -67,9 +67,9 @@ public class IntegrationTests {
     public void computeIntegralBySubstitutionTest1() {
         // int(x^2*exp(x^3),x) = exp(x^3)/3.
         try {
-            f = Expression.build("int(x^2*exp(x^3),x)", null);
+            f = Expression.build("int(x^2*exp(x^3),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("exp(x^3)/3", null);
+            Expression expectedResult = Expression.build("exp(x^3)/3");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -81,9 +81,9 @@ public class IntegrationTests {
     public void computeIntegralBySubstitutionTest2() {
         // int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x) = sin(x^3+sin(x)).
         try {
-            f = Expression.build("int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x)", null);
+            f = Expression.build("int((6*x^2+2*cos(x))*cos(x^3+sin(x)),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("2*sin(x^3+sin(x))", null);
+            Expression expectedResult = Expression.build("2*sin(x^3+sin(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -95,7 +95,7 @@ public class IntegrationTests {
     public void computeIntegralByPartialIntegrationTest() {
         // int(x^2*cos(x),x) = sin(x)*x^2-2*(-cos(x)*x-(-sin(x))).
         try {
-            f = Expression.build("int(x^2*cos(x),x)", null);
+            f = Expression.build("int(x^2*cos(x),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
             Expression expectedResult = Variable.create("x").sin().mult(Variable.create("x").pow(2)).sub(
                     Expression.TWO.mult(Expression.MINUS_ONE.mult(Variable.create("x").cos()).mult(Variable.create("x")).sub(
@@ -113,24 +113,24 @@ public class IntegrationTests {
         // int(cot(x),x) = ln(|sin(x)|).
         // int(5^x,x) = 5^x/ln(5).
         try {
-            f = Expression.build("int(ln(x),x)", null);
+            f = Expression.build("int(ln(x),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("x*ln(x)-x", null);
+            Expression expectedResult = Expression.build("x*ln(x)-x");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
-            f = Expression.build("int(cot(x),x)", null);
+            f = Expression.build("int(cot(x),x)");
             integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            expectedResult = Expression.build("ln(|sin(x)|)", null);
+            expectedResult = Expression.build("ln(|sin(x)|)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
-            f = Expression.build("int(5^x,x)", null);
+            f = Expression.build("int(5^x,x)");
             integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            expectedResult = Expression.build("exp(ln(5)*x)/ln(5)", null);
+            expectedResult = Expression.build("exp(ln(5)*x)/ln(5)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
             expectedResult = expectedResult.simplify();
             // Vereinfacht ist integral = 5^x/ln(5).
-            Expression resultSimplified = Expression.build("5^x/ln(5)", null);
+            Expression resultSimplified = Expression.build("5^x/ln(5)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(expectedResult.equivalent(resultSimplified));
         } catch (ExpressionException | EvaluationException e) {
@@ -142,7 +142,7 @@ public class IntegrationTests {
     public void computeIntegralOfPowerOfElementaryFunctionTest() {
         // int(tan(x)^3,x) = tan(x)^2/2+ln(|cos(x)|).
         try {
-            f = Expression.build("int(tan(x)^3,x)", null);
+            f = Expression.build("int(tan(x)^3,x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
             Expression expectedResult = Variable.create("x").tan().pow(2).div(2).add(Variable.create("x").cos().abs().ln());
             TestUtilities.printResult(expectedResult, integral);
@@ -156,7 +156,7 @@ public class IntegrationTests {
     public void integralOfGaussianFunctionNotExistsTest() {
         // int(exp(x^2),x) ist nicht in kompakter Form berechenbar.
         try {
-            f = Expression.build("int(exp(x^2),x)", null);
+            f = Expression.build("int(exp(x^2),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
             TestUtilities.printResult(f, integral);
             Assert.assertTrue(integral.equals(f));
@@ -169,9 +169,9 @@ public class IntegrationTests {
     public void integralOfSumTest() {
         // int(x^2+exp(x^2),x) ist = x^3/3+int(exp(x^2), x).
         try {
-            f = Expression.build("int(x^2+exp(x^2),x)", null);
+            f = Expression.build("int(x^2+exp(x^2),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)", null);
+            Expression expectedResult = Expression.build("x^(2+1)/(2+1)+int(exp(x^2),x)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -183,9 +183,9 @@ public class IntegrationTests {
     public void integralOfConstantMultipleOfFunctionTest() {
         // Integral von (5*exp(x^2))/11 ist = (5*int(exp(x^2), x))/11.
         try {
-            f = Expression.build("int((5*exp(x^2))/11,x)", null);
+            f = Expression.build("int((5*exp(x^2))/11,x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("(5*int(exp(x^2), x))/11", null);
+            Expression expectedResult = Expression.build("(5*int(exp(x^2), x))/11");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -199,9 +199,9 @@ public class IntegrationTests {
     public void integralOfRationalFunctionTest() {
         // Integral von (2*x^2+14*x+8)/(x^3+7*x^2+7*x-15) = ln(|x-1|)+2*ln(|3+x|)-ln(|5+x|).
         try {
-            f = Expression.build("int((2*x^2+14*x+8)/(x^3+7*x^2+7*x-15),x)", null);
+            f = Expression.build("int((2*x^2+14*x+8)/(x^3+7*x^2+7*x-15),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("(ln(|x-1|)+2*ln(|3+x|))-ln(|5+x|)", null);
+            Expression expectedResult = Expression.build("(ln(|x-1|)+2*ln(|3+x|))-ln(|5+x|)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -213,9 +213,9 @@ public class IntegrationTests {
     public void integralOfRationalFunctionTest2() {
         // Integral von (3*x+4)/(2*x^2+5*x+3) = ln(|1+x|)+ln(|3+2*x|)/2.
         try {
-            f = Expression.build("int((3*x+4)/(2*x^2+5*x+3),x)", null);
+            f = Expression.build("int((3*x+4)/(2*x^2+5*x+3),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("ln(|1+x|)+ln(|3+2*x|)/2", null);
+            Expression expectedResult = Expression.build("ln(|1+x|)+ln(|3+2*x|)/2");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -227,9 +227,9 @@ public class IntegrationTests {
     public void integralOfRationalFunctionInExpTest1() {
         // Integral von 1/(1+exp(x)) = (x+ln(1))-ln(1+exp(x)).
         try {
-            f = Expression.build("int(1/(1+exp(x)),x)", null);
+            f = Expression.build("int(1/(1+exp(x)),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("(x+ln(1))-ln(1+exp(x))", null);
+            Expression expectedResult = Expression.build("(x+ln(1))-ln(1+exp(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -241,10 +241,10 @@ public class IntegrationTests {
     public void integralOfRationalFunctionInExpTest2() {
         // Integral von 1/(3+exp(2*x/7)) = x/3-ln((3+exp((2*x)/7))^(7/6)).
         try {
-            f = Expression.build("int(1/(3+exp(2*x/7)),x)", null);
+            f = Expression.build("int(1/(3+exp(2*x/7)),x)");
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f);
-            Expression expectedResult = Expression.build("(7*((2/7*x+ln(1))/3-(ln(3+exp(2/7*x)))/3))/2", null);
-            Expression expectedResultSimplified = Expression.build("x/3-ln((3+exp((2*x)/7))^(7/6))", null);
+            Expression expectedResult = Expression.build("(7*((2/7*x+ln(1))/3-(ln(3+exp(2/7*x)))/3))/2");
+            Expression expectedResultSimplified = Expression.build("x/3-ln((3+exp((2*x)/7))^(7/6))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
             integral = integral.simplify();
@@ -258,10 +258,10 @@ public class IntegrationTests {
     public void integralOfRationalFunctionInSinCosTest1() {
         // Integral von 1/(2+cos(x)) = (2*arctan(tan(x/2)/3^(1/2)))/3^(1/2).
         try {
-            f = Expression.build("int(1/(2+cos(x)),x)", null);
+            f = Expression.build("int(1/(2+cos(x)),x)");
             // Faktoren sortieren, damit die Überprüfung einfacher wird.
             Expression integral = GeneralIntegralUtils.integrateIndefinite((Operator) f).orderDifferencesAndQuotients().orderSumsAndProducts();
-            Expression expectedResult = Expression.build("(2*arctan(tan(x/2)/3^(1/2)))/3^(1/2)", null);
+            Expression expectedResult = Expression.build("(2*arctan(tan(x/2)/3^(1/2)))/3^(1/2)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -273,10 +273,10 @@ public class IntegrationTests {
     public void integralOfRationalFunctionInSinCosTest2() {
         // Integral von 1/(sin(x)+cos(x)) = ln(|2^(1/2)+tan(x/2)-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2))).
         try {
-            f = Expression.build("int(1/(sin(x)+cos(x)),x)", null);
+            f = Expression.build("int(1/(sin(x)+cos(x)),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("ln(|(2^(1/2)+tan(x/2))-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2)))", null);
+            Expression expectedResult = Expression.build("ln(|(2^(1/2)+tan(x/2))-1|^(1/2^(1/2))/|tan(x/2)-(1+2^(1/2))|^(1/2^(1/2)))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -288,10 +288,10 @@ public class IntegrationTests {
     public void integralOfProductOfLinearPolynomialAndSqrtOfQuadraticPolynomialTest1() {
         // Integral von (6*x+7)*(1+x^2)^(1/2) = 2*(1+x^2)^(3/2)+(7*x*(1+x^2)^(1/2))/2+(7*arsinh(x))/2.
         try {
-            f = Expression.build("int((6*x+7)*(1+x^2)^(1/2),x)", null);
+            f = Expression.build("int((6*x+7)*(1+x^2)^(1/2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("2*(1+x^2)^(3/2)+(7*x*(1+x^2)^(1/2))/2+(7*arsinh(x))/2", null);
+            Expression expectedResult = Expression.build("2*(1+x^2)^(3/2)+(7*x*(1+x^2)^(1/2))/2+(7*arsinh(x))/2");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -303,10 +303,10 @@ public class IntegrationTests {
     public void integralOfProductOfLinearPolynomialAndSqrtOfQuadraticPolynomialTest2() {
         // Integral von x^3*(1+x^2)^(1/2) = (1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3.
         try {
-            f = Expression.build("int(x^3*(1+x^2)^(1/2),x)", null);
+            f = Expression.build("int(x^3*(1+x^2)^(1/2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("(1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3", null);
+            Expression expectedResult = Expression.build("(1+x^2)^(5/2)/5-(1+x^2)^(3/2)/3");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -318,10 +318,10 @@ public class IntegrationTests {
     public void integralOfQuotientOfPolynomialAndSqrtOfOddPowerOfQuadraticPolynomialTest1() {
         // Integral von x^3/(1+x^2)^(1/2) = (1+x^2)^(3/2)/3-(1+x^2)^(1/2).
         try {
-            f = Expression.build("int(x^3/(1+x^2)^(1/2),x)", null);
+            f = Expression.build("int(x^3/(1+x^2)^(1/2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("((x^2-2)*(1+x^2)^(1/2))/3", null);
+            Expression expectedResult = Expression.build("((x^2-2)*(1+x^2)^(1/2))/3");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -333,10 +333,10 @@ public class IntegrationTests {
     public void integralOfQuotientOfPolynomialAndSqrtOfOddPowerOfQuadraticPolynomialTest2() {
         // Integral von (2+x^3)/(1+x^2)^(3/2) = (1+x^2)^(1/2)+(1+2*x)/(1+x^2)^(1/2).
         try {
-            f = Expression.build("int((2+x^3)/(1+x^2)^(3/2),x)", null);
+            f = Expression.build("int((2+x^3)/(1+x^2)^(3/2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build(" (2+x^2+2*x)/(1+x^2)^(1/2)", null);
+            Expression expectedResult = Expression.build(" (2+x^2+2*x)/(1+x^2)^(1/2)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -349,10 +349,10 @@ public class IntegrationTests {
     public void integrateByRischAlgorithmRationalPartTest1() {
         // Integral von (ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2) = x/(x^2+ln(x)).
         try {
-            f = Expression.build("int((ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2),x)", null);
+            f = Expression.build("int((ln(x)-x^2-1)/(x^4+2*x^2*ln(x)+ln(x)^2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("x/(x^2+ln(x))", null);
+            Expression expectedResult = Expression.build("x/(x^2+ln(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -364,10 +364,10 @@ public class IntegrationTests {
     public void integrateByRischAlgorithmRationalPartTest2() {
         // int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))), x) = ln(1+exp(x)+ln(x)).
         try {
-            f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)", null);
+            f = Expression.build("int((x*exp(x)+1)/(x*(1+exp(x)+ln(x))),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("ln(1+exp(x)+ln(x))", null);
+            Expression expectedResult = Expression.build("ln(1+exp(x)+ln(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -382,10 +382,10 @@ public class IntegrationTests {
          Ideales Ergebnis wäre x/(1+exp(x^2)).
          */
         try {
-            f = Expression.build("int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x)", null);
+            f = Expression.build("int((1+(1-2*x^2)*exp(x^2))/(1+2*exp(x^2)+exp(2*x^2)),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = f.simplify();
-            Expression expectedResult = Expression.build("x/(1+exp(x^2))", null);
+            Expression expectedResult = Expression.build("x/(1+exp(x^2))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
@@ -398,10 +398,10 @@ public class IntegrationTests {
         // int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x) = (-ln(x))/(x+exp(x)) gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)", null);
+            f = Expression.build("int((-exp(x)-x+ln(x)*x+ln(x)*x*exp(x))/(x*(exp(x)+x)^2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))", null);
+            Expression expectedResult = Expression.build("(-ln(x))/(x+exp(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -414,10 +414,10 @@ public class IntegrationTests {
         // int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x) = x/(1+exp(x))^4 gemäß dem Risch-Algorithmus.
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            f = Expression.build("int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x)", null);
+            f = Expression.build("int((1+exp(x)-4*x*exp(x))/(1+exp(x))^5,x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("x/(1+exp(x))^4", null);
+            Expression expectedResult = Expression.build("x/(1+exp(x))^4");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -434,10 +434,10 @@ public class IntegrationTests {
          */
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            f = Expression.build("int((1-2*x*exp(x)-exp(2*x))/(1+exp(x))^3,x)", null);
+            f = Expression.build("int((1-2*x*exp(x)-exp(2*x))/(1+exp(x))^3,x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(1+(1-2*x)*exp(x)+(1+exp(x))*(1+2*x))/(2*(1+exp(x))^2)", null);
+            Expression expectedResult = Expression.build("(1+(1-2*x)*exp(x)+(1+exp(x))*(1+2*x))/(2*(1+exp(x))^2)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -454,10 +454,10 @@ public class IntegrationTests {
          */
         try {
             // Für diesen Test müssen Logarithmen auseinandergezogen werden.
-            f = Expression.build("int((2+(2*x-1)*ln(x)-x)/(x^2+x*ln(x)+x^2*ln(x)+x*ln(x)^2),x)", null);
+            f = Expression.build("int((2+(2*x-1)*ln(x)-x)/(x^2+x*ln(x)+x^2*ln(x)+x*ln(x)^2),x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("2*ln(x+ln(x))-3*ln(1+ln(x))", null);
+            Expression expectedResult = Expression.build("2*ln(x+ln(x))-3*ln(1+ln(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -469,10 +469,10 @@ public class IntegrationTests {
     public void integrateByRischAlgorithmPolynomialPartLogarithmicCaseTest1() {
         // int(ln(1+x^2)/x^2,x) = 2*arctan(x)-ln(1+x^2)/x gemäß dem Risch-Algorithmus.
         try {
-            f = Expression.build("int(ln(1+x^2)/x^2,x)", null);
+            f = Expression.build("int(ln(1+x^2)/x^2,x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("2*arctan(x)-ln(1+x^2)/x", null);
+            Expression expectedResult = Expression.build("2*arctan(x)-ln(1+x^2)/x");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -484,10 +484,10 @@ public class IntegrationTests {
     public void integrateByRischAlgorithmPolynomialPartLogarithmicCaseTest2() {
         // int((2*(x*exp(x)+exp(2*x))*ln(1+exp(x)))/(1+exp(x))+(1+exp(x))*ln(1+exp(x))^2,x) = (x+exp(x))*ln(1+exp(x)) gemäß dem Risch-Algorithmus.
         try {
-            f = Expression.build("int((2*(x*exp(x)+exp(2*x))*ln(1+exp(x)))/(1+exp(x))+(1+exp(x))*ln(1+exp(x))^2,x)", null);
+            f = Expression.build("int((2*(x*exp(x)+exp(2*x))*ln(1+exp(x)))/(1+exp(x))+(1+exp(x))*ln(1+exp(x))^2,x)");
             // Ohne simplify() ist der Ausdruck zu lang.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(x+exp(x))*ln(1+exp(x))^2", null);
+            Expression expectedResult = Expression.build("(x+exp(x))*ln(1+exp(x))^2");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -501,10 +501,10 @@ public class IntegrationTests {
         int((2*x^2+4*x+1)*exp(x^2),x) = (2+x)*exp(x^2) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((2*x^2+4*x+1)*exp(x^2),x)", null);
+            f = Expression.build("int((2*x^2+4*x+1)*exp(x^2),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(2+x)*exp(x^2)", null);
+            Expression expectedResult = Expression.build("(2+x)*exp(x^2)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -518,10 +518,10 @@ public class IntegrationTests {
         int((x^3+x^2+x-1)*exp(x)/x^2,x) = ((1+x^2)*exp(x))/x gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)", null);
+            f = Expression.build("int((x^3+x^2+x-1)*exp(x)/x^2,x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x", null);
+            Expression expectedResult = Expression.build("((1+x^2)*exp(x))/x");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -535,10 +535,10 @@ public class IntegrationTests {
         int((x^2+2*x)*exp(x)+(2*x^2+2*x+1)*exp(2*x)/(1+x)^2,x) = x^2*exp(x)+(x*exp(2*x))/(1+x) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((x^2+2*x)*exp(x)+(2*x^2+2*x+1)*exp(2*x)/(1+x)^2,x)", null);
+            f = Expression.build("int((x^2+2*x)*exp(x)+(2*x^2+2*x+1)*exp(2*x)/(1+x)^2,x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("x^2*exp(x)+(x*exp(2*x))/(1+x)", null);
+            Expression expectedResult = Expression.build("x^2*exp(x)+(x*exp(2*x))/(1+x)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -552,10 +552,10 @@ public class IntegrationTests {
         int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x) = (4+2*x)*exp(2*x^2)+(1+2*x-2*x^2)*exp(-x^2) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x)", null);
+            f = Expression.build("int((8*x^2+16*x+2)*exp(2*x^2)+(-2*x^2+2*x+1)*exp(-x^2),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("2*(2+x)*exp(2*x^2)+(x-1)*exp(-x^2)", null);
+            Expression expectedResult = Expression.build("2*(2+x)*exp(2*x^2)+(x-1)*exp(-x^2)");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -569,10 +569,10 @@ public class IntegrationTests {
         int((2*x+x^2+2*exp(x)+x^2*exp(x)+exp(2*x))*exp(x+exp(x)),x) = (x^2+exp(x))*exp(x+exp(x)) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((2*x+x^2+2*exp(x)+x^2*exp(x)+exp(2*x))*exp(x+exp(x)),x)", null);
+            f = Expression.build("int((2*x+x^2+2*exp(x)+x^2*exp(x)+exp(2*x))*exp(x+exp(x)),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(x^2+exp(x))*exp(x+exp(x))", null);
+            Expression expectedResult = Expression.build("(x^2+exp(x))*exp(x+exp(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -586,10 +586,10 @@ public class IntegrationTests {
         int((1/x+1+2*ln(x)+ln(x)^2)*exp(x*ln(x)),x) = (1+ln(x))*exp(x*ln(x)) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((1/x+1+2*ln(x)+ln(x)^2)*exp(x*ln(x)),x)", null);
+            f = Expression.build("int((1/x+1+2*ln(x)+ln(x)^2)*exp(x*ln(x)),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(1+ln(x))*exp(x*ln(x))", null);
+            Expression expectedResult = Expression.build("(1+ln(x))*exp(x*ln(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -604,10 +604,10 @@ public class IntegrationTests {
         = (x^2*exp(x*ln(x)))/(x+ln(x)) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((x^3+x^2-x+x^3*ln(x)+x^2*ln(x)+2*x*ln(x)+x^2*ln(x)^2)/(x+ln(x))^2*exp(x*ln(x)),x)", null);
+            f = Expression.build("int((x^3+x^2-x+x^3*ln(x)+x^2*ln(x)+2*x*ln(x)+x^2*ln(x)^2)/(x+ln(x))^2*exp(x*ln(x)),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("(x^2*exp(x*ln(x)))/(x+ln(x))", null);
+            Expression expectedResult = Expression.build("(x^2*exp(x*ln(x)))/(x+ln(x))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -622,10 +622,10 @@ public class IntegrationTests {
         = (1+2*x)*exp(x^3) + x/(1+2*exp(x^3)) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((1+(3*x^2+4)*exp(x^3)+(24*x^3+12*x^2+8)*exp(2*x^3)+(24*x^3+12*x^2+8)*exp(3*x^3))/(1+4*exp(x^3)+4*exp(2*x^3)),x)", null);
+            f = Expression.build("int((1+(3*x^2+4)*exp(x^3)+(24*x^3+12*x^2+8)*exp(2*x^3)+(24*x^3+12*x^2+8)*exp(3*x^3))/(1+4*exp(x^3)+4*exp(2*x^3)),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("((1+2*exp(x^3))*(1+2*x)*exp(x^3)+x)/(1+2*exp(x^3))", null);
+            Expression expectedResult = Expression.build("((1+2*exp(x^3))*(1+2*x)*exp(x^3)+x)/(1+2*exp(x^3))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {
@@ -640,10 +640,10 @@ public class IntegrationTests {
         = x*exp(-x^2)+ln(x+exp(x^2)) gemäß dem Risch-Algorithmus.
          */
         try {
-            f = Expression.build("int((x-2*x^3+2*(1-x^2)*exp(x^2)+2*x*exp(2*x^2))/(x*exp(x^2)+exp(2*x^2)),x)", null);
+            f = Expression.build("int((x-2*x^3+2*(1-x^2)*exp(x^2)+2*x*exp(2*x^2))/(x*exp(x^2)+exp(2*x^2)),x)");
             // simplify(...) macht den Ausdruck ein wenig schöner.
             Expression integral = RischAlgorithmUtils.integrateByRischAlgorithmForTranscendentalExtension((Operator) f).simplify(simplifyTypes);
-            Expression expectedResult = Expression.build("x*exp(-x^2)+ln(x+exp(x^2))", null);
+            Expression expectedResult = Expression.build("x*exp(-x^2)+ln(x+exp(x^2))");
             TestUtilities.printResult(expectedResult, integral);
             Assert.assertTrue(integral.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotAlgebraicallyIntegrableException e) {

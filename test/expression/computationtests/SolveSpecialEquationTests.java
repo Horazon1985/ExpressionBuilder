@@ -16,14 +16,14 @@ import abstractexpressions.expression.basic.SimplifyRationalFunctionUtils;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import abstractexpressions.expression.equation.SolveGeneralEquationUtils;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class SolveSpecialEquationMethodsTests {
+public class SolveSpecialEquationTests {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -41,21 +41,21 @@ public class SolveSpecialEquationMethodsTests {
     public void isRationalExponentialEquationTest() {
         try {
             // Test: e^(2*x)+e^(7*x+1)/(2-e^(4*x))^3 ist eine rationale Exponentialgleichung.
-            Expression f = Expression.build("exp(2*x)+exp(7*x+1)/(2-exp(4*x))^3", null);
+            Expression f = Expression.build("exp(2*x)+exp(7*x+1)/(2-exp(4*x))^3");
             f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, "x");
             HashSet<Expression> argumentsOfExp = new HashSet<>();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(f, "x", argumentsOfExp));
             System.out.println(f);
             System.out.println(argumentsOfExp);
             // Test: 5^x/(25^(x+3)-14)-12*625^x ist eine rationale Exponentialgleichung.
-            Expression g = Expression.build("5^x/(25^(x+3)-14)-12*625^x", null);
+            Expression g = Expression.build("5^x/(25^(x+3)-14)-12*625^x");
             g = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(g, "x");
             argumentsOfExp.clear();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(g, "x", argumentsOfExp));
             System.out.println(g);
             System.out.println(argumentsOfExp);
             // Test: 7^x+2*10^x ist keine rationale Exponentialgleichung.
-            Expression h = Expression.build("7^x+2*10^x", null);
+            Expression h = Expression.build("7^x+2*10^x");
             h = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(h, "x");
             argumentsOfExp.clear();
             Assert.assertFalse(SimplifyRationalFunctionUtils.isRationalFunktionInExp(h, "x", argumentsOfExp));
@@ -70,7 +70,7 @@ public class SolveSpecialEquationMethodsTests {
     public void isGeneralRationalExponentialEquationTest() {
         try {
             // Test: a^x+a^(2*x)-30 ist eine rationale Exponentialgleichung.
-            Expression f = Expression.build("a^x+a^(2*x)-30", null);
+            Expression f = Expression.build("a^x+a^(2*x)-30");
             f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, "x");
             HashSet<Expression> factorsOfVar = new HashSet<>();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(f, "x", factorsOfVar));
@@ -85,7 +85,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveExponentialEquationTest1() {
         try {
             // Test: f = e^(3*x) - 20*e^(2*x) + 101*e^(x) - 130 = 0. Lösungen sind ln(2), ln(5), ln(13).
-            Expression f = Expression.build("exp(3*x)-20*exp(2*x)+101*exp(x)-130", null);
+            Expression f = Expression.build("exp(3*x)-20*exp(2*x)+101*exp(x)-130");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 3);
             assertTrue(zeros.containsExpression(new Constant(2).ln()));
@@ -100,7 +100,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveExponentialEquationTest2() {
         try {
             // Test: f = exp(x) + exp(2^(1/2)*x) = 10. Keine algebraischen Lösungen.
-            Expression f = Expression.build("exp(x) + exp(2^(1/2)*x) - 10", null);
+            Expression f = Expression.build("exp(x) + exp(2^(1/2)*x) - 10");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 0);
         } catch (ExpressionException | EvaluationException e) {
@@ -112,7 +112,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveExponentialEquationTest3() {
         try {
             // Test: f = 5^x + 3*25^x - 8/25 = 0. Lösung ist x = -1.
-            Expression f = Expression.build("5^x + 3*25^x - 8/25", null);
+            Expression f = Expression.build("5^x + 3*25^x - 8/25");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(Expression.MINUS_ONE));
@@ -125,7 +125,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveGeneralRationalExponentialEquationTest() {
         try {
             // Test: a^x+a^(2*x)-30 = 0. Lösung x = ln(5)/ln(a)
-            Expression f = Expression.build("a^x+a^(2*x)-30", null);
+            Expression f = Expression.build("a^x+a^(2*x)-30");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(new Constant(5).ln().div(Variable.create("a").ln())));
@@ -138,7 +138,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest1() {
         try {
             // Test: (7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5 = 0. Lösung x = 1.
-            Expression f = Expression.build("(7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5", null);
+            Expression f = Expression.build("(7*x+1)^(1/3)+(x^2+5*x+21)^(1/3)-5");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(ONE));
@@ -151,7 +151,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest2() {
         try {
             // Test: x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1 = 0. Lösung x = 3.
-            Expression f = Expression.build("x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1", null);
+            Expression f = Expression.build("x*(2*x+3)^(1/2)-(x+1)*(x^2-5)^(1/2)-1");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(THREE));
@@ -164,7 +164,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest3() {
         try {
             // Test: x^2+(x^3+1)*(3*x^5+x+30)^(1/7)-(x^4+6) = 0. Lösung x = 2.
-            Expression f = Expression.build("x^2+(x^3+1)*(3*x^5+x+30)^(1/7)-(x^4+6)", null);
+            Expression f = Expression.build("x^2+(x^3+1)*(3*x^5+x+30)^(1/7)-(x^4+6)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(TWO));
@@ -177,7 +177,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest4() {
         try {
             // Test: x*x^(1/2)+(x^2+1)^(3/2)-(8+x^3) = 0. Lösung x = 1.
-            Expression f = Expression.build("x*x^(1/2)+(x^2+3)^(3/2)-(8+x^3)", null);
+            Expression f = Expression.build("x*x^(1/2)+(x^2+3)^(3/2)-(8+x^3)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(ONE));
@@ -190,7 +190,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest5() {
         try {
             // Test: x*(2+x)^(1/2)-(x-1)^(1/3) - 3 = 0. Lösung x = 2.
-            Expression f = Expression.build("x*(2+x)^(1/2)-(x-1)^(1/3) - 3", null);
+            Expression f = Expression.build("x*(2+x)^(1/2)-(x-1)^(1/3) - 3");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(TWO));
@@ -203,7 +203,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest6() {
         try {
             // Test: (12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5 = 0. Lösung x = 1/2.
-            Expression f = Expression.build("(12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5", null);
+            Expression f = Expression.build("(12*x+1/x)^(2/3)+(3/4+x^2)^(1/2)-5");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             assertTrue(zeros.getBound() >= 2);
             assertTrue(zeros.containsExpression(ONE.div(TWO)));
@@ -217,7 +217,7 @@ public class SolveSpecialEquationMethodsTests {
     public void solveAlgebraicEquationTest7() {
         try {
             // Test: (x+(x^3+1)^(1/3))^2-(1+x^2) = 0. Lösung x = 2.
-            Expression f = Expression.build("(x+(x^3+1)^(1/3))^2-(1+x^2)", null);
+            Expression f = Expression.build("(x+(x^3+1)^(1/3))^2-(1+x^2)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
 //            assertTrue(zeros.getBound() == 1);
 //            assertTrue(zeros.containsExpression(TWO));

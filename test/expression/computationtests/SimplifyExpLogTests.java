@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
+import utilities.TestUtilities;
 
 public class SimplifyExpLogTests {
 
@@ -31,11 +32,12 @@ public class SimplifyExpLogTests {
     @Test
     public void collectExponentialFunctionsInProduct() {
         try{
-            Expression f = Expression.build("a*exp(x)*b*exp(y^2)", new HashSet<String>());
-            Expression g = Expression.build("a*exp(x+y^2)*b", new HashSet<String>());
+            Expression f = Expression.build("a*exp(x)*b*exp(y^2)");
+            Expression g = Expression.build("a*exp(x+y^2)*b");
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             SimplifyExpLogUtils.collectExponentialFunctionsInProduct(factors);
             Expression fNew = SimplifyUtilities.produceProduct(factors);
+            TestUtilities.printResult(g, fNew);
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException e){
             fail(e.getMessage());
@@ -45,13 +47,14 @@ public class SimplifyExpLogTests {
     @Test
     public void collectExponentialFunctionsInQuotient() {
         try{
-            Expression f = Expression.build("(a*exp(x)*b*exp(y^2))/(c*exp(z)*d)", new HashSet<String>());
-            Expression g = Expression.build("(a*exp(x+y^2-z)*b)/(c*d)", new HashSet<String>());
+            Expression f = Expression.build("(a*exp(x)*b*exp(y^2))/(c*exp(z)*d)");
+            Expression g = Expression.build("(a*exp(x+y^2-z)*b)/(c*d)");
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
             ExpressionCollection factorsDenominator = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
             SimplifyExpLogUtils.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferencesAndQuotients();
             g = g.orderDifferencesAndQuotients();
+            TestUtilities.printResult(g, fNew);
             Assert.assertTrue(fNew.equivalent(g));
         } catch (ExpressionException | EvaluationException e){
             fail(e.getMessage());

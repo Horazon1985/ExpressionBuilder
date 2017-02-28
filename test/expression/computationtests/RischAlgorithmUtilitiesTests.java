@@ -4,7 +4,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.integration.RischAlgorithmUtils;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;
 import org.junit.Before;

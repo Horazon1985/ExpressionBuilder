@@ -41,7 +41,7 @@ public class GroebnerBasisTests {
     @Test
     public void getMultiPolynomialFromExpressionTest1() {
         try {
-            Expression f = Expression.build("7*x^2*y-z^5/a", null);
+            Expression f = Expression.build("7*x^2*y-z^5/a");
             ArrayList<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");
@@ -56,7 +56,7 @@ public class GroebnerBasisTests {
     @Test
     public void getMultiPolynomialFromExpressionTest2() {
         try {
-            Expression f = Expression.build("0", null);
+            Expression f = Expression.build("0");
             ArrayList<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");
@@ -71,7 +71,7 @@ public class GroebnerBasisTests {
     @Test
     public void getMultiPolynomialFromExpressionIfNotMultiPolynomialTest() {
         try {
-            Expression f = Expression.build("x^2*y+sin(z)", null);
+            Expression f = Expression.build("x^2*y+sin(z)");
             ArrayList<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");

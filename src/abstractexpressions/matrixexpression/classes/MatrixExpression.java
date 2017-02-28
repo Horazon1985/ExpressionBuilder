@@ -165,6 +165,15 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
+    public static MatrixExpression build(String formula) throws ExpressionException {
+        return build(formula, null);
+    }
+    
+    /**
+     * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
+     *
+     * @throws ExpressionException
+     */
     public static MatrixExpression build(String formula, HashSet<String> vars) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();

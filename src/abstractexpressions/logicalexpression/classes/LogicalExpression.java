@@ -27,6 +27,15 @@ public abstract class LogicalExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
+    public static LogicalExpression build(String formula) throws ExpressionException {
+        return build(formula, null);
+    }
+    
+    /**
+     * Erstellt aus einem String einen logischen Ausdruck.
+     *
+     * @throws ExpressionException
+     */
     public static LogicalExpression build(String formula, HashSet<String> vars) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
