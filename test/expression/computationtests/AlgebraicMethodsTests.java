@@ -1,6 +1,7 @@
 package expression.computationtests;
 
 import abstractexpressions.expression.classes.Expression;
+import basic.MathToolTestBase;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
@@ -12,7 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class AlgebraicMethodsTests {
+public class AlgebraicMethodsTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -33,7 +34,8 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(3 + 5*7^(1/2))^5");
             Expression fExpanded = f.simplify();
             Expression expectedResult = Expression.build("506868+233900*7^(1/2)");
-            TestUtilities.printResult(expectedResult, fExpanded);
+            results = new Object[]{fExpanded};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fExpanded.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -47,7 +49,8 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(2 - 3*5^(1/2))^3");
             Expression fExpanded = f.simplify();
             Expression expectedResult = Expression.build("278-171*5^(1/2)");
-            TestUtilities.printResult(expectedResult, fExpanded);
+            results = new Object[]{fExpanded};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fExpanded.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -61,7 +64,8 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(2^(1/2)/3-4)^3");
             Expression fExpanded = f.simplify();
             Expression expectedResult = Expression.build("(434*2^(1/2))/27-200/3");
-            TestUtilities.printResult(expectedResult, fExpanded);
+            results = new Object[]{fExpanded};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fExpanded.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -75,13 +79,14 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(6*2^(1/2)-4*3^(1/2))^7");
             Expression fExpanded = f.simplify();
             Expression expectedResult = Expression.build("73073664*2^(1/2)-59664384*3^(1/2)");
-            TestUtilities.printResult(expectedResult, fExpanded);
+            results = new Object[]{fExpanded};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fExpanded.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void expandAlgebraicExpressionFailedTest() {
         try {
@@ -90,13 +95,14 @@ public class AlgebraicMethodsTests {
             f = f.pow(ComputationBounds.BOUND_ALGEBRA_MAX_POWER_OF_BINOMIAL + 1);
             Expression fExpanded = f.simplify();
             Expression expectedResult = f;
-            TestUtilities.printResult(expectedResult, f);
+            results = new Object[]{fExpanded};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fExpanded.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void sqrtFromDegreeTwoElementsOverRationalsTest1() {
         try {
@@ -104,13 +110,14 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(49+12*5^(1/2))^(1/2)");
             Expression fSimplified = f.simplify();
             Expression expectedResult = Expression.build("2+3*5^(1/2)");
-            TestUtilities.printResult(expectedResult, f);
+            results = new Object[]{fSimplified};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fSimplified.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void sqrtFromDegreeTwoElementsOverRationalsTest2() {
         try {
@@ -118,13 +125,14 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(49-12*5^(1/2))^(1/2)");
             Expression fSimplified = f.simplify();
             Expression expectedResult = Expression.build("2-3*5^(1/2)");
-            TestUtilities.printResult(expectedResult, f);
+            results = new Object[]{fSimplified};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fSimplified.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void sqrtFromDegreeTwoElementsOverRationalsTest3() {
         try {
@@ -132,13 +140,14 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(203/1200+(2/3)^(1/2)/5)^(1/2)");
             Expression fSimplified = f.simplify();
             Expression expectedResult = Expression.build("1/4+(2*(2/3)^(1/2))/5");
-            TestUtilities.printResult(expectedResult, f);
+            results = new Object[]{fSimplified};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fSimplified.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void sqrtFromDegreeTwoElementsOverRationalsNotSimplifiedTest() {
         try {
@@ -146,11 +155,12 @@ public class AlgebraicMethodsTests {
             Expression f = Expression.build("(5+5^(1/2))^(1/2)");
             Expression fSimplified = f.simplify();
             Expression expectedResult = Expression.build("(5+5^(1/2))^(1/2)");
-            TestUtilities.printResult(expectedResult, f);
+            results = new Object[]{fSimplified};
+            expectedResults = new Object[]{expectedResult};
             Assert.assertTrue(fSimplified.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
+
 }

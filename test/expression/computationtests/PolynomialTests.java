@@ -13,6 +13,7 @@ import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
 import static abstractexpressions.expression.basic.SimplifyTrigonometryUtils.THREE;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import basic.MathToolTestBase;
 import java.math.BigInteger;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -21,7 +22,7 @@ import org.junit.Test;
 import static org.junit.Assert.fail;
 import utilities.TestUtilities;
 
-public class PolynomialTests {
+public class PolynomialTests extends MathToolTestBase {
 
     Expression f, g, h, expectedFactorizationOfF, expectedFactorizationOfFLight, ggT;
 

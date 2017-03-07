@@ -11,6 +11,7 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationUtils;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
+import basic.MathToolTestBase;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import org.junit.AfterClass;
@@ -21,7 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class SolveGeneralDifferentialEquationTests {
+public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

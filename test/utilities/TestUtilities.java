@@ -69,9 +69,13 @@ public class TestUtilities {
         StackTraceElement[] elements = t.getStackTrace();
         String callerClassName = elements[1].getClassName();
         String callerMethodName = elements[1].getMethodName();
+        printResults(callerClassName, callerMethodName, expectedResults, results);
+    }
+    
+    public static void printResults(String className, String testMethodName, Object[] expectedResults, Object[] results) {
         System.out.println("--------------Begin of test----------------");
-        System.out.println("Test class: " + callerClassName);
-        System.out.println("Test: " + callerMethodName);
+        System.out.println("Test class: " + className);
+        System.out.println("Test: " + testMethodName);
         if (expectedResults.length != results.length) {
             System.err.println("Number of expected results does not coincide with the number of results!");
         } else {

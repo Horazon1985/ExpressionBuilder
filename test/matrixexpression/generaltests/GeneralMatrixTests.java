@@ -3,6 +3,7 @@ package matrixexpression.generaltests;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
@@ -11,7 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class GeneralMatrixTests {
+public class GeneralMatrixTests extends MathToolTestBase {
 
     MatrixExpression matExpr;
     MatrixExpression expectedResult;
@@ -34,7 +35,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("[2,3;-1,6]^(-1)", null);
             expectedResult = MatrixExpression.build("[2/5,-1/5;1/15,2/15]", null);
             matExpr = matExpr.simplify();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -47,7 +51,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7]+[2,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])+sin([a,b;c,d])^2)+[6,3;2,-7]", null);
             matExpr = matExpr.simplifyFactorize();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -60,7 +67,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
             matExpr = matExpr.simplifyFactorize();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -73,7 +83,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[2,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])-sin([a,b;c,d])^2)+[6,3;2,-7]", null);
             matExpr = matExpr.simplifyFactorize();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -86,7 +99,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
             expectedResult = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
             matExpr = matExpr.simplifyFactorize();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -99,7 +115,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("(exp([a,b;c,d])+[1,2;3,4])+(sin([a,b;c,d])+[5,6;7,8/11])", null);
             expectedResult = MatrixExpression.build("[6,8;10,52/11]+exp([a,b;c,d])+sin([a,b;c,d])", null);
             matExpr = matExpr.simplify();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -112,7 +131,10 @@ public class GeneralMatrixTests {
             matExpr = MatrixExpression.build("(exp([a,b;c,d])*[1,2;3,4])*([5,6;7,8/11]*sin([a,b;c,d]))*[3,-4;1,-9]", null);
             expectedResult = MatrixExpression.build("exp([a,b;c,d])*[19,82/11;43,230/11]*sin([a,b;c,d])*[3,-4;1,-9]", null);
             matExpr = matExpr.simplify();
-            TestUtilities.printResult(expectedResult, matExpr);
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             Assert.assertTrue(matExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());

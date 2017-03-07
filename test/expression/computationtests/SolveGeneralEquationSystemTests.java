@@ -6,6 +6,7 @@ import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils.SolutionType;
+import basic.MathToolTestBase;
 import java.util.ArrayList;
 import exceptions.ExpressionException;
 import exceptions.NotAlgebraicallySolvableException;
@@ -17,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class SolveGeneralEquationSystemTests {
+public class SolveGeneralEquationSystemTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

@@ -4,6 +4,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.integration.RischAlgorithmUtils;
+import basic.MathToolTestBase;
 import org.junit.Assert;
 import org.junit.AfterClass;
 import static org.junit.Assert.fail;
@@ -11,7 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class RischAlgorithmUtilitiesTests {
+public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
 
     Expression f;
 

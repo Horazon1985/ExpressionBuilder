@@ -1,11 +1,12 @@
 package logicalexpression.generaltests;
 
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GeneralSimplifyLogicalExpressionTests {
+public class GeneralSimplifyLogicalExpressionTests extends MathToolTestBase {
     
     @BeforeClass
     public static void setUpClass() throws Exception {

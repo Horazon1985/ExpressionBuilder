@@ -10,6 +10,7 @@ import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
@@ -17,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SimplifyOperatorTests {
+public class SimplifyOperatorTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

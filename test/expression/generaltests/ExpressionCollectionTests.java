@@ -8,6 +8,7 @@ import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.basic.ExpressionCollection;
+import basic.MathToolTestBase;
 import java.util.HashSet;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertFalse;
@@ -17,7 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ExpressionCollectionTests {
+public class ExpressionCollectionTests extends MathToolTestBase {
 
     Expression f, g, h;
 

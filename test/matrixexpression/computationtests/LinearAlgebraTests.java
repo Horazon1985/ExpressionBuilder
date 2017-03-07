@@ -9,6 +9,7 @@ import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsU
 import abstractexpressions.matrixexpression.computation.GaussAlgorithmUtils;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
@@ -16,7 +17,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class LinearAlgebraTests {
+public class LinearAlgebraTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -118,6 +119,10 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
             Expression[] solution = GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+
+            results = new Object[]{solution.length, solution[0], solution[1], solution[2]};
+            expectedResults = new Object[]{3, expectedSolution[0], expectedSolution[1], expectedSolution[2]};
+
             Assert.assertTrue(solution.length == 3);
             Assert.assertTrue(solution[0].equals(expectedSolution[0]));
             Assert.assertTrue(solution[1].equals(expectedSolution[1]));
@@ -140,6 +145,10 @@ public class LinearAlgebraTests {
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
             Expression[] solution = GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b);
+
+            results = new Object[]{solution.length, solution[0], solution[1], solution[2], solution[3], solution[4]};
+            expectedResults = new Object[]{5, expectedSolution[0], expectedSolution[1], expectedSolution[2], expectedSolution[3], expectedSolution[4]};
+
             Assert.assertTrue(solution.length == 5);
             Assert.assertTrue(solution[0].equals(expectedSolution[0]));
             Assert.assertTrue(solution[1].equals(expectedSolution[1]));

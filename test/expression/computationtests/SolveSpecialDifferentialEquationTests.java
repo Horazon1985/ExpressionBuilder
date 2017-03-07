@@ -10,6 +10,7 @@ import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.differentialequation.SolveGeneralDifferentialEquationUtils;
 import abstractexpressions.expression.basic.ExpressionCollection;
+import basic.MathToolTestBase;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import org.junit.AfterClass;
@@ -19,7 +20,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SolveSpecialDifferentialEquationTests {
+public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

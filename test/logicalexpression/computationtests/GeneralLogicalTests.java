@@ -3,6 +3,7 @@ package logicalexpression.computationtests;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
 import static abstractexpressions.logicalexpression.classes.LogicalExpression.FALSE;
 import static abstractexpressions.logicalexpression.classes.LogicalExpression.TRUE;
+import basic.MathToolTestBase;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import org.junit.AfterClass;
@@ -11,7 +12,7 @@ import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GeneralLogicalTests {
+public class GeneralLogicalTests extends MathToolTestBase {
 
     public GeneralLogicalTests() {
     }

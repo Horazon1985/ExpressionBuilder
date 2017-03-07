@@ -6,6 +6,8 @@ import exceptions.NotSubstitutableException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.THREE;
+import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Variable;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
@@ -14,8 +16,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
+import basic.MathToolTestBase;
 
-public class SubstitutionTests {
+public class SubstitutionTests extends MathToolTestBase {
 
     Expression f, subst, expectedResult, substVar;
     String var;
@@ -45,6 +48,10 @@ public class SubstitutionTests {
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
             expectedResult = new Constant(7).add(new Constant(3).mult(substVar)).add(substVar.pow(5));
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());
@@ -64,6 +71,10 @@ public class SubstitutionTests {
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();
             expectedResult = new Constant(8).add(substVar.div(10)).add(new Constant(2).mult(substVar).exp());
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());
@@ -83,6 +94,10 @@ public class SubstitutionTests {
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
             expectedResult = substVar.pow(2).div(new Constant(2).pow(2));
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());
@@ -102,6 +117,10 @@ public class SubstitutionTests {
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
             expectedResult = Variable.create("a").mult(substVar.pow(3)).add(substVar);
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());
@@ -120,7 +139,11 @@ public class SubstitutionTests {
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();
-            expectedResult = new Constant(2).add(ONE.div(new Constant(7).mult(substVar)));
+            expectedResult = TWO.add(ONE.div(new Constant(7).mult(substVar)));
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());
@@ -139,7 +162,11 @@ public class SubstitutionTests {
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();
-            expectedResult = new Constant(3).exp().mult(substVar.pow(2));
+            expectedResult = THREE.exp().mult(substVar.pow(2));
+            
+            results = new Object[]{f};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(f.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException | NotSubstitutableException e) {
             fail(e.getMessage());

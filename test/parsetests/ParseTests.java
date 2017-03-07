@@ -4,6 +4,7 @@ import exceptions.ExpressionException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
+import basic.MathToolTestBase;
 import java.util.ArrayList;
 import operationparser.OperationParser;
 import operationparser.ParameterPattern;
@@ -19,7 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class ParseTests {
+public class ParseTests extends MathToolTestBase {
 
     private ParseResultPattern resultPattern;
     private ParameterPattern p;
@@ -508,7 +509,7 @@ public class ParseTests {
     @Test
     public void parseOperatorNotSuccesfullyParsedTest4() {
         try {
-            Expression expr = Expression.build("diff(x)", null);
+            Expression.build("diff(x)", null);
             fail();
         } catch (ParseException e) {
             /* 

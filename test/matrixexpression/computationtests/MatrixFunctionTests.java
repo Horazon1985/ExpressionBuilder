@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import static org.junit.Assert.fail;
@@ -11,7 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MatrixFunctionTests {
+public class MatrixFunctionTests extends MathToolTestBase {
 
     MatrixExpression a;
 

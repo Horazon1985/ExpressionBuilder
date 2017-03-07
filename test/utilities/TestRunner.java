@@ -1,5 +1,6 @@
 package utilities;
 
+import basic.MathToolTestBase;
 import expression.computationtests.*;
 import expression.generaltests.*;
 import logicalexpression.computationtests.*;
@@ -8,6 +9,7 @@ import matrixexpression.computationtests.*;
 import matrixexpression.generaltests.*;
 import parsetests.*;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -100,15 +102,17 @@ public class TestRunner {
             for (Method test : methods) {
                 if (test.getAnnotation(Test.class) != null && test.getAnnotation(Ignore.class) == null) {
                     try {
-                        System.out.println("Execution of test " + test.getName() + " begins ...");
+                        System.out.println("Execution of test " + test.getName() + " begins.");
                         if (beforeMethod != null) {
                             // @Before-Methode aufrufen.
                             beforeMethod.invoke(obj);
                         }
                         test.invoke(obj);
+                        printResults(cls, test);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                        printResults(cls, test);
                         numberOfFailedTests++;
                         System.err.println("Execution of test " + test.getName() + ": failed.");
                     }
@@ -129,6 +133,29 @@ public class TestRunner {
 
         System.out.println("Number of successful tests: " + numberOfSuccessfulTests);
         System.err.println("Number of failed tests: " + numberOfFailedTests);
+    }
+
+    private void printResults(Class clazz, Method testMethod) {
+        if (MathToolTestBase.class.isAssignableFrom(clazz)) {
+            try {
+                Field expectedResults = MathToolTestBase.class.getDeclaredField("expectedResults");
+                Field results = MathToolTestBase.class.getDeclaredField("results");
+                expectedResults.setAccessible(true);
+                results.setAccessible(true);
+                Object[] expectedResultArray = (Object[]) expectedResults.get(null);
+                Object[] resultArray = (Object[]) results.get(null);
+                if (exists(expectedResultArray) && exists(resultArray)) {
+                    TestUtilities.printResults(clazz.getName(), testMethod.getName(), expectedResultArray, resultArray);
+                }
+            } catch (NoSuchFieldException | SecurityException | IllegalAccessException e) {
+
+            }
+
+        }
+    }
+
+    private boolean exists(Object[] objects) {
+        return objects != null && objects.length > 0;
     }
 
 }

@@ -6,13 +6,14 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
+import basic.MathToolTestBase;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class SimplifyUtilitiesTests {
+public class SimplifyUtilitiesTests extends MathToolTestBase {
 
     Expression f, g, h;
     Expression exprWithMultipleVariables;

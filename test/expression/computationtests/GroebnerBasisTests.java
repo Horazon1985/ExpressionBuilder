@@ -13,6 +13,7 @@ import abstractexpressions.expression.commutativealgebra.GroebnerBasisUtils.Mono
 import abstractexpressions.expression.commutativealgebra.GroebnerBasisUtils.MultiPolynomial;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyMultiPolynomialUtils;
+import basic.MathToolTestBase;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import java.math.BigInteger;
@@ -24,7 +25,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class GroebnerBasisTests {
+public class GroebnerBasisTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.integration.GeneralIntegralUtils;
 import abstractexpressions.expression.integration.RischAlgorithmUtils;
+import basic.MathToolTestBase;
 import enums.TypeSimplify;
 import exceptions.NotAlgebraicallyIntegrableException;
 import java.util.HashSet;
@@ -18,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import utilities.TestUtilities;
 
-public class IntegrationTests {
+public class IntegrationTests extends MathToolTestBase {
 
     private static final HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
     private Expression f;

@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
+import basic.MathToolTestBase;
 import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
 
-public class GeneralSimplifyExpressionTests {
+public class GeneralSimplifyExpressionTests extends MathToolTestBase {
 
     Expression a, b, c, d, x, y, z;
 
