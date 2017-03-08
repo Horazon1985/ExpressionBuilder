@@ -43,12 +43,20 @@ public class SimplifyUtilitiesTests extends MathToolTestBase {
     @Test
     public void getFactorsOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
     public void getFactorsOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(g);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
     }
 
@@ -56,6 +64,10 @@ public class SimplifyUtilitiesTests extends MathToolTestBase {
     public void getFactorsOfGIfApproximatingTest() {
         g = g.turnToApproximate();
         ExpressionCollection factors = SimplifyUtilities.getFactors(g);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
         // Notwendig für weitere Tests!
         g = g.turnToPrecise();
@@ -64,48 +76,80 @@ public class SimplifyUtilitiesTests extends MathToolTestBase {
     @Test
     public void getFactorsOfHTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactors(h);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{1};
+
         assertTrue(factors.getBound() == 1);
     }
 
     @Test
     public void getFactorsOfEnumeratorOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
     public void getFactorsOfDenominatorOfFTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfDenominatorInExpression(f);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{0};
+
         assertTrue(factors.isEmpty());
     }
 
     @Test
     public void getFactorsOfEnumeratorOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfNumeratorInExpression(g);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
     public void getFactorsOfDenominatorOfGTest() {
         ExpressionCollection factors = SimplifyUtilities.getFactorsOfDenominatorInExpression(g);
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{0};
+
         assertTrue(factors.isEmpty());
     }
 
     @Test
     public void getNonConstantFactorsOfEnumeratorOfExprTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfNumeratorInExpression(exprWithMultipleVariables, "x");
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{2};
+
         assertTrue(factors.getBound() == 2);
     }
 
     @Test
     public void getNonConstantFactorsOfDenominatorOfExprWithRespectToXTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(exprWithMultipleVariables, "x");
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{0};
+
         assertTrue(factors.isEmpty());
     }
 
     @Test
     public void getNonConstantFactorsOfDenominatorOfExprWithRespectToYTest() {
         ExpressionCollection factors = SimplifyUtilities.getNonConstantFactorsOfDenominatorInExpression(exprWithMultipleVariables, "y");
+
+        results = new Object[]{factors.getBound()};
+        expectedResults = new Object[]{1};
+
         assertTrue(factors.getBound() == 1);
     }
 

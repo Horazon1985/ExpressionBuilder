@@ -47,6 +47,10 @@ public class ExpressionCollectionTests extends MathToolTestBase {
         terms.add(g);
         terms.add(h);
         terms.add(f);
+
+        results = new Object[]{terms.getBound(), terms.getSize()};
+        expectedResults = new Object[]{4, 4};
+
         assertTrue(terms.getBound() == 4);
         assertTrue(terms.getSize() == 4);
     }
@@ -59,6 +63,10 @@ public class ExpressionCollectionTests extends MathToolTestBase {
         terms.add(h);
         terms.add(f);
         terms.remove(3);
+
+        results = new Object[]{terms.getBound(), terms.getSize()};
+        expectedResults = new Object[]{3, 3};
+
         assertTrue(terms.getBound() == 3);
         assertTrue(terms.getSize() == 3);
     }
@@ -71,6 +79,10 @@ public class ExpressionCollectionTests extends MathToolTestBase {
         terms.add(h);
         terms.add(f);
         terms.remove(1);
+
+        results = new Object[]{terms.getBound(), terms.getSize()};
+        expectedResults = new Object[]{4, 3};
+
         assertTrue(terms.getBound() == 4);
         assertTrue(terms.getSize() == 3);
     }

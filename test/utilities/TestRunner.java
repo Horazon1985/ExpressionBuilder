@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -88,6 +89,14 @@ public class TestRunner {
                     break;
                 }
             }
+            Method afterMethod = null;
+            // @After-Methode finden.
+            for (Method m : methods) {
+                if (m.getAnnotation(After.class) != null) {
+                    afterMethod = m;
+                    break;
+                }
+            }
 
             // Zuerst muss die mit @BeforeClass annotierte Methode aufgerufen werden.
             for (Method method : methods) {
@@ -108,13 +117,23 @@ public class TestRunner {
                             beforeMethod.invoke(obj);
                         }
                         test.invoke(obj);
-                        printResults(cls, test);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                        printResults(cls, test);
                         numberOfFailedTests++;
                         System.err.println("Execution of test " + test.getName() + ": failed.");
+                    } finally {
+                        if (afterMethod != null) {
+                            // @After-Methode aufrufen.
+                            try {
+                                afterMethod.invoke(obj);
+                            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                                System.err.println("Can't invoke @After method for test " + test.getName());
+
+                            }
+                        }
+                        printResults(cls, test);
+                        MathToolTestBase.resetResults();
                     }
                 }
             }

@@ -34,8 +34,12 @@ public class MatrixFunctionTests extends MathToolTestBase {
             a = MatrixExpression.build("[0,0,0;-1,0,0;2,5,0]", null);
             Assert.assertTrue(a instanceof Matrix);
             MatrixExpression expOfM = a.exp().simplify();
-            MatrixExpression result = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]", null);
-            Assert.assertTrue(expOfM.equals(result));
+            MatrixExpression expectedResult = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]", null);
+
+            results = new Object[]{expOfM};
+            expectedResults = new Object[]{expectedResult};
+
+            Assert.assertTrue(expOfM.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -51,8 +55,12 @@ public class MatrixFunctionTests extends MathToolTestBase {
             a = MatrixExpression.build("[3,-1;3,7]", null);
             Assert.assertTrue(a instanceof Matrix);
             MatrixExpression expOfM =a.ln().simplify();
-            MatrixExpression result = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
-            Assert.assertTrue(expOfM.equals(result));
+            MatrixExpression expectedResult = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
+
+            results = new Object[]{expOfM};
+            expectedResults = new Object[]{expectedResult};
+            
+            Assert.assertTrue(expOfM.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

@@ -83,44 +83,44 @@ public class TestUtilities {
 
                 if (expectedResults[i] instanceof Expression && results[i] instanceof Expression) {
                     if (((Expression) expectedResults[i]).equivalent((Expression) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i] instanceof LogicalExpression && results[i] instanceof LogicalExpression) {
                     if (((LogicalExpression) expectedResults[i]).equivalent((LogicalExpression) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i] instanceof MatrixExpression && results[i] instanceof MatrixExpression) {
                     if (((MatrixExpression) expectedResults[i]).equivalent((MatrixExpression) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i] instanceof ExpressionCollection && results[i] instanceof ExpressionCollection) {
                     if (((ExpressionCollection) expectedResults[i]).equals((ExpressionCollection) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i] instanceof LogicalExpressionCollection && results[i] instanceof LogicalExpressionCollection) {
                     if (((LogicalExpressionCollection) expectedResults[i]).equals((LogicalExpressionCollection) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i] instanceof MatrixExpressionCollection && results[i] instanceof MatrixExpressionCollection) {
                     if (((MatrixExpressionCollection) expectedResults[i]).equals((MatrixExpressionCollection) results[i])) {
-                        System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                        System.out.println("\033[32m Expected result:" + expectedResults[i]);
                     } else {
-                        System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                        System.out.println("\033[31m Expected result: " + expectedResults[i]);
                     }
                 } else if (expectedResults[i].equals(results[i])) {
-                    System.out.println("\033[32m Expected result:" + expectedResults[i].toString());
+                    System.out.println("\033[32m Expected result:" + expectedResults[i]);
                 } else {
-                    System.out.println("\033[31m Expected result: " + expectedResults[i].toString());
+                    System.out.println("\033[31m Expected result: " + expectedResults[i]);
                 }
 
                 System.out.println("Result: " + results[i].toString());

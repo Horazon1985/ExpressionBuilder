@@ -28,9 +28,9 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void cancelFalseInSumsTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("a|0|b|0|0|c", null);
+            LogicalExpression logExpr = LogicalExpression.build("a|0|b|0|0|c");
             logExpr = logExpr.simplify();
-            LogicalExpression expectedResult = LogicalExpression.build("a|b|c", null);
+            LogicalExpression expectedResult = LogicalExpression.build("a|b|c");
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -40,9 +40,13 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void trueInSumsOccursTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("a|0|b|1|0|c", null);
+            LogicalExpression logExpr = LogicalExpression.build("a|0|b|1|0|c");
             logExpr = logExpr.simplify();
             LogicalExpression expectedResult = TRUE;
+            
+            results = new Object[]{logExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -52,9 +56,13 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void cancelTrueInProductsTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("a&1&1&(c|d)&1", null);
+            LogicalExpression logExpr = LogicalExpression.build("a&1&1&(c|d)&1");
             logExpr = logExpr.simplify();
-            LogicalExpression expectedResult = LogicalExpression.build("a&(c|d)", null);
+            LogicalExpression expectedResult = LogicalExpression.build("a&(c|d)");
+            
+            results = new Object[]{logExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -64,9 +72,13 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void falseInProductsOccursTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("a&0&c&(d|e)", null);
+            LogicalExpression logExpr = LogicalExpression.build("a&0&c&(d|e)");
             logExpr = logExpr.simplify();
             LogicalExpression expectedResult = FALSE;
+            
+            results = new Object[]{logExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -76,9 +88,13 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void factorizeInSumsTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("a&b|a&c|x|a&d", null);
+            LogicalExpression logExpr = LogicalExpression.build("a&b|a&c|x|a&d");
             logExpr = logExpr.simplify();
-            LogicalExpression expectedResult = LogicalExpression.build("a&(b|c|d)|x", null);
+            LogicalExpression expectedResult = LogicalExpression.build("a&(b|c|d)|x");
+            
+            results = new Object[]{logExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -88,9 +104,13 @@ public class GeneralLogicalTests extends MathToolTestBase {
     @Test
     public void factorizeInProductsTest() {
         try {
-            LogicalExpression logExpr = LogicalExpression.build("(a|b)&(a|c)&x&(a|d)", null);
+            LogicalExpression logExpr = LogicalExpression.build("(a|b)&(a|c)&x&(a|d)");
             logExpr = logExpr.simplify();
-            LogicalExpression expectedResult = LogicalExpression.build("(a|b&c&d)&x", null);
+            LogicalExpression expectedResult = LogicalExpression.build("(a|b&c&d)&x");
+            
+            results = new Object[]{logExpr};
+            expectedResults = new Object[]{expectedResult};
+            
             assertTrue(logExpr.equivalent(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
