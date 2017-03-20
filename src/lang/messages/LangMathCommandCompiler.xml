@@ -1532,8 +1532,8 @@
         <Russian> свободная константа.</Russian>
     </object>
     <object id = "MCC_DIFFEQ_ARE_FREE_CONSTANTS">
-        <German> sind freie Konstante.</German>
-        <English> are free constant.</English>
+        <German> sind freie Konstanten.</German>
+        <English> are free constants.</English>
         <Ukrainian> вільні константи.</Ukrainian>
         <Russian> свободные константы.</Russian>
     </object>
