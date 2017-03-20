@@ -41,11 +41,13 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             Expression leftSide = Expression.build("y''");
             Expression rightSide = Expression.build("y^2");
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, rightSide, "x", "y");
+            Expression expectedSolutionOne = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).add(Variable.create("x")).add(Variable.create("C_2"));
+            Expression expectedSolutionTwo = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).sub(Variable.create("x").add(Variable.create("C_3")));
+            expectedResults = new Object[]{2, expectedSolutionOne, expectedSolutionTwo};
+            results = new Object[]{solutions.getBound(), solutions.get(0), solutions.get(1)};
             assertTrue(solutions.getBound() == 2);
-            Expression solutionOne = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).add(Variable.create("x")).add(Variable.create("C_2"));
-            Expression solutionTwo = new Operator(TypeOperator.integral, new Object[]{ONE.div(TWO.mult(Variable.create("y").pow(3)).div(3).add(Variable.create("C_1")).pow(1, 2)), "y"}).sub(Variable.create("x").add(Variable.create("C_3")));
-            assertTrue(solutions.containsExquivalent(solutionOne));
-            assertTrue(solutions.containsExquivalent(solutionTwo));
+            assertTrue(solutions.containsExquivalent(expectedSolutionOne));
+            assertTrue(solutions.containsExquivalent(expectedSolutionTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -58,6 +60,8 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             Expression leftSide = Expression.build("y'''");
             Expression rightSide = Expression.build("y'^2");
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, rightSide, "x", "y");
+            expectedResults = new Object[]{0};
+            results = new Object[]{solutions.getBound()};
             assertTrue(solutions.isEmpty());
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -70,9 +74,11 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             // DGL: y' -4*x*y + 6*y^2 = 0. Lösungen sind exp(2*x^2)/(C_1+6*int(exp(2*x^2),x)).
             Expression leftSide = Expression.build("y' -4*x*y + 6*y^2");
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, ZERO, "x", "y");
+            Expression expectedSolution = TWO.mult(Variable.create("x").pow(2)).exp().div(Variable.create("C_1").add(new Constant(6).mult(new Operator(TypeOperator.integral, new Object[]{TWO.mult(Variable.create("x").pow(2)).exp(), "x"}))));
+            expectedResults = new Object[]{1, expectedSolution};
+            results = new Object[]{solutions.getBound(), solutions.get(0)};
             assertTrue(solutions.getBound() == 1);
-            Expression solution = TWO.mult(Variable.create("x").pow(2)).exp().div(Variable.create("C_1").add(new Constant(6).mult(new Operator(TypeOperator.integral, new Object[]{TWO.mult(Variable.create("x").pow(2)).exp(), "x"}))));
-            assertTrue(solutions.containsExquivalent(solution));
+            assertTrue(solutions.containsExquivalent(expectedSolution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

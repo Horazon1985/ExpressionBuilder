@@ -7,7 +7,6 @@ import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyExpLogUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import basic.MathToolTestBase;
-import java.util.HashSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

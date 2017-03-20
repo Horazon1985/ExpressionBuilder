@@ -41,9 +41,11 @@ public class SolveGeneralEquationTests extends MathToolTestBase {
             // Test: f = 5*exp(x^4-7) = 2. Lösungen sind (7+ln(2/5))^(1/4), -(7+ln(2/5))^(1/4).
             Expression f = Expression.build("5*exp(x^4-7)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, Expression.TWO, "x");
-            assertTrue(zeros.getBound() == 2);
             Expression zeroOne = Expression.build("(7+ln(2/5))^(1/4)");
             Expression zeroTwo = Expression.build("-(7+ln(2/5))^(1/4)");
+            expectedResults = new Object[]{2, zeroOne, zeroTwo};
+            results = new Object[]{zeros.getBound(), zeros.get(0), zeros.get(1)};
+            assertTrue(zeros.getBound() == 2);
             assertTrue(zeros.containsExpression(zeroOne));
             assertTrue(zeros.containsExpression(zeroTwo));
         } catch (ExpressionException | EvaluationException e) {
@@ -57,8 +59,10 @@ public class SolveGeneralEquationTests extends MathToolTestBase {
             // Test: f = (x^2+5*x-14)/(x-2) = 0. Die Lösung ist -7. Die Nullstelle 2 des Nenners wird aussortiert.
             Expression f = Expression.build("(x^2+5*x-14)/(x-2)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
-            assertTrue(zeros.getBound() == 1);
             Expression zeroOne = new Constant(-7);
+            expectedResults = new Object[]{2, zeroOne};
+            results = new Object[]{zeros.getBound(), zeros.get(0)};
+            assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(zeroOne));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
