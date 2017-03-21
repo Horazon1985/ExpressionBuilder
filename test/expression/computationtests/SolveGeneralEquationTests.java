@@ -62,7 +62,7 @@ public class SolveGeneralEquationTests extends MathToolTestBase {
             Expression f = Expression.build("(x^2+5*x-14)/(x-2)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
             Expression zeroOne = new Constant(-7);
-            expectedResults = new Object[]{2, zeroOne};
+            expectedResults = new Object[]{1, zeroOne};
             results = new Object[]{zeros.getBound(), zeros.get(0)};
             assertTrue(zeros.getBound() == 1);
             assertTrue(zeros.containsExpression(zeroOne));
@@ -230,7 +230,7 @@ public class SolveGeneralEquationTests extends MathToolTestBase {
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, new Constant(10), "x");
             Expression zeroOne = new Constant(-5).div(2).sub((new Constant(29).div(4).add(TEN.ln())).pow(1, 2));
             Expression zeroTwo = new Constant(29).div(4).add(TEN.ln()).pow(1, 2).sub(new Constant(5).div(2));
-            expectedResults = new Object[]{3, zeroOne, zeroTwo};
+            expectedResults = new Object[]{2, zeroOne, zeroTwo};
             results = new Object[]{zeros.getBound(), zeros.get(0), zeros.get(1)};
             assertTrue(zeros.getBound() == 2);
             assertTrue(zeros.containsExpression(zeroOne));

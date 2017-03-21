@@ -151,7 +151,7 @@ public class TestRunner {
         }
 
         System.out.println("Number of successful tests: " + numberOfSuccessfulTests);
-        System.err.println("Number of failed tests: " + numberOfFailedTests);
+        System.err.println("\033[31mNumber of failed tests: " + numberOfFailedTests);
     }
 
     private void printResults(Class clazz, Method testMethod) {

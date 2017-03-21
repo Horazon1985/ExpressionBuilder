@@ -132,7 +132,7 @@ public class IntegrationTests extends MathToolTestBase {
             expectedResult = expectedResult.simplify();
             // Vereinfacht ist integral = 5^x/ln(5).
             Expression resultSimplified = Expression.build("5^x/ln(5)");
-            TestUtilities.printResult(expectedResult, integral);
+            TestUtilities.printResult(expectedResult, resultSimplified);
             Assert.assertTrue(expectedResult.equivalent(resultSimplified));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
