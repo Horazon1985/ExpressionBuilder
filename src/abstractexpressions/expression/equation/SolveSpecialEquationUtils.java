@@ -1037,45 +1037,45 @@ public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtil
                 }
                 return new RadicalSummandData(ONE, getRadicandInCaseOfPureRoot(f, var, n).simplify(), n);
             }
-            if (f.isProduct() && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) f).getLeft(), var)) {
+            if (f.isProduct()) {
+                Expression[] separationIntoRationalAndNonRationalFactors = separateIntoRationalAndNonRationalFactors(f, var);
+                Expression rationalFactor = separationIntoRationalAndNonRationalFactors[0];
+                Expression nonRationalFactor = separationIntoRationalAndNonRationalFactors[1];
                 if (n == null) {
-                    return new RadicalSummandData(((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n),
-                            getRootDegreeInCaseOfPureRoot(((BinaryOperation) f).getRight(), var));
+                    return new RadicalSummandData(rationalFactor, getRadicandInCaseOfPureRoot(nonRationalFactor, var, n),
+                            getRootDegreeInCaseOfPureRoot(nonRationalFactor, var));
                 }
-                return new RadicalSummandData(((BinaryOperation) f).getLeft(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getRight(), var, n), n);
+                return new RadicalSummandData(rationalFactor, getRadicandInCaseOfPureRoot(nonRationalFactor, var, n), n);
             }
-            if (f.isProduct() && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
+            if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()) {
+                Expression[] separationIntoRationalAndNonRationalFactors = separateIntoRationalAndNonRationalFactors(((BinaryOperation) f).getLeft(), var);
+                Expression rationalFactor = separationIntoRationalAndNonRationalFactors[0];
+                Expression nonRationalFactor = separationIntoRationalAndNonRationalFactors[1];
                 if (n == null) {
-                    return new RadicalSummandData(((BinaryOperation) f).getRight(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n),
-                            getRootDegreeInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var));
+                    return new RadicalSummandData(rationalFactor.div(((BinaryOperation) f).getRight()),
+                            getRadicandInCaseOfPureRoot(nonRationalFactor, var, n),
+                            getRootDegreeInCaseOfPureRoot(nonRationalFactor, var));
                 }
-                return new RadicalSummandData(((BinaryOperation) f).getRight(), getRadicandInCaseOfPureRoot(((BinaryOperation) f).getLeft(), var, n), n);
-            }
-            if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
-                    && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var)
-                    && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                if (n == null) {
-                    return new RadicalSummandData(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
-                            getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n),
-                            getRootDegreeInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var));
-                }
-                return new RadicalSummandData(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft().div(((BinaryOperation) f).getRight()),
-                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var, n), n);
-            }
-            if (f.isQuotient() && ((BinaryOperation) f).getLeft().isProduct()
-                    && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight(), var)
-                    && SimplifyRationalFunctionUtils.isRationalFunction(((BinaryOperation) f).getRight(), var)) {
-                if (n == null) {
-                    return new RadicalSummandData(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
-                            getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n),
-                            getRootDegreeInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var));
-                }
-                return new RadicalSummandData(((BinaryOperation) ((BinaryOperation) f).getLeft()).getRight().div(((BinaryOperation) f).getRight()),
-                        getRadicandInCaseOfPureRoot(((BinaryOperation) ((BinaryOperation) f).getLeft()).getLeft(), var, n), n);
+                return new RadicalSummandData(rationalFactor.div(((BinaryOperation) f).getRight()),
+                        getRadicandInCaseOfPureRoot(nonRationalFactor, var, n), n);
             }
         } catch (EvaluationException e) {
         }
         throw new NotAlgebraicallySolvableException();
+    }
+
+    private static Expression[] separateIntoRationalAndNonRationalFactors(Expression f, String var) {
+        ExpressionCollection factors = SimplifyUtilities.getFactors(f);
+        ExpressionCollection rationalFactors = new ExpressionCollection();
+        ExpressionCollection nonRationalFactors = new ExpressionCollection();
+        for (Expression factor : factors) {
+            if (SimplifyRationalFunctionUtils.isRationalFunction(factor, var)) {
+                rationalFactors.add(factor);
+            } else {
+                nonRationalFactors.add(factor);
+            }
+        }
+        return new Expression[]{SimplifyUtilities.produceProduct(rationalFactors), SimplifyUtilities.produceProduct(nonRationalFactors)};
     }
 
     private static Expression getRadicandInCaseOfPureRoot(Expression f, String var, Integer n) throws NotAlgebraicallySolvableException {
@@ -1288,14 +1288,14 @@ public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtil
 
         /*
         Die Gleichung a*g^(1/3) + b*h^(1/3) = p ist äquivalent zur
-        Gleichung (p^3 - a^3*g - b^3*h)^3 - 27*a*b*g*h*p^3 = 0.
+        Gleichung (p^3 - a^3*g - b^3*h)^3 - 27*a^3*b^3*g*h*p^3 = 0.
          */
         Expression a = factorsAndRadicands[0].factor;
         Expression b = factorsAndRadicands[1].factor;
         Expression g = factorsAndRadicands[0].radicand;
         Expression h = factorsAndRadicands[1].radicand;
         Expression newEquation = rightSide.pow(3).sub(a.pow(3).mult(g).add(b.pow(3).mult(h))).pow(3).sub(
-                new Constant(27).mult(a).mult(b).mult(g).mult(h).mult(rightSide.pow(3)));
+                new Constant(27).mult(a.pow(3)).mult(b.pow(3)).mult(g).mult(h).mult(rightSide.pow(3)));
 
         return solveZeroEquation(newEquation, var);
 

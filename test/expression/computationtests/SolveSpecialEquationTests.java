@@ -237,11 +237,13 @@ public class SolveSpecialEquationTests extends MathToolTestBase {
     @Test
     public void solveAlgebraicEquationTest7() {
         try {
-            // Test: (x+(x^3+1)^(1/3))^2-(1+x^2) = 0. Lösung x = 2.
-            Expression f = Expression.build("(x+(x^3+1)^(1/3))^2-(1+x^2)");
+            // Test: (x+(x^3+4*x^2+3)^(1/3))^2-(9+x^4) = 0. Lösung x = 2.
+            Expression f = Expression.build("(x+(x^3+4*x^2+3)^(1/3))^2-(9+x^4)");
             ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
-//            assertTrue(zeros.getBound() == 1);
-//            assertTrue(zeros.containsExpression(TWO));
+            expectedResults = new Object[]{1, TWO};
+            results = new Object[]{zeros.getBound(), zeros.get(0)};
+            assertTrue(zeros.getBound() == 1);
+            assertTrue(zeros.containsExpression(TWO));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
