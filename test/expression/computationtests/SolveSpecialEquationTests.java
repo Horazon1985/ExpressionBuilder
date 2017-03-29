@@ -46,22 +46,16 @@ public class SolveSpecialEquationTests extends MathToolTestBase {
             f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, "x");
             HashSet<Expression> argumentsOfExp = new HashSet<>();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(f, "x", argumentsOfExp));
-            System.out.println(f);
-            System.out.println(argumentsOfExp);
             // Test: 5^x/(25^(x+3)-14)-12*625^x ist eine rationale Exponentialgleichung.
             Expression g = Expression.build("5^x/(25^(x+3)-14)-12*625^x");
             g = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(g, "x");
             argumentsOfExp.clear();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(g, "x", argumentsOfExp));
-            System.out.println(g);
-            System.out.println(argumentsOfExp);
             // Test: 7^x+2*10^x ist keine rationale Exponentialgleichung.
             Expression h = Expression.build("7^x+2*10^x");
             h = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(h, "x");
             argumentsOfExp.clear();
             Assert.assertFalse(SimplifyRationalFunctionUtils.isRationalFunktionInExp(h, "x", argumentsOfExp));
-            System.out.println(h);
-            System.out.println(argumentsOfExp);
         } catch (exceptions.ExpressionException e) {
             fail(e.getMessage());
         }
@@ -247,6 +241,21 @@ public class SolveSpecialEquationTests extends MathToolTestBase {
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void solveAlgebraicEquationTest8() {
+//        try {
+//            // Test: 3*x*(1+x^3)^(1/2)+(3*x^4-2*x^3)^(1/5)-20 = 0. Lösung x = 2.
+//            Expression f = Expression.build("3*x*(1+x^3)^(1/2)+(3*x^4-2*x^3)^(1/5)-20");
+//            ExpressionCollection zeros = SolveGeneralEquationUtils.solveEquation(f, ZERO, "x");
+//            expectedResults = new Object[]{1, TWO};
+//            results = new Object[]{zeros.getBound(), zeros.get(0)};
+//            assertTrue(zeros.getBound() == 1);
+//            assertTrue(zeros.containsExpression(TWO));
+//        } catch (ExpressionException | EvaluationException e) {
+//            fail(e.getMessage());
+//        }
     }
 
 }
