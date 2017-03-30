@@ -33,7 +33,7 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
     @Before
     public void defineExpressions() throws Exception {
     }
-    
+
     @Test
     public void solveDiffEqWithOnlySecondDerivativeAndFunctionTest() {
         try {
@@ -67,7 +67,24 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             fail(e.getMessage());
         }
     }
-    
+
+    @Test
+    public void solveDiffEqWithOnlyVarOrdAndDerivativesTest() {
+        try {
+            /* 
+            DGL: y'' + y'^3*y = 0. Imnplizite Lösungen: y_1 = C_1 und 
+            y_2, y_3, y_4 sind gegeben durch y^3/3 - 2*C_2*y = 2*x + C_3. 
+             */
+            Expression leftSide = Expression.build("y'' + y'^3*y");
+            ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, ZERO, "x", "y");
+//            expectedResults = new Object[]{0};
+//            results = new Object[]{solutions.getBound()};
+            assertTrue(solutions.getBound() == 4);
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+
     @Test
     public void solveBernoulliDifferentialEquationTest() {
         try {
@@ -83,6 +100,5 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             fail(e.getMessage());
         }
     }
-    
-    
+
 }

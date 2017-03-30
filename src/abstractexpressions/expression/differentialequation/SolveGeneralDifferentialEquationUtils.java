@@ -268,7 +268,12 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
         // TO DO.
         Expression diffEq = f.sub(g);
-        // Zunächst: DGL im Folgenden Sinne reduzieren.
+        /* 
+        Zunächst: DGL im Folgenden Sinne reduzieren: Hat die DGL die Form
+        f(y^(n), ..., y^(k), x) = 0, so wird die DGL 
+        f(z^(n - k), ..., z', z, x) = 0 nach z und anschließend die 
+        DGL y^(k) = z(x) nach y gelöst.
+        */
         Object[] reductionOfDifferentialEquation = reduceDifferentialEquation(diffEq, varOrd);
 
         // Reduzierte DGL lösen.
@@ -495,7 +500,16 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         try {
             // Typ: y^(n+2) = f(y^(n)).
-            solutions = SolveSpecialDifferentialEquationUtils.solveDifferentialEquationWithOnlyTwoDifferentDerivatives(f, varAbsc, varOrd);
+            solutions = SolveSpecialDifferentialEquationUtils.solveDifferentialEquationWithSecondDerivativeAndVarOrd(f, varAbsc, varOrd);
+            if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
+                return solutions;
+            }
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+        }
+
+        try {
+            // Typ: f(y'', y', y) = 0.
+            solutions = SolveSpecialDifferentialEquationUtils.solveDifferentialEquationOfOrderTwoWithoutVarAbsc(f, varAbsc, varOrd);
             if (!solutions.isEmpty() && solutions != NO_SOLUTIONS) {
                 return solutions;
             }

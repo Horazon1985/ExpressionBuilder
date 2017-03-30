@@ -15,9 +15,11 @@ import static abstractexpressions.expression.differentialequation.SolveGeneralDi
 import abstractexpressions.expression.equation.SolveGeneralEquationUtils;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
+import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils;
 import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
 import exceptions.MathToolException;
+import notations.NotationLoader;
 
 /**
  * Klasse, die Lösungsmethoden für spezielle Taypen von Differentialgleichungen
@@ -39,12 +41,12 @@ public abstract class SolveSpecialDifferentialEquationUtils extends SolveGeneral
 
     }
 
-    //Typ: y^'' = f(y).
+    //Typ: y^'' = g(y).
     /**
      * Liefert Lösungen von Differentialgleichungen vom Typ y'' = g(y). Die
-     * eingegebene DGL hat die Form f = 0;
+     * eingegebene DGL hat die Form f = 0.
      */
-    public static ExpressionCollection solveDifferentialEquationWithOnlyTwoDifferentDerivatives(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    public static ExpressionCollection solveDifferentialEquationWithSecondDerivativeAndVarOrd(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         ExpressionCollection solutions = new ExpressionCollection();
 
@@ -82,6 +84,44 @@ public abstract class SolveSpecialDifferentialEquationUtils extends SolveGeneral
 
     }
 
+    //Typ: f(y'', y', y) = 0.
+    /**
+     * Liefert Lösungen von Differentialgleichungen vom Typ f(y'', y', y) = 0.
+     */
+    public static ExpressionCollection solveDifferentialEquationOfOrderTwoWithoutVarAbsc(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        int ord = getOrderOfDifferentialEquation(f, varOrd);
+
+        if (f.contains(varAbsc) || ord != 2) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        /*
+        Algorithmus: die DGL f(y'', y', y) = 0 wird mittels Substitution v = y'
+        äquivalent zur DGL f(v*v', v', y) = 0. Für jede Lösung v(y) muss sodann
+        die DGL y' = v(y) gelöst werden.
+         */
+        String varOrdSubst = NotationLoader.SUBSTITUTION_VAR;
+        Expression substitutedDiffEq = f;
+        substitutedDiffEq = substitutedDiffEq.replaceVariable(varOrd + "'", Variable.create(varOrdSubst));
+        substitutedDiffEq = substitutedDiffEq.replaceVariable(varOrd + "''", Variable.create(varOrdSubst).mult(Variable.create(varOrdSubst + "'")));
+
+        try {
+            ExpressionCollection solutionsOfSubstitutedDiffEq = solveZeroDifferentialEquation(substitutedDiffEq, varOrd, varOrdSubst);
+            ExpressionCollection solutions = new ExpressionCollection();
+            // Jetzt: Für jede Lösung v die DGL y' = v(y) lösen und in die Menge der Lösungen aufnehmen.
+            ExpressionCollection solutionsForVarOrd;
+            for (Expression solutionOfSubstitutedDiffEq : solutionsOfSubstitutedDiffEq) {
+                solutionsForVarOrd = solveDifferentialEquation(Variable.create(varOrd + "'"), solutionOfSubstitutedDiffEq, varAbsc, varOrd);
+                solutions.addAll(solutionsForVarOrd);
+            }
+            return solutions;
+        } catch (EvaluationException e) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+    }
+
     private static ExpressionCollection solveDifferentialEquationWithOnlySecondDerivative(Expression rightSide, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         try {
@@ -103,7 +143,7 @@ public abstract class SolveSpecialDifferentialEquationUtils extends SolveGeneral
                 // Nichts tun, Lösung ignorieren.
             }
             try {
-                solutions = SimplifyUtilities.union(solutions, 
+                solutions = SimplifyUtilities.union(solutions,
                         SolveGeneralEquationUtils.solveEquation(h, MINUS_ONE.mult(Variable.create(varAbsc).add(getFreeIntegrationConstantVariable())), varOrd).simplify(simplifyTypesSolutionOfDifferentialEquation));
             } catch (EvaluationException e) {
                 // Nichts tun, Lösung ignorieren.
@@ -138,7 +178,7 @@ public abstract class SolveSpecialDifferentialEquationUtils extends SolveGeneral
         }
 
     }
-    
+
     /**
      * Gibt zurück, ob die Differentialgleichung f = 0 die Gestalt a(x, y) +
      * b(x, y)*y' = 0 besitzt.
