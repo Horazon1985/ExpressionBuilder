@@ -72,14 +72,17 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
     public void solveDiffEqWithOnlyVarOrdAndDerivativesTest() {
         try {
             /* 
-            DGL: y'' + y'^3*y = 0. Imnplizite Lösungen: y_1 = C_1 und 
-            y_2, y_3, y_4 sind gegeben durch y^3/3 - 2*C_2*y = 2*x + C_3. 
+            DGL: y'' + y'^2*y = 0. Imnplizite Lösungen: y_1 = C_1 und 
+            y_2 ist gegeben durch int(exp(y^2/2-C_1),y)-(x+C_1) und  
+            int(exp(y^2/2-C_1),y)+x-C_1. 
              */
-            Expression leftSide = Expression.build("y'' + y'^3*y");
+            Expression leftSide = Expression.build("y'' + y'^2*y");
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, ZERO, "x", "y");
-//            expectedResults = new Object[]{0};
-//            results = new Object[]{solutions.getBound()};
-            assertTrue(solutions.getBound() == 4);
+            Expression implicitSolutionOne = Expression.build("int(exp(y^2/2-C_1),y)-(x+C_1)");
+            Expression implicitSolutionTwo = Expression.build("int(exp(y^2/2-C_1),y)+x-C_1");
+            expectedResults = new Object[]{0, implicitSolutionOne, implicitSolutionTwo};
+            results = new Object[]{solutions.getBound(), solutions.get(0), solutions.get(1)};
+            assertTrue(solutions.getBound() == 3);
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
