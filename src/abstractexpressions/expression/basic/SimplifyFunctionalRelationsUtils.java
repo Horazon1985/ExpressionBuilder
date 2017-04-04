@@ -13,8 +13,73 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Objects;
 
 public abstract class SimplifyFunctionalRelationsUtils {
+
+    private static class MultipleOfFunction {
+
+        private final Expression argument;
+        private final BigDecimal numerator;
+        private final BigDecimal denominator;
+
+        public MultipleOfFunction(Expression argument, BigDecimal numerator, BigDecimal denominator) {
+            this.argument = argument;
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+
+        public Expression getArgument() {
+            return argument;
+        }
+
+        public BigDecimal getNumerator() {
+            return numerator;
+        }
+
+        public BigDecimal getDenominator() {
+            return denominator;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) {
+                return false;
+            }
+            if (!(o instanceof MultipleOfFunction)) {
+                return false;
+            }
+            Expression arg = ((MultipleOfFunction) o).getArgument();
+            BigDecimal num = ((MultipleOfFunction) o).getNumerator();
+            BigDecimal denom = ((MultipleOfFunction) o).getDenominator();
+
+            boolean result;
+            if (arg == null) {
+                return false;
+            } else {
+                result = arg.equals(argument);
+            }
+            if (num == null) {
+                return false;
+            } else {
+                result = result && num.equals(numerator);
+            }
+            if (denom == null) {
+                return false;
+            }
+            return result && denom.equals(denominator);
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 3;
+            hash = 37 * hash + Objects.hashCode(this.argument);
+            hash = 37 * hash + Objects.hashCode(this.numerator);
+            hash = 37 * hash + Objects.hashCode(this.denominator);
+            return hash;
+        }
+
+    }
 
     /**
      * Prüft, ob expr ein (rationales) Vielfaches einer Funktion vom Typ type
@@ -30,35 +95,29 @@ public abstract class SimplifyFunctionalRelationsUtils {
      * zurückgegeben.<br>
      * (4) expr = tan(u^2), type = TypeFunction.tan wird {u^2, 1} zurückgegeben.
      */
-    private static Object[] isMultipleOfFunction(Expression expr, TypeFunction type) {
+    private static MultipleOfFunction getMultipleOfFunction(Expression expr, TypeFunction type) {
 
         // expr ist von der Form f(x).
         if (expr.isFunction(type)) {
-            Object[] result = new Object[2];
-            result[0] = ((Function) expr).getLeft();
-            result[1] = BigDecimal.ONE;
-            return result;
+            return new MultipleOfFunction(((Function) expr).getLeft(), BigDecimal.ONE, BigDecimal.ONE);
         }
 
         // expr ist von der Form a*f(x).
         if (expr.isProduct()
                 && ((BinaryOperation) expr).getLeft() instanceof Constant
                 && ((BinaryOperation) expr).getRight().isFunction(type)) {
-            Object[] result = new Object[2];
-            result[0] = ((Function) ((BinaryOperation) expr).getRight()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) expr).getRight()).getLeft(),
+                    ((Constant) ((BinaryOperation) expr).getLeft()).getValue(),
+                    BigDecimal.ONE);
         }
 
         // expr ist von der Form f(x)/a.
         if (expr.isQuotient()
                 && ((BinaryOperation) expr).getRight() instanceof Constant
                 && ((BinaryOperation) expr).getLeft().isFunction(type)) {
-            Object[] result = new Object[3];
-            result[0] = ((Function) ((BinaryOperation) expr).getLeft()).getLeft();
-            result[1] = BigDecimal.ONE;
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) expr).getLeft()).getLeft(),
+                    BigDecimal.ONE,
+                    ((Constant) ((BinaryOperation) expr).getRight()).getValue());
         }
 
         // expr ist von der Form a*f(x)/b.
@@ -67,16 +126,12 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 && ((BinaryOperation) expr).getLeft().isProduct()
                 && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft() instanceof Constant
                 && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().isFunction(type)) {
-            Object[] result = new Object[3];
-            result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue();
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft(),
+                    ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue(),
+                    ((Constant) ((BinaryOperation) expr).getRight()).getValue());
         }
 
-        Object[] result = new Object[1];
-        result[0] = false;
-        return result;
+        return null;
 
     }
 
@@ -87,22 +142,17 @@ public abstract class SimplifyFunctionalRelationsUtils {
      * zurückgegeben. Diese Methode wird benötigt, um etwa zu prüfen, ob
      * 7*cos(x)^2/5 + 7*sin(x)^2/5 zu 7/5 vereinfacht werden kann.
      */
-    private static Object[] isMultipleOfSquareOfFunction(Expression expr, TypeFunction type) {
+    private static MultipleOfFunction getMultipleOfSquareOfFunction(Expression expr, TypeFunction type) {
 
         if (!(expr instanceof BinaryOperation)) {
-            Object[] result = new Object[1];
-            result[0] = false;
-            return result;
+            return null;
         }
 
         // expr ist von der Form f(x)^2.
         if (expr.isPower()
                 && ((BinaryOperation) expr).getRight().equals(Expression.TWO)
                 && ((BinaryOperation) expr).getLeft().isFunction(type)) {
-            Object[] result = new Object[2];
-            result[0] = ((Function) ((BinaryOperation) expr).getLeft()).getLeft();
-            result[1] = BigDecimal.ONE;
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) expr).getLeft()).getLeft(), BigDecimal.ONE, BigDecimal.ONE);
         }
 
         // expr ist von der Form a*f(x)^2.
@@ -110,10 +160,9 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 && ((BinaryOperation) expr).getRight().isPower()
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getRight().equals(Expression.TWO)
                 && ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft().isFunction(type)) {
-            Object[] result = new Object[2];
-            result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) expr).getLeft()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) ((BinaryOperation) expr).getRight()).getLeft()).getLeft(),
+                    ((Constant) ((BinaryOperation) expr).getLeft()).getValue(),
+                    BigDecimal.ONE);
         }
 
         // expr ist von der Form f(x)^2/a.
@@ -121,11 +170,9 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 && ((BinaryOperation) expr).getLeft().isPower()
                 && (((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().equals(Expression.TWO))
                 && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft().isFunction(type)) {
-            Object[] result = new Object[3];
-            result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getLeft();
-            result[1] = BigDecimal.ONE;
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getLeft(),
+                    BigDecimal.ONE,
+                    ((Constant) ((BinaryOperation) expr).getRight()).getValue());
         }
 
         // expr ist von der Form a*f(x)^2/b.
@@ -135,16 +182,12 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 && ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight().isPower()
                 && (((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getRight().equals(Expression.TWO))
                 && ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft().isFunction(type)) {
-            Object[] result = new Object[3];
-            result[0] = ((Function) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft()).getLeft();
-            result[1] = ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue();
-            result[2] = ((Constant) ((BinaryOperation) expr).getRight()).getValue();
-            return result;
+            return new MultipleOfFunction(((Function) ((BinaryOperation) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getRight()).getLeft()).getLeft(),
+                    ((Constant) ((BinaryOperation) ((BinaryOperation) expr).getLeft()).getLeft()).getValue(),
+                    ((Constant) ((BinaryOperation) expr).getRight()).getValue());
         }
 
-        Object[] result = new Object[1];
-        result[0] = false;
-        return result;
+        return null;
 
     }
 
@@ -155,7 +198,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
      */
     public static void reduceSumOfSquaresOfSineAndCosine(ExpressionCollection summands) {
 
-        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+        MultipleOfFunction firstSummandData, secondSummandData;
 
         // Fall: sin(x)^2 steht VOR cos(x)^2
         for (int i = 0; i < summands.getBound(); i++) {
@@ -163,8 +206,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summands.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfSquareOfFunction(summands.get(i), TypeFunction.sin);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandData = getMultipleOfSquareOfFunction(summands.get(i), TypeFunction.sin);
+            if (firstSummandData == null) {
                 continue;
             }
 
@@ -173,31 +216,36 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summands.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfSquareOfFunction(summands.get(j), TypeFunction.cos);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandData = getMultipleOfSquareOfFunction(summands.get(j), TypeFunction.cos);
+                if (secondSummandData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-                            summands.remove(j);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summands.remove(j);
-                            break;
-                        }
-                    }
-
+                if (firstSummandData.equals(secondSummandData)) {
+                    summands.put(i, new Constant(firstSummandData.getNumerator()).div(firstSummandData.getDenominator()));
+                    summands.remove(j);
+                    break;
                 }
 
+//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
+//
+//                    if (isFirstSummandSuitable.length == 2) {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
+//                            summands.remove(j);
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
+//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
+//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
+//                            summands.remove(j);
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -208,8 +256,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summands.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfSquareOfFunction(summands.get(i), TypeFunction.cos);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandData = getMultipleOfSquareOfFunction(summands.get(i), TypeFunction.cos);
+            if (firstSummandData == null) {
                 continue;
             }
 
@@ -218,33 +266,38 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summands.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfSquareOfFunction(summands.get(j), TypeFunction.sin);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandData = getMultipleOfSquareOfFunction(summands.get(j), TypeFunction.sin);
+                if (secondSummandData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summands.remove(i);
-                            summands.remove(j);
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summands.remove(i);
-                            summands.remove(j);
-                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-                            break;
-                        }
-                    }
-
+                if (firstSummandData.equals(secondSummandData)) {
+                    summands.put(i, new Constant(firstSummandData.getNumerator()).div(firstSummandData.getDenominator()));
+                    summands.remove(j);
+                    break;
                 }
 
+//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
+//
+//                    if (isFirstSummandSuitable.length == 2) {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+//                            summands.remove(i);
+//                            summands.remove(j);
+//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
+//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
+//                            summands.remove(i);
+//                            summands.remove(j);
+//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -254,12 +307,12 @@ public abstract class SimplifyFunctionalRelationsUtils {
     /**
      * Falls in expr der Ausdruck cosh(x)^2 - sinh(x)^2 auftaucht, dann zu 1
      * vereinfachen. Falls in expr sinh(x)^2 - cosh(x)^2 auftaucht, dann zu -1
-     * vereinfachen.<br> 
+     * vereinfachen.<br>
      * Beispiel: x+y+cosh(a*b)^2+z-sinh(a*b)^2 wird vereinfacht zu 1+x+y+z.
      */
     public static void reduceDifferenceOfSquaresOfHypSineAndHypCosine(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) throws EvaluationException {
 
-        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+        MultipleOfFunction firstSummandData, secondSummandData;
 
         // Fall: sinh(x)^2 steht VOR cosh(x)^2
         for (int i = 0; i < summandsLeft.getBound(); i++) {
@@ -267,8 +320,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summandsLeft.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfSquareOfFunction(summandsLeft.get(i), TypeFunction.sinh);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandData = getMultipleOfSquareOfFunction(summandsLeft.get(i), TypeFunction.sinh);
+            if (firstSummandData == null) {
                 continue;
             }
 
@@ -277,31 +330,36 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfSquareOfFunction(summandsRight.get(j), TypeFunction.cosh);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandData = getMultipleOfSquareOfFunction(summandsRight.get(j), TypeFunction.cosh);
+                if (secondSummandData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-                            summandsLeft.remove(i);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summandsLeft.remove(i);
-                            break;
-                        }
-                    }
-
+                if (firstSummandData.equals(secondSummandData)) {
+                    summandsRight.put(j, new Constant(firstSummandData.getNumerator()).div(firstSummandData.getDenominator()));
+                    summandsLeft.remove(i);
+                    break;
                 }
 
+//                if (firstSummandData.length == secondSummandData.length
+//                        && ((Expression) firstSummandData[0]).equivalent((Expression) secondSummandData[0])) {
+//
+//                    if (firstSummandData.length == 2) {
+//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0) {
+//                            summandsRight.put(j, new Constant((BigDecimal) firstSummandData[1]));
+//                            summandsLeft.remove(i);
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0
+//                                && ((BigDecimal) firstSummandData[2]).compareTo((BigDecimal) secondSummandData[2]) == 0) {
+//                            summandsRight.put(j, new Constant((BigDecimal) firstSummandData[1]).div((BigDecimal) firstSummandData[2]));
+//                            summandsLeft.remove(i);
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -312,8 +370,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summandsLeft.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfSquareOfFunction(summandsLeft.get(i), TypeFunction.cosh);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandData = getMultipleOfSquareOfFunction(summandsLeft.get(i), TypeFunction.cosh);
+            if (firstSummandData == null) {
                 continue;
             }
 
@@ -322,31 +380,36 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfSquareOfFunction(summandsRight.get(j), TypeFunction.sinh);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandData = getMultipleOfSquareOfFunction(summandsRight.get(j), TypeFunction.sinh);
+                if (secondSummandData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-                            summandsRight.remove(j);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summandsRight.remove(j);
-                            break;
-                        }
-                    }
-
+                if (firstSummandData.equals(secondSummandData)) {
+                    summandsLeft.put(i, new Constant(firstSummandData.getNumerator()).div(firstSummandData.getDenominator()));
+                    summandsRight.remove(j);
+                    break;
                 }
 
+//                if (firstSummandData.length == secondSummandData.length
+//                        && ((Expression) firstSummandData[0]).equivalent((Expression) secondSummandData[0])) {
+//
+//                    if (firstSummandData.length == 2) {
+//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0) {
+//                            summandsLeft.put(i, new Constant((BigDecimal) firstSummandData[1]));
+//                            summandsRight.remove(j);
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0
+//                                && ((BigDecimal) firstSummandData[2]).compareTo((BigDecimal) secondSummandData[2]) == 0) {
+//                            summandsLeft.put(i, new Constant((BigDecimal) firstSummandData[1]).div((BigDecimal) firstSummandData[2]));
+//                            summandsRight.remove(j);
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -373,32 +436,37 @@ public abstract class SimplifyFunctionalRelationsUtils {
         }
 
         Expression constantSummand = summands.get(0);
-        Object[] isSummandSuitable;
+        MultipleOfFunction summandData;
 
         for (int i = 0; i < summands.getBound(); i++) {
 
             if (summands.get(i) == null) {
                 continue;
             }
-            isSummandSuitable = isMultipleOfSquareOfFunction(summands.get(i), type);
-            if (isSummandSuitable.length == 1) {
+            summandData = getMultipleOfSquareOfFunction(summands.get(i), type);
+            if (summandData == null) {
                 continue;
             }
 
-            if (isSummandSuitable.length == 2) {
-                if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-                    summands.remove(0);
-                    summands.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                    return;
-                }
-            } else {
-                if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
-                    summands.remove(0);
-                    summands.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                    return;
-                }
+            if (new Constant(summandData.getNumerator()).div(summandData.getDenominator()).equals(constantSummand)) {
+                summands.remove(0);
+                summands.put(i, constantSummand.mult(new Function(summandData.getArgument(), resultType).pow(2)));
+                return;
             }
 
+//            if (summandData.length == 2) {
+//                if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
+//                    summands.remove(0);
+//                    summands.put(i, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                    return;
+//                }
+//            } else {
+//                if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
+//                    summands.remove(0);
+//                    summands.put(i, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                    return;
+//                }
+//            }
         }
 
     }
@@ -418,7 +486,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
         }
 
         Expression constantSummand;
-        Object[] isSummandSuitable;
+        MultipleOfFunction summandData;
 
         /*
          Entscheidend ist hierbei, dass oBdA angenommen werden kann, dass der
@@ -436,25 +504,30 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(i) == null) {
                     continue;
                 }
-                isSummandSuitable = isMultipleOfSquareOfFunction(summandsRight.get(i), type);
-                if (isSummandSuitable.length == 1) {
+                summandData = getMultipleOfSquareOfFunction(summandsRight.get(i), type);
+                if (summandData == null) {
                     continue;
                 }
 
-                if (isSummandSuitable.length == 2) {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-                        summandsRight.remove(i);
-                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
-                } else {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).div(new Constant((BigDecimal) isSummandSuitable[2])).equals(constantSummand)) {
-                        summandsRight.remove(i);
-                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
+                if (new Constant(summandData.getNumerator()).div(summandData.getDenominator()).equals(constantSummand)) {
+                    summandsRight.remove(i);
+                    summandsLeft.put(0, constantSummand.mult(new Function(summandData.getArgument(), resultType).pow(2)));
+                    return;
                 }
 
+//                if (summandData.length == 2) {
+//                    if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
+//                        summandsRight.remove(i);
+//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                } else {
+//                    if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
+//                        summandsRight.remove(i);
+//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                }
             }
 
         } else {
@@ -467,25 +540,30 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsLeft.get(i) == null) {
                     continue;
                 }
-                isSummandSuitable = isMultipleOfSquareOfFunction(summandsLeft.get(i), type);
-                if (isSummandSuitable.length == 1) {
+                summandData = getMultipleOfSquareOfFunction(summandsLeft.get(i), type);
+                if (summandData == null) {
                     continue;
                 }
 
-                if (isSummandSuitable.length == 2) {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-                        summandsLeft.remove(i);
-                        summandsRight.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
-                } else {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
-                        summandsLeft.remove(i);
-                        summandsRight.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
+                if (new Constant(summandData.getNumerator()).div(summandData.getDenominator()).equals(constantSummand)) {
+                    summandsLeft.remove(i);
+                    summandsRight.put(0, constantSummand.mult(new Function(summandData.getArgument(), resultType).pow(2)));
+                    return;
                 }
 
+//                if (summandData.length == 2) {
+//                    if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
+//                        summandsLeft.remove(i);
+//                        summandsRight.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                } else {
+//                    if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
+//                        summandsLeft.remove(i);
+//                        summandsRight.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                }
             }
 
         }
@@ -507,7 +585,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
         }
 
         Expression constantSummand;
-        Object[] isSummandSuitable;
+        MultipleOfFunction summandData;
 
         /*
          Entscheidend ist hierbei, dass oBdA angenommen werden kann, dass der
@@ -525,25 +603,30 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(i) == null) {
                     continue;
                 }
-                isSummandSuitable = isMultipleOfSquareOfFunction(summandsRight.get(i), type);
-                if (isSummandSuitable.length == 1) {
+                summandData = getMultipleOfSquareOfFunction(summandsRight.get(i), type);
+                if (summandData == null) {
                     continue;
                 }
 
-                if (isSummandSuitable.length == 2) {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-                        summandsLeft.remove(0);
-                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
-                } else {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).div(new Constant((BigDecimal) isSummandSuitable[2])).equals(constantSummand)) {
-                        summandsLeft.remove(0);
-                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        return;
-                    }
+                if (new Constant(summandData.getNumerator()).div(summandData.getDenominator()).equals(constantSummand)) {
+                    summandsLeft.remove(0);
+                    summandsRight.put(i, constantSummand.mult(new Function(summandData.getArgument(), resultType).pow(2)));
+                    return;
                 }
 
+//                if (isSummandSuitable.length == 2) {
+//                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
+//                        summandsLeft.remove(0);
+//                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                } else {
+//                    if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
+//                        summandsLeft.remove(0);
+//                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
+//                        return;
+//                    }
+//                }
             }
 
         } else {
@@ -556,24 +639,30 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsLeft.get(i) == null) {
                     continue;
                 }
-                isSummandSuitable = isMultipleOfSquareOfFunction(summandsLeft.get(i), type);
-                if (isSummandSuitable.length == 1) {
+                summandData = getMultipleOfSquareOfFunction(summandsLeft.get(i), type);
+                if (summandData == null) {
                     continue;
                 }
 
-                if (isSummandSuitable.length == 2) {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        summandsRight.remove(i);
-                        return;
-                    }
-                } else {
-                    if (new Constant((BigDecimal) isSummandSuitable[1]).div(new Constant((BigDecimal) isSummandSuitable[2])).equals(constantSummand)) {
-                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-                        summandsRight.remove(i);
-                        return;
-                    }
+                if (new Constant(summandData.getNumerator()).div(summandData.getDenominator()).equals(constantSummand)) {
+                    summandsLeft.put(0, constantSummand.mult(new Function(summandData.getArgument(), resultType).pow(2)));
+                    summandsRight.remove(i);
+                    return;
                 }
+
+//                if (isSummandSuitable.length == 2) {
+//                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
+//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
+//                        summandsRight.remove(i);
+//                        return;
+//                    }
+//                } else {
+//                    if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
+//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
+//                        summandsRight.remove(i);
+//                        return;
+//                    }
+//                }
 
             }
 
@@ -591,15 +680,15 @@ public abstract class SimplifyFunctionalRelationsUtils {
     public static void sumOfTwoFunctions(ExpressionCollection summands, TypeFunction firstType, TypeFunction secondType,
             TypeFunction resultType) {
 
-        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+        MultipleOfFunction firstSummandMultipleData, secondSummandMultipleData;
 
         for (int i = 0; i < summands.getBound(); i++) {
 
             if (summands.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfFunction(summands.get(i), firstType);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandMultipleData = getMultipleOfFunction(summands.get(i), firstType);
+            if (firstSummandMultipleData == null) {
                 continue;
             }
 
@@ -608,31 +697,38 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (i == j || summands.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfFunction(summands.get(j), secondType);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandMultipleData = getMultipleOfFunction(summands.get(j), secondType);
+                if (secondSummandMultipleData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
-                            summands.remove(Math.max(i, j));
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summands.remove(Math.max(i, j));
-                            break;
-                        }
-                    }
-
+                if (firstSummandMultipleData.equals(secondSummandMultipleData)) {
+                    summands.put(Math.min(i, j),
+                            new Constant(firstSummandMultipleData.getNumerator()).mult(new Function(firstSummandMultipleData.getArgument(), resultType))
+                                    .div(firstSummandMultipleData.getDenominator()));
+                    summands.remove(Math.max(i, j));
+                    break;
                 }
 
+//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
+//
+//                    if (isFirstSummandSuitable.length == 2) {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+//                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
+//                            summands.remove(Math.max(i, j));
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
+//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
+//                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
+//                            summands.remove(Math.max(i, j));
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -767,7 +863,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
      */
     public static void reduceCoshMinusSinhToExp(ExpressionCollection summandsLeft, ExpressionCollection summandsRight) {
 
-        Object[] isFirstSummandSuitable, isSecondSummandSuitable;
+        MultipleOfFunction firstSummandMultipleData, secondSummandMultipleData;
 
         // Fall: cosh(x) - sinh(x)
         for (int i = 0; i < summandsLeft.getBound(); i++) {
@@ -775,8 +871,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summandsLeft.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfFunction(summandsLeft.get(i), TypeFunction.cosh);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandMultipleData = getMultipleOfFunction(summandsLeft.get(i), TypeFunction.cosh);
+            if (firstSummandMultipleData == null) {
                 continue;
             }
 
@@ -785,30 +881,36 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfFunction(summandsRight.get(j), TypeFunction.sinh);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandMultipleData = getMultipleOfFunction(summandsRight.get(j), TypeFunction.sinh);
+                if (secondSummandMultipleData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
-                            summandsRight.remove(j);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summandsRight.remove(j);
-                            break;
-                        }
-                    }
-
+                if (firstSummandMultipleData.equals(secondSummandMultipleData)) {
+                    summandsLeft.put(i, new Constant(firstSummandMultipleData.getNumerator()).mult(MINUS_ONE.mult(firstSummandMultipleData.getArgument()).exp())
+                            .div(firstSummandMultipleData.getDenominator()));
+                    summandsRight.remove(j);
+                    break;
                 }
+//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
+//
+//                    if (isFirstSummandSuitable.length == 2) {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+//                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
+//                            summandsRight.remove(j);
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
+//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
+//                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
+//                            summandsRight.remove(j);
+//                            break;
+//                        }
+//                    }
+//
+//                }
 
             }
 
@@ -820,8 +922,8 @@ public abstract class SimplifyFunctionalRelationsUtils {
             if (summandsLeft.get(i) == null) {
                 continue;
             }
-            isFirstSummandSuitable = isMultipleOfFunction(summandsLeft.get(i), TypeFunction.sinh);
-            if (isFirstSummandSuitable.length == 1) {
+            firstSummandMultipleData = getMultipleOfFunction(summandsLeft.get(i), TypeFunction.sinh);
+            if (firstSummandMultipleData == null) {
                 continue;
             }
 
@@ -830,32 +932,38 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 if (summandsRight.get(j) == null) {
                     continue;
                 }
-                isSecondSummandSuitable = isMultipleOfFunction(summandsRight.get(j), TypeFunction.cosh);
-                if (isSecondSummandSuitable.length == 1) {
+                secondSummandMultipleData = getMultipleOfFunction(summandsRight.get(j), TypeFunction.cosh);
+                if (secondSummandMultipleData == null) {
                     continue;
                 }
 
-                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-
-                    if (isFirstSummandSuitable.length == 2) {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
-                            summandsLeft.remove(i);
-                            break;
-                        }
-                    } else {
-                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(
-                                    Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
-                            summandsLeft.remove(i);
-                            break;
-                        }
-                    }
-
+                if (firstSummandMultipleData.equals(secondSummandMultipleData)) {
+                    summandsRight.put(i, new Constant(firstSummandMultipleData.getNumerator()).mult(MINUS_ONE.mult(firstSummandMultipleData.getArgument()).exp())
+                            .div(firstSummandMultipleData.getDenominator()));
+                    summandsLeft.remove(j);
+                    break;
                 }
 
+//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
+//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
+//
+//                    if (isFirstSummandSuitable.length == 2) {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
+//                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
+//                            summandsLeft.remove(i);
+//                            break;
+//                        }
+//                    } else {
+//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
+//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
+//                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(
+//                                    Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
+//                            summandsLeft.remove(i);
+//                            break;
+//                        }
+//                    }
+//
+//                }
             }
 
         }
@@ -1495,42 +1603,42 @@ public abstract class SimplifyFunctionalRelationsUtils {
 
     public static Expression reduceAbsOfQuotientIfNumeratorHasFixedSign(Expression expr) {
 
-        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.abs) || !((Function) expr).getLeft().isQuotient()){
+        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.abs) || !((Function) expr).getLeft().isQuotient()) {
             return expr;
         }
-        
+
         Expression numerator = ((BinaryOperation) ((Function) expr).getLeft()).getLeft();
         Expression denominator = ((BinaryOperation) ((Function) expr).getLeft()).getRight();
-        
-        if (numerator.isAlwaysNonNegative()){
+
+        if (numerator.isAlwaysNonNegative()) {
             return numerator.div(denominator.abs());
         }
-        
-        if (numerator.isAlwaysNonPositive()){
+
+        if (numerator.isAlwaysNonPositive()) {
             return MINUS_ONE.mult(numerator).div(denominator.abs());
         }
-        
+
         return expr;
 
     }
 
     public static Expression reduceSgnOfQuotientIfNumeratorHasFixedSign(Expression expr) {
 
-        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.sgn) || !((Function) expr).getLeft().isQuotient()){
+        if (!(expr instanceof Function) || !((Function) expr).getType().equals(TypeFunction.sgn) || !((Function) expr).getLeft().isQuotient()) {
             return expr;
         }
-        
+
         Expression numerator = ((BinaryOperation) ((Function) expr).getLeft()).getLeft();
         Expression denominator = ((BinaryOperation) ((Function) expr).getLeft()).getRight();
-        
-        if (numerator.isAlwaysPositive()){
+
+        if (numerator.isAlwaysPositive()) {
             return ONE.div(denominator.abs());
         }
-        
-        if (numerator.isAlwaysNegative()){
+
+        if (numerator.isAlwaysNegative()) {
             return MINUS_ONE.div(denominator.abs());
         }
-        
+
         return expr;
 
     }
@@ -1828,7 +1936,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
         Expression exponentToCompare;
 
         Expression argument, sumOfArguments;
-        
+
         for (int i = 0; i < factors.getBound(); i++) {
 
             if (factors.get(i) == null) {
@@ -1856,9 +1964,9 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 }
 
                 // Nun: x!^n*(-1-x)!^n = (Gamma(1+x)*Gamma(-x))^n = (x/sin(pi*x))^n.
-                if (base.isOperator(TypeOperator.fac) && baseToCompare.isOperator(TypeOperator.fac) && exponent.equivalent(exponentToCompare)){
+                if (base.isOperator(TypeOperator.fac) && baseToCompare.isOperator(TypeOperator.fac) && exponent.equivalent(exponentToCompare)) {
                     sumOfArguments = ((Expression) ((Operator) base).getParams()[0]).add((Expression) ((Operator) baseToCompare).getParams()[0]).simplify();
-                    if (sumOfArguments.equals(MINUS_ONE)){
+                    if (sumOfArguments.equals(MINUS_ONE)) {
                         argument = (Expression) ((Operator) base).getParams()[0];
                         factors.put(i, argument.div(PI.mult(argument).sin()).pow(exponent));
                         factors.remove(j);
@@ -1870,5 +1978,5 @@ public abstract class SimplifyFunctionalRelationsUtils {
         }
 
     }
-    
+
 }

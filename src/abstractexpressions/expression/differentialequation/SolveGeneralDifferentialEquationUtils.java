@@ -15,6 +15,10 @@ import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyMultiPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
+import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixFunction;
@@ -22,6 +26,7 @@ import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
 import enums.TypeSimplify;
 import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
+import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -255,6 +260,140 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     }
 
     /**
+     * Führt an f und g, wenn möglich, elementare Äquivalenzumformungen durch
+     * und gibt dann die Lösungen der Differentialgleichung f = g aus, falls 
+     * welche gefunden wurden.
+     *
+     * @throws EvaluationException
+     */
+//    private static ExpressionCollection elementaryEquivalentTransformation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
+//
+//        ExpressionCollection solutions = new ExpressionCollection();
+//
+//        if (f.contains(varAbsc) && !g.contains(varAbsc) && f instanceof BinaryOperation) {
+//
+//            BinaryOperation fAsBinaryOperation = (BinaryOperation) f;
+//            if (fAsBinaryOperation.getLeft().contains(varAbsc) && !fAsBinaryOperation.getRight().contains(varAbsc)) {
+//
+//                if (fAsBinaryOperation.isSum()) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.sub(fAsBinaryOperation.getRight()), varAbsc);
+//                } else if (fAsBinaryOperation.isDifference()) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.add(fAsBinaryOperation.getRight()), varAbsc);
+//                } else if (fAsBinaryOperation.isProduct() && !fAsBinaryOperation.getRight().equals(ZERO)) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.div(fAsBinaryOperation.getRight()), varAbsc);
+//                } else if (fAsBinaryOperation.isQuotient() && !fAsBinaryOperation.getRight().equals(ZERO)) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.mult(fAsBinaryOperation.getRight()), varAbsc);
+//                } else if (fAsBinaryOperation.isPower()) {
+//
+//                    if (fAsBinaryOperation.getRight().isOddIntegerConstant()) {
+//                        return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
+//                    }
+//                    if (fAsBinaryOperation.getRight().isEvenIntegerConstant()) {
+//                        if (!g.isConstant() || g.isNonNegative()) {
+//                            ExpressionCollection resultPositive = solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
+//                            ExpressionCollection resultNegative = solveGeneralEquation(fAsBinaryOperation.getLeft(), Expression.MINUS_ONE.mult(g.pow(ONE, fAsBinaryOperation.getRight())), varAbsc);
+//                            return SimplifyUtilities.union(resultPositive, resultNegative);
+//                        }
+//                        return new ExpressionCollection();
+//                    }
+//                    if (fAsBinaryOperation.getRight().isRationalConstant()) {
+//                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getBigIntValue();
+//                        if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenIntegerConstant()) {
+//                            solutions = solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), varAbsc);
+//                            if (g.isConstant() && g.isNonPositive()) {
+//                                /*
+//                                 Falsche Lösungen aussortieren: wenn g <= 0
+//                                 ist und f von der Form f = h^(1/n) mit
+//                                 geradem n, dann kann die Gleichung f = g
+//                                 nicht bestehen (f ist nicht konstant, denn es
+//                                 enthält die Variable var).
+//                                 */
+//                                return new ExpressionCollection();
+//                            }
+//                            return solutions;
+//                        }
+//                        return solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), varAbsc);
+//                    }
+//
+//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
+//
+//                }
+//            } else if (!fAsBinaryOperation.getLeft().contains(varAbsc) && fAsBinaryOperation.getRight().contains(varAbsc)) {
+//
+//                if (fAsBinaryOperation.isSum()) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), g.sub(fAsBinaryOperation.getLeft()), varAbsc);
+//                } else if (fAsBinaryOperation.isDifference()) {
+//                    return solveGeneralEquation(Expression.MINUS_ONE.mult(fAsBinaryOperation.getRight()), g.sub(fAsBinaryOperation.getLeft()), varAbsc);
+//                } else if (fAsBinaryOperation.isProduct() && !fAsBinaryOperation.getLeft().equals(ZERO)) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), g.div(fAsBinaryOperation.getLeft()), varAbsc);
+//                } else if (fAsBinaryOperation.isQuotient() && !fAsBinaryOperation.getLeft().equals(ZERO) && !g.equals(ZERO)) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), fAsBinaryOperation.getLeft().div(g), varAbsc);
+//                } else if (fAsBinaryOperation.isPower()) {
+//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), (new Function(g, TypeFunction.ln)).div(new Function(fAsBinaryOperation.getLeft(), TypeFunction.ln)), varAbsc);
+//                }
+//
+//            }
+//
+//        }
+//
+//        // Falls nichts von all dem funktioniert hat, dann zumindest alle Nenner durch Multiplikation eliminieren.
+//        try {
+//            return solveFractionalEquation(f, g, varAbsc);
+//        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+//        }
+//
+//        return solutions;
+//
+//    }
+
+    /**
+     * Kürzt gleiche Summanden auf beiden Seiten.
+     */
+    private static Expression[] cancelEqualSummandsInDifferentialEquation(Expression f, Expression g) {
+
+        ExpressionCollection summandsLeftF = SimplifyUtilities.getSummandsLeftInExpression(f);
+        ExpressionCollection summandsRightF = SimplifyUtilities.getSummandsRightInExpression(f);
+        ExpressionCollection summandsLeftG = SimplifyUtilities.getSummandsLeftInExpression(g);
+        ExpressionCollection summandsRightG = SimplifyUtilities.getSummandsRightInExpression(g);
+
+        // Gleiche Summanden in Minuenden beseitigen.
+        Expression summandF, summandG;
+        for (int i = 0; i < summandsLeftF.getBound(); i++) {
+            summandF = summandsLeftF.get(i);
+            for (int j = 0; j < summandsLeftG.getBound(); j++) {
+                if (summandsLeftG.get(j) != null) {
+                    summandG = summandsLeftG.get(j);
+                    if (summandF.equivalent(summandG)) {
+                        summandsLeftF.remove(i);
+                        summandsLeftG.remove(j);
+                        break;
+                    }
+                }
+            }
+        }
+        // Gleiche Summanden in Subtrahenden beseitigen.
+        for (int i = 0; i < summandsRightF.getBound(); i++) {
+            summandF = summandsRightF.get(i);
+            for (int j = 0; j < summandsRightG.getBound(); j++) {
+                if (summandsRightG.get(j) != null) {
+                    summandG = summandsRightG.get(j);
+                    if (summandF.equivalent(summandG)) {
+                        summandsRightF.remove(i);
+                        summandsRightG.remove(j);
+                        break;
+                    }
+                }
+            }
+        }
+
+        Expression[] result = new Expression[2];
+        result[0] = SimplifyUtilities.produceDifference(summandsLeftF, summandsRightF);
+        result[1] = SimplifyUtilities.produceDifference(summandsLeftG, summandsRightG);
+        return result;
+
+    }
+    
+    /**
      * Interne Hauptprozedur zum algebraischen Lösen von Differntialgleichungen
      * der Form f(x, y, y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
      *
@@ -266,7 +405,13 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         g = g.simplify(simplifyTypesDifferentialEquation);
 
         // Zunächst werden einige Äquivalenzumformungen vorgenommen.
-        // TO DO.
+        Expression[] F;
+        F = cancelEqualSummandsInDifferentialEquation(f, g);
+        f = F[0];
+        g = F[1];
+        
+        // TO DO: Weitere Äquivalenzumformungen.
+
         Expression diffEq = f.sub(g);
         /* 
         Zunächst: DGL im Folgenden Sinne reduzieren: Hat die DGL die Form
