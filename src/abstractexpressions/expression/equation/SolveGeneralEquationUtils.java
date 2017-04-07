@@ -61,7 +61,6 @@ public abstract class SolveGeneralEquationUtils {
         simplifyTypesEquation.add(TypeSimplify.simplify_algebraic_expressions);
         simplifyTypesEquation.add(TypeSimplify.simplify_functional_relations);
         simplifyTypesEquation.add(TypeSimplify.simplify_collect_logarithms);
-        
 
         simplifyTypesExpandedEquation.add(TypeSimplify.order_difference_and_division);
         simplifyTypesExpandedEquation.add(TypeSimplify.order_sums_and_products);
@@ -547,41 +546,42 @@ public abstract class SolveGeneralEquationUtils {
             throw new NotAlgebraicallySolvableException();
         }
 
-        if (type.equals(TypeFunction.abs)) {
-            return solveEquationAbs(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.sgn)) {
-            return solveEquationSgn(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.exp)) {
-            return solveEquationExp(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.lg)) {
-            return solveEquationLg(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.ln)) {
-            return solveEquationLn(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.sin)) {
-            return solveEquationSin(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.cos)) {
-            return solveEquationCos(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.tan)) {
-            return solveEquationTan(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.cot)) {
-            return solveEquationCot(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.sec)) {
-            return solveEquationSec(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.cosec)) {
-            return solveEquationCosec(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.cosh)) {
-            return solveEquationCosh(((Function) f).getLeft(), g, var);
-        } else if (type.equals(TypeFunction.sech)) {
-            return solveEquationSech(((Function) f).getLeft(), g, var);
+        switch (type) {
+            case abs:
+                return solveEquationAbs(((Function) f).getLeft(), g, var);
+            case sgn:
+                return solveEquationSgn(((Function) f).getLeft(), g, var);
+            case exp:
+                return solveEquationExp(((Function) f).getLeft(), g, var);
+            case lg:
+                return solveEquationLg(((Function) f).getLeft(), g, var);
+            case ln:
+                return solveEquationLn(((Function) f).getLeft(), g, var);
+            case sin:
+                return solveEquationSin(((Function) f).getLeft(), g, var);
+            case cos:
+                return solveEquationCos(((Function) f).getLeft(), g, var);
+            case tan:
+                return solveEquationTan(((Function) f).getLeft(), g, var);
+            case cot:
+                return solveEquationCot(((Function) f).getLeft(), g, var);
+            case sec:
+                return solveEquationSec(((Function) f).getLeft(), g, var);
+            case cosec:
+                return solveEquationCosec(((Function) f).getLeft(), g, var);
+            case cosh:
+                return solveEquationCosh(((Function) f).getLeft(), g, var);
+            case sech:
+                return solveEquationSech(((Function) f).getLeft(), g, var);
+            default:
+                // Ansonsten ist f eine bijektive Funktion
+                return solveEquationWithBijectiveFunction(((Function) f).getLeft(), type, g, var);
         }
-
-        // Ansonsten ist f eine bijektive Funktion
-        return solveEquationWithBijectiveFunction(((Function) f).getLeft(), type, g, var);
 
     }
 
     /**
-     * Methode zum Lösen einer Betragsgleichung |argument| = g nach der
+     * Methode zum Lösen einer Gleichung f(x) = g(x) mit bijektivem f nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationWithBijectiveFunction(Expression argument, TypeFunction type,
@@ -589,39 +589,56 @@ public abstract class SolveGeneralEquationUtils {
 
         TypeFunction inverseType;
 
-        if (type.equals(TypeFunction.sinh)) {
-            inverseType = TypeFunction.arsinh;
-        } else if (type.equals(TypeFunction.tanh)) {
-            inverseType = TypeFunction.artanh;
-        } else if (type.equals(TypeFunction.coth)) {
-            inverseType = TypeFunction.arcoth;
-        } else if (type.equals(TypeFunction.cosech)) {
-            inverseType = TypeFunction.arcosech;
-        } else if (type.equals(TypeFunction.arcsin)) {
-            inverseType = TypeFunction.sin;
-        } else if (type.equals(TypeFunction.arccos)) {
-            inverseType = TypeFunction.cos;
-        } else if (type.equals(TypeFunction.arctan)) {
-            inverseType = TypeFunction.tan;
-        } else if (type.equals(TypeFunction.arccot)) {
-            inverseType = TypeFunction.cot;
-        } else if (type.equals(TypeFunction.arcsec)) {
-            inverseType = TypeFunction.sec;
-        } else if (type.equals(TypeFunction.arccosec)) {
-            inverseType = TypeFunction.cosec;
-        } else if (type.equals(TypeFunction.arsinh)) {
-            inverseType = TypeFunction.sinh;
-        } else if (type.equals(TypeFunction.arcosh)) {
-            inverseType = TypeFunction.cosh;
-        } else if (type.equals(TypeFunction.artanh)) {
-            inverseType = TypeFunction.tanh;
-        } else if (type.equals(TypeFunction.arcoth)) {
-            inverseType = TypeFunction.coth;
-        } else if (type.equals(TypeFunction.arsech)) {
-            inverseType = TypeFunction.sech;
-        } else {
-            // Hier ist type == arccosech.
-            inverseType = TypeFunction.cosech;
+        switch (type) {
+            case sinh:
+                inverseType = TypeFunction.arsinh;
+                break;
+            case tanh:
+                inverseType = TypeFunction.artanh;
+                break;
+            case coth:
+                inverseType = TypeFunction.arcoth;
+                break;
+            case cosech:
+                inverseType = TypeFunction.arcosech;
+                break;
+            case arcsin:
+                inverseType = TypeFunction.sin;
+                break;
+            case arccos:
+                inverseType = TypeFunction.cos;
+                break;
+            case arctan:
+                inverseType = TypeFunction.tan;
+                break;
+            case arccot:
+                inverseType = TypeFunction.cot;
+                break;
+            case arcsec:
+                inverseType = TypeFunction.sec;
+                break;
+            case arccosec:
+                inverseType = TypeFunction.cosec;
+                break;
+            case arsinh:
+                inverseType = TypeFunction.sinh;
+                break;
+            case arcosh:
+                inverseType = TypeFunction.cosh;
+                break;
+            case artanh:
+                inverseType = TypeFunction.tanh;
+                break;
+            case arcoth:
+                inverseType = TypeFunction.coth;
+                break;
+            case arsech:
+                inverseType = TypeFunction.sech;
+                break;
+            default:
+                // Hier ist type == arccosech.
+                inverseType = TypeFunction.cosech;
+                break;
         }
 
         ExpressionCollection zeros = new ExpressionCollection();
@@ -629,18 +646,12 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(type)) {
             try {
                 zeros = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
-                if (zeros.isEmpty()) {
-                    return NO_SOLUTIONS;
-                }
             } catch (EvaluationException e) {
                 return NO_SOLUTIONS;
             }
         } else if (!g.contains(var)) {
             try {
                 zeros = solveGeneralEquation(argument, new Function(g, inverseType), var);
-                if (zeros.isEmpty()) {
-                    return NO_SOLUTIONS;
-                }
             } catch (EvaluationException e) {
                 return NO_SOLUTIONS;
             }
@@ -1635,10 +1646,10 @@ public abstract class SolveGeneralEquationUtils {
          werden, die neue Gleichung zu lösen.
          */
         Expression fExpanded = f.simplify(simplifyTypesExpandedEquation);
-        if (!f.equals(fExpanded)){
+        if (!f.equals(fExpanded)) {
             return solveZeroEquation(fExpanded, var);
         }
-        
+
         return zeros;
 
     }

@@ -168,11 +168,19 @@ public abstract class SimplifyMultiPolynomialUtils {
             return BigInteger.ZERO;
         }
         if (f instanceof BinaryOperation) {
+            BigInteger degLeft = getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars);
+            BigInteger degRight = getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars);
             if (f.isSum() || f.isDifference()) {
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).max(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
+                if (degLeft.equals(BigInteger.valueOf(-1)) || degRight.equals(BigInteger.valueOf(-1))) {
+                    return BigInteger.valueOf(-1);
+                }
+                return degLeft.max(degRight);
             }
             if (f.isProduct()) {
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).add(getDegreeOfMultiPolynomial(((BinaryOperation) f).getRight(), vars));
+                if (degLeft.equals(BigInteger.valueOf(-1)) || degRight.equals(BigInteger.valueOf(-1))) {
+                    return BigInteger.valueOf(-1);
+                }
+                return degLeft.add(degRight);
             }
             if (f.isQuotient()) {
                 for (String var : vars) {
@@ -181,11 +189,11 @@ public abstract class SimplifyMultiPolynomialUtils {
                         return BigInteger.valueOf(-1);
                     }
                 }
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars);
+                return degLeft;
             }
             if (f.isPower() && ((BinaryOperation) f).getRight().isIntegerConstant() && ((BinaryOperation) f).getRight().isNonNegative()) {
                 BigInteger exponent = ((Constant) ((BinaryOperation) f).getRight()).getBigIntValue();
-                return getDegreeOfMultiPolynomial(((BinaryOperation) f).getLeft(), vars).multiply(exponent);
+                return degLeft.multiply(exponent);
             }
         }
         if (f instanceof Operator) {
@@ -276,7 +284,7 @@ public abstract class SimplifyMultiPolynomialUtils {
         for (Expression summand : summandsRight) {
             fAsMultiPolynomial.addMonomial(getMonomialFromExpression(MINUS_ONE.mult(summand).simplify(), vars));
         }
-        
+
         fAsMultiPolynomial.clearZeroMonomials();
 
         return fAsMultiPolynomial;
@@ -285,18 +293,18 @@ public abstract class SimplifyMultiPolynomialUtils {
 
     public static ArrayList<MultiPolynomial> getMultiPolynomialsFromExpressions(ArrayList<Expression> exprs, ArrayList<String> vars) throws EvaluationException {
         ArrayList<MultiPolynomial> polynomials = new ArrayList<>();
-        for (Expression expr : exprs){
+        for (Expression expr : exprs) {
             polynomials.add(getMultiPolynomialFromExpression(expr, vars));
         }
         return polynomials;
     }
-    
+
     public static ArrayList<MultiPolynomial> getMultiPolynomialsFromExpressions(Expression[] exprs, ArrayList<String> vars) throws EvaluationException {
         ArrayList<MultiPolynomial> polynomials = new ArrayList<>();
-        for (Expression expr : exprs){
+        for (Expression expr : exprs) {
             polynomials.add(getMultiPolynomialFromExpression(expr, vars));
         }
         return polynomials;
     }
-    
+
 }

@@ -4,9 +4,7 @@ import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
-import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.TWO;
-import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
@@ -26,7 +24,6 @@ import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
 import enums.TypeSimplify;
 import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
-import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -260,93 +257,6 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     }
 
     /**
-     * Führt an f und g, wenn möglich, elementare Äquivalenzumformungen durch
-     * und gibt dann die Lösungen der Differentialgleichung f = g aus, falls 
-     * welche gefunden wurden.
-     *
-     * @throws EvaluationException
-     */
-//    private static ExpressionCollection elementaryEquivalentTransformation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException {
-//
-//        ExpressionCollection solutions = new ExpressionCollection();
-//
-//        if (f.contains(varAbsc) && !g.contains(varAbsc) && f instanceof BinaryOperation) {
-//
-//            BinaryOperation fAsBinaryOperation = (BinaryOperation) f;
-//            if (fAsBinaryOperation.getLeft().contains(varAbsc) && !fAsBinaryOperation.getRight().contains(varAbsc)) {
-//
-//                if (fAsBinaryOperation.isSum()) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.sub(fAsBinaryOperation.getRight()), varAbsc);
-//                } else if (fAsBinaryOperation.isDifference()) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.add(fAsBinaryOperation.getRight()), varAbsc);
-//                } else if (fAsBinaryOperation.isProduct() && !fAsBinaryOperation.getRight().equals(ZERO)) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.div(fAsBinaryOperation.getRight()), varAbsc);
-//                } else if (fAsBinaryOperation.isQuotient() && !fAsBinaryOperation.getRight().equals(ZERO)) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.mult(fAsBinaryOperation.getRight()), varAbsc);
-//                } else if (fAsBinaryOperation.isPower()) {
-//
-//                    if (fAsBinaryOperation.getRight().isOddIntegerConstant()) {
-//                        return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
-//                    }
-//                    if (fAsBinaryOperation.getRight().isEvenIntegerConstant()) {
-//                        if (!g.isConstant() || g.isNonNegative()) {
-//                            ExpressionCollection resultPositive = solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
-//                            ExpressionCollection resultNegative = solveGeneralEquation(fAsBinaryOperation.getLeft(), Expression.MINUS_ONE.mult(g.pow(ONE, fAsBinaryOperation.getRight())), varAbsc);
-//                            return SimplifyUtilities.union(resultPositive, resultNegative);
-//                        }
-//                        return new ExpressionCollection();
-//                    }
-//                    if (fAsBinaryOperation.getRight().isRationalConstant()) {
-//                        BigInteger rootDegree = ((Constant) ((BinaryOperation) fAsBinaryOperation.getRight()).getRight()).getBigIntValue();
-//                        if (((BinaryOperation) fAsBinaryOperation.getRight()).getRight().isEvenIntegerConstant()) {
-//                            solutions = solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), varAbsc);
-//                            if (g.isConstant() && g.isNonPositive()) {
-//                                /*
-//                                 Falsche Lösungen aussortieren: wenn g <= 0
-//                                 ist und f von der Form f = h^(1/n) mit
-//                                 geradem n, dann kann die Gleichung f = g
-//                                 nicht bestehen (f ist nicht konstant, denn es
-//                                 enthält die Variable var).
-//                                 */
-//                                return new ExpressionCollection();
-//                            }
-//                            return solutions;
-//                        }
-//                        return solveGeneralEquation(fAsBinaryOperation.pow(rootDegree), g.pow(rootDegree), varAbsc);
-//                    }
-//
-//                    return solveGeneralEquation(fAsBinaryOperation.getLeft(), g.pow(ONE, fAsBinaryOperation.getRight()), varAbsc);
-//
-//                }
-//            } else if (!fAsBinaryOperation.getLeft().contains(varAbsc) && fAsBinaryOperation.getRight().contains(varAbsc)) {
-//
-//                if (fAsBinaryOperation.isSum()) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), g.sub(fAsBinaryOperation.getLeft()), varAbsc);
-//                } else if (fAsBinaryOperation.isDifference()) {
-//                    return solveGeneralEquation(Expression.MINUS_ONE.mult(fAsBinaryOperation.getRight()), g.sub(fAsBinaryOperation.getLeft()), varAbsc);
-//                } else if (fAsBinaryOperation.isProduct() && !fAsBinaryOperation.getLeft().equals(ZERO)) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), g.div(fAsBinaryOperation.getLeft()), varAbsc);
-//                } else if (fAsBinaryOperation.isQuotient() && !fAsBinaryOperation.getLeft().equals(ZERO) && !g.equals(ZERO)) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), fAsBinaryOperation.getLeft().div(g), varAbsc);
-//                } else if (fAsBinaryOperation.isPower()) {
-//                    return solveGeneralEquation(fAsBinaryOperation.getRight(), (new Function(g, TypeFunction.ln)).div(new Function(fAsBinaryOperation.getLeft(), TypeFunction.ln)), varAbsc);
-//                }
-//
-//            }
-//
-//        }
-//
-//        // Falls nichts von all dem funktioniert hat, dann zumindest alle Nenner durch Multiplikation eliminieren.
-//        try {
-//            return solveFractionalEquation(f, g, varAbsc);
-//        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
-//        }
-//
-//        return solutions;
-//
-//    }
-
-    /**
      * Kürzt gleiche Summanden auf beiden Seiten.
      */
     private static Expression[] cancelEqualSummandsInDifferentialEquation(Expression f, Expression g) {
@@ -392,7 +302,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return result;
 
     }
-    
+
     /**
      * Interne Hauptprozedur zum algebraischen Lösen von Differntialgleichungen
      * der Form f(x, y, y', ..., y^(n)) = g(x, y, y', ..., y^(n)).
@@ -409,16 +319,31 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         F = cancelEqualSummandsInDifferentialEquation(f, g);
         f = F[0];
         g = F[1];
-        
-        // TO DO: Weitere Äquivalenzumformungen.
 
+        // Falls die Gleichung eine Potenzgleichung darstellt.
+        try {
+            return solvePowerDifferentialEquation(f, g, varAbsc, varOrd);
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+        }
+
+        // Falls die Gleichung eine Funktionsgleichung darstellt.
+        try {
+            return solveFunctionDifferentialEquation(f, g, varAbsc, varOrd);
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+        }
+        
+        // Falls f und g einen gemeinsamen Faktor h im Zähler besitzen.
+//        try {
+//            return solveEquationWithCommonFactors(f, g, var);
+//        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+//        }
         Expression diffEq = f.sub(g);
         /* 
         Zunächst: DGL im Folgenden Sinne reduzieren: Hat die DGL die Form
         f(y^(n), ..., y^(k), x) = 0, so wird die DGL 
         f(z^(n - k), ..., z', z, x) = 0 nach z und anschließend die 
         DGL y^(k) = z(x) nach y gelöst.
-        */
+         */
         Object[] reductionOfDifferentialEquation = reduceDifferentialEquation(diffEq, varOrd);
 
         // Reduzierte DGL lösen.
@@ -429,6 +354,265 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
     }
 
+    private static boolean doesNotContainDifferentialEquationVars(Expression f, String varAbsc, String varOrd) {
+        HashSet<String> vars = f.getContainedIndeterminates();
+        for (String var : vars) {
+            if (var.equals(varAbsc)) {
+                return false;
+            }
+            boolean isDerivativeOfVarOrd = var.startsWith(varOrd);
+            for (int i = varOrd.length(); i < var.length(); i++) {
+                isDerivativeOfVarOrd = isDerivativeOfVarOrd && var.substring(i, i + 1).equals("'");
+            }
+            if (isDerivativeOfVarOrd) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isAdmissibleExponent(Expression expr) {
+        return expr.isOddIntegerConstant()
+                || expr.isRationalConstant() && ((BinaryOperation) expr).getLeft().isOddIntegerConstant()
+                && ((BinaryOperation) expr).getRight().isOddIntegerConstant();
+    }
+
+    /**
+     * Prozedur zum Finden spezieller Lösungen von Gleichungen der Form f(x, y,
+     * ..., y^(n))^p(x, y, ..., y^(n)) = g(x, y, ..., y^(n))^q(x, y, ...,
+     * y^(n)).
+     *
+     * @throws EvaluationException
+     */
+    private static ExpressionCollection solvePowerDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        if (f.isPower() && doesNotContainDifferentialEquationVars(((BinaryOperation) f).getRight(), varAbsc, varOrd)
+                && doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            Expression expF = ((BinaryOperation) f).getRight();
+            if (isAdmissibleExponent(expF)) {
+                return solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), g.pow(ONE.div(expF)), varAbsc, varOrd);
+            }
+        }
+
+        if (g.isPower() && doesNotContainDifferentialEquationVars(((BinaryOperation) g).getRight(), varAbsc, varOrd)
+                && doesNotContainDifferentialEquationVars(f, varAbsc, varOrd)) {
+            return solvePowerDifferentialEquation(g, f, varAbsc, varOrd);
+        }
+
+        if (f.isPower() && g.isPower()
+                && ((BinaryOperation) f).getRight().equivalent(((BinaryOperation) g).getRight())
+                && doesNotContainDifferentialEquationVars(((BinaryOperation) f).getRight(), varAbsc, varOrd)
+                && doesNotContainDifferentialEquationVars(((BinaryOperation) g).getRight(), varAbsc, varOrd)) {
+            
+            Expression exp = ((BinaryOperation) f).getRight();
+            if (isAdmissibleExponent(exp)) {
+                return solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), ((BinaryOperation) g).getLeft(), varAbsc, varOrd);
+            }
+            if (!exp.isIntegerConstantOrRationalConstant()) {
+                return solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), ((BinaryOperation) g).getLeft(), varAbsc, varOrd);
+            }
+            ExpressionCollection solutionsOne = solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), ((BinaryOperation) g).getLeft(), varAbsc, varOrd);
+            ExpressionCollection solutionsTwo = solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), MINUS_ONE.mult(((BinaryOperation) g).getLeft()), varAbsc, varOrd);
+            return SimplifyUtilities.union(solutionsOne, solutionsTwo);
+            
+        }
+
+        throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+
+    }
+
+    /**
+     * Prozedur zum Lösen von Differentialgleichungen der Form 
+     * F(f(x, y, ..., y^(n))) = F(g(x, y, ..., y^(n))) oder
+     * F(f(x, y, ..., y^(n))) = const, varAbsc = x, varOrd = y.
+     */
+    private static ExpressionCollection solveFunctionDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) 
+            throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        if (g.isFunction() && !doesNotContainDifferentialEquationVars(((Function) g).getLeft(), varAbsc, varOrd)
+                && doesNotContainDifferentialEquationVars(f, varAbsc, varOrd)) {
+            return solveFunctionDifferentialEquation(g, f, varAbsc, varOrd);
+        }
+        
+        
+        if (doesNotContainDifferentialEquationVars(f, varAbsc, varOrd) || !(f instanceof Function)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        TypeFunction type = ((Function) f).getType();
+
+        if (!g.isFunction(type) && !doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+        }
+
+        if (type.equals(TypeFunction.abs)) {
+            return solveDifferentialEquationAbs(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.sgn)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationSgn(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.exp)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationExp(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.lg)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationLg(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.ln)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationLn(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.sin)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationSin(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.cos)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationCos(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.tan)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationTan(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.cot)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationCot(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.sec)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationSec(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.cosec)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationCosec(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.cosh)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationCosh(((Function) f).getLeft(), g, varAbsc, varOrd);
+        } else if (type.equals(TypeFunction.sech)) {
+            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+//            return solveEquationSech(((Function) f).getLeft(), g, varAbsc, varOrd);
+        }
+
+        // Ansonsten ist f eine bijektive Funktion
+        return solveDifferentialEquationWithBijectiveFunction(((Function) f).getLeft(), type, g, varAbsc, varOrd);
+
+    }
+
+    /**
+     * Methode zum Lösen einer Betragsdifferentialgleichung |argument| = g..
+     */
+    private static ExpressionCollection solveDifferentialEquationAbs(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection solutionsPositive, solutionsNegative;
+
+        if (g.isFunction(TypeFunction.abs)) {
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, Expression.MINUS_ONE.mult(((Function) g).getLeft()), varAbsc, varOrd);
+                solutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        } else if (!g.contains(varAbsc)) {
+            if (g.isNonPositive() && !g.equals(ZERO)) {
+                // Gleichung ist unlösbar. 
+                return NO_SOLUTIONS;
+            }
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, g, varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, Expression.MINUS_ONE.mult(g), varAbsc, varOrd);
+                if (!solutionsPositive.isEmpty() || !solutionsNegative.isEmpty()) {
+                    solutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer Differentialgleichung f(x, y, ..., y^(n)) 
+     * = g(x, y, ..., y^(n)) mit bijektivem f.
+     */
+    private static ExpressionCollection solveDifferentialEquationWithBijectiveFunction(Expression argument, TypeFunction type,
+            Expression g, String varAbsc, String varOrd) {
+
+        TypeFunction inverseType;
+
+        switch (type) {
+            case sinh:
+                inverseType = TypeFunction.arsinh;
+                break;
+            case tanh:
+                inverseType = TypeFunction.artanh;
+                break;
+            case coth:
+                inverseType = TypeFunction.arcoth;
+                break;
+            case cosech:
+                inverseType = TypeFunction.arcosech;
+                break;
+            case arcsin:
+                inverseType = TypeFunction.sin;
+                break;
+            case arccos:
+                inverseType = TypeFunction.cos;
+                break;
+            case arctan:
+                inverseType = TypeFunction.tan;
+                break;
+            case arccot:
+                inverseType = TypeFunction.cot;
+                break;
+            case arcsec:
+                inverseType = TypeFunction.sec;
+                break;
+            case arccosec:
+                inverseType = TypeFunction.cosec;
+                break;
+            case arsinh:
+                inverseType = TypeFunction.sinh;
+                break;
+            case arcosh:
+                inverseType = TypeFunction.cosh;
+                break;
+            case artanh:
+                inverseType = TypeFunction.tanh;
+                break;
+            case arcoth:
+                inverseType = TypeFunction.coth;
+                break;
+            case arsech:
+                inverseType = TypeFunction.sech;
+                break;
+            default:
+                // Hier ist type == arccosech.
+                inverseType = TypeFunction.cosech;
+                break;
+        }
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        if (g.isFunction(type)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, new Function(g, inverseType), varAbsc, varOrd);
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+    
     /**
      * Interne Hauptprozedur zum algebraischen Lösen von Differntialgleichungen
      * der Form f(x, y, y', ..., y^(n)) = 0.

@@ -227,25 +227,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-//
-//                    if (isFirstSummandSuitable.length == 2) {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-//                            summands.remove(j);
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-//                            summands.remove(j);
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -277,27 +258,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-//
-//                    if (isFirstSummandSuitable.length == 2) {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-//                            summands.remove(i);
-//                            summands.remove(j);
-//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]));
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-//                            summands.remove(i);
-//                            summands.remove(j);
-//                            summands.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).div((BigDecimal) isFirstSummandSuitable[2]));
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -341,25 +301,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (firstSummandData.length == secondSummandData.length
-//                        && ((Expression) firstSummandData[0]).equivalent((Expression) secondSummandData[0])) {
-//
-//                    if (firstSummandData.length == 2) {
-//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0) {
-//                            summandsRight.put(j, new Constant((BigDecimal) firstSummandData[1]));
-//                            summandsLeft.remove(i);
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0
-//                                && ((BigDecimal) firstSummandData[2]).compareTo((BigDecimal) secondSummandData[2]) == 0) {
-//                            summandsRight.put(j, new Constant((BigDecimal) firstSummandData[1]).div((BigDecimal) firstSummandData[2]));
-//                            summandsLeft.remove(i);
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -391,25 +332,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (firstSummandData.length == secondSummandData.length
-//                        && ((Expression) firstSummandData[0]).equivalent((Expression) secondSummandData[0])) {
-//
-//                    if (firstSummandData.length == 2) {
-//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0) {
-//                            summandsLeft.put(i, new Constant((BigDecimal) firstSummandData[1]));
-//                            summandsRight.remove(j);
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) firstSummandData[1]).compareTo((BigDecimal) secondSummandData[1]) == 0
-//                                && ((BigDecimal) firstSummandData[2]).compareTo((BigDecimal) secondSummandData[2]) == 0) {
-//                            summandsLeft.put(i, new Constant((BigDecimal) firstSummandData[1]).div((BigDecimal) firstSummandData[2]));
-//                            summandsRight.remove(j);
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -454,19 +376,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 return;
             }
 
-//            if (summandData.length == 2) {
-//                if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
-//                    summands.remove(0);
-//                    summands.put(i, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                    return;
-//                }
-//            } else {
-//                if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
-//                    summands.remove(0);
-//                    summands.put(i, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                    return;
-//                }
-//            }
         }
 
     }
@@ -515,19 +424,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     return;
                 }
 
-//                if (summandData.length == 2) {
-//                    if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
-//                        summandsRight.remove(i);
-//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                } else {
-//                    if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
-//                        summandsRight.remove(i);
-//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                }
             }
 
         } else {
@@ -551,19 +447,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     return;
                 }
 
-//                if (summandData.length == 2) {
-//                    if (new Constant((BigDecimal) summandData[1]).equals(constantSummand)) {
-//                        summandsLeft.remove(i);
-//                        summandsRight.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                } else {
-//                    if (new Constant((BigDecimal) summandData[1]).div((BigDecimal) summandData[2]).equals(constantSummand)) {
-//                        summandsLeft.remove(i);
-//                        summandsRight.put(0, constantSummand.mult(new Function((Expression) summandData[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                }
             }
 
         }
@@ -614,19 +497,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     return;
                 }
 
-//                if (isSummandSuitable.length == 2) {
-//                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-//                        summandsLeft.remove(0);
-//                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                } else {
-//                    if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
-//                        summandsLeft.remove(0);
-//                        summandsRight.put(i, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-//                        return;
-//                    }
-//                }
             }
 
         } else {
@@ -649,20 +519,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     summandsRight.remove(i);
                     return;
                 }
-
-//                if (isSummandSuitable.length == 2) {
-//                    if (new Constant((BigDecimal) isSummandSuitable[1]).equals(constantSummand)) {
-//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-//                        summandsRight.remove(i);
-//                        return;
-//                    }
-//                } else {
-//                    if (new Constant((BigDecimal) isSummandSuitable[1]).div((BigDecimal) isSummandSuitable[2]).equals(constantSummand)) {
-//                        summandsLeft.put(0, constantSummand.mult(new Function((Expression) isSummandSuitable[0], resultType).pow(2)));
-//                        summandsRight.remove(i);
-//                        return;
-//                    }
-//                }
 
             }
 
@@ -710,25 +566,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-//
-//                    if (isFirstSummandSuitable.length == 2) {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-//                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)));
-//                            summands.remove(Math.max(i, j));
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-//                            summands.put(Math.min(i, j), new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(new Function((Expression) isFirstSummandSuitable[0], resultType)).div((BigDecimal) isFirstSummandSuitable[2]));
-//                            summands.remove(Math.max(i, j));
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -892,25 +729,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     summandsRight.remove(j);
                     break;
                 }
-//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-//
-//                    if (isFirstSummandSuitable.length == 2) {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-//                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
-//                            summandsRight.remove(j);
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-//                            summandsLeft.put(i, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
-//                            summandsRight.remove(j);
-//                            break;
-//                        }
-//                    }
-//
-//                }
 
             }
 
@@ -944,26 +762,6 @@ public abstract class SimplifyFunctionalRelationsUtils {
                     break;
                 }
 
-//                if (isFirstSummandSuitable.length == isSecondSummandSuitable.length
-//                        && ((Expression) isFirstSummandSuitable[0]).equivalent((Expression) isSecondSummandSuitable[0])) {
-//
-//                    if (isFirstSummandSuitable.length == 2) {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0) {
-//                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()));
-//                            summandsLeft.remove(i);
-//                            break;
-//                        }
-//                    } else {
-//                        if (((BigDecimal) isFirstSummandSuitable[1]).compareTo((BigDecimal) isSecondSummandSuitable[1]) == 0
-//                                && ((BigDecimal) isFirstSummandSuitable[2]).compareTo((BigDecimal) isSecondSummandSuitable[2]) == 0) {
-//                            summandsRight.put(j, new Constant((BigDecimal) isFirstSummandSuitable[1]).mult(
-//                                    Expression.MINUS_ONE.mult((Expression) isFirstSummandSuitable[0]).exp()).div((BigDecimal) isFirstSummandSuitable[2]));
-//                            summandsLeft.remove(i);
-//                            break;
-//                        }
-//                    }
-//
-//                }
             }
 
         }
@@ -1129,7 +927,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
      * wird dies zu H(x) zusammengefasst, wobei H.getTypeFunction() ==
      * result_type ist. Beispiel: sin(x)/cos(x) wird zu tan(x) vereinfacht.
      * Diese Funktion kann auch gleiche Potenzen von solchen Funktionen
-     * zusammenfassen. Konkret: F(x)/n*G(x)^n = H(x)^n.
+     * zusammenfassen. Konkret: F(x)^n / *G(x)^n = H(x)^n.
      */
     public static void quotientOfTwoFunctions(ExpressionCollection factorsEnumerator, ExpressionCollection factorsDenominator,
             TypeFunction firstType, TypeFunction secondType, TypeFunction resultType) {

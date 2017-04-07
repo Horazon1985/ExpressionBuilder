@@ -327,11 +327,12 @@ public abstract class Expression implements AbstractExpression {
                     i = i + k - 1;
                 } else if ((int) charWithinAbsBrackets >= 97 && (int) charWithinAbsBrackets <= 122
                         || (int) charWithinAbsBrackets >= 48 && (int) charWithinAbsBrackets <= 57
+                        || (int) charWithinAbsBrackets == 95 || (int) charWithinAbsBrackets == 39
                         || (int) charWithinAbsBrackets == 41) {
                     /*
                      Dann steht links von einer |-Kette eine Zahl oder ein
-                     Buchstabe oder ")" -> Es ist eine Ketten von schließenden
-                     Betragsklammern.
+                     Buchstabe oder ein '_' oder ein ''' oder ")" 
+                     -> Es ist eine Ketten von schließenden Betragsklammern.
                      */
                     absBracketCounter = absBracketCounter + k;
                     i = i + k - 1;
