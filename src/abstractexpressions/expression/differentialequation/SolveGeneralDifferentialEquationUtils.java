@@ -333,7 +333,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             return solveFunctionDifferentialEquation(f, g, varAbsc, varOrd);
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
-        
+
         // Falls f und g einen gemeinsamen Faktor h im Zähler besitzen.
 //        try {
 //            return solveEquationWithCommonFactors(f, g, var);
@@ -405,7 +405,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
                 && ((BinaryOperation) f).getRight().equivalent(((BinaryOperation) g).getRight())
                 && doesNotContainDifferentialEquationVars(((BinaryOperation) f).getRight(), varAbsc, varOrd)
                 && doesNotContainDifferentialEquationVars(((BinaryOperation) g).getRight(), varAbsc, varOrd)) {
-            
+
             Expression exp = ((BinaryOperation) f).getRight();
             if (isAdmissibleExponent(exp)) {
                 return solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), ((BinaryOperation) g).getLeft(), varAbsc, varOrd);
@@ -416,7 +416,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             ExpressionCollection solutionsOne = solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), ((BinaryOperation) g).getLeft(), varAbsc, varOrd);
             ExpressionCollection solutionsTwo = solveGeneralDifferentialEquation(((BinaryOperation) f).getLeft(), MINUS_ONE.mult(((BinaryOperation) g).getLeft()), varAbsc, varOrd);
             return SimplifyUtilities.union(solutionsOne, solutionsTwo);
-            
+
         }
 
         throw new DifferentialEquationNotAlgebraicallyIntegrableException();
@@ -424,19 +424,18 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     }
 
     /**
-     * Prozedur zum Lösen von Differentialgleichungen der Form 
-     * F(f(x, y, ..., y^(n))) = F(g(x, y, ..., y^(n))) oder
-     * F(f(x, y, ..., y^(n))) = const, varAbsc = x, varOrd = y.
+     * Prozedur zum Lösen von Differentialgleichungen der Form F(f(x, y, ...,
+     * y^(n))) = F(g(x, y, ..., y^(n))) oder F(f(x, y, ..., y^(n))) = const,
+     * varAbsc = x, varOrd = y.
      */
-    private static ExpressionCollection solveFunctionDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd) 
+    private static ExpressionCollection solveFunctionDifferentialEquation(Expression f, Expression g, String varAbsc, String varOrd)
             throws EvaluationException, DifferentialEquationNotAlgebraicallyIntegrableException {
 
         if (g.isFunction() && !doesNotContainDifferentialEquationVars(((Function) g).getLeft(), varAbsc, varOrd)
                 && doesNotContainDifferentialEquationVars(f, varAbsc, varOrd)) {
             return solveFunctionDifferentialEquation(g, f, varAbsc, varOrd);
         }
-        
-        
+
         if (doesNotContainDifferentialEquationVars(f, varAbsc, varOrd) || !(f instanceof Function)) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
@@ -447,36 +446,37 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
-        if (type.equals(TypeFunction.abs)) {
-            return solveDifferentialEquationAbs(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.sgn)) {
-            return solveDifferentialEquationSgn(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.exp)) {
-            return solveDifferentialEquationExp(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.lg)) {
-            return solveDifferentialEquationLg(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.ln)) {
-            return solveDifferentialEquationLn(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.sin)) {
-            return solveDifferentialEquationSin(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.cos)) {
-            return solveDifferentialEquationCos(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.tan)) {
-            return solveDifferentialEquationTan(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.cot)) {
-            return solveDifferentialEquationCot(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.sec)) {
-            return solveDifferentialEquationSec(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.cosec)) {
-            return solveDifferentialEquationCosec(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.cosh)) {
-            return solveDifferentialEquationCosh(((Function) f).getLeft(), g, varAbsc, varOrd);
-        } else if (type.equals(TypeFunction.sech)) {
-            return solveDifferentialEquationSech(((Function) f).getLeft(), g, varAbsc, varOrd);
+        switch (type) {
+            case abs:
+                return solveDifferentialEquationAbs(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case sgn:
+                return solveDifferentialEquationSgn(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case exp:
+                return solveDifferentialEquationExp(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case lg:
+                return solveDifferentialEquationLg(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case ln:
+                return solveDifferentialEquationLn(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case sin:
+                return solveDifferentialEquationSin(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case cos:
+                return solveDifferentialEquationCos(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case tan:
+                return solveDifferentialEquationTan(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case cot:
+                return solveDifferentialEquationCot(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case sec:
+                return solveDifferentialEquationSec(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case cosec:
+                return solveDifferentialEquationCosec(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case cosh:
+                return solveDifferentialEquationCosh(((Function) f).getLeft(), g, varAbsc, varOrd);
+            case sech:
+                return solveDifferentialEquationSech(((Function) f).getLeft(), g, varAbsc, varOrd);
+            default:
+                // Ansonsten ist f eine bijektive Funktion
+                return solveDifferentialEquationWithBijectiveFunction(((Function) f).getLeft(), type, g, varAbsc, varOrd);
         }
-
-        // Ansonsten ist f eine bijektive Funktion
-        return solveDifferentialEquationWithBijectiveFunction(((Function) f).getLeft(), type, g, varAbsc, varOrd);
 
     }
 
@@ -521,7 +521,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form sgn(argument) = g.
      */
@@ -548,7 +548,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form exp(argument) = g.
      */
@@ -583,7 +583,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form lg(argument) = g.
      */
@@ -771,7 +771,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form sin(argument) = g.
      */
@@ -838,7 +838,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form cos(argument) = g.
      */
@@ -905,7 +905,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer DGL der Form tan(argument) = g.
      */
@@ -1015,7 +1015,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Methode zum Lösen einer Gleichung der Form sec(argument) = g nach der
      * Variablen var.
@@ -1147,7 +1147,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * In f sind Variablen enthalten, unter anderem "Parametervariablen" K_1,
      * K_2, .... Diese Funktion liefert dasjenige K_i, welches in h noch nicht
@@ -1161,10 +1161,10 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         }
         return var + j;
     }
-    
+
     /**
-     * Methode zum Lösen einer Differentialgleichung f(x, y, ..., y^(n)) 
-     * = g(x, y, ..., y^(n)) mit bijektivem f.
+     * Methode zum Lösen einer Differentialgleichung f(x, y, ..., y^(n)) = g(x,
+     * y, ..., y^(n)) mit bijektivem f.
      */
     private static ExpressionCollection solveDifferentialEquationWithBijectiveFunction(Expression argument, TypeFunction type,
             Expression g, String varAbsc, String varOrd) {
@@ -1242,7 +1242,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         return solutions;
 
     }
-    
+
     /**
      * Interne Hauptprozedur zum algebraischen Lösen von Differntialgleichungen
      * der Form f(x, y, y', ..., y^(n)) = 0.
