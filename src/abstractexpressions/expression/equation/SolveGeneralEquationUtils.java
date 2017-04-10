@@ -19,6 +19,8 @@ import abstractexpressions.expression.basic.SimplifyBinaryOperationUtils;
 import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyRationalFunctionUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
+import static abstractexpressions.expression.classes.Expression.PI;
+import static abstractexpressions.expression.classes.Expression.TEN;
 import java.math.BigInteger;
 import java.util.HashSet;
 import notations.NotationLoader;
@@ -755,7 +757,7 @@ public abstract class SolveGeneralEquationUtils {
                 return NO_SOLUTIONS;
             }
             try {
-                zeros = solveGeneralEquation(argument, new Function(g, TypeFunction.ln), var);
+                zeros = solveGeneralEquation(argument, g.ln(), var);
                 if (zeros.isEmpty()) {
                     return NO_SOLUTIONS;
                 }
@@ -791,7 +793,7 @@ public abstract class SolveGeneralEquationUtils {
                 return NO_SOLUTIONS;
             }
             try {
-                zeros = solveGeneralEquation(argument, new Constant(10).pow(g), var);
+                zeros = solveGeneralEquation(argument, TEN.pow(g), var);
                 if (zeros == NO_SOLUTIONS) {
                     return NO_SOLUTIONS;
                 }
@@ -841,7 +843,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung cosh(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form cosh(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationCosh(Expression argument, Expression g, String var) {
@@ -856,7 +858,7 @@ public abstract class SolveGeneralEquationUtils {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
-                zerosNegative = solveGeneralEquation(argument, (Expression.MINUS_ONE).mult(((Function) g).getLeft()), var);
+                zerosNegative = solveGeneralEquation(argument, MINUS_ONE.mult(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -876,8 +878,8 @@ public abstract class SolveGeneralEquationUtils {
         } else if (!g.contains(var)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, new Function(g, TypeFunction.arcosh), var);
-                zerosNegative = solveGeneralEquation(argument, (Expression.MINUS_ONE).mult(new Function(g, TypeFunction.arcosh)), var);
+                zerosPositive = solveGeneralEquation(argument, g.arcosh(), var);
+                zerosNegative = solveGeneralEquation(argument, MINUS_ONE.mult(g.arcosh()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -901,7 +903,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung sech(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form sech(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationSech(Expression argument, Expression g, String var) {
@@ -916,7 +918,7 @@ public abstract class SolveGeneralEquationUtils {
 
             try {
                 zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft(), var);
-                zerosNegative = solveGeneralEquation(argument, (Expression.MINUS_ONE).mult(((Function) g).getLeft()), var);
+                zerosNegative = solveGeneralEquation(argument, MINUS_ONE.mult(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -936,8 +938,8 @@ public abstract class SolveGeneralEquationUtils {
         } else if (!g.contains(var)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, new Function(g, TypeFunction.arsech), var);
-                zerosNegative = solveGeneralEquation(argument, (Expression.MINUS_ONE).mult(new Function(g, TypeFunction.arsech)), var);
+                zerosPositive = solveGeneralEquation(argument, g.arsech(), var);
+                zerosNegative = solveGeneralEquation(argument, MINUS_ONE.mult(g.arsech()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -961,7 +963,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung sin(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form sin(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationSin(Expression argument, Expression g, String var) {
@@ -976,8 +978,8 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.sin)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(Expression.PI).sub(((Function) g).getLeft()), var);
+                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(PI.mult(Variable.create(K)))), var);
+                zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(PI).sub(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -999,12 +1001,12 @@ public abstract class SolveGeneralEquationUtils {
             Function gComposedWithInverse = new Function(g, TypeFunction.arcsin);
             try {
                 if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(PI.mult(Variable.create(K)))), var);
                 } else if (g.equals(ZERO)) {
-                    zerosPositive = solveGeneralEquation(argument, Expression.PI.mult(Variable.create(K)), var);
+                    zerosPositive = solveGeneralEquation(argument, PI.mult(Variable.create(K)), var);
                 } else {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                    zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(Expression.PI).sub(gComposedWithInverse), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(PI.mult(Variable.create(K)))), var);
+                    zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(PI).sub(gComposedWithInverse), var);
                 }
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
@@ -1029,7 +1031,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung cos(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form cos(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationCos(Expression argument, Expression g, String var) {
@@ -1044,8 +1046,8 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.cos)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                zerosNegative = solveGeneralEquation(argument, TWO.mult(Expression.PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), var);
+                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(PI.mult(Variable.create(K)))), var);
+                zerosNegative = solveGeneralEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -1067,12 +1069,12 @@ public abstract class SolveGeneralEquationUtils {
             Function gComposedWithInverse = new Function(g, TypeFunction.arccos);
             try {
                 if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(PI.mult(Variable.create(K)))), var);
                 } else if (g.equals(ZERO)) {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(Expression.PI.mult(Variable.create(K))), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), var);
                 } else {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                    zerosNegative = solveGeneralEquation(argument, TWO.mult(Expression.PI.mult(Variable.create(K))).sub(gComposedWithInverse), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(PI.mult(Variable.create(K)))), var);
+                    zerosNegative = solveGeneralEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(gComposedWithInverse), var);
                 }
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
@@ -1097,7 +1099,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung tan(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form tan(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationTan(Expression argument, Expression g, String var) {
@@ -1110,7 +1112,7 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.tan)) {
 
             try {
-                possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(Expression.PI.mult(Variable.create(K))), var);
+                possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(PI.mult(Variable.create(K))), var);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
                     try {
@@ -1130,7 +1132,7 @@ public abstract class SolveGeneralEquationUtils {
 
             Function gComposedWithInverse = new Function(g, TypeFunction.arctan);
             try {
-                possibleZeros = solveGeneralEquation(argument, gComposedWithInverse.add(Expression.PI.mult(Variable.create(K))), var);
+                possibleZeros = solveGeneralEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), var);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
                     try {
@@ -1153,7 +1155,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung cot(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form cot(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationCot(Expression argument, Expression g, String var) {
@@ -1166,7 +1168,7 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.cot)) {
 
             try {
-                possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(Expression.PI.mult(Variable.create(K))), var);
+                possibleZeros = solveGeneralEquation(argument, ((Function) g).getLeft().add(PI.mult(Variable.create(K))), var);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
                     try {
@@ -1186,7 +1188,7 @@ public abstract class SolveGeneralEquationUtils {
 
             Function gComposedWithInverse = new Function(g, TypeFunction.arccot);
             try {
-                possibleZeros = solveGeneralEquation(argument, gComposedWithInverse.add(Expression.PI.mult(Variable.create(K))), var);
+                possibleZeros = solveGeneralEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), var);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
                     try {
@@ -1209,7 +1211,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung sec(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form sec(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationSec(Expression argument, Expression g, String var) {
@@ -1224,8 +1226,8 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.sec)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                zerosNegative = solveGeneralEquation(argument, TWO.mult(Expression.PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), var);
+                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), var);
+                zerosNegative = solveGeneralEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -1246,11 +1248,11 @@ public abstract class SolveGeneralEquationUtils {
 
             Function gComposedWithInverse = new Function(g, TypeFunction.arcsec);
             try {
-                if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
+                if (g.equals(ONE) || g.equals(MINUS_ONE)) {
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), var);
                 } else {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                    zerosNegative = solveGeneralEquation(argument, TWO.mult(Expression.PI.mult(Variable.create(K))).sub(gComposedWithInverse), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), var);
+                    zerosNegative = solveGeneralEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(gComposedWithInverse), var);
                 }
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
@@ -1275,7 +1277,7 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * Methode zum Lösen einer Logarithmusgleichung cosec(argument) = g nach der
+     * Methode zum Lösen einer Gleichung der Form cosec(argument) = g nach der
      * Variablen var.
      */
     private static ExpressionCollection solveEquationCosec(Expression argument, Expression g, String var) {
@@ -1290,8 +1292,8 @@ public abstract class SolveGeneralEquationUtils {
         if (g.isFunction(TypeFunction.cosec)) {
 
             try {
-                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(Expression.PI).sub(((Function) g).getLeft()), var);
+                zerosPositive = solveGeneralEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), var);
+                zerosNegative = solveGeneralEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(((Function) g).getLeft()), var);
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 
                 for (int i = 0; i < possibleZeros.getBound(); i++) {
@@ -1312,11 +1314,11 @@ public abstract class SolveGeneralEquationUtils {
 
             Function gComposedWithInverse = new Function(g, TypeFunction.arccosec);
             try {
-                if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
+                if (g.equals(ONE) || g.equals(MINUS_ONE)) {
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), var);
                 } else {
-                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add((TWO).mult(Expression.PI.mult(Variable.create(K)))), var);
-                    zerosNegative = solveGeneralEquation(argument, ONE.add((TWO).mult(Variable.create(K))).mult(Expression.PI).sub(gComposedWithInverse), var);
+                    zerosPositive = solveGeneralEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), var);
+                    zerosNegative = solveGeneralEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(gComposedWithInverse), var);
                 }
                 possibleZeros = SimplifyUtilities.union(zerosPositive, zerosNegative);
                 // Ungültige Lösungen aussortieren. 

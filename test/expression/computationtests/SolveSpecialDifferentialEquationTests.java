@@ -78,11 +78,15 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
              */
             Expression leftSide = Expression.build("y'' + y'^2*y");
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, ZERO, "x", "y");
-            Expression implicitSolutionOne = Expression.build("int(exp(y^2/2-C_1),y)-(x+C_1)");
-            Expression implicitSolutionTwo = Expression.build("int(exp(y^2/2-C_1),y)+x-C_1");
-            expectedResults = new Object[]{0, implicitSolutionOne, implicitSolutionTwo};
-            results = new Object[]{solutions.getBound(), solutions.get(0), solutions.get(1)};
+            Expression solutionOne = Variable.create("C_1");
+            Expression implicitSolutionTwo = new Operator(TypeOperator.integral, new Object[]{Variable.create("y").pow(2).div(2).sub(Variable.create("C_1")).exp(), "y"}).sub(Variable.create("x").add(Variable.create("C_1")));
+            Expression implicitSolutionThree = new Operator(TypeOperator.integral, new Object[]{Variable.create("y").pow(2).div(2).sub(Variable.create("C_1")).exp(), "y"}).add(Variable.create("x")).sub(Variable.create("C_1"));
+            expectedResults = new Object[]{3, solutionOne, implicitSolutionTwo, implicitSolutionThree};
+            results = new Object[]{solutions.getBound(), solutions.get(0), solutions.get(1), solutions.get(2)};
             assertTrue(solutions.getBound() == 3);
+            assertTrue(solutionOne.equals(solutions.get(0)));
+            assertTrue(implicitSolutionTwo.equals(solutions.get(1)));
+            assertTrue(implicitSolutionThree.equals(solutions.get(2)));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

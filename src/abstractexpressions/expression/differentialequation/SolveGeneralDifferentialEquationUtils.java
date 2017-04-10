@@ -14,6 +14,8 @@ import abstractexpressions.expression.basic.SimplifyMultiPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import static abstractexpressions.expression.classes.Expression.ONE;
+import static abstractexpressions.expression.classes.Expression.PI;
+import static abstractexpressions.expression.classes.Expression.TEN;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Function;
 import abstractexpressions.expression.classes.TypeFunction;
@@ -448,41 +450,29 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         if (type.equals(TypeFunction.abs)) {
             return solveDifferentialEquationAbs(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.sgn)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationSgn(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationSgn(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.exp)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationExp(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationExp(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.lg)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationLg(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationLg(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.ln)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationLn(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationLn(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.sin)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationSin(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationSin(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.cos)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationCos(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationCos(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.tan)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationTan(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationTan(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.cot)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationCot(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationCot(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.sec)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationSec(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationSec(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.cosec)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationCosec(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationCosec(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.cosh)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationCosh(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationCosh(((Function) f).getLeft(), g, varAbsc, varOrd);
         } else if (type.equals(TypeFunction.sech)) {
-            throw new DifferentialEquationNotAlgebraicallyIntegrableException();
-//            return solveEquationSech(((Function) f).getLeft(), g, varAbsc, varOrd);
+            return solveDifferentialEquationSech(((Function) f).getLeft(), g, varAbsc, varOrd);
         }
 
         // Ansonsten ist f eine bijektive Funktion
@@ -509,7 +499,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             } catch (EvaluationException e) {
                 return NO_SOLUTIONS;
             }
-        } else if (!g.contains(varAbsc)) {
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
             if (g.isNonPositive() && !g.equals(ZERO)) {
                 // Gleichung ist unlösbar. 
                 return NO_SOLUTIONS;
@@ -530,6 +520,646 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         return solutions;
 
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form sgn(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationSgn(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        if (g.isConstant() && !g.equals(ZERO)) {
+            // DGL ist entweder unlösbar oder kann nicht explizit gelöst werden.
+            return NO_SOLUTIONS;
+        }
+        // Man kann zumindest über den Spezialfall g = 0 etwas aussagen: sgn(f) = 0 <=> f = 0.
+        if (g.equals(ZERO)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, ZERO, varAbsc, varOrd);
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form exp(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationExp(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        if (g.isFunction(TypeFunction.exp)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            if (g.isNonPositive()) {
+                // Gleichung ist unlösbar. 
+                return NO_SOLUTIONS;
+            }
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, g.ln(), varAbsc, varOrd);
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form lg(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationLg(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        if (g.isFunction(TypeFunction.lg)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                if (solutions == NO_SOLUTIONS) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            if (argument.isAlwaysNonPositive()) {
+                // Gleichung ist unlösbar. 
+                return NO_SOLUTIONS;
+            }
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, TEN.pow(g), varAbsc, varOrd);
+                if (solutions == NO_SOLUTIONS) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+
+    /**
+     * Methode zum Lösen einer DGL der Form ln(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationLn(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+
+        if (g.isFunction(TypeFunction.ln)) {
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                if (solutions == NO_SOLUTIONS) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            if (argument.isAlwaysNonPositive()) {
+                // Gleichung ist unlösbar. 
+                return NO_SOLUTIONS;
+            }
+            try {
+                solutions = solveGeneralDifferentialEquation(argument, g.exp(), varAbsc, varOrd);
+                if (solutions == NO_SOLUTIONS) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+        }
+
+        return solutions;
+
+    }
+
+    /**
+     * Methode zum Lösen einer DGL der Form cosh(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationCosh(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative;
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.cosh)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, MINUS_ONE.mult(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, g.arcosh(), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, MINUS_ONE.mult(g.arcosh()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+
+    /**
+     * Methode zum Lösen einer DGL der Form sech(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationSech(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative;
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.sech)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft(), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, MINUS_ONE.mult(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, g.arsech(), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, MINUS_ONE.mult(g.arsech()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form sin(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationSin(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative = new ExpressionCollection();
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.sin)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arcsin);
+            try {
+                if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                } else if (g.equals(ZERO)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, PI.mult(Variable.create(K)), varAbsc, varOrd);
+                } else {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add((TWO).mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                    solutionsNegative = solveGeneralDifferentialEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(gComposedWithInverse), varAbsc, varOrd);
+                }
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form cos(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationCos(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative = new ExpressionCollection();
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.cos)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arccos);
+            try {
+                if (g.equals(ONE) || g.equals(Expression.MINUS_ONE)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                } else if (g.equals(ZERO)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), varAbsc, varOrd);
+                } else {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                    solutionsNegative = solveGeneralDifferentialEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(gComposedWithInverse), varAbsc, varOrd);
+                }
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer DGL der Form tan(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationTan(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.tan)) {
+
+            try {
+                possibleSolutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(PI.mult(Variable.create(K))), varAbsc, varOrd);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arctan);
+            try {
+                possibleSolutions = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), varAbsc, varOrd);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+
+    /**
+     * Methode zum Lösen einer DGL der Form cot(argument) = g.
+     */
+    private static ExpressionCollection solveDifferentialEquationCot(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.cot)) {
+
+            try {
+                possibleSolutions = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(PI.mult(Variable.create(K))), varAbsc, varOrd);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arccot);
+            try {
+                possibleSolutions = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(PI.mult(Variable.create(K))), varAbsc, varOrd);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * Methode zum Lösen einer Gleichung der Form sec(argument) = g nach der
+     * Variablen var.
+     */
+    private static ExpressionCollection solveDifferentialEquationSec(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative = new ExpressionCollection();
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.sec)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arcsec);
+            try {
+                if (g.equals(ONE) || g.equals(MINUS_ONE)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                } else {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                    solutionsNegative = solveGeneralDifferentialEquation(argument, TWO.mult(PI.mult(Variable.create(K))).sub(gComposedWithInverse), varAbsc, varOrd);
+                }
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+
+    /**
+     * Methode zum Lösen einer Gleichung der Form cosec(argument) = g nach der
+     * Variablen var.
+     */
+    private static ExpressionCollection solveDifferentialEquationCosec(Expression argument, Expression g, String varAbsc, String varOrd) {
+
+        ExpressionCollection solutions = new ExpressionCollection();
+        ExpressionCollection possibleSolutions;
+        ExpressionCollection solutionsPositive;
+        ExpressionCollection solutionsNegative = new ExpressionCollection();
+        String K = getParameterVariable(g);
+
+        // Lösungsfamilien erzeugen!
+        if (g.isFunction(TypeFunction.cosec)) {
+
+            try {
+                solutionsPositive = solveGeneralDifferentialEquation(argument, ((Function) g).getLeft().add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                solutionsNegative = solveGeneralDifferentialEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(((Function) g).getLeft()), varAbsc, varOrd);
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        } else if (doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+
+            Function gComposedWithInverse = new Function(g, TypeFunction.arccosec);
+            try {
+                if (g.equals(ONE) || g.equals(MINUS_ONE)) {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                } else {
+                    solutionsPositive = solveGeneralDifferentialEquation(argument, gComposedWithInverse.add(TWO.mult(PI.mult(Variable.create(K)))), varAbsc, varOrd);
+                    solutionsNegative = solveGeneralDifferentialEquation(argument, ONE.add(TWO.mult(Variable.create(K))).mult(PI).sub(gComposedWithInverse), varAbsc, varOrd);
+                }
+                possibleSolutions = SimplifyUtilities.union(solutionsPositive, solutionsNegative);
+                // Ungültige Lösungen aussortieren. 
+                for (int i = 0; i < possibleSolutions.getBound(); i++) {
+                    try {
+                        possibleSolutions.put(i, possibleSolutions.get(i).simplify());
+                        solutions.add(possibleSolutions.get(i));
+                    } catch (EvaluationException e) {
+                    }
+                }
+                if (solutions.isEmpty()) {
+                    return NO_SOLUTIONS;
+                }
+            } catch (EvaluationException e) {
+                return NO_SOLUTIONS;
+            }
+
+        }
+
+        return solutions;
+
+    }
+    
+    /**
+     * In f sind Variablen enthalten, unter anderem "Parametervariablen" K_1,
+     * K_2, .... Diese Funktion liefert dasjenige K_i, welches in h noch nicht
+     * vorkommt.
+     */
+    private static String getParameterVariable(Expression f) {
+        String var = NotationLoader.FREE_INTEGER_PARAMETER_VAR + "_";
+        int j = 1;
+        while (f.contains(var + j)) {
+            j++;
+        }
+        return var + j;
     }
     
     /**
