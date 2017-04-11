@@ -329,17 +329,17 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
-        // Falls die Gleichung eine Funktionsgleichung darstellt.
+        // Falls die DGL eine Funktionsdifferentialgleichung darstellt.
         try {
             return solveFunctionDifferentialEquation(f, g, varAbsc, varOrd);
         } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
         }
 
         // Falls f und g einen gemeinsamen Faktor h im Zähler besitzen.
-//        try {
-//            return solveEquationWithCommonFactors(f, g, var);
-//        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
-//        }
+        try {
+            return solveDifferentialEquationWithCommonFactors(f, g, varAbsc, varOrd);
+        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
+        }
 
         // Ansonsten: f = g <=> f - g = 0 und die letzte DGL wird gelöst.
         Expression diffEq = f.sub(g);
