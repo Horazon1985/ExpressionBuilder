@@ -44,7 +44,7 @@ public abstract class EigenvaluesEigenvectorsUtils {
                 ExpressionCollection eigenvalues = getEigenvalues(base);
                 eigenvalues.powExpression(exponent);
                 eigenvalues = eigenvalues.simplify();
-                eigenvalues.removeMultipleTerms();
+                eigenvalues.removeMultipleEquivalentTerms();
                 return eigenvalues;
             }
 

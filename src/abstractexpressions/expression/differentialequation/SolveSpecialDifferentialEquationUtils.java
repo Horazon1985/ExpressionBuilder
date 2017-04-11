@@ -79,7 +79,7 @@ public abstract class SolveSpecialDifferentialEquationUtils extends SolveGeneral
             }
         }
 
-        solutions.removeMultipleTerms();
+        solutions.removeMultipleEquivalentTerms();
         return solutions;
 
     }

@@ -1066,7 +1066,7 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
         Expression currentExtry;
 
         for (int i = 0; i < n; i++) {
-            copyOfResult = ExpressionCollection.copy(result);
+            copyOfResult = result.copy();
             result.clear();
 
             // Nun das Cauchyprodukt bilden.

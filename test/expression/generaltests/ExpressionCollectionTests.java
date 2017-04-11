@@ -204,7 +204,7 @@ public class ExpressionCollectionTests extends MathToolTestBase {
         terms.add(Expression.TWO);
         terms.add(Expression.TWO);
         terms.add(Expression.THREE);
-        terms.removeMultipleTerms();
+        terms.removeMultipleEquivalentTerms();
         assertTrue(terms.getBound() == 3);
         assertTrue(terms.get(0).equals(Expression.ONE));
         assertTrue(terms.get(1).equals(Expression.TWO));

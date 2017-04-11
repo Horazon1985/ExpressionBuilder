@@ -23,8 +23,8 @@ public abstract class SimplifyMatrixUtilities {
          nachträglich gebraucht und sollten nicht verändert werden ->
          matTermsLeft und matTermsRight kopieren.
          */
-        MatrixExpressionCollection matTermsLeftCopy = MatrixExpressionCollection.copy(matTermsLeft);
-        MatrixExpressionCollection matTermsRightCopy = MatrixExpressionCollection.copy(matTermsRight);
+        MatrixExpressionCollection matTermsLeftCopy = matTermsLeft.copy();
+        MatrixExpressionCollection matTermsRightCopy = matTermsRight.copy();
 
         MatrixExpression matTermLeft, matTermRight;
         boolean equivalentMatTermFound;
@@ -68,8 +68,8 @@ public abstract class SimplifyMatrixUtilities {
      */
     public static MatrixExpressionCollection intersection(MatrixExpressionCollection matTermsLeft, MatrixExpressionCollection matTermsRight) {
 
-        MatrixExpressionCollection termsLeftCopy = MatrixExpressionCollection.copy(matTermsLeft);
-        MatrixExpressionCollection termsRightCopy = MatrixExpressionCollection.copy(matTermsRight);
+        MatrixExpressionCollection termsLeftCopy = matTermsLeft.copy();
+        MatrixExpressionCollection termsRightCopy = matTermsRight.copy();
         MatrixExpressionCollection result = new MatrixExpressionCollection();
 
         for (int i = 0; i < matTermsLeft.getBound(); i++) {
@@ -98,7 +98,7 @@ public abstract class SimplifyMatrixUtilities {
          nachträglich gebraucht und sollten nicht verändert werden ->
          termsLeft und termsRight kopieren.
          */
-        MatrixExpressionCollection termsLeftCopy = MatrixExpressionCollection.copy(termsLeft);
+        MatrixExpressionCollection termsLeftCopy = termsLeft.copy();
         boolean termIsContainedInTermsLeft;
 
         for (int i = 0; i < termsRight.getBound(); i++) {

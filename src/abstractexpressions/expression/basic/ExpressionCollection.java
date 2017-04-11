@@ -251,31 +251,31 @@ public class ExpressionCollection implements Iterable<Expression> {
     }
 
     /**
-     * Kopiert terms.
+     * Gibt eine Kopie der vorliegenden ExpressionCollection-Instanz zurück.
      */
-    public static ExpressionCollection copy(ExpressionCollection terms) {
+    public ExpressionCollection copy() {
 
         ExpressionCollection result = new ExpressionCollection();
-        for (int i = 0; i < terms.getBound(); i++) {
-            if (terms.get(i) != null) {
-                result.put(i, terms.get(i).copy());
+        for (int i = 0; i < this.bound; i++) {
+            if (this.terms.get(i) != null) {
+                result.put(i, this.terms.get(i).copy());
             }
         }
-        result.bound = terms.bound;
+        result.bound = this.bound;
         return result;
 
     }
 
     /**
      * Gibt eine ExpressionCollection zurück, die genau aus den Elemente
-     * terms(m), ..., terms(n - 1) bzw. ganz terms im Falle von Indexüberläufen
-     * besteht.
+     * der vorliegenden ExpressionCollection-Instanz mit den Indizes m, ..., 
+     * n - 1 bzw. aus allen Elementen im Falle von Indexüberläufen besteht.
      */
-    public static ExpressionCollection copy(ExpressionCollection terms, int m, int n) {
+    public ExpressionCollection copy(int m, int n) {
         ExpressionCollection result = new ExpressionCollection();
         for (int i = m; i < n; i++) {
-            if (terms.get(i) != null) {
-                result.add(terms.get(i).copy());
+            if (this.terms.get(i) != null) {
+                result.add(this.terms.get(i).copy());
             }
         }
         return result;
@@ -284,7 +284,7 @@ public class ExpressionCollection implements Iterable<Expression> {
     /**
      * Entfernt alle mehrfachen Kopien bereits vorhandener Terme.
      */
-    public void removeMultipleTerms() {
+    public void removeMultipleEquivalentTerms() {
 
         for (int i = 0; i < this.bound; i++) {
             if (terms.get(i) == null) {

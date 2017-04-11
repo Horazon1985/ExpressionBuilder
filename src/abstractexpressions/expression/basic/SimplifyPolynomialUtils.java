@@ -736,7 +736,7 @@ public abstract class SimplifyPolynomialUtils {
             }
         }
 
-        Expression polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(ExpressionCollection.copy(a, 0, m), var);
+        Expression polynomialOfPrimitivePeriod = decomposePolynomialInIrreducibleFactors(a.copy(0, m), var);
         Expression secondFactor = decomposePolynomialInIrreducibleFactors(coefficientsSecondFactor, var);
 
         return polynomialOfPrimitivePeriod.mult(secondFactor).simplify(simplifyTypesDecomposePolynomial);
@@ -754,7 +754,7 @@ public abstract class SimplifyPolynomialUtils {
             throw new PolynomialNotDecomposableException();
         }
 
-        Expression polynomialOfPrimitivePeriod = SimplifyPolynomialUtils.getPolynomialFromCoefficients(ExpressionCollection.copy(a, 0, m), var);
+        Expression polynomialOfPrimitivePeriod = SimplifyPolynomialUtils.getPolynomialFromCoefficients(a.copy(0, m), var);
         Expression secondFactor = ONE;
 
         for (int i = 1; i < a.getBound() / m; i++) {
@@ -969,7 +969,7 @@ public abstract class SimplifyPolynomialUtils {
                 int exponent = ((Constant) ((BinaryOperation) factor).getRight()).getValue().intValue();
                 polynomialCoefficients = getPolynomialCoefficients(((BinaryOperation) factor).getLeft(), var);
                 for (int i = 0; i < exponent; i++) {
-                    coefficientsOfFactors.add(ExpressionCollection.copy(polynomialCoefficients));
+                    coefficientsOfFactors.add(polynomialCoefficients.copy());
                 }
             } else {
                 coefficientsOfFactors.add(getPolynomialCoefficients(factor, var));
@@ -1281,7 +1281,7 @@ public abstract class SimplifyPolynomialUtils {
 
         int degreeDenominator = coefficientsDenominator.getBound() - 1;
         ExpressionCollection multipleOfDenominator = new ExpressionCollection();
-        ExpressionCollection coeffcicientsEnumeratorCopy = ExpressionCollection.copy(coefficientsNumerator);
+        ExpressionCollection coeffcicientsEnumeratorCopy = coefficientsNumerator.copy();
         for (int i = coeffcicientsEnumeratorCopy.getBound() - 1; i >= degreeDenominator; i--) {
             quotient[0].put(i - degreeDenominator, coeffcicientsEnumeratorCopy.get(i).div(coefficientsDenominator.get(degreeDenominator)).simplify(simplifyTypesPolynomialDivisionEuklidRepresentation));
             for (int j = degreeDenominator; j >= 0; j--) {
@@ -1366,13 +1366,13 @@ public abstract class SimplifyPolynomialUtils {
             return getGGTOfPolynomials(b, a);
         }
 
-        ExpressionCollection aCopy = ExpressionCollection.copy(a);
-        ExpressionCollection bCopy = ExpressionCollection.copy(b);
+        ExpressionCollection aCopy = a.copy();
+        ExpressionCollection bCopy = b.copy();
         ExpressionCollection r = polynomialDivision(aCopy, bCopy)[1];
 
         while (!r.isEmpty()) {
-            aCopy = ExpressionCollection.copy(bCopy);
-            bCopy = ExpressionCollection.copy(r);
+            aCopy = bCopy.copy();
+            bCopy = r.copy();
             r = polynomialDivision(aCopy, bCopy)[1];
         }
 
@@ -1576,10 +1576,10 @@ public abstract class SimplifyPolynomialUtils {
 
         boolean periodFound;
         for (BigInteger cycleLength : cycleLengths) {
-            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLength.intValue());
+            periodForCompare = coefficients.copy(0, cycleLength.intValue());
             periodFound = true;
             for (int j = 1; j < coefficients.getBound() / cycleLength.intValue(); j++) {
-                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
+                currentPeriod = coefficients.copy(j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
                 if (!SimplifyUtilities.equivalent(periodForCompare, currentPeriod)) {
                     periodFound = false;
                     break;
@@ -1613,10 +1613,10 @@ public abstract class SimplifyPolynomialUtils {
 
         boolean periodFound;
         for (BigInteger cycleLength : cycleLengths) {
-            periodForCompare = ExpressionCollection.copy(coefficients, 0, cycleLength.intValue());
+            periodForCompare = coefficients.copy(0, cycleLength.intValue());
             periodFound = true;
             for (int j = 1; j < coefficients.getBound() / cycleLength.intValue(); j++) {
-                currentPeriod = ExpressionCollection.copy(coefficients, j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
+                currentPeriod = coefficients.copy(j * cycleLength.intValue(), (j + 1) * cycleLength.intValue());
                 if (j % 2 == 1) {
                     for (int k = 0; k < periodForCompare.getBound(); k++) {
                         try {

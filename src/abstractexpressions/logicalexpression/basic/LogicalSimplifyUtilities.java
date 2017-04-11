@@ -12,8 +12,8 @@ public abstract class LogicalSimplifyUtilities {
     public static LogicalExpressionCollection intersection(LogicalExpressionCollection logTermsLeft,
             LogicalExpressionCollection logTermsRight) {
 
-        LogicalExpressionCollection logTermsLeftCopy = LogicalExpressionCollection.copy(logTermsLeft);
-        LogicalExpressionCollection logTermsRightCopy = LogicalExpressionCollection.copy(logTermsRight);
+        LogicalExpressionCollection logTermsLeftCopy = logTermsLeft.copy();
+        LogicalExpressionCollection logTermsRightCopy = logTermsRight.copy();
         LogicalExpressionCollection result = new LogicalExpressionCollection();
 
         for (int i = 0; i < logTermsLeft.getBound(); i++) {
@@ -43,8 +43,8 @@ public abstract class LogicalSimplifyUtilities {
          nachträglich gebraucht und sollten nicht verändert werden ->
          logTermsLeft und logTermsRight kopieren.
          */
-        LogicalExpressionCollection logTermsLeftCopy = LogicalExpressionCollection.copy(logTermsLeft);
-        LogicalExpressionCollection logTermsRightCopy = LogicalExpressionCollection.copy(logTermsRight);
+        LogicalExpressionCollection logTermsLeftCopy = logTermsLeft.copy();
+        LogicalExpressionCollection logTermsRightCopy = logTermsRight.copy();
 
         LogicalExpression termLeft, termRight;
         boolean equivalentTermFound;

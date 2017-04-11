@@ -36,8 +36,8 @@ public abstract class SimplifyUtilities {
      */
     public static ExpressionCollection intersection(ExpressionCollection termsLeft, ExpressionCollection termsRight) {
 
-        ExpressionCollection termsLeftCopy = ExpressionCollection.copy(termsLeft);
-        ExpressionCollection termsRightCopy = ExpressionCollection.copy(termsRight);
+        ExpressionCollection termsLeftCopy = termsLeft.copy();
+        ExpressionCollection termsRightCopy = termsRight.copy();
         ExpressionCollection result = new ExpressionCollection();
 
         for (int i = 0; i < termsLeft.getBound(); i++) {
@@ -66,8 +66,8 @@ public abstract class SimplifyUtilities {
          nachträglich gebraucht und sollten nicht verändert werden ->
          termsLeft und termsRight kopieren.
          */
-        ExpressionCollection termsLeftCopy = ExpressionCollection.copy(termsLeft);
-        ExpressionCollection termsRightCopy = ExpressionCollection.copy(termsRight);
+        ExpressionCollection termsLeftCopy = termsLeft.copy();
+        ExpressionCollection termsRightCopy = termsRight.copy();
 
         Expression termLeft, termRight;
         boolean equivalentTermFound;
@@ -117,7 +117,7 @@ public abstract class SimplifyUtilities {
          nachträglich gebraucht und sollten nicht verändert werden ->
          termsLeft und termsRight kopieren.
          */
-        ExpressionCollection termsLeftCopy = ExpressionCollection.copy(termsLeft);
+        ExpressionCollection termsLeftCopy = termsLeft.copy();
         boolean termIsContainedInTermsLeft;
 
         for (int i = 0; i < termsRight.getBound(); i++) {

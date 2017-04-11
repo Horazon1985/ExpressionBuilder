@@ -1,5 +1,6 @@
 package abstractexpressions.expression.equation;
 
+import abstractexpressions.expression.abstractequation.AbstractEquationUtils;
 import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import exceptions.NotSubstitutableException;
@@ -972,7 +973,7 @@ public abstract class SolveGeneralEquationUtils {
         ExpressionCollection possibleZeros;
         ExpressionCollection zerosPositive;
         ExpressionCollection zerosNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.sin)) {
@@ -1040,7 +1041,7 @@ public abstract class SolveGeneralEquationUtils {
         ExpressionCollection possibleZeros;
         ExpressionCollection zerosPositive;
         ExpressionCollection zerosNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cos)) {
@@ -1106,7 +1107,7 @@ public abstract class SolveGeneralEquationUtils {
 
         ExpressionCollection zeros = new ExpressionCollection();
         ExpressionCollection possibleZeros;
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.tan)) {
@@ -1162,7 +1163,7 @@ public abstract class SolveGeneralEquationUtils {
 
         ExpressionCollection zeros = new ExpressionCollection();
         ExpressionCollection possibleZeros;
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cot)) {
@@ -1220,7 +1221,7 @@ public abstract class SolveGeneralEquationUtils {
         ExpressionCollection possibleZeros;
         ExpressionCollection zerosPositive;
         ExpressionCollection zerosNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.sec)) {
@@ -1286,7 +1287,7 @@ public abstract class SolveGeneralEquationUtils {
         ExpressionCollection possibleZeros;
         ExpressionCollection zerosPositive;
         ExpressionCollection zerosNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cosec)) {
@@ -1343,109 +1344,6 @@ public abstract class SolveGeneralEquationUtils {
     }
 
     /**
-     * In f sind Variablen enthalten, unter anderem "Parametervariablen" K_1,
-     * K_2, .... Diese Funktion liefert dasjenige K_i, welches in h noch nicht
-     * vorkommt.
-     */
-    private static String getParameterVariable(Expression f) {
-        String var = NotationLoader.FREE_INTEGER_PARAMETER_VAR + "_";
-        int j = 1;
-        while (f.contains(var + j)) {
-            j++;
-        }
-        return var + j;
-    }
-
-    /**
-     * Hilfsmethode für solveGeneralEquation(). Liefert alle gemeinsamen
-     * Faktoren (mit Vielfachheiten) von f und g.
-     */
-    private static ExpressionCollection getCommonFactors(Expression f, Expression g) {
-
-        ExpressionCollection factorsF, factorsG;
-
-        if (f.isQuotient()) {
-            factorsF = SimplifyUtilities.getFactorsOfNumeratorInExpression(((BinaryOperation) f).getLeft());
-        } else {
-            factorsF = SimplifyUtilities.getFactors(f);
-        }
-
-        if (g.isQuotient()) {
-            factorsG = SimplifyUtilities.getFactorsOfNumeratorInExpression(((BinaryOperation) g).getLeft());
-        } else {
-            factorsG = SimplifyUtilities.getFactors(g);
-        }
-
-        ExpressionCollection factorsFCopy = ExpressionCollection.copy(factorsF);
-        ExpressionCollection factorsGCopy = ExpressionCollection.copy(factorsG);
-
-        try {
-
-            /*
-             Idee: Falls f und g Faktoren der Form h^m und h^n besitzen, wobei
-             m und n rationale Zahlen sind, so wird h^(min(m, n)) zur Menge
-             der gemeinsamen Faktoren hinzugefügt. Andernfalls werden Faktoren
-             nur dann hinzugefügt, wenn sie äquivalent sind.
-             */
-            ExpressionCollection commonFactors = new ExpressionCollection();
-            Expression base, baseToCompare, exponent, exponentToCompare, exponentDifference, exponentOfCommonFactor;
-
-            for (int i = 0; i < factorsF.getBound(); i++) {
-                if (factorsF.get(i) == null) {
-                    continue;
-                }
-
-                if (factorsF.get(i).isPower() && ((BinaryOperation) factorsF.get(i)).getRight().isIntegerConstantOrRationalConstant()) {
-                    base = ((BinaryOperation) factorsF.get(i)).getLeft();
-                    exponent = ((BinaryOperation) factorsF.get(i)).getRight();
-                } else {
-                    base = factorsF.get(i);
-                    exponent = ONE;
-                }
-
-                for (int j = 0; j < factorsG.getBound(); j++) {
-                    if (factorsG.get(j) == null) {
-                        continue;
-                    }
-
-                    if (factorsG.get(j).isPower() && ((BinaryOperation) factorsG.get(j)).getRight().isIntegerConstantOrRationalConstant()) {
-                        baseToCompare = ((BinaryOperation) factorsG.get(j)).getLeft();
-                        exponentToCompare = ((BinaryOperation) factorsG.get(j)).getRight();
-                    } else {
-                        baseToCompare = factorsG.get(j);
-                        exponentToCompare = ONE;
-                    }
-
-                    if (base.equivalent(baseToCompare)) {
-                        exponentDifference = exponent.sub(exponentToCompare).simplify();
-                        if (exponentDifference.isNonNegative()) {
-                            exponentOfCommonFactor = exponentToCompare;
-                        } else {
-                            exponentOfCommonFactor = exponent;
-                        }
-                        if (exponentOfCommonFactor.equals(ONE)) {
-                            commonFactors.add(base);
-                        } else {
-                            commonFactors.add(base.pow(exponentOfCommonFactor));
-                        }
-                        factorsF.remove(i);
-                        factorsG.remove(j);
-                        break;
-                    }
-
-                }
-            }
-
-            return commonFactors;
-
-        } catch (EvaluationException e) {
-        }
-
-        return SimplifyUtilities.intersection(factorsFCopy, factorsGCopy);
-
-    }
-
-    /**
      * Hilfsmethode für solveGeneralEquation(). Liefert Lösungen für die
      * Gleichung f = g, falls f und g gemeinsame nichtkonstante Faktoren
      * besitzen.
@@ -1456,7 +1354,7 @@ public abstract class SolveGeneralEquationUtils {
 
         if (g.contains(var)) {
             try {
-                ExpressionCollection commonFactorsOfFAndG = getCommonFactors(f, g);
+                ExpressionCollection commonFactorsOfFAndG = AbstractEquationUtils.getCommonFactors(f, g);
                 if (!commonFactorsOfFAndG.isEmpty()) {
                     Expression fWithoutCommonFactors = f.div(SimplifyUtilities.produceProduct(commonFactorsOfFAndG)).simplify();
                     Expression gWithoutCommonFactors = g.div(SimplifyUtilities.produceProduct(commonFactorsOfFAndG)).simplify();
@@ -1590,7 +1488,7 @@ public abstract class SolveGeneralEquationUtils {
          Menge von potiellen (einfachen) Substitutionen zur Verfügung.
          */
         ExpressionCollection setOfSubstitutions = getSuitableSubstitutionForEquation(f, var);
-        setOfSubstitutions.removeMultipleTerms();
+        setOfSubstitutions.removeMultipleEquivalentTerms();
         Expression fSubstituted;
 
         ExpressionCollection zeros = new ExpressionCollection();

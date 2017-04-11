@@ -2213,7 +2213,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
         for (int i = 0; i < summandsLeft.getBound(); i++) {
 
-            commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
+            commonDenominatorsCopy = commonDenominators.copy();
             complementFactorsForEachSummand.clear();
             additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsLeft.get(i)));
             numberOfFactorsInCurrentDenominator = additionalDenominators.getBound();
@@ -2273,7 +2273,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
         for (int i = 0; i < summandsRight.getBound(); i++) {
 
-            commonDenominatorsCopy = ExpressionCollection.copy(commonDenominators);
+            commonDenominatorsCopy = commonDenominators.copy();
             complementFactorsForEachSummand.clear();
             additionalDenominators = SimplifyUtilities.collectFactorsByPowers(SimplifyUtilities.getFactorsOfDenominatorInExpression(summandsRight.get(i)));
             numberOfFactorsInCurrentDenominator = additionalDenominators.getBound();
@@ -2500,19 +2500,19 @@ public abstract class SimplifyBinaryOperationUtils {
                             SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(summandDenominator),
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-                    summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
+                    summandsLeftInNumeratorMultiples = summandsLeftInNumerator.copy();
                     summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
-                    summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
+                    summandsRightInNumeratorMultiples = summandsRightInNumerator.copy();
                     summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
-                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominator.copy();
                     summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
-                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominator.copy();
                     summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
@@ -2548,19 +2548,19 @@ public abstract class SimplifyBinaryOperationUtils {
                             SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(summandDenominator),
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-                    summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
+                    summandsLeftInNumeratorMultiples = summandsLeftInNumerator.copy();
                     summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
-                    summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
+                    summandsRightInNumeratorMultiples = summandsRightInNumerator.copy();
                     summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
-                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominator.copy();
                     summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
-                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominator.copy();
                     summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
@@ -2609,19 +2609,19 @@ public abstract class SimplifyBinaryOperationUtils {
                             SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(summandDenominator),
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-                    summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
+                    summandsLeftInNumeratorMultiples = summandsLeftInNumerator.copy();
                     summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
-                    summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
+                    summandsRightInNumeratorMultiples = summandsRightInNumerator.copy();
                     summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
-                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominator.copy();
                     summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
-                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominator.copy();
                     summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
@@ -2657,19 +2657,19 @@ public abstract class SimplifyBinaryOperationUtils {
                             SimplifyUtilities.getConstantFactorsOfNumeratorInExpression(summandDenominator),
                             SimplifyUtilities.getConstantFactorsOfDenominatorInExpression(summandDenominator));
 
-                    summandsLeftInNumeratorMultiples = ExpressionCollection.copy(summandsLeftInNumerator);
+                    summandsLeftInNumeratorMultiples = summandsLeftInNumerator.copy();
                     summandsLeftInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsLeftInNumeratorMultiples = summandsLeftInNumeratorMultiples.simplify();
 
-                    summandsRightInNumeratorMultiples = ExpressionCollection.copy(summandsRightInNumerator);
+                    summandsRightInNumeratorMultiples = summandsRightInNumerator.copy();
                     summandsRightInNumeratorMultiples.multiplyWithExpression(coefficientInDenominatorForTesting);
                     summandsRightInNumeratorMultiples = summandsRightInNumeratorMultiples.simplify();
 
-                    summandsLeftInDenominatorMultiples = ExpressionCollection.copy(summandsLeftInDenominator);
+                    summandsLeftInDenominatorMultiples = summandsLeftInDenominator.copy();
                     summandsLeftInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsLeftInDenominatorMultiples = summandsLeftInDenominatorMultiples.simplify();
 
-                    summandsRightInDenominatorMultiples = ExpressionCollection.copy(summandsRightInDenominator);
+                    summandsRightInDenominatorMultiples = summandsRightInDenominator.copy();
                     summandsRightInDenominatorMultiples.multiplyWithExpression(coefficientInNumeratorForTesting);
                     summandsRightInDenominatorMultiples = summandsRightInDenominatorMultiples.simplify();
 
@@ -4087,10 +4087,10 @@ public abstract class SimplifyBinaryOperationUtils {
             ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(currentFactor);
             ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(currentFactor);
             for (int i = 0; i < summandsLeft.getBound(); i++) {
-                summandsLeft.put(i, SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsLeft.get(i)).mult(SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
+                summandsLeft.put(i, SimplifyUtilities.produceProduct(factors.copy(0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsLeft.get(i)).mult(SimplifyUtilities.produceProduct(factors.copy(smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
             }
             for (int i = 0; i < summandsRight.getBound(); i++) {
-                summandsRight.put(i, SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, 0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsRight.get(i)).mult(SimplifyUtilities.produceProduct(ExpressionCollection.copy(factors, smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
+                summandsRight.put(i, SimplifyUtilities.produceProduct(factors.copy(0, smallestIndexOfFactorWhichIsEitherSumOrDifference)).mult(summandsRight.get(i)).mult(SimplifyUtilities.produceProduct(factors.copy(smallestIndexOfFactorWhichIsEitherSumOrDifference + 1, factors.getBound() + 1))).orderSumsAndProducts());
             }
 
             return SimplifyUtilities.produceDifference(summandsLeft, summandsRight);

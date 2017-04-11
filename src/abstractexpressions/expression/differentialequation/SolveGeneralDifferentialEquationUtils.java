@@ -1,5 +1,6 @@
 package abstractexpressions.expression.differentialequation;
 
+import abstractexpressions.expression.abstractequation.AbstractEquationUtils;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
@@ -339,6 +340,8 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 //            return solveEquationWithCommonFactors(f, g, var);
 //        } catch (DifferentialEquationNotAlgebraicallyIntegrableException e) {
 //        }
+
+        // Ansonsten: f = g <=> f - g = 0 und die letzte DGL wird gelöst.
         Expression diffEq = f.sub(g);
         /* 
         Zunächst: DGL im Folgenden Sinne reduzieren: Hat die DGL die Form
@@ -781,7 +784,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         ExpressionCollection possibleSolutions;
         ExpressionCollection solutionsPositive;
         ExpressionCollection solutionsNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.sin)) {
@@ -848,7 +851,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         ExpressionCollection possibleSolutions;
         ExpressionCollection solutionsPositive;
         ExpressionCollection solutionsNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cos)) {
@@ -913,7 +916,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         ExpressionCollection solutions = new ExpressionCollection();
         ExpressionCollection possibleSolutions;
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.tan)) {
@@ -968,7 +971,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         ExpressionCollection solutions = new ExpressionCollection();
         ExpressionCollection possibleSolutions;
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cot)) {
@@ -1026,7 +1029,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         ExpressionCollection possibleSolutions;
         ExpressionCollection solutionsPositive;
         ExpressionCollection solutionsNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.sec)) {
@@ -1092,7 +1095,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         ExpressionCollection possibleSolutions;
         ExpressionCollection solutionsPositive;
         ExpressionCollection solutionsNegative = new ExpressionCollection();
-        String K = getParameterVariable(g);
+        String K = AbstractEquationUtils.getParameterVariable(g);
 
         // Lösungsfamilien erzeugen!
         if (g.isFunction(TypeFunction.cosec)) {
@@ -1146,20 +1149,6 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         return solutions;
 
-    }
-
-    /**
-     * In f sind Variablen enthalten, unter anderem "Parametervariablen" K_1,
-     * K_2, .... Diese Funktion liefert dasjenige K_i, welches in h noch nicht
-     * vorkommt.
-     */
-    private static String getParameterVariable(Expression f) {
-        String var = NotationLoader.FREE_INTEGER_PARAMETER_VAR + "_";
-        int j = 1;
-        while (f.contains(var + j)) {
-            j++;
-        }
-        return var + j;
     }
 
     /**
@@ -1243,6 +1232,37 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
     }
 
+    /**
+     * Hilfsmethode für solveGeneralDifferentialEquation(). Liefert Lösungen 
+     * einer DGL der Form f = g, falls f und g gemeinsame nichtkonstante 
+     * Faktoren besitzen.
+     */
+    private static ExpressionCollection solveDifferentialEquationWithCommonFactors(Expression f, Expression g, String varAbsc, String varOrd) 
+            throws DifferentialEquationNotAlgebraicallyIntegrableException {
+
+        ExpressionCollection solutionsOfCancelledFactors = new ExpressionCollection();
+
+        if (!doesNotContainDifferentialEquationVars(g, varAbsc, varOrd)) {
+            try {
+                ExpressionCollection commonFactorsOfFAndG = AbstractEquationUtils.getCommonFactors(f, g);
+                if (!commonFactorsOfFAndG.isEmpty()) {
+                    Expression fWithoutCommonFactors = f.div(SimplifyUtilities.produceProduct(commonFactorsOfFAndG)).simplify();
+                    Expression gWithoutCommonFactors = g.div(SimplifyUtilities.produceProduct(commonFactorsOfFAndG)).simplify();
+                    for (int i = 0; i < commonFactorsOfFAndG.getBound(); i++) {
+                        solutionsOfCancelledFactors = SimplifyUtilities.union(solutionsOfCancelledFactors,
+                                solveZeroDifferentialEquation(commonFactorsOfFAndG.get(i), varAbsc, varOrd));
+                    }
+                    return SimplifyUtilities.union(solveGeneralDifferentialEquation(fWithoutCommonFactors, gWithoutCommonFactors, varAbsc, varOrd),
+                            solutionsOfCancelledFactors);
+                }
+            } catch (EvaluationException e) {
+            }
+        }
+
+        throw new DifferentialEquationNotAlgebraicallyIntegrableException();
+
+    }
+    
     /**
      * Interne Hauptprozedur zum algebraischen Lösen von Differntialgleichungen
      * der Form f(x, y, y', ..., y^(n)) = 0.
@@ -1344,7 +1364,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         for (int i = 0; i < solutionsForParticularFactors.size(); i++) {
             solutions = SimplifyUtilities.union(solutions, solutionsForParticularFactors.get(i));
         }
-        solutions.removeMultipleTerms();
+        solutions.removeMultipleEquivalentTerms();
         return solutions;
 
     }
@@ -1352,7 +1372,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     private static ExpressionCollection solveZeroDifferentialEquationIfQuotient(Expression numerator, Expression denominator, String varAbsc, String varOrd) throws EvaluationException {
 
         ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(numerator, varAbsc, varOrd);
-        solutionsNumerator.removeMultipleTerms();
+        solutionsNumerator.removeMultipleEquivalentTerms();
         ExpressionCollection solutions = new ExpressionCollection();
 
         // Nun diejenigen Lösungen aussortieren, welche im Nenner = 0 liefern.
@@ -1368,7 +1388,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     private static ExpressionCollection solveZeroDifferentialEquationIfPower(Expression base, Expression exponent, String varAbsc, String varOrd) throws EvaluationException {
 
         ExpressionCollection solutionsNumerator = solveZeroDifferentialEquation(base, varAbsc, varOrd);
-        solutionsNumerator.removeMultipleTerms();
+        solutionsNumerator.removeMultipleEquivalentTerms();
         ExpressionCollection solutions = new ExpressionCollection();
 
         // Nun diejenigen Lösungen aufnehmen, welche im Exponenten einen Ausdruck liefern, welcher stets > 0 ist.
@@ -1501,7 +1521,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             }
         }
 
-        solutions.removeMultipleTerms();
+        solutions.removeMultipleEquivalentTerms();
 
         if (solutions.isEmpty()) {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
@@ -2419,7 +2439,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             }
         }
 
-        solutions.removeMultipleTerms();
+        solutions.removeMultipleEquivalentTerms();
         return solutions;
 
     }

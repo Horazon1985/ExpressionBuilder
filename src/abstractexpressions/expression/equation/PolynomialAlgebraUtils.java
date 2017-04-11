@@ -215,7 +215,7 @@ public abstract class PolynomialAlgebraUtils {
             degree = degree - rationalZeros.getBound();
 
             // Mehrfache Lösungen beseitigen!
-            rationalZeros.removeMultipleTerms();
+            rationalZeros.removeMultipleEquivalentTerms();
 
             if (!rationalZeros.isEmpty()) {
                 zeros = SimplifyUtilities.union(zeros, rationalZeros);
@@ -418,7 +418,7 @@ public abstract class PolynomialAlgebraUtils {
         }
 
         ExpressionCollection coefficientsOfDivisionQuotient;
-        ExpressionCollection multipleOfCoefficients = ExpressionCollection.copy(coefficients);
+        ExpressionCollection multipleOfCoefficients = coefficients.copy();
 
         multipleOfCoefficients.multiplyWithExpression(new Constant(commonDenominator));
         multipleOfCoefficients = multipleOfCoefficients.simplify();
@@ -437,7 +437,7 @@ public abstract class PolynomialAlgebraUtils {
             multipleOfCoefficients = multipleOfCoefficients.simplify();
         }
 
-        coefficientsOfDivisionQuotient = ExpressionCollection.copy(multipleOfCoefficients);
+        coefficientsOfDivisionQuotient = multipleOfCoefficients.copy();
 
         // Eigentliche Polynomdivision.
         BigInteger[] zero;
@@ -666,7 +666,7 @@ public abstract class PolynomialAlgebraUtils {
         ExpressionCollection zerosForSubst = SimplifyUtilities.union(solveQuadraticEquation(coefficientsQuadraticEquationOne),
                 solveQuadraticEquation(coefficientsQuadraticEquationTwo));
         // Mehrfachlösungen werden beseitigt.
-        zerosForSubst.removeMultipleTerms();
+        zerosForSubst.removeMultipleEquivalentTerms();
 
         // Rücksubstitution und Zurückgeben der Nullstellen.
         for (Expression zeroForSubst : zerosForSubst) {
@@ -690,7 +690,7 @@ public abstract class PolynomialAlgebraUtils {
 
         int period = SimplifyPolynomialUtils.getPeriodOfCoefficients(coefficients);
         int n = coefficients.getBound() / period;
-        ExpressionCollection result = solvePolynomialEquation(ExpressionCollection.copy(coefficients, 0, period), var);
+        ExpressionCollection result = solvePolynomialEquation(coefficients.copy(0, period), var);
 
         if ((period / 2) * 2 != period && (n / 2) * 2 == n) {
             ExpressionCollection specialZero = new ExpressionCollection();
