@@ -33,7 +33,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
         // f = exp(x+2), var = "x", fieldGenerators = {}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection();
-            f = Expression.build("exp(x+2)", null);
+            f = Expression.build("exp(x+2)");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertFalse(result);
         } catch (ExpressionException e) {
@@ -46,7 +46,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
         // f = exp(x)+3*ln(x)-7/4, var = "x", fieldGenerators = {exp(x), ln(x)}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(x)");
-            f = Expression.build("exp(x)+3*ln(x)-7/4", null);
+            f = Expression.build("exp(x)+3*ln(x)-7/4");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
         } catch (ExpressionException e) {
@@ -59,7 +59,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
         // f = exp(x)+3*ln(x)-7/4, var = "x", fieldGenerators = {exp(x), ln(x)}.
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(x)");
-            f = Expression.build("exp(x)+3*ln(7*x)-7/4", null);
+            f = Expression.build("exp(x)+3*ln(7*x)-7/4");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
         } catch (ExpressionException e) {
@@ -75,10 +75,10 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          */
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x/8)", "ln(x)");
-            f = Expression.build("exp(5+3*x/8+a^2)-7/11", null);
+            f = Expression.build("exp(5+3*x/8+a^2)-7/11");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
-            f = Expression.build("exp(5+3^(1/5)*x+a^2)-7/11", null);
+            f = Expression.build("exp(5+3^(1/5)*x+a^2)-7/11");
             result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertFalse(result);
         } catch (ExpressionException e) {
@@ -94,10 +94,10 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          */
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(2*x+3)");
-            f = Expression.build("x^2/(1+x)+ln((3+2*x)^7)-x", null);
+            f = Expression.build("x^2/(1+x)+ln((3+2*x)^7)-x");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
-            f = Expression.build("x^3+7*ln(x)-5", null);
+            f = Expression.build("x^3+7*ln(x)-5");
             result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertFalse(result);
         } catch (ExpressionException e) {
@@ -113,7 +113,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          */
         try {
             ExpressionCollection fieldGenerators = new ExpressionCollection("exp(x)", "ln(14/5+(6*x)/5)");
-            f = Expression.build("x^2/(1+x)+x*ln(21/8+9*x/8)-x^5", null);
+            f = Expression.build("x^2/(1+x)+x*ln(21/8+9*x/8)-x^5");
             boolean result = RischAlgorithmUtils.isFunctionRationalOverDifferentialField(f, "x", fieldGenerators);
             Assert.assertTrue(result);
         } catch (ExpressionException e) {
@@ -128,7 +128,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          fieldGenerators = {exp(x/11), exp(x), ln(3+x), exp(5*x+exp(x)-1)} zurückgegeben.
          */
         try {
-            f = Expression.build("x^7*exp(x+sinh(x/11))+ln(3+x)+exp(5*x+exp(x)-1)", null);
+            f = Expression.build("x^7*exp(x+sinh(x/11))+ln(3+x)+exp(5*x+exp(x)-1)");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(x/11)",
                     "exp((x+exp(x/11)/2)-exp((-x)/11)/2)", "ln(3+x)", "exp((5*x+exp(x))-1)");
@@ -145,7 +145,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          fieldGenerators = {ln(x), exp(7*x), exp(x+exp(7*x)), exp(x+exp(x+exp(7*x)))} zurückgegeben.
          */
         try {
-            f = Expression.build("(x^7+ln(x)^3)*exp(x+exp(x+exp(7*x)))", null);
+            f = Expression.build("(x^7+ln(x)^3)*exp(x+exp(x+exp(7*x)))");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("ln(x)", "exp(7*x)", "exp(x+exp(7*x))", "exp(x+exp(x+exp(7*x)))");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -161,7 +161,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          fieldGenerators = {exp(2*x/105)} zurückgegeben.
          */
         try {
-            f = Expression.build("x*exp(8*x/15)-exp(6*x/35)", null);
+            f = Expression.build("x*exp(8*x/15)-exp(6*x/35)");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp((2*x)/105)");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -177,7 +177,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          fieldGenerators = {exp(2*x/45)} zurückgegeben.
          */
         try {
-            f = Expression.build("exp(8*x/15)-exp(10*x/9)+exp(4*x)/x", null);
+            f = Expression.build("exp(8*x/15)-exp(10*x/9)+exp(4*x)/x");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp((2*x)/45)");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -193,7 +193,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          fieldGenerators = {exp(x), exp(x+exp(x))} zurückgegeben.
          */
         try {
-            f = Expression.build("exp(x+exp(x/2))+exp(x/3)", null);
+            f = Expression.build("exp(x+exp(x/2))+exp(x/3)");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(x/6)", "exp(x+exp(x/2))");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -210,7 +210,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          Ferner: f ist algebraisch über R(x, fieldGenerators).
          */
         try {
-            f = Expression.build("x^2*exp(x+exp(x)*ln(x))+x^3/(8+x)", null);
+            f = Expression.build("x^2*exp(x+exp(x)*ln(x))+x^3/(8+x)");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(x)", "ln(x)", "exp(x+exp(x)*ln(x))");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -228,7 +228,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          Ferner: f ist algebraisch über R(x, fieldGenerators).
          */
         try {
-            f = Expression.build("x^2*exp(x)+5^x", null);
+            f = Expression.build("x^2*exp(x)+5^x");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(x)", "exp(ln(5)*x)");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));
@@ -246,7 +246,7 @@ public class RischAlgorithmUtilitiesTests extends MathToolTestBase {
          Aber: f ist nicht algebraisch über R(x, fieldGenerators).
          */
         try {
-            f = Expression.build("x^2*exp(x+exp(1/x)*ln(x))+x^3/8+arctan(x)", null);
+            f = Expression.build("x^2*exp(x+exp(1/x)*ln(x))+x^3/8+arctan(x)");
             ExpressionCollection fieldGenerators = RischAlgorithmUtils.getOrderedTranscendentalGeneratorsForDifferentialField(f, "x");
             ExpressionCollection fieldGeneratorsForCompare = new ExpressionCollection("exp(1/x)", "ln(x)", "exp(x+exp(1/x)*ln(x))");
             Assert.assertTrue(fieldGenerators.equivalentInTerms(fieldGeneratorsForCompare));

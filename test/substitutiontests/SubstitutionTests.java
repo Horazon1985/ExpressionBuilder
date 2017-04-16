@@ -42,8 +42,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = 3*x^2+3*sin(x)+(x^2+sin(x))^5+7, var = "x", subst = x^2+sin(x).
             Dann ist f = 3*X_1+X_1^5+7, X_1 = subst.
              */
-            f = Expression.build("3*x^2+3*sin(x)+(x^2+sin(x))^5+7", null);
-            subst = Expression.build("x^2+sin(x)", null);
+            f = Expression.build("3*x^2+3*sin(x)+(x^2+sin(x))^5+7");
+            subst = Expression.build("x^2+sin(x)");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
@@ -65,8 +65,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = (8+x/5+exp(4*x-(2*x^2+4)))-(x^2/10+1/5), var = "x", subst = 2*x-(x^2+2).
             Dann ist f = 8+X_1/10+exp(2*X_1), X_1 = subst.
              */
-            f = Expression.build("(8+x/5+exp(4*x-(2*x^2+4)))-(x^2/10+1/5)", null);
-            subst = Expression.build("2*x-(x^2+2)", null);
+            f = Expression.build("(8+x/5+exp(4*x-(2*x^2+4)))-(x^2/10+1/5)");
+            subst = Expression.build("2*x-(x^2+2)");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();
@@ -88,8 +88,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = x^10, var = "x", subst = 2*x^5.
             Dann ist f = X_1^2/4, X_1 = subst.
              */
-            f = Expression.build("x^10", null);
-            subst = Expression.build("2*x^5", null);
+            f = Expression.build("x^10");
+            subst = Expression.build("2*x^5");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
@@ -111,8 +111,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = a*x^3*sin(x)^6+x*sin(x)^2, var = "x", subst = x*sin(x)^2.
             Dann ist f = a*X_1^3+X_1, X_1 = subst.
              */
-            f = Expression.build("a*x^3*sin(x)^6+x*sin(x)^2", null);
-            subst = Expression.build("x*sin(x)^2", null);
+            f = Expression.build("a*x^3*sin(x)^6+x*sin(x)^2");
+            subst = Expression.build("x*sin(x)^2");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst);
@@ -134,8 +134,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = 2+sin(x^2+x+5)/7, var = "x", subst = cosec(5+x+x^2).
             Dann ist f = 2+1/(7*X_1), X_1 = subst.
              */
-            f = Expression.build("2+sin(x^2+x+5)/7", null);
-            subst = Expression.build("cosec(5+x+x^2)", null);
+            f = Expression.build("2+sin(x^2+x+5)/7");
+            subst = Expression.build("cosec(5+x+x^2)");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();
@@ -157,8 +157,8 @@ public class SubstitutionTests extends MathToolTestBase {
              f = exp(8*x+5), var = "x", subst = exp(4*x+1).
             Dann ist f = exp(3)*X_1^2, X_1 = subst.
              */
-            f = Expression.build("exp(8*x+5)", null);
-            subst = Expression.build("exp(4*x+1)", null);
+            f = Expression.build("exp(8*x+5)");
+            subst = Expression.build("exp(4*x+1)");
             var = "x";
             substVar = Variable.create(SubstitutionUtilities.getSubstitutionVariable(f));
             f = SubstitutionUtilities.substitute(f, var, subst).simplify();

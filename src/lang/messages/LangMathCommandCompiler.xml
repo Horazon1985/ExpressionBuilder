@@ -1044,7 +1044,7 @@
     </object>
     <object id = "MCC_WRONG_FORM_OF_VAR_PARAMETER_IN_SOLVEDIFFEQ">
         <German>Der [0]. Parameter im Befehl 'solvediffeq' muss eine gültige Veränderliche sein.</German>
-        <English>The [0]. parameter in command 'solvediffeq' must be a valid variable.</English>
+        <English>The [0]. parameter in command 'solvediffeq' must be a valid indeterminate.</English>
         <Ukrainian>[0]. параметр команди 'solvediffeq' має бути діючою змінною.</Ukrainian>
         <Russian>[0]. параматр команды 'solvediffeq' должен быть действительной переменной.</Russian>
     </object>

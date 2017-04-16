@@ -8,6 +8,8 @@ import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
+import abstractexpressions.interfaces.IdentifierValidator;
+import abstractexpressions.interfaces.IdentifierValidatorImpl;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,19 +20,19 @@ import process.Canceller;
 
 public abstract class Expression implements AbstractExpression {
 
-    private static final String EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE";    
-    private static final String EB_Expression_IS_NOT_VALID_COMMAND = "EB_Expression_IS_NOT_VALID_COMMAND";    
-    private static final String EB_Expression_MISSING_CLOSING_BRACKET = "EB_Expression_MISSING_CLOSING_BRACKET";    
-    private static final String EB_Expression_EMPTY_PARAMETER = "EB_Expression_EMPTY_PARAMETER";    
-    private static final String EB_Expression_WRONG_BRACKETS = "EB_Expression_WRONG_BRACKETS";    
-    private static final String EB_Expression_TWO_OPERATIONS = "EB_Expression_TWO_OPERATIONS";    
-    private static final String EB_Expression_WRONG_ABS_BRACKETS = "EB_Expression_WRONG_ABS_BRACKETS";    
-    private static final String EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY";    
-    private static final String EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY";    
-    private static final String EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION";    
-    private static final String EB_Expression_FORMULA_CANNOT_BE_INTERPRETED = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED";    
-    private static final String EB_Expression_STACK_OVERFLOW = "EB_Expression_STACK_OVERFLOW";    
-    
+    private static final String EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE";
+    private static final String EB_Expression_IS_NOT_VALID_COMMAND = "EB_Expression_IS_NOT_VALID_COMMAND";
+    private static final String EB_Expression_MISSING_CLOSING_BRACKET = "EB_Expression_MISSING_CLOSING_BRACKET";
+    private static final String EB_Expression_EMPTY_PARAMETER = "EB_Expression_EMPTY_PARAMETER";
+    private static final String EB_Expression_WRONG_BRACKETS = "EB_Expression_WRONG_BRACKETS";
+    private static final String EB_Expression_TWO_OPERATIONS = "EB_Expression_TWO_OPERATIONS";
+    private static final String EB_Expression_WRONG_ABS_BRACKETS = "EB_Expression_WRONG_ABS_BRACKETS";
+    private static final String EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_LEFT_SIDE_OF_BINARY_IS_EMPTY";
+    private static final String EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY = "EB_Expression_RIGHT_SIDE_OF_BINARY_IS_EMPTY";
+    private static final String EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION = "EB_Expression_WRONG_NUMBER_OF_PARAMETERS_IN_SELF_DEFINED_FUNCTION";
+    private static final String EB_Expression_FORMULA_CANNOT_BE_INTERPRETED = "EB_Expression_FORMULA_CANNOT_BE_INTERPRETED";
+    private static final String EB_Expression_STACK_OVERFLOW = "EB_Expression_STACK_OVERFLOW";
+
     // Sprache für Fehlermeldungen.
     private static TypeLanguage language;
 
@@ -43,6 +45,8 @@ public abstract class Expression implements AbstractExpression {
     public final static Constant TEN = new Constant(10);
     public final static Constant MINUS_ONE = new Constant(-1);
 
+    public final static IdentifierValidator VALIDATOR = new IdentifierValidatorImpl();
+    
     public static TypeLanguage getLanguage() {
         return language;
     }
@@ -203,21 +207,6 @@ public abstract class Expression implements AbstractExpression {
     }
 
     /**
-     * Prüft, ob es sich bei var um einen zulässigen Variablennamen oder um die
-     * formale Ableitung einer zulässigen Variable handelt. True wird genau dann
-     * zurückgegeben, wenn var ein Kleinbuchstabe ist, eventuell gefolgt von '_'
-     * und einer natürlichen Zahl (als Index) und eventuell von einer Anzahl von
-     * Apostrophs. Beispielsweise wird bei y, x_2, z_4''', t'' true
-     * zurückgegeben, bei t'_3' dagegen wird false zurückgegeben.
-     */
-    public static boolean isValidDerivativeOfVariable(String var) {
-        while (var.length() > 0 && var.substring(var.length() - 1).equals("'")) {
-            var = var.substring(0, var.length() - 1);
-        }
-        return isValidVariable(var);
-    }
-
-    /**
      * Prüft, ob es sich bei var um einen zulässigen Variablennamen handelt, und
      * ob zusätzlich der entsprechenden Variable kein fester Wert zugewiesen
      * wurde.
@@ -232,7 +221,7 @@ public abstract class Expression implements AbstractExpression {
      * der entsprechenden Variable kein fester Wert zugewiesen wurde.
      */
     public static boolean isValidDerivativeOfIndeterminate(String var) {
-        return isValidVariable(var) && Variable.create(var).getPreciseExpression() == null;
+        return VALIDATOR.isValidIdentifier(var) && Variable.create(var).getPreciseExpression() == null;
     }
 
     /**
@@ -255,7 +244,16 @@ public abstract class Expression implements AbstractExpression {
      * @throws ExpressionException
      */
     public static Expression build(String formula) throws ExpressionException {
-        return build(formula, null);
+        return build(formula, null, null);
+    }
+
+    /**
+     * Hauptmethode zum Erstellen einer Expression aus einem String.
+     *
+     * @throws ExpressionException
+     */
+    public static Expression build(String formula, HashSet<String> vars) throws ExpressionException {
+        return build(formula, vars, VALIDATOR);
     }
     
     /**
@@ -263,7 +261,16 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static Expression build(String formula, HashSet<String> vars) throws ExpressionException {
+    public static Expression build(String formula, IdentifierValidator validator) throws ExpressionException {
+        return build(formula, null, VALIDATOR);
+    }
+    
+    /**
+     * Hauptmethode zum Erstellen einer Expression aus einem String.
+     *
+     * @throws ExpressionException
+     */
+    public static Expression build(String formula, HashSet<String> vars, IdentifierValidator validator) throws ExpressionException {
 
         // Leerzeichen beseitigen und alles zu Kleinbuchstaben machen
         formula = formula.replaceAll(" ", "").toLowerCase();
@@ -439,7 +446,7 @@ public abstract class Expression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist.
         if (priority == 5) {
-            if (isValidDerivativeOfVariable(formula)) {
+            if (VALIDATOR.isValidIdentifier(formula)) {
                 if (vars != null) {
                     vars.add(formula);
                 }
@@ -1005,7 +1012,7 @@ public abstract class Expression implements AbstractExpression {
         }
         return this.add(new Constant(a));
     }
-    
+
     /**
      * Addiert die Variable mit dem Namen var zum gegebenen Ausdruck.
      */
@@ -1865,8 +1872,7 @@ public abstract class Expression implements AbstractExpression {
      * Gibt den vereinfachten Ausdruck zurück, wobei bei der Vereinfachung
      * Logarithmen von Produkten oder Potenzen in Summen oder Vielfache von
      * Logarithmen auseinandergezogen werden.<br>
-     * BEISPIEL: Der Ausdruck ln(x*y^3) wird zu ln(x) + 3*ln(y)
-     * vereinfacht.
+     * BEISPIEL: Der Ausdruck ln(x*y^3) wird zu ln(x) + 3*ln(y) vereinfacht.
      *
      * @throws EvaluationException
      */
@@ -1962,8 +1968,8 @@ public abstract class Expression implements AbstractExpression {
     public abstract Expression simplifyExpandAndCollectEquivalentsIfShorter() throws EvaluationException;
 
     /**
-     * Gibt den Ausdruck zurück, welcher durch 'Standardvereinfachung'
-     * des gegebenen Ausdrucks entsteht.
+     * Gibt den Ausdruck zurück, welcher durch 'Standardvereinfachung' des
+     * gegebenen Ausdrucks entsteht.
      *
      * @throws EvaluationException
      */
@@ -2116,7 +2122,8 @@ public abstract class Expression implements AbstractExpression {
 
     /**
      * Gibt den Ausdruck zurück, welcher durch die mittels simplifyTypes
-     * definierten Vereinfachung des gegebenen Ausdrucks entsteht. Das Argument var wird hier nur für die Methoden
+     * definierten Vereinfachung des gegebenen Ausdrucks entsteht. Das Argument
+     * var wird hier nur für die Methoden
      * simplifyReplaceExponentialFunctionsWithRespectToVariableByDefinitions()
      * und
      * simplifyReplaceTrigonometricalFunctionsWithRespectToVariableByDefinitions()
@@ -2248,7 +2255,7 @@ public abstract class Expression implements AbstractExpression {
 
     /**
      * Gibt den Ausdruck zurück, welcher durch die mittels simplifyTypes
-     * definierten Vereinfachung des gegebenen Ausdrucks entsteht. 
+     * definierten Vereinfachung des gegebenen Ausdrucks entsteht.
      *
      * @throws EvaluationException
      */

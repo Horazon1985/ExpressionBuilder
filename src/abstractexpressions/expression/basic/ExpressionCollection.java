@@ -44,7 +44,7 @@ public class ExpressionCollection implements Iterable<Expression> {
             if (term != null) {
                 if (term instanceof String) {
                     try {
-                        this.add(Expression.build((String) term, null));
+                        this.add(Expression.build((String) term));
                     } catch (ExpressionException e) {
                         // Dann einfach nichts hinzufügen.
                     }

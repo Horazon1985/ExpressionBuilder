@@ -6,6 +6,7 @@ import command.TypeCommand;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.classes.Expression;
+import static abstractexpressions.expression.classes.Expression.VALIDATOR;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import java.util.ArrayList;
@@ -994,7 +995,7 @@ public abstract class OperationParser {
         if (type.getRole().equals(ParamRole.VARIABLE)) {
 
             if (type.equals(ParamType.uniquevar) || type.equals(ParamType.var)) {
-                if (Expression.isValidDerivativeOfVariable(parameter)) {
+                if (VALIDATOR.isValidIdentifier(parameter)) {
                     return parameter;
                 }
             } else if (Expression.isValidDerivativeOfIndeterminate(parameter)) {

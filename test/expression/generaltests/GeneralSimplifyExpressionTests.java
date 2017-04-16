@@ -32,13 +32,13 @@ public class GeneralSimplifyExpressionTests extends MathToolTestBase {
 
     @Before
     public void defineExpressions() throws Exception {
-        a = Expression.build("a", new HashSet<String>());
-        b = Expression.build("b", new HashSet<String>());
-        c = Expression.build("c", new HashSet<String>());
-        d = Expression.build("d", new HashSet<String>());
-        x = Expression.build("x", new HashSet<String>());
-        y = Expression.build("y", new HashSet<String>());
-        z = Expression.build("z", new HashSet<String>());
+        a = Expression.build("a");
+        b = Expression.build("b");
+        c = Expression.build("c");
+        d = Expression.build("d");
+        x = Expression.build("x");
+        y = Expression.build("y");
+        z = Expression.build("z");
     }
 
     // Tests für triviale Vereinfachung.

@@ -215,13 +215,13 @@ public class ExpressionCollectionTests extends MathToolTestBase {
     public void containsTest() {
         ExpressionCollection terms = new ExpressionCollection();
         try {
-            terms.add(Expression.build("a+b", new HashSet<String>()));
-            terms.add(Expression.build("x*y", new HashSet<String>()));
-            terms.add(Expression.build("sin(z)", new HashSet<String>()));
+            terms.add(Expression.build("a+b"));
+            terms.add(Expression.build("x*y"));
+            terms.add(Expression.build("sin(z)"));
             terms.remove(1);
-            Expression expr1 = Expression.build("a+b", new HashSet<String>());
-            Expression expr2 = Expression.build("x*y", new HashSet<String>());
-            Expression expr3 = Expression.build("sin(z)", new HashSet<String>());
+            Expression expr1 = Expression.build("a+b");
+            Expression expr2 = Expression.build("x*y");
+            Expression expr3 = Expression.build("sin(z)");
             assertTrue(terms.containsExpression(expr1));
             assertFalse(terms.containsExpression(expr2));
             assertTrue(terms.containsExpression(expr3));
@@ -235,12 +235,12 @@ public class ExpressionCollectionTests extends MathToolTestBase {
     public void containsEquivalentTest() {
         ExpressionCollection terms = new ExpressionCollection();
         try {
-            terms.add(Expression.build("a+b+c", new HashSet<String>()));
-            terms.add(Expression.build("x*y*z", new HashSet<String>()));
-            terms.add(Expression.build("a*sin(u+v)", new HashSet<String>()));
-            Expression expr1 = Expression.build("c+a+b", new HashSet<String>());
-            Expression expr2 = Expression.build("z*y*x", new HashSet<String>());
-            Expression expr3 = Expression.build("sin(v+u)*a", new HashSet<String>());
+            terms.add(Expression.build("a+b+c"));
+            terms.add(Expression.build("x*y*z"));
+            terms.add(Expression.build("a*sin(u+v)"));
+            Expression expr1 = Expression.build("c+a+b");
+            Expression expr2 = Expression.build("z*y*x");
+            Expression expr3 = Expression.build("sin(v+u)*a");
             assertTrue(terms.containsExquivalent(expr1));
             assertTrue(terms.containsExquivalent(expr2));
             assertTrue(terms.containsExquivalent(expr3));
