@@ -47,7 +47,7 @@ public class LogicalVariable extends LogicalExpression {
             LogicalVariable.create(name, value);
         }
     }
-    
+
     public static LogicalVariable create(String name) {
         if (logicalVariables.containsKey(name)) {
             return logicalVariables.get(name);
@@ -81,30 +81,30 @@ public class LogicalVariable extends LogicalExpression {
     }
 
     @Override
-    public LogicalExpression copy(){
+    public LogicalExpression copy() {
         return LogicalVariable.create(this.name, this.value);
     }
 
     @Override
-    public boolean evaluate(){
+    public boolean evaluate() {
         return this.value;
     }
-    
+
     @Override
-    public void addContainedVars(HashSet vars){
+    public void addContainedVars(HashSet vars) {
         vars.add(this.name);
     }
 
     @Override
-    public boolean contains(String var){
+    public boolean contains(String var) {
         return this.name.equals(var);
     }
 
     @Override
-    public boolean isConstant(){
+    public boolean isConstant() {
         return false;
     }
-    
+
     @Override
     public boolean equals(LogicalExpression logExpr) {
         if (logExpr instanceof LogicalVariable) {
@@ -120,7 +120,15 @@ public class LogicalVariable extends LogicalExpression {
         }
         return false;
     }
-    
+
+    @Override
+    public LogicalExpression replaceVariable(String var, LogicalExpression expr) {
+        if (this.name.equals(var)) {
+            return expr;
+        }
+        return this;
+    }
+
     @Override
     public String toString() {
         return this.name;
@@ -135,10 +143,10 @@ public class LogicalVariable extends LogicalExpression {
     public LogicalExpression factorizeInSums() {
         return this;
     }
-    
+
     @Override
     public LogicalExpression factorizeInProducts() {
         return this;
     }
-    
+
 }

@@ -484,6 +484,11 @@ public abstract class LogicalExpression implements AbstractExpression {
     public abstract boolean equivalent(LogicalExpression logExpr);
 
     /**
+     * Ersetzt im gegebenen Ausdruck die Variable var durch den Ausdruck expr.
+     */
+    public abstract LogicalExpression replaceVariable(String var, LogicalExpression expr);
+    
+    /**
      * Gibt einen vereinfachten logischen Ausdruck des gegebenen logischen
      * Ausdrucks zurück, wobei bei der Vereinfachung einfache
      * Vereinfachungsoperationen eingesetzt werden.

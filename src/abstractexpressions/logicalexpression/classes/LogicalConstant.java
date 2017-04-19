@@ -60,7 +60,12 @@ public class LogicalConstant extends LogicalExpression {
         }
         return false;
     }
-
+    
+    @Override
+    public LogicalExpression replaceVariable(String var, LogicalExpression expr) {
+        return this;
+    }
+    
     @Override
     public String toString() {
         if (this.value == true) {

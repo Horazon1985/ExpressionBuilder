@@ -61,6 +61,11 @@ public class LogicalUnaryOperation extends LogicalExpression {
     }
 
     @Override
+    public LogicalExpression replaceVariable(String var, LogicalExpression expr) {
+        return new LogicalUnaryOperation(this.left.replaceVariable(var, expr), this.type);
+    }
+    
+    @Override
     public String toString() {
         if (this.left instanceof LogicalBinaryOperation) {
             return "!(" + this.left.toString() + ")";

@@ -54,7 +54,12 @@ public class LogicalBinaryOperation extends LogicalExpression {
         }
 
     }
-
+    
+    @Override
+    public LogicalExpression replaceVariable(String var, LogicalExpression expr) {
+        return new LogicalBinaryOperation(this.left.replaceVariable(var, expr), this.right.replaceVariable(var, expr), this.type);
+    }
+    
     @Override
     public void addContainedVars(HashSet vars) {
         this.left.addContainedVars(vars);
