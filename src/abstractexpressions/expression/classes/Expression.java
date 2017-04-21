@@ -9,7 +9,7 @@ import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.interfaces.IdentifierValidator;
-import abstractexpressions.interfaces.IdentifierValidatorImpl;
+import abstractexpressions.interfaces.IdentifierValidatorExpression;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -45,7 +45,7 @@ public abstract class Expression implements AbstractExpression {
     public final static Constant TEN = new Constant(10);
     public final static Constant MINUS_ONE = new Constant(-1);
 
-    public final static IdentifierValidator VALIDATOR = new IdentifierValidatorImpl();
+    public final static IdentifierValidator VALIDATOR = new IdentifierValidatorExpression();
     
     public static TypeLanguage getLanguage() {
         return language;
@@ -244,7 +244,7 @@ public abstract class Expression implements AbstractExpression {
      * @throws ExpressionException
      */
     public static Expression build(String formula) throws ExpressionException {
-        return build(formula, null, null);
+        return build(formula, null, VALIDATOR);
     }
 
     /**
@@ -262,7 +262,7 @@ public abstract class Expression implements AbstractExpression {
      * @throws ExpressionException
      */
     public static Expression build(String formula, IdentifierValidator validator) throws ExpressionException {
-        return build(formula, null, VALIDATOR);
+        return build(formula, null, validator);
     }
     
     /**
@@ -401,11 +401,11 @@ public abstract class Expression implements AbstractExpression {
 
             //Falls der Ausdruck die Form "+abc..." besitzt -> daraus "abc..." machen
             if (formulaLeft.isEmpty() && priority == 0) {
-                return build(formulaRight, vars);
+                return build(formulaRight, vars, validator);
             }
             //Falls der Ausdruck die Form "-abc..." besitzt -> daraus "(-1)*abc..." machen
             if (formulaLeft.isEmpty() && priority == 1) {
-                Expression right = build(formulaRight, vars);
+                Expression right = build(formulaRight, vars, validator);
                 /* 
                  Konstanten und Verhältnisse von Konstanten bilden Ausnahmen: Dann wird das 
                  Minuszeichen direkt in den Zähler gezogen.
@@ -415,25 +415,25 @@ public abstract class Expression implements AbstractExpression {
                 } else if (right.isRationalConstant() && ((BinaryOperation) right).getLeft().isNonNegative()) {
                     return new Constant(((Constant) ((BinaryOperation) right).getLeft()).getValue().negate()).div(((BinaryOperation) right).getRight());
                 }
-                return MINUS_ONE.mult(build(formulaRight, vars));
+                return MINUS_ONE.mult(build(formulaRight, vars, validator));
             }
             switch (priority) {
                 case 0:
-                    return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.PLUS);
+                    return new BinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeBinary.PLUS);
                 case 1:
-                    return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.MINUS);
+                    return new BinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeBinary.MINUS);
                 case 2:
-                    return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.TIMES);
+                    return new BinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeBinary.TIMES);
                 case 3:
-                    return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.DIV);
+                    return new BinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeBinary.DIV);
                 default:
-                    return new BinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeBinary.POW);
+                    return new BinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeBinary.POW);
             }
         }
 
         // Falls kein binärer Operator und die Formel die Form (...) hat -> Klammern beseitigen.
         if ((priority == 5) && (formula.substring(0, 1).equals("(")) && (formula.substring(formulaLength - 1, formulaLength).equals(")"))) {
-            return build(formula.substring(1, formulaLength - 1), vars);
+            return build(formula.substring(1, formulaLength - 1), vars, validator);
         }
 
         //Falls der Ausdruck eine Zahl ist.
@@ -446,7 +446,7 @@ public abstract class Expression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist.
         if (priority == 5) {
-            if (VALIDATOR.isValidIdentifier(formula)) {
+            if (validator.isValidIdentifier(formula)) {
                 if (vars != null) {
                     vars.add(formula);
                 }
@@ -459,7 +459,7 @@ public abstract class Expression implements AbstractExpression {
 
         //AUSNAHME: |...| = abs(...), falls es klappt!
         if (formula.substring(0, 1).equals("|") && formula.substring(formula.length() - 1, formula.length()).equals("|")) {
-            Expression formulaInAbsBrackets = Expression.build(formula.substring(1, formula.length() - 1), vars);
+            Expression formulaInAbsBrackets = Expression.build(formula.substring(1, formula.length() - 1), vars, validator);
             return new Function(formulaInAbsBrackets, TypeFunction.abs);
         }
 
@@ -477,9 +477,9 @@ public abstract class Expression implements AbstractExpression {
                         String functionArgument = formula.substring(functionNameLength + 1, formulaLength - 1);
                         if (type.equals(TypeFunction.sqrt)) {
                             // Die Wurzel wird intern sofort als (...)^(1/2) aufgefasst.
-                            return build(functionArgument, vars).pow(ONE.div(TWO));
+                            return build(functionArgument, vars, validator).pow(ONE.div(TWO));
                         }
-                        return new Function(build(functionArgument, vars), type);
+                        return new Function(build(functionArgument, vars, validator), type);
 
                     }
                 }
@@ -490,7 +490,7 @@ public abstract class Expression implements AbstractExpression {
         if (priority == 5) {
             if (formula.substring(formula.length() - 1, formula.length()).equals("!")) {
                 Expression[] params = new Expression[1];
-                params[0] = Expression.build(formula.substring(0, formula.length() - 1), vars);
+                params[0] = Expression.build(formula.substring(0, formula.length() - 1), vars, validator);
                 return new Operator(TypeOperator.fac, params);
             }
         }
@@ -517,7 +517,7 @@ public abstract class Expression implements AbstractExpression {
                 if (SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length == functionArguments.length) {
                     Expression[] exprsInArguments = new Expression[functionArguments.length];
                     for (int i = 0; i < functionArguments.length; i++) {
-                        exprsInArguments[i] = Expression.build(functionArguments[i], vars);
+                        exprsInArguments[i] = Expression.build(functionArguments[i], vars, validator);
                     }
                     return new SelfDefinedFunction(function, SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function),
                             SelfDefinedFunction.getAbstractExpressionsForSelfDefinedFunctions().get(function), exprsInArguments);

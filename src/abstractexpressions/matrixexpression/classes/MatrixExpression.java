@@ -8,6 +8,9 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.interfaces.IdentifierValidator;
+import abstractexpressions.interfaces.IdentifierValidatorExpression;
+import abstractexpressions.interfaces.IdentifierValidatorMatrixExpression;
 import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -32,6 +35,9 @@ public abstract class MatrixExpression implements AbstractExpression {
     
     public final static Matrix MINUS_ONE = new Matrix(Expression.MINUS_ONE);
 
+    public final static IdentifierValidator VALIDATOR_EXPRESSION = new IdentifierValidatorExpression();
+    public final static IdentifierValidator VALIDATOR_MATRIX_EXPRESSION = new IdentifierValidatorMatrixExpression();
+    
     /**
      * Falls matrix eine Matrix darstellt, so werden die einzelnen Matrixzeilen
      * in einem Stringarray zurückgegeben. Andernfalls wird eine

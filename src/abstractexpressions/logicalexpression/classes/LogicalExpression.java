@@ -3,6 +3,8 @@ package abstractexpressions.logicalexpression.classes;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.interfaces.AbstractExpression;
+import abstractexpressions.interfaces.IdentifierValidator;
+import abstractexpressions.interfaces.IdentifierValidatorLogicalExpression;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,13 +24,15 @@ public abstract class LogicalExpression implements AbstractExpression {
     public final static LogicalConstant FALSE = new LogicalConstant(false);
     public final static LogicalConstant TRUE = new LogicalConstant(true);
 
+    public final static IdentifierValidator VALIDATOR = new IdentifierValidatorLogicalExpression();
+    
     /**
      * Erstellt aus einem String einen logischen Ausdruck.
      *
      * @throws ExpressionException
      */
     public static LogicalExpression build(String formula) throws ExpressionException {
-        return build(formula, null);
+        return build(formula, null, VALIDATOR);
     }
     
     /**
@@ -37,6 +41,24 @@ public abstract class LogicalExpression implements AbstractExpression {
      * @throws ExpressionException
      */
     public static LogicalExpression build(String formula, HashSet<String> vars) throws ExpressionException {
+        return build(formula, vars, VALIDATOR);
+    }
+    
+    /**
+     * Erstellt aus einem String einen logischen Ausdruck.
+     *
+     * @throws ExpressionException
+     */
+    public static LogicalExpression build(String formula, IdentifierValidator validator) throws ExpressionException {
+        return build(formula, null, validator);
+    }
+    
+    /**
+     * Erstellt aus einem String einen logischen Ausdruck.
+     *
+     * @throws ExpressionException
+     */
+    public static LogicalExpression build(String formula, HashSet<String> vars, IdentifierValidator validator) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
 
@@ -115,13 +137,13 @@ public abstract class LogicalExpression implements AbstractExpression {
 
             switch (priority) {
                 case 0:
-                    return new LogicalBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeLogicalBinary.EQUIVALENCE);
+                    return new LogicalBinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeLogicalBinary.EQUIVALENCE);
                 case 1:
-                    return new LogicalBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeLogicalBinary.IMPLICATION);
+                    return new LogicalBinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeLogicalBinary.IMPLICATION);
                 case 2:
-                    return new LogicalBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeLogicalBinary.OR);
+                    return new LogicalBinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeLogicalBinary.OR);
                 case 3:
-                    return new LogicalBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeLogicalBinary.AND);
+                    return new LogicalBinaryOperation(build(formulaLeft, vars, validator), build(formulaRight, vars, validator), TypeLogicalBinary.AND);
                 default:    //Passiert zwar nicht, aber trotzdem!
                     return null;
             }
@@ -134,12 +156,12 @@ public abstract class LogicalExpression implements AbstractExpression {
              werden.
              */
             String formulaLeft = formula.substring(1, formulaLength);
-            return new LogicalUnaryOperation(build(formulaLeft, vars), TypeLogicalUnary.NEGATION);
+            return new LogicalUnaryOperation(build(formulaLeft, vars, validator), TypeLogicalUnary.NEGATION);
         }
 
         //Falls kein binärer Operator und die Formel die Form (...) hat -> Klammern beseitigen
         if ((priority == 5) && (formula.substring(0, 1).equals("(")) && (formula.substring(formulaLength - 1, formulaLength).equals(")"))) {
-            return build(formula.substring(1, formulaLength - 1), vars);
+            return build(formula.substring(1, formulaLength - 1), vars, validator);
         }
 
         //Falls der Ausdruck eine ganze Zahl ist (0 = false, 1 = true)
@@ -154,7 +176,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist
         if (priority == 5) {
-            if (isValidVariable(formula)) {
+            if (VALIDATOR.isValidIdentifier(formula)) {
                 if (vars != null) {
                     vars.add(formula);
                 }
@@ -163,38 +185,6 @@ public abstract class LogicalExpression implements AbstractExpression {
         }
 
         throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_LOGICAL_EXPRESSION_CANNOT_BE_INTERPRETED, formula));
-
-    }
-
-    /**
-     * Prüft, ob es sich bei var um einen zulässigen Variablennamen einer
-     * logischen Variable handelt.
-     */
-    public static boolean isValidVariable(String var) {
-
-        if (var.length() == 0) {
-            return false;
-        }
-
-        //Falls der Ausdruck eine (einfache) Variable ist
-        if ((var.length() == 1) && ((int) var.charAt(0) >= 97) && ((int) var.charAt(0) <= 122)) {
-            return true;
-        }
-
-        //Falls der Ausdruck eine logische Variable mit Index ist (Form: Buchstabe_Index)
-        if ((var.length() >= 3) && ((int) var.charAt(0) >= 97) && ((int) var.charAt(0) <= 122)
-                && ((int) var.charAt(1) == 95)) {
-
-            for (int i = 2; i < var.length(); i++) {
-                if (((int) var.charAt(i) < 48) || ((int) var.charAt(i) > 57)) {
-                    return false;
-                }
-            }
-            return true;
-
-        }
-
-        return false;
 
     }
 

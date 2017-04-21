@@ -2,7 +2,7 @@ package abstractexpressions.interfaces;
 
 import abstractexpressions.expression.classes.Expression;
 
-public class IdentifierValidatorImpl implements IdentifierValidator {
+public class IdentifierValidatorExpression implements IdentifierValidator {
 
     /**
      * Prüft, ob es sich bei var um einen zulässigen Variablennamen oder um die
