@@ -100,7 +100,7 @@ public abstract class Expression implements AbstractExpression {
 
     /**
      * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
-     * stehen. Beispiel input = "x,y,f(w,z),u,v". Paremeter sind dann {x, y,
+     * stehen. Beispiel input = "x,y,f(w,z),u,v". Parameter sind dann {x, y,
      * f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von runden
      * Klammern umgeben ist, werden die Parameter getrennt.
      *
