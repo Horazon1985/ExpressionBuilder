@@ -31,10 +31,10 @@ public class MatrixFunctionTests extends MathToolTestBase {
     @Test
     public void computeExpOfNilpotentMatrixTest() {
         try {
-            a = MatrixExpression.build("[0,0,0;-1,0,0;2,5,0]", null);
+            a = MatrixExpression.build("[0,0,0;-1,0,0;2,5,0]");
             Assert.assertTrue(a instanceof Matrix);
             MatrixExpression expOfM = a.exp().simplify();
-            MatrixExpression expectedResult = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]", null);
+            MatrixExpression expectedResult = MatrixExpression.build("[1,0,0;-1,1,0;(-1)/2,5,1]");
 
             results = new Object[]{expOfM};
             expectedResults = new Object[]{expectedResult};
@@ -52,10 +52,10 @@ public class MatrixFunctionTests extends MathToolTestBase {
          ln() kann daher leicht berechnet werden.
          */
         try {
-            a = MatrixExpression.build("[3,-1;3,7]", null);
+            a = MatrixExpression.build("[3,-1;3,7]");
             Assert.assertTrue(a instanceof Matrix);
             MatrixExpression expOfM =a.ln().simplify();
-            MatrixExpression expectedResult = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]", null);
+            MatrixExpression expectedResult = MatrixExpression.build("[ln(8/6^(1/2)),ln(2/6^(1/2));ln((3*6^(1/2))/4),ln(3*6^(1/2))]");
 
             results = new Object[]{expOfM};
             expectedResults = new Object[]{expectedResult};

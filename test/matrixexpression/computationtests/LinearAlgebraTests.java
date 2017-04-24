@@ -34,7 +34,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void isDiagonalizableTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[2,3;-1,6]", null);
+            MatrixExpression m = MatrixExpression.build("[2,3;-1,6]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
@@ -46,7 +46,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     public void isDiagonalizableWithoutComputingEigenvectorsTest() {
         try {
             // Diese Matrix besitzt drei verschiedene Eigenwerte, aber sehr komplizierte.
-            MatrixExpression m = MatrixExpression.build("[1,2,3;4,3,2;1,2,5]", null);
+            MatrixExpression m = MatrixExpression.build("[1,2,3;4,3,2;1,2,5]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
@@ -57,7 +57,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void isNotDiagonalizableTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[1,2;0,1]", null);
+            MatrixExpression m = MatrixExpression.build("[1,2;0,1]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertFalse(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
@@ -68,7 +68,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void diagonalizeMatrixTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[3,-2;2,-3]", null);
+            MatrixExpression m = MatrixExpression.build("[3,-2;2,-3]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(EigenvaluesEigenvectorsUtils.isMatrixDiagonalizable((Matrix) m));
         } catch (ExpressionException e) {
@@ -79,7 +79,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void isMatrixNilpotentTest1() {
         try {
-            MatrixExpression m = MatrixExpression.build("[-18,-24;27/2,18]", null);
+            MatrixExpression m = MatrixExpression.build("[-18,-24;27/2,18]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
@@ -90,7 +90,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void isMatrixNilpotentTest2() {
         try {
-            MatrixExpression m = MatrixExpression.build("[0,a,b;0,0,c;0,0,0]", null);
+            MatrixExpression m = MatrixExpression.build("[0,a,b;0,0,c;0,0,0]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
@@ -101,7 +101,7 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void isMatrixNotNilpotentTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[1,-2,5;6,8,11;2,4,3]", null);
+            MatrixExpression m = MatrixExpression.build("[1,-2,5;6,8,11;2,4,3]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertFalse(((Matrix) m).isNilpotentMatrix());
         } catch (ExpressionException e) {
@@ -113,8 +113,8 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void solveLGSWithUniqueSolutionTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[2,-1,0;3,2,6;0,-1,4]", null);
-            MatrixExpression b = MatrixExpression.build("[0;49;26]", null);
+            MatrixExpression m = MatrixExpression.build("[2,-1,0;3,2,6;0,-1,4]");
+            MatrixExpression b = MatrixExpression.build("[0;49;26]");
             Expression[] expectedSolution = new Expression[]{new Constant(1), new Constant(2), new Constant(7)};
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
@@ -135,8 +135,8 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void solveLGSWithNonUniqueSolutionTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[0,1,3,-2,4;0,0,0,2,5]", null);
-            MatrixExpression b = MatrixExpression.build("[11;17]", null);
+            MatrixExpression m = MatrixExpression.build("[0,1,3,-2,4;0,0,0,2,5]");
+            MatrixExpression b = MatrixExpression.build("[11;17]");
             // Lösungen sind x_0 = T_2, x_1 = 28 - (9*T_0 + 3*T_1), x_2 = T_1, x_3 = 17/2 - 5*T_0/2, x_4 = T_0.
             Expression[] expectedSolution = new Expression[]{Variable.create("T_2"),
                 new Constant(28).sub(new Constant(9).mult(Variable.create("T_0")).add(new Constant(3).mult(Variable.create("T_1")))),
@@ -163,8 +163,8 @@ public class LinearAlgebraTests extends MathToolTestBase {
     @Test
     public void solveLGSWithNoSolutionTest() {
         try {
-            MatrixExpression m = MatrixExpression.build("[2,3;6,10;8,5]", null);
-            MatrixExpression b = MatrixExpression.build("[-1;-4;4]", null);
+            MatrixExpression m = MatrixExpression.build("[2,3;6,10;8,5]");
+            MatrixExpression b = MatrixExpression.build("[-1;-4;4]");
             Assert.assertTrue(m instanceof Matrix);
             Assert.assertTrue(b instanceof Matrix);
             Assert.assertTrue(GaussAlgorithmUtils.solveLinearSystemOfEquations((Matrix) m, (Matrix) b) == GaussAlgorithmUtils.NO_SOLUTIONS);

@@ -180,7 +180,27 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
+    public static MatrixExpression build(String formula, IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression) 
+            throws ExpressionException {
+        return build(formula, null, validatorExpression, validatorMatrixExpression);
+    }
+    
+    /**
+     * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
+     *
+     * @throws ExpressionException
+     */
     public static MatrixExpression build(String formula, HashSet<String> vars) throws ExpressionException {
+        return build(formula, vars, VALIDATOR_EXPRESSION, VALIDATOR_MATRIX_EXPRESSION);
+    }
+    
+    /**
+     * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
+     *
+     * @throws ExpressionException
+     */
+    public static MatrixExpression build(String formula, HashSet<String> vars, 
+            IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
 
@@ -191,7 +211,7 @@ public abstract class MatrixExpression implements AbstractExpression {
          */
         Expression expr;
         try {
-            expr = Expression.build(formula, vars);
+            expr = Expression.build(formula, vars, validatorExpression);
             return new Matrix(expr);
         } catch (ExpressionException e) {
             /*
@@ -281,23 +301,26 @@ public abstract class MatrixExpression implements AbstractExpression {
 
             //Falls der Ausdruck die Form "+A..." besitzt -> daraus "A..." machen
             if (formulaLeft.isEmpty() && priority == 0) {
-                return build(formulaRight, vars);
+                return build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
             }
             //Falls der Ausdruck die Form "-A..." besitzt -> daraus "(-1)*A..." machen
             if (formulaLeft.isEmpty() && priority == 1) {
-                return MINUS_ONE.mult(build(formulaRight, vars));
+                return MINUS_ONE.mult(build(formulaRight, vars, validatorExpression, validatorMatrixExpression));
             }
             switch (priority) {
                 case 0:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeMatrixBinary.PLUS);
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.PLUS);
                 case 1:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeMatrixBinary.MINUS);
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.MINUS);
                 case 2:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars), build(formulaRight, vars), TypeMatrixBinary.TIMES);
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.TIMES);
                 default:
                     try {
-                        Expression exponent = Expression.build(formulaRight, vars);
-                        return new MatrixPower(build(formulaLeft, vars), exponent);
+                        Expression exponent = Expression.build(formulaRight, vars, validatorExpression);
+                        return new MatrixPower(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), exponent);
                     } catch (ExpressionException e) {
                         throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED, formulaRight));
                     }
@@ -309,7 +332,7 @@ public abstract class MatrixExpression implements AbstractExpression {
          Klammern beseitigen
          */
         if (priority == 4 && formula.substring(0, 1).equals("(") && formula.substring(formulaLength - 1, formulaLength).equals(")")) {
-            return build(formula.substring(1, formulaLength - 1), vars);
+            return build(formula.substring(1, formulaLength - 1), vars, validatorExpression, validatorMatrixExpression);
         }
 
         /*
@@ -329,8 +352,8 @@ public abstract class MatrixExpression implements AbstractExpression {
                 if (formula.length() >= functionNameLength + 2) {
                     if ((formula.substring(0, functionNameLength).equals(type.toString())) && (formula.substring(functionNameLength, functionNameLength + 1).equals("(")) && (formula.substring(formulaLength - 1, formulaLength).equals(")"))) {
 
-                        String formula_interior = formula.substring(functionNameLength + 1, formulaLength - 1);
-                        return new MatrixFunction(build(formula_interior, vars), type);
+                        String formulaArgument = formula.substring(functionNameLength + 1, formulaLength - 1);
+                        return new MatrixFunction(build(formulaArgument, vars, validatorExpression, validatorMatrixExpression), type);
 
                     }
                 }

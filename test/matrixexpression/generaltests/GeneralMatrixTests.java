@@ -32,8 +32,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void invertMatrixTest() {
         try {
-            matExpr = MatrixExpression.build("[2,3;-1,6]^(-1)", null);
-            expectedResult = MatrixExpression.build("[2/5,-1/5;1/15,2/15]", null);
+            matExpr = MatrixExpression.build("[2,3;-1,6]^(-1)");
+            expectedResult = MatrixExpression.build("[2/5,-1/5;1/15,2/15]");
             matExpr = matExpr.simplify();
             
             results = new Object[]{matExpr};
@@ -48,8 +48,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void factorizeInSumsTest() {
         try {
-            matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7]+[2,3;-1,6]*sin([a,b;c,d])^2", null);
-            expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])+sin([a,b;c,d])^2)+[6,3;2,-7]", null);
+            matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7]+[2,3;-1,6]*sin([a,b;c,d])^2");
+            expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])+sin([a,b;c,d])^2)+[6,3;2,-7]");
             matExpr = matExpr.simplifyFactorize();
             
             results = new Object[]{matExpr};
@@ -64,8 +64,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void factorizeInSumsNotPossibleTest() {
         try {
-            matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
-            expectedResult = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)", null);
+            matExpr = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)");
+            expectedResult = MatrixExpression.build("[2,3;-1,6]*exp([a,b;c,d])+([6,3;2,-7]+[5,3;-1,6]*sin([a,b;c,d])^2)");
             matExpr = matExpr.simplifyFactorize();
             
             results = new Object[]{matExpr};
@@ -80,8 +80,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void factorizeInDifferencesTest() {
         try {
-            matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[2,3;-1,6]*sin([a,b;c,d])^2", null);
-            expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])-sin([a,b;c,d])^2)+[6,3;2,-7]", null);
+            matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[2,3;-1,6]*sin([a,b;c,d])^2");
+            expectedResult = MatrixExpression.build("[2,3;-1,6]*(exp([a,b;c,d])-sin([a,b;c,d])^2)+[6,3;2,-7]");
             matExpr = matExpr.simplifyFactorize();
             
             results = new Object[]{matExpr};
@@ -96,8 +96,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void factorizeInDifferencesNotPossibleTest() {
         try {
-            matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
-            expectedResult = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2", null);
+            matExpr = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2");
+            expectedResult = MatrixExpression.build("([2,3;-1,6]*exp([a,b;c,d])+[6,3;2,-7])-[5,3;-1,6]*sin([a,b;c,d])^2");
             matExpr = matExpr.simplifyFactorize();
             
             results = new Object[]{matExpr};
@@ -112,8 +112,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void collectSummandsTest() {
         try {
-            matExpr = MatrixExpression.build("(exp([a,b;c,d])+[1,2;3,4])+(sin([a,b;c,d])+[5,6;7,8/11])", null);
-            expectedResult = MatrixExpression.build("[6,8;10,52/11]+exp([a,b;c,d])+sin([a,b;c,d])", null);
+            matExpr = MatrixExpression.build("(exp([a,b;c,d])+[1,2;3,4])+(sin([a,b;c,d])+[5,6;7,8/11])");
+            expectedResult = MatrixExpression.build("[6,8;10,52/11]+exp([a,b;c,d])+sin([a,b;c,d])");
             matExpr = matExpr.simplify();
             
             results = new Object[]{matExpr};
@@ -128,8 +128,8 @@ public class GeneralMatrixTests extends MathToolTestBase {
     @Test
     public void collectFactorsTest() {
         try {
-            matExpr = MatrixExpression.build("(exp([a,b;c,d])*[1,2;3,4])*([5,6;7,8/11]*sin([a,b;c,d]))*[3,-4;1,-9]", null);
-            expectedResult = MatrixExpression.build("exp([a,b;c,d])*[19,82/11;43,230/11]*sin([a,b;c,d])*[3,-4;1,-9]", null);
+            matExpr = MatrixExpression.build("(exp([a,b;c,d])*[1,2;3,4])*([5,6;7,8/11]*sin([a,b;c,d]))*[3,-4;1,-9]");
+            expectedResult = MatrixExpression.build("exp([a,b;c,d])*[19,82/11;43,230/11]*sin([a,b;c,d])*[3,-4;1,-9]");
             matExpr = matExpr.simplify();
             
             results = new Object[]{matExpr};
