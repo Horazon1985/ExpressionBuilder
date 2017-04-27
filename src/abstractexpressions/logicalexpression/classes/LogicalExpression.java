@@ -160,7 +160,7 @@ public abstract class LogicalExpression implements AbstractExpression {
         }
 
         //Falls kein binärer Operator und die Formel die Form (...) hat -> Klammern beseitigen
-        if ((priority == 5) && (formula.substring(0, 1).equals("(")) && (formula.substring(formulaLength - 1, formulaLength).equals(")"))) {
+        if (priority == 5 && formula.substring(0, 1).equals("(") && formula.substring(formulaLength - 1, formulaLength).equals(")")) {
             return build(formula.substring(1, formulaLength - 1), vars, validator);
         }
 
@@ -176,7 +176,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist
         if (priority == 5) {
-            if (VALIDATOR.isValidIdentifier(formula)) {
+            if (validator.isValidIdentifier(formula)) {
                 if (vars != null) {
                     vars.add(formula);
                 }
