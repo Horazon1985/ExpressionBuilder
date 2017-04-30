@@ -128,7 +128,7 @@ public abstract class LogicalExpression implements AbstractExpression {
             String formulaLeft = formula.substring(0, breakpoint);
             String formulaRight = formula.substring(breakpoint + 1, formulaLength);
 
-            if ((formulaLeft.equals("")) && (priority != 1)) {
+            if (formulaLeft.equals("") && priority != 1) {
                 throw new ExpressionException(Translator.translateOutputMessage(LEB_LogicalExpression_LEFT_SIDE_OF_LOGICAL_BINARY_IS_EMPTY));
             }
             if (formulaRight.equals("")) {
