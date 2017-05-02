@@ -204,22 +204,6 @@ public abstract class MatrixExpression implements AbstractExpression {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
 
-        /*
-         Versuche zunächst, ob formula zu einer Instanz von Expression
-         kompiliert werden kann. Falls ja, soll diese zu einer (1x1)-matrix
-         konvertiert und zurückgegeben werden.
-         */
-        Expression expr;
-        try {
-            expr = Expression.build(formula, vars, validatorExpression);
-            return new Matrix(expr);
-        } catch (ExpressionException e) {
-            /*
-             Dann müssen, falls formula eine korrekte MatrixExpression
-             darstellt, echte Matrizen involviert sein. -> Weiter im Code.
-             */
-        }
-
         // Prioritäten: + = 0, - = 1, * = 2, ^ = 3, 4 = Matrix, Matrixfunktion, MatrixOperator.
         int priority = 4;
         int breakpoint = -1;
@@ -370,6 +354,16 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
         }
 
+        /*
+         Letzter Versuch: versuchen, formula zu einer Instanz von Expression
+         zu kompilieren. Falls dies klappt, soll diese zu einer (1x1)-Matrix
+         konvertiert und zurückgegeben werden.
+         */
+        try {
+            return new Matrix(Expression.build(formula, vars, validatorExpression));
+        } catch (ExpressionException e) {
+        }
+        
         // Falls der Ausdruck ein MatrixOperator ist.
         if (priority == 4) {
             String[] operatorNameAndParams = Expression.getOperatorAndArguments(formula);

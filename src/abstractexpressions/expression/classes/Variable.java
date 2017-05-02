@@ -384,10 +384,6 @@ public class Variable extends Expression {
 
     @Override
     public String toString() {
-//        if (this.name.equals("pi")){
-//            // Unicode: pi = \u03C0
-//            return "\u03C0";
-//        }
         return this.name;
     }
 

@@ -154,6 +154,11 @@ public class MatrixVariable extends MatrixExpression {
     }
 
     @Override
+    public String toString() {
+        return this.name;
+    }
+    
+    @Override
     public MatrixExpression simplifyBasic() throws EvaluationException {
         return this.value.simplifyBasic();
     }

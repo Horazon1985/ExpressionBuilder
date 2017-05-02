@@ -1,5 +1,7 @@
 package matrixexpression.generaltests;
 
+import abstractexpressions.expression.classes.Expression;
+import abstractexpressions.matrixexpression.classes.Matrix;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
@@ -10,7 +12,6 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import utilities.TestUtilities;
 
 public class GeneralMatrixTests extends MathToolTestBase {
 
@@ -41,6 +42,36 @@ public class GeneralMatrixTests extends MathToolTestBase {
             
             Assert.assertTrue(matExpr.equals(expectedResult));
         } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void matrixExpressionBuildTest1() {
+        try {
+            matExpr = MatrixExpression.build("a*[1;3]");
+            expectedResult = MatrixExpression.build("[a]").mult(MatrixExpression.build("[1;3]"));
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
+            Assert.assertTrue(matExpr.equals(expectedResult));
+        } catch (ExpressionException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void matrixExpressionBuildTest2() {
+        try {
+            matExpr = MatrixExpression.build("exp([1,2;3,x])");
+            expectedResult = MatrixExpression.build("[1,2;3,x]").exp();
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
+            Assert.assertTrue(matExpr.equals(expectedResult));
+        } catch (ExpressionException e) {
             fail(e.getMessage());
         }
     }
