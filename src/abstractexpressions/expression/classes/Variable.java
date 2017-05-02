@@ -5,11 +5,12 @@ import enums.TypeFractionSimplification;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import lang.translator.Translator;
 
 public class Variable extends Expression {
 
-    protected static HashMap<String, Variable> variables = new HashMap<>();
+    protected static Map<String, Variable> variables = new HashMap<>();
     protected String name;
     private double value;
     private Expression preciseExpression;

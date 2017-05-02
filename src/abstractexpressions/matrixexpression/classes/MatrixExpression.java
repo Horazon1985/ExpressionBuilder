@@ -20,24 +20,24 @@ import process.Canceller;
 
 public abstract class MatrixExpression implements AbstractExpression {
 
-    private static final String MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE";    
-    private static final String MEB_MatrixExpression_ROW_MISSING = "MEB_MatrixExpression_ROW_MISSING"; 
+    private static final String MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE";
+    private static final String MEB_MatrixExpression_ROW_MISSING = "MEB_MatrixExpression_ROW_MISSING";
     private static final String MEB_MatrixExpression_NO_ROWS = "MEB_MatrixExpression_NO_ROWS";
-    private static final String MEB_MatrixExpression_EMPTY_PARAMETER = "MEB_MatrixExpression_EMPTY_PARAMETER";    
-    private static final String MEB_MatrixExpression_WRONG_BRACKETS = "MEB_MatrixExpression_WRONG_BRACKETS";    
-    private static final String MEB_MatrixExpression_TWO_OPERATIONS = "MEB_MatrixExpression_TWO_OPERATIONS";    
-    private static final String MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY";    
-    private static final String MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY";    
-    private static final String MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED";    
-    private static final String MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED";    
+    private static final String MEB_MatrixExpression_EMPTY_PARAMETER = "MEB_MatrixExpression_EMPTY_PARAMETER";
+    private static final String MEB_MatrixExpression_WRONG_BRACKETS = "MEB_MatrixExpression_WRONG_BRACKETS";
+    private static final String MEB_MatrixExpression_TWO_OPERATIONS = "MEB_MatrixExpression_TWO_OPERATIONS";
+    private static final String MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_LEFT_SIDE_OF_MATRIXBINARY_IS_EMPTY";
+    private static final String MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY = "MEB_MatrixExpression_RIGHT_SIDE_OF_MATRIXBINARY_IS_EMPTY";
+    private static final String MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED";
+    private static final String MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED = "MEB_MatrixExpression_FORMULA_CANNOT_BE_INTERPRETED";
     private static final String MEB_MatrixExpression_NOT_A_MATRIX = "MEB_MatrixExpression_NOT_A_MATRIX";
-    private static final String MEB_MatrixExpression_STACK_OVERFLOW = "MEB_MatrixExpression_STACK_OVERFLOW";    
-    
+    private static final String MEB_MatrixExpression_STACK_OVERFLOW = "MEB_MatrixExpression_STACK_OVERFLOW";
+
     public final static Matrix MINUS_ONE = new Matrix(Expression.MINUS_ONE);
 
     public final static IdentifierValidator VALIDATOR_EXPRESSION = new IdentifierValidatorExpression();
     public final static IdentifierValidator VALIDATOR_MATRIX_EXPRESSION = new IdentifierValidatorMatrixExpression();
-    
+
     /**
      * Falls matrix eine Matrix darstellt, so werden die einzelnen Matrixzeilen
      * in einem Stringarray zurückgegeben. Andernfalls wird eine
@@ -174,17 +174,17 @@ public abstract class MatrixExpression implements AbstractExpression {
     public static MatrixExpression build(String formula) throws ExpressionException {
         return build(formula, null);
     }
-    
+
     /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
      * @throws ExpressionException
      */
-    public static MatrixExpression build(String formula, IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression) 
+    public static MatrixExpression build(String formula, IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression)
             throws ExpressionException {
         return build(formula, null, validatorExpression, validatorMatrixExpression);
     }
-    
+
     /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
@@ -193,13 +193,13 @@ public abstract class MatrixExpression implements AbstractExpression {
     public static MatrixExpression build(String formula, HashSet<String> vars) throws ExpressionException {
         return build(formula, vars, VALIDATOR_EXPRESSION, VALIDATOR_MATRIX_EXPRESSION);
     }
-    
+
     /**
      * Hauptmethode zum Erstellen einer MatrixExpression aus einem String.
      *
      * @throws ExpressionException
      */
-    public static MatrixExpression build(String formula, HashSet<String> vars, 
+    public static MatrixExpression build(String formula, HashSet<String> vars,
             IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
@@ -309,13 +309,13 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
             switch (priority) {
                 case 0:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
                             build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.PLUS);
                 case 1:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
                             build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.MINUS);
                 case 2:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), 
+                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
                             build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.TIMES);
                 default:
                     try {
@@ -336,14 +336,24 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         /*
-         Falls der Ausdruck keine Expression darstellt, dann stellt er
-         (höchstens) eine Matrix oder eine Matrixfunktion dar.
+         Falls der Ausdruck keine MatrixBinaryOperation darstellt, dann stellt er
+         (höchstens) eine Matrix, eine Matrixvariable, eine Matrixfunktion oder einen Matrizenoperator dar.
          */
-        //Falls der Ausdruck eine Matrix ist.
+        // Falls der Ausdruck eine Matrix ist.
         if (priority == 4 && formula.substring(0, 1).equals("[") && formula.substring(formulaLength - 1, formulaLength).equals("]")) {
             return getMatrix(formula.substring(1, formulaLength - 1), vars);
         }
-        //Falls der Ausdruck eine Matrixfunktion ist.
+        // Falls der Ausdruck eine Matrixvariable ist.
+        if (priority == 4) {
+            if (validatorMatrixExpression.isValidIdentifier(formula)) {
+                if (vars != null) {
+                    vars.add(formula);
+                }
+                return MatrixVariable.create(formula);
+            }
+        }
+        
+        // Falls der Ausdruck eine Matrixfunktion ist.
         if (priority == 4) {
             int functionNameLength;
             for (TypeMatrixFunction type : TypeMatrixFunction.values()) {
@@ -360,7 +370,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             }
         }
 
-        //Falls der Ausdruck ein MatrixOperator ist.
+        // Falls der Ausdruck ein MatrixOperator ist.
         if (priority == 4) {
             String[] operatorNameAndParams = Expression.getOperatorAndArguments(formula);
             String[] params = Expression.getArguments(operatorNameAndParams[1]);
