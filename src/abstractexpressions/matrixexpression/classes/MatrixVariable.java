@@ -110,12 +110,14 @@ public class MatrixVariable extends MatrixExpression {
 
     @Override
     public void addContainedVars(HashSet<String> vars) {
-        this.value.addContainedVars(vars);
+        vars.add(this.name);
     }
 
     @Override
     public void addContainedIndeterminates(HashSet<String> vars) {
-        this.value.addContainedIndeterminates(vars);
+        if (this.value != null) {
+            vars.add(this.name);
+        }
     }
 
     @Override
@@ -157,7 +159,7 @@ public class MatrixVariable extends MatrixExpression {
     public String toString() {
         return this.name;
     }
-    
+
     @Override
     public MatrixExpression simplifyBasic() throws EvaluationException {
         return this.value.simplifyBasic();

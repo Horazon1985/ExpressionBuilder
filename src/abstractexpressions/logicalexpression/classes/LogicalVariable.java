@@ -2,10 +2,11 @@ package abstractexpressions.logicalexpression.classes;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 public class LogicalVariable extends LogicalExpression {
 
-    private static HashMap<String, LogicalVariable> logicalVariables = new HashMap<>();
+    private static Map<String, LogicalVariable> logicalVariables = new HashMap<>();
     private final String name;
     private boolean value;
 
