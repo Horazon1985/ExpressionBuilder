@@ -325,6 +325,11 @@ public class MatrixPower extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+        return new MatrixPower(this.left.replaceMatrixVariable(var, matExpr), this.right);
+    }
+    
+    @Override
     public String toString() {
 
         String baseAsText, exponentAsText;

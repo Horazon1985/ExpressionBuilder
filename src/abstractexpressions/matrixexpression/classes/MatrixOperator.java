@@ -358,6 +358,27 @@ public class MatrixOperator extends MatrixExpression {
         return new MatrixOperator(this.type, resultParams, this.precise);
 
     }
+    
+    @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+
+        Object[] resultParams = new Object[this.params.length];
+
+        /*
+         Bei den Operator INT, PROD und SUM können die (lokalen) Variablen
+         (Integrationsvariable/Index) KEINE Matrizenvariablen sein.
+         */
+        for (int i = 0; i < this.params.length; i++) {
+            if (this.params[i] instanceof MatrixExpression) {
+                resultParams[i] = ((MatrixExpression) this.params[i]).replaceMatrixVariable(var, matExpr);
+            } else {
+                resultParams[i] = this.params[i];
+            }
+        }
+
+        return new MatrixOperator(this.type, resultParams, this.precise);
+
+    }
 
     @Override
     public void addContainedVars(HashSet<String> vars) {

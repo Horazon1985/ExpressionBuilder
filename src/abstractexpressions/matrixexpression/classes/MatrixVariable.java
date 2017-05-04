@@ -156,6 +156,14 @@ public class MatrixVariable extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+        if (this.name.equals(var)) {
+            return matExpr;
+        }
+        return this;
+    }
+    
+    @Override
     public String toString() {
         return this.name;
     }

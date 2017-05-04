@@ -769,6 +769,11 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+        return this;
+    }
+    
+    @Override
     public String toString() {
 
         String entriesAsText = "";

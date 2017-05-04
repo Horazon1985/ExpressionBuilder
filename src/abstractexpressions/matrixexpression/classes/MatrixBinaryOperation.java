@@ -375,6 +375,11 @@ public class MatrixBinaryOperation extends MatrixExpression {
     public MatrixExpression replaceVariable(String var, Expression expr) {
         return new MatrixBinaryOperation(this.left.replaceVariable(var, expr), this.right.replaceVariable(var, expr), this.type);
     }
+    
+    @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+        return new MatrixBinaryOperation(this.left.replaceMatrixVariable(var, matExpr), this.right.replaceMatrixVariable(var, matExpr), this.type);
+    }
 
     @Override
     public String toString() {

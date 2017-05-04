@@ -900,6 +900,12 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression replaceVariable(String var, Expression expr);
 
     /**
+     * Gibt den Matrizenausdruck zurück, der durch das Ersetzen der Matrizenvariablen
+     * var durch den Matrizenausdruck matExpr entsteht.
+     */
+    public abstract MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr);
+
+    /**
      * Führt triviale Vereinfachungen am gegebenen Matrizenausdruck durch und
      * gibt den vereinfachten Ausdruck zurück.
      *

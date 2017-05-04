@@ -194,6 +194,11 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
+    public MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr) {
+        return new MatrixFunction(this.left.replaceMatrixVariable(var, matExpr), this.type);
+    }
+
+    @Override
     public String toString() {
         return this.type.toString() + "(" + this.left.toString() + ")";
     }
