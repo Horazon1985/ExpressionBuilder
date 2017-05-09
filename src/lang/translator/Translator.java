@@ -20,18 +20,17 @@ public abstract class Translator {
         // Die entsprechende XML-Datei öffnen.
         try {
             URL langFile;
-            if (exceptionId.substring(0, 2).equals("CC")) {
+            if (exceptionId.startsWith("CC")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangComputationalClasses.xml");
-            } else if (exceptionId.substring(0, 2).equals("EB")) {
+            } else if (exceptionId.startsWith("EB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangExpressionBuilder.xml");
-                langFile.getPath();
-            } else if (exceptionId.substring(0, 2).equals("GR")) {
+            } else if (exceptionId.startsWith("GR")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangGraphic.xml");
-            } else if (exceptionId.substring(0, 3).equals("LEB")) {
+            } else if (exceptionId.startsWith("LEB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangLogicalExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 3).equals("MEB")) {
+            } else if (exceptionId.startsWith("MEB")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangMatrixExpressionBuilder.xml");
-            } else if (exceptionId.substring(0, 2).equals("SM")) {
+            } else if (exceptionId.startsWith("SM")) {
                 langFile = ClassLoader.getSystemResource("lang/messages/LangSimplifyMethods.xml");
             } else {
                 // Datei für unbekannten Fehler öffnen.
