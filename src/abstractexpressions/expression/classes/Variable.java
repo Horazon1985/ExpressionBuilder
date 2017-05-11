@@ -244,6 +244,10 @@ public class Variable extends Expression {
         return vars;
     }
 
+    public static boolean doesVariableAlreadyExist(String varName) {
+        return variables.containsKey(varName);
+    }
+    
     @Override
     public Expression copy() {
         return Variable.create(this.name, this.value);

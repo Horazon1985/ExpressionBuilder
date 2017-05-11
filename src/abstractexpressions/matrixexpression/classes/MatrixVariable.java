@@ -67,6 +67,10 @@ public class MatrixVariable extends MatrixExpression {
             MatrixVariable.create(name);
         }
     }
+    
+    public static boolean doesMatrixVariableAlreadyExist(String varName) {
+        return matrixVariables.containsKey(varName);
+    }
 
     @Override
     public Dimension getDimension() throws EvaluationException {

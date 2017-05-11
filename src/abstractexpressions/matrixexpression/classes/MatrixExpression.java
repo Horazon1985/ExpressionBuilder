@@ -8,6 +8,7 @@ import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
+import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.interfaces.IdentifierValidator;
 import abstractexpressions.interfaces.IdentifierValidatorExpression;
 import abstractexpressions.interfaces.IdentifierValidatorMatrixExpression;
@@ -15,6 +16,7 @@ import java.awt.Dimension;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
 
@@ -856,6 +858,50 @@ public abstract class MatrixExpression implements AbstractExpression {
         return vars;
     }
 
+    public Set<String> getContainedExpressionVars() {
+        Set<String> allVars = getContainedVars();
+        Set<String> exprVars = new HashSet<>();
+        for (String var : allVars) {
+            if (Variable.doesVariableAlreadyExist(var)) {
+                exprVars.add(var);
+            }
+        }
+        return exprVars;
+    }
+    
+    public Set<String> getContainedExpressionIndeterminates() {
+        Set<String> allVars = getContainedIndeterminates();
+        Set<String> exprVars = new HashSet<>();
+        for (String var : allVars) {
+            if (Variable.doesVariableAlreadyExist(var)) {
+                exprVars.add(var);
+            }
+        }
+        return exprVars;
+    }
+    
+    public Set<String> getContainedMatrixVars() {
+        Set<String> allVars = getContainedVars();
+        Set<String> exprVars = new HashSet<>();
+        for (String var : allVars) {
+            if (MatrixVariable.doesMatrixVariableAlreadyExist(var)) {
+                exprVars.add(var);
+            }
+        }
+        return exprVars;
+    }
+    
+    public Set<String> getContainedMatrixIndeterminates() {
+        Set<String> allVars = getContainedIndeterminates();
+        Set<String> exprVars = new HashSet<>();
+        for (String var : allVars) {
+            if (MatrixVariable.doesMatrixVariableAlreadyExist(var)) {
+                exprVars.add(var);
+            }
+        }
+        return exprVars;
+    }
+    
     /**
      * Setzt alle im gegebenen Matrizenausdruck vorkommenden Konstanten auf
      * 'approximativ' (precise = false).
