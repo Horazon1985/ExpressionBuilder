@@ -1,11 +1,11 @@
 package abstractexpressions.logicalexpression.classes;
 
 import exceptions.EvaluationException;
-import java.util.HashSet;
 import abstractexpressions.logicalexpression.basic.LogicalExpressionCollection;
 import abstractexpressions.logicalexpression.basic.LogicalSimplifyUtilities;
 import abstractexpressions.logicalexpression.basic.LogicalTrivialSimplifyUtils;
 import abstractexpressions.logicalexpression.basic.SimplifyLogicalBinaryOperationUtils;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class LogicalBinaryOperation extends LogicalExpression {
@@ -61,7 +61,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
     }
     
     @Override
-    public void addContainedVars(HashSet vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
     }

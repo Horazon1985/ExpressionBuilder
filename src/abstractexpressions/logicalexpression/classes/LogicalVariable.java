@@ -3,6 +3,7 @@ package abstractexpressions.logicalexpression.classes;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class LogicalVariable extends LogicalExpression {
 
@@ -92,7 +93,7 @@ public class LogicalVariable extends LogicalExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet vars) {
+    public void addContainedVars(Set<String> vars) {
         vars.add(this.name);
     }
 

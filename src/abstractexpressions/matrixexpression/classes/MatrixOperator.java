@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Set;
 import operationparser.OperationParser;
 import lang.translator.Translator;
 
@@ -115,7 +116,7 @@ public class MatrixOperator extends MatrixExpression {
      *
      * @throws ExpressionException
      */
-    public static MatrixOperator getMatrixOperator(String operator, String[] params, HashSet<String> vars) throws ExpressionException {
+    public static MatrixOperator getMatrixOperator(String operator, String[] params, Set<String> vars) throws ExpressionException {
 
         TypeMatrixOperator type = getTypeFromName(operator);
 
@@ -381,7 +382,7 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
 
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die
@@ -420,7 +421,7 @@ public class MatrixOperator extends MatrixExpression {
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
 
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die

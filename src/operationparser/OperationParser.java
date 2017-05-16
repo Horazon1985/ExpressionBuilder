@@ -16,6 +16,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixOperator;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import java.util.Arrays;
+import java.util.Set;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
@@ -397,7 +398,7 @@ public abstract class OperationParser {
     /**
      * Parsen mathematischer Standardoperatoren.
      */
-    public static Operator parseDefaultOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
+    public static Operator parseDefaultOperator(String operatorName, String[] arguments, Set<String> vars, String pattern) throws ExpressionException {
 
         // Operatortyp.
         TypeOperator type = Operator.getTypeFromName(operatorName);
@@ -591,7 +592,7 @@ public abstract class OperationParser {
     /**
      * Parsen mathematischer Matrizenoperatoren.
      */
-    public static MatrixOperator parseDefaultMatrixOperator(String operatorName, String[] arguments, HashSet<String> vars, String pattern) throws ExpressionException {
+    public static MatrixOperator parseDefaultMatrixOperator(String operatorName, String[] arguments, Set<String> vars, String pattern) throws ExpressionException {
 
         // Operatortyp.
         TypeMatrixOperator type = MatrixOperator.getTypeFromName(operatorName);
@@ -975,7 +976,7 @@ public abstract class OperationParser {
      *
      * @throws ExpressionException
      */
-    private static Object getOperationParameter(String opName, String parameter, HashSet<String> vars, ParamType type, ArrayList<String> restrictions, int index, Class cls) throws ExpressionException {
+    private static Object getOperationParameter(String opName, String parameter, Set<String> vars, ParamType type, ArrayList<String> restrictions, int index, Class cls) throws ExpressionException {
 
         /* 
          Da diese Methode für Operator, MatrixOperator, Command gültig sein soll,
@@ -990,7 +991,7 @@ public abstract class OperationParser {
             errorMessagePrefix = "MCC_COMMAND_";
         }
 
-        HashSet<String> containedVars = new HashSet<>();
+        Set<String> containedVars = new HashSet<>();
 
         if (type.getRole().equals(ParamRole.VARIABLE)) {
 

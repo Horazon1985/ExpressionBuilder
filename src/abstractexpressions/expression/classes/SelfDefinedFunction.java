@@ -5,6 +5,7 @@ import enums.TypeFractionSimplification;
 import exceptions.EvaluationException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class SelfDefinedFunction extends Expression {
@@ -133,14 +134,14 @@ public class SelfDefinedFunction extends Expression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         for (int i = 0; i < this.left.length; i++) {
             this.left[i].addContainedVars(vars);
         }
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         for (int i = 0; i < this.left.length; i++) {
             this.left[i].addContainedIndeterminates(vars);
         }

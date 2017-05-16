@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import operationparser.OperationParser;
 import lang.translator.Translator;
 
@@ -118,7 +119,7 @@ public class Operator extends Expression {
      *
      * @throws ExpressionException
      */
-    public static Operator getOperator(String operator, String[] params, HashSet<String> vars) throws ExpressionException {
+    public static Operator getOperator(String operator, String[] params, Set<String> vars) throws ExpressionException {
 
         TypeOperator type = getTypeFromName(operator);
 
@@ -251,7 +252,7 @@ public class Operator extends Expression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
 
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die
@@ -288,7 +289,7 @@ public class Operator extends Expression {
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         /*
          Bei bestimmter Integration/Summen/Produkten zählt die
          Integrationsvariable/der Index NICHT als vorkommende Variable.

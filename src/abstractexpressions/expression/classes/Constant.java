@@ -6,7 +6,7 @@ import abstractexpressions.expression.basic.SimplifyBinaryOperationUtils;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class Constant extends Expression {
@@ -113,11 +113,11 @@ public class Constant extends Expression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
     }
     
     @Override

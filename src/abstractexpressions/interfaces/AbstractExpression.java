@@ -1,6 +1,6 @@
 package abstractexpressions.interfaces;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public interface AbstractExpression {
 
@@ -14,25 +14,25 @@ public interface AbstractExpression {
      * Fügt dem HashSet vars alle Variablen hinzu, die in diesem abstrakten
      * Ausdruck vorkommen.
      */
-    public void addContainedVars(HashSet<String> vars);
+    public void addContainedVars(Set<String> vars);
 
     /**
      * Gibt ein HashSet zurück, welches alle Variablennamen enthält, die in
      * diesem abstrakten Ausdruck vorkommen.
      */
-    public HashSet<String> getContainedVars();
+    public Set<String> getContainedVars();
 
     /**
      * Fügt dem HashSet vars alle Variablen hinzu, die in diesem abstrakten
      * Ausdruck vorkommen.
      */
-    public void addContainedIndeterminates(HashSet<String> vars);
+    public void addContainedIndeterminates(Set<String> vars);
     
     /**
      * Gibt ein HashSet zurück, welches alle Variablennamen enthält, die in
      * diesem abstrakten Ausdruck vorkommen und deren KEIN fester Wert
      * zugeordnet wurde.
      */
-    public HashSet<String> getContainedIndeterminates();
+    public Set<String> getContainedIndeterminates();
 
 }

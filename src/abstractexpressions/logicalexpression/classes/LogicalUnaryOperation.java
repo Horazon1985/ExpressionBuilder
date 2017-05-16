@@ -2,6 +2,7 @@ package abstractexpressions.logicalexpression.classes;
 
 import exceptions.EvaluationException;
 import java.util.HashSet;
+import java.util.Set;
 
 public class LogicalUnaryOperation extends LogicalExpression {
 
@@ -32,7 +33,7 @@ public class LogicalUnaryOperation extends LogicalExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
     }
 

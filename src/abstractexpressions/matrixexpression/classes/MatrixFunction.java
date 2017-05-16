@@ -10,6 +10,7 @@ import java.util.HashSet;
 import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class MatrixFunction extends MatrixExpression {
@@ -118,12 +119,12 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         this.left.addContainedIndeterminates(vars);
     }
 

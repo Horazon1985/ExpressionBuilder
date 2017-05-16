@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
 
@@ -40,7 +41,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static LogicalExpression build(String formula, HashSet<String> vars) throws ExpressionException {
+    public static LogicalExpression build(String formula, Set<String> vars) throws ExpressionException {
         return build(formula, vars, VALIDATOR);
     }
     
@@ -58,7 +59,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static LogicalExpression build(String formula, HashSet<String> vars, IdentifierValidator validator) throws ExpressionException {
+    public static LogicalExpression build(String formula, Set<String> vars, IdentifierValidator validator) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
 
@@ -417,14 +418,14 @@ public abstract class LogicalExpression implements AbstractExpression {
      * zum HashSet vars hinzu.
      */
     @Override
-    public abstract void addContainedVars(HashSet vars);
+    public abstract void addContainedVars(Set<String> vars);
 
     /**
      * Gibt ein HashSet mit allen logischen Variablen, die in dem gegebenen
      * Ausdruck vorkommen, zurück.
      */
     @Override
-    public HashSet<String> getContainedVars() {
+    public Set<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
@@ -435,7 +436,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      * und denen kein fester Wert zugewiesen wurde, zum HashSet vars hinzu.
      */
     @Override
-    public void addContainedIndeterminates(HashSet vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         addContainedVars(vars);
     }
 
@@ -444,7 +445,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      * Ausdruck vorkommen und denen kein fester Wert zugewiesen wurde, zurück.
      */
     @Override
-    public HashSet<String> getContainedIndeterminates() {
+    public Set<String> getContainedIndeterminates() {
         return getContainedVars();
     }
 

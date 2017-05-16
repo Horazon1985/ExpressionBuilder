@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import notations.NotationLoader;
 
 public abstract class SolveGeneralDifferentialEquationUtils {
@@ -139,7 +140,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
      */
     public static int getOrderOfDifferentialEquation(Expression f, String varOrd) {
         int ord = 0;
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = f.getContainedIndeterminates();
         for (String var : vars) {
             if (var.startsWith(varOrd) && var.contains("'") && var.replaceAll("'", "").equals(varOrd)) {
                 ord = Math.max(ord, var.length() - var.replaceAll("'", "").length());
@@ -154,7 +155,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
      */
     public static int getSubOrderOfDifferentialEquation(Expression f, String varOrd) {
         int subOrd = getOrderOfDifferentialEquation(f, varOrd);
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = f.getContainedIndeterminates();
         for (String var : vars) {
             if (var.startsWith(varOrd) && var.replaceAll("'", "").equals(varOrd)) {
                 subOrd = Math.min(subOrd, var.length() - var.replaceAll("'", "").length());
@@ -360,7 +361,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     }
 
     private static boolean doesNotContainDifferentialEquationVars(Expression f, String varAbsc, String varOrd) {
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = f.getContainedIndeterminates();
         for (String var : vars) {
             if (var.equals(varAbsc)) {
                 return false;
@@ -2152,7 +2153,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         int n = getOrderOfDifferentialEquation(f, varOrd);
         ExpressionCollection coefficients = new ExpressionCollection();
         String varOrdWithPrimes = varOrd;
-        HashSet<String> vars = f.getContainedIndeterminates();
+        Set<String> vars = f.getContainedIndeterminates();
 
         Expression coefficient;
         for (int i = 0; i <= n; i++) {

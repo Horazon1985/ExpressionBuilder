@@ -12,6 +12,7 @@ import abstractexpressions.matrixexpression.basic.MatrixExpressionCollection;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixBinaryOperationUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixUtilities;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class MatrixBinaryOperation extends MatrixExpression {
@@ -324,13 +325,13 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         this.left.addContainedIndeterminates(vars);
         this.right.addContainedIndeterminates(vars);
     }

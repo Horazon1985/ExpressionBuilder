@@ -12,6 +12,7 @@ import enums.TypeFractionSimplification;
 import enums.TypeSimplify;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class Function extends Expression {
@@ -264,12 +265,12 @@ public class Function extends Expression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         this.left.addContainedIndeterminates(vars);
     }
 

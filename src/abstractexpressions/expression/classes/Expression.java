@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
 
@@ -252,7 +253,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static Expression build(String formula, HashSet<String> vars) throws ExpressionException {
+    public static Expression build(String formula, Set<String> vars) throws ExpressionException {
         return build(formula, vars, VALIDATOR);
     }
     
@@ -270,7 +271,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static Expression build(String formula, HashSet<String> vars, IdentifierValidator validator) throws ExpressionException {
+    public static Expression build(String formula, Set<String> vars, IdentifierValidator validator) throws ExpressionException {
 
         // Leerzeichen beseitigen und alles zu Kleinbuchstaben machen
         formula = formula.replaceAll(" ", "").toLowerCase();
@@ -570,14 +571,14 @@ public abstract class Expression implements AbstractExpression {
      * vars hinzu.
      */
     @Override
-    public abstract void addContainedVars(HashSet<String> vars);
+    public abstract void addContainedVars(Set<String> vars);
 
     /**
      * Gibt ein HashSet mit allen Variablen, die in dem gegebenen Ausdruck
      * vorkommen, zurück.
      */
     @Override
-    public HashSet<String> getContainedVars() {
+    public Set<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
@@ -588,14 +589,14 @@ public abstract class Expression implements AbstractExpression {
      * gegebenen Ausdruck vorkommen, zum HashSet vars hinzu.
      */
     @Override
-    public abstract void addContainedIndeterminates(HashSet<String> vars);
+    public abstract void addContainedIndeterminates(Set<String> vars);
 
     /**
      * Gibt ein HashSet mit allen Variablen, denen kein Wert zugewiesen wurde
      * und die in dem gegebenen Ausdruck vorkommen, zurück.
      */
     @Override
-    public HashSet<String> getContainedIndeterminates() {
+    public Set<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;

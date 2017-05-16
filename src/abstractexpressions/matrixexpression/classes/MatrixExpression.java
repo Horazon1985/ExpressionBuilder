@@ -139,7 +139,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static Matrix getMatrix(String formula, HashSet<String> vars) throws ExpressionException {
+    public static Matrix getMatrix(String formula, Set<String> vars) throws ExpressionException {
 
         String[] rows = getRowsFromMatrix(formula);
         Object[] currentRow = getEntriesFromRow(rows[0]).toArray();
@@ -192,7 +192,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static MatrixExpression build(String formula, HashSet<String> vars) throws ExpressionException {
+    public static MatrixExpression build(String formula, Set<String> vars) throws ExpressionException {
         return build(formula, vars, VALIDATOR_EXPRESSION, VALIDATOR_MATRIX_EXPRESSION);
     }
 
@@ -201,7 +201,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static MatrixExpression build(String formula, HashSet<String> vars,
+    public static MatrixExpression build(String formula, Set<String> vars,
             IdentifierValidator validatorExpression, IdentifierValidator validatorMatrixExpression) throws ExpressionException {
 
         formula = formula.replaceAll(" ", "").toLowerCase();
@@ -827,14 +827,14 @@ public abstract class MatrixExpression implements AbstractExpression {
      * HashSet vars hinzu.
      */
     @Override
-    public abstract void addContainedVars(HashSet<String> vars);
+    public abstract void addContainedVars(Set<String> vars);
 
     /**
      * Gibt ein HashSet mit allen Variablen, die in dem gegebenen
      * Matrizenausdruck vorkommen, zurück.
      */
     @Override
-    public HashSet<String> getContainedVars() {
+    public Set<String> getContainedVars() {
         HashSet<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
@@ -845,14 +845,14 @@ public abstract class MatrixExpression implements AbstractExpression {
      * gegebenen Matrizenausdruck vorkommen, zum HashSet vars hinzu.
      */
     @Override
-    public abstract void addContainedIndeterminates(HashSet<String> vars);
+    public abstract void addContainedIndeterminates(Set<String> vars);
 
     /**
      * Gibt ein HashSet mit allen Variablen, denen kein Wert zugewiesen wurde
      * und die in dem gegebenen Matrizenausdruck vorkommen, zurück.
      */
     @Override
-    public HashSet<String> getContainedIndeterminates() {
+    public Set<String> getContainedIndeterminates() {
         HashSet<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;

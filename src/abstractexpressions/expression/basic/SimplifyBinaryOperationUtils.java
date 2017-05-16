@@ -22,6 +22,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import lang.translator.Translator;
 
 /**
@@ -2342,7 +2343,7 @@ public abstract class SimplifyBinaryOperationUtils {
      */
     private static Expression decomposeIfIsRationalPolynomialInOneVariable(Expression expr) {
 
-        HashSet<String> vars = expr.getContainedIndeterminates();
+        Set<String> vars = expr.getContainedIndeterminates();
         if (vars.size() != 1) {
             return expr;
         }

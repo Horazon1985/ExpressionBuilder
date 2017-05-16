@@ -9,6 +9,7 @@ import static abstractexpressions.expression.classes.Expression.ZERO;
 import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Set;
 
 public class Matrix extends MatrixExpression {
 
@@ -656,7 +657,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
                 this.entry[i][j].addContainedVars(vars);
@@ -665,7 +666,7 @@ public class Matrix extends MatrixExpression {
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         for (int i = 0; i < this.getRowNumber(); i++) {
             for (int j = 0; j < this.getColumnNumber(); j++) {
                 this.entry[i][j].addContainedIndeterminates(vars);

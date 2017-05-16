@@ -1,6 +1,7 @@
 package abstractexpressions.logicalexpression.classes;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class LogicalConstant extends LogicalExpression {
 
@@ -32,7 +33,7 @@ public class LogicalConstant extends LogicalExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet vars) {
+    public void addContainedVars(Set<String> vars) {
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MatrixVariable extends MatrixExpression {
 
@@ -113,12 +114,12 @@ public class MatrixVariable extends MatrixExpression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         vars.add(this.name);
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         if (this.value != null) {
             vars.add(this.name);
         }

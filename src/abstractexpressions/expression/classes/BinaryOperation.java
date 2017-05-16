@@ -17,6 +17,7 @@ import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Set;
 import lang.translator.Translator;
 
 public class BinaryOperation extends Expression {
@@ -130,13 +131,13 @@ public class BinaryOperation extends Expression {
     }
 
     @Override
-    public void addContainedVars(HashSet<String> vars) {
+    public void addContainedVars(Set<String> vars) {
         this.left.addContainedVars(vars);
         this.right.addContainedVars(vars);
     }
 
     @Override
-    public void addContainedIndeterminates(HashSet<String> vars) {
+    public void addContainedIndeterminates(Set<String> vars) {
         this.left.addContainedIndeterminates(vars);
         this.right.addContainedIndeterminates(vars);
     }

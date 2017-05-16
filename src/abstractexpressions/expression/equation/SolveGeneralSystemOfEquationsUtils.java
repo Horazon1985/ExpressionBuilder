@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Set;
 
 public abstract class SolveGeneralSystemOfEquationsUtils {
 
@@ -33,7 +34,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
     public static final ArrayList<Expression[]> NO_SOLUTIONS = new ArrayList<>();
 
     private static HashSet<String> getIndeterminatesInEquation(Expression equation, ArrayList<String> vars) {
-        HashSet<String> allVarsInEquation = equation.getContainedIndeterminates();
+        Set<String> allVarsInEquation = equation.getContainedIndeterminates();
         HashSet<String> varsInEquation = new HashSet<>();
         for (String var : allVarsInEquation) {
             if (vars.contains(var)) {
@@ -44,7 +45,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
     }
 
     private static HashSet<String> getIndeterminatesInEquation(MultiPolynomial equation, ArrayList<String> vars) {
-        HashSet<String> allVarsInEquation = equation.toExpression().getContainedIndeterminates();
+        Set<String> allVarsInEquation = equation.toExpression().getContainedIndeterminates();
         HashSet<String> varsInEquation = new HashSet<>();
         for (String var : allVarsInEquation) {
             if (vars.contains(var)) {
