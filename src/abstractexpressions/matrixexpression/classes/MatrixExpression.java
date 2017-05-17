@@ -357,7 +357,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
 
         /*
-         Letzter Versuch: versuchen, formula zu einer Instanz von Expression
+         Versuch: versuchen, formula zu einer Instanz von Expression
          zu kompilieren. Falls dies klappt, soll diese zu einer (1x1)-Matrix
          konvertiert und zurückgegeben werden.
          */
