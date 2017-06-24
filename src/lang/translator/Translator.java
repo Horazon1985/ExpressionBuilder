@@ -2,7 +2,9 @@ package lang.translator;
 
 import abstractexpressions.expression.classes.Expression;
 import java.net.URL;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -55,6 +57,17 @@ public abstract class Translator {
         RESOURCES.put(PREFIX_OPERATION_PARSING_UTILS_MESSAGES, PATH_OPERATION_PARSING_UTILS_MESSAGES);
         RESOURCES.put(PREFIX_SIMPLIFY_UTILS_MESSAGES, PATH_SIMPLIFY_UTILS_MESSAGES);
         RESOURCES.put(PREFIX_OPERATION_PARSER_MESSAGES, PATH_OPERATION_PARSER_MESSAGES);
+    }
+    
+    public static Collection<String> getResources() {
+        Collection<String> resources = new HashSet<>();
+        /*
+        Manipulationen an RESOURCES.values() können Änderungen an der Map 
+        RESOURCES nach sich ziehen können. Deshalb wird hier eine Kopie 
+        zurückgegeben.
+        */
+        resources.addAll(RESOURCES.values());
+        return resources;
     }
     
     /**
