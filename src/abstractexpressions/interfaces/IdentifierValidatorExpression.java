@@ -14,7 +14,7 @@ public class IdentifierValidatorExpression implements IdentifierValidator {
      */
     @Override
     public boolean isValidIdentifier(String identifier) {
-        while (identifier.length() > 0 && identifier.substring(identifier.length() - 1).equals("'")) {
+        while (identifier.length() > 0 && identifier.endsWith("'")) {
             identifier = identifier.substring(0, identifier.length() - 1);
         }
         return Expression.isValidVariable(identifier);

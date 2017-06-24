@@ -2,6 +2,8 @@ package lang.translator;
 
 import abstractexpressions.expression.classes.Expression;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -11,6 +13,50 @@ import org.w3c.dom.NodeList;
 
 public abstract class Translator {
 
+    private static final String PREFIX_CANCELLER_MESSAGES = "CN";
+    private static final String PREFIX_COMPUTATIONAL_CLASSES_MESSAGES = "CC";
+    private static final String PREFIX_EXPRESSION_BUILDER_MESSAGES = "EB";
+    private static final String PREFIX_GRAPHIC_MESSAGES = "GR";
+    private static final String PREFIX_LOGICAL_EXPRESSION_BUILDER_MESSAGES = "LEB";
+    private static final String PREFIX_MATRIX_EXPRESSION_BUILDER_MESSAGES = "MEB";
+    private static final String PREFIX_OPERATION_PARSING_UTILS_MESSAGES = "OU";
+    private static final String PREFIX_SIMPLIFY_UTILS_MESSAGES = "SU";
+    private static final String PREFIX_OPERATION_PARSER_MESSAGES = "OP";
+
+    private static final String PATH_CANCELLER_MESSAGES = "lang/messages/LangCanceller.xml";
+    private static final String PATH_COMPUTATIONAL_CLASSES_MESSAGES = "lang/messages/LangComputationalClasses.xml";
+    private static final String PATH_EXPRESSION_BUILDER_MESSAGES = "lang/messages/LangExpressionBuilder.xml";
+    private static final String PATH_GRAPHIC_MESSAGES = "lang/messages/LangGraphic.xml";
+    private static final String PATH_LOGICAL_EXPRESSION_BUILDER_MESSAGES = "LangLogicalExpressionBuilder.xml";
+    private static final String PATH_MATRIX_EXPRESSION_BUILDER_MESSAGES = "lang/messages/LangMatrixExpressionBuilder.xml";
+    private static final String PATH_OPERATION_PARSING_UTILS_MESSAGES = "lang/messages/LangOperationParsingUtils.xml";
+    private static final String PATH_SIMPLIFY_UTILS_MESSAGES = "lang/messages/LangSimplifyUtils.xml";
+    private static final String PATH_OPERATION_PARSER_MESSAGES = "lang/messages/LangOperationParser.xml";
+    
+    private static final String PATH_UNKNOWN_ERROR_MESSAGES = "mathtool/lang/messages/LangUndefinedError.xml";
+
+    private static final String ELEMENT_NAME_OBJECT = "object";
+    private static final String ELEMENT_ATTRIBUTE_ID = "id";
+    
+    private static final String ELEMENT_NAME_DE = "German";
+    private static final String ELEMENT_NAME_EN = "English";
+    private static final String ELEMENT_NAME_RU = "Russian";
+    private static final String ELEMENT_NAME_UA = "Ukrainian";
+    
+    private static final Map<String, String> RESOURCES = new HashMap<>();
+
+    static {
+        RESOURCES.put(PREFIX_CANCELLER_MESSAGES, PATH_CANCELLER_MESSAGES);
+        RESOURCES.put(PREFIX_COMPUTATIONAL_CLASSES_MESSAGES, PATH_COMPUTATIONAL_CLASSES_MESSAGES);
+        RESOURCES.put(PREFIX_EXPRESSION_BUILDER_MESSAGES, PATH_EXPRESSION_BUILDER_MESSAGES);
+        RESOURCES.put(PREFIX_GRAPHIC_MESSAGES, PATH_GRAPHIC_MESSAGES);
+        RESOURCES.put(PREFIX_LOGICAL_EXPRESSION_BUILDER_MESSAGES, PATH_LOGICAL_EXPRESSION_BUILDER_MESSAGES);
+        RESOURCES.put(PREFIX_MATRIX_EXPRESSION_BUILDER_MESSAGES, PATH_MATRIX_EXPRESSION_BUILDER_MESSAGES);
+        RESOURCES.put(PREFIX_OPERATION_PARSING_UTILS_MESSAGES, PATH_OPERATION_PARSING_UTILS_MESSAGES);
+        RESOURCES.put(PREFIX_SIMPLIFY_UTILS_MESSAGES, PATH_SIMPLIFY_UTILS_MESSAGES);
+        RESOURCES.put(PREFIX_OPERATION_PARSER_MESSAGES, PATH_OPERATION_PARSER_MESSAGES);
+    }
+    
     /**
      * Gibt eine Meldung entsprechend der exceptionId und der eingestellten
      * Sprache zurück.
@@ -19,22 +65,16 @@ public abstract class Translator {
 
         // Die entsprechende XML-Datei öffnen.
         try {
-            URL langFile;
-            if (exceptionId.startsWith("CC")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangComputationalClasses.xml");
-            } else if (exceptionId.startsWith("EB")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangExpressionBuilder.xml");
-            } else if (exceptionId.startsWith("GR")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangGraphic.xml");
-            } else if (exceptionId.startsWith("LEB")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangLogicalExpressionBuilder.xml");
-            } else if (exceptionId.startsWith("MEB")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangMatrixExpressionBuilder.xml");
-            } else if (exceptionId.startsWith("SM")) {
-                langFile = ClassLoader.getSystemResource("lang/messages/LangSimplifyMethods.xml");
-            } else {
-                // Datei für unbekannten Fehler öffnen.
-                langFile = ClassLoader.getSystemResource("lang/messages/LangUndefinedError.xml");
+            URL langFile = null;
+            for (String key : RESOURCES.keySet()) {
+                if (exceptionId.startsWith(key)) {
+                    langFile = ClassLoader.getSystemResource(RESOURCES.get(key));
+                    break;
+                }
+            }
+            if (langFile == null) {
+                // Fall: Unbekannten Fehler aufgetreten (Präfix nicht identifizierbar).
+                langFile = ClassLoader.getSystemResource(PATH_UNKNOWN_ERROR_MESSAGES);
             }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -42,7 +82,7 @@ public abstract class Translator {
             Document doc = dBuilder.parse(langFile.openStream());
 
             doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("object");
+            NodeList nList = doc.getElementsByTagName(ELEMENT_NAME_OBJECT);
 
             for (int i = 0; i < nList.getLength(); i++) {
 
@@ -52,16 +92,16 @@ public abstract class Translator {
 
                     Element eElement = (Element) nNode;
 
-                    if (eElement.getAttribute("id").equals(exceptionId)) {
+                    if (eElement.getAttribute(ELEMENT_ATTRIBUTE_ID).equals(exceptionId)) {
                         switch (Expression.getLanguage()) {
                             case DE:
-                                return eElement.getElementsByTagName("German").item(0).getTextContent();
+                                return eElement.getElementsByTagName(ELEMENT_NAME_DE).item(0).getTextContent();
                             case EN:
-                                return eElement.getElementsByTagName("English").item(0).getTextContent();
+                                return eElement.getElementsByTagName(ELEMENT_NAME_EN).item(0).getTextContent();
                             case RU:
-                                return eElement.getElementsByTagName("Russian").item(0).getTextContent();
+                                return eElement.getElementsByTagName(ELEMENT_NAME_RU).item(0).getTextContent();
                             case UA:
-                                return eElement.getElementsByTagName("Ukrainian").item(0).getTextContent();
+                                return eElement.getElementsByTagName(ELEMENT_NAME_UA).item(0).getTextContent();
                             default:
                                 break;
                         }

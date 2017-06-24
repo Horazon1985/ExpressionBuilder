@@ -8,7 +8,7 @@ public abstract class Canceller {
     /**
      * Id für den Fehlertext, dass eine Berechnung abgebrochen wurde.
      */
-    private static String MCC_COMPUTATION_ABORTED = "MCC_COMPUTATION_ABORTED";
+    private static String CN_COMPUTATION_ABORTED = "CN_COMPUTATION_ABORTED";
     
     private Canceller() {
     }
@@ -20,7 +20,7 @@ public abstract class Canceller {
      */
     public static void interruptComputationIfNeeded() {
         if (Thread.interrupted()) {
-            throw new CancellationException(Translator.translateOutputMessage(MCC_COMPUTATION_ABORTED));
+            throw new CancellationException(Translator.translateOutputMessage(CN_COMPUTATION_ABORTED));
         }
     }
 

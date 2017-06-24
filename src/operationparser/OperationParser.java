@@ -21,128 +21,10 @@ import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
 import operationparser.ParameterPattern.ParamType;
 import lang.translator.Translator;
+import util.OperationDataTO;
+import util.OperationParsingUtils;
 
 public abstract class OperationParser {
-
-    /**
-     * Der jeweilige Befehl und die Parameter in der Befehlsklammer werden
-     * ausgelesen und zurückgegeben.<br>
-     * BEISPIEL: commandLine = f(x, y, z). Zurückgegeben wird ein array der
-     * Länge zwei: im 0. Eintrag steht der String "f", im 1. der String "x, y,
-     * z".
-     *
-     * @throws ExpressionException
-     */
-    public static String[] getOperationAndArguments(String input) throws ExpressionException {
-
-        // Leerzeichen beseitigen
-        input = input.replaceAll(" ", "");
-
-        String[] result = new String[2];
-        int i = input.indexOf("(");
-        if (i == -1) {
-            // Um zu verhindern, dass es eine IndexOutOfBoundsException gibt.
-            i = 0;
-        }
-        result[0] = input.substring(0, i);
-
-        //Wenn der Befehl leer ist -> Fehler.
-        if (result[0].length() == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE"));
-        }
-
-        //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
-        if (result[0].length() > input.length() - 2) {
-            throw new ExpressionException(input + Translator.translateOutputMessage("EB_Expression_IS_NOT_VALID_COMMAND"));
-        }
-
-        //Wenn am Ende nicht ")" steht.
-        if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_MISSING_CLOSING_BRACKET", input));
-        }
-
-        result[1] = input.substring(result[0].length() + 1, input.length() - 1);
-
-        return result;
-
-    }
-
-    /**
-     * Gibt ein String-Array zurück, in dem die einzelnen Parameter, welche in
-     * input enthalten und durch ein Komma getrennt sind, stehen. Nach einem
-     * eingelesenen Komma, welches NICHT von runden Klammern umgeben ist, werden
-     * die Parameter getrennt.<br>
-     * VORAUSSETZUNG: im String input stehen NUR die Parameter, getrennt durch
-     * ein Komma.<br>
-     * BEISPIEL input = "x,y,f(w,z),u,v". Die Paremeter sind dann {x, y, f(w,
-     * z), u, v}.
-     *
-     * @throws ExpressionException
-     */
-    public static String[] getArguments(String input) throws ExpressionException {
-
-        //Leerzeichen beseitigen
-        input = input.replaceAll(" ", "");
-
-        //Falls Parameterstring leer ist -> Fertig
-        if (input.isEmpty()) {
-            return new String[0];
-        }
-
-        ArrayList<String> resultParameters = new ArrayList<>();
-        int startPositionOfCurrentParameter = 0;
-
-        /*
-         Differenz zwischen der Anzahl der öffnenden und der der schließenden
-         Klammern (bracketCounter == 0 am Ende -> alles ok).
-         */
-        int bracketCounter = 0;
-        int squareBracketCounter = 0;
-        String currentChar;
-        //Jetzt werden die einzelnen Parameter ausgelesen
-        for (int i = 0; i < input.length(); i++) {
-
-            currentChar = input.substring(i, i + 1);
-            if (currentChar.equals("(")) {
-                bracketCounter++;
-            }
-            if (currentChar.equals(")")) {
-                bracketCounter--;
-            }
-            if (currentChar.equals("[")) {
-                squareBracketCounter++;
-            }
-            if (currentChar.equals("]")) {
-                squareBracketCounter--;
-            }
-            if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
-                if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
-                }
-                resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
-                startPositionOfCurrentParameter = i + 1;
-            }
-            if (i == input.length() - 1) {
-                if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_EMPTY_PARAMETER"));
-                }
-                resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
-            }
-
-        }
-
-        if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Expression_WRONG_BRACKETS"));
-        }
-
-        String[] resultParametersAsArray = new String[resultParameters.size()];
-        for (int i = 0; i < resultParameters.size(); i++) {
-            resultParametersAsArray[i] = resultParameters.get(i);
-        }
-
-        return resultParametersAsArray;
-
-    }
 
     /**
      * Gibt für ein Pattern pattern das entsprechende Objekt der Klasse
@@ -153,11 +35,10 @@ public abstract class OperationParser {
      */
     public static ParseResultPattern getResultPattern(String pattern) throws ExpressionException {
 
-        String[] opAndArgs = getOperationAndArguments(pattern);
-        // Operationsname.
-        String opName = opAndArgs[0];
-        // Operationsparameter.
-        String[] args = getArguments(opAndArgs[1]);
+        OperationDataTO opData = OperationParsingUtils.getOperationData(pattern);
+        // Operationsname und Operationsparameter auslesen.
+        String opName = opData.getOperationName();
+        String[] args = opData.getOperationArguments();
 
         ArrayList<ParameterPattern> paramPatterns = new ArrayList<>();
         ParameterPattern[] paramPattern = new ParameterPattern[args.length];
@@ -191,9 +72,9 @@ public abstract class OperationParser {
                         paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
                         break;
                     } else if (args[i].indexOf(type.name()) == 0) {
-                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                        paramType = paramTypeAndRestrictions[0];
-                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+                        OperationDataTO paramData = OperationParsingUtils.getOperationData(args[i]);
+                        paramType = paramData.getOperationName();
+                        restrictions = paramData.getOperationArguments();
 
                         // Multiplizität bestimmen.
                         if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
@@ -263,9 +144,9 @@ public abstract class OperationParser {
                         paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
                         break;
                     } else if (args[i].indexOf(type.name()) == 0) {
-                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                        paramType = paramTypeAndRestrictions[0];
-                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+                        OperationDataTO paramData = OperationParsingUtils.getOperationData(args[i]);
+                        paramType = paramData.getOperationName();
+                        restrictions = paramData.getOperationArguments();
 
                         // Multiplizität bestimmen.
                         if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
@@ -288,9 +169,9 @@ public abstract class OperationParser {
                 } else if (role.equals(ParamRole.TYPE)) {
 
                     if (args[i].indexOf(type.name()) == 0) {
-                        paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                        paramType = paramTypeAndRestrictions[0];
-                        restrictions = getArguments(paramTypeAndRestrictions[1]);
+                        OperationDataTO paramData = OperationParsingUtils.getOperationData(args[i]);
+                        paramType = paramData.getOperationName();
+                        restrictions = paramData.getOperationArguments();
 
                         // Multiplizität bestimmen.
                         if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
@@ -324,9 +205,9 @@ public abstract class OperationParser {
                     paramPattern[i] = new ParameterPattern(type, Multiplicity.plus, restrictionsAsList);
                     break;
                 } else if (args[i].indexOf(type.name()) == 0) {
-                    paramTypeAndRestrictions = getOperationAndArguments(args[i]);
-                    paramType = paramTypeAndRestrictions[0];
-                    restrictions = getArguments(paramTypeAndRestrictions[1]);
+                    OperationDataTO paramData = OperationParsingUtils.getOperationData(args[i]);
+                    paramType = paramData.getOperationName();
+                    restrictions = paramData.getOperationArguments();
 
                     // Multiplizität bestimmen.
                     if (paramType.substring(paramType.length() - 1).equals(ParameterPattern.multPlus)) {
@@ -427,9 +308,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
                         + operatorName
-                        + Translator.translateOutputMessage("EB_Operator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
+                        + Translator.translateOutputMessage("OP_OPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -463,9 +344,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length || arguments.length > 0 && resultPattern.size() == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
-                    + Translator.translateOutputMessage("EB_Operator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
+                    + Translator.translateOutputMessage("OP_OPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
         }
 
         /* 
@@ -508,21 +389,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -531,21 +412,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("EB_Operator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -574,11 +455,11 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                        throw new ExpressionException(Translator.translateOutputMessage("OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_1")
                                 + var
-                                + Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + Translator.translateOutputMessage("OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_2")
                                 + operatorName
-                                + Translator.translateOutputMessage("EB_Operator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                                + Translator.translateOutputMessage("OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
                     }
                 }
             }
@@ -621,9 +502,9 @@ public abstract class OperationParser {
 
             // Das Pattern besitzt mehr Argumente als der zu parsende Ausdruck.
             if (indexInOperatorArguments >= arguments.length) {
-                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
+                throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1")
                         + operatorName
-                        + Translator.translateOutputMessage("MEB_MatrixOperator_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
+                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2"));
             }
 
             // Indizes loggen!
@@ -658,9 +539,9 @@ public abstract class OperationParser {
 
         // Der zu parsende Ausdruck besitzt mehr Argumente als das Pattern.
         if (indexInOperatorArguments < arguments.length || arguments.length > 0 && resultPattern.size() == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
+            throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_1")
                     + operatorName
-                    + Translator.translateOutputMessage("MEB_MatrixOperator_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
+                    + Translator.translateOutputMessage("OP_MATRIXOPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_2"));
         }
 
         /* 
@@ -703,21 +584,21 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -726,21 +607,21 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
+                                throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
                                         + var
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
                                         + (q + 1)
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
                                         + operatorName
-                                        + Translator.translateOutputMessage("MEB_MatrixOperator_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                        + Translator.translateOutputMessage("OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
                             }
                         }
 
@@ -769,11 +650,11 @@ public abstract class OperationParser {
                 var = (String) params[j];
                 for (int k = 0; k < params.length; k++) {
                     if (params[k] instanceof String && ((String) params[k]).equals(var) && k != j) {
-                        throw new ExpressionException(Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_1")
+                        throw new ExpressionException(Translator.translateOutputMessage("OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_1")
                                 + var
-                                + Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_2")
+                                + Translator.translateOutputMessage("OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_2")
                                 + operatorName
-                                + Translator.translateOutputMessage("MEB_MatrixOperator_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
+                                + Translator.translateOutputMessage("OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_3"));
                     }
                 }
             }
@@ -984,11 +865,11 @@ public abstract class OperationParser {
          */
         String errorMessagePrefix = "";
         if (cls.equals(Operator.class)) {
-            errorMessagePrefix = "EB_Operator_";
+            errorMessagePrefix = "OP_OPERATOR_";
         } else if (cls.equals(MatrixOperator.class)) {
-            errorMessagePrefix = "MEB_MatrixOperator_";
+            errorMessagePrefix = "OP_MATRIXOPERATOR_";
         } else if (cls.equals(Command.class)) {
-            errorMessagePrefix = "MCC_COMMAND_";
+            errorMessagePrefix = "OP_COMMAND_";
         }
 
         Set<String> containedVars = new HashSet<>();

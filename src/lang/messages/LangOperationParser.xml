@@ -1,0 +1,679 @@
+<objects>
+    <!-- Fehlermeldungen für das Kompilieren eines Standardoperators -->  
+    <object id = "OP_OPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1">
+        <German>Zu wenig Parameter im Operator </German>
+        <English>Not enough parameters in operator </English>
+        <Ukrainian>Замало параметрів у оператора </Ukrainian>
+        <Russian>Недостаточно параметров у оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_1">
+        <German>Zu viele Parameter im Operator </German>
+        <English>Too many parameters in operator </English>
+        <Ukrainian>Забагато параметрів у оператора </Ukrainian>
+        <Russian>Слишком много параметров у оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+        <German> muss im Ausdruck im </German>
+        <English> must occur in the </English>
+        <Ukrainian> повинна міститися у </Ukrainian>
+        <Russian> должна встречаться в </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+        <German> Parameter des Operators </German>
+        <English> parameter of the operator </English>
+        <Ukrainian> параметрі оператора </Ukrainian>
+        <Russian> параметре оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+        <German> vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+        <German> darf im Ausdruck im </German>
+        <English> must not occur in the </English>
+        <Ukrainian> не повинна міститися у </Ukrainian>
+        <Russian> не должна встречаться в </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+        <German> nicht vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_2">
+        <German> darf in den Parametern des Operators </German>
+        <English> is not allowed to occur twice in the parameters of the operator </English>
+        <Ukrainian> не повинна міститися у параметрах оператора </Ukrainian>
+        <Russian> не должна встречаться в параметрах оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_3">
+        <German> nicht mehrmals vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>частіше одного разу.</Ukrainian>
+        <Russian>чаще одного раза.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "OP_OPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3">
+        <German> muss ein '='-Zeichen enthalten.</German>
+        <English> must contain a '=' sign.</English>
+        <Ukrainian> має містити символ '='.</Ukrainian>
+        <Russian> должно содержать символ '='.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must contain least </English>
+        <Ukrainian> має містити щонайменше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must contain at most </English>
+        <Ukrainian> має містити щонайбільше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+        <German> Variablen enthalten.</German>
+        <English> variables.</English>
+        <Ukrainian> змінних.</Ukrainian>
+        <Russian> переменных.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_1">
+        <German>Die ganze Zahl im </German>
+        <English>The integer value in the </English>
+        <Ukrainian>Ціле число у </Ukrainian>
+        <Russian>Целое число в </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must be at least </English>
+        <Ukrainian> має бути щонайменше </Ukrainian>
+        <Russian> должно быть минимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must be at most </English>
+        <Ukrainian> має бути щонайбільш </Ukrainian>
+        <Russian> должно быть максимум </Russian>
+    </object>
+    <object id = "OP_OPERATOR_BOUNDS_FOR_PARAMETER_6">
+        <German> betragen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+        <German>. Parameter im Operator </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметр оператора </Ukrainian>
+        <Russian>. параметр оператора </Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
+        <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English> must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian> має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian> должен быть действительной переменной, которой не присвоено значение.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+        <German> muss eine gültige Veränderliche sein.</German>
+        <English> must be a valid variable.</English>
+        <Ukrainian> має бути діючою змінною.</Ukrainian>
+        <Russian> должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+        <German> muss eine gültige Gleichung der Form 'f = g' sein.</German>
+        <English> must be a valid equation of the form 'f = g'.</English>
+        <Ukrainian> має бути діючим рівнянням у формі 'f = g'.</Ukrainian>
+        <Russian> должен быть действительным уравнением в форме 'f = g'.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+        <German> muss ein gültiger Ausdruck sein.</German>
+        <English> must be a valid expression.</English>
+        <Ukrainian> має бути діючим виразом.</Ukrainian>
+        <Russian> должен быть действительным выражением.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+        <German> muss eine ganze Zahl sein.</German>
+        <English> must be an integer.</English>
+        <Ukrainian> має бути цілим числом.</Ukrainian>
+        <Russian> должен быть целым числом.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+        <German> muss ein gültiger logischer Ausdruck sein.</German>
+        <English> must be a valid logical expression.</English>
+        <Ukrainian> має бути діючим логічним виразом.</Ukrainian>
+        <Russian> должен быть действительным логическим выражением.</Russian>
+    </object>
+    <object id = "OP_OPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+        <German> muss ein gültiger Matrizenausdruck sein.</German>
+        <English> must be a valid matrix expression.</English>
+        <Ukrainian> має бути діючим матричним виразом.</Ukrainian>
+        <Russian> должен быть действительным матричным выражением.</Russian>
+    </object>
+    
+    <!-- Fehlermeldungen für das Kompilieren eines Standardmatrixoperators -->  
+    <object id = "OP_MATRIXOPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_1">
+        <German>Zu wenig Parameter im Operator </German>
+        <English>Not enough parameters in operator </English>
+        <Ukrainian>Замало параметрів у оператора </Ukrainian>
+        <Russian>Недостаточно параметров у оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_NOT_ENOUGH_PARAMETERS_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_1">
+        <German>Zu viele Parameter im Operator </German>
+        <English>Too many parameters in operator </English>
+        <Ukrainian>Забагато параметрів у оператора </Ukrainian>
+        <Russian>Слишком много параметров у оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_TOO_MANY_PARAMETERS_IN_OPERATOR_2">
+        <German>.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+        <German> muss im Ausdruck im </German>
+        <English> must occur in the </English>
+        <Ukrainian> повинна міститися у </Ukrainian>
+        <Russian> должна встречаться в </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+        <German> Parameter des Operators </German>
+        <English> parameter of the operator </English>
+        <Ukrainian> параметрі оператора </Ukrainian>
+        <Russian> параметре оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+        <German> vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+        <German> darf im Ausdruck im </German>
+        <English> must not occur in the </English>
+        <Ukrainian> не повинна міститися у </Ukrainian>
+        <Russian> не должна встречаться в </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+        <German> nicht vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_2">
+        <German> darf in den Parametern des Operators </German>
+        <English> is not allowed to occur twice in the parameters of the operator </English>
+        <Ukrainian> не повинна міститися у параметрах оператора </Ukrainian>
+        <Russian> не должна встречаться в параметрах оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_UNIQUE_VARIABLE_OCCUR_TWICE_3">
+        <German> nicht mehrmals vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>частіше одного разу.</Ukrainian>
+        <Russian>чаще одного раза.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN_3">
+        <German> muss ein '='-Zeichen enthalten.</German>
+        <English> must contain a '=' sign.</English>
+        <Ukrainian> має містити символ '='.</Ukrainian>
+        <Russian> должно содержать символ '='.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must contain least </English>
+        <Ukrainian> має містити щонайменше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must contain at most </English>
+        <Ukrainian> має містити щонайбільше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+        <German> Variablen enthalten.</German>
+        <English> variables.</English>
+        <Ukrainian> змінних.</Ukrainian>
+        <Russian> переменных.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_1">
+        <German>Die ganze Zahl im </German>
+        <English>The integer value in the </English>
+        <Ukrainian>Ціле число у </Ukrainian>
+        <Russian>Целое число в </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_2">
+        <German>. Parameter des Operators </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметрі оператора </Ukrainian>
+        <Russian>. параметре оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must be at least </English>
+        <Ukrainian> має бути щонайменше </Ukrainian>
+        <Russian> должно быть минимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must be at most </English>
+        <Ukrainian> має бути щонайбільш </Ukrainian>
+        <Russian> должно быть максимум </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_BOUNDS_FOR_PARAMETER_6">
+        <German> betragen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+        <German>. Parameter im Operator </German>
+        <English>. parameter of the operator </English>
+        <Ukrainian>. параметр оператора </Ukrainian>
+        <Russian>. параметр оператора </Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
+        <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English> must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian> має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian> должен быть действительной переменной, которой не присвоено значение.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+        <German> muss eine gültige Veränderliche sein.</German>
+        <English> must be a valid variable.</English>
+        <Ukrainian> має бути діючою змінною.</Ukrainian>
+        <Russian> должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+        <German> muss eine gültige Gleichung der Form 'f = g' sein.</German>
+        <English> must be a valid equation of the form 'f = g'.</English>
+        <Ukrainian> має бути діючим рівнянням у формі 'f = g'.</Ukrainian>
+        <Russian> должен быть действительным уравнением в форме 'f = g'.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+        <German> muss ein gültiger Ausdruck sein.</German>
+        <English> must be a valid expression.</English>
+        <Ukrainian> має бути діючим виразом.</Ukrainian>
+        <Russian> должен быть действительным выражением.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+        <German> muss eine ganze Zahl sein.</German>
+        <English> must be an integer.</English>
+        <Ukrainian> має бути цілим числом.</Ukrainian>
+        <Russian> должен быть целым числом.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+        <German> muss ein gültiger logischer Ausdruck sein.</German>
+        <English> must be a valid logical expression.</English>
+        <Ukrainian> має бути діючим логічним виразом.</Ukrainian>
+        <Russian> должен быть действительным логическим выражением.</Russian>
+    </object>
+    <object id = "OP_MATRIXOPERATOR_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+        <German> muss ein gültiger Matrizenausdruck sein.</German>
+        <English> must be a valid matrix expression.</English>
+        <Ukrainian> має бути діючим матричним виразом.</Ukrainian>
+        <Russian> должен быть действительным матричным выражением.</Russian>
+    </object>
+    
+    <!-- Fehlermeldungen für das Kompilieren eines Standardbefehls -->  
+    <object id = "OP_COMMAND_NOT_ENOUGH_PARAMETERS_IN_COMMAND">
+        <German>Zu wenig Parameter im Befehl [0].</German>
+        <English>Not enough parameters in command [0].</English>
+        <Ukrainian>Замало параметрів у команди [0].</Ukrainian>
+        <Russian>Недостаточно параметров у команды [0].</Russian>
+    </object>
+    <object id = "OP_COMMAND_TOO_MANY_PARAMETERS_IN_COMMAND">
+        <German>Zu viele Parameter im Befehl [0].</German>
+        <English>Too many parameters in command [0].</English>
+        <Ukrainian>Забагато параметрів у команди [0].</Ukrainian>
+        <Russian>Слишком много параметров у команды [0].</Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2">
+        <German> muss im Ausdruck im </German>
+        <English> must occur in the </English>
+        <Ukrainian> повинна міститися у </Ukrainian>
+        <Russian> должна встречаться в </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3">
+        <German>. Parameter des Befehls </German>
+        <English>. parameter of the command </English>
+        <Ukrainian>. параметрі команди </Ukrainian>
+        <Russian>. параметре команды </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4">
+        <German> vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1">
+        <German>Die Variable </German>
+        <English>The variable </English>
+        <Ukrainian>Змінна </Ukrainian>
+        <Russian>Переменная </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2">
+        <German> darf im Ausdruck im </German>
+        <English> must not occur in the </English>
+        <Ukrainian> не повинна міститися у </Ukrainian>
+        <Russian> не должна встречаться в </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3">
+        <German>. Parameter des Befehls </German>
+        <English>. parameter of the command </English>
+        <Ukrainian>. параметрі команди </Ukrainian>
+        <Russian>. параметре команды </Russian>
+    </object>
+    <object id = "OP_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4">
+        <German> nicht vorkommen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_COMMAND_UNIQUE_VARIABLE_OCCUR_TWICE">
+        <German>Die Variable [0] darf in den Parametern des Befehls '[1]' nicht mehrmals vorkommen.</German>
+        <English>The variable [0] is not allowed to occur twice in the parameters of the command '[1]'.</English>
+        <Ukrainian>Змінна [0] не повинна міститися у параметрах команди '[1]' частіше одного разу.</Ukrainian>
+        <Russian>Переменная [0] не должна встречаться в параметрах команды '[1]' чаще одного раза.</Russian>
+    </object>
+    <object id = "OP_COMMAND_PARAMETER_MUST_CONTAIN_EQUALITY_SIGN">
+        <German>Der Ausdruck im [0]. Parameter des Befehls '[1]' muss ein '='-Zeichen enthalten.</German>
+        <English>The expression in the [0]. parameter of the command '[1]' must contain a '=' sign.</English>
+        <Ukrainian>Вираз у [0]. параметрі команди '[1]' має містити символ '='.</Ukrainian>
+        <Russian>Выражение в [0]. параметре команды '[1]' должно содержать символ '='.</Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_1">
+        <German>Der Ausdruck im </German>
+        <English>The expression in the </English>
+        <Ukrainian>Вираз у </Ukrainian>
+        <Russian>Выражение в </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_2">
+        <German>. Parameter des Befehls </German>
+        <English>. parameter of the command </English>
+        <Ukrainian>. параметрі команди </Ukrainian>
+        <Russian>. параметре команды </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must contain least </English>
+        <Ukrainian> має містити щонайменше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must contain at most </English>
+        <Ukrainian> має містити щонайбільше </Ukrainian>
+        <Russian> должно содержать минимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_VAR_OCCURRENCE_IN_PARAMETER_6">
+        <German> Variablen enthalten.</German>
+        <English> variables.</English>
+        <Ukrainian> змінних.</Ukrainian>
+        <Russian> переменных.</Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_1">
+        <German>Die ganze Zahl im </German>
+        <English>The integer value in the </English>
+        <Ukrainian>Ціле число у </Ukrainian>
+        <Russian>Целое число в </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_2">
+        <German>. Parameter des Befehls </German>
+        <English>. parameter of the command </English>
+        <Ukrainian>. параметрі команди </Ukrainian>
+        <Russian>. параметре команды </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_3">
+        <German> muss mindestens </German>
+        <English> must be at least </English>
+        <Ukrainian> має бути щонайменше </Ukrainian>
+        <Russian> должно быть минимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_4">
+        <German> und höchstens </German>
+        <English> and at most </English>
+        <Ukrainian> та щонайбільше </Ukrainian>
+        <Russian> и максимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_5">
+        <German> muss höchstens </German>
+        <English> must be at most </English>
+        <Ukrainian> має бути щонайбільш </Ukrainian>
+        <Russian> должно быть максимум </Russian>
+    </object>
+    <object id = "OP_COMMAND_BOUNDS_FOR_PARAMETER_6">
+        <German> betragen.</German>
+        <English>.</English>
+        <Ukrainian>.</Ukrainian>
+        <Russian>.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_1">
+        <German>Der </German>
+        <English>The </English>
+        <Ukrainian></Ukrainian>
+        <Russian></Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_2">
+        <German>. Parameter im Befehl </German>
+        <English>. parameter of the command </English>
+        <Ukrainian>. параметр команди </Ukrainian>
+        <Russian>. параметр команды </Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_TYPE">
+        <German> muss ein gültiger Typ sein. Zugelassene Typen sind: </German>
+        <English> must be a valid type. Admissible types are: .</English>
+        <Ukrainian> має бути діючим типом. Допустимими типами є: </Ukrainian>
+        <Russian> должен быть действующим типом. Допустимыми типам являются: </Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INDET">
+        <German> muss eine gültige Veränderliche sein, welcher kein fester Wert zugewiesen wurde.</German>
+        <English> must be a valid variable, which was not assigned a fixed value.</English>
+        <Ukrainian> має бути діючою змінною, котій не присвоєно значення.</Ukrainian>
+        <Russian> должен быть действительной переменной, которой не присвоено значення.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_VAR">
+        <German> muss eine gültige Veränderliche sein.</German>
+        <English> must be a valid variable.</English>
+        <Ukrainian> має бути діючою змінною.</Ukrainian>
+        <Russian> должен быть действительной переменной.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EQUATION">
+        <German> muss eine gültige Gleichung der Form 'f = g' sein.</German>
+        <English> must be a valid equation of the form 'f = g'.</English>
+        <Ukrainian> має бути діючим рівнянням у формі 'f = g'.</Ukrainian>
+        <Russian> должен быть действительным уравнением в форме 'f = g'.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_EXPRESSION">
+        <German> muss ein gültiger Ausdruck sein.</German>
+        <English> must be a valid expression.</English>
+        <Ukrainian> має бути діючим виразом.</Ukrainian>
+        <Russian> должен быть действительным выражением.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_INTEGER">
+        <German> muss eine ganze Zahl sein.</German>
+        <English> must be an integer.</English>
+        <Ukrainian> має бути цілим числом.</Ukrainian>
+        <Russian> должен быть целым числом.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_LOGICAL_EXPRESSION">
+        <German> muss ein gültiger logischer Ausdruck sein.</German>
+        <English> must be a valid logical expression.</English>
+        <Ukrainian> має бути діючим логічним виразом.</Ukrainian>
+        <Russian> должен быть действительным логическим выражением.</Russian>
+    </object>
+    <object id = "OP_COMMAND_WRONG_FORM_OF_GENERAL_PARAMETER_IN_OPERATOR_MATRIX_EXPRESSION">
+        <German> muss ein gültiger Matrizenausdruck sein.</German>
+        <English> must be a valid matrix expression.</English>
+        <Ukrainian> має бути діючим матричним виразом.</Ukrainian>
+        <Russian> должен быть действительным матричным выражением.</Russian>
+    </object>
+</objects>

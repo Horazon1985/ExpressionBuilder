@@ -13,18 +13,16 @@ import abstractexpressions.interfaces.IdentifierValidatorExpression;
 import enums.TypeFractionSimplification;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
+import util.OperationDataTO;
+import util.OperationParsingUtils;
 
 public abstract class Expression implements AbstractExpression {
 
     private static final String EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE";
-    private static final String EB_Expression_IS_NOT_VALID_COMMAND = "EB_Expression_IS_NOT_VALID_COMMAND";
-    private static final String EB_Expression_MISSING_CLOSING_BRACKET = "EB_Expression_MISSING_CLOSING_BRACKET";
-    private static final String EB_Expression_EMPTY_PARAMETER = "EB_Expression_EMPTY_PARAMETER";
     private static final String EB_Expression_WRONG_BRACKETS = "EB_Expression_WRONG_BRACKETS";
     private static final String EB_Expression_TWO_OPERATIONS = "EB_Expression_TWO_OPERATIONS";
     private static final String EB_Expression_WRONG_ABS_BRACKETS = "EB_Expression_WRONG_ABS_BRACKETS";
@@ -35,7 +33,7 @@ public abstract class Expression implements AbstractExpression {
     private static final String EB_Expression_STACK_OVERFLOW = "EB_Expression_STACK_OVERFLOW";
 
     // Sprache für Fehlermeldungen.
-    private static TypeLanguage language;
+    private static TypeLanguage language = TypeLanguage.DE;
 
     public final static Variable PI = Variable.create("pi");
     public final static Constant ZERO = new Constant(0);
@@ -54,122 +52,6 @@ public abstract class Expression implements AbstractExpression {
 
     public static void setLanguage(TypeLanguage typeLanguage) {
         language = typeLanguage;
-    }
-
-    /**
-     * Der Befehl für die jeweilige math. Operation und die Parameter in der
-     * Befehlsklammer werden ausgelesen und zurückgegeben.<br>
-     * BEISPIEL: commandLine = f(x, y, z). Zurückgegeben wird ein array der
-     * Länge zwei: im 0. Eintrag steht der String "f", im 1. der String "x, y,
-     * z".
-     *
-     * @throws ExpressionException
-     */
-    public static String[] getOperatorAndArguments(String input) throws ExpressionException {
-
-        // Leerzeichen beseitigen
-        input = input.replaceAll(" ", "");
-
-        String[] result = new String[2];
-        int i = input.indexOf("(");
-        if (i == -1) {
-            // Um zu verhindern, dass es eine IndexOutOfBoundsException gibt.
-            i = 0;
-        }
-        result[0] = input.substring(0, i);
-
-        //Wenn der Befehl leer ist -> Fehler.
-        if (result[0].length() == 0) {
-            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE));
-        }
-
-        //Wenn length(result[0]) > l - 2 -> Fehler (der Befehl besitzt NICHT die Form command(...)).
-        if (result[0].length() > input.length() - 2) {
-            throw new ExpressionException(input + Translator.translateOutputMessage(EB_Expression_IS_NOT_VALID_COMMAND));
-        }
-
-        //Wenn am Ende nicht ")" steht.
-        if (!input.substring(input.length() - 1, input.length()).equals(")")) {
-            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_MISSING_CLOSING_BRACKET, input));
-        }
-
-        result[1] = input.substring(result[0].length() + 1, input.length() - 1);
-
-        return result;
-
-    }
-
-    /**
-     * Input: String input, in der NUR die Parameter (getrennt durch ein Komma)
-     * stehen. Beispiel input = "x,y,f(w,z),u,v". Parameter sind dann {x, y,
-     * f(w, z), u, v}. Nach einem eingelesenen Komma, welches NICHT von runden
-     * Klammern umgeben ist, werden die Parameter getrennt.
-     *
-     * @throws ExpressionException
-     */
-    public static String[] getArguments(String input) throws ExpressionException {
-
-        //Leerzeichen beseitigen
-        input = input.replaceAll(" ", "");
-
-        //Falls Parameterstring leer ist -> Fertig
-        if (input.isEmpty()) {
-            return new String[0];
-        }
-
-        ArrayList<String> resultParameters = new ArrayList<>();
-        int startPositionOfCurrentParameter = 0;
-
-        /*
-         Differenz zwischen der Anzahl der öffnenden und der der schließenden
-         Klammern (bracketCounter == 0 am Ende -> alles ok).
-         */
-        int bracketCounter = 0;
-        int squareBracketCounter = 0;
-        String currentChar;
-        //Jetzt werden die einzelnen Parameter ausgelesen
-        for (int i = 0; i < input.length(); i++) {
-
-            currentChar = input.substring(i, i + 1);
-            if (currentChar.equals("(")) {
-                bracketCounter++;
-            }
-            if (currentChar.equals(")")) {
-                bracketCounter--;
-            }
-            if (currentChar.equals("[")) {
-                squareBracketCounter++;
-            }
-            if (currentChar.equals("]")) {
-                squareBracketCounter--;
-            }
-            if (bracketCounter == 0 && squareBracketCounter == 0 && currentChar.equals(",")) {
-                if (input.substring(startPositionOfCurrentParameter, i).isEmpty()) {
-                    throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EMPTY_PARAMETER));
-                }
-                resultParameters.add(input.substring(startPositionOfCurrentParameter, i));
-                startPositionOfCurrentParameter = i + 1;
-            }
-            if (i == input.length() - 1) {
-                if (startPositionOfCurrentParameter == input.length()) {
-                    throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_EMPTY_PARAMETER));
-                }
-                resultParameters.add(input.substring(startPositionOfCurrentParameter, input.length()));
-            }
-
-        }
-
-        if (bracketCounter != 0 || squareBracketCounter != 0) {
-            throw new ExpressionException(Translator.translateOutputMessage(EB_Expression_WRONG_BRACKETS));
-        }
-
-        String[] resultParametersAsArray = new String[resultParameters.size()];
-        for (int i = 0; i < resultParameters.size(); i++) {
-            resultParametersAsArray[i] = resultParameters.get(i);
-        }
-
-        return resultParametersAsArray;
-
     }
 
     /**
@@ -487,7 +369,7 @@ public abstract class Expression implements AbstractExpression {
             }
         }
 
-        //AUSNAHME: Operator Fakultät (== !).
+        // AUSNAHME: Operator Fakultät (== !).
         if (priority == 5) {
             if (formula.substring(formula.length() - 1, formula.length()).equals("!")) {
                 Expression[] params = new Expression[1];
@@ -496,23 +378,25 @@ public abstract class Expression implements AbstractExpression {
             }
         }
 
-        //Falls der Ausdruck ein Operator ist.
+        // Falls der Ausdruck ein Operator ist.
         if (priority == 5) {
-            String[] operatorNameAndParams = getOperatorAndArguments(formula);
-            String[] params = getArguments(operatorNameAndParams[1]);
+            OperationDataTO opData = OperationParsingUtils.getOperationData(formula);
+            String opName = opData.getOperationName();
+            String[] params = opData.getOperationArguments();
             String operatorName;
             for (TypeOperator type : TypeOperator.values()) {
                 operatorName = Operator.getNameFromType(type);
-                if (operatorNameAndParams[0].equals(operatorName)) {
+                if (opName.equals(operatorName)) {
                     return Operator.getOperator(operatorName, params, vars);
                 }
             }
         }
 
-        //Falls der Ausdruck eine vom Benutzer selbstdefinierte Funktion ist.
+        // Falls der Ausdruck eine vom Benutzer selbstdefinierte Funktion ist.
         if (priority == 5) {
-            String function = getOperatorAndArguments(formula)[0];
-            String[] functionArguments = getArguments(getOperatorAndArguments(formula)[1]);
+            OperationDataTO functionData = OperationParsingUtils.getOperationData(formula);
+            String function = functionData.getOperationName();
+            String[] functionArguments = functionData.getOperationArguments();
 
             if (SelfDefinedFunction.getInnerExpressionsForSelfDefinedFunctions().containsKey(function)) {
                 if (SelfDefinedFunction.getArgumentsForSelfDefinedFunctions().get(function).length == functionArguments.length) {

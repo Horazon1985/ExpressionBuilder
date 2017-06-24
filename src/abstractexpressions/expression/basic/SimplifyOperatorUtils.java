@@ -15,9 +15,7 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
 import exceptions.EvaluationException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 
 public abstract class SimplifyOperatorUtils {
 

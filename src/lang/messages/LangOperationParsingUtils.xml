@@ -1,0 +1,32 @@
+<objects>
+    <object id = "OU_EXPRESSION_EMPTY_OR_INCOMPLETE">
+        <German>Der Ausdruck ist leer oder unvollständig.</German>
+        <English>The expression is either empty or incomplete.</English>
+        <Ukrainian>Вираз порожній або неповний.</Ukrainian>
+        <Russian>Выражение пустое либо неполное.</Russian>
+    </object>
+    <object id = "OU_IS_NOT_VALID_COMMAND">
+        <German> ist kein gültiger Befehl oder Operator.</German>
+        <English> is not a valid command or operator.</English>
+        <Ukrainian> не є діючою командою або оператором.</Ukrainian>
+        <Russian> не является действительной командой или оператором.</Russian>
+    </object>
+    <object id = "OU_MISSING_CLOSING_BRACKET">
+        <German>In [0] fehlt am Ende eine schließende Klammer.</German>
+        <English>In [0] a closing bracket is missing.</English>
+        <Ukrainian>В [0] в кінці відсутня закриваюча дужка.</Ukrainian>
+        <Russian>В [0] в конце отсуствует закрывающая скобка.</Russian>
+    </object>
+    <object id = "OU_EMPTY_PARAMETER">
+        <German>Leerer Parameter.</German>
+        <English>Empty parameter.</English>
+        <Ukrainian>Порожній ппараметр.</Ukrainian>
+        <Russian>Пустой параметр.</Russian>
+    </object>
+    <object id = "OU_WRONG_BRACKETS">
+        <German>Falsche Klammerung.</German>
+        <English>Incorrect brackets.</English>
+        <Ukrainian>Неправильні дужки.</Ukrainian>
+        <Russian>Неправильные скобки.</Russian>
+    </object>
+</objects>

@@ -258,6 +258,8 @@ public abstract class SimplifyPolynomialUtils {
      * Ermittelt die Koeffizienten, falls f ein Polynom in derivative Variablen
      * var ist. Ist f kein Polynom, so wird eine leere ExpressionCollection
      * zurückgegeben.
+     * 
+     * @throws EvaluationException
      */
     public static ExpressionCollection getPolynomialCoefficients(Expression f, String var) throws EvaluationException {
 
@@ -272,7 +274,7 @@ public abstract class SimplifyPolynomialUtils {
             return coefficients;
         }
         if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("SM_PolynomialAlgebraMethods_TOO_HIGH_DEGREE"));
+            throw new EvaluationException(Translator.translateOutputMessage("SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE"));
         }
 
         f = f.simplify(simplifyTypesExpandPolynomial);

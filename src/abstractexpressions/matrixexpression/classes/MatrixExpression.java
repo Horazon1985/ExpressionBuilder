@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
+import util.OperationDataTO;
+import util.OperationParsingUtils;
 
 public abstract class MatrixExpression implements AbstractExpression {
 
@@ -368,12 +370,13 @@ public abstract class MatrixExpression implements AbstractExpression {
         
         // Falls der Ausdruck ein MatrixOperator ist.
         if (priority == 4) {
-            String[] operatorNameAndParams = Expression.getOperatorAndArguments(formula);
-            String[] params = Expression.getArguments(operatorNameAndParams[1]);
+            OperationDataTO opData = OperationParsingUtils.getOperationData(formula);
+            String opName = opData.getOperationName();
+            String[] params = opData.getOperationArguments();
             String operatorName;
             for (TypeMatrixOperator type : TypeMatrixOperator.values()) {
                 operatorName = MatrixOperator.getNameFromType(type);
-                if (operatorNameAndParams[0].equals(operatorName)) {
+                if (opName.equals(operatorName)) {
                     return MatrixOperator.getMatrixOperator(operatorName, params, vars);
                 }
             }
