@@ -29,7 +29,7 @@ public abstract class Translator {
     private static final String PATH_COMPUTATIONAL_CLASSES_MESSAGES = "lang/messages/LangComputationalClasses.xml";
     private static final String PATH_EXPRESSION_BUILDER_MESSAGES = "lang/messages/LangExpressionBuilder.xml";
     private static final String PATH_GRAPHIC_MESSAGES = "lang/messages/LangGraphic.xml";
-    private static final String PATH_LOGICAL_EXPRESSION_BUILDER_MESSAGES = "LangLogicalExpressionBuilder.xml";
+    private static final String PATH_LOGICAL_EXPRESSION_BUILDER_MESSAGES = "lang/messages/LangLogicalExpressionBuilder.xml";
     private static final String PATH_MATRIX_EXPRESSION_BUILDER_MESSAGES = "lang/messages/LangMatrixExpressionBuilder.xml";
     private static final String PATH_OPERATION_PARSING_UTILS_MESSAGES = "lang/messages/LangOperationParsingUtils.xml";
     private static final String PATH_SIMPLIFY_UTILS_MESSAGES = "lang/messages/LangSimplifyUtils.xml";
