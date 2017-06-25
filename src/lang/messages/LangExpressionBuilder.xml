@@ -95,18 +95,6 @@
         <Ukrainian>Один з операторів, що зустрічаються у виразі, неможливо оцінити.</Ukrainian>
         <Russian>Один из встречающихся операторов невозможно оценить.</Russian>
     </object>
-    <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_1">
-        <German>Der Ausdruck </German>
-        <English>The expression </English>
-        <Ukrainian>Вираз </Ukrainian>
-        <Russian>Выражение </Russian>
-    </object>
-    <object id = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED_2">
-        <German> kann nicht ausgewertet werden, da er einen Operator enthält, welcher nicht weiter vereinfacht werden kann.</German>
-        <English> cannot be evaluated, because it contains an operator, which cannot be further simplified.</English>
-        <Ukrainian> не можна оцінити, оскількт він містить оператор, який неможливо спростити.</Ukrainian>
-        <Russian> нельзя оценить, поскольку оно содержит оператор, который невозможно упростить.</Russian>
-    </object>
     
     <object id = "EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID">
         <German>Der 3. Parameter im Operator 'diff' muss entweder eine gültige Variable oder eine nicht-negative ganze Zahl sein.</German>

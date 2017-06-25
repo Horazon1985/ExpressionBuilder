@@ -45,6 +45,8 @@ public abstract class Translator {
     private static final String ELEMENT_NAME_RU = "Russian";
     private static final String ELEMENT_NAME_UA = "Ukrainian";
     
+    private static final String ERROR_TEXT = "Message not found.";
+    
     private static final Map<String, String> RESOURCES = new HashMap<>();
 
     static {
@@ -125,8 +127,8 @@ public abstract class Translator {
         } catch (Exception e) {
         }
 
-        // Sollte nie eintreten.
-        return "";
+        // Sollte bei korrekten Fehler-IDs und vorhandenen Fehlerdateien nie eintreten.
+        return ERROR_TEXT;
 
     }
 
