@@ -1015,30 +1015,32 @@ public class Operator extends Expression {
         if (expr instanceof Operator) {
 
             Operator operator = (Operator) expr;
-            boolean result = (this.type.equals(operator.type) & (this.params.length == operator.params.length));
+            boolean result = this.type.equals(operator.type) && this.params.length == operator.params.length;
             if (!result) {
                 return false;
             }
 
             if (this.type.equals(TypeOperator.fourier) || this.type.equals(TypeOperator.integral)
                     || this.type.equals(TypeOperator.sum) || this.type.equals(TypeOperator.taylor)) {
-                result = result && (((Expression) this.params[0]).antiEquivalent((Expression) operator.params[0]));
+                result = result && ((Expression) this.params[0]).antiEquivalent((Expression) operator.params[0]);
                 for (int i = 1; i < this.params.length; i++) {
                     if (this.params[i] instanceof Expression) {
-                        result = result && (((Expression) this.params[i]).equivalent((Expression) operator.params[i]));
+                        result = result && ((Expression) this.params[i]).equivalent((Expression) operator.params[i]);
                     } else {
-                        result = result && (this.params[i].equals(operator.params[i]));
+                        result = result && this.params[i].equals(operator.params[i]);
                     }
                 }
             } else if (this.type.equals(TypeOperator.diff) || this.type.equals(TypeOperator.div)
                     || this.type.equals(TypeOperator.laplace) || this.type.equals(TypeOperator.mu)) {
                 for (int i = 0; i < this.params.length; i++) {
                     if (this.params[i] instanceof Expression) {
-                        result = result && (((Expression) this.params[i]).antiEquivalent((Expression) operator.params[i]));
+                        result = result && ((Expression) this.params[i]).antiEquivalent((Expression) operator.params[i]);
                     } else {
-                        result = result && (this.params[i].equals(operator.params[i]));
+                        result = result && this.params[i].equals(operator.params[i]);
                     }
                 }
+            } else {
+                return false;
             }
 
             return result;
