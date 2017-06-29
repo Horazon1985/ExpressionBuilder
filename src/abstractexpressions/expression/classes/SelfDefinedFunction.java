@@ -4,7 +4,6 @@ import enums.TypeExpansion;
 import enums.TypeFractionSimplification;
 import exceptions.EvaluationException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import lang.translator.Translator;
 
@@ -441,9 +440,8 @@ public class SelfDefinedFunction extends Expression {
 
     @Override
     public int getLength() {
-        Expression[] arguments = ((SelfDefinedFunction) this).getLeft();
         int length = 0;
-        for (Expression argument : arguments) {
+        for (Expression argument : this.left) {
             length += argument.getLength();
         }
         return length;
