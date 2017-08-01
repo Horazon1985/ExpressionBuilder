@@ -2016,7 +2016,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public Expression simplify(HashSet<TypeSimplify> simplifyTypes, String var) throws EvaluationException {
+    public Expression simplify(Set<TypeSimplify> simplifyTypes, String var) throws EvaluationException {
 
         try {
             Expression expr, exprSimplified = this;
@@ -2144,7 +2144,7 @@ public abstract class Expression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public Expression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+    public Expression simplify(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
 
         try {
             Expression expr, exprSimplified = this;

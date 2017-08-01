@@ -189,7 +189,7 @@ public class MatrixVariable extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+    public MatrixExpression simplifyMatrixEntries(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
         return this.value.simplifyMatrixEntries();
     }
 

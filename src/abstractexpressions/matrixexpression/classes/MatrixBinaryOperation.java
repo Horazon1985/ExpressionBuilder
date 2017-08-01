@@ -528,7 +528,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplify_types) throws EvaluationException {
+    public MatrixExpression simplifyMatrixEntries(Set<TypeSimplify> simplify_types) throws EvaluationException {
         return new MatrixBinaryOperation(this.left.simplifyMatrixEntries(simplify_types), this.right.simplifyMatrixEntries(simplify_types), this.type);
     }
 

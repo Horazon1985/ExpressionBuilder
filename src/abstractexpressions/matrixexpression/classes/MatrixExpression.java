@@ -987,7 +987,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public abstract MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException;
+    public abstract MatrixExpression simplifyMatrixEntries(Set<TypeSimplify> simplifyTypes) throws EvaluationException;
 
     /**
      * Gibt den vereinfachten Matrizenausdruck zurück, wobei bei der
@@ -1074,7 +1074,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws EvaluationException
      */
-    public MatrixExpression simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+    public MatrixExpression simplify(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
 
         try {
             MatrixExpression matExpr, matExprSimplified = this;

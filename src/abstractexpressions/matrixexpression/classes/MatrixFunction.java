@@ -864,7 +864,7 @@ public class MatrixFunction extends MatrixExpression {
     }
 
     @Override
-    public MatrixExpression simplifyMatrixEntries(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+    public MatrixExpression simplifyMatrixEntries(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
         return new MatrixFunction(this.left.simplifyMatrixEntries(simplifyTypes), this.type);
     }
 
