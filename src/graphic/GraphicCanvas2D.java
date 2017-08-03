@@ -4,7 +4,6 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -303,7 +302,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
 
         for (int i = 0; i < this.graphs2D.size(); i++) {
 
-            gc.setFill(this.COLORS.get(i));
+            gc.setStroke(this.COLORS.get(i));
 
             if (this.graphs2D.get(i).length > 1) {
 
@@ -328,7 +327,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
 
         }
 
-        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
 
     }
 

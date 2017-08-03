@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -52,6 +53,8 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
     public AbstractGraphicCanvas2D() {
 
+        super();
+        
         setOnMouseMoved(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -65,6 +68,8 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
     public AbstractGraphicCanvas2D(final double maxZoomfactor, final double minZoomfactor) {
 
+        super();
+        
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -97,55 +102,21 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
             }
         });
 
-//        addMouseMotionListener(new MouseMotionListener() {
-//
-//            @Override
-//            public void mouseDragged(MouseEvent e) {
-//                if (movable) {
-//                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
-//                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
-//                    lastMousePosition = e.getPoint();
-//                    repaint();
-//                } else {
-//                    if (lastMousePosition.x - e.getPoint().x >= 0 && zoomfactorX < maxZoomfactor
-//                            || lastMousePosition.x - e.getPoint().x <= 0 && zoomfactorX > minZoomfactor) {
-//                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-//                        zoomfactorX = zoomfactorX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
-//                    }
-//                    if (lastMousePosition.y - e.getPoint().y >= 0 && zoomfactorY < maxZoomfactor
-//                            || lastMousePosition.y - e.getPoint().y <= 0 && zoomfactorY > minZoomfactor) {
-//                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-//                        zoomfactorY = zoomfactorY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
-//                    }
-//                    lastMousePosition = e.getPoint();
-//                    repaint();
-//                }
-//            }
-//
-//            @Override
-//            public void mouseMoved(MouseEvent e) {
-//                mouseCoordinateX = e.getPoint().x;
-//                mouseCoordinateY = e.getPoint().y;
-//                repaint();
-//            }
-//        });
-//
-//        addMouseWheelListener(new MouseWheelListener() {
-//            @Override
-//            public void mouseWheelMoved(MouseWheelEvent e) {
-//                // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
-//                if ((e.getWheelRotation() >= 0 && zoomfactor < maxZoomfactor)
-//                        || (e.getWheelRotation() <= 0 && zoomfactor > minZoomfactor)) {
-//                    maxX *= Math.pow(1.1, e.getWheelRotation());
-//                    maxY *= Math.pow(1.1, e.getWheelRotation());
-//                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
-//                    computeExpXExpY();
-//                    repaint();
-//                }
-//
-//                repaint();
-//            }
-//        });
+        setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+                // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
+                if (event.getDeltaY() >= 0 && zoomfactor < maxZoomfactor
+                        || event.getDeltaY() <= 0 && zoomfactor > minZoomfactor) {
+                    maxX *= Math.pow(1.1, event.getDeltaY());
+                    maxY *= Math.pow(1.1, event.getDeltaY());
+                    zoomfactor *= Math.pow(1.1, event.getDeltaY());
+                    computeExpXExpY();
+                }
+                draw();
+            }
+        });
+        
     }
 
     public static boolean getPointsAreShowable() {
@@ -297,7 +268,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * allgemeine Funktion.
      */
     protected void drawAxesAndLines(GraphicsContext gc) {
-        gc.setFill(Color.LIGHTGRAY);
+        gc.setStroke(Color.LIGHTGRAY);
 
         int linePosition;
         int k = (int) (this.axeCenterX * Math.pow(10, -this.expX));
@@ -389,7 +360,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
         // Achsen inkl. Achsenbezeichnungen eintragen
         // Achsen
-        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
         gc.strokeLine(0, 250 + (int) (250 * this.axeCenterY / this.maxY), 500, 250 + (int) (250 * this.axeCenterY / this.maxY));
         gc.strokeLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX), 500);
         // Achsenpfeile
@@ -407,7 +378,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
          */
         Text firstAxis = createText("1. axis");
         double lengthTextFirstAxis = firstAxis.getLayoutBounds().getWidth();
-        Text secondAxis = createText("1. axis");
+        Text secondAxis = createText("2. axis");
         double lengthTextSecondAxis = secondAxis.getLayoutBounds().getWidth();
 
         if (this.varAbsc == null) {
@@ -427,7 +398,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * von Nullstellen etc).
      */
     protected void drawSpecialPoints(GraphicsContext gc, double[][] specialPoints) {
-        gc.setFill(Color.RED);
+        gc.setStroke(Color.RED);
         if (specialPoints == null) {
             return;
         }
@@ -443,12 +414,12 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * Pixelkoordinaten des Punktes sind.
      */
     protected void drawCirclePoint(GraphicsContext gc, int x, int y, boolean printCoordinates) {
-        gc.setFill(Color.RED);
+        gc.setStroke(Color.RED);
         gc.fillOval(x - 3, y - 3, 7, 7);
         if (!printCoordinates) {
             return;
         }
-        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
         Text coordText = createText("(" + roundCoordinate(convertToEuclideanCoordinateX(x), 2) + ", "
                 + roundCoordinate(convertToEuclideanCoordinateY(y), 2) + ")");
         double length = coordText.getLayoutBounds().getWidth();
@@ -470,7 +441,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * wobei x und y die Pixelkoordinaten des Punktes sind.
      */
     protected void drawVectorLine(GraphicsContext gc, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
-        gc.setFill(Color.BLACK);
+        gc.setStroke(Color.BLACK);
         Text coordText = createText("(" + roundCoordinate(convertToEuclideanCoordinateX(endPointVectorX), 2) + ", "
                 + roundCoordinate(convertToEuclideanCoordinateY(endPointVectorY), 2) + ")");
         double length = coordText.getLayoutBounds().getWidth();
