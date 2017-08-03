@@ -20,9 +20,6 @@ import lang.translator.Translator;
  */
 public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
-    protected static final int FONT_SIZE = 12;
-    protected static final Font FONT = new Font("Courier New", FONT_SIZE);
-
     /**
      * Variablenname für 2D-Graphen: varAbsc = Abszissenname.
      */
@@ -376,18 +373,16 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
          Hierzu müssen die Pixellängen der gezeichneten Strings ausgerechnet
          werden (mittels gc.getFontMetrics().stringWidth()).
          */
-        Text firstAxis = createText("1. axis");
-        double lengthTextFirstAxis = firstAxis.getLayoutBounds().getWidth();
-        Text secondAxis = createText("2. axis");
-        double lengthTextSecondAxis = secondAxis.getLayoutBounds().getWidth();
+        double lengthTextFirstAxis = FIRST_AXIS.getLayoutBounds().getWidth();
+        double lengthTextSecondAxis = SECOND_AXIS.getLayoutBounds().getWidth();
 
         if (this.varAbsc == null) {
-            gc.strokeText(firstAxis.getText(), 500 - 5 - lengthTextFirstAxis, 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+            gc.strokeText(FIRST_AXIS.getText(), 500 - 5 - lengthTextFirstAxis, 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
         } else {
             gc.strokeText(this.varAbsc, 500 - 5 - createText(varAbsc).getLayoutBounds().getWidth(), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
         }
         if (this.varOrd == null) {
-            gc.strokeText(secondAxis.getText(), 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - lengthTextSecondAxis, 20);
+            gc.strokeText(SECOND_AXIS.getText(), 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - lengthTextSecondAxis, 20);
         } else {
             gc.strokeText(this.varOrd, 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - createText(varOrd).getLayoutBounds().getWidth(), 20);
         }
@@ -471,12 +466,6 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
     private static BigDecimal roundCoordinate(double value, int digits) {
         return BigDecimal.valueOf(value).multiply(BigDecimal.TEN.pow(digits)).setScale(
                 0, BigDecimal.ROUND_HALF_UP).divide(BigDecimal.TEN.pow(digits));
-    }
-
-    private Text createText(String s) {
-        Text text = new Text(s);
-        text.setFont(FONT);
-        return text;
     }
 
     protected abstract void drawMousePointOnGraph();

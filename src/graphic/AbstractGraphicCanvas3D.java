@@ -15,7 +15,9 @@ import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import lang.translator.Translator;
 
 /**
@@ -102,6 +104,22 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
 
         public void addPoint(double[] point) {
             this.points.add(point);
+        }
+        
+        public double[] getArrayOfXCoordinates() {
+            double[] xCoordinates = new double[points.size()];
+            for (int i = 0; i < points.size(); i++) {
+                xCoordinates[i] = points.get(i)[0];
+            }
+            return xCoordinates;
+        }
+
+        public double[] getArrayOfYCoordinates() {
+            double[] yCoordinates = new double[points.size()];
+            for (int i = 0; i < points.size(); i++) {
+                yCoordinates[i] = points.get(i)[1];
+            }
+            return yCoordinates;
         }
 
         public double getCenterX() {
@@ -209,59 +227,84 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
 
     public AbstractGraphicCanvas3D() {
         this.isRotating = false;
+
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 if (event.getButton() == MouseButton.PRIMARY) {
                     isAngleMeant = true;
-                    lastMousePosition = new Point((int) event.getX(),(int) event.getY());
+                    lastMousePosition = new Point((int) event.getX(), (int) event.getY());
                 }
                 if (event.getButton() == MouseButton.SECONDARY) {
                     isAngleMeant = false;
-                    lastMousePosition = new Point((int) event.getX(),(int) event.getY());
+                    lastMousePosition = new Point((int) event.getX(), (int) event.getY());
                 }
             }
         });
 
-//        addMouseMotionListener(new MouseMotionListener() {
-//
-//            @Override
-//            public void mouseDragged(MouseEvent e) {
-//                if (isAngleMeant) {
-//                    angle += (lastMousePosition.x - e.getPoint().x) * 0.5;
-//
-//                    if (angle >= 360) {
-//                        angle = angle - 360;
-//                    }
-//                    if (angle < 0) {
-//                        angle = angle + 360;
-//                    }
-//
-//                    lastMousePosition = e.getPoint();
-//                    repaint();
-//                } else {
-//                    verticalAngle -= (lastMousePosition.y - e.getPoint().y) * 0.3;
-//
-//                    if (verticalAngle >= 90) {
-//                        verticalAngle = 90;
-//                    }
-//                    if (verticalAngle < 1) {
-//                        verticalAngle = 1;
-//                    }
-//
-//                    smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
-//                    height = heightProjection * Math.cos(verticalAngle / 180 * Math.PI);
-//
-//                    lastMousePosition = e.getPoint();
-//                    repaint();
-//                }
-//            }
-//
-//            @Override
-//            public void mouseMoved(MouseEvent e) {
-//            }
-//        });
-//
+        setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (isAngleMeant) {
+                    angle += (lastMousePosition.x - event.getX()) * 0.5;
+
+                    if (angle >= 360) {
+                        angle = angle - 360;
+                    }
+                    if (angle < 0) {
+                        angle = angle + 360;
+                    }
+                } else {
+                    verticalAngle -= (lastMousePosition.y - event.getY()) * 0.3;
+
+                    if (verticalAngle >= 90) {
+                        verticalAngle = 90;
+                    }
+                    if (verticalAngle < 1) {
+                        verticalAngle = 1;
+                    }
+
+                    smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
+                    height = heightProjection * Math.cos(verticalAngle / 180 * Math.PI);
+                }
+                lastMousePosition = new Point((int) event.getX(), (int) event.getY());
+                draw();
+            }
+        });
+
+        setOnScroll(new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent event) {
+                // Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
+                if (event.getDeltaY() >= 0 && zoomfactor < 10
+                        || event.getDeltaY() <= 0 && zoomfactor > 0.1) {
+                    minX *= Math.pow(1.1, event.getDeltaY());
+                    minY *= Math.pow(1.1, event.getDeltaY());
+                    minZ *= Math.pow(1.1, event.getDeltaY());
+                    maxX *= Math.pow(1.1, event.getDeltaY());
+                    maxY *= Math.pow(1.1, event.getDeltaY());
+                    maxZ *= Math.pow(1.1, event.getDeltaY());
+                    axeCenterX *= Math.pow(1.1, event.getDeltaY());
+                    axeCenterY *= Math.pow(1.1, event.getDeltaY());
+                    axeCenterZ *= Math.pow(1.1, event.getDeltaY());
+                    zoomfactor *= Math.pow(1.1, event.getDeltaY());
+
+                    intervals = (int) (50 * zoomfactor);
+
+                    if (intervals > 50) {
+                        intervals = 50;
+                    }
+                    if (intervals < 2) {
+                        intervals = 2;
+                    }
+
+                    draw();
+                }
+            }
+            
+        });
+        
+        
 //        addMouseWheelListener(new MouseWheelListener() {
 //            @Override
 //            public void mouseWheelMoved(MouseWheelEvent e) {
@@ -292,7 +335,6 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
 //                }
 //            }
 //        });
-
     }
 
     /**
@@ -582,49 +624,47 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
      */
     protected void drawInfinitesimalTangentSpace(TangentPolygon p, GraphicsContext gc, Color c) {
 
-        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, p.getPoints().size());
+//        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, p.getPoints().size());
         if (p.getPoints().isEmpty()) {
             return;
         }
 
-        int[] pixel = convertToPixel(p.getPoints().get(0)[0], p.getPoints().get(0)[1], p.getPoints().get(0)[2]);
-        tangent.moveTo(pixel[0], pixel[1]);
-        for (int k = 1; k < p.getPoints().size(); k++) {
-            pixel = convertToPixel(p.getPoints().get(k)[0], p.getPoints().get(k)[1], p.getPoints().get(k)[2]);
-            tangent.lineTo(pixel[0], pixel[1]);
-        }
-        tangent.closePath();
-        Graphics2D g2 = (Graphics2D) g;
+//        int[] pixel = convertToPixel(p.getPoints().get(0)[0], p.getPoints().get(0)[1], p.getPoints().get(0)[2]);
+//        tangent.moveTo(pixel[0], pixel[1]);
+//        for (int k = 1; k < p.getPoints().size(); k++) {
+//            pixel = convertToPixel(p.getPoints().get(k)[0], p.getPoints().get(k)[1], p.getPoints().get(k)[2]);
+//            tangent.lineTo(pixel[0], pixel[1]);
+//        }
+//        tangent.closePath();
 
         if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
-            g2.setPaint(c);
-            g2.fill(tangent);
+            gc.setFill(c);
         }
 
         switch (backgroundColorMode) {
             case BRIGHT:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphBright);
+                        gc.setStroke(gridColorWholeGraphBright);
                         break;
                     case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyBright);
+                        gc.setStroke(gridColorGridOnlyBright);
                         break;
                 }
                 break;
             case DARK:
                 switch (presentationMode) {
                     case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphDark);
+                        gc.setStroke(gridColorWholeGraphDark);
                         break;
                     case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyDark);
+                        gc.setStroke(gridColorGridOnlyDark);
                         break;
                 }
                 break;
         }
 
-        g2.draw(tangent);
+        gc.fillPolygon(p.getArrayOfXCoordinates(), p.getArrayOfYCoordinates(), p.getPoints().size());
 
     }
 
@@ -668,14 +708,14 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         // Achse beschriften
         if (this.angle >= 270) {
             if (varOrd == null) {
-                gc.strokeText("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+                gc.strokeText(SECOND_AXIS.getText(), borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             } else {
                 gc.strokeText(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             }
         } else if (varOrd == null) {
-            gc.strokeText("2. axis", borderPixels[0][0] - gc.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
+            gc.strokeText(SECOND_AXIS.getText(), borderPixels[0][0] - SECOND_AXIS.getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         } else {
-            gc.strokeText(varOrd, borderPixels[0][0] - gc.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            gc.strokeText(varOrd, borderPixels[0][0] - createText(varOrd).getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         }
 
         // Horizontale Niveaulinien zeichnen
@@ -724,7 +764,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
-                        - gc.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
+                        - createText(String.valueOf(roundAxisEntries(i, this.expY))).getLayoutBounds().getWidth() - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -773,14 +813,14 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         // Achse beschriften
         if (this.angle >= 90) {
             if (varOrd == null) {
-                gc.strokeText("2. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+                gc.strokeText(SECOND_AXIS.getText(), borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             } else {
                 gc.strokeText(varOrd, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             }
         } else if (varOrd == null) {
-            gc.strokeText("2. axis", borderPixels[0][0] - gc.getFontMetrics().stringWidth("2. axis") - 10, borderPixels[0][1] + 15);
+            gc.strokeText(SECOND_AXIS.getText(), borderPixels[0][0] - SECOND_AXIS.getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         } else {
-            gc.strokeText(varOrd, borderPixels[0][0] - gc.getFontMetrics().stringWidth(varOrd) - 10, borderPixels[0][1] + 15);
+            gc.strokeText(varOrd, borderPixels[0][0] - createText(varOrd).getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         }
 
         // Horizontale Niveaulinien zeichnen
@@ -829,7 +869,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expY)), lineLevelPixels[0][0]
-                        - gc.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expY))) - 5,
+                        - createText(String.valueOf(roundAxisEntries(i, this.expY))).getLayoutBounds().getWidth() - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -878,14 +918,14 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         // Achse beschriften
         if (this.angle >= 180) {
             if (varAbsc == null) {
-                gc.strokeText("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+                gc.strokeText(FIRST_AXIS.getText(), borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             } else {
                 gc.strokeText(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             }
         } else if (varAbsc == null) {
-            gc.strokeText("1. axis", borderPixels[0][0] - gc.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
+            gc.strokeText(FIRST_AXIS.getText(), borderPixels[0][0] - FIRST_AXIS.getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         } else {
-            gc.strokeText(varAbsc, borderPixels[0][0] - gc.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            gc.strokeText(varAbsc, borderPixels[0][0] - createText(varAbsc).getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         }
 
         // Horizontale Niveaulinien zeichnen
@@ -935,7 +975,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
-                        - gc.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
+                        - createText(String.valueOf(roundAxisEntries(i, this.expX))).getLayoutBounds().getWidth() - 5,
                         lineLevelPixels[0][1]);
             }
 
@@ -984,14 +1024,14 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         // Achse beschriften
         if (this.angle <= 90) {
             if (varAbsc == null) {
-                gc.strokeText("1. axis", borderPixels[1][0] + 10, borderPixels[1][1] + 15);
+                gc.strokeText(FIRST_AXIS.getText(), borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             } else {
                 gc.strokeText(varAbsc, borderPixels[1][0] + 10, borderPixels[1][1] + 15);
             }
         } else if (varAbsc == null) {
-            gc.strokeText("1. axis", borderPixels[0][0] - gc.getFontMetrics().stringWidth("1. axis") - 10, borderPixels[0][1] + 15);
+            gc.strokeText(FIRST_AXIS.getText(), borderPixels[0][0] - FIRST_AXIS.getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         } else {
-            gc.strokeText(varAbsc, borderPixels[0][0] - gc.getFontMetrics().stringWidth(varAbsc) - 10, borderPixels[0][1] + 15);
+            gc.strokeText(varAbsc, borderPixels[0][0] - createText(varAbsc).getLayoutBounds().getWidth() - 10, borderPixels[0][1] + 15);
         }
 
         // Horizontale Niveaulinien zeichnen
@@ -1040,7 +1080,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0] + 5, lineLevelPixels[0][1]);
             } else {
                 gc.strokeText(String.valueOf(roundAxisEntries(i, this.expX)), lineLevelPixels[0][0]
-                        - gc.getFontMetrics().stringWidth(String.valueOf(roundAxisEntries(i, this.expX))) - 5,
+                        - createText(String.valueOf(roundAxisEntries(i, this.expX))).getLayoutBounds().getWidth() - 5,
                         lineLevelPixels[0][1]);
             }
 
