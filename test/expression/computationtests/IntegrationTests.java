@@ -11,8 +11,9 @@ import basic.MathToolTestBase;
 import enums.TypeSimplify;
 import exceptions.NotAlgebraicallyIntegrableException;
 import java.util.HashSet;
-import junit.framework.Assert;
+import java.util.Set;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -21,7 +22,7 @@ import utilities.TestUtilities;
 
 public class IntegrationTests extends MathToolTestBase {
 
-    private static final HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypes = new HashSet<>();
     private Expression f;
 
     @BeforeClass
