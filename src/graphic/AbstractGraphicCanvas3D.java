@@ -1,13 +1,6 @@
 package graphic;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-import java.awt.geom.GeneralPath;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +10,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import lang.translator.Translator;
 
 /**
@@ -105,7 +97,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         public void addPoint(double[] point) {
             this.points.add(point);
         }
-        
+
         public double[] getArrayOfXCoordinates() {
             double[] xCoordinates = new double[points.size()];
             for (int i = 0; i < points.size(); i++) {
@@ -278,16 +270,16 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 // Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
                 if (event.getDeltaY() >= 0 && zoomfactor < 10
                         || event.getDeltaY() <= 0 && zoomfactor > 0.1) {
-                    minX *= Math.pow(1.1, event.getDeltaY());
-                    minY *= Math.pow(1.1, event.getDeltaY());
-                    minZ *= Math.pow(1.1, event.getDeltaY());
-                    maxX *= Math.pow(1.1, event.getDeltaY());
-                    maxY *= Math.pow(1.1, event.getDeltaY());
-                    maxZ *= Math.pow(1.1, event.getDeltaY());
-                    axeCenterX *= Math.pow(1.1, event.getDeltaY());
-                    axeCenterY *= Math.pow(1.1, event.getDeltaY());
-                    axeCenterZ *= Math.pow(1.1, event.getDeltaY());
-                    zoomfactor *= Math.pow(1.1, event.getDeltaY());
+                    minX *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    minY *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    minZ *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    maxX *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    maxY *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    maxZ *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    axeCenterX *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    axeCenterY *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    axeCenterZ *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    zoomfactor *= Math.pow(1.1, -event.getDeltaY() / 40);
 
                     intervals = (int) (50 * zoomfactor);
 
@@ -301,10 +293,9 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                     draw();
                 }
             }
-            
+
         });
-        
-        
+
 //        addMouseWheelListener(new MouseWheelListener() {
 //            @Override
 //            public void mouseWheelMoved(MouseWheelEvent e) {
@@ -624,18 +615,9 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
      */
     protected void drawInfinitesimalTangentSpace(TangentPolygon p, GraphicsContext gc, Color c) {
 
-//        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, p.getPoints().size());
         if (p.getPoints().isEmpty()) {
             return;
         }
-
-//        int[] pixel = convertToPixel(p.getPoints().get(0)[0], p.getPoints().get(0)[1], p.getPoints().get(0)[2]);
-//        tangent.moveTo(pixel[0], pixel[1]);
-//        for (int k = 1; k < p.getPoints().size(); k++) {
-//            pixel = convertToPixel(p.getPoints().get(k)[0], p.getPoints().get(k)[1], p.getPoints().get(k)[2]);
-//            tangent.lineTo(pixel[0], pixel[1]);
-//        }
-//        tangent.closePath();
 
         if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
             gc.setFill(c);

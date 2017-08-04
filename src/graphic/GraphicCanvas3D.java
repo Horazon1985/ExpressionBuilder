@@ -3,15 +3,13 @@ package graphic;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
-public class GraphicPanel3D extends AbstractGraphicPanel3D {
+public class GraphicCanvas3D extends AbstractGraphicCanvas3D {
 
     /**
      * Variablenname für 3D-Graphen: varAbsc = Abszissenname.
@@ -33,9 +31,9 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
     private final ArrayList<Color> colors = new ArrayList<>();
 
-    private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
+    private final static Color[] FIXED_COLORS = {Color.rgb(170, 170, 70), Color.rgb(170, 70, 170), Color.rgb(70, 170, 170)};
 
-    public GraphicPanel3D() {
+    public GraphicCanvas3D() {
         super();
     }
 
@@ -63,8 +61,8 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         int numberOfColors = Math.max(this.exprs.size(), this.graphs3D.size());
         this.colors.clear();
         for (int i = this.colors.size(); i < numberOfColors; i++) {
-            if (i < fixedColors.length) {
-                this.colors.add(fixedColors[i]);
+            if (i < FIXED_COLORS.length) {
+                this.colors.add(FIXED_COLORS[i]);
             } else {
                 this.colors.add(generateColor());
             }
@@ -72,7 +70,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     private Color generateColor() {
-        return new Color((int) (70 + 100 * Math.random()), (int) (100 * Math.random()), (int) (70 + 100 * Math.random()));
+        return Color.rgb((int) (70 + 100 * Math.random()), (int) (100 * Math.random()), (int) (70 + 100 * Math.random()));
     }
 
     public void setParameters(String varAbsc, String varOrd, double bigRadius, double heightProjection, double angle,
@@ -203,52 +201,6 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet ein (tangentiales) viereckiges Plättchen eines 3D-Graphen.
-     */
-    private void drawInfinitesimalTangentSpace(int x_1, int y_1, int x_2, int y_2,
-            int x_3, int y_3, int x_4, int y_4, Graphics g, Color c) {
-
-        GeneralPath tangent = new GeneralPath(GeneralPath.WIND_EVEN_ODD, 4);
-        tangent.moveTo(x_1, y_1);
-        tangent.lineTo(x_2, y_2);
-        tangent.lineTo(x_3, y_3);
-        tangent.lineTo(x_4, y_4);
-        tangent.closePath();
-        Graphics2D g2 = (Graphics2D) g;
-
-        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
-            g2.setPaint(c);
-            g2.fill(tangent);
-        }
-
-        switch (backgroundColorMode) {
-            case BRIGHT:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphBright);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyBright);
-                        break;
-                }
-                break;
-            case DARK:
-                switch (presentationMode) {
-                    case WHOLE_GRAPH:
-                        g2.setPaint(gridColorWholeGraphDark);
-                        break;
-                    case GRID_ONLY:
-                        g2.setPaint(gridColorGridOnlyDark);
-                        break;
-                }
-                break;
-        }
-
-        g2.draw(tangent);
-
-    }
-
-    /**
      * Berechnet die Höhe des Schwerpunktes eines Tangentialplättchens, falls es
      * definiert ist.
      */
@@ -284,7 +236,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     /**
      * Zeichnet alle 3D-Graphen in kartesischen Koordinaten.
      */
-    private void drawGraphsFromGraphs3DForGraphic(Graphics g, double minExpr, double maxExpr) {
+    private void drawGraphsFromGraphs3DForGraphic(GraphicsContext g, double minExpr, double maxExpr) {
 
         int numberOfIntervalsAlongAbsc = 0;
         int numberOfIntervalsAlongOrd = 0;
@@ -345,15 +297,16 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
+                    TangentPolygon p = new TangentPolygon();
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                        p.setPoints(new double[]{graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j - 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j - 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i + 1][numberOfIntervalsAlongOrd - j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[i][numberOfIntervalsAlongOrd - j][1]});
+                        drawInfinitesimalTangentSpace(p, g, c);
 
                     }
 
@@ -378,15 +331,16 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
+                    TangentPolygon p = new TangentPolygon();
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[i][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1],
-                                graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1],
-                                graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1],
-                                graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1],
-                                g, c);
+                        p.setPoints(new double[]{graphicalGraphs.get(indices.get(k))[i][j][0], graphicalGraphs.get(indices.get(k))[i][j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i + 1][j][0], graphicalGraphs.get(indices.get(k))[i + 1][j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i + 1][j + 1][0], graphicalGraphs.get(indices.get(k))[i + 1][j + 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[i][j + 1][0], graphicalGraphs.get(indices.get(k))[i][j + 1][1]});
+                        drawInfinitesimalTangentSpace(p, g, c);
 
                     }
 
@@ -411,15 +365,16 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
+                    TangentPolygon p = new TangentPolygon();
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1],
-                                g, c);
+                        p.setPoints(new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][j + 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][j + 1][1]});
+                        drawInfinitesimalTangentSpace(p, g, c);
 
                     }
 
@@ -444,15 +399,16 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
                     // Indizes für eine aufsteigende Ordnung berechnen.
                     indices = getIndicesForAscendingSorting(heightsOfCentersOfInfinitesimalTangentSpaces);
 
+                    TangentPolygon p = new TangentPolygon();
                     for (int k = 0; k < indices.size(); k++) {
 
                         Color c = computeColor(this.colors.get(indices.get(k)), minExpr, maxExpr, this.graphs3DForGraphic.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][2]);
                         // Für die vorkommenden Indizes ist der entsprechende Graph automatisch in allen 4 Randpunkten definiert.
-                        drawInfinitesimalTangentSpace(graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1],
-                                graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1],
-                                g, c);
+                        p.setPoints(new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j - 1][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i][numberOfIntervalsAlongOrd - j][1]},
+                                new double[]{graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][0], graphicalGraphs.get(indices.get(k))[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j][1]});
+                        drawInfinitesimalTangentSpace(p, g, c);
 
                     }
 
@@ -506,7 +462,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     /**
      * Hauptmethode zum Zeichnen von 3D-Graphen in kartesischen Koordinaten.
      */
-    private void drawGraph3D(Graphics g) {
+    private void drawGraph3D(GraphicsContext gc) {
 
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
@@ -518,7 +474,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         if (this.graphs3D.isEmpty()) {
             return;
         }
-        
+
         convertGraphsToCoarserGraphs();
 
         /*
@@ -566,12 +522,12 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
             }
         }
 
-        drawLevelsOnEast(g, this.varAbsc, this.varOrd, null);
-        drawLevelsOnSouth(g, this.varAbsc, this.varOrd, null);
-        drawLevelsOnWest(g, this.varAbsc, this.varOrd, null);
-        drawLevelsOnNorth(g, this.varAbsc, this.varOrd, null);
-        drawLevelsBottom(g);
-        drawGraphsFromGraphs3DForGraphic(g, minExpr, maxExpr);
+        drawLevelsOnEast(gc, this.varAbsc, this.varOrd, null);
+        drawLevelsOnSouth(gc, this.varAbsc, this.varOrd, null);
+        drawLevelsOnWest(gc, this.varAbsc, this.varOrd, null);
+        drawLevelsOnNorth(gc, this.varAbsc, this.varOrd, null);
+        drawLevelsBottom(gc);
+        drawGraphsFromGraphs3DForGraphic(gc, minExpr, maxExpr);
 
     }
 
@@ -582,23 +538,21 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(x_0, x_1, y_0, y_1);
-        drawGraphs3D();
+        draw();
     }
 
     public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(x_0, x_1, y_0, y_1);
-        drawGraphs3D();
-    }
-
-    private void drawGraphs3D() {
-        repaint();
+        draw();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        drawGraph3D(g);
+    public void draw() {
+        GraphicsContext gc = getGraphicsContext2D();
+
+        super.draw();
+        drawGraph3D(gc);
     }
 
 }

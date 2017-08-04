@@ -105,9 +105,9 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
                 // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
                 if (event.getDeltaY() >= 0 && zoomfactor < maxZoomfactor
                         || event.getDeltaY() <= 0 && zoomfactor > minZoomfactor) {
-                    maxX *= Math.pow(1.1, event.getDeltaY());
-                    maxY *= Math.pow(1.1, event.getDeltaY());
-                    zoomfactor *= Math.pow(1.1, event.getDeltaY());
+                    maxX *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    maxY *= Math.pow(1.1, -event.getDeltaY() / 40);
+                    zoomfactor *= Math.pow(1.1, -event.getDeltaY() / 40);
                     computeExpXExpY();
                 }
                 draw();
