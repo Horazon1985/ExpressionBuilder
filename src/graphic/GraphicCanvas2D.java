@@ -7,9 +7,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class GraphicCanvas2D extends AbstractGraphicCanvas2D {

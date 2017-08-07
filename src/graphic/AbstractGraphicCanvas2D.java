@@ -406,6 +406,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      */
     protected void drawCirclePoint(GraphicsContext gc, int x, int y, boolean printCoordinates) {
         gc.setStroke(Color.RED);
+        gc.setFill(Color.RED);
         gc.fillOval(x - 3, y - 3, 7, 7);
         if (!printCoordinates) {
             return;
