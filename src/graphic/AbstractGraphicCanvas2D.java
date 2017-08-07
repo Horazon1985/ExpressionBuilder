@@ -11,7 +11,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import lang.translator.Translator;
 
@@ -49,10 +48,8 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
     protected final static int MOUSE_DISTANCE_FOR_SHOWING_POINT = 10;
 
     public AbstractGraphicCanvas2D() {
-
         super();
-        
-        setOnMouseMoved(new EventHandler<MouseEvent>() {
+        addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 mouseCoordinateX = (int) event.getX();
@@ -60,13 +57,12 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
                 draw();
             }
         });
-
     }
 
     public AbstractGraphicCanvas2D(final double maxZoomfactor, final double minZoomfactor) {
 
-        super();
-        
+        this();
+
         setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -103,8 +99,8 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
             @Override
             public void handle(ScrollEvent event) {
                 // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
-                if (event.getDeltaY() >= 0 && zoomfactor < maxZoomfactor
-                        || event.getDeltaY() <= 0 && zoomfactor > minZoomfactor) {
+                if (event.getDeltaY() <= 0 && zoomfactor < maxZoomfactor
+                        || event.getDeltaY() >= 0 && zoomfactor > minZoomfactor) {
                     maxX *= Math.pow(1.1, -event.getDeltaY() / 40);
                     maxY *= Math.pow(1.1, -event.getDeltaY() / 40);
                     zoomfactor *= Math.pow(1.1, -event.getDeltaY() / 40);
@@ -113,7 +109,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
                 draw();
             }
         });
-        
+
     }
 
     public static boolean getPointsAreShowable() {
@@ -393,7 +389,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * von Nullstellen etc).
      */
     protected void drawSpecialPoints(GraphicsContext gc, double[][] specialPoints) {
-        gc.setStroke(Color.RED);
+        gc.setFill(Color.RED);
         if (specialPoints == null) {
             return;
         }

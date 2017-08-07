@@ -7,7 +7,9 @@ import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
 public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
@@ -384,7 +386,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
     public void draw() {
 
         GraphicsContext gc = getGraphicsContext2D();
-        
+
         super.draw();
         drawGraphs2D(gc);
 
@@ -412,9 +414,9 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
 
     @Override
     protected void drawMousePointOnGraph() {
-        
+
         GraphicsContext gc = getGraphicsContext2D();
-        
+
         int lowerPixelBoundX = Math.max(0, this.mouseCoordinateX - MOUSE_DISTANCE_FOR_SHOWING_POINT);
         int upperPixelBoundX = Math.min((int) this.getWidth(), this.mouseCoordinateX + MOUSE_DISTANCE_FOR_SHOWING_POINT);
 

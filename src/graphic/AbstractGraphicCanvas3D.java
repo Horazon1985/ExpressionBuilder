@@ -268,8 +268,8 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
             @Override
             public void handle(ScrollEvent event) {
                 // Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
-                if (event.getDeltaY() >= 0 && zoomfactor < 10
-                        || event.getDeltaY() <= 0 && zoomfactor > 0.1) {
+                if (event.getDeltaY() <= 0 && zoomfactor < 10
+                        || event.getDeltaY() >= 0 && zoomfactor > 0.1) {
                     minX *= Math.pow(1.1, -event.getDeltaY() / 40);
                     minY *= Math.pow(1.1, -event.getDeltaY() / 40);
                     minZ *= Math.pow(1.1, -event.getDeltaY() / 40);
@@ -296,36 +296,6 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
 
         });
 
-//        addMouseWheelListener(new MouseWheelListener() {
-//            @Override
-//            public void mouseWheelMoved(MouseWheelEvent e) {
-//                // Der Zoomfaktor darf höchstens 10 sein (und mindestens 0.1)
-//                if (e.getWheelRotation() >= 0 && zoomfactor < 10
-//                        || e.getWheelRotation() <= 0 && zoomfactor > 0.1) {
-//                    minX *= Math.pow(1.1, e.getWheelRotation());
-//                    minY *= Math.pow(1.1, e.getWheelRotation());
-//                    minZ *= Math.pow(1.1, e.getWheelRotation());
-//                    maxX *= Math.pow(1.1, e.getWheelRotation());
-//                    maxY *= Math.pow(1.1, e.getWheelRotation());
-//                    maxZ *= Math.pow(1.1, e.getWheelRotation());
-//                    axeCenterX *= Math.pow(1.1, e.getWheelRotation());
-//                    axeCenterY *= Math.pow(1.1, e.getWheelRotation());
-//                    axeCenterZ *= Math.pow(1.1, e.getWheelRotation());
-//                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
-//
-//                    intervals = (int) (50 * zoomfactor);
-//
-//                    if (intervals > 50) {
-//                        intervals = 50;
-//                    }
-//                    if (intervals < 2) {
-//                        intervals = 2;
-//                    }
-//
-//                    repaint();
-//                }
-//            }
-//        });
     }
 
     /**
