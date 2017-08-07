@@ -616,8 +616,17 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
                 break;
         }
 
+        drawFilledPolygon(p, gc);
+    }
+    
+    private void drawFilledPolygon(TangentPolygon p, GraphicsContext gc) {
+        for (int i = 0; i < p.getPoints().size() - 1; i++) {
+            gc.strokeLine(p.getArrayOfXCoordinates()[i], p.getArrayOfYCoordinates()[i], 
+                    p.getArrayOfXCoordinates()[i + 1], p.getArrayOfYCoordinates()[i + 1]);
+        }
+        gc.strokeLine(p.getArrayOfXCoordinates()[p.getPoints().size() - 1], p.getArrayOfYCoordinates()[p.getPoints().size() - 1], 
+                p.getArrayOfXCoordinates()[0], p.getArrayOfYCoordinates()[0]);
         gc.fillPolygon(p.getArrayOfXCoordinates(), p.getArrayOfYCoordinates(), p.getPoints().size());
-
     }
 
     /**
