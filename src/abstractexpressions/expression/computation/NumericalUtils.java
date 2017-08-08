@@ -299,7 +299,7 @@ public abstract class NumericalUtils {
     /**
      * Hauptmethode zum (numerischen) Lösen der (impliziten) Gleichung f(var1,
      * var2) = 0 im Bereich x_0 &#8804; varAbsc &#8804; x_1, y_0 &#8804; varOrd
-     * &#8804; y_1.<br> 
+     * &#8804; y_1.<br>
      * VORAUSSETZUNG: f hängt nur von varAbsc und varOrd ab.
      */
     public static MarchingSquare[][] solveImplicitEquation2D(Expression f, String varAbsc, String varOrd,
@@ -331,7 +331,7 @@ public abstract class NumericalUtils {
 
                 square = new MarchingSquare();
                 for (int p = 0; p < 2; p++) {
-                    for (int q = 0; q < 2; q++) {                      
+                    for (int q = 0; q < 2; q++) {
                         square.setVertexValue(p, q, innerPoints[p + i][q + j]);
                     }
                 }
@@ -342,6 +342,25 @@ public abstract class NumericalUtils {
 
         return squares;
 
+    }
+
+    public static graphic.GraphicCanvasImplicit2D.MarchingSquare[][] convertToCanvas(MarchingSquare[][] squaresForSwing) {
+        if (squaresForSwing.length == 0) {
+            return new graphic.GraphicCanvasImplicit2D.MarchingSquare[0][0];
+        }
+        graphic.GraphicCanvasImplicit2D.MarchingSquare[][] squaresForCanvas
+                = new graphic.GraphicCanvasImplicit2D.MarchingSquare[squaresForSwing.length][squaresForSwing[0].length];
+        for (int i = 0; i < squaresForSwing.length; i++) {
+            for (int j = 0; j < squaresForSwing[0].length; j++) {
+                graphic.GraphicCanvasImplicit2D.MarchingSquare squareForCanvas = new graphic.GraphicCanvasImplicit2D.MarchingSquare();
+                squareForCanvas.setVertexValue(0, 0, squaresForSwing[i][j].getVertexValue(0, 0));
+                squareForCanvas.setVertexValue(0, 1, squaresForSwing[i][j].getVertexValue(0, 1));
+                squareForCanvas.setVertexValue(1, 0, squaresForSwing[i][j].getVertexValue(1, 0));
+                squareForCanvas.setVertexValue(1, 1, squaresForSwing[i][j].getVertexValue(1, 1));
+                squaresForCanvas[i][j] = squareForCanvas;
+            }
+        }
+        return squaresForCanvas;
     }
 
     public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
