@@ -775,21 +775,11 @@ public abstract class OperationParser {
                         if (params[q] instanceof AbstractExpression) {
                             expr = (AbstractExpression) params[q];
                             if (occurrence && !expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
-                                        + var
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
-                                        + (q + 1)
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
-                                        + commandName
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER",
+                                        var, q + 1, commandName));
                             } else if (!occurrence && expr.contains(var)) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
-                                        + var
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
-                                        + (q + 1)
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
-                                        + commandName
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER",
+                                        var, q + 1, commandName));
                             }
                         } else if (params[q] instanceof AbstractExpression[]) {
                             exprs = (AbstractExpression[]) params[q];
@@ -798,21 +788,11 @@ public abstract class OperationParser {
                                 varOccurrs = varOccurrs || abstrExpr.contains(var);
                             }
                             if (occurrence && !varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_1")
-                                        + var
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_2")
-                                        + (q + 1)
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_3")
-                                        + commandName
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER_4"));
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_OCCUR_IN_PARAMETER",
+                                        var, q + 1, commandName));
                             } else if (!occurrence && varOccurrs) {
-                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_1")
-                                        + var
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_2")
-                                        + (q + 1)
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_3")
-                                        + commandName
-                                        + Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER_4"));
+                                throw new ExpressionException(Translator.translateOutputMessage("MCC_COMMAND_VARIABLE_MUST_NOT_OCCUR_IN_PARAMETER",
+                                        var, q + 1, commandName));
                             }
                         }
 

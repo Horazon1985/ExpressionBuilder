@@ -3,8 +3,8 @@ package abstractexpressions.expression.computation;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import graphic.GraphicPanelImplicit2D.MarchingSquare;
-import graphic.GraphicPanelImplicit3D.MarchingCube;
+import graphic.util.MarchingCube;
+import graphic.util.MarchingSquare;
 import java.util.ArrayList;
 import lang.translator.Translator;
 
@@ -342,25 +342,6 @@ public abstract class NumericalUtils {
 
         return squares;
 
-    }
-
-    public static graphic.GraphicCanvasImplicit2D.MarchingSquare[][] convertToCanvas(MarchingSquare[][] squaresForSwing) {
-        if (squaresForSwing.length == 0) {
-            return new graphic.GraphicCanvasImplicit2D.MarchingSquare[0][0];
-        }
-        graphic.GraphicCanvasImplicit2D.MarchingSquare[][] squaresForCanvas
-                = new graphic.GraphicCanvasImplicit2D.MarchingSquare[squaresForSwing.length][squaresForSwing[0].length];
-        for (int i = 0; i < squaresForSwing.length; i++) {
-            for (int j = 0; j < squaresForSwing[0].length; j++) {
-                graphic.GraphicCanvasImplicit2D.MarchingSquare squareForCanvas = new graphic.GraphicCanvasImplicit2D.MarchingSquare();
-                squareForCanvas.setVertexValue(0, 0, squaresForSwing[i][j].getVertexValue(0, 0));
-                squareForCanvas.setVertexValue(0, 1, squaresForSwing[i][j].getVertexValue(0, 1));
-                squareForCanvas.setVertexValue(1, 0, squaresForSwing[i][j].getVertexValue(1, 0));
-                squareForCanvas.setVertexValue(1, 1, squaresForSwing[i][j].getVertexValue(1, 1));
-                squaresForCanvas[i][j] = squareForCanvas;
-            }
-        }
-        return squaresForCanvas;
     }
 
     public static MarchingCube[][][] solveImplicitEquation3D(Expression f, String varAbsc, String varOrd, String varAppl,
