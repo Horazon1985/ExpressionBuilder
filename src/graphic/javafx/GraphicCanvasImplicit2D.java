@@ -1,15 +1,15 @@
-package graphic;
+package graphic.javafx;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import graphic.util.MarchingSquare;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Arrays;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import lang.translator.Translator;
 
-public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
+public class GraphicCanvasImplicit2D extends AbstractGraphicCanvas2D {
 
     /**
      * Funktionsterme für den Graphen einer implizit gegebenen Funktion. Dieses
@@ -22,9 +22,9 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
     private GraphPointsInMarchingSquare[][] graphPoints;
 
-    private final Color color = Color.blue;
+    private final Color color = Color.BLUE;
 
-    public GraphicPanelImplicit2D() {
+    public GraphicCanvasImplicit2D() {
         super();
     }
 
@@ -91,16 +91,16 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         this.maxY = exprOrdEnd.evaluate() - this.axeCenterY;
     }
 
-    private void drawMarchingSquares(Graphics g) {
+    private void drawMarchingSquares(GraphicsContext gc) {
         this.graphPoints = new GraphPointsInMarchingSquare[this.implicitGraph2D.length][this.implicitGraph2D[0].length];
         for (int i = 0; i < this.implicitGraph2D.length; i++) {
             for (int j = 0; j < this.implicitGraph2D.length; j++) {
-                drawSingleMarchingSquareAndComputeGraphPoints(g, i, j);
+                drawSingleMarchingSquareAndComputeGraphPoints(gc, i, j);
             }
         }
     }
 
-    private void drawSingleMarchingSquareAndComputeGraphPoints(Graphics g, int i, int j) {
+    private void drawSingleMarchingSquareAndComputeGraphPoints(GraphicsContext gc, int i, int j) {
 
         int[] pixel, pixelNext;
         MarchingSquare square = this.implicitGraph2D[i][j];
@@ -117,7 +117,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                     getWrappedCoordinates(i + 1, j),
                     getWrappedCoordinates(i, j + 1),
                     getWrappedCoordinates(i + 1, j + 1));
-            drawSingleZeroMarchingSquare(g, i, j);
+            drawSingleZeroMarchingSquare(gc, i, j);
             return;
         }
 
@@ -141,7 +141,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][0], squareVertexValues[0][1]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[1][0] >= 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
                 coordinateX = vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[0][0]);
@@ -152,7 +152,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[0][1] >= 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
                 coordinateX = vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][1], squareVertexValues[1][1]);
@@ -163,7 +163,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[0][0]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else {
                 vertexCoordinates = getCoordinates(i + 1, j + 1);
                 coordinateX = vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][1], squareVertexValues[0][1]);
@@ -174,7 +174,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
         } else if (square.getNumberOfInnerVertices() <= 2) {
             if (squareVertexValues[0][0] <= 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
@@ -187,7 +187,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[0][0], squareVertexValues[0][1]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
             if (squareVertexValues[1][0] <= 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
@@ -199,7 +199,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
             if (squareVertexValues[0][1] <= 0 && squareVertexValues[0][0] > 0 && squareVertexValues[1][1] > 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
@@ -211,7 +211,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[0][1], squareVertexValues[0][0]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
             if (squareVertexValues[1][1] <= 0 && squareVertexValues[1][0] > 0 && squareVertexValues[0][1] > 0) {
                 vertexCoordinates = getCoordinates(i + 1, j + 1);
@@ -223,7 +223,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
             // Behandlung aller Fälle, in denen eine isolierte Kante vorliegt.
             if (squareVertexValues[0][0] <= 0 && squareVertexValues[1][0] <= 0) {
@@ -236,7 +236,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY * getFactor(squareVertexValues[1][0], squareVertexValues[1][1]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[0][0] <= 0 && squareVertexValues[0][1] <= 0) {
                 vertexCoordinates = getCoordinates(i, j);
                 coordinateX = vertexCoordinates[0] + deltaX * getFactor(squareVertexValues[0][0], squareVertexValues[1][0]);
@@ -247,7 +247,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY;
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[1][0] <= 0 && squareVertexValues[1][1] <= 0) {
                 vertexCoordinates = getCoordinates(i + 1, j);
                 coordinateX = vertexCoordinates[0] - deltaX * getFactor(squareVertexValues[1][0], squareVertexValues[0][0]);
@@ -258,7 +258,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] + deltaY;
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             } else if (squareVertexValues[0][1] <= 0 && squareVertexValues[1][1] <= 0) {
                 vertexCoordinates = getCoordinates(i, j + 1);
                 coordinateX = vertexCoordinates[0];
@@ -269,7 +269,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
                 coordinateY = vertexCoordinates[1] - deltaY * getFactor(squareVertexValues[1][1], squareVertexValues[1][0]);
                 this.graphPoints[i][j].addPoints(new Double[]{coordinateX, coordinateY});
                 pixelNext = convertToPixel(coordinateX, coordinateY);
-                g.drawLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
+                gc.strokeLine(pixel[0], pixel[1], pixelNext[0], pixelNext[1]);
             }
 
         }
@@ -280,7 +280,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
      * Füllt das Rechteck an der Position (i, j) vollständig mit der Farbe des
      * Graphen aus.
      */
-    private void drawSingleZeroMarchingSquare(Graphics g, int i, int j) {
+    private void drawSingleZeroMarchingSquare(GraphicsContext gc, int i, int j) {
         int numberOfIntervalsAlongX = this.implicitGraph2D.length;
         int numberOfIntervalsAlongY = this.implicitGraph2D[0].length;
         double deltaX = 2 * this.maxX / numberOfIntervalsAlongX;
@@ -288,7 +288,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         double[] vertexCoordinates = getCoordinates(i, j);
         int[] bottomLeft = convertToPixel(vertexCoordinates[0], vertexCoordinates[1]);
         int[] topRight = convertToPixel(vertexCoordinates[0] + deltaX, vertexCoordinates[1] + deltaY);
-        g.fillRect(bottomLeft[0], bottomLeft[1], topRight[0] - bottomLeft[0], bottomLeft[1] - topRight[1]);
+        gc.fillRect(bottomLeft[0], bottomLeft[1], topRight[0] - bottomLeft[0], bottomLeft[1] - topRight[1]);
     }
 
     private double[] getCoordinates(int i, int j) {
@@ -319,9 +319,9 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    private void drawImplicitGraph2D(Graphics g) {
-        g.setColor(this.color);
-        drawMarchingSquares(g);
+    private void drawImplicitGraph2D(GraphicsContext gc) {
+        gc.setStroke(this.color);
+        drawMarchingSquares(gc);
     }
 
     /**
@@ -333,21 +333,26 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
     public void drawImplicitGraph2D(MarchingSquare[][] implicitGraph2D, Expression exprAbscStart, Expression exprAbscEnd, Expression exprOrdStart, Expression exprOrdEnd) throws EvaluationException {
         this.implicitGraph2D = implicitGraph2D;
         computeScreenSizes(exprAbscStart, exprAbscEnd, exprOrdStart, exprOrdEnd);
-        repaint();
+        draw();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        drawImplicitGraph2D(g);
+    public void draw() {
+        GraphicsContext gc = getGraphicsContext2D();
+        
+        super.draw();
+        
+        drawImplicitGraph2D(gc);
         if (pointsAreShowable) {
-            drawMousePointOnGraph(g);
+            drawMousePointOnGraph();
         }
     }
 
     @Override
-    protected void drawMousePointOnGraph(Graphics g) {
+    protected void drawMousePointOnGraph() {
 
+        GraphicsContext gc = getGraphicsContext2D();
+        
         int minIndexX = Math.max(0, (int) Math.round((double) (this.mouseCoordinateX * this.implicitGraph2D.length) / 500) - (this.implicitGraph2D.length * MOUSE_DISTANCE_FOR_SHOWING_POINT / 500));
         int maxIndexX = Math.min(this.implicitGraph2D.length - 1, (int) Math.round((double) (this.mouseCoordinateX * this.implicitGraph2D.length) / 500) + (this.implicitGraph2D.length * MOUSE_DISTANCE_FOR_SHOWING_POINT / 500));
         int minIndexY = Math.max(0, (int) Math.round((double) ((500 - this.mouseCoordinateY) * this.implicitGraph2D[0].length) / 500) - (this.implicitGraph2D[0].length * MOUSE_DISTANCE_FOR_SHOWING_POINT / 500));
@@ -381,7 +386,7 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         }
 
         if (minimalDistance != -1) {
-            drawCirclePoint(g, coordinateXWithMinimalDistance, coordinateYWithMinimalDistance, true);
+            drawCirclePoint(gc, coordinateXWithMinimalDistance, coordinateYWithMinimalDistance, true);
         }
 
     }

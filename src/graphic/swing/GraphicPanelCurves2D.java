@@ -1,13 +1,13 @@
-package graphic;
+package graphic.swing;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 
-public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
+public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
     /**
      * Parametervariable für die parametrisierte Kurve.
@@ -26,7 +26,7 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
      */
     private final ArrayList<double[]> curve2D = new ArrayList<>();
 
-    public GraphicCanvasCurves2D() {
+    public GraphicPanelCurves2D() {
         super(10, 0.1);
     }
 
@@ -196,13 +196,13 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
         return result;
     }
 
-    private void drawCurve2D(GraphicsContext gc) {
+    private void drawCurve2D(Graphics g) {
 
         if (this.curve2D.size() <= 1) {
             return;
         }
 
-        gc.setStroke(Color.BLUE);
+        g.setColor(Color.blue);
 
         int[][] graphicalCurve = convertCurveToGraphicalCurve();
         for (int i = 0; i < graphicalCurve.length - 1; i++) {
@@ -211,12 +211,12 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
                     && !Double.isNaN(this.curve2D.get(i)[1]) && !Double.isInfinite(this.curve2D.get(i)[1])
                     && !Double.isNaN(this.curve2D.get(i + 1)[1]) && !Double.isInfinite(this.curve2D.get(i + 1)[1])) {
 
-                gc.strokeLine(graphicalCurve[i][0], graphicalCurve[i][1], graphicalCurve[i + 1][0], graphicalCurve[i + 1][1]);
+                g.drawLine(graphicalCurve[i][0], graphicalCurve[i][1], graphicalCurve[i + 1][0], graphicalCurve[i + 1][1]);
 
             }
         }
 
-        gc.setStroke(Color.BLACK);
+        g.setColor(Color.black);
 
     }
 
@@ -232,23 +232,24 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
         setExpression(expr);
         computeScreenSizes(t_0, t_1);
         expressionToGraph(t_0, t_1);
-        draw();
+        drawCurve2D();
+    }
+
+    private void drawCurve2D() {
+        repaint();
     }
 
     @Override
-    public void draw() {
-        GraphicsContext gc = getGraphicsContext2D();
-        super.draw();
-        drawCurve2D(gc);
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        drawCurve2D(g);
         if (pointsAreShowable) {
-            drawMousePointOnGraph();
+            drawMousePointOnGraph(g);
         }
     }
 
     @Override
-    protected void drawMousePointOnGraph() {
-
-        GraphicsContext gc = getGraphicsContext2D();
+    protected void drawMousePointOnGraph(Graphics g) {
 
         int coarseIndexWithNearestDistance = -1;
 
@@ -316,7 +317,7 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
         }
         
         pixel = convertToPixel(this.curve2D.get(indexWithMinimalDistance)[0], this.curve2D.get(indexWithMinimalDistance)[1]);
-        drawCirclePoint(gc, pixel[0], pixel[1], true);
+        drawCirclePoint(g, pixel[0], pixel[1], true);
         
     }
 

@@ -1,6 +1,6 @@
-package graphic;
+package graphic.javafx;
 
-import static graphic.AbstractGraphicCanvas2D.FONT;
+import static graphic.javafx.AbstractGraphicCanvas2D.FONT;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;

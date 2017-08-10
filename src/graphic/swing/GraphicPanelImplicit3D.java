@@ -1,8 +1,8 @@
-package graphic;
+package graphic.swing;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
-import static graphic.AbstractGraphicPanel3D.presentationMode;
+import static graphic.swing.AbstractGraphicPanel3D.presentationMode;
 import graphic.util.MarchingCube;
 import java.awt.Color;
 import java.awt.Graphics;

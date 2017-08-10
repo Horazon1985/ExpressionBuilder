@@ -1,4 +1,4 @@
-package graphic;
+package graphic.swing;
 
 import abstractexpressions.expression.classes.MultiIndexVariable;
 import command.Command;
@@ -44,6 +44,7 @@ import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import abstractexpressions.output.EditableString;
+import graphic.util.TypeBracket;
 
 public class GraphicPanelFormula extends JPanel {
 

@@ -1,4 +1,4 @@
-package graphic;
+package graphic.javafx;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;

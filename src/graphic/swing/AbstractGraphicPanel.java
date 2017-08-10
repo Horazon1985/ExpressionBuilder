@@ -1,4 +1,4 @@
-package graphic;
+package graphic.swing;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;

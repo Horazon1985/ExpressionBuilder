@@ -1,4 +1,4 @@
-package graphic;
+package graphic.util;
 
 public enum TypeBracket {
 

@@ -1,4 +1,4 @@
-package graphic;
+package graphic.javafx;
 
 import java.awt.Point;
 import java.math.BigDecimal;

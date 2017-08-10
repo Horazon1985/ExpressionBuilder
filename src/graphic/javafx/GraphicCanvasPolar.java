@@ -1,14 +1,15 @@
-package graphic;
+package graphic.javafx;
 
+import graphic.swing.AbstractGraphicPanel2D;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 
-public class GraphicPanelPolar extends AbstractGraphicPanel2D {
+public class GraphicCanvasPolar extends AbstractGraphicCanvas2D {
 
     /**
      * Parametervariable für den Winkel in den Polarkoordinaten.
@@ -22,7 +23,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
     private final ArrayList<Color> colors = new ArrayList<>();
 
-    public GraphicPanelPolar() {
+    public GraphicCanvasPolar() {
         super(10, 0.1);
     }
 
@@ -47,8 +48,8 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     public void setColors() {
         int numberOfColors = Math.max(this.exprs.size(), this.polarGraph2D.size());
         for (int i = this.colors.size(); i < numberOfColors; i++) {
-            if (i < AbstractGraphicPanel2D.FIXED_COLORS.length) {
-                this.colors.add(GraphicPanelPolar.FIXED_COLORS[i]);
+            if (i < AbstractGraphicCanvas2D.FIXED_COLORS.length) {
+                this.colors.add(GraphicCanvasPolar.FIXED_COLORS[i]);
             } else {
                 this.colors.add(generateColor());
             }
@@ -188,10 +189,10 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         setExpressions(exprs);
         computeScreenSizes(phi_0, phi_1);
         expressionToGraph(phi_0.evaluate(), phi_1.evaluate());
-        drawGraphPolar();
+        draw();
     }
 
-    private void drawGraphPolar(Graphics g) {
+    private void drawGraphPolar(GraphicsContext gc) {
 
         if (this.polarGraph2D.isEmpty()) {
             return;
@@ -199,7 +200,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
         for (int i = 0; i < this.polarGraph2D.size(); i++) {
 
-            g.setColor(this.colors.get(i));
+            gc.setStroke(this.colors.get(i));
 
             if (this.polarGraph2D.get(i).length > 1) {
 
@@ -209,12 +210,12 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
                             && !Double.isNaN(this.polarGraph2D.get(i)[j + 1][1]) && !Double.isInfinite(this.polarGraph2D.get(i)[j + 1][1])) {
 
                         if (this.axeCenterY + this.maxY < this.polarGraph2D.get(i)[j][1] && this.axeCenterY - this.maxY > this.polarGraph2D.get(i)[j + 1][1]) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], 0, graphicalGraph.get(i)[j + 1][0], 500);
+                            gc.strokeLine(graphicalGraph.get(i)[j][0], 0, graphicalGraph.get(i)[j + 1][0], 500);
                         } else if (this.axeCenterY - this.maxY > this.polarGraph2D.get(i)[j][1] && this.axeCenterY + this.maxY < this.polarGraph2D.get(i)[j + 1][1]) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], 500, graphicalGraph.get(i)[j + 1][0], 0);
+                            gc.strokeLine(graphicalGraph.get(i)[j][0], 500, graphicalGraph.get(i)[j + 1][0], 0);
                         } else if (this.axeCenterY + 2 * this.maxY >= this.polarGraph2D.get(i)[j][1] && this.axeCenterY - 2 * this.maxY <= this.polarGraph2D.get(i)[j][1]
                                 && this.axeCenterY + 2 * this.maxY >= this.polarGraph2D.get(i)[j + 1][1] && this.axeCenterY - 2 * this.maxY <= this.polarGraph2D.get(i)[j + 1][1]) {
-                            g.drawLine(graphicalGraph.get(i)[j][0], graphicalGraph.get(i)[j][1], graphicalGraph.get(i)[j + 1][0], graphicalGraph.get(i)[j + 1][1]);
+                            gc.strokeLine(graphicalGraph.get(i)[j][0], graphicalGraph.get(i)[j][1], graphicalGraph.get(i)[j + 1][0], graphicalGraph.get(i)[j + 1][1]);
                         }
 
                     }
@@ -224,26 +225,25 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
         }
 
-        g.setColor(Color.black);
+        gc.setStroke(Color.BLACK);
 
-    }
-
-    private void drawGraphPolar() {
-        repaint();
     }
 
     @Override
-    public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        drawGraphPolar(g);
+    public void draw() {
+        GraphicsContext gc = getGraphicsContext2D();
+        super.draw();
+        drawGraphPolar(gc);
         if (pointsAreShowable) {
-            drawMousePointOnGraph(g);
+            drawMousePointOnGraph();
         }
     }
 
     @Override
-    protected void drawMousePointOnGraph(Graphics g) {
+    protected void drawMousePointOnGraph() {
 
+        GraphicsContext gc = getGraphicsContext2D();
+        
         int[] minimalDistances = new int[this.polarGraph2D.size()];
         int[] indicesInPolarGraphWithMinimalDistance = new int[this.polarGraph2D.size()];
         for (int i = 0; i < indicesInPolarGraphWithMinimalDistance.length; i++) {
@@ -347,7 +347,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
         int[] pixel = convertToPixel(this.polarGraph2D.get(polarGraphIndexWithMinimalDistance)[indexInPolarGraphWithMinimalDistance][0],
                 this.polarGraph2D.get(polarGraphIndexWithMinimalDistance)[indexInPolarGraphWithMinimalDistance][1]);
-        drawCirclePoint(g, pixel[0], pixel[1], true);
+        drawCirclePoint(gc, pixel[0], pixel[1], true);
 
     }
 

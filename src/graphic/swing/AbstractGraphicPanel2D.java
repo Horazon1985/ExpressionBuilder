@@ -1,23 +1,23 @@
-package graphic;
+package graphic.swing;
 
 import abstractexpressions.matrixexpression.classes.Matrix;
 import exceptions.EvaluationException;
-import javafx.scene.input.MouseEvent;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import javafx.event.EventHandler;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.ScrollEvent;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import lang.translator.Translator;
 
 /**
  * Abstrakte Oberklasse aller Grafikklassen für zweidimensionale Grafiken.
  */
-public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
+public abstract class AbstractGraphicPanel2D extends AbstractGraphicPanel {
 
     /**
      * Variablenname für 2D-Graphen: varAbsc = Abszissenname.
@@ -44,72 +44,107 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
     protected Point lastMousePosition;
     protected double zoomfactor, zoomfactorX, zoomfactorY;
 
-    protected final static Color[] FIXED_COLORS = {Color.BLUE, Color.GREEN, Color.ORANGE, Color.RED, Color.PINK};
+    protected final static Color[] FIXED_COLORS = {Color.blue, Color.green, Color.orange, Color.red, Color.PINK};
     protected final static int MOUSE_DISTANCE_FOR_SHOWING_POINT = 10;
 
-    public AbstractGraphicCanvas2D() {
-        super();
-        addEventHandler(MouseEvent.MOUSE_MOVED, new EventHandler<MouseEvent>() {
+    public AbstractGraphicPanel2D() {
+        
+        addMouseMotionListener(new MouseMotionListener() {
+
             @Override
-            public void handle(MouseEvent event) {
-                mouseCoordinateX = (int) event.getX();
-                mouseCoordinateY = (int) event.getY();
-                draw();
+            public void mouseDragged(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseCoordinateX = e.getPoint().x;
+                mouseCoordinateY = e.getPoint().y;
+                repaint();
             }
         });
+        
     }
 
-    public AbstractGraphicCanvas2D(final double maxZoomfactor, final double minZoomfactor) {
+    public AbstractGraphicPanel2D(final double maxZoomfactor, final double minZoomfactor) {
 
-        this();
-
-        setOnMousePressed(new EventHandler<MouseEvent>() {
+        addMouseListener(new MouseListener() {
             @Override
-            public void handle(MouseEvent event) {
-                lastMousePosition = new Point((int) event.getX(), (int) event.getY());
-                movable = event.getButton() == MouseButton.PRIMARY;
+            public void mouseClicked(MouseEvent e) {
             }
-        });
 
-        setOnMouseDragged(new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent event) {
-                if (movable) {
-                    axeCenterX += (lastMousePosition.x - event.getX()) * maxX / 250;
-                    axeCenterY += (-lastMousePosition.y + event.getY()) * maxY / 250;
-                    lastMousePosition = new Point((int) event.getX(), (int) event.getY());
+            public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1) {
+                    lastMousePosition = e.getPoint();
+                    movable = true;
                 } else {
-                    if (lastMousePosition.x - event.getX() >= 0 && zoomfactorX < maxZoomfactor
-                            || lastMousePosition.x - event.getX() <= 0 && zoomfactorX > minZoomfactor) {
-                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - event.getX());
-                        zoomfactorX = zoomfactorX * Math.pow(1.02, lastMousePosition.x - event.getX());
-                    }
-                    if (lastMousePosition.y - event.getY() >= 0 && zoomfactorY < maxZoomfactor
-                            || lastMousePosition.y - event.getY() <= 0 && zoomfactorY > minZoomfactor) {
-                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - event.getY());
-                        zoomfactorY = zoomfactorY * Math.pow(1.02, lastMousePosition.y - event.getY());
-                    }
-                    lastMousePosition = new Point((int) event.getX(), (int) event.getY());
+                    lastMousePosition = e.getPoint();
+                    movable = false;
                 }
-                draw();
             }
-        });
 
-        setOnScroll(new EventHandler<ScrollEvent>() {
             @Override
-            public void handle(ScrollEvent event) {
-                // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
-                if (event.getDeltaY() <= 0 && zoomfactor < maxZoomfactor
-                        || event.getDeltaY() >= 0 && zoomfactor > minZoomfactor) {
-                    maxX *= Math.pow(1.1, -event.getDeltaY() / 40);
-                    maxY *= Math.pow(1.1, -event.getDeltaY() / 40);
-                    zoomfactor *= Math.pow(1.1, -event.getDeltaY() / 40);
-                    computeExpXExpY();
-                }
-                draw();
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
             }
         });
 
+        addMouseMotionListener(new MouseMotionListener() {
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (movable) {
+                    axeCenterX += (lastMousePosition.x - e.getPoint().x) * maxX / 250;
+                    axeCenterY += (-lastMousePosition.y + e.getPoint().y) * maxY / 250;
+                    lastMousePosition = e.getPoint();
+                    repaint();
+                } else {
+                    if (lastMousePosition.x - e.getPoint().x >= 0 && zoomfactorX < maxZoomfactor
+                            || lastMousePosition.x - e.getPoint().x <= 0 && zoomfactorX > minZoomfactor) {
+                        maxX = maxX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
+                        zoomfactorX = zoomfactorX * Math.pow(1.02, lastMousePosition.x - e.getPoint().x);
+                    }
+                    if (lastMousePosition.y - e.getPoint().y >= 0 && zoomfactorY < maxZoomfactor
+                            || lastMousePosition.y - e.getPoint().y <= 0 && zoomfactorY > minZoomfactor) {
+                        maxY = maxY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
+                        zoomfactorY = zoomfactorY * Math.pow(1.02, lastMousePosition.y - e.getPoint().y);
+                    }
+                    lastMousePosition = e.getPoint();
+                    repaint();
+                }
+            }
+
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                mouseCoordinateX = e.getPoint().x;
+                mouseCoordinateY = e.getPoint().y;
+                repaint();
+            }
+        });
+
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                // Der Zoomfaktor darf höchstens maxZoomfactor sein (und mindestens minZoomfactor)
+                if ((e.getWheelRotation() >= 0 && zoomfactor < maxZoomfactor)
+                        || (e.getWheelRotation() <= 0 && zoomfactor > minZoomfactor)) {
+                    maxX *= Math.pow(1.1, e.getWheelRotation());
+                    maxY *= Math.pow(1.1, e.getWheelRotation());
+                    zoomfactor *= Math.pow(1.1, e.getWheelRotation());
+                    computeExpXExpY();
+                    repaint();
+                }
+
+                repaint();
+            }
+        });
     }
 
     public static boolean getPointsAreShowable() {
@@ -155,7 +190,7 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * Erzeugt eine neue Zufallsfarbe.
      */
     protected Color generateColor() {
-        return Color.rgb((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
+        return new Color((int) (255 * Math.random()), (int) (255 * Math.random()), (int) (255 * Math.random()));
     }
 
     protected int[] getMouseCoordinates() {
@@ -260,8 +295,8 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * mit f(varAbsc) beschriftet. f steht hierbei stellvertretend für eine
      * allgemeine Funktion.
      */
-    protected void drawAxesAndLines(GraphicsContext gc) {
-        gc.setStroke(Color.LIGHTGRAY);
+    protected void drawAxesAndLines(Graphics g) {
+        g.setColor(Color.lightGray);
 
         int linePosition;
         int k = (int) (this.axeCenterX * Math.pow(10, -this.expX));
@@ -273,14 +308,14 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
             if (k != 0) {
                 linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
-                gc.strokeLine(linePosition, 0, linePosition, 500);
+                g.drawLine(linePosition, 0, linePosition, 500);
 
                 if ((250 * this.axeCenterY / this.maxY - 3 <= 248) && (250 * this.axeCenterY / this.maxY - 3 >= -230)) {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
                 } else if (250 * this.axeCenterY / this.maxY - 3 > 248) {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
                 } else {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
                 }
 
             }
@@ -296,14 +331,14 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
             if (k != 0) {
                 linePosition = convertToPixel(k * Math.pow(10, this.expX), 0)[0];
-                gc.strokeLine(linePosition, 0, linePosition, 500);
+                g.drawLine(linePosition, 0, linePosition, 500);
 
                 if ((250 * this.axeCenterY / this.maxY - 3 <= 248) && (250 * this.axeCenterY / this.maxY - 3 >= -230)) {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+                    g.drawString(String.valueOf(roundAxisEntries(k, expX)), linePosition + 3, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
                 } else if (250 * this.axeCenterY / this.maxY - 3 > 248) {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 495);
                 } else {
-                    gc.strokeText(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
+                    g.drawString(String.valueOf(roundAxisEntries(k, this.expX)), linePosition + 3, 20);
                 }
 
             }
@@ -318,14 +353,14 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
         while (linePosition >= 0) {
             linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
-            gc.strokeLine(0, linePosition, 500, linePosition);
+            g.drawLine(0, linePosition, 500, linePosition);
 
             if ((250 * this.axeCenterX / this.maxX - 3 >= -225) && (250 * this.axeCenterX / this.maxX - 3 <= 245)) {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
             } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
             } else {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
             }
 
             k++;
@@ -337,14 +372,14 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
         while (linePosition <= 500) {
             linePosition = convertToPixel(0, k * Math.pow(10, this.expY))[1];
-            gc.strokeLine(0, linePosition, 500, linePosition);
+            g.drawLine(0, linePosition, 500, linePosition);
 
             if ((250 * this.axeCenterX / this.maxX - 3 >= -225) && (250 * this.axeCenterX / this.maxX - 3 <= 245)) {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, this.expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, linePosition - 3);
             } else if (250 * this.axeCenterX / this.maxX - 3 >= -225) {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 5, linePosition - 3);
             } else {
-                gc.strokeText(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
+                g.drawString(String.valueOf(roundAxisEntries(k, this.expY)), 475, linePosition - 3);
             }
 
             k--;
@@ -353,34 +388,31 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
         // Achsen inkl. Achsenbezeichnungen eintragen
         // Achsen
-        gc.setStroke(Color.BLACK);
-        gc.strokeLine(0, 250 + (int) (250 * this.axeCenterY / this.maxY), 500, 250 + (int) (250 * this.axeCenterY / this.maxY));
-        gc.strokeLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX), 500);
+        g.setColor(Color.black);
+        g.drawLine(0, 250 + (int) (250 * this.axeCenterY / this.maxY), 500, 250 + (int) (250 * this.axeCenterY / this.maxY));
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX), 500);
         // Achsenpfeile
-        gc.strokeLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
-        gc.strokeLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) + 3);
-        gc.strokeLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, 6);
-        gc.strokeLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) - 3, 6);
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) - 3);
+        g.drawLine(500, 250 + (int) (250 * this.axeCenterY / this.maxY), 494, 250 + (int) (250 * this.axeCenterY / this.maxY) + 3);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) + 3, 6);
+        g.drawLine(250 - (int) (250 * this.axeCenterX / this.maxX), 0, 250 - (int) (250 * this.axeCenterX / this.maxX) - 3, 6);
         /*
-         Achsenbeschriftung. WICHTIG: In der Prozedur strokeText werden die
+         Achsenbeschriftung. WICHTIG: In der Prozedur drawString werden die
          Achsenbeschriftung derart eingetragen, dass (1) Die Beschriftung der
          Variablen var innerhalb des Bildschirms liegt (5 px) (2) Die
          Beschriftung f(var) links von der vertikalen Achse liegt (5 px)
          Hierzu müssen die Pixellängen der gezeichneten Strings ausgerechnet
-         werden (mittels gc.getFontMetrics().stringWidth()).
+         werden (mittels g.getFontMetrics().stringWidth()).
          */
-        double lengthTextFirstAxis = FIRST_AXIS.getLayoutBounds().getWidth();
-        double lengthTextSecondAxis = SECOND_AXIS.getLayoutBounds().getWidth();
-
         if (this.varAbsc == null) {
-            gc.strokeText(FIRST_AXIS.getText(), 500 - 5 - lengthTextFirstAxis, 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+            g.drawString("1. axis", 500 - 5 - g.getFontMetrics().stringWidth("1. axis"), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
         } else {
-            gc.strokeText(this.varAbsc, 500 - 5 - createText(varAbsc).getLayoutBounds().getWidth(), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
+            g.drawString(this.varAbsc, 500 - 5 - g.getFontMetrics().stringWidth(this.varAbsc), 250 + (int) (250 * this.axeCenterY / this.maxY) + 15);
         }
         if (this.varOrd == null) {
-            gc.strokeText(SECOND_AXIS.getText(), 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - lengthTextSecondAxis, 20);
+            g.drawString("2. axis", 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - g.getFontMetrics().stringWidth("2. axis"), 20);
         } else {
-            gc.strokeText(this.varOrd, 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - createText(varOrd).getLayoutBounds().getWidth(), 20);
+            g.drawString(this.varOrd, 250 - (int) (250 * this.axeCenterX / this.maxX) - 5 - g.getFontMetrics().stringWidth(this.varOrd), 20);
         }
     }
 
@@ -388,15 +420,15 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * Zeichnet rote Punkte an gegebenen Stellen specialPoints (etwa Markierung
      * von Nullstellen etc).
      */
-    protected void drawSpecialPoints(GraphicsContext gc, double[][] specialPoints) {
-        gc.setFill(Color.RED);
+    protected void drawSpecialPoints(Graphics g, double[][] specialPoints) {
+        g.setColor(Color.red);
         if (specialPoints == null) {
             return;
         }
         int[][] specialPointsCoordinates = new int[specialPoints.length][2];
         for (int i = 0; i < specialPoints.length; i++) {
             specialPointsCoordinates[i] = convertToPixel(specialPoints[i][0], specialPoints[i][1]);
-            gc.fillOval(specialPointsCoordinates[i][0] - 3, specialPointsCoordinates[i][1] - 3, 7, 7);
+            g.fillOval(specialPointsCoordinates[i][0] - 3, specialPointsCoordinates[i][1] - 3, 7, 7);
         }
     }
 
@@ -404,27 +436,26 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * Zeichnet einen roten Punkt an der Stelle (x, y), wobei x und y die
      * Pixelkoordinaten des Punktes sind.
      */
-    protected void drawCirclePoint(GraphicsContext gc, int x, int y, boolean printCoordinates) {
-        gc.setStroke(Color.RED);
-        gc.setFill(Color.RED);
-        gc.fillOval(x - 3, y - 3, 7, 7);
+    protected void drawCirclePoint(Graphics g, int x, int y, boolean printCoordinates) {
+        g.setColor(Color.red);
+        g.fillOval(x - 3, y - 3, 7, 7);
         if (!printCoordinates) {
             return;
         }
-        gc.setStroke(Color.BLACK);
-        Text coordText = createText("(" + roundCoordinate(convertToEuclideanCoordinateX(x), 2) + ", "
-                + roundCoordinate(convertToEuclideanCoordinateY(y), 2) + ")");
-        double length = coordText.getLayoutBounds().getWidth();
+        g.setColor(Color.black);
+        String coordinates = "(" + roundCoordinate(convertToEuclideanCoordinateX(x), 2) + ", "
+                + roundCoordinate(convertToEuclideanCoordinateY(y), 2) + ")";
+        int length = g.getFontMetrics().stringWidth(coordinates);
         if (x >= length) {
             if (y >= 20) {
-                gc.strokeText(coordText.getText(), x - length, y - 5);
+                g.drawString(coordinates, x - length, y - 5);
             } else {
-                gc.strokeText(coordText.getText(), x - length, y + 20);
+                g.drawString(coordinates, x - length, y + 20);
             }
         } else if (y >= 20) {
-            gc.strokeText(coordText.getText(), x, y - 5);
+            g.drawString(coordinates, x, y - 5);
         } else {
-            gc.strokeText(coordText.getText(), x, y + 20);
+            g.drawString(coordinates, x, y + 20);
         }
     }
 
@@ -432,32 +463,32 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      * Zeichnet einen Vektorpfeil für den Vektor [a; b] an der Stelle (x, y),
      * wobei x und y die Pixelkoordinaten des Punktes sind.
      */
-    protected void drawVectorLine(GraphicsContext gc, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
-        gc.setStroke(Color.BLACK);
-        Text coordText = createText("(" + roundCoordinate(convertToEuclideanCoordinateX(endPointVectorX), 2) + ", "
-                + roundCoordinate(convertToEuclideanCoordinateY(endPointVectorY), 2) + ")");
-        double length = coordText.getLayoutBounds().getWidth();
-        gc.strokeLine(x, y, endPointVectorX, endPointVectorY);
+    protected void drawVectorLine(Graphics g, int x, int y, int endPointVectorX, int endPointVectorY, boolean printCoordinates) {
+        g.setColor(Color.black);
+        String coordinates = "(" + roundCoordinate(convertToEuclideanCoordinateX(endPointVectorX), 2) + ", "
+                + roundCoordinate(convertToEuclideanCoordinateY(endPointVectorY), 2) + ")";
+        int length = g.getFontMetrics().stringWidth(coordinates);
+        g.drawLine(x, y, endPointVectorX, endPointVectorY);
         if (endPointVectorX >= length) {
             if (endPointVectorY >= 20) {
-                gc.strokeText(coordText.getText(), endPointVectorX - length, endPointVectorY - 5);
+                g.drawString(coordinates, endPointVectorX - length, endPointVectorY - 5);
             } else {
-                gc.strokeText(coordText.getText(), endPointVectorX - length, endPointVectorY + 20);
+                g.drawString(coordinates, endPointVectorX - length, endPointVectorY + 20);
             }
         } else if (endPointVectorY >= 20) {
-            gc.strokeText(coordText.getText(), endPointVectorX, endPointVectorY - 5);
+            g.drawString(coordinates, endPointVectorX, endPointVectorY - 5);
         } else {
-            gc.strokeText(coordText.getText(), endPointVectorX, endPointVectorY + 20);
+            g.drawString(coordinates, endPointVectorX, endPointVectorY + 20);
         }
     }
 
-    protected void drawVectorArrow(GraphicsContext gc, int x, int y, int length, double angleOfArrow) {
+    protected void drawVectorArrow(Graphics g, int x, int y, int length, double angleOfArrow) {
         if (angleOfArrow == -1) {
             return;
         }
         double angleForLeftArrowPart = angleOfArrow - Math.PI / 4, angleForRightArrowPart = angleOfArrow + Math.PI / 4;
-        gc.strokeLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
-        gc.strokeLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForLeftArrowPart)), y - (int) (length * Math.sin(angleForLeftArrowPart)));
+        g.drawLine(x, y, x - (int) (length * Math.cos(angleForRightArrowPart)), y - (int) (length * Math.sin(angleForRightArrowPart)));
     }
 
     private static BigDecimal roundCoordinate(double value, int digits) {
@@ -465,23 +496,23 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
                 0, BigDecimal.ROUND_HALF_UP).divide(BigDecimal.TEN.pow(digits));
     }
 
-    protected abstract void drawMousePointOnGraph();
+    protected abstract void drawMousePointOnGraph(Graphics g);
 
     @Override
-    public void draw() {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         /*
         Folgende "Vorarbeit" benötigt jede 2D-Grafikart: Weißen Hintergrund
         zeichnen, Markierungen an den Achsen berechnen und Niveaulinien 
         und Achsen zeichnen. 
          */
         // Weißen Hintergrund zeichnen.
-        GraphicsContext gc = getGraphicsContext2D();
-        gc.setFill(Color.WHITE);
-        gc.fillRect(0, 0, getWidth(), getHeight());
+        g.setColor(Color.white);
+        g.fillRect(0, 0, 500, 500);
         // Markierungen an den Achsen berechnen.
         computeExpXExpY();
         // Niveaulinien und Achsen zeichnen
-        drawAxesAndLines(gc);
+        drawAxesAndLines(g);
     }
 
 }

@@ -1,4 +1,4 @@
-package graphic;
+package graphic.swing;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Constant;
@@ -261,6 +261,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
     }
 
+    @Override
     protected void drawMousePointOnGraph(Graphics g) {
         Variable.setValue(this.varAbsc, convertToEuclideanCoordinateX(this.mouseCoordinateX));
         Variable.setValue(this.varOrd, convertToEuclideanCoordinateY(this.mouseCoordinateY));

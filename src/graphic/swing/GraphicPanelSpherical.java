@@ -1,4 +1,4 @@
-package graphic;
+package graphic.swing;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
@@ -11,33 +11,35 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
+public class GraphicPanelSpherical extends AbstractGraphicPanel3D {
 
     /**
-     * Variablenname für 3D-Graphen: varR = Radiusname.
-     */
-    private String varR;
-    /**
-     * Variablenname für 3D-Graphen: varPhi = Winkelname.
+     * Variablenname für 3D-Graphen: varPhi = Name des horizintalen Winkels,
+     * gemessen von der positiven x-Achse aus.
      */
     private String varPhi;
-    private final ArrayList<Expression> exprs = new ArrayList<>();
-    private ArrayList<double[][][]> cylindricalGraphs3D = new ArrayList<>();
     /**
-     * "Vergröberte Version" von cylindricalGraphs3D (GRUND: beim Herauszoomen
+     * Variablenname für 3D-Graphen: varPhi = Name des vertikalen Winkels,
+     * gemessen von der positiven z-Achse aus.
+     */
+    private String varTau;
+    private final ArrayList<Expression> exprs = new ArrayList<>();
+    private ArrayList<double[][][]> sphericalGraphs3D = new ArrayList<>();
+    /**
+     * "Vergröberte Version" von sphericalGraphs3D (GRUND: beim Herauszoomen
      * dürfen die Plättchen am Graphen nicht so klein sein. Deshalb muss der
      * Graph etwas vergröbert werden).
      */
-    private ArrayList<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
-    private ArrayList<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
+    private ArrayList<double[][][]> sphericalGraphs3DForGraphic = new ArrayList<>();
+    private ArrayList<boolean[][]> sphericalGraphs3DAreDefined = new ArrayList<>();
 
     private final ArrayList<Color> colors = new ArrayList<>();
 
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
-    private double minR, maxR, minPhi, maxPhi;
+    private double minPhi, maxPhi, minTau, maxTau;
 
-    public GraphicPanelCylindrical() {
+    public GraphicPanelSpherical() {
         super();
     }
 
@@ -61,13 +63,8 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         setColors();
     }
 
-    public void addExpression(Expression expr) {
-        this.exprs.add(expr);
-        setColors();
-    }
-
     private void setColors() {
-        int numberOfColors = Math.max(this.exprs.size(), this.cylindricalGraphs3D.size());
+        int numberOfColors = Math.max(this.exprs.size(), this.sphericalGraphs3D.size());
         this.colors.clear();
         for (int i = this.colors.size(); i < numberOfColors; i++) {
             if (i < fixedColors.length) {
@@ -82,10 +79,10 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         return new Color((int) (70 + 100 * Math.random()), (int) (100 * Math.random()), (int) (70 + 100 * Math.random()));
     }
 
-    public void setParameters(String varR, String varPhi, double bigRadius, double heightProjection, double angle,
+    public void setParameters(String varPhi, String varTau, double bigRadius, double heightProjection, double angle,
             double verticalAngle) {
-        this.varR = varR;
         this.varPhi = varPhi;
+        this.varTau = varTau;
         this.heightProjection = heightProjection;
         this.bigRadius = bigRadius;
         this.smallRadius = bigRadius * Math.sin(verticalAngle / 180 * Math.PI);
@@ -97,60 +94,65 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.<br>
-     * VOLRAUSSETZUNG: exprs, varR und varPhi sind bereits initialisiert.
+     * VOLRAUSSETZUNG: exprs, varPhi und varTau sind bereits initialisiert.
      */
     private void computeScreenSizes() {
-        super.computeScreenSizes(this.cylindricalGraphs3D, true, true, true);
+        super.computeScreenSizes(this.sphericalGraphs3D, true, true, true);
     }
 
     /**
-     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck exprs.
+     * Berechnet die Gitterpunkte für den 3D-Graphen aus dem Ausdruck expr.
      *
      * @throws EvaluationException
      */
     private void expressionToGraph(Expression exprR_0, Expression exprR_1, Expression exprPhi_0, Expression exprPhi_1) throws EvaluationException {
 
-        this.minR = exprR_0.evaluate();
-        this.maxR = exprR_1.evaluate();
-        this.minPhi = exprPhi_0.evaluate();
-        this.maxPhi = exprPhi_1.evaluate();
+        this.minPhi = exprR_0.evaluate();
+        this.maxPhi = exprR_1.evaluate();
+        this.minTau = exprPhi_0.evaluate();
+        this.maxTau = exprPhi_1.evaluate();
 
-        this.cylindricalGraphs3D = new ArrayList<>();
-        this.cylindricalGraphs3DAreDefined = new ArrayList<>();
+        this.sphericalGraphs3D = new ArrayList<>();
+        this.sphericalGraphs3DAreDefined = new ArrayList<>();
 
-        double currentR, currentPhi;
+        double currentPhi, currentTau, currentR;
         double[][][] singleGraph;
         boolean[][] singleGraphIsDefined;
         /*
-         Entlang r wird in 100 Intervalle unterteilt, entlang phi in 
-         100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle.
+         Entlang phi wird in 100 * (this.maxPhi - this.minPhi) / (2 * Math.PI) Intervalle 
+         unterteilt, entlang tau in 100 * (this.maxTau - this.minTau) / (2 * Math.PI) 
+         Intervalle.
          */
         int numberOfIntervalsAlongPhi = (int) (100 * (this.maxPhi - this.minPhi) / (2 * Math.PI));
+        int numberOfIntervalsAlongTau = (int) (100 * (this.maxTau - this.minTau) / (2 * Math.PI));
         for (Expression expr : this.exprs) {
 
-            singleGraph = new double[101][numberOfIntervalsAlongPhi + 1][3];
-            singleGraphIsDefined = new boolean[101][numberOfIntervalsAlongPhi + 1];
-            Variable.setValue(this.varR, this.minR);
+            singleGraph = new double[numberOfIntervalsAlongPhi + 1][numberOfIntervalsAlongTau + 1][3];
+            singleGraphIsDefined = new boolean[numberOfIntervalsAlongPhi + 1][numberOfIntervalsAlongTau + 1];
             Variable.setValue(this.varPhi, this.minPhi);
-            for (int i = 0; i <= 100; i++) {
-                for (int j = 0; j <= numberOfIntervalsAlongPhi; j++) {
-                    currentR = this.minR + (this.maxR - this.minR) * i / 100;
-                    currentPhi = this.minPhi + (this.maxPhi - this.minPhi) * j / numberOfIntervalsAlongPhi;
-                    singleGraph[i][j][0] = currentR * Math.cos(currentPhi);
-                    singleGraph[i][j][1] = currentR * Math.sin(currentPhi);
-                    Variable.setValue(this.varR, currentR);
+            Variable.setValue(this.varTau, this.minTau);
+            for (int i = 0; i <= numberOfIntervalsAlongPhi; i++) {
+                for (int j = 0; j <= numberOfIntervalsAlongTau; j++) {
+                    currentPhi = this.minPhi + (this.maxPhi - this.minPhi) * i / numberOfIntervalsAlongPhi;
+                    currentTau = this.minTau + (this.maxTau - this.minTau) * j / numberOfIntervalsAlongTau;
                     Variable.setValue(this.varPhi, currentPhi);
+                    Variable.setValue(this.varTau, currentTau);
                     try {
-                        singleGraph[i][j][2] = expr.evaluate();
+                        currentR = expr.evaluate();
+                        singleGraph[i][j][0] = currentR * Math.sin(currentTau) * Math.cos(currentPhi);
+                        singleGraph[i][j][1] = currentR * Math.sin(currentTau) * Math.sin(currentPhi);
+                        singleGraph[i][j][2] = currentR * Math.cos(currentTau);
                         singleGraphIsDefined[i][j] = true;
                     } catch (EvaluationException e) {
+                        singleGraph[i][j][0] = Double.NaN;
+                        singleGraph[i][j][1] = Double.NaN;
                         singleGraph[i][j][2] = Double.NaN;
                         singleGraphIsDefined[i][j] = false;
                     }
                 }
             }
-            this.cylindricalGraphs3D.add(singleGraph);
-            this.cylindricalGraphs3DAreDefined.add(singleGraphIsDefined);
+            this.sphericalGraphs3D.add(singleGraph);
+            this.sphericalGraphs3DAreDefined.add(singleGraphIsDefined);
 
         }
 
@@ -162,52 +164,52 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     /**
      * Gibt (eventuell) etwas gröbere Graphen zurück, damit sie gezeichnet
      * werden können.<br>
-     * VORAUSSETZUNG: minR, maxR, minPhi und maxPhi sind initialisiert.
+     * VORAUSSETZUNG: minPhi, maxPhi, minTau und maxTau sind initialisiert.
      */
     private void convertGraphsToCoarserGraphs() {
 
-        int numberOfIntervalsAlongR = (int) (50 * this.zoomfactor);
-        if (numberOfIntervalsAlongR > 50) {
-            numberOfIntervalsAlongR = 50;
-        }
-        if (numberOfIntervalsAlongR < 2) {
-            numberOfIntervalsAlongR = 2;
-        }
-
-        // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
         int numberOfIntervalsAlongPhi = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
-        if (numberOfIntervalsAlongPhi > this.cylindricalGraphs3D.get(0)[0].length - 1) {
-            numberOfIntervalsAlongPhi = this.cylindricalGraphs3D.get(0)[0].length - 1;
+        // Zur Erinnerung: Einschränkung ist maxPhi - minPhi <= 10 * 2 * pi.
+        if (numberOfIntervalsAlongPhi > this.sphericalGraphs3D.get(0).length - 1) {
+            numberOfIntervalsAlongPhi = this.sphericalGraphs3D.get(0).length - 1;
         }
-        if (numberOfIntervalsAlongPhi < 2) {
+        if (numberOfIntervalsAlongPhi < 2){
             numberOfIntervalsAlongPhi = 2;
         }
+        int numberOfIntervalsAlongTau = (int) (50 * this.zoomfactor * (this.maxPhi - this.minPhi) / (2 * Math.PI));
+        // Zur Erinnerung: Einschränkung ist maxTau - minTau <= 10 * 2 * pi.
+        if (numberOfIntervalsAlongTau > this.sphericalGraphs3D.get(0)[0].length - 1) {
+            numberOfIntervalsAlongTau = this.sphericalGraphs3D.get(0)[0].length - 1;
+        }
+        if (numberOfIntervalsAlongTau < 2){
+            numberOfIntervalsAlongTau = 2;
+        }
 
-        this.cylindricalGraphs3DForGraphic = new ArrayList<>();
+        this.sphericalGraphs3DForGraphic = new ArrayList<>();
 
         double[][][] graph3DForGraphic;
         boolean[][] coarserGraph3DIsDefined;
-        this.cylindricalGraphs3DAreDefined.clear();
-        for (double[][][] graph3D : this.cylindricalGraphs3D) {
+        this.sphericalGraphs3DAreDefined.clear();
+        for (double[][][] graph3D : this.sphericalGraphs3D) {
 
-            graph3DForGraphic = new double[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi][3];
-            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongR][numberOfIntervalsAlongPhi];
+            graph3DForGraphic = new double[numberOfIntervalsAlongPhi][numberOfIntervalsAlongTau][3];
+            coarserGraph3DIsDefined = new boolean[numberOfIntervalsAlongPhi][numberOfIntervalsAlongTau];
 
             int currentIndexI, currentIndexJ;
 
-            for (int i = 0; i < numberOfIntervalsAlongR; i++) {
+            for (int i = 0; i < numberOfIntervalsAlongPhi; i++) {
 
-                if (graph3D.length <= numberOfIntervalsAlongR) {
+                if (graph3D.length <= numberOfIntervalsAlongPhi) {
                     currentIndexI = graph3D.length - 1;
                 } else {
-                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongR - 1));
+                    currentIndexI = (int) (i * ((double) graph3D.length - 1) / (numberOfIntervalsAlongPhi - 1));
                 }
 
-                for (int j = 0; j < numberOfIntervalsAlongPhi; j++) {
-                    if (graph3D[0].length <= numberOfIntervalsAlongPhi) {
+                for (int j = 0; j < numberOfIntervalsAlongTau; j++) {
+                    if (graph3D[0].length <= numberOfIntervalsAlongTau) {
                         currentIndexJ = graph3D[0].length - 1;
                     } else {
-                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongPhi - 1));
+                        currentIndexJ = (int) (j * ((double) graph3D[0].length - 1) / (numberOfIntervalsAlongTau - 1));
                     }
                     graph3DForGraphic[i][j][0] = graph3D[currentIndexI][currentIndexJ][0];
                     graph3DForGraphic[i][j][1] = graph3D[currentIndexI][currentIndexJ][1];
@@ -218,8 +220,8 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
             }
 
-            this.cylindricalGraphs3DForGraphic.add(graph3DForGraphic);
-            this.cylindricalGraphs3DAreDefined.add(coarserGraph3DIsDefined);
+            this.sphericalGraphs3DForGraphic.add(graph3DForGraphic);
+            this.sphericalGraphs3DAreDefined.add(coarserGraph3DIsDefined);
 
         }
 
@@ -261,20 +263,20 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         double averageHeightOfTangentSpace = 0;
         int numberOfDefinedBorderPoints = 0;
 
-        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
-            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
+        if (this.sphericalGraphs3DAreDefined.get(indexOfGraph3D)[i][j]) {
+            averageHeightOfTangentSpace += this.sphericalGraphs3DForGraphic.get(indexOfGraph3D)[i][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
-            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
+        if (this.sphericalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j]) {
+            averageHeightOfTangentSpace += this.sphericalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
-            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
+        if (this.sphericalGraphs3DAreDefined.get(indexOfGraph3D)[i][j + 1]) {
+            averageHeightOfTangentSpace += this.sphericalGraphs3DForGraphic.get(indexOfGraph3D)[i][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
-        if (this.cylindricalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
-            averageHeightOfTangentSpace += this.cylindricalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
+        if (this.sphericalGraphs3DAreDefined.get(indexOfGraph3D)[i + 1][j + 1]) {
+            averageHeightOfTangentSpace += this.sphericalGraphs3DForGraphic.get(indexOfGraph3D)[i + 1][j + 1][2];
             numberOfDefinedBorderPoints++;
         }
 
@@ -286,7 +288,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Zeichnet alle 3D-Graphen in Zylinderkoordinaten.
+     * Zeichnet alle 3D-Graphen in Kugelkoordinaten.
      */
     private void drawGraphsFromCylindricalGraphs3DForGraphic(Graphics g) {
 
@@ -294,7 +296,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         int numberOfIntervalsAlongOrd = 0;
 
         // Anzahl der Intervalle für das Zeichnen ermitteln.
-        for (double[][][] cylindricalgraph3DForGraphic : this.cylindricalGraphs3DForGraphic) {
+        for (double[][][] cylindricalgraph3DForGraphic : this.sphericalGraphs3DForGraphic) {
             if (cylindricalgraph3DForGraphic.length > 0) {
                 numberOfIntervalsAlongAbsc = cylindricalgraph3DForGraphic.length - 1;
                 numberOfIntervalsAlongOrd = cylindricalgraph3DForGraphic[0].length - 1;
@@ -311,12 +313,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         ArrayList<int[][][]> graphicalGraphs = new ArrayList<>();
         int[][][] graphicalGraph;
 
-        for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+        for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
             graphicalGraph = new int[numberOfIntervalsAlongAbsc + 1][numberOfIntervalsAlongOrd + 1][2];
             for (int i = 0; i < numberOfIntervalsAlongAbsc + 1; i++) {
                 for (int j = 0; j < numberOfIntervalsAlongOrd + 1; j++) {
-                    graphicalGraph[i][j] = convertToPixel(this.cylindricalGraphs3DForGraphic.get(k)[i][j][0], this.cylindricalGraphs3DForGraphic.get(k)[i][j][1],
-                            this.cylindricalGraphs3DForGraphic.get(k)[i][j][2]);
+                    graphicalGraph[i][j] = convertToPixel(this.sphericalGraphs3DForGraphic.get(k)[i][j][0], this.sphericalGraphs3DForGraphic.get(k)[i][j][1],
+                            this.sphericalGraphs3DForGraphic.get(k)[i][j][2]);
                 }
             }
             graphicalGraphs.add(graphicalGraph);
@@ -340,7 +342,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -372,7 +374,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, i, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -404,7 +406,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, j);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -436,7 +438,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
                     // Alle Schwerpunkte der einzelnen Tangentialplättchen berechnen.
                     heightsOfCentersOfInfinitesimalTangentSpaces.clear();
-                    for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
+                    for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
                         heightOfCentersOfInfinitesimalTangentSpace = computeAverageHeightOfInfinitesimalTangentSpace(k, numberOfIntervalsAlongAbsc - i - 1, numberOfIntervalsAlongOrd - j - 1);
                         if (!heightOfCentersOfInfinitesimalTangentSpace.equals(Double.NaN)) {
                             heightsOfCentersOfInfinitesimalTangentSpaces.put(k, heightOfCentersOfInfinitesimalTangentSpace);
@@ -504,9 +506,9 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Hauptmethode zum Zeichnen von 3D-Graphen in Zylinderkoordinaten.
+     * Hauptmethode zum Zeichnen von 3D-Graphen in Kugelkoordinaten.
      */
-    private void drawCylindricalGraph3D(Graphics g) {
+    private void drawSphericalGraph3D(Graphics g) {
 
         /*
          Falls kein echter Graph vorhanden ist, dann nur den weißen
@@ -515,7 +517,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
          aber varAbsc und varOrd nicht initialisiert und es gibt eine
          Exception. Dies wird hiermit verhindert.
          */
-        if (this.cylindricalGraphs3D.isEmpty()) {
+        if (this.sphericalGraphs3D.isEmpty()) {
             return;
         }
         
@@ -530,13 +532,13 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
         // Zunächst wird geprüft, ob mindestens ein Graph IRGENDWO definiert ist
         boolean graphIsSomewhereDefined = false;
-        for (int k = 0; k < this.cylindricalGraphs3DAreDefined.size(); k++) {
-            for (int i = 0; i < this.cylindricalGraphs3DForGraphic.get(k).length; i++) {
-                for (int j = 0; j < this.cylindricalGraphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.cylindricalGraphs3DAreDefined.get(k)[i][j]) {
+        for (int k = 0; k < this.sphericalGraphs3DAreDefined.size(); k++) {
+            for (int i = 0; i < this.sphericalGraphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.sphericalGraphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.sphericalGraphs3DAreDefined.get(k)[i][j]) {
                         graphIsSomewhereDefined = true;
-                        minExpr = this.cylindricalGraphs3DForGraphic.get(k)[i][j][2];
-                        maxExpr = this.cylindricalGraphs3DForGraphic.get(k)[i][j][2];
+                        minExpr = this.sphericalGraphs3DForGraphic.get(k)[i][j][2];
+                        maxExpr = this.sphericalGraphs3DForGraphic.get(k)[i][j][2];
                         break;
                     }
                 }
@@ -555,12 +557,12 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
             maxExpr = 1;
         }
 
-        for (int k = 0; k < this.cylindricalGraphs3DForGraphic.size(); k++) {
-            for (int i = 0; i < this.cylindricalGraphs3DForGraphic.get(k).length; i++) {
-                for (int j = 0; j < this.cylindricalGraphs3DForGraphic.get(k)[0].length; j++) {
-                    if (this.cylindricalGraphs3DAreDefined.get(k)[i][j]) {
-                        minExpr = Math.min(minExpr, this.cylindricalGraphs3DForGraphic.get(k)[i][j][2]);
-                        maxExpr = Math.max(maxExpr, this.cylindricalGraphs3DForGraphic.get(k)[i][j][2]);
+        for (int k = 0; k < this.sphericalGraphs3DForGraphic.size(); k++) {
+            for (int i = 0; i < this.sphericalGraphs3DForGraphic.get(k).length; i++) {
+                for (int j = 0; j < this.sphericalGraphs3DForGraphic.get(k)[0].length; j++) {
+                    if (this.sphericalGraphs3DAreDefined.get(k)[i][j]) {
+                        minExpr = Math.min(minExpr, this.sphericalGraphs3DForGraphic.get(k)[i][j][2]);
+                        maxExpr = Math.max(maxExpr, this.sphericalGraphs3DForGraphic.get(k)[i][j][2]);
                     }
                 }
             }
@@ -576,29 +578,28 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
     }
 
     /**
-     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in
-     * Zylinderkoordinaten.
+     * Öffentliche Hauptmethode zum Zeichnen von 3D-Graphen in Kugelkoordinaten.
      */
-    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
+    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression... exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
-        drawCylindricalGraphs3D();
+        drawSphericalGraphs3D();
     }
 
-    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
-        drawCylindricalGraphs3D();
+        drawSphericalGraphs3D();
     }
 
-    private void drawCylindricalGraphs3D() {
+    private void drawSphericalGraphs3D() {
         repaint();
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        drawCylindricalGraph3D(g);
+        drawSphericalGraph3D(g);
     }
 
 }
