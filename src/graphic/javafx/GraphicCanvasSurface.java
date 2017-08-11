@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -234,7 +235,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
                     }
                     for (int k = 0; k < this.abstractGraph3D[i][numberOfIntervalsAlongOrd - j - 1].size(); k++) {
                         Color c = computeColor(this.color, this.minZOrigin, this.maxZOrigin, this.abstractGraph3D[i][numberOfIntervalsAlongOrd - j - 1].get(k).getCenterZ());
-                        drawInfinitesimalTangentSpace(this.abstractGraph3D[i][numberOfIntervalsAlongOrd - j - 1].get(k), gc, c);
+                        drawInfinitesimalSurfaceTangentSpace(this.abstractGraph3D[i][numberOfIntervalsAlongOrd - j - 1].get(k), gc, c);
                     }
 
                 }
@@ -250,7 +251,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
                     }
                     for (int k = 0; k < this.abstractGraph3D[i][j].size(); k++) {
                         Color c = computeColor(this.color, this.minZ, this.maxZ, this.abstractGraph3D[i][j].get(k).getCenterZ());
-                        drawInfinitesimalTangentSpace(this.abstractGraph3D[i][j].get(k), gc, c);
+                        drawInfinitesimalSurfaceTangentSpace(this.abstractGraph3D[i][j].get(k), gc, c);
                     }
 
                 }
@@ -266,7 +267,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
                     }
                     for (int k = 0; k < this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][j].size(); k++) {
                         Color c = computeColor(this.color, this.minZ, this.maxZ, this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][j].get(k).getCenterZ());
-                        drawInfinitesimalTangentSpace(this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][j].get(k), gc, c);
+                        drawInfinitesimalSurfaceTangentSpace(this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][j].get(k), gc, c);
                     }
 
                 }
@@ -282,13 +283,63 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
                     }
                     for (int k = 0; k < this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].size(); k++) {
                         Color c = computeColor(this.color, this.minZ, this.maxZ, this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].get(k).getCenterZ());
-                        drawInfinitesimalTangentSpace(this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].get(k), gc, c);
+                        drawInfinitesimalSurfaceTangentSpace(this.abstractGraph3D[numberOfIntervalsAlongAbsc - i - 1][numberOfIntervalsAlongOrd - j - 1].get(k), gc, c);
                     }
 
                 }
             }
 
         }
+
+    }
+
+    /**
+     * Zeichnet ein (tangentiales) viereckiges Plättchen des 3D-Graphen.
+     */
+    private void drawInfinitesimalSurfaceTangentSpace(TangentPolygon p, GraphicsContext gc, Color c) {
+
+        if (p.getPoints().size() < 2) {
+            return;
+        }
+
+        int[] pixel;
+        double[] pixelAsDouble;
+        List<double[]> pixels = new ArrayList<>();
+        for (int i = 0; i < p.getPoints().size(); i++) {
+            pixel = convertToPixel(p.getPoints().get(i)[0], p.getPoints().get(i)[1], p.getPoints().get(i)[2]);
+            pixelAsDouble = new double[]{(double) pixel[0], (double) pixel[1]};
+            pixels.add(pixelAsDouble);
+        }
+        TangentPolygon pForGraphic = new TangentPolygon(pixels);
+
+        if (presentationMode.equals(PresentationMode.WHOLE_GRAPH)) {
+            gc.setFill(c);
+        }
+
+        switch (backgroundColorMode) {
+            case BRIGHT:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        gc.setStroke(gridColorWholeGraphBright);
+                        break;
+                    case GRID_ONLY:
+                        gc.setStroke(gridColorGridOnlyBright);
+                        break;
+                }
+                break;
+            case DARK:
+                switch (presentationMode) {
+                    case WHOLE_GRAPH:
+                        gc.setStroke(gridColorWholeGraphDark);
+                        break;
+                    case GRID_ONLY:
+                        gc.setStroke(gridColorGridOnlyDark);
+                        break;
+                }
+                break;
+        }
+
+        drawFilledPolygon(pForGraphic, gc);
 
     }
 
@@ -307,7 +358,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
         if (this.surfaceGraph3D.length == 0) {
             return;
         }
-        
+
         convertGraphToCoarserGraph();
 
         drawLevelsOnEast(gc, null, null, null);

@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
@@ -80,13 +81,20 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
 
     public static class TangentPolygon implements Comparable<TangentPolygon> {
 
-        private ArrayList<double[]> points = new ArrayList<>();
+        public TangentPolygon(){
+        }
+        
+        public TangentPolygon(List<double[]> points){
+            this.points = points;
+        }
+        
+        private List<double[]> points = new ArrayList<>();
 
-        public ArrayList<double[]> getPoints() {
+        public List<double[]> getPoints() {
             return points;
         }
 
-        public void setPoints(ArrayList<double[]> points) {
+        public void setPoints(List<double[]> points) {
             this.points = points;
         }
 
@@ -619,7 +627,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
         drawFilledPolygon(p, gc);
     }
     
-    private void drawFilledPolygon(TangentPolygon p, GraphicsContext gc) {
+    protected void drawFilledPolygon(TangentPolygon p, GraphicsContext gc) {
         for (int i = 0; i < p.getPoints().size() - 1; i++) {
             gc.strokeLine(p.getArrayOfXCoordinates()[i], p.getArrayOfYCoordinates()[i], 
                     p.getArrayOfXCoordinates()[i + 1], p.getArrayOfYCoordinates()[i + 1]);
