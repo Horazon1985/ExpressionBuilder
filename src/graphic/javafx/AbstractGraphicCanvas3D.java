@@ -585,7 +585,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
      */
     protected void drawInfinitesimalTangentSpace(TangentPolygon p, GraphicsContext gc, Color c) {
 
-        if (p.getPoints().isEmpty()) {
+        if (p.getPoints().size() < 2) {
             return;
         }
 
