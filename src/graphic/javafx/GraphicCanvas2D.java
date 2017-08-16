@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -15,23 +16,23 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
     /**
      * Funktionsterme für Graphen.
      */
-    private ArrayList<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> graphs2D = new ArrayList<>();
-    private final ArrayList<Color> COLORS = new ArrayList<>();
+    private List<Expression> exprs = new ArrayList<>();
+    private final List<double[][]> graphs2D = new ArrayList<>();
+    private final List<Color> COLORS = new ArrayList<>();
 
     public GraphicCanvas2D() {
         super(100000000, 0.00000001);
     }
 
-    public ArrayList<double[][]> getGraphs() {
+    public List<double[][]> getGraphs() {
         return this.graphs2D;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.COLORS;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
