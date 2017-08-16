@@ -3,7 +3,6 @@ package graphic.javafx;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

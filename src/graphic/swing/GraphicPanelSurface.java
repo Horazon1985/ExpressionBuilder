@@ -5,8 +5,6 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.geom.GeneralPath;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;

@@ -107,6 +107,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
                     vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 20;
                     vectorFieldArrow[2] = vectorFieldArrow[0] + constAbscValue;
                     vectorFieldArrow[3] = vectorFieldArrow[1] + constOrdValue;
+                    this.vectorField2D.add(vectorFieldArrow);
                 }
             }
         } else {
