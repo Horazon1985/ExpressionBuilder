@@ -309,7 +309,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.
      */
-    protected void computeScreenSizes(ArrayList<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
+    protected void computeScreenSizes(List<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
 
         if (graphs.isEmpty()) {
 

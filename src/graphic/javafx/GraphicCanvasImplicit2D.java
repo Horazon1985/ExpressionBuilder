@@ -5,6 +5,7 @@ import abstractexpressions.expression.classes.Expression;
 import graphic.util.MarchingSquare;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import lang.translator.Translator;
@@ -16,7 +17,7 @@ public class GraphicCanvasImplicit2D extends AbstractGraphicCanvas2D {
      * ArrayList wird vor dem Plotten mit genau zwei Ausdrücken f und g gefüllt,
      * so dass der Graph der implizit gegebenen Funktion f = g geplottet wird.
      */
-    private ArrayList<Expression> exprs = new ArrayList<>();
+    private List<Expression> exprs = new ArrayList<>();
 
     private MarchingSquare[][] implicitGraph2D;
 
@@ -58,7 +59,7 @@ public class GraphicCanvasImplicit2D extends AbstractGraphicCanvas2D {
         return this.color;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 

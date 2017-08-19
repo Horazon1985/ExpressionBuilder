@@ -4,6 +4,7 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -24,7 +25,7 @@ public class GraphicCanvasCurves2D extends AbstractGraphicCanvas2D {
      * benachbarten ArrayList-Elemente werden beim Zeichnen miteinander
      * verbunden.
      */
-    private final ArrayList<double[]> curve2D = new ArrayList<>();
+    private final List<double[]> curve2D = new ArrayList<>();
 
     public GraphicCanvasCurves2D() {
         super(10, 0.1);

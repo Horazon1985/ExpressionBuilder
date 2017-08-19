@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -21,15 +22,15 @@ public class GraphicCanvasSpherical extends AbstractGraphicCanvas3D {
      * gemessen von der positiven z-Achse aus.
      */
     private String varTau;
-    private final ArrayList<Expression> exprs = new ArrayList<>();
-    private ArrayList<double[][][]> sphericalGraphs3D = new ArrayList<>();
+    private final List<Expression> exprs = new ArrayList<>();
+    private List<double[][][]> sphericalGraphs3D = new ArrayList<>();
     /**
      * "Vergröberte Version" von sphericalGraphs3D (GRUND: beim Herauszoomen
      * dürfen die Plättchen am Graphen nicht so klein sein. Deshalb muss der
      * Graph etwas vergröbert werden).
      */
-    private ArrayList<double[][][]> sphericalGraphs3DForGraphic = new ArrayList<>();
-    private ArrayList<boolean[][]> sphericalGraphs3DAreDefined = new ArrayList<>();
+    private List<double[][][]> sphericalGraphs3DForGraphic = new ArrayList<>();
+    private List<boolean[][]> sphericalGraphs3DAreDefined = new ArrayList<>();
 
     private final ArrayList<Color> colors = new ArrayList<>();
 
@@ -41,7 +42,7 @@ public class GraphicCanvasSpherical extends AbstractGraphicCanvas3D {
         super();
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 

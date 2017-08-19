@@ -29,7 +29,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
     private double[][][] surfaceGraph3DForGraphic;
     private boolean[][] surfaceGraph3DIsDefined;
 
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     private final Color color = Color.rgb(170, 170, 70);
 
@@ -43,7 +43,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
         return this.expr;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         if (this.colors.isEmpty()) {
             this.colors.add(this.color);
         }

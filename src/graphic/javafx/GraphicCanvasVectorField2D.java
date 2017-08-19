@@ -7,6 +7,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -16,7 +17,7 @@ public class GraphicCanvasVectorField2D extends AbstractGraphicCanvas2D {
      * Funktionsvorschrift für das Vektorfeld als (2x1)-Matrix.
      */
     private Matrix vectorFieldExpr;
-    private final ArrayList<double[]> vectorField2D = new ArrayList<>();
+    private final List<double[]> vectorField2D = new ArrayList<>();
 
     private final Color color = Color.BLUE;
 
@@ -28,7 +29,7 @@ public class GraphicCanvasVectorField2D extends AbstractGraphicCanvas2D {
         return this.color;
     }
 
-    public ArrayList<double[]> getvectorField() {
+    public List<double[]> getvectorField() {
         return this.vectorField2D;
     }
 

@@ -4,7 +4,6 @@ import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import graphic.util.MarchingCube;
 import java.awt.Point;
-import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

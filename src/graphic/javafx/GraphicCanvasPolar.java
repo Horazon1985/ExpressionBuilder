@@ -1,11 +1,11 @@
 package graphic.javafx;
 
-import graphic.swing.AbstractGraphicPanel2D;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -19,19 +19,19 @@ public class GraphicCanvasPolar extends AbstractGraphicCanvas2D {
     /**
      * Funktionsterme für Graphen.
      */
-    private final ArrayList<Expression> exprs = new ArrayList<>();
+    private final List<Expression> exprs = new ArrayList<>();
     private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     public GraphicCanvasPolar() {
         super(10, 0.1);
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
