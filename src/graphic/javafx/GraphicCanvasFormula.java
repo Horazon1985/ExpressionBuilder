@@ -1,4 +1,4 @@
-package graphic.swing;
+package graphic.javafx;
 
 import abstractexpressions.expression.classes.MultiIndexVariable;
 import command.Command;
@@ -18,18 +18,11 @@ import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.output.EditableAbstractExpression;
 import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import javax.swing.JPanel;
 import abstractexpressions.logicalexpression.classes.LogicalBinaryOperation;
 import abstractexpressions.logicalexpression.classes.LogicalConstant;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
@@ -45,8 +38,19 @@ import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import abstractexpressions.output.EditableString;
 import graphic.util.TypeBracket;
+import java.util.List;
+import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
-public class GraphicPanelFormula extends JPanel {
+public class GraphicCanvasFormula extends Canvas {
 
     private Expression expr;
     private LogicalExpression logExpr;
@@ -56,50 +60,31 @@ public class GraphicPanelFormula extends JPanel {
     private Object[] output;
     private int width, height, fontSize;
 
-    private Color backgroundColor = Color.white;
-    private static final Color BACKGROUND_COLOR_UNMARKED = Color.white;
-    private static final Color BACKGROUND_COLOR_MARKED = new Color(51, 204, 255);
+    private Color backgroundColor = Color.WHITE;
+    private static final Color BACKGROUND_COLOR_UNMARKED = Color.WHITE;
+    private static final Color BACKGROUND_COLOR_MARKED = Color.rgb(51, 204, 255);
 
-    private static final ArrayList<GraphicPanelFormula> formulas = new ArrayList<>();
+    private static final List<GraphicCanvasFormula> FORMULAS = new ArrayList<>();
 
-    public GraphicPanelFormula() {
-        formulas.add(this);
-        this.addMouseListener(new MouseListener() {
+    public GraphicCanvasFormula() {
+        FORMULAS.add(this);
 
+        setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    if (getBackgroundColor().equals(GraphicPanelFormula.BACKGROUND_COLOR_UNMARKED)) {
+            public void handle(MouseEvent event) {
+                if (event.getButton().equals(MouseButton.PRIMARY)) {
+                    if (getBackgroundColor().equals(GraphicCanvasFormula.BACKGROUND_COLOR_UNMARKED)) {
                         setMarked();
                     } else {
                         setUnmarked();
                     }
-                } else if (e.getButton() == MouseEvent.BUTTON3) {
+                } else if (event.getButton().equals(MouseButton.SECONDARY)) {
                     setMarked();
                 }
                 setRestUnmarked();
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-
-            }
         });
+
     }
 
     public Color getBackgroundColor() {
@@ -112,17 +97,17 @@ public class GraphicPanelFormula extends JPanel {
 
     private void setMarked() {
         this.backgroundColor = BACKGROUND_COLOR_MARKED;
-        repaint();
+        drawFormula();
     }
 
     private void setUnmarked() {
         this.backgroundColor = BACKGROUND_COLOR_UNMARKED;
-        repaint();
+        drawFormula();
     }
 
     private void setRestUnmarked() {
-        GraphicPanelFormula formula;
-        for (Iterator<GraphicPanelFormula> iterator = formulas.iterator(); iterator.hasNext();) {
+        GraphicCanvasFormula formula;
+        for (Iterator<GraphicCanvasFormula> iterator = FORMULAS.iterator(); iterator.hasNext();) {
             formula = iterator.next();
             if (this != formula) {
                 formula.setUnmarked();
@@ -130,14 +115,20 @@ public class GraphicPanelFormula extends JPanel {
         }
     }
 
-    @Override
-    public int getHeight() {
+    public int getFormulaHeight() {
         return this.height;
     }
 
-    @Override
-    public int getWidth() {
+    public int getFormulaWidth() {
         return this.width;
+    }
+
+    private static int getTextHeight(String s) {
+        return (int) new Text(s).getLayoutBounds().getHeight();
+    }
+
+    private static int getTextWidth(String s) {
+        return (int) new Text(s).getLayoutBounds().getWidth();
     }
 
     /**
@@ -237,7 +228,7 @@ public class GraphicPanelFormula extends JPanel {
     public void initialize(int fontSize) {
 
         this.fontSize = fontSize;
-        Graphics g = this.getGraphics();
+        GraphicsContext g = getGraphicsContext2D();
         setFont(g, fontSize);
         /*
          Pufferrahmen mit Breite fontsize/2 lassen! GRUND: Buchstaben wie
@@ -248,13 +239,15 @@ public class GraphicPanelFormula extends JPanel {
          */
         this.width = getLengthOfOutput(g, fontSize, output) + this.fontSize;
         this.height = getHeightOfOutput(g, fontSize, output) + this.fontSize;
-        this.setBounds(0, 0, this.width, this.height);
-
+        setLayoutX(0);
+        setLayoutY(0);
+        setWidth(this.width);
+        setHeight(this.height);
     }
 
-    public void setFont(Graphics g, int fontSize) {
-        Font f = new Font("Times New Roman", Font.BOLD, fontSize);
-        g.setFont(f);
+    public void setFont(GraphicsContext gc, int fontSize) {
+        Font f = Font.font("Times New Roman", FontWeight.BOLD, fontSize);
+        gc.setFont(f);
     }
 
     private int getSizeForSup(int fontsize) {
@@ -265,7 +258,7 @@ public class GraphicPanelFormula extends JPanel {
         return (int) (0.7 * fontsize);
     }
 
-    private int getHeightOfCommand(Graphics g, Command c, int fontSize) {
+    private int getHeightOfCommand(GraphicsContext g, Command c, int fontSize) {
 
         Object[] params = c.getParams();
 
@@ -332,7 +325,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfCenterOfCommand(Graphics g, Command c, int fontSize) {
+    private int getHeightOfCenterOfCommand(GraphicsContext g, Command c, int fontSize) {
 
         Object[] params = c.getParams();
 
@@ -396,14 +389,14 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfCommand(Graphics g, Command c, int fontSize) {
+    private int getLengthOfCommand(GraphicsContext g, Command c, int fontSize) {
 
         setFont(g, fontSize);
 
         Object[] params = c.getParams();
 
         // result ist bereits die Pixellänge des Befehlsnamens zusammen mit den beiden Klammern.
-        int resultLength = g.getFontMetrics().stringWidth(c.getName())
+        int resultLength = getTextWidth(c.getName())
                 + 2 * getWidthOfBracket(fontSize) + getWidthOfSignEquals(g, fontSize);
 
         /*
@@ -415,17 +408,17 @@ public class GraphicPanelFormula extends JPanel {
                 if (params.length == 2) {
 
                     // Fall: Variablendeklaration.
-                    resultLength = resultLength + g.getFontMetrics().stringWidth((String) params[0])
+                    resultLength = resultLength + getTextWidth((String) params[0])
                             + getWidthOfSignEquals(g, fontSize) + getLengthOfExpression(g, (Expression) params[1], fontSize);
 
                 } else {
 
                     // Fall: Funktionsdeklaration.
-                    resultLength = resultLength + g.getFontMetrics().stringWidth((String) params[0])
-                            + 2 * getWidthOfBracket(fontSize) + (params.length - 3) * g.getFontMetrics().stringWidth(", ");
+                    resultLength = resultLength + getTextWidth((String) params[0])
+                            + 2 * getWidthOfBracket(fontSize) + (params.length - 3) * getTextWidth(", ");
 
                     for (int i = 1; i < params.length - 1; i++) {
-                        resultLength = resultLength + g.getFontMetrics().stringWidth((String) params[i]);
+                        resultLength = resultLength + getTextWidth((String) params[i]);
                     }
 
                     resultLength = resultLength + getWidthOfSignEquals(g, fontSize);
@@ -442,7 +435,7 @@ public class GraphicPanelFormula extends JPanel {
                 }
                 break;
             case solve:
-                resultLength = resultLength + (params.length - 2) * g.getFontMetrics().stringWidth(", ");
+                resultLength = resultLength + (params.length - 2) * getTextWidth(", ");
                 for (Object param : params) {
                     if (param instanceof Expression) {
                         resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
@@ -454,17 +447,17 @@ public class GraphicPanelFormula extends JPanel {
                         resultLength = resultLength + getLengthOfLogicalExpression(g, (LogicalExpression) param, fontSize);
                     } else if (param instanceof Integer) {
                         setFont(g, fontSize);
-                        resultLength = resultLength + g.getFontMetrics().stringWidth(String.valueOf((Integer) param));
+                        resultLength = resultLength + getTextWidth(String.valueOf((Integer) param));
                     } else if (param instanceof String) {
                         setFont(g, fontSize);
-                        resultLength = resultLength + g.getFontMetrics().stringWidth((String) param);
+                        resultLength = resultLength + getTextWidth((String) param);
                     }
                 }
                 break;
             case normal:
             case tangent:
                 // Die Gesamtlänge aller Kommata und aller "="-Zeichen hinzuaddieren.
-                resultLength = resultLength + ((HashMap) params[1]).size() * (g.getFontMetrics().stringWidth(", ") + getWidthOfSignEquals(g, fontSize));
+                resultLength = resultLength + ((HashMap) params[1]).size() * (getTextWidth(", ") + getWidthOfSignEquals(g, fontSize));
                 // Länge der Funktionsvorschrift hinzuaddieren.
                 resultLength = resultLength + getLengthOfExpression(g, (Expression) params[0], fontSize);
                 HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
@@ -473,14 +466,14 @@ public class GraphicPanelFormula extends JPanel {
                     setFont(g, fontSize);
                     varCurrent = (String) iter.next();
                     // Pixellänge der jeweiligen Variable hinzuaddieren.
-                    resultLength = resultLength + g.getFontMetrics().stringWidth(varCurrent);
+                    resultLength = resultLength + getTextWidth(varCurrent);
                     // Pixellänge des jeweiligen Variablenwertes hinzuaddieren.
                     resultLength = resultLength + getLengthOfExpression(g, (Expression) varsWithValues.get(varCurrent), fontSize);
                 }
                 break;
             default:
                 // Sonstiger Fall.
-                resultLength = resultLength + Math.max(params.length - 1, 0) * g.getFontMetrics().stringWidth(", ");
+                resultLength = resultLength + Math.max(params.length - 1, 0) * getTextWidth(", ");
                 for (Object param : params) {
                     if (param instanceof Expression) {
                         resultLength = resultLength + getLengthOfExpression(g, (Expression) param, fontSize);
@@ -497,10 +490,10 @@ public class GraphicPanelFormula extends JPanel {
                         resultLength = resultLength + getLengthOfMatrixExpression(g, (MatrixExpression) param, fontSize);
                     } else if (param instanceof Integer) {
                         setFont(g, fontSize);
-                        resultLength = resultLength + g.getFontMetrics().stringWidth(String.valueOf((Integer) param));
+                        resultLength = resultLength + getTextWidth(String.valueOf((Integer) param));
                     } else if (param instanceof String) {
                         setFont(g, fontSize);
-                        resultLength = resultLength + g.getFontMetrics().stringWidth((String) param);
+                        resultLength = resultLength + getTextWidth((String) param);
                     } else {
                         // Sollte eigentlich nicht vorkommen, aber sicherheitshalber.
                         resultLength = 0;
@@ -513,15 +506,15 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getHeightOfLogicalExpression(GraphicsContext g, LogicalExpression logExpr, int fontSize) {
         return fontSize;
     }
 
-    private int getHeightOfCenterOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getHeightOfCenterOfLogicalExpression(GraphicsContext g, LogicalExpression logExpr, int fontSize) {
         return (2 * fontSize) / 5;
     }
 
-    private int getLengthOfLogicalExpression(Graphics g, LogicalExpression logExpr, int fontSize) {
+    private int getLengthOfLogicalExpression(GraphicsContext g, LogicalExpression logExpr, int fontSize) {
 
         if (logExpr instanceof LogicalConstant) {
             return getLengthOfLogicalConstant(g, (LogicalConstant) logExpr, fontSize);
@@ -536,17 +529,17 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfLogicalConstant(Graphics g, LogicalConstant logExpr, int fontSize) {
+    private int getLengthOfLogicalConstant(GraphicsContext g, LogicalConstant logExpr, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth(logExpr.toString());
+        return getTextWidth(logExpr.toString());
     }
 
-    private int getLengthOfLogicalVariable(Graphics g, LogicalVariable logExpr, int fontSize) {
+    private int getLengthOfLogicalVariable(GraphicsContext g, LogicalVariable logExpr, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth(logExpr.toString());
+        return getTextWidth(logExpr.toString());
     }
 
-    private int getLengthOfLogicalUnaryOperation(Graphics g, LogicalUnaryOperation logExpr, int fontSize) {
+    private int getLengthOfLogicalUnaryOperation(GraphicsContext g, LogicalUnaryOperation logExpr, int fontSize) {
         setFont(g, fontSize);
         if (logExpr.getLeft() instanceof LogicalVariable) {
             return getWidthOfSignNegation(g, fontSize)
@@ -557,7 +550,7 @@ public class GraphicPanelFormula extends JPanel {
                 + 2 * getWidthOfBracket(fontSize);
     }
 
-    private int getLengthOfLogicalBinaryOperation(Graphics g, LogicalBinaryOperation logExpr, int fontSize) {
+    private int getLengthOfLogicalBinaryOperation(GraphicsContext g, LogicalBinaryOperation logExpr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -621,7 +614,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getHeightOfMatrixExpression(GraphicsContext g, MatrixExpression matExpr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -735,7 +728,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfMatrixRow(Graphics g, Expression[] row, int fontSize) {
+    private int getHeightOfMatrixRow(GraphicsContext g, Expression[] row, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -750,7 +743,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfCenterOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getHeightOfCenterOfMatrixExpression(GraphicsContext g, MatrixExpression matExpr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -843,7 +836,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfCenterOfMatrixRow(Graphics g, Expression[] rowEntries, int fontSize) {
+    private int getHeightOfCenterOfMatrixRow(GraphicsContext g, Expression[] rowEntries, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -855,7 +848,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfMatrixColumn(Graphics g, Expression[] columnEntries, int fontSize) {
+    private int getLengthOfMatrixColumn(GraphicsContext g, Expression[] columnEntries, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -867,7 +860,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfMatrixExpression(Graphics g, MatrixExpression matExpr, int fontSize) {
+    private int getLengthOfMatrixExpression(GraphicsContext g, MatrixExpression matExpr, int fontSize) {
 
         // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
         Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
@@ -950,10 +943,10 @@ public class GraphicPanelFormula extends JPanel {
             if (((MatrixFunction) matExpr).getLeft() instanceof Matrix
                     && !(((MatrixFunction) matExpr).getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression)) {
                 // In diesem Fall braucht man keine umschließende Klammern für matExpr.
-                return g.getFontMetrics().stringWidth(((MatrixFunction) matExpr).getName())
+                return getTextWidth(((MatrixFunction) matExpr).getName())
                         + getLengthOfMatrixExpression(g, ((MatrixFunction) matExpr).getLeft(), fontSize);
             } else {
-                return g.getFontMetrics().stringWidth(((MatrixFunction) matExpr).getName()) + 2 * getWidthOfBracket(fontSize)
+                return getTextWidth(((MatrixFunction) matExpr).getName()) + 2 * getWidthOfBracket(fontSize)
                         + getLengthOfMatrixExpression(g, ((MatrixFunction) matExpr).getLeft(), fontSize);
             }
 
@@ -966,7 +959,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfMatrixOperator(Graphics g, MatrixOperator matOperator, int fontSize) {
+    private int getLengthOfMatrixOperator(GraphicsContext g, MatrixOperator matOperator, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -988,21 +981,21 @@ public class GraphicPanelFormula extends JPanel {
                 int result;
                 if (params.length == 2) {
 
-                    result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
+                    result = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1])
                             + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
 
                 } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1]);
                     setFont(g, getSizeForSup(fontSize));
-                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + getTextWidth(String.valueOf((int) params[2]));
                     result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
 
                 } else {
 
-                    int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getTextWidth((String) params[1]);
                     for (int i = 2; i < params.length; i++) {
-                        widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                        widthOfDifferentialOperator = widthOfDifferentialOperator + getTextWidth((String) params[i]);
                     }
                     widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
                     result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
@@ -1035,17 +1028,17 @@ public class GraphicPanelFormula extends JPanel {
                  var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
                  Pixel).
                  */
-                return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
+                return result + getTextWidth("d" + (String) params[1]) + fontSize / 2;
 
             }
             case laplace:
-                return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                return getTextWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
             case prod: {
 
                 int heightFactor = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
                 int result = getWidthOfSignPi(g, fontSize, heightFactor);
                 setFont(g, getSizeForSup(fontSize));
-                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                int lengthIndexVar = getTextWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
                 if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
@@ -1062,7 +1055,7 @@ public class GraphicPanelFormula extends JPanel {
                 int heightSummand = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
                 int result = getWidthOfSignSigma(g, fontSize, heightSummand);
                 setFont(g, getSizeForSup(fontSize));
-                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                int lengthIndexVar = getTextWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
                 if (((MatrixExpression) params[0]) instanceof MatrixBinaryOperation
@@ -1078,7 +1071,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 // Sonstiger Standardfall
                 String name = MatrixOperator.getNameFromType(matOperator.getType());
-                int result = g.getFontMetrics().stringWidth(name) + 2 * getWidthOfBracket(fontSize);
+                int result = getTextWidth(name) + 2 * getWidthOfBracket(fontSize);
 
                 for (int i = 0; i < params.length; i++) {
 
@@ -1088,13 +1081,13 @@ public class GraphicPanelFormula extends JPanel {
                     } else if (params[i] instanceof MatrixExpression) {
                         result = result + getLengthOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[i], fontSize);
                     } else if (params[i] instanceof String) {
-                        result = result + g.getFontMetrics().stringWidth((String) params[i]);
+                        result = result + getTextWidth((String) params[i]);
                     } else if (params[i] instanceof Integer) {
-                        result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
+                        result = result + getTextWidth(String.valueOf((Integer) params[i]));
                     }
 
                     if (i < params.length - 1) {
-                        result = result + g.getFontMetrics().stringWidth(", ");
+                        result = result + getTextWidth(", ");
                     }
 
                 }
@@ -1105,7 +1098,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getHeightOfExpression(GraphicsContext g, Expression expr, int fontSize) {
 
         if (expr instanceof Constant) {
             return fontSize;
@@ -1251,7 +1244,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int fontSize) {
+    private int getHeightOfBinaryOperationRoot(GraphicsContext g, Expression base, BigInteger p, BigInteger q, int fontSize) {
         /* 
          q spielt bei der Höhe KEINE Rolle, denn der obere Rand von p befindet
          sich maximal auf derselben Höhe, wie der waagerechte Wurzelstrich.
@@ -1266,7 +1259,7 @@ public class GraphicPanelFormula extends JPanel {
         return getHeightOfExpression(g, base, fontSize) + getSizeForSup(fontSize) / 2;
     }
 
-    private int getHeightOfCenterOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getHeightOfCenterOfExpression(GraphicsContext g, Expression expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1374,7 +1367,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfExpression(Graphics g, Expression expr, int fontSize) {
+    private int getLengthOfExpression(GraphicsContext g, Expression expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1395,16 +1388,16 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfConstant(Graphics g, Constant expr, int fontSize) {
+    private int getLengthOfConstant(GraphicsContext g, Constant expr, int fontSize) {
         setFont(g, fontSize);
         String s = expr.toString();
         if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
-            return getWidthOfSignMinus(g, fontSize) + g.getFontMetrics().stringWidth(s.substring(1, s.length()));
+            return getWidthOfSignMinus(g, fontSize) + getTextWidth(s.substring(1, s.length()));
         }
-        return g.getFontMetrics().stringWidth(s);
+        return getTextWidth(s);
     }
 
-    private int getLengthOfVariable(Graphics g, Variable expr, int fontSize) {
+    private int getLengthOfVariable(GraphicsContext g, Variable expr, int fontSize) {
         setFont(g, fontSize);
 
         if (expr instanceof MultiIndexVariable) {
@@ -1413,7 +1406,7 @@ public class GraphicPanelFormula extends JPanel {
 
         if (!expr.getName().contains("_")) {
             String s = expr.toString();
-            return g.getFontMetrics().stringWidth(s);
+            return getTextWidth(s);
         }
 
         // Die Variable ist von der Form x_index mit eventuellen Apostrophs.
@@ -1428,10 +1421,10 @@ public class GraphicPanelFormula extends JPanel {
         // Apostrophs auslesen.
         String apostrophs = expr.getName().substring(i, expr.getName().length());
 
-        int lengthVar = g.getFontMetrics().stringWidth(varName);
-        int lengthApostrophs = g.getFontMetrics().stringWidth(apostrophs);
+        int lengthVar = getTextWidth(varName);
+        int lengthApostrophs = getTextWidth(apostrophs);
         setFont(g, getSizeForSub(fontSize));
-        int lengthIndex = g.getFontMetrics().stringWidth(index);
+        int lengthIndex = getTextWidth(index);
 
         // Es wird zwischen der Variablen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
         return lengthVar + Math.max(getSizeForSub(fontSize) / 3 + lengthIndex, lengthApostrophs);
@@ -1440,27 +1433,27 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Zeichnen einer Multiindexvariablen.
      */
-    private int getLengthOfMultiIndexVariable(Graphics g, MultiIndexVariable v, int fontSize) {
+    private int getLengthOfMultiIndexVariable(GraphicsContext g, MultiIndexVariable v, int fontSize) {
 
         setFont(g, fontSize);
 
         String name = v.getName();
         String nameWithoutPrimes = name.replaceAll("'", "");
-        int lengthOfVarWithoutIndices = g.getFontMetrics().stringWidth(name);
+        int lengthOfVarWithoutIndices = getTextWidth(name);
 
         // Länge Variablennamens zusammen mit den Apostrophs berechnen.
         if (name.contains("'")) {
-            lengthOfVarWithoutIndices += g.getFontMetrics().stringWidth(name.substring(name.indexOf("'")));
+            lengthOfVarWithoutIndices += getTextWidth(name.substring(name.indexOf("'")));
         }
 
         // Länge Variablennamens zusammen mit den Indizes berechnen.
         // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
-        int lengthOfVarWithoutPrimes = g.getFontMetrics().stringWidth(nameWithoutPrimes) + fontSize / 3;
+        int lengthOfVarWithoutPrimes = getTextWidth(nameWithoutPrimes) + fontSize / 3;
         setFont(g, getSizeForSub(fontSize));
         for (int i = 0; i < v.getIndices().size(); i++) {
-            lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices().get(i).toString());
+            lengthOfVarWithoutPrimes += getTextWidth(v.getIndices().get(i).toString());
             if (i < v.getIndices().size() - 1) {
-                lengthOfVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
+                lengthOfVarWithoutPrimes += getTextWidth(",");
             }
         }
 
@@ -1472,7 +1465,7 @@ public class GraphicPanelFormula extends JPanel {
      * Gibt die Länge von expr zurück. VORAUSSETZUNG: expr ist eine Instanz von
      * BinaryOperation.
      */
-    private int getLengthOfBinaryOperation(Graphics g, BinaryOperation expr, int fontSize) {
+    private int getLengthOfBinaryOperation(GraphicsContext g, BinaryOperation expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1605,7 +1598,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int fontSize) {
+    private int getLengthOfBinaryOperationRoot(GraphicsContext g, Expression base, BigInteger p, BigInteger q, int fontSize) {
         int h = getHeightOfExpression(g, base, fontSize);
         int length = getWidthOfSignRoot(g, fontSize, h) + getLengthOfExpression(g, base, fontSize);
 
@@ -1619,7 +1612,7 @@ public class GraphicPanelFormula extends JPanel {
         return length;
     }
 
-    private int getLengthOfFunction(Graphics g, Function expr, int fontSize) {
+    private int getLengthOfFunction(GraphicsContext g, Function expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1628,7 +1621,7 @@ public class GraphicPanelFormula extends JPanel {
          beiden Klammerbreiten. Diese betragen jeweils fontsize.
          */
         if (!expr.getType().equals(TypeFunction.abs)) {
-            return g.getFontMetrics().stringWidth(expr.getName())
+            return getTextWidth(expr.getName())
                     + getLengthOfExpression(g, expr.getLeft(), fontSize)
                     + 2 * getWidthOfBracket(fontSize);
         } else {
@@ -1638,7 +1631,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfOperator(Graphics g, Operator expr, int fontSize) {
+    private int getLengthOfOperator(GraphicsContext g, Operator expr, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -1651,21 +1644,21 @@ public class GraphicPanelFormula extends JPanel {
 
                 if (params.length == 2) {
 
-                    result = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1])
+                    result = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1])
                             + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
 
                 } else if (params.length == 3 && params[2] instanceof Integer) {
 
-                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1]);
                     setFont(g, getSizeForSup(fontSize));
-                    widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth(String.valueOf((int) params[2]));
+                    widthOfDifferentialOperator = widthOfDifferentialOperator + getTextWidth(String.valueOf((int) params[2]));
                     result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
 
                 } else {
 
-                    int widthOfDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+                    int widthOfDifferentialOperator = getTextWidth((String) params[1]);
                     for (int i = 2; i < params.length; i++) {
-                        widthOfDifferentialOperator = widthOfDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                        widthOfDifferentialOperator = widthOfDifferentialOperator + getTextWidth((String) params[i]);
                     }
                     widthOfDifferentialOperator = widthOfDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
                     result = widthOfDifferentialOperator + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
@@ -1717,17 +1710,17 @@ public class GraphicPanelFormula extends JPanel {
                  var) etwas Abstand zum nächsten Zeichen ist (nämlich fontSize / 2
                  Pixel).
                  */
-                return result + g.getFontMetrics().stringWidth("d" + (String) params[1]) + fontSize / 2;
+                return result + getTextWidth("d" + (String) params[1]) + fontSize / 2;
 
             }
             case laplace:
-                return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                return getTextWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
             case prod: {
 
                 int heightFactor = getHeightOfExpression(g, (Expression) params[0], fontSize);
                 int result = getWidthOfSignPi(g, fontSize, heightFactor);
                 setFont(g, getSizeForSup(fontSize));
-                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                int lengthIndexVar = getTextWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
                 if (((Expression) params[0]) instanceof BinaryOperation
@@ -1744,7 +1737,7 @@ public class GraphicPanelFormula extends JPanel {
                 int heightSummand = getHeightOfExpression(g, (Expression) params[0], fontSize);
                 int result = getWidthOfSignSigma(g, fontSize, heightSummand);
                 setFont(g, getSizeForSup(fontSize));
-                int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+                int lengthIndexVar = getTextWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
                 result = Math.max(result, getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize)));
                 if (((Expression) params[0]) instanceof BinaryOperation
@@ -1774,7 +1767,7 @@ public class GraphicPanelFormula extends JPanel {
                         lengthOfName = getWidthOfSignTaylor(g, fontSize);
                         break;
                     default:
-                        lengthOfName = g.getFontMetrics().stringWidth(name);
+                        lengthOfName = getTextWidth(name);
                         break;
                 }
 
@@ -1786,13 +1779,13 @@ public class GraphicPanelFormula extends JPanel {
                     if (params[i] instanceof Expression) {
                         result = result + getLengthOfExpression(g, (Expression) expr.getParams()[i], fontSize);
                     } else if (params[i] instanceof String) {
-                        result = result + g.getFontMetrics().stringWidth((String) params[i]);
+                        result = result + getTextWidth((String) params[i]);
                     } else if (params[i] instanceof Integer) {
-                        result = result + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
+                        result = result + getTextWidth(String.valueOf((Integer) params[i]));
                     }
 
                     if (i < params.length - 1) {
-                        result = result + g.getFontMetrics().stringWidth(", ");
+                        result = result + getTextWidth(", ");
                     }
 
                 }
@@ -1803,13 +1796,13 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfSelfDefinedFunction(Graphics g, SelfDefinedFunction expr, int fontSize) {
+    private int getLengthOfSelfDefinedFunction(GraphicsContext g, SelfDefinedFunction expr, int fontSize) {
 
         setFont(g, fontSize);
 
-        int result = g.getFontMetrics().stringWidth(expr.getName());
+        int result = getTextWidth(expr.getName());
         result = result + 2 * getWidthOfBracket(fontSize)
-                + (expr.getArguments().length - 1) * g.getFontMetrics().stringWidth(", ");
+                + (expr.getArguments().length - 1) * getTextWidth(", ");
 
         for (Expression left : expr.getLeft()) {
             result = result + getLengthOfExpression(g, left, fontSize);
@@ -1819,7 +1812,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfOutput(Graphics g, int fontSize, Object... output) {
+    private int getHeightOfOutput(GraphicsContext g, int fontSize, Object... output) {
 
         int heightBelowCommonCenter = (2 * fontSize) / 5;
         int heightBeyondCommonCenter = (3 * fontSize) / 5;
@@ -1880,7 +1873,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getHeightOfCenterOfOutput(Graphics g, int fontSize, Object... output) {
+    private int getHeightOfCenterOfOutput(GraphicsContext g, int fontSize, Object... output) {
 
         int heightCenter = 2 * fontSize / 5;
 
@@ -1923,7 +1916,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private int getLengthOfOutput(Graphics g, int fontSize, Object... output) {
+    private int getLengthOfOutput(GraphicsContext g, int fontSize, Object... output) {
 
         int length = 0;
 
@@ -1944,7 +1937,7 @@ public class GraphicPanelFormula extends JPanel {
 
                 String text = ((EditableString) out).getText();
                 setFont(g, fontSize);
-                length = length + g.getFontMetrics().stringWidth(text);
+                length = length + getTextWidth(text);
 
             } else if (out instanceof Expression) {
                 length = length + getLengthOfExpression(g, (Expression) out, fontSize);
@@ -1956,7 +1949,7 @@ public class GraphicPanelFormula extends JPanel {
                 length = length + getLengthOfCommand(g, (Command) out, fontSize);
             } else if (out instanceof String) {
                 setFont(g, fontSize);
-                length = length + g.getFontMetrics().stringWidth((String) out);
+                length = length + getTextWidth((String) out);
             } else if (out instanceof TypeBracket) {
                 length = length + 2 * getWidthOfBracket(fontSize);
             }
@@ -1979,19 +1972,19 @@ public class GraphicPanelFormula extends JPanel {
         return fontSize;
     }
 
-    private int getWidthOfSignPlus(Graphics g, int fontSize) {
+    private int getWidthOfSignPlus(GraphicsContext g, int fontSize) {
         return fontSize;
     }
 
-    private int getWidthOfSignMinus(Graphics g, int fontSize) {
+    private int getWidthOfSignMinus(GraphicsContext g, int fontSize) {
         return fontSize;
     }
 
-    private int getWidthOfSignMult(Graphics g, int fontSize) {
+    private int getWidthOfSignMult(GraphicsContext g, int fontSize) {
         return fontSize;
     }
 
-    private int getWidthOfSignRoot(Graphics g, int fontSize, int height) {
+    private int getWidthOfSignRoot(GraphicsContext g, int fontSize, int height) {
         /*
          Der Balance halber: Die Breite soll 1/3 das geometrischen Mittels von
          fontSize und height sein. Grund: Wenn die Höhe sehr groß ist, soll das
@@ -2000,68 +1993,68 @@ public class GraphicPanelFormula extends JPanel {
         return Math.max((int) (Math.sqrt(fontSize * height) / 3), 1);
     }
 
-    private int getWidthOfSignEquals(Graphics g, int fontSize) {
+    private int getWidthOfSignEquals(GraphicsContext g, int fontSize) {
         return fontSize;
     }
 
-    private int getWidthOfSignPartial(Graphics g, int fontSize) {
+    private int getWidthOfSignPartial(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        int result = g.getFontMetrics().stringWidth("\u2202");
+        int result = getTextWidth("\u2202");
         return result;
     }
 
-    private int getWidthOfSignFac(Graphics g, int fontSize) {
-        int oldFontSize = g.getFont().getSize();
+    private int getWidthOfSignFac(GraphicsContext g, int fontSize) {
+        int oldFontSize = (int) g.getFont().getSize();
         setFont(g, fontSize);
-        int result = g.getFontMetrics().stringWidth("!");
+        int result = getTextWidth("!");
         setFont(g, oldFontSize);
         return result;
     }
 
-    private int getWidthOfSignIntegral(Graphics g, int fontSize, int height) {
+    private int getWidthOfSignIntegral(GraphicsContext g, int fontSize, int height) {
         setFont(g, height);
-        int result = g.getFontMetrics().stringWidth("\u222B");
+        int result = getTextWidth("\u222B");
         setFont(g, fontSize);
         return result;
     }
 
-    private int getWidthOfSignSmallMu(Graphics g, int fontSize) {
+    private int getWidthOfSignSmallMu(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u03BC");
+        return getTextWidth("\u03BC");
     }
 
-    private int getWidthOfSignSmallSigma(Graphics g, int fontSize) {
+    private int getWidthOfSignSmallSigma(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u03C3");
+        return getTextWidth("\u03C3");
     }
 
-    private int getWidthOfSignCross(Graphics g, int fontSize) {
+    private int getWidthOfSignCross(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u2A2F");
+        return getTextWidth("\u2A2F");
     }
 
-    private int getWidthOfSignDelta(Graphics g, int fontSize) {
+    private int getWidthOfSignDelta(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u0394");
+        return getTextWidth("\u0394");
     }
 
-    private int getWidthOfSignPi(Graphics g, int fontSize, int height) {
+    private int getWidthOfSignPi(GraphicsContext g, int fontSize, int height) {
         setFont(g, height);
-        int result = g.getFontMetrics().stringWidth("\u03A0");
+        int result = getTextWidth("\u03A0");
         setFont(g, fontSize);
         return result;
     }
 
-    private int getWidthOfSignSigma(Graphics g, int fontSize, int height) {
+    private int getWidthOfSignSigma(GraphicsContext g, int fontSize, int height) {
         setFont(g, height);
-        int result = g.getFontMetrics().stringWidth("\u03A3");
+        int result = getTextWidth("\u03A3");
         setFont(g, fontSize);
         return result;
     }
 
-    private int getWidthOfSignTaylor(Graphics g, int fontSize) {
+    private int getWidthOfSignTaylor(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("T");
+        return getTextWidth("T");
     }
 
     /**
@@ -2081,9 +2074,9 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Gibt die Länge des des NOT-Symbols zurück.
      */
-    private int getWidthOfSignNegation(Graphics g, int fontSize) {
+    private int getWidthOfSignNegation(GraphicsContext g, int fontSize) {
         setFont(g, fontSize);
-        return g.getFontMetrics().stringWidth("\u00AC");
+        return getTextWidth("\u00AC");
     }
 
     /**
@@ -2100,263 +2093,252 @@ public class GraphicPanelFormula extends JPanel {
         return fontSize;
     }
 
-    private void drawOpeningBracket(Graphics g, int x_0, int y_0, int fontSize, int height) {
+    private void drawOpeningBracket(GraphicsContext g, int x_0, int y_0, int fontSize, int height) {
 
-        Graphics2D g2 = (Graphics2D) g;
-        /**
-         * Strichdicke abhängig von fontSize berechnen.
-         */
+        // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
 
-        g2.drawArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + (3 * getWidthOfBracket(fontSize)) / 4,
+        g.strokeArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + (3 * getWidthOfBracket(fontSize)) / 4,
                 getWidthOfBracket(fontSize) / 2, getWidthOfBracket(fontSize) / 2,
-                90, 90);
-        g2.drawLine(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + getWidthOfBracket(fontSize),
+                90, 90, ArcType.OPEN);
+        g.strokeLine(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + getWidthOfBracket(fontSize),
                 x_0 + getWidthOfBracket(fontSize) / 4, y_0);
-        g2.drawArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - getWidthOfBracket(fontSize) / 4,
+        g.strokeArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - getWidthOfBracket(fontSize) / 4,
                 getWidthOfBracket(fontSize) / 2, getWidthOfBracket(fontSize) / 2,
-                180, 90);
+                180, 90, ArcType.OPEN);
 
     }
 
-    private void drawClosingBracket(Graphics g, int x_0, int y_0, int fontSize, int height) {
+    private void drawClosingBracket(GraphicsContext g, int x_0, int y_0, int fontSize, int height) {
 
-        Graphics2D g2 = (Graphics2D) g;
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
 
-        g2.drawArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + (3 * getWidthOfBracket(fontSize)) / 4,
+        g.strokeArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - height + (3 * getWidthOfBracket(fontSize)) / 4,
                 getWidthOfBracket(fontSize) / 2, getWidthOfBracket(fontSize) / 2,
-                0, 90);
-        g2.drawLine(x_0 + (3 * getWidthOfBracket(fontSize)) / 4, y_0 - height + getWidthOfBracket(fontSize),
+                0, 90, ArcType.OPEN);
+        g.strokeLine(x_0 + (3 * getWidthOfBracket(fontSize)) / 4, y_0 - height + getWidthOfBracket(fontSize),
                 x_0 + (3 * getWidthOfBracket(fontSize)) / 4, y_0);
-        g2.drawArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - getWidthOfBracket(fontSize) / 4,
+        g.strokeArc(x_0 + getWidthOfBracket(fontSize) / 4, y_0 - getWidthOfBracket(fontSize) / 4,
                 getWidthOfBracket(fontSize) / 2, getWidthOfBracket(fontSize) / 2,
-                270, 90);
+                270, 90, ArcType.OPEN);
 
     }
 
-    private void drawAbsLine(Graphics g, int x_0, int y_0, int fontSize, int height) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawAbsLine(GraphicsContext g, int x_0, int y_0, int fontSize, int height) {
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
-        g2.drawLine(x_0 + getWidthOfAbsBracket(fontSize) / 2, y_0 - height, x_0 + getWidthOfAbsBracket(fontSize) / 2, y_0 + getWidthOfAbsBracket(fontSize) / 4);
+        g.setLineWidth(thick);
+        g.strokeLine(x_0 + getWidthOfAbsBracket(fontSize) / 2, y_0 - height, x_0 + getWidthOfAbsBracket(fontSize) / 2, y_0 + getWidthOfAbsBracket(fontSize) / 4);
     }
 
-    private void drawSignPlus(Graphics g, int x_0, int y_0, int fontSize) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawSignPlus(GraphicsContext g, int x_0, int y_0, int fontSize) {
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         //Waagerechter Strich
-        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
         //Senkrechter Strich
-        g2.drawLine(x_0 + fontSize / 2, y_0 - (2 * fontSize) / 3, x_0 + fontSize / 2, y_0 - fontSize / 3);
+        g.strokeLine(x_0 + fontSize / 2, y_0 - (2 * fontSize) / 3, x_0 + fontSize / 2, y_0 - fontSize / 3);
     }
 
-    private void drawSignMinus(Graphics g, int x_0, int y_0, int fontSize) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawSignMinus(GraphicsContext g, int x_0, int y_0, int fontSize) {
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         //Waagerechter Strich
-        g2.drawLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + fontSize / 3, y_0 - fontSize / 2, x_0 + (2 * fontSize) / 3, y_0 - fontSize / 2);
     }
 
-    private void drawSignMult(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignMult(GraphicsContext g, int x_0, int y_0, int fontSize) {
         //Ausgefüllter Kreis
         g.fillOval(x_0 + (2 * fontSize) / 5, y_0 - (3 * fontSize) / 5, fontSize / 5, fontSize / 5);
     }
 
-    private void drawSignRoot(Graphics g, int x_0, int y_0, int fontSize, int height) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawSignRoot(GraphicsContext g, int x_0, int y_0, int fontSize, int height) {
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         int widthOfSqrt = getWidthOfSignRoot(g, fontSize, height);
         //Waagerechter Strich
-        g2.drawLine(x_0, y_0 - height / 4, x_0 + widthOfSqrt / 5, y_0);
-        g2.drawLine(x_0 + widthOfSqrt / 5, y_0, x_0 + getWidthOfSignRoot(g, fontSize, height), y_0 - height);
+        g.strokeLine(x_0, y_0 - height / 4, x_0 + widthOfSqrt / 5, y_0);
+        g.strokeLine(x_0 + widthOfSqrt / 5, y_0, x_0 + getWidthOfSignRoot(g, fontSize, height), y_0 - height);
     }
 
-    private void drawRoofOfSignRoot(Graphics g, int x_0, int y_0, int fontSize, int length) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawRoofOfSignRoot(GraphicsContext g, int x_0, int y_0, int fontSize, int length) {
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         //Waagerechter Strich
-        g2.drawLine(x_0, y_0, x_0 + length, y_0);
+        g.strokeLine(x_0, y_0, x_0 + length, y_0);
     }
 
-    private void drawSignEquals(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignEquals(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("=", x_0 + (getWidthOfSignEquals(g, fontSize) - g.getFontMetrics().stringWidth("=")) / 2, y_0);
+        g.strokeText("=", x_0 + (getWidthOfSignEquals(g, fontSize) - getTextWidth("=")) / 2, y_0);
     }
 
-    private void drawFractionLine(Graphics g, int x_0, int y_0, int fontSize, int length) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawFractionLine(GraphicsContext g, int x_0, int y_0, int fontSize, int length) {
+
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
-        g2.drawLine(x_0, y_0, x_0 + length, y_0);
+        g.setLineWidth(thick);
+        g.strokeLine(x_0, y_0, x_0 + length, y_0);
     }
 
-    private void drawSignPartial(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignPartial(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u2202", x_0, y_0);
+        g.strokeText("\u2202", x_0, y_0);
     }
 
-    private void drawSignFac(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignFac(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("!", x_0, y_0);
+        g.strokeText("!", x_0, y_0);
     }
 
-    private void drawSignIntegral(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignIntegral(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         /*
          Die Verschiebung um forntsize / 15 ist deshalb da, weil das
          Integralzeichen etwas nach unten aus seiner "Box" herausragt. Dieses
          Maß wurde durch PROBIEREN herausgefunden / optimiert.
          */
-        g.drawString("\u222B", x_0, y_0 - fontSize / 15);
+        g.strokeText("\u222B", x_0, y_0 - fontSize / 15);
     }
 
-    private void drawSignSmallMu(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignSmallMu(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u03BC", x_0, y_0);
+        g.strokeText("\u03BC", x_0, y_0);
     }
 
-    private void drawSignSmallSigma(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignSmallSigma(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u03C3", x_0, y_0);
+        g.strokeText("\u03C3", x_0, y_0);
     }
 
-    private void drawSignCross(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignCross(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u00D7", x_0, y_0);
+        g.strokeText("\u00D7", x_0, y_0);
     }
 
-    private void drawSignDelta(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignDelta(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u2206", x_0, y_0);
+        g.strokeText("\u2206", x_0, y_0);
     }
 
-    private void drawSignPi(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignPi(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u03A0", x_0, y_0 - fontSize / 15);
+        g.strokeText("\u03A0", x_0, y_0 - fontSize / 15);
     }
 
-    private void drawSignSigma(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignSigma(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         /*
          Die Verschiebung um forntsize / 15 ist deshalb da, weil das
          Summenzeichen etwas nach unten aus seiner "Box" herausragt. Dieses
          Maß wurde durch PROBIEREN herausgefunden / optimiert.
          */
-        g.drawString("\u03A3", x_0, y_0 - fontSize / 15);
+        g.strokeText("\u03A3", x_0, y_0 - fontSize / 15);
     }
 
-    private void drawSignTaylor(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignTaylor(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("T", x_0, y_0);
+        g.strokeText("T", x_0, y_0);
     }
 
     /**
      * Zeichnen des UND-Symbols.
      */
-    private void drawSignAnd(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignAnd(GraphicsContext g, int x_0, int y_0, int fontSize) {
 
-        Graphics2D g2 = (Graphics2D) g;
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         //Schräger Strich: Links unten nach rechts oben.
-        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 10, x_0 + fontSize / 2, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + fontSize / 4, y_0 - fontSize / 10, x_0 + fontSize / 2, y_0 - fontSize / 2);
         //Schräger Strich: Links oben nach rechts unten.
-        g2.drawLine(x_0 + fontSize / 2, y_0 - fontSize / 2, x_0 + (3 * fontSize) / 4, y_0 - fontSize / 10);
+        g.strokeLine(x_0 + fontSize / 2, y_0 - fontSize / 2, x_0 + (3 * fontSize) / 4, y_0 - fontSize / 10);
 
     }
 
     /**
      * Zeichnen des ODER-Symbols.
      */
-    private void drawSignOr(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignOr(GraphicsContext g, int x_0, int y_0, int fontSize) {
 
-        Graphics2D g2 = (Graphics2D) g;
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         //Schräger Strich: Links oben nach rechts unten.
-        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 2, x_0 + fontSize / 2, y_0 - fontSize / 10);
+        g.strokeLine(x_0 + fontSize / 4, y_0 - fontSize / 2, x_0 + fontSize / 2, y_0 - fontSize / 10);
         //Schräger Strich: Links unten nach rechts oben.
-        g2.drawLine(x_0 + fontSize / 2, y_0 - fontSize / 10, x_0 + (3 * fontSize) / 4, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + fontSize / 2, y_0 - fontSize / 10, x_0 + (3 * fontSize) / 4, y_0 - fontSize / 2);
 
     }
 
     /**
      * Zeichnen des NOT-Symbols.
      */
-    private void drawSignNegation(Graphics g, int x_0, int y_0, int fontSize) {
+    private void drawSignNegation(GraphicsContext g, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString("\u00AC", x_0, y_0);
+        g.strokeText("\u00AC", x_0, y_0);
     }
 
     /**
      * Zeichnen des Implikationssymbols.
      */
-    private void drawSignImplication(Graphics g, int x_0, int y_0, int fontSize) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawSignImplication(GraphicsContext g, int x_0, int y_0, int fontSize) {
+
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         // Zwei waagerechter Strich
-        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
-        g2.drawLine(x_0 + fontSize / 4, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + fontSize / 4, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
+        g.strokeLine(x_0 + fontSize / 4, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
         // Zwei Pfeilspitzenstriche
-        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
-        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
     }
 
     /**
      * Zeichnen des Äquivalenzsymbols.
      */
-    private void drawSignEquivalence(Graphics g, int x_0, int y_0, int fontSize) {
-        Graphics2D g2 = (Graphics2D) g;
+    private void drawSignEquivalence(GraphicsContext g, int x_0, int y_0, int fontSize) {
+
         // Strichdicke abhängig von fontSize berechnen.
         int thick = Math.max((int) Math.round(((double) this.fontSize) / 10), 1);
-        g2.setStroke(new BasicStroke(thick));
+        g.setLineWidth(thick);
         // Zwei waagerechter Strich
-        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
-        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
+        g.strokeLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 4, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 4);
+        g.strokeLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 2, x_0 + (5 * fontSize) / 8, y_0 - fontSize / 2);
         // Vier Pfeilspitzenstriche
-        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
-        g2.drawLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
-        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
-        g2.drawLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (5 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (5 * fontSize) / 8, y_0 - fontSize / 8, x_0 + (3 * fontSize) / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (3 * fontSize) / 8, y_0 - (5 * fontSize) / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
+        g.strokeLine(x_0 + (3 * fontSize) / 8, y_0 - fontSize / 8, x_0 + fontSize / 4, y_0 - (3 * fontSize) / 8);
     }
 
     /**
      * Zeichnen einer Konstanten.
      */
-    private void drawConstant(Graphics g, Constant expr, int x_0, int y_0, int fontSize) {
+    private void drawConstant(GraphicsContext g, Constant expr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         if (expr.getValue().compareTo(BigDecimal.ZERO) < 0) {
             Constant exprNeg = new Constant(expr.getValue().negate());
             // Minuszeichen wird mit der internen Methode separat gezeichnet (der Einheitlichkeit halber).
             drawSignMinus(g, x_0, y_0 - (getHeightOfCenterOfExpression(g, exprNeg, fontSize) - fontSize / 2), fontSize);
-            g.drawString(exprNeg.toString(), x_0 + getWidthOfSignMinus(g, fontSize), y_0);
+            g.strokeText(exprNeg.toString(), x_0 + getWidthOfSignMinus(g, fontSize), y_0);
             return;
         }
-        g.drawString(expr.toString(), x_0, y_0);
+        g.strokeText(expr.toString(), x_0, y_0);
     }
 
     /**
      * Zeichnen einer Variablen.
      */
-    private void drawVariable(Graphics g, Variable expr, int x_0, int y_0, int fontSize) {
+    private void drawVariable(GraphicsContext g, Variable expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2367,9 +2349,9 @@ public class GraphicPanelFormula extends JPanel {
 
         if (expr.getName().equals("pi")) {
             // Unicode: pi = \u03C0
-            g.drawString("\u03C0", x_0, y_0);
+            g.strokeText("\u03C0", x_0, y_0);
         } else if (!expr.getName().contains("_")) {
-            g.drawString(expr.toString(), x_0, y_0);
+            g.strokeText(expr.toString(), x_0, y_0);
         } else {
             // Die Variable ist von der Form x_index mit eventuellen Apostrophs.
             int i = 2;
@@ -2383,13 +2365,13 @@ public class GraphicPanelFormula extends JPanel {
             // Apostrophs auslesen.
             String apostrophs = expr.getName().substring(i, expr.getName().length());
 
-            int lengthVar = g.getFontMetrics().stringWidth(varName);
+            int lengthVar = getTextWidth(varName);
 
             // Ersten Buchstaben und die Apostrophs zeichnen.
-            g.drawString(varName + apostrophs, x_0, y_0);
+            g.strokeText(varName + apostrophs, x_0, y_0);
             setFont(g, getSizeForSub(fontSize));
             // Es wird zwischen der Variablen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
-            g.drawString(index, x_0 + lengthVar + getSizeForSub(fontSize) / 3, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+            g.strokeText(index, x_0 + lengthVar + getSizeForSub(fontSize) / 3, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
 
         }
 
@@ -2398,33 +2380,33 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Zeichnen einer Multiindexvariablen.
      */
-    private void drawMultiIndexVariable(Graphics g, MultiIndexVariable v, int x_0, int y_0, int fontSize) {
+    private void drawMultiIndexVariable(GraphicsContext g, MultiIndexVariable v, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
         String name = v.getName();
         String nameWithoutPrimes = name.replaceAll("'", "");
-        int varWithoutPrimesWidth = g.getFontMetrics().stringWidth(nameWithoutPrimes);
+        int varWithoutPrimesWidth = getTextWidth(nameWithoutPrimes);
 
         // Variablennamen (mit Spostrophs) ohne Indizes zeichnen.
-        g.drawString(name, x_0, y_0);
+        g.strokeText(name, x_0, y_0);
 
         // Indizes zeichnen.
         // Es wird zwischen dem Variablennamen und dem Index getSizeForSub(fontSize) / 3 Pixel Platz gelassen.
         int distanceFromVarWithoutPrimes = getSizeForSub(fontSize) / 3;
         setFont(g, getSizeForSub(fontSize));
         for (int i = 0; i < v.getIndices().size(); i++) {
-            g.drawString(v.getIndices().get(i).toString(), x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
-            distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(v.getIndices().get(i).toString());
+            g.strokeText(v.getIndices().get(i).toString(), x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+            distanceFromVarWithoutPrimes += getTextWidth(v.getIndices().get(i).toString());
             if (i < v.getIndices().size() - 1) {
-                g.drawString(",", x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
-                distanceFromVarWithoutPrimes += g.getFontMetrics().stringWidth(",");
+                g.strokeText(",", x_0 + varWithoutPrimesWidth + distanceFromVarWithoutPrimes, y_0 + Math.max(getSizeForSub(fontSize) / 2, 1));
+                distanceFromVarWithoutPrimes += getTextWidth(",");
             }
         }
 
     }
 
-    private void drawBinaryOperationPlus(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationPlus(GraphicsContext g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2464,7 +2446,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawBinaryOperationMinus(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationMinus(GraphicsContext g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2510,7 +2492,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawBinaryOperationTimes(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationTimes(GraphicsContext g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2605,7 +2587,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawBinaryOperationDiv(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationDiv(GraphicsContext g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2653,7 +2635,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawBinaryOperationPow(Graphics g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationPow(GraphicsContext g, BinaryOperation expr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2701,7 +2683,7 @@ public class GraphicPanelFormula extends JPanel {
      * Zeichnet den Ausdruck base^(p/q) mit Hilfe des Wurzelzeichens.<br>
      * ACHTUNG: Bitte nur benutzen, wenn q >= 1 ist.
      */
-    private void drawBinaryOperationRoot(Graphics g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
+    private void drawBinaryOperationRoot(GraphicsContext g, Expression base, BigInteger p, BigInteger q, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2730,7 +2712,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawFunction(Graphics g, Function f, int x_0, int y_0, int fontSize) {
+    private void drawFunction(GraphicsContext g, Function f, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2740,14 +2722,14 @@ public class GraphicPanelFormula extends JPanel {
         if (!f.getType().equals(TypeFunction.abs)) {
 
             setFont(g, fontSize);
-            g.drawString(f.getName(), x_0, y_0 - (heightCenterLeft - (2 * fontSize) / 5));
-            drawOpeningBracket(g, x_0 + g.getFontMetrics().stringWidth(f.getName()), y_0, fontSize, heightLeft);
+            g.strokeText(f.getName(), x_0, y_0 - (heightCenterLeft - (2 * fontSize) / 5));
+            drawOpeningBracket(g, x_0 + getTextWidth(f.getName()), y_0, fontSize, heightLeft);
             drawExpression(g, f.getLeft(),
-                    x_0 + g.getFontMetrics().stringWidth(f.getName()) + getWidthOfBracket(fontSize),
+                    x_0 + getTextWidth(f.getName()) + getWidthOfBracket(fontSize),
                     y_0, fontSize);
             setFont(g, fontSize);
             drawClosingBracket(g,
-                    x_0 + g.getFontMetrics().stringWidth(f.getName()) + getWidthOfBracket(fontSize)
+                    x_0 + getTextWidth(f.getName()) + getWidthOfBracket(fontSize)
                     + getLengthOfExpression(g, f.getLeft(), fontSize),
                     y_0, fontSize, heightLeft);
 
@@ -2764,7 +2746,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawOperator(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperator(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         /*
          Unicodes: SIGMA = \u03A3, PI = \u03A0, INT = \u222B, sqrt = \u221A,
@@ -2786,7 +2768,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawOperatorDiff(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorDiff(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2799,12 +2781,12 @@ public class GraphicPanelFormula extends JPanel {
         if (params.length == 2) {
 
             lengthEnumeratorDifferentialOperator = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+            lengthDifferentialOperator = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1]);
 
             // Im Folgenden sei x = var.
             // Zeichnen von dx (im Nenner des Operators) 
             drawSignPartial(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2), fontSize);
-            g.drawString((String) params[1], x_0 + lengthEnumeratorDifferentialOperator, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
+            g.strokeText((String) params[1], x_0 + lengthEnumeratorDifferentialOperator, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
 
             // Zeichnen des Bruchstrichs
             drawFractionLine(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2) - (3 * fontSize) / 2, fontSize, lengthDifferentialOperator);
@@ -2828,14 +2810,14 @@ public class GraphicPanelFormula extends JPanel {
         } else if (params.length == 3 && params[2] instanceof Integer) {
 
             int lengthPartialSign = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = lengthPartialSign + g.getFontMetrics().stringWidth((String) params[1]) + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
+            lengthDifferentialOperator = lengthPartialSign + getTextWidth((String) params[1]) + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
             lengthEnumeratorDifferentialOperator = lengthPartialSign + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
 
             // Im Folgenden sei x = var, k = Ordnung der Ableitung.
             // Zeichnen von dx^k (im Nenner des Operators) 
             drawSignPartial(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)), fontSize);
-            g.drawString((String) params[1], x_0 + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)));
-            drawExpression(g, new Constant((int) params[2]), x_0 + lengthPartialSign + g.getFontMetrics().stringWidth((String) params[1]),
+            g.strokeText((String) params[1], x_0 + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)));
+            drawExpression(g, new Constant((int) params[2]), x_0 + lengthPartialSign + getTextWidth((String) params[1]),
                     y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)) - fontSize, getSizeForSup(fontSize));
 
             // Zeichnen des Bruchstrichs
@@ -2863,9 +2845,9 @@ public class GraphicPanelFormula extends JPanel {
         } else {
 
             int lengthPartialSign = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+            lengthDifferentialOperator = getTextWidth((String) params[1]);
             for (int i = 2; i < params.length; i++) {
-                lengthDifferentialOperator = lengthDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                lengthDifferentialOperator = lengthDifferentialOperator + getTextWidth((String) params[i]);
             }
             lengthDifferentialOperator = lengthDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
 
@@ -2879,8 +2861,8 @@ public class GraphicPanelFormula extends JPanel {
             int l_current = 0;
             for (int i = 1; i < params.length; i++) {
                 drawSignPartial(g, x_0 + l_current, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2), fontSize);
-                g.drawString((String) params[i], x_0 + l_current + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
-                l_current = l_current + lengthPartialSign + g.getFontMetrics().stringWidth((String) params[i]);
+                g.strokeText((String) params[i], x_0 + l_current + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
+                l_current = l_current + lengthPartialSign + getTextWidth((String) params[i]);
             }
 
             // Zeichnen des Bruchstrichs
@@ -2908,7 +2890,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawOperatorFac(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorFac(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2936,7 +2918,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawOperatorInt(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorInt(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -2953,11 +2935,11 @@ public class GraphicPanelFormula extends JPanel {
             drawExpression(g, (Expression) params[0], x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand), y_0, fontSize);
             //dx
             setFont(g, fontSize);
-            g.drawString(" d", x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand,
+            g.strokeText(" d", x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand,
                     y_0 - (heightCenterIntegrand - (2 * fontSize) / 5));
             setFont(g, fontSize);
             drawVariable(g, Variable.create((String) params[1]),
-                    x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand + g.getFontMetrics().stringWidth(" d"),
+                    x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand + getTextWidth(" d"),
                     y_0 - (heightCenterIntegrand - (2 * fontSize) / 5), fontSize);
 
         } else {
@@ -2978,17 +2960,17 @@ public class GraphicPanelFormula extends JPanel {
             drawExpression(g, (Expression) params[0], x_0 + lengthOfIntegralSignWithLimits, y_0 - heightLowerLimit, fontSize);
             //dx
             setFont(g, fontSize);
-            g.drawString(" d", x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand,
+            g.strokeText(" d", x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand,
                     y_0 - heightLowerLimit - (heightCenterIntegrand - (2 * fontSize) / 5));
             drawVariable(g, Variable.create((String) params[1]),
-                    x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand + g.getFontMetrics().stringWidth(" d"),
+                    x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand + getTextWidth(" d"),
                     y_0 - heightLowerLimit - (heightCenterIntegrand - (2 * fontSize) / 5), fontSize);
 
         }
 
     }
 
-    private void drawOperatorProd(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorProd(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3000,7 +2982,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
         int lengthVar = getLengthOfVariable(g, Variable.create((String) params[1]), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        int lengthEquals = g.getFontMetrics().stringWidth(" = ");
+        int lengthEquals = getTextWidth(" = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthPiSign = getWidthOfSignPi(g, fontSize, heightFactor);
@@ -3010,7 +2992,7 @@ public class GraphicPanelFormula extends JPanel {
         //Zunächst Schriftgröße verkleinern, da Indizes kleinere Schriftgröße besitzen.
         drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        g.drawString(" = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
+        g.strokeText(" = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
                 y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
@@ -3031,7 +3013,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawOperatorSum(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorSum(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3043,7 +3025,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
         int lengthVar = getLengthOfVariable(g, Variable.create((String) params[1]), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        int lengthEquals = g.getFontMetrics().stringWidth(" = ");
+        int lengthEquals = getTextWidth(" = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthSigmaSign = getWidthOfSignSigma(g, fontSize, heightSummand);
@@ -3053,7 +3035,7 @@ public class GraphicPanelFormula extends JPanel {
         //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
         drawVariable(g, Variable.create((String) params[1]), x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals), getSizeForSub(fontSize));
         setFont(g, getSizeForSub(fontSize));
-        g.drawString(" = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
+        g.strokeText(" = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar,
                 y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVar - lengthEquals) / 2 + lengthVar + lengthEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
@@ -3077,7 +3059,7 @@ public class GraphicPanelFormula extends JPanel {
      * Zeichnen aller anderen Operatoren, welche keine besonderen Symbole
      * gebrauchen (also div, gcd, lcm, mod, ...).
      */
-    private void drawOperatorDefault(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
+    private void drawOperatorDefault(GraphicsContext g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3106,8 +3088,8 @@ public class GraphicPanelFormula extends JPanel {
                 distanceFromBeginningOfOperator += getWidthOfSignTaylor(g, fontSize);
                 break;
             default:
-                g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromBeginningOfOperator += g.getFontMetrics().stringWidth(name);
+                g.strokeText(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
+                distanceFromBeginningOfOperator += getTextWidth(name);
                 break;
         }
 
@@ -3123,21 +3105,21 @@ public class GraphicPanelFormula extends JPanel {
                 distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + getLengthOfExpression(g, (Expression) left[i], fontSize);
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
-                g.drawString((String) left[i], x_0 + distanceFromBeginningOfOperator,
+                g.strokeText((String) left[i], x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth((String) left[i]);
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + getTextWidth((String) left[i]);
             } else if (left[i] instanceof Integer) {
                 setFont(g, fontSize);
-                g.drawString(String.valueOf((Integer) left[i]), x_0 + distanceFromBeginningOfOperator,
+                g.strokeText(String.valueOf((Integer) left[i]), x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth(String.valueOf((Integer) left[i]));
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + getTextWidth(String.valueOf((Integer) left[i]));
             }
 
             if (i < left.length - 1) {
                 setFont(g, fontSize);
-                g.drawString(", ", x_0 + distanceFromBeginningOfOperator,
+                g.strokeText(", ", x_0 + distanceFromBeginningOfOperator,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + g.getFontMetrics().stringWidth(", ");
+                distanceFromBeginningOfOperator = distanceFromBeginningOfOperator + getTextWidth(", ");
             }
 
         }
@@ -3149,7 +3131,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawSelfDefinedFunction(Graphics g, SelfDefinedFunction f, int x_0, int y_0, int fontSize) {
+    private void drawSelfDefinedFunction(GraphicsContext g, SelfDefinedFunction f, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3157,32 +3139,32 @@ public class GraphicPanelFormula extends JPanel {
         int heightCenterF = getHeightOfCenterOfExpression(g, f, fontSize);
         Expression[] left = f.getLeft();
 
-        g.drawString(((SelfDefinedFunction) f).getName(), x_0, y_0 - (heightCenterF - (2 * fontSize) / 5));
-        drawOpeningBracket(g, x_0 + g.getFontMetrics().stringWidth(((SelfDefinedFunction) f).getName()), y_0, fontSize, heightF);
+        g.strokeText(((SelfDefinedFunction) f).getName(), x_0, y_0 - (heightCenterF - (2 * fontSize) / 5));
+        drawOpeningBracket(g, x_0 + getTextWidth(((SelfDefinedFunction) f).getName()), y_0, fontSize, heightF);
 
         int distanceFromOpeningBracket = 0;
 
         for (int i = 0; i < left.length; i++) {
 
             drawExpression(g, left[i],
-                    x_0 + g.getFontMetrics().stringWidth(((SelfDefinedFunction) f).getName())
+                    x_0 + getTextWidth(((SelfDefinedFunction) f).getName())
                     + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                     y_0 - (heightCenterF - getHeightOfCenterOfExpression(g, left[i], fontSize)), fontSize);
             distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, left[i], fontSize);
 
             if (i < left.length - 1) {
                 setFont(g, fontSize);
-                g.drawString(", ", x_0 + g.getFontMetrics().stringWidth(((SelfDefinedFunction) f).getName())
+                g.strokeText(", ", x_0 + getTextWidth(((SelfDefinedFunction) f).getName())
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterF - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
             }
 
         }
 
         setFont(g, fontSize);
         drawClosingBracket(g,
-                x_0 + g.getFontMetrics().stringWidth(((SelfDefinedFunction) f).getName())
+                x_0 + getTextWidth(((SelfDefinedFunction) f).getName())
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                 y_0, fontSize, heightF);
 
@@ -3191,7 +3173,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen einer Expression expr.
      */
-    private void drawExpression(Graphics g, Expression expr, int x_0, int y_0, int fontSize) {
+    private void drawExpression(GraphicsContext g, Expression expr, int x_0, int y_0, int fontSize) {
 
         if (expr instanceof Constant) {
             drawConstant(g, (Constant) expr, x_0, y_0, fontSize);
@@ -3225,7 +3207,7 @@ public class GraphicPanelFormula extends JPanel {
      * Hauptmethode zum Zeichnen einer Expression expr, welche von Klammern
      * umgeben ist.
      */
-    private void drawExpressionSurroundedByBrackets(Graphics g, Expression expr, int x_0, int y_0, int fontSize) {
+    private void drawExpressionSurroundedByBrackets(GraphicsContext g, Expression expr, int x_0, int y_0, int fontSize) {
 
         int heightExpr = getHeightOfExpression(g, expr, fontSize);
 
@@ -3267,7 +3249,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen einer LogicalExpression log_expr.
      */
-    private void drawLogicalExpression(Graphics g, LogicalExpression logExpr, int x_0, int y_0, int fontSize) {
+    private void drawLogicalExpression(GraphicsContext g, LogicalExpression logExpr, int x_0, int y_0, int fontSize) {
 
         if (logExpr instanceof LogicalConstant) {
             drawLogicalConstant(g, (LogicalConstant) logExpr, x_0, y_0, fontSize);
@@ -3284,23 +3266,23 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer logischen Konstante.
      */
-    private void drawLogicalConstant(Graphics g, LogicalConstant logExpr, int x_0, int y_0, int fontSize) {
+    private void drawLogicalConstant(GraphicsContext g, LogicalConstant logExpr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString(logExpr.toString(), x_0, y_0);
+        g.strokeText(logExpr.toString(), x_0, y_0);
     }
 
     /**
      * Methode zum Zeichnen einer logischen Variablen.
      */
-    private void drawLogicalVariable(Graphics g, LogicalVariable logExpr, int x_0, int y_0, int fontSize) {
+    private void drawLogicalVariable(GraphicsContext g, LogicalVariable logExpr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString(logExpr.toString(), x_0, y_0);
+        g.strokeText(logExpr.toString(), x_0, y_0);
     }
 
     /**
      * Methode zum Zeichnen einer logischen unären Operation.
      */
-    private void drawLogicalUnaryOperation(Graphics g, LogicalUnaryOperation logExpr, int x_0, int y_0, int fontSize) {
+    private void drawLogicalUnaryOperation(GraphicsContext g, LogicalUnaryOperation logExpr, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
         drawSignNegation(g, x_0, y_0, fontSize);
         int l = getWidthOfSignNegation(g, fontSize);
@@ -3324,7 +3306,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer logischen Binäroperation.
      */
-    private void drawLogicalBinaryOperation(Graphics g, LogicalBinaryOperation logExpr, int x_0, int y_0, int fontSize) {
+    private void drawLogicalBinaryOperation(GraphicsContext g, LogicalBinaryOperation logExpr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3424,7 +3406,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer Matrix m.
      */
-    private void drawMatrix(Graphics g, Matrix matrix, int x_0, int y_0, int fontSize) {
+    private void drawMatrix(GraphicsContext g, Matrix matrix, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3485,7 +3467,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer Summe von MatrixExpressions.
      */
-    private void drawMatrixBinaryOperationPlus(Graphics g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixBinaryOperationPlus(GraphicsContext g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3507,7 +3489,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer Differenz von MatrixExpressions.
      */
-    private void drawMatrixBinaryOperationMinus(Graphics g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixBinaryOperationMinus(GraphicsContext g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3548,7 +3530,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen eines Produkts von MatrixExpressions.
      */
-    private void drawMatrixBinaryOperationTimes(Graphics g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixBinaryOperationTimes(GraphicsContext g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3637,7 +3619,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen einer MatrixBinaryOperation matExpr.
      */
-    private void drawMatrixBinaryOperation(Graphics g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixBinaryOperation(GraphicsContext g, MatrixBinaryOperation matExpr, int x_0, int y_0, int fontSize) {
 
         if (matExpr.getType().equals(TypeMatrixBinary.PLUS)) {
             drawMatrixBinaryOperationPlus(g, matExpr, x_0, y_0, fontSize);
@@ -3652,7 +3634,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer MatrixPower matExpr.
      */
-    private void drawMatrixPower(Graphics g, MatrixPower matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixPower(GraphicsContext g, MatrixPower matExpr, int x_0, int y_0, int fontSize) {
 
         int heightLeft = getHeightOfMatrixExpression(g, ((MatrixPower) matExpr).getLeft(), fontSize);
         int lengthLeft = getLengthOfMatrixExpression(g, ((MatrixPower) matExpr).getLeft(), fontSize);
@@ -3678,16 +3660,16 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen einer MatrixFunktion matExpr.
      */
-    private void drawMatrixFunction(Graphics g, MatrixFunction matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixFunction(GraphicsContext g, MatrixFunction matExpr, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
         int heightLeft = getHeightOfMatrixExpression(g, matExpr.getLeft(), fontSize);
         int heightCenterLeft = getHeightOfCenterOfMatrixExpression(g, matExpr.getLeft(), fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(matExpr.getName());
+        int lengthName = getTextWidth(matExpr.getName());
 
         setFont(g, fontSize);
-        g.drawString(matExpr.getName(), x_0, y_0 - (heightCenterLeft - (2 * fontSize) / 5));
+        g.strokeText(matExpr.getName(), x_0, y_0 - (heightCenterLeft - (2 * fontSize) / 5));
 
         if (matExpr.getLeft() instanceof Matrix && !(matExpr.getLeft().convertOneTimesOneMatrixToExpression() instanceof Expression)) {
             /*
@@ -3712,7 +3694,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Methode zum Zeichnen eines MatrixOperators matExpr.
      */
-    private void drawMatrixOperator(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperator(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         /*
          Unicodes: SIGMA = \u03A3, PI = \u03A0, INT = \u222B, sqrt = \u221A,
@@ -3736,7 +3718,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawMatrixOperatorCross(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorCross(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3753,11 +3735,11 @@ public class GraphicPanelFormula extends JPanel {
                 drawSignCross(g, x_0 + distanceFromBeginning, y_0 - (heightCenter - 2 * fontSize / 5), fontSize);
                 distanceFromBeginning += getWidthOfSignCross(g, fontSize) + fontSize / 2;
             }
-        } 
+        }
 
     }
 
-    private void drawMatrixOperatorDiff(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorDiff(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3770,12 +3752,12 @@ public class GraphicPanelFormula extends JPanel {
         if (params.length == 2) {
 
             lengthEnumeratorDifferentialOperator = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = getWidthOfSignPartial(g, fontSize) + g.getFontMetrics().stringWidth((String) params[1]);
+            lengthDifferentialOperator = getWidthOfSignPartial(g, fontSize) + getTextWidth((String) params[1]);
 
             // Im Folgenden sei x = var.
             //zeichnen von dx (im Nenner des Operators) 
             drawSignPartial(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2), fontSize);
-            g.drawString((String) params[1], x_0 + lengthEnumeratorDifferentialOperator, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
+            g.strokeText((String) params[1], x_0 + lengthEnumeratorDifferentialOperator, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
 
             //Zeichnen des Bruchstrichs
             drawFractionLine(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2) - (3 * fontSize) / 2, fontSize, lengthDifferentialOperator);
@@ -3800,14 +3782,14 @@ public class GraphicPanelFormula extends JPanel {
         } else if (params.length == 3 && params[2] instanceof Integer) {
 
             int lengthPartialSign = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = lengthPartialSign + g.getFontMetrics().stringWidth((String) params[1]) + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
+            lengthDifferentialOperator = lengthPartialSign + getTextWidth((String) params[1]) + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
             lengthEnumeratorDifferentialOperator = lengthPartialSign + getLengthOfConstant(g, new Constant((int) params[2]), getSizeForSup(fontSize));
 
             // Im Folgenden sei x = var, k = Ordnung der Ableitung.
             //zeichnen von dx^k (im Nenner des Operators) 
             drawSignPartial(g, x_0, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)), fontSize);
-            g.drawString((String) params[1], x_0 + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)));
-            drawExpression(g, new Constant((int) params[2]), x_0 + lengthPartialSign + g.getFontMetrics().stringWidth((String) params[1]),
+            g.strokeText((String) params[1], x_0 + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)));
+            drawExpression(g, new Constant((int) params[2]), x_0 + lengthPartialSign + getTextWidth((String) params[1]),
                     y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2 - getSizeForSup(fontSize)) - fontSize, getSizeForSup(fontSize));
 
             //Zeichnen des Bruchstrichs
@@ -3836,9 +3818,9 @@ public class GraphicPanelFormula extends JPanel {
         } else {
 
             int lengthPartialSign = getWidthOfSignPartial(g, fontSize);
-            lengthDifferentialOperator = g.getFontMetrics().stringWidth((String) params[1]);
+            lengthDifferentialOperator = getTextWidth((String) params[1]);
             for (int i = 2; i < params.length; i++) {
-                lengthDifferentialOperator = lengthDifferentialOperator + g.getFontMetrics().stringWidth((String) params[i]);
+                lengthDifferentialOperator = lengthDifferentialOperator + getTextWidth((String) params[i]);
             }
             lengthDifferentialOperator = lengthDifferentialOperator + (params.length - 1) * getWidthOfSignPartial(g, fontSize);
 
@@ -3852,8 +3834,8 @@ public class GraphicPanelFormula extends JPanel {
             int l_current = 0;
             for (int i = 1; i < params.length; i++) {
                 drawSignPartial(g, x_0 + l_current, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2), fontSize);
-                g.drawString((String) params[i], x_0 + l_current + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
-                l_current = l_current + lengthPartialSign + g.getFontMetrics().stringWidth((String) params[i]);
+                g.strokeText((String) params[i], x_0 + l_current + lengthPartialSign, y_0 - Math.max(0, heightCenterOperand - (3 * fontSize) / 2));
+                l_current = l_current + lengthPartialSign + getTextWidth((String) params[i]);
             }
 
             //Zeichnen des Bruchstrichs
@@ -3882,7 +3864,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawMatrixOperatorInt(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorInt(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3899,11 +3881,11 @@ public class GraphicPanelFormula extends JPanel {
             drawMatrixExpression(g, (MatrixExpression) params[0], x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand), y_0, fontSize);
             //dx
             setFont(g, fontSize);
-            g.drawString(" d", x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand,
+            g.strokeText(" d", x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand,
                     y_0 - (heightCenterIntegrand - (2 * fontSize) / 5));
             setFont(g, fontSize);
             drawVariable(g, Variable.create((String) params[1]),
-                    x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand + g.getFontMetrics().stringWidth(" d"),
+                    x_0 + getWidthOfSignIntegral(g, fontSize, heightIntegrand) + lengthIntegrand + getTextWidth(" d"),
                     y_0 - (heightCenterIntegrand - (2 * fontSize) / 5), fontSize);
 
         } else {
@@ -3924,17 +3906,17 @@ public class GraphicPanelFormula extends JPanel {
             drawMatrixExpression(g, (MatrixExpression) params[0], x_0 + lengthOfIntegralSignWithLimits, y_0 - heightLowerLimit, fontSize);
             //dx
             setFont(g, fontSize);
-            g.drawString(" d", x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand,
+            g.strokeText(" d", x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand,
                     y_0 - heightLowerLimit - (heightCenterIntegrand - (2 * fontSize) / 5));
             drawVariable(g, Variable.create((String) params[1]),
-                    x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand + g.getFontMetrics().stringWidth(" d"),
+                    x_0 + lengthOfIntegralSignWithLimits + lengthIntegrand + getTextWidth(" d"),
                     y_0 - heightLowerLimit - (heightCenterIntegrand - (2 * fontSize) / 5), fontSize);
 
         }
 
     }
 
-    private void drawMatrixOperatorLaplace(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorLaplace(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3952,7 +3934,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawMatrixOperatorProd(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorProd(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -3963,7 +3945,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightCenterLowerLimit = getHeightOfCenterOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
         setFont(g, getSizeForSup(fontSize));
-        int lengthVarEquals = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+        int lengthVarEquals = getTextWidth((String) params[1] + " = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthPiSign = getWidthOfSignPi(g, fontSize, heightFactor);
@@ -3972,7 +3954,7 @@ public class GraphicPanelFormula extends JPanel {
         //Untere Grenze mitsamt dem String "var="
         //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
         setFont(g, getSizeForSup(fontSize));
-        g.drawString((String) params[1] + " = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
+        g.strokeText((String) params[1] + " = ", x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfPiSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2 + lengthVarEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
         drawSignPi(g, x_0 + (lengthOfPiSignWithLimits - lengthPiSign) / 2, y_0 - heightLowerLimit, heightFactor);
@@ -3992,7 +3974,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawMatrixOperatorSum(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorSum(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4003,7 +3985,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightCenterLowerLimit = getHeightOfCenterOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int heightCenterVarEquals = getHeightOfCenterOfExpression(g, Variable.create((String) params[1]), getSizeForSup(fontSize));
         setFont(g, getSizeForSup(fontSize));
-        int lengthVarEquals = g.getFontMetrics().stringWidth((String) params[1] + " = ");
+        int lengthVarEquals = getTextWidth((String) params[1] + " = ");
         int lengthLowerLimit = getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize));
         int lengthUpperLimit = getLengthOfExpression(g, (Expression) params[3], getSizeForSup(fontSize));
         int lengthSigmaSign = getWidthOfSignSigma(g, fontSize, heightSummand);
@@ -4012,7 +3994,7 @@ public class GraphicPanelFormula extends JPanel {
         //Untere Grenze mitsamt dem String "var="
         //Zunächst Schriftgröße verkleinern, da Indizes kleinerev Schriftgröße besitzen.
         setFont(g, getSizeForSup(fontSize));
-        g.drawString((String) params[1] + " = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
+        g.strokeText((String) params[1] + " = ", x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2, y_0 - (heightCenterLowerLimit - heightCenterVarEquals));
         drawExpression(g, (Expression) params[2], x_0 + (lengthOfSigmaSignWithLimits - lengthLowerLimit - lengthVarEquals) / 2 + lengthVarEquals, y_0, getSizeForSup(fontSize));
         //Produktzeichen
         drawSignSigma(g, x_0 + (lengthOfSigmaSignWithLimits - lengthSigmaSign) / 2, y_0 - heightLowerLimit, heightSummand);
@@ -4036,7 +4018,7 @@ public class GraphicPanelFormula extends JPanel {
      * Zeichnen aller anderen Operatoren, welche keine besonderen Symbole
      * gebrauchen (also div, gcd, lcm, mod, ...).
      */
-    private void drawMatrixOperatorDefault(Graphics g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
+    private void drawMatrixOperatorDefault(GraphicsContext g, MatrixOperator matOperator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4045,8 +4027,8 @@ public class GraphicPanelFormula extends JPanel {
         Object[] left = ((MatrixOperator) matOperator).getParams();
         String name = MatrixOperator.getNameFromType(((MatrixOperator) matOperator).getType());
 
-        g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-        drawOpeningBracket(g, x_0 + g.getFontMetrics().stringWidth(name), y_0, fontSize, heightOperator);
+        g.strokeText(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
+        drawOpeningBracket(g, x_0 + getTextWidth(name), y_0, fontSize, heightOperator);
 
         int distanceFromOpeningBracket = 0;
 
@@ -4054,43 +4036,43 @@ public class GraphicPanelFormula extends JPanel {
 
             if (left[i] instanceof Expression) {
                 drawExpression(g, (Expression) left[i],
-                        x_0 + g.getFontMetrics().stringWidth(name)
+                        x_0 + getTextWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfExpression(g, (Expression) left[i], fontSize)), fontSize);
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) left[i], fontSize);
             } else if (left[i] instanceof MatrixExpression) {
                 drawMatrixExpression(g, (MatrixExpression) left[i],
-                        x_0 + g.getFontMetrics().stringWidth(name)
+                        x_0 + getTextWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) left[i], fontSize)), fontSize);
                 distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfMatrixExpression(g, (MatrixExpression) left[i], fontSize);
             } else if (left[i] instanceof String) {
                 setFont(g, fontSize);
-                g.drawString((String) left[i], x_0 + g.getFontMetrics().stringWidth(name)
+                g.strokeText((String) left[i], x_0 + getTextWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth((String) left[i]);
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth((String) left[i]);
             } else if (left[i] instanceof Integer) {
                 setFont(g, fontSize);
-                g.drawString(String.valueOf((Integer) left[i]), x_0 + g.getFontMetrics().stringWidth(name)
+                g.strokeText(String.valueOf((Integer) left[i]), x_0 + getTextWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(String.valueOf((Integer) left[i]));
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(String.valueOf((Integer) left[i]));
             }
 
             if (i < left.length - 1) {
                 setFont(g, fontSize);
-                g.drawString(", ", x_0 + g.getFontMetrics().stringWidth(name)
+                g.strokeText(", ", x_0 + getTextWidth(name)
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterOperator - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
             }
 
         }
 
         setFont(g, fontSize);
         drawClosingBracket(g,
-                x_0 + g.getFontMetrics().stringWidth(name)
+                x_0 + getTextWidth(name)
                 + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                 y_0, fontSize, heightOperator);
 
@@ -4099,7 +4081,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen einer MatrixExpression matExpr.
      */
-    private void drawMatrixExpression(Graphics g, MatrixExpression matExpr, int x_0, int y_0, int fontSize) {
+    private void drawMatrixExpression(GraphicsContext g, MatrixExpression matExpr, int x_0, int y_0, int fontSize) {
 
         // Im Vorfeld prüfen, ob es sich um eine 1x1-Matrix handelt. Falls ja, dann wie eine Instanz von Expression behandeln.
         Object matExprConverted = matExpr.convertOneTimesOneMatrixToExpression();
@@ -4137,7 +4119,7 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen eines Befehls.
      */
-    private void drawCommand(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommand(GraphicsContext g, Command c, int x_0, int y_0, int fontSize) {
 
         switch (c.getTypeCommand()) {
             case def:
@@ -4159,7 +4141,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawCommandDef(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommandDef(GraphicsContext g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4168,16 +4150,16 @@ public class GraphicPanelFormula extends JPanel {
         int heightCommand = getHeightOfCommand(g, c, fontSize);
         int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
         setFont(g, fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(c.getName());
+        int lengthName = getTextWidth(c.getName());
 
-        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+        g.strokeText(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
 
         if (params.length == 2) {
 
             // Fall: Variablendeklaration.
-            int lengthVar = g.getFontMetrics().stringWidth((String) params[0]);
-            g.drawString((String) params[0],
+            int lengthVar = getTextWidth((String) params[0]);
+            g.strokeText((String) params[0],
                     x_0 + lengthName + getWidthOfBracket(fontSize),
                     y_0 - (heightCenterCommand - (2 * fontSize) / 5));
             drawSignEquals(g, x_0 + lengthName + getWidthOfBracket(fontSize) + lengthVar,
@@ -4219,9 +4201,9 @@ public class GraphicPanelFormula extends JPanel {
             int distanceFromOpeningBracket = 0;
 
             // Funktionsnamen zeichnen.
-            g.drawString(functionName, x_0 + lengthName + getWidthOfBracket(fontSize),
+            g.strokeText(functionName, x_0 + lengthName + getWidthOfBracket(fontSize),
                     y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-            distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(functionName);
+            distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(functionName);
             // Öffnende Klammer für die Funktion zeichnen.
             drawOpeningBracket(g, x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                     y_0 - (heightCenterCommand - (2 * fontSize) / 5), fontSize, fontSize);
@@ -4235,10 +4217,10 @@ public class GraphicPanelFormula extends JPanel {
 
                 // Einzelne Funktionsvariablen mit einem Komma abtrennen.
                 if (i < varsForOutput.length - 1) {
-                    g.drawString(", ",
+                    g.strokeText(", ",
                             x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                             y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                    distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                    distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
                 }
 
             }
@@ -4266,7 +4248,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawCommandLatex(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommandLatex(GraphicsContext g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4275,9 +4257,9 @@ public class GraphicPanelFormula extends JPanel {
         int heightCommand = getHeightOfCommand(g, c, fontSize);
         int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
         setFont(g, fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(c.getName());
+        int lengthName = getTextWidth(c.getName());
 
-        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+        g.strokeText(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
 
         int distanceFromOpeningBracket = 0;
@@ -4307,7 +4289,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawCommandsNormalOrTangent(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommandsNormalOrTangent(GraphicsContext g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4316,9 +4298,9 @@ public class GraphicPanelFormula extends JPanel {
         int heightCommand = getHeightOfCommand(g, c, fontSize);
         int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
         setFont(g, fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(c.getName());
+        int lengthName = getTextWidth(c.getName());
 
-        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+        g.strokeText(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
 
         int distanceFromOpeningBracket = 0;
@@ -4330,9 +4312,9 @@ public class GraphicPanelFormula extends JPanel {
         distanceFromOpeningBracket = distanceFromOpeningBracket + getLengthOfExpression(g, (Expression) params[0], fontSize);
         // Komma zeichnen.
         setFont(g, fontSize);
-        g.drawString(", ", x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
+        g.strokeText(", ", x_0 + lengthName + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                 y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-        distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+        distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
 
         /*
          Variablennamen mit den dazugehörigen Werten auslesen (params[1] ist
@@ -4349,10 +4331,10 @@ public class GraphicPanelFormula extends JPanel {
             valueOfVarCurrent = (Expression) varsWithValues.get(varCurrent);
 
             // Variablennamen zeichnen.
-            g.drawString(varCurrent, x_0 + lengthName
+            g.strokeText(varCurrent, x_0 + lengthName
                     + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                     y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-            distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(varCurrent);
+            distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(varCurrent);
             // "="-Zeichen zeichnen.
             drawSignEquals(g, x_0 + lengthName
                     + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
@@ -4368,10 +4350,10 @@ public class GraphicPanelFormula extends JPanel {
             if (iter.hasNext()) {
                 setFont(g, fontSize);
                 // Koma zeichnen.
-                g.drawString(", ", x_0 + lengthName
+                g.strokeText(", ", x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
             }
 
         }
@@ -4383,7 +4365,7 @@ public class GraphicPanelFormula extends JPanel {
 
     }
 
-    private void drawCommandDefault(Graphics g, Command c, int x_0, int y_0, int fontSize) {
+    private void drawCommandDefault(GraphicsContext g, Command c, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
 
@@ -4392,9 +4374,9 @@ public class GraphicPanelFormula extends JPanel {
         int heightCommand = getHeightOfCommand(g, c, fontSize);
         int heightCenterCommand = getHeightOfCenterOfCommand(g, c, fontSize);
         setFont(g, fontSize);
-        int lengthName = g.getFontMetrics().stringWidth(c.getName());
+        int lengthName = getTextWidth(c.getName());
 
-        g.drawString(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
+        g.strokeText(c.getName(), x_0, y_0 - (heightCenterCommand - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + lengthName, y_0, fontSize, heightCommand);
 
         int distanceFromOpeningBracket = 0;
@@ -4450,28 +4432,28 @@ public class GraphicPanelFormula extends JPanel {
             } else if (params[i] instanceof String) {
 
                 setFont(g, fontSize);
-                g.drawString((String) params[i], x_0 + lengthName
+                g.strokeText((String) params[i], x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth((String) params[i]);
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth((String) params[i]);
 
             } else if (params[i] instanceof Integer) {
 
                 setFont(g, fontSize);
-                g.drawString(String.valueOf((Integer) params[i]), x_0 + lengthName
+                g.strokeText(String.valueOf((Integer) params[i]), x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(String.valueOf((Integer) params[i]));
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(String.valueOf((Integer) params[i]));
 
             }
 
             if (i < params.length - 1) {
                 setFont(g, fontSize);
                 // Koma zeichnen.
-                g.drawString(", ", x_0 + lengthName
+                g.strokeText(", ", x_0 + lengthName
                         + getWidthOfBracket(fontSize) + distanceFromOpeningBracket,
                         y_0 - (heightCenterCommand - (2 * fontSize) / 5));
-                distanceFromOpeningBracket = distanceFromOpeningBracket + g.getFontMetrics().stringWidth(", ");
+                distanceFromOpeningBracket = distanceFromOpeningBracket + getTextWidth(", ");
             }
 
         }
@@ -4486,9 +4468,9 @@ public class GraphicPanelFormula extends JPanel {
     /**
      * Hauptmethode zum Zeichnen eines Textes.
      */
-    private void drawText(Graphics g, String s, int x_0, int y_0, int fontSize) {
+    private void drawText(GraphicsContext g, String s, int x_0, int y_0, int fontSize) {
         setFont(g, fontSize);
-        g.drawString(s, x_0, y_0);
+        g.strokeText(s, x_0, y_0);
     }
 
     /**
@@ -4496,7 +4478,7 @@ public class GraphicPanelFormula extends JPanel {
      * sollen nur Instanzen von Expression, LogicalExpression, Command und
      * String sein.
      */
-    private void drawOutput(Graphics g, int x_0, int y_0, int fontSize, Object... output) {
+    private void drawOutput(GraphicsContext g, int x_0, int y_0, int fontSize, Object... output) {
 
         int distanceFromBeginningOfOutput = 0;
         int heightCenterOutput = getHeightOfCenterOfOutput(g, fontSize, output);
@@ -4534,8 +4516,8 @@ public class GraphicPanelFormula extends JPanel {
                 distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getLengthOfCommand(g, (Command) out, fontSize);
             } else if (out instanceof String) {
                 setFont(g, fontSize);
-                g.drawString((String) out, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
-                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + g.getFontMetrics().stringWidth((String) out);
+                g.strokeText((String) out, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
+                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getTextWidth((String) out);
             } else if (out instanceof MultiIndexVariable) {
                 setFont(g, fontSize);
                 drawMultiIndexVariable(g, (MultiIndexVariable) out, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5), fontSize);
@@ -4571,8 +4553,8 @@ public class GraphicPanelFormula extends JPanel {
                 String text = ((EditableString) out).getText();
 
                 setFont(g, fontSize);
-                g.drawString(text, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
-                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + g.getFontMetrics().stringWidth(text);
+                g.strokeText(text, x_0 + distanceFromBeginningOfOutput, y_0 - (heightCenterOutput - (2 * fontSize) / 5));
+                distanceFromBeginningOfOutput = distanceFromBeginningOfOutput + getTextWidth(text);
 
             }
 
@@ -4581,19 +4563,14 @@ public class GraphicPanelFormula extends JPanel {
     }
 
     public void drawFormula() {
-        repaint();
-    }
 
-    @Override
-    public void paintComponent(Graphics g) {
-
-        super.paintComponent(g);
-        g.setColor(this.backgroundColor);
-        g.fillRect(0, 0, this.width, this.height);
-        g.setColor(Color.black);
-        setFont(g, fontSize);
+        GraphicsContext gc = getGraphicsContext2D();
+        gc.setFill(this.backgroundColor);
+        gc.fillRect(0, 0, this.width, this.height);
+        gc.setStroke(Color.BLACK);
+        setFont(gc, fontSize);
         // Pufferrahmen mit Breite fontsize/2 lassen!
-        drawOutput(g, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
+        drawOutput(gc, this.fontSize / 2, this.height - this.fontSize / 2, fontSize, output);
 
     }
 
