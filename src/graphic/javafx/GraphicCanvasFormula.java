@@ -17,7 +17,6 @@ import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.interfaces.AbstractExpression;
 import abstractexpressions.output.EditableAbstractExpression;
-import java.awt.BasicStroke;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
