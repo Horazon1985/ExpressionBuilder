@@ -1,4 +1,4 @@
-package graphic.swing;
+package graphic.common;
 
 import java.awt.Dimension;
 import java.awt.Point;

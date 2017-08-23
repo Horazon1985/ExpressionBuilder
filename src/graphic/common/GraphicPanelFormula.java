@@ -1,4 +1,4 @@
-package graphic.swing;
+package graphic.common;
 
 import abstractexpressions.expression.classes.MultiIndexVariable;
 import command.Command;
@@ -253,7 +253,7 @@ public class GraphicPanelFormula extends JPanel {
     }
 
     public void setFont(Graphics g, int fontSize) {
-        Font f = new Font("Times New Roman", Font.BOLD, fontSize);
+        Font f = new Font("Times New Roman", Font.PLAIN, fontSize);
         g.setFont(f);
     }
 
