@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JTextArea;
 import java.awt.event.MouseListener;
+import java.util.List;
 
 public class GraphicArea extends JTextArea {
 
-    private final ArrayList<GraphicPanelFormula> formulas;
-    private final ArrayList<Point> formulasCoordinates;
+    private final List<GraphicPanelFormula> formulas;
+    private final List<Point> formulasCoordinates;
     private static int fontSize;
+    private static final int PADDING = 10;
 
     private final MouseListener mathToolMouseListener;
 
@@ -44,7 +46,7 @@ public class GraphicArea extends JTextArea {
         GraphicArea.fontSize = fontSize;
     }
 
-    public ArrayList<GraphicPanelFormula> getFormulas() {
+    public List<GraphicPanelFormula> getFormulas() {
         return this.formulas;
     }
 
@@ -52,7 +54,7 @@ public class GraphicArea extends JTextArea {
      * Fügt Elemente von out nacheinander der gegebenen Instanz von GraphicArea
      * hinzu.
      */
-    public void addComponent(ArrayList out) {
+    public void addComponent(List out) {
 
         GraphicPanelFormula formula = new GraphicPanelFormula();
         this.add(formula);
@@ -108,16 +110,16 @@ public class GraphicArea extends JTextArea {
     public void setPosition(GraphicPanelFormula f) {
 
         if (this.formulasCoordinates.isEmpty()) {
-            this.formulasCoordinates.add(new Point(10, f.getHeight()));
+            this.formulasCoordinates.add(new Point(PADDING, f.getHeight() + PADDING));
         } else {
-            this.formulasCoordinates.add(new Point(10, this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y + 10 + f.getHeight()));
+            this.formulasCoordinates.add(new Point(PADDING, this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y + PADDING + f.getHeight()));
         }
         f.setBounds(this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).x,
                 this.formulasCoordinates.get(this.formulasCoordinates.size() - 1).y - f.getHeight(),
                 f.getWidth(), f.getHeight());
         updateSize();
 
-        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den MathToolGUI implementiert.
+        // Beim Initialisieren wird der GraphicArea der MouseListener übergeben, den die MathTool-GUI implementiert.
         if (getMouseListeners().length > 0) {
             addMouseListener(getMouseListeners()[0]);
         }
