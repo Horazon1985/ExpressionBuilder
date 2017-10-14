@@ -1,7 +1,5 @@
 package matrixexpression.generaltests;
 
-import abstractexpressions.expression.classes.Expression;
-import abstractexpressions.matrixexpression.classes.Matrix;
 import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;

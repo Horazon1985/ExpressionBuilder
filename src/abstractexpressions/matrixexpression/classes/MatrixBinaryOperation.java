@@ -7,7 +7,6 @@ import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.TypeBinary;
 import java.awt.Dimension;
-import java.util.HashSet;
 import abstractexpressions.matrixexpression.basic.MatrixExpressionCollection;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixBinaryOperationUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;

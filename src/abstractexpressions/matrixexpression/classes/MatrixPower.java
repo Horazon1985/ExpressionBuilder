@@ -11,7 +11,6 @@ import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsU
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixBinaryOperationUtils;
 import java.awt.Dimension;
 import java.math.BigDecimal;
-import java.util.HashSet;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
 import java.util.Set;
 import lang.translator.Translator;

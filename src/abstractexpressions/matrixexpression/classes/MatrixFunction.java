@@ -6,7 +6,6 @@ import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
 import java.awt.Dimension;
-import java.util.HashSet;
 import abstractexpressions.matrixexpression.computation.EigenvaluesEigenvectorsUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionUtils;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixFunctionalRelationsUtils;
@@ -45,8 +44,8 @@ public class MatrixFunction extends MatrixExpression {
         }
         /*
          Alle anderen Funktionen, die durch eine Potenzreiche definiert sind. 
-         Voraussetzung: F(this) oder ln(this) sind wohldefiniert, d.h.
-         this stellt eine quadratische Matrix dar.
+         Voraussetzung: F(this) ist wohldefiniert, d.h. this stellt eine 
+         quadratische Matrix dar.
          */
         return new Dimension(this.left.getDimension().width, this.left.getDimension().height);
     }

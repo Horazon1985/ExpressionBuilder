@@ -8,7 +8,6 @@ import static abstractexpressions.expression.classes.Expression.ONE;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import java.awt.Dimension;
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Matrix extends MatrixExpression {

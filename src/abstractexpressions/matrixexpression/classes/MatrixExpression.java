@@ -295,23 +295,40 @@ public abstract class MatrixExpression implements AbstractExpression {
             if (formulaLeft.isEmpty() && priority == 1) {
                 return MINUS_ONE.mult(build(formulaRight, vars, validatorExpression, validatorMatrixExpression));
             }
+            
+            MatrixExpression resultLeft = build(formulaLeft, vars, validatorExpression, validatorMatrixExpression);
+
+            MatrixExpression resultRight, result;
             switch (priority) {
                 case 0:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
-                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.PLUS);
+                    resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
+                    result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.PLUS);
+                    // Prüfung, ob die Dimension wohldefiniert ist.
+                    result.getMatrixExpressionDimension();
+                    return result;
                 case 1:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
-                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.MINUS);
+                    resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
+                    result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.MINUS);
+                    // Prüfung, ob die Dimension wohldefiniert ist.
+                    result.getMatrixExpressionDimension();
+                    return result;
                 case 2:
-                    return new MatrixBinaryOperation(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression),
-                            build(formulaRight, vars, validatorExpression, validatorMatrixExpression), TypeMatrixBinary.TIMES);
+                    resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
+                    result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.TIMES);
+                    // Prüfung, ob die Dimension wohldefiniert ist.
+                    result.getMatrixExpressionDimension();
+                    return result;
                 default:
+                    Expression exponent;
                     try {
-                        Expression exponent = Expression.build(formulaRight, vars, validatorExpression);
-                        return new MatrixPower(build(formulaLeft, vars, validatorExpression, validatorMatrixExpression), exponent);
+                        exponent = Expression.build(formulaRight, vars, validatorExpression);
                     } catch (ExpressionException e) {
                         throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_EXPONENT_FORMULA_CANNOT_BE_INTERPRETED, formulaRight));
                     }
+                    result = new MatrixPower(resultLeft, exponent);
+                    // Prüfung, ob die Dimension wohldefiniert ist.
+                    result.getMatrixExpressionDimension();
+                    return result;
             }
         }
 
@@ -340,7 +357,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                 return MatrixVariable.create(formula);
             }
         }
-        
+
         // Falls der Ausdruck eine Matrixfunktion ist.
         if (priority == 4) {
             int functionNameLength;
@@ -367,7 +384,7 @@ public abstract class MatrixExpression implements AbstractExpression {
             return new Matrix(Expression.build(formula, vars, validatorExpression));
         } catch (ExpressionException e) {
         }
-        
+
         // Falls der Ausdruck ein MatrixOperator ist.
         if (priority == 4) {
             OperationDataTO opData = OperationParsingUtils.getOperationData(formula);
@@ -778,6 +795,20 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract Dimension getDimension() throws EvaluationException;
 
     /**
+     * Gibt die Maße der Ergebnismatrix an, oder wirft eine ExpressionException,
+     * wenn die Ergebnismatrix nicht wohldefiniert ist.
+     *
+     * @throws ExpressionException
+     */
+    private Dimension getMatrixExpressionDimension() throws ExpressionException {
+        try {
+            return getDimension();
+        } catch (EvaluationException e) {
+            throw new ExpressionException(e.getMessage());
+        }
+    }
+
+    /**
      * Führt, falls möglich, die auftretenden algebraischen Operationen +, - und
      * * aus und gibt das Ergebnis als MatrixExpression (und falls möglich, als
      * Matrix) zurück.
@@ -871,7 +902,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
         return exprVars;
     }
-    
+
     public Set<String> getContainedExpressionIndeterminates() {
         Set<String> allVars = getContainedIndeterminates();
         Set<String> exprVars = new HashSet<>();
@@ -882,7 +913,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
         return exprVars;
     }
-    
+
     public Set<String> getContainedMatrixVars() {
         Set<String> allVars = getContainedVars();
         Set<String> exprVars = new HashSet<>();
@@ -893,7 +924,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
         return exprVars;
     }
-    
+
     public Set<String> getContainedMatrixIndeterminates() {
         Set<String> allVars = getContainedIndeterminates();
         Set<String> exprVars = new HashSet<>();
@@ -904,7 +935,7 @@ public abstract class MatrixExpression implements AbstractExpression {
         }
         return exprVars;
     }
-    
+
     /**
      * Setzt alle im gegebenen Matrizenausdruck vorkommenden Konstanten auf
      * 'approximativ' (precise = false).
@@ -949,8 +980,8 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract MatrixExpression replaceVariable(String var, Expression expr);
 
     /**
-     * Gibt den Matrizenausdruck zurück, der durch das Ersetzen der Matrizenvariablen
-     * var durch den Matrizenausdruck matExpr entsteht.
+     * Gibt den Matrizenausdruck zurück, der durch das Ersetzen der
+     * Matrizenvariablen var durch den Matrizenausdruck matExpr entsteht.
      */
     public abstract MatrixExpression replaceMatrixVariable(String var, MatrixExpression matExpr);
 

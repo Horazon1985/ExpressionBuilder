@@ -881,7 +881,7 @@ public class MatrixOperator extends MatrixExpression {
         }
 
         // Dann kann nichts vereinfacht werden.
-        return new MatrixOperator(TypeMatrixOperator.grad, new Object[]{expr});
+        throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES"));
 
     }
 
