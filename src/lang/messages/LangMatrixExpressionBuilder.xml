@@ -165,8 +165,8 @@
     <object id = "MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES">
         <German>Der Gradient kann nur von 1x1-Matrizen gebildet werden.</German>
         <English>Only gradient of 1x1-matrices is possible.</English>
-        <Ukrainian>Градиент может быть образован только 1x1-матрицами.</Ukrainian>
-        <Russian>Градієнт може бути утворений лише 1x1-матрицями.</Russian>
+        <Ukrainian>Градієнт можна утворити лише 1x1-матрицями.</Ukrainian>
+        <Russian>Градиент может быть образован только 1x1-матрицами.</Russian>
     </object>
     <object id = "MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX">
         <German>Der 1. Parameter im Operator 'prod' muss eine quadratische Matrix sein.</German>
