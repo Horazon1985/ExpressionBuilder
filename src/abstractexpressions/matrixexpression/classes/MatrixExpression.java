@@ -864,7 +864,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract void addContainedVars(Set<String> vars);
 
     /**
-     * Gibt ein HashSet mit allen Variablen, die in dem gegebenen
+     * Gibt ein Set mit allen Variablen, die in dem gegebenen
      * Matrizenausdruck vorkommen, zurück.
      */
     @Override
@@ -882,7 +882,7 @@ public abstract class MatrixExpression implements AbstractExpression {
     public abstract void addContainedIndeterminates(Set<String> vars);
 
     /**
-     * Gibt ein HashSet mit allen Variablen, denen kein Wert zugewiesen wurde
+     * Gibt ein Set mit allen Variablen, denen kein Wert zugewiesen wurde
      * und die in dem gegebenen Matrizenausdruck vorkommen, zurück.
      */
     @Override
