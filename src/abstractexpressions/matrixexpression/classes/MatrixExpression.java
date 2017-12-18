@@ -51,7 +51,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static String[] getRowsFromMatrix(String matrix) throws ExpressionException {
+    private static String[] getRowsFromMatrix(String matrix) throws ExpressionException {
 
         int numberOfRows = 1;
         for (int i = 0; i < matrix.length(); i++) {
@@ -82,7 +82,7 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static ArrayList<String> getEntriesFromRow(String row) throws ExpressionException {
+    private static ArrayList<String> getEntriesFromRow(String row) throws ExpressionException {
 
         /*
          Differenz zwischen der Anzahl der öffnenden und der der schließenden

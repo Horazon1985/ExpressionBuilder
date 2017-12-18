@@ -1,9 +1,18 @@
 package abstractexpressions.interfaces;
 
 import abstractexpressions.expression.classes.Expression;
+import java.util.Map;
 
 public class IdentifierValidatorExpression implements IdentifierValidator {
 
+    @Override
+    public void setKnownVariables(Map<String, Class<? extends AbstractExpression>> knownVariables) {
+    }
+    
+    @Override
+    public void unsetKnownVariables() {
+    }
+    
     /**
      * Prüft, ob es sich bei var um einen zulässigen Variablennamen oder um die
      * formale Ableitung einer zulässigen Variable handelt. True wird genau dann
@@ -19,5 +28,10 @@ public class IdentifierValidatorExpression implements IdentifierValidator {
         }
         return Expression.isValidVariable(identifier);
     }
-    
+
+    @Override
+    public boolean isValidKnownIdentifier(String identifier, Map<String, Class<? extends AbstractExpression>> knownVariables) {
+        return isValidIdentifier(identifier);
+    }
+   
 }
