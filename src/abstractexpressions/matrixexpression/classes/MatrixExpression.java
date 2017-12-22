@@ -916,13 +916,13 @@ public abstract class MatrixExpression implements AbstractExpression {
 
     public Set<String> getContainedMatrixVars() {
         Set<String> allVars = getContainedVars();
-        Set<String> exprVars = new HashSet<>();
+        Set<String> matrixVars = new HashSet<>();
         for (String var : allVars) {
             if (MatrixVariable.doesMatrixVariableAlreadyExist(var)) {
-                exprVars.add(var);
+                matrixVars.add(var);
             }
         }
-        return exprVars;
+        return matrixVars;
     }
 
     public Set<String> getContainedMatrixIndeterminates() {
