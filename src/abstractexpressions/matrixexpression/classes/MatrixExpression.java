@@ -141,10 +141,11 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    public static Matrix getMatrix(String formula, Set<String> vars) throws ExpressionException {
+    public static Matrix getMatrix(String formula, Set<String> vars, IdentifierValidator validatorExpression) throws ExpressionException {
 
         String[] rows = getRowsFromMatrix(formula);
-        Object[] currentRow = getEntriesFromRow(rows[0]).toArray();
+        ArrayList<String> currentRowList = getEntriesFromRow(rows[0]);
+        String[] currentRow = currentRowList.toArray(new String[currentRowList.size()]);
         Expression[][] entry = new Expression[rows.length][currentRow.length];
 
         for (int i = 0; i < rows.length; i++) {
@@ -152,12 +153,12 @@ public abstract class MatrixExpression implements AbstractExpression {
             if (rows[i].isEmpty()) {
                 throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_NOT_A_MATRIX));
             }
-            currentRow = getEntriesFromRow(rows[i]).toArray();
+            currentRow = getEntriesFromRow(rows[i]).toArray(new String[currentRowList.size()]);
             if (currentRow.length != entry[0].length) {
                 throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixExpression_NOT_A_MATRIX));
             }
             for (int j = 0; j < currentRow.length; j++) {
-                entry[i][j] = Expression.build((String) currentRow[j], vars);
+                entry[i][j] = Expression.build(currentRow[j], vars, validatorExpression);
             }
 
         }
@@ -346,11 +347,11 @@ public abstract class MatrixExpression implements AbstractExpression {
          */
         // Falls der Ausdruck eine Matrix ist.
         if (priority == 4 && formula.substring(0, 1).equals("[") && formula.substring(formulaLength - 1, formulaLength).equals("]")) {
-            return getMatrix(formula.substring(1, formulaLength - 1), vars);
+            return getMatrix(formula.substring(1, formulaLength - 1), vars, validatorExpression);
         }
         // Falls der Ausdruck eine Matrixvariable ist.
         if (priority == 4) {
-            if (validatorMatrixExpression.isValidIdentifier(formula)) {
+            if (validatorMatrixExpression.isValidIdentifierOfRequiredType(formula, MatrixExpression.class)) {
                 if (vars != null) {
                     vars.add(formula);
                 }

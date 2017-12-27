@@ -329,7 +329,7 @@ public abstract class Expression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist.
         if (priority == 5) {
-            if (validator.isValidIdentifier(formula)) {
+            if (validator.isValidIdentifierOfRequiredType(formula, Expression.class)) {
                 if (vars != null) {
                     vars.add(formula);
                 }

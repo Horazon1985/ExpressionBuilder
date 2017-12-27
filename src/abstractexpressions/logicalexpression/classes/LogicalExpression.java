@@ -177,7 +177,7 @@ public abstract class LogicalExpression implements AbstractExpression {
 
         //Falls der Ausdruck eine Variable ist
         if (priority == 5) {
-            if (validator.isValidIdentifier(formula)) {
+            if (validator.isValidIdentifierOfRequiredType(formula, LogicalExpression.class)) {
                 if (vars != null) {
                     vars.add(formula);
                 }

@@ -8,8 +8,10 @@ public interface IdentifierValidator {
     
     public void unsetKnownVariables();
     
-    public boolean isValidIdentifier(String identifier);
+    public boolean isValidIdentifier(String identifierName);
     
-    public boolean isValidKnownIdentifier(String identifier, Map<String, Class<? extends AbstractExpression>> knownVariables);
+    public boolean isValidIdentifierOfRequiredType(String identifierName, Class requiredClass);
+    
+    public boolean isValidKnownIdentifier(String identifierName, Class requiredClass, Map<String, Class<? extends AbstractExpression>> knownVariables);
     
 }
