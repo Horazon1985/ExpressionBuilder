@@ -5,7 +5,6 @@ import enums.TypeSimplify;
 import exceptions.EvaluationException;
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,6 +40,11 @@ public class MatrixVariable extends MatrixExpression {
     private MatrixVariable() {
     }
 
+    private MatrixVariable(String name) {
+        this.name = name;
+        this.precise = true;
+    }
+
     private MatrixVariable(String name, MatrixExpression value) {
         this.name = name;
         this.value = value;
@@ -48,14 +52,26 @@ public class MatrixVariable extends MatrixExpression {
     }
 
     /**
-     * Methode create: ohne Wertzuweisung (d.h. die Variable wird automatisch
-     * auf 0 gesetzt)
+     * Methode create: ohne Wertzuweisung.
      */
     public static MatrixVariable create(String name) {
         if (matrixVariables.containsKey(name)) {
             return matrixVariables.get(name);
         } else {
-            MatrixVariable result = new MatrixVariable(name, MatrixExpression.getZeroMatrix(1, 1));
+            MatrixVariable result = new MatrixVariable(name);
+            matrixVariables.put(name, result);
+            return result;
+        }
+    }
+
+    /**
+     * Methode create: mit Wertzuweisung.
+     */
+    public static MatrixVariable create(String name, MatrixExpression value) {
+        if (matrixVariables.containsKey(name)) {
+            return matrixVariables.get(name);
+        } else {
+            MatrixVariable result = new MatrixVariable(name, value);
             matrixVariables.put(name, result);
             return result;
         }

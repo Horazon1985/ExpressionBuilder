@@ -305,19 +305,19 @@ public abstract class MatrixExpression implements AbstractExpression {
                     resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
                     result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.PLUS);
                     // Prüfung, ob die Dimension wohldefiniert ist.
-                    result.getMatrixExpressionDimension();
+                    result.checkIfMatrixExpressionDimensionIsWellDefined();
                     return result;
                 case 1:
                     resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
                     result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.MINUS);
                     // Prüfung, ob die Dimension wohldefiniert ist.
-                    result.getMatrixExpressionDimension();
+                    result.checkIfMatrixExpressionDimensionIsWellDefined();
                     return result;
                 case 2:
                     resultRight = build(formulaRight, vars, validatorExpression, validatorMatrixExpression);
                     result = new MatrixBinaryOperation(resultLeft, resultRight, TypeMatrixBinary.TIMES);
                     // Prüfung, ob die Dimension wohldefiniert ist.
-                    result.getMatrixExpressionDimension();
+                    result.checkIfMatrixExpressionDimensionIsWellDefined();
                     return result;
                 default:
                     Expression exponent;
@@ -328,7 +328,7 @@ public abstract class MatrixExpression implements AbstractExpression {
                     }
                     result = new MatrixPower(resultLeft, exponent);
                     // Prüfung, ob die Dimension wohldefiniert ist.
-                    result.getMatrixExpressionDimension();
+                    result.checkIfMatrixExpressionDimensionIsWellDefined();
                     return result;
             }
         }
@@ -801,9 +801,14 @@ public abstract class MatrixExpression implements AbstractExpression {
      *
      * @throws ExpressionException
      */
-    private Dimension getMatrixExpressionDimension() throws ExpressionException {
+    private void checkIfMatrixExpressionDimensionIsWellDefined() throws ExpressionException {
+        // Wenn Matrizenvariablen vorkommen, kann die Dimension nicht ermittelt werden.
+        Set<String> matrixVars = getContainedMatrixVars();
+        if (!matrixVars.isEmpty()) {
+            return;
+        }
         try {
-            return getDimension();
+            getDimension();
         } catch (EvaluationException e) {
             throw new ExpressionException(e.getMessage());
         }
