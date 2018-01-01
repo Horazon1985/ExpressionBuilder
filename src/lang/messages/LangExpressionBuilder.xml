@@ -30,10 +30,10 @@
         <Russian>Деление на ноль.</Russian>
     </object>
     <object id = "EB_Expression_EXPRESSION_EMPTY_OR_INCOMPLETE">
-        <German>Der Ausdruck ist leer oder unvollständig.</German>
-        <English>The expression is either empty or incomplete.</English>
-        <Ukrainian>Вираз порожній або неповний.</Ukrainian>
-        <Russian>Выражение пустое либо неполное.</Russian>
+        <German>Der Ausdruck ist leer, fehlerhaft oder unvollständig.</German>
+        <English>The expression is either empty or incorrect or or incomplete.</English>
+        <Ukrainian>Вираз порожній ??? або неповний.</Ukrainian>
+        <Russian>Выражение пустое ??? либо неполное.</Russian>
     </object>
     <object id = "EB_Expression_TWO_OPERATIONS">
         <German>Im Ausdruck treten zwei Operationen hintereinander auf.</German>

@@ -30,10 +30,10 @@
         <Russian>Выражение содержит матрицу, которая задана неверно.</Russian>
     </object>
     <object id = "MEB_MatrixExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
-        <German>Der Ausdruck ist leer oder unvollständig.</German>
-        <English>The expression is either epmty or incomplete.</English>
-        <Ukrainian>Вираз порожній або неповний.</Ukrainian>
-        <Russian>Выражение пустое либо неполное.</Russian>
+        <German>Der Ausdruck ist leer, fehlerhaft oder unvollständig.</German>
+        <English>The expression is either epmty, incorrect or incomplete.</English>
+        <Ukrainian>Вираз порожній ??? або неповний.</Ukrainian>
+        <Russian>Выражение пустое ??? либо неполное.</Russian>
     </object>
     <object id = "MEB_MatrixExpression_TWO_OPERATIONS">
         <German>Im Matrizenausdruck treten zwei Operationen hintereinander auf.</German>

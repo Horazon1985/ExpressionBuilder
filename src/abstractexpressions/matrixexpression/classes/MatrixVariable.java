@@ -84,7 +84,7 @@ public class MatrixVariable extends MatrixExpression {
             MatrixVariable.create(name);
         }
     }
-    
+
     public static boolean doesMatrixVariableAlreadyExist(String varName) {
         return matrixVariables.containsKey(varName);
     }
@@ -173,7 +173,10 @@ public class MatrixVariable extends MatrixExpression {
 
     @Override
     public MatrixExpression replaceVariable(String var, Expression expr) {
-        return this.value.replaceVariable(var, expr);
+        if (this.value != null) {
+            return this.value.replaceVariable(var, expr);
+        }
+        return this;
     }
 
     @Override
@@ -183,7 +186,7 @@ public class MatrixVariable extends MatrixExpression {
         }
         return this;
     }
-    
+
     @Override
     public String toString() {
         return this.name;
