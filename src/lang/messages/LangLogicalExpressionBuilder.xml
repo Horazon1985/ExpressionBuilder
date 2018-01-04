@@ -6,10 +6,10 @@
         <Russian>Вычисление прекращено.</Russian>
     </object>
     <object id = "LEB_LogicalExpression_EXPRESSION_EMPTY_OR_INCOMPLETE">
-        <German>Der Ausdruck ist leer, fehlerhaft oder unvollständig.</German>
-        <English>The expression is either empty or incorrect or or incomplete.</English>
-        <Ukrainian>Вираз порожній ??? або неповний.</Ukrainian>
-        <Russian>Выражение пустое ??? либо неполное.</Russian>
+        <German>Logischer Ausdruck ist leer oder unvollständig.</German>
+        <English>Logical expression is either empty or incomplete.</English>
+        <Ukrainian>Логічний вираз порожній або неповний.</Ukrainian>
+        <Russian>Логическое выражение пустое или неполное.</Russian>
     </object>
     <object id = "LEB_LogicalExpression_WRONG_BRACKETS">
         <German>Falsche Klammerung.</German>
