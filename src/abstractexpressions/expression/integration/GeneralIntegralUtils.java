@@ -24,12 +24,13 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import abstractexpressions.expression.basic.SimplifyRationalFunctionUtils;
+import java.util.Set;
 
 public abstract class GeneralIntegralUtils {
 
-    private static final HashSet<TypeSimplify> simplifyTypesPrepareIntegrand = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesMultiplyOutIntegrand = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesPrepareIntegrand = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesPrepareDominatorOfIntegrand = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesMultiplyOutIntegrand = new HashSet<>();
 
     static {
         simplifyTypesPrepareIntegrand.add(TypeSimplify.order_difference_and_division);

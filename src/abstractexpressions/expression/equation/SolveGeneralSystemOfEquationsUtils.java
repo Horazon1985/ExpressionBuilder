@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public abstract class SolveGeneralSystemOfEquationsUtils {
@@ -30,12 +31,12 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
      * Konstanten, die aussagen, ob ein Gleichungssystem keine Lösungen besitzt
      * oder ob es definitiv alle reellen Zahlentupel als Lösungen besitzt.
      */
-    public static final ArrayList<Expression[]> ALL_REALS = new ArrayList<>();
-    public static final ArrayList<Expression[]> NO_SOLUTIONS = new ArrayList<>();
+    public static final List<Expression[]> ALL_REALS = new ArrayList<>();
+    public static final List<Expression[]> NO_SOLUTIONS = new ArrayList<>();
 
-    private static HashSet<String> getIndeterminatesInEquation(Expression equation, ArrayList<String> vars) {
+    private static Set<String> getIndeterminatesInEquation(Expression equation, List<String> vars) {
         Set<String> allVarsInEquation = equation.getContainedIndeterminates();
-        HashSet<String> varsInEquation = new HashSet<>();
+        Set<String> varsInEquation = new HashSet<>();
         for (String var : allVarsInEquation) {
             if (vars.contains(var)) {
                 varsInEquation.add(var);
@@ -44,9 +45,9 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return varsInEquation;
     }
 
-    private static HashSet<String> getIndeterminatesInEquation(MultiPolynomial equation, ArrayList<String> vars) {
+    private static Set<String> getIndeterminatesInEquation(MultiPolynomial equation, List<String> vars) {
         Set<String> allVarsInEquation = equation.toExpression().getContainedIndeterminates();
-        HashSet<String> varsInEquation = new HashSet<>();
+        Set<String> varsInEquation = new HashSet<>();
         for (String var : allVarsInEquation) {
             if (vars.contains(var)) {
                 varsInEquation.add(var);
@@ -55,7 +56,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return varsInEquation;
     }
 
-    private static boolean isSystemPolynomial(Expression[] equations, ArrayList<String> vars) {
+    private static boolean isSystemPolynomial(Expression[] equations, List<String> vars) {
         for (Expression equation : equations) {
             if (!SimplifyMultiPolynomialUtils.isMultiPolynomial(equation, vars)) {
                 return false;
@@ -64,7 +65,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return true;
     }
 
-    private static boolean isSystemLinear(Expression[] equations, ArrayList<String> vars) {
+    private static boolean isSystemLinear(Expression[] equations, List<String> vars) {
         if (!isSystemPolynomial(equations, vars)) {
             return false;
         }
@@ -77,7 +78,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return true;
     }
 
-    public static Expression[] solveLinearSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    public static Expression[] solveLinearSystemOfEquations(Expression[] equations, List<String> vars) throws NotAlgebraicallySolvableException {
 
         // Prüfung, ob alle Gleichungen linear in den angegebenen Variablen sind.
         if (!isSystemLinear(equations, vars)) {
@@ -114,7 +115,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    public static ArrayList<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
+    public static List<Expression[]> solvePolynomialSystemOfEquations(Expression[] equations, List<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
         // Vorarbeit.
         for (Expression equation : equations) {
@@ -123,14 +124,14 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
             }
         }
 
-        ArrayList<Expression> reducedEquationsAsArrayList = new ArrayList<>();
+        List<Expression> reducedEquationsAsList = new ArrayList<>();
         for (Expression equation : equations) {
             if (!equation.equals(ZERO)) {
-                reducedEquationsAsArrayList.add(equation);
+                reducedEquationsAsList.add(equation);
             }
         }
         Expression[] reducedEquations = new Expression[0];
-        equations = reducedEquationsAsArrayList.toArray(reducedEquations);
+        equations = reducedEquationsAsList.toArray(reducedEquations);
 
         if (equations.length < vars.size()) {
             // In diesem Fall kann es (höchst wahrscheinlich) nicht endlich viele (reelle) Lösungen geben.
@@ -144,7 +145,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
             }
         }
 
-        ArrayList<MultiPolynomial> polynomials;
+        List<MultiPolynomial> polynomials;
         try {
             polynomials = SimplifyMultiPolynomialUtils.getMultiPolynomialsFromExpressions(equations, vars);
             if (polynomials.size() < equations.length) {
@@ -162,18 +163,18 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         }
         GroebnerBasisUtils.setMonomialVars(vars.toArray(monomialVars));
 
-        ArrayList<MultiPolynomial> groebnerBasis;
+        List<MultiPolynomial> groebnerBasis;
         try {
             groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(polynomials);
         } catch (EvaluationException e) {
             throw new NotAlgebraicallySolvableException();
         }
 
-        ArrayList<String> varsCopy = new ArrayList<>(vars);
-        ArrayList<HashMap<String, Expression>> solutions = solveTriangularPolynomialSystemOfEquations(groebnerBasis, varsCopy, type);
+        List<String> varsCopy = new ArrayList<>(vars);
+        List<HashMap<String, Expression>> solutions = solveTriangularPolynomialSystemOfEquations(groebnerBasis, varsCopy, type);
 
         // Die Lösungstupel in Arrays verwandeln und ausgeben.
-        ArrayList<Expression[]> orderedSolutions = new ArrayList<>();
+        List<Expression[]> orderedSolutions = new ArrayList<>();
         Expression[] orderedSolution;
         for (HashMap<String, Expression> solution : solutions) {
             orderedSolution = new Expression[solution.size()];
@@ -187,7 +188,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    private static ArrayList<HashMap<String, Expression>> solveTriangularPolynomialSystemOfEquations(ArrayList<MultiPolynomial> equations, ArrayList<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
+    private static List<HashMap<String, Expression>> solveTriangularPolynomialSystemOfEquations(List<MultiPolynomial> equations, List<String> vars, SolutionType type) throws NotAlgebraicallySolvableException {
 
         // Dann ist es nur eine Gleichung in einer Variablen.
         if (vars.size() == 1) {
@@ -233,7 +234,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
                 throw new NotAlgebraicallySolvableException();
             }
 
-            ArrayList<HashMap<String, Expression>> solutionsOfSystem = new ArrayList<>();
+            List<HashMap<String, Expression>> solutionsOfSystem = new ArrayList<>();
             HashMap<String, Expression> solutionOfSystem;
             for (Expression solution : solutions) {
                 solutionOfSystem = new HashMap<>();
@@ -245,8 +246,8 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
         }
 
-        HashSet<String> varsInEquation;
-        ArrayList<MultiPolynomial> equationsWithOneVar = new ArrayList<>();
+        Set<String> varsInEquation;
+        List<MultiPolynomial> equationsWithOneVar = new ArrayList<>();
         String var = null;
         for (int i = 0; i < equations.size(); i++) {
 
@@ -295,8 +296,8 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         }
 
         vars.remove(var);
-        ArrayList<MultiPolynomial> equationsWithVarReplacedBySolution = new ArrayList<>();
-        ArrayList<HashMap<String, Expression>> solutions = new ArrayList<>();
+        List<MultiPolynomial> equationsWithVarReplacedBySolution = new ArrayList<>();
+        List<HashMap<String, Expression>> solutions = new ArrayList<>();
 
         // Jede gefundene Lösung in die restlichen Gleichungen einsetzen und weiter rekursiv auflösen.
         try {
@@ -309,9 +310,9 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
                 }
 
                 // Kopie von vars machen!
-                ArrayList<String> varsCopy = new ArrayList<>();
+                List<String> varsCopy = new ArrayList<>();
                 varsCopy.addAll(vars);
-                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy, type);
+                List<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularPolynomialSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy, type);
 
                 HashMap<String, Expression> singleSolution;
                 for (HashMap<String, Expression> solutionOfReducedPolynomialSystem : solutionsOfReducedPolynomialSystem) {
@@ -332,7 +333,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    public static ArrayList<Expression[]> solveGeneralSystemOfEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    public static List<Expression[]> solveGeneralSystemOfEquations(Expression[] equations, List<String> vars) throws NotAlgebraicallySolvableException {
 
         // Triviale Gleichungen beseitigen.
         try {
@@ -351,11 +352,11 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
             throw new NotAlgebraicallySolvableException();
         }
 
-        ArrayList<String> varsCopy = new ArrayList<>(vars);
-        ArrayList<HashMap<String, Expression>> solutions = solveTriangularGeneralSystemOfEquations(new ArrayList<>(Arrays.asList(equations)), varsCopy);
+        List<String> varsCopy = new ArrayList<>(vars);
+        List<HashMap<String, Expression>> solutions = solveTriangularGeneralSystemOfEquations(new ArrayList<>(Arrays.asList(equations)), varsCopy);
 
         // Die Lösungstupel in Arrays verwandeln und ausgeben.
-        ArrayList<Expression[]> orderedSolutions = new ArrayList<>();
+        List<Expression[]> orderedSolutions = new ArrayList<>();
         Expression[] orderedSolution;
         for (HashMap<String, Expression> solution : solutions) {
             orderedSolution = new Expression[solution.size()];
@@ -369,7 +370,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    private static boolean doesExpressionContainSomeVar(Expression f, ArrayList<String> vars) {
+    private static boolean doesExpressionContainSomeVar(Expression f, List<String> vars) {
         for (String var : vars) {
             if (f.contains(var)) {
                 return true;
@@ -378,8 +379,8 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return false;
     }
 
-    private static Expression[] removeTrivialEquations(Expression[] equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
-        ArrayList<Expression> nonTrivialEquations = new ArrayList<>();
+    private static Expression[] removeTrivialEquations(Expression[] equations, List<String> vars) throws NotAlgebraicallySolvableException {
+        List<Expression> nonTrivialEquations = new ArrayList<>();
         for (Expression equation : equations) {
             if (!equation.equals(ZERO)) {
                 nonTrivialEquations.add(equation);
@@ -391,11 +392,11 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         return nonTrivialEquations.toArray(nonTrivialEquationsAsArray);
     }
 
-    private static Expression[] removeRedundantEquations(Expression[] equations, ArrayList<String> vars) {
+    private static Expression[] removeRedundantEquations(Expression[] equations, List<String> vars) {
 
-        ArrayList<Expression> nonRedundantEquations = new ArrayList<>();
+        List<Expression> nonRedundantEquations = new ArrayList<>();
         Expression quotient;
-        ArrayList<Integer> indicesWithRedundantEquations = new ArrayList<>();
+        List<Integer> indicesWithRedundantEquations = new ArrayList<>();
         for (int i = 0; i < equations.length; i++) {
             if (indicesWithRedundantEquations.contains(i)) {
                 continue;
@@ -423,7 +424,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    private static ArrayList<HashMap<String, Expression>> solveTriangularGeneralSystemOfEquations(ArrayList<Expression> equations, ArrayList<String> vars) throws NotAlgebraicallySolvableException {
+    private static List<HashMap<String, Expression>> solveTriangularGeneralSystemOfEquations(List<Expression> equations, List<String> vars) throws NotAlgebraicallySolvableException {
 
         // Dann ist es nur eine Gleichung in einer Variablen.
         if (vars.size() == 1) {
@@ -466,7 +467,7 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
         }
 
-        HashSet<String> varsInEquation;
+        Set<String> varsInEquation;
         ArrayList<Expression> equationsWithOneVar = new ArrayList<>();
         String var = null;
         for (int i = 0; i < equations.size(); i++) {
@@ -512,8 +513,8 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
         }
 
         vars.remove(var);
-        ArrayList<Expression> equationsWithVarReplacedBySolution = new ArrayList<>();
-        ArrayList<HashMap<String, Expression>> solutions = new ArrayList<>();
+        List<Expression> equationsWithVarReplacedBySolution = new ArrayList<>();
+        List<HashMap<String, Expression>> solutions = new ArrayList<>();
 
         // Jede gefundene Lösung in die restlichen Gleichungen einsetzen und weiter rekursiv auflösen.
         try {
@@ -526,9 +527,9 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
                 }
 
                 // Kopie von vars machen!
-                ArrayList<String> varsCopy = new ArrayList<>();
+                List<String> varsCopy = new ArrayList<>();
                 varsCopy.addAll(vars);
-                ArrayList<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularGeneralSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy);
+                List<HashMap<String, Expression>> solutionsOfReducedPolynomialSystem = solveTriangularGeneralSystemOfEquations(equationsWithVarReplacedBySolution, varsCopy);
 
                 HashMap<String, Expression> singleSolution;
                 for (HashMap<String, Expression> solutionOfReducedPolynomialSystem : solutionsOfReducedPolynomialSystem) {
@@ -549,10 +550,10 @@ public abstract class SolveGeneralSystemOfEquationsUtils {
 
     }
 
-    public static ArrayList<Expression[]> solveSystemOfEquations(Expression[] equations, ArrayList<String> vars) {
+    public static List<Expression[]> solveSystemOfEquations(Expression[] equations, List<String> vars) {
 
         // Typ: lineares Gleichungssystem.
-        ArrayList<Expression[]> solutions = new ArrayList<>();
+        List<Expression[]> solutions = new ArrayList<>();
         try {
             Expression[] solution = solveLinearSystemOfEquations(equations, vars);
             if (solution == GaussAlgorithmUtils.NO_SOLUTIONS) {

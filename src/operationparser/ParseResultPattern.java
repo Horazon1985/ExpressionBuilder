@@ -1,6 +1,6 @@
 package operationparser;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /*
 Diese Klasse stellt ein technisches Ergebnis für ein geparstes Pattern, welches 
@@ -29,9 +29,9 @@ public class ParseResultPattern {
 
     private final String operationName;
 
-    private final ArrayList<ParameterPattern> parameterPatterns;
+    private final List<ParameterPattern> parameterPatterns;
 
-    public ParseResultPattern(String operationName, ArrayList<ParameterPattern> paramPatterns) {
+    public ParseResultPattern(String operationName, List<ParameterPattern> paramPatterns) {
         this.operationName = operationName;
         this.parameterPatterns = paramPatterns;
     }

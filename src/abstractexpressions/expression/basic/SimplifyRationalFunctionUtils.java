@@ -10,8 +10,8 @@ import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.Variable;
 import enums.TypeExpansion;
 import java.math.BigInteger;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public abstract class SimplifyRationalFunctionUtils {
 
@@ -19,7 +19,7 @@ public abstract class SimplifyRationalFunctionUtils {
      * Hilfsmethode. Gibt zurück, ob alle paarweisen Verhältnisse von Ausdrücken
      * in terms rational sind.
      */
-    private static boolean areQuotientsOfTermsRational(HashSet<Expression> terms) {
+    private static boolean areQuotientsOfTermsRational(Set<Expression> terms) {
         for (Expression expr : terms) {
             if (!expr.equals(Expression.ZERO)) {
                 return areQuotientsRational(expr, terms);
@@ -35,7 +35,7 @@ public abstract class SimplifyRationalFunctionUtils {
      * 5*exp(3*x) true zurückgegeben, jedoch false bei f = exp(x) +
      * exp(2^(1/2)*x).
      */
-    public static boolean isRationalFunktionInExp(Expression f, String var, HashSet<Expression> argumentsInExp) {
+    public static boolean isRationalFunktionInExp(Expression f, String var, Set<Expression> argumentsInExp) {
         if (!f.contains(var)) {
             return true;
         }
@@ -169,13 +169,13 @@ public abstract class SimplifyRationalFunctionUtils {
         return f;
     }
 
-    // Allgemeine Hilfsmethoden um festzustellen, ob ein HashSet von Expressions
+    // Allgemeine Hilfsmethoden um festzustellen, ob ein Set von Expressions
     // nur Ausdrücke enthält, deren paarweise Quotienten rational sind.
     /**
      * Hilfsmethode. Gibt zurück, ob alle Verhältnisse von Ausdrücken in terms
      * und expr rational sind.
      */
-    private static boolean areQuotientsRational(Expression expr, HashSet<Expression> terms) {
+    private static boolean areQuotientsRational(Expression expr, Set<Expression> terms) {
         try {
             Iterator iter = terms.iterator();
             while (iter.hasNext()) {
@@ -301,7 +301,7 @@ public abstract class SimplifyRationalFunctionUtils {
      * BEISPIEL: bei f = sin(2*x) + 5*cos(3*x) true zurückgegeben, jedoch false
      * bei f = sin(x) + cos(2^(1/2)*x).
      */
-    public static boolean isRationalFunktionInTrigonometricalFunctions(Expression f, String var, HashSet<Expression> argumentsInTrigonometricFunctions) {
+    public static boolean isRationalFunktionInTrigonometricalFunctions(Expression f, String var, Set<Expression> argumentsInTrigonometricFunctions) {
         if (!f.contains(var)) {
             return true;
         }

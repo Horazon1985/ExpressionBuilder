@@ -5,12 +5,12 @@ import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.TypeOperator;
 import basic.MathToolTestBase;
-import java.util.ArrayList;
 import operationparser.OperationParser;
 import operationparser.ParameterPattern;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamType;
 import exceptions.ParseException;
+import java.util.List;
 import operationparser.ParseResultPattern;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -18,13 +18,13 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import utilities.TestUtilities;
+import testrunner.TestUtilities;
 
 public class ParseTests extends MathToolTestBase {
 
     private ParseResultPattern resultPattern;
     private ParameterPattern p;
-    private ArrayList<String> restrictions;
+    private List<String> restrictions;
 
     private Operator operator;
     private Operator expectedOperator;
@@ -320,8 +320,9 @@ public class ParseTests extends MathToolTestBase {
 
             // Ausgabe der Ergebnisse.
             expectedOperator = new Operator(TypeOperator.diff, new Object[]{Expression.build("x^2+y"), "x", "y", "x"});
-            TestUtilities.printResult(expectedOperator, operator);
-
+            
+            expectedResults = new Object[]{expectedOperator};
+            results = new Object[]{operator};
             Assert.assertTrue(operator.getType().equals(TypeOperator.diff));
             Assert.assertTrue(operator.getParams().length == 4);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2+y")));
@@ -343,8 +344,9 @@ public class ParseTests extends MathToolTestBase {
 
             // Ausgabe der Ergebnisse.
             expectedOperator = new Operator(TypeOperator.diff, new Object[]{Expression.build("x^2+y"), "x", 3});
-            TestUtilities.printResult(expectedOperator, operator);
 
+            expectedResults = new Object[]{expectedOperator};
+            results = new Object[]{operator};
             Assert.assertTrue(operator.getType().equals(TypeOperator.diff));
             Assert.assertTrue(operator.getParams().length == 3);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2+y")));
@@ -367,8 +369,9 @@ public class ParseTests extends MathToolTestBase {
             expectedOperator = new Operator(TypeOperator.var, new Object[]{Expression.build("x^2"),
                 Expression.build("3"), Expression.build("t"), Expression.build("sin(u)"),
                 Expression.build("a+b")});
-            TestUtilities.printResult(expectedOperator, operator);
 
+            expectedResults = new Object[]{expectedOperator};
+            results = new Object[]{operator};
             Assert.assertTrue(operator.getType().equals(TypeOperator.var));
             Assert.assertTrue(operator.getParams().length == 5);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2")));
@@ -392,8 +395,9 @@ public class ParseTests extends MathToolTestBase {
             // Ausgabe der Ergebnisse.
             expectedOperator = new Operator(TypeOperator.integral, new Object[]{Expression.build("x^2"),
                 "x", Expression.build("2"), Expression.build("sin(1)")});
-            TestUtilities.printResult(expectedOperator, operator);
 
+            expectedResults = new Object[]{expectedOperator};
+            results = new Object[]{operator};
             Assert.assertTrue(operator.getType().equals(TypeOperator.integral));
             Assert.assertTrue(operator.getParams().length == 4);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2")));
@@ -416,8 +420,9 @@ public class ParseTests extends MathToolTestBase {
             // Ausgabe der Ergebnisse.
             expectedOperator = new Operator(TypeOperator.laplace, new Object[]{Expression.build("x^2+y"),
                 "x", "y", "z"});
-            TestUtilities.printResult(expectedOperator, operator);
 
+            expectedResults = new Object[]{expectedOperator};
+            results = new Object[]{operator};
             Assert.assertTrue(operator.getType().equals(TypeOperator.laplace));
             Assert.assertTrue(operator.getParams().length == 4);
             Assert.assertTrue(((Expression) operator.getParams()[0]).equals(Expression.build("x^2+y")));
@@ -428,31 +433,6 @@ public class ParseTests extends MathToolTestBase {
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }
-    }
-
-    @Test
-    public void parseGroebnerBasisCommandSuccesfullyParsedTest() {
-        // Parsen von "groebnerbasis(x^2+y,x,lex,x,y,z)" gegen das Pattern "groebnerbasis(expr+,type(lex,deglex,revlex,degrevlex),uniqueindet+)".
-//        try {
-//            String patternForCommand = "groebnerbasis(expr+,type(lex,deglex,revlex,degrevlex),uniqueindet+)";
-//            Command command = OperationParser.parseDefaultCommand("groebnerbasis", new String[]{"x^2+y", "x", "lex", "y", "z"}, patternForCommand);
-//
-//            // Ausgabe der Ergebnisse.
-//            Command expectedCommand = new Command(TypeOperator.groebnerbasis, new Object[]{Expression.build("x^2+y"),
-//                "lex", "x", "y", "z"});
-//            TestUtilities.printResult(expectedCommand, command);
-//
-//            Assert.assertTrue(command.getTypeCommand().equals(TypeCommand.groebnerbasis));
-//            Assert.assertTrue(command.getParams().length == 4);
-//            Assert.assertTrue(((Expression) command.getParams()[0]).equals(Expression.build("x^2+y")));
-//            Assert.assertTrue(((String) command.getParams()[1]).equals("lex"));
-//            Assert.assertTrue(((String) command.getParams()[2]).equals("x"));
-//            Assert.assertTrue(((String) command.getParams()[3]).equals("y"));
-//            Assert.assertTrue(((String) command.getParams()[4]).equals("z"));
-//
-//        } catch (ExpressionException e) {
-//            fail(e.getMessage());
-//        }
     }
 
     @Test

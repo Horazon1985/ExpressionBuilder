@@ -3,10 +3,11 @@ package abstractexpressions.logicalexpression.basic;
 import java.util.HashMap;
 import java.util.Iterator;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
+import java.util.Map;
 
 public class LogicalExpressionCollection implements Iterable<LogicalExpression> {
 
-    private final HashMap<Integer, LogicalExpression> logTerms;
+    private final Map<Integer, LogicalExpression> logTerms;
     private int bound;
 
     public LogicalExpressionCollection() {

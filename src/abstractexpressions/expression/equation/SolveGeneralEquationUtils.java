@@ -24,9 +24,9 @@ import static abstractexpressions.expression.classes.Expression.PI;
 import static abstractexpressions.expression.classes.Expression.TEN;
 import java.math.BigInteger;
 import java.util.HashSet;
-import notations.NotationLoader;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import exceptions.NotAlgebraicallySolvableException;
+import java.util.Set;
 
 public abstract class SolveGeneralEquationUtils {
 
@@ -44,8 +44,8 @@ public abstract class SolveGeneralEquationUtils {
     public static final ExpressionCollection ALL_REALS = new ExpressionCollection();
     public static final ExpressionCollection NO_SOLUTIONS = new ExpressionCollection();
 
-    private static final HashSet<TypeSimplify> simplifyTypesEquation = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesExpandedEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesExpandedEquation = new HashSet<>();
 
     static {
         simplifyTypesEquation.add(TypeSimplify.order_difference_and_division);

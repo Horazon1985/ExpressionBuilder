@@ -8,6 +8,7 @@ import java.awt.Graphics;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
@@ -28,7 +29,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
     private double[][][] surfaceGraph3DForGraphic;
     private boolean[][] surfaceGraph3DIsDefined;
 
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     private final Color color = new Color(170, 170, 70);
 
@@ -42,7 +43,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
         return this.expr;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         if (this.colors.isEmpty()) {
             this.colors.add(this.color);
         }
@@ -160,7 +161,7 @@ public class GraphicPanelSurface extends AbstractGraphicPanel3D {
 
         }
 
-        this.abstractGraph3D = (ArrayList<TangentPolygon>[][]) Array.newInstance(new ArrayList<TangentPolygon>().getClass(), numberOfIntervals, numberOfIntervals);
+        this.abstractGraph3D = (List<TangentPolygon>[][]) Array.newInstance(new ArrayList<TangentPolygon>().getClass(), numberOfIntervals, numberOfIntervals);
         TangentPolygon polygon;
         int indexI, indexJ;
         double centerX, centerY;

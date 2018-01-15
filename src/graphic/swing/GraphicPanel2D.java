@@ -9,29 +9,30 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class GraphicPanel2D extends AbstractGraphicPanel2D {
 
     /**
      * Funktionsterme für Graphen.
      */
-    private ArrayList<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> graphs2D = new ArrayList<>();
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private List<Expression> exprs = new ArrayList<>();
+    private final List<double[][]> graphs2D = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     public GraphicPanel2D() {
         super(100000000, 0.00000001);
     }
 
-    public ArrayList<double[][]> getGraphs() {
+    public List<double[][]> getGraphs() {
         return this.graphs2D;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
@@ -45,7 +46,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
         this.varOrd = varOrd;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs = exprs;
         this.graphs2D.clear();
         this.colors.clear();
@@ -336,7 +337,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphs2D(Expression x_0, Expression x_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphs2D(Expression x_0, Expression x_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;
@@ -351,7 +352,7 @@ public class GraphicPanel2D extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;

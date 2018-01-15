@@ -20,7 +20,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
-import utilities.TestUtilities;
+import testrunner.TestUtilities;
 
 public class PolynomialTests extends MathToolTestBase {
 
@@ -133,8 +133,8 @@ public class PolynomialTests extends MathToolTestBase {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection(new Constant(-557).div(3750), ONE.div(375), new Constant(13).div(25), TWO.div(5));
             ExpressionCollection expectedRest = new ExpressionCollection(new Constant(74443).div(7500), new Constant(11531).div(1875));
-            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
-                    new Object[]{divisionResult[0], divisionResult[1]});
+            expectedResults = new Object[]{expectedQuotient, expectedRest};
+            results = new Object[]{divisionResult[0], divisionResult[1]};
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -153,8 +153,8 @@ public class PolynomialTests extends MathToolTestBase {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection();
             ExpressionCollection expectedRest = new ExpressionCollection(1, 0, 5, 3);
-            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
-                    new Object[]{divisionResult[0], divisionResult[1]});
+            expectedResults = new Object[]{expectedQuotient, expectedRest};
+            results = new Object[]{divisionResult[0], divisionResult[1]};
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -174,8 +174,8 @@ public class PolynomialTests extends MathToolTestBase {
             ExpressionCollection[] divisionResult = SimplifyPolynomialUtils.polynomialDivision(coefficientsF, coefficientsG);
             ExpressionCollection expectedQuotient = new ExpressionCollection(ONE.div(2), 1, 0, -2, 1);
             ExpressionCollection expectedRest = new ExpressionCollection();
-            TestUtilities.printResults(new Object[]{expectedQuotient, expectedRest},
-                    new Object[]{divisionResult[0], divisionResult[1]});
+            expectedResults = new Object[]{expectedQuotient, expectedRest};
+            results = new Object[]{divisionResult[0], divisionResult[1]};
             Assert.assertTrue(divisionResult.length == 2);
             Assert.assertTrue(divisionResult[0].equals(expectedQuotient));
             Assert.assertTrue(divisionResult[1].equals(expectedRest));
@@ -194,6 +194,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("3+13*x+7*x^2+x^3");
             ggT = Expression.build("3+x");
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
+            expectedResults = new Object[]{expectedResult};
+            results = new Object[]{ggT};
             TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
@@ -213,7 +215,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("x^5+4*x^3-(256+48*x^2+64*x)");
             ggT = Expression.build("64+20*x^2+x^4+32*x+4*x^3");
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
-            TestUtilities.printResult(expectedResult, ggT);
+            expectedResults = new Object[]{expectedResult};
+            results = new Object[]{ggT};
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -235,7 +238,8 @@ public class PolynomialTests extends MathToolTestBase {
             ExpressionCollection coefficientsG = SimplifyPolynomialUtils.getPolynomialCoefficients(g, "z");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialUtils.getGGTOfPolynomials(coefficientsF, coefficientsG);
             Expression expectedResult = SimplifyPolynomialUtils.getPolynomialFromCoefficients(expectedResultCoefficients, "z");
-            TestUtilities.printResult(expectedResult, ggT);
+            expectedResults = new Object[]{expectedResult};
+            results = new Object[]{ggT};
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -253,7 +257,8 @@ public class PolynomialTests extends MathToolTestBase {
             ExpressionCollection coefficientsG = SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x");
             ExpressionCollection expectedResultCoefficients = SimplifyPolynomialUtils.getGGTOfPolynomials(coefficientsF, coefficientsG);
             Expression expectedResult = SimplifyPolynomialUtils.getPolynomialFromCoefficients(expectedResultCoefficients, "x");
-            TestUtilities.printResult(expectedResult, ggT);
+            expectedResults = new Object[]{expectedResult};
+            results = new Object[]{ggT};
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -268,7 +273,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("2*x^2+4*x-18");
             ggT = ONE;
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
-            TestUtilities.printResult(expectedResult, ggT);
+            expectedResults = new Object[]{expectedResult};
+            results = new Object[]{ggT};
             Assert.assertTrue(expectedResult.equals(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -282,8 +288,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^2+3*x+2");
             g = Expression.build("x^2+4*x+3");
             Expression[] expectedResult = SimplifyPolynomialUtils.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
-            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
-                    new Object[]{MINUS_ONE, ONE});
+            expectedResults = new Object[]{expectedResult[0], expectedResult[1]};
+            results = new Object[]{MINUS_ONE, ONE};
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equals(MINUS_ONE));
             Assert.assertTrue(expectedResult[1].equals(ONE));
@@ -302,9 +308,9 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("8+16*x+10*x^2+2*x^3");
             g = Expression.build("60+95*x+40*x^2+5*x^3");
             Expression[] expectedResult = SimplifyPolynomialUtils.getEuclideanRepresentationOfGCDOfTwoPolynomials(f, g, "x");
-            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
-                    new Object[]{SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8)),
-                        SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))});
+            expectedResults = new Object[]{expectedResult[0], expectedResult[1]};
+            results = new Object[]{SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8)),
+                SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))};
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(13).div(8), new Constant(3).div(8))));
             Assert.assertTrue(expectedResult[1].equivalent(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", new Constant(-1).div(5), new Constant(-3).div(20))));
@@ -324,9 +330,9 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("x^2+1");
             h = Expression.build("x^2");
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
-            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
-                    new Object[]{Expression.build("(-1)/2+(1/2)*x"),
-                        Expression.build("1+((-1)/2)*x")});
+            expectedResults = new Object[]{expectedResult[0], expectedResult[1]};
+            results = new Object[]{Expression.build("(-1)/2+(1/2)*x"),
+                Expression.build("1+((-1)/2)*x")};
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(Expression.build("(-1)/2+(1/2)*x")));
             Assert.assertTrue(expectedResult[1].equivalent(Expression.build("1+((-1)/2)*x")));
@@ -346,9 +352,9 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("x^2+4*x+3");
             h = Expression.build("x^3+x^2");
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
-            TestUtilities.printResults(new Object[]{expectedResult[0], expectedResult[1]},
-                    new Object[]{Expression.build("3*x"),
-                        Expression.build("(-2)*x")});
+            expectedResults = new Object[]{expectedResult[0], expectedResult[1]};
+            results = new Object[]{Expression.build("3*x"),
+                Expression.build("(-2)*x")};
             Assert.assertTrue(expectedResult.length == 2);
             Assert.assertTrue(expectedResult[0].equivalent(Expression.build("3*x")));
             Assert.assertTrue(expectedResult[1].equivalent(Expression.build("(-2)*x")));
@@ -368,7 +374,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("x^2+4*x+3");
             h = Expression.build("x^4");
             Expression[] expectedResult = SimplifyPolynomialUtils.getOptimalEuclideanRepresentation(f, g, h, "x");
-            TestUtilities.printResults(expectedResult, new Expression[]{});
+            expectedResults = expectedResult;
+            results = new Expression[]{};
             Assert.assertTrue(expectedResult.length == 0);
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -383,7 +390,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^5-7");
             expectedFactorizationOfF = Expression.build("(x-7^(1/5))*((x^2+7^(2/5))+(7^(1/5)*(1+5^(1/2))*x)/2)*((x^2+7^(2/5))-(7^(1/5)*(5^(1/2)-1)*x)/2)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -397,7 +405,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^4+1");
             expectedFactorizationOfF = Expression.build("(x^2+2^(1/2)*x+1)*((x^2+1)-2^(1/2)*x)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -411,7 +420,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^3+1");
             expectedFactorizationOfF = Expression.build("(x+1)*((1+x^2)-x)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -425,7 +435,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("1+x+x^2+x^3+x^4");
             expectedFactorizationOfF = Expression.build("((1+x^2)+((1-5^(1/2))*x)/2)*(1+x^2+((5^(1/2)+1)*x)/2)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -439,7 +450,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("1+x+x^2+x^3+x^4+x^5");
             expectedFactorizationOfF = Expression.build("(1+x)*((1+x^2)-x)*(1+x+x^2)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -453,7 +465,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("4*x^5+3*x^4+25*x^3+4*x^2+3*x+25");
             expectedFactorizationOfF = Expression.build("4*(x^2+(3*x)/4+25/4)*(1+x)*((1+x^2)-x)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -467,7 +480,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("12+2*x+x^2-12*x^3-2*x^4-x^5+12*x^6+2*x^7+x^8");
             expectedFactorizationOfF = Expression.build("(12+2*x+x^2)*((1+x^6)-x^3)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x").orderDifferencesAndQuotients();
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -481,9 +495,9 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^3+5*x+7");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
-            TestUtilities.printResults(new Object[]{SimplifyPolynomialUtils.getDegreeOfPolynomial(factors.get(0), "x"),
-                SimplifyPolynomialUtils.getDegreeOfPolynomial(factors.get(1), "x")},
-                    new Object[]{BigInteger.ONE, BigInteger.valueOf(2)});
+            expectedResults = new Object[]{SimplifyPolynomialUtils.getDegreeOfPolynomial(factors.get(0), "x"),
+                SimplifyPolynomialUtils.getDegreeOfPolynomial(factors.get(1), "x")};
+            results = new Object[]{BigInteger.ONE, BigInteger.valueOf(2)};
             Assert.assertTrue(factors.getBound() == 2);
             // Hier werden nur die Grade getestet, da die Faktoren etwas zu kompliziert sind.
             Assert.assertTrue(SimplifyPolynomialUtils.getDegreeOfPolynomial(factors.get(0), "x").compareTo(BigInteger.ONE) == 0);
@@ -500,7 +514,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("144+33*x^2+x^4+72*x+6*x^3");
             expectedFactorizationOfF = Expression.build("(x^2+3*x+12)^2");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -517,7 +532,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("248832+259200*x^2+61020*x^4+5085*x^6+150*x^8+x^10+311040*x+142560*x^3+19683*x^5+990*x^7+15*x^9");
             expectedFactorizationOfF = Expression.build("(x^2+3*x+12)^5");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -533,7 +549,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("216+585*x^2+275*x^4+35*x^6+459*x+469*x^3+113*x^5+x^8+7*x^7");
             expectedFactorizationOfF = Expression.build("(x^2+x+8)*(x^2+2*x+3)^3");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -549,7 +566,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("2+4*x^2+2*x^4");
             expectedFactorizationOfF = Expression.build("2*(1+x^2)^2");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -565,7 +583,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("32+178*x^2+259*x^4+165*x^6+80*x+218*x^3+197*x^5+56*x^8+82*x^7+11*x^10+16*x^9+x^12+x^11");
             expectedFactorizationOfF = Expression.build("(x^2+2)*((4+x^2)-x)^2*(x^2+x+1)^3");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -581,7 +600,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("14+93*x+125*x^2+51*x^3+5*x^4");
             expectedFactorizationOfF = Expression.build("5*(x+1)*(x+2)*(x+7)*(x+1/5)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -597,7 +617,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("27*x+27*x^3+9*x^5+x^7-(135+135*x^2+45*x^4+5*x^6)");
             expectedFactorizationOfF = Expression.build("(x^2+3)^3*(x-5)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -613,7 +634,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^4+5*x^3+21*x^2+35*x+50");
             expectedFactorizationOfF = Expression.build("(x^2+2*x+5)*(x^2+3*x+10)");
             f = SimplifyPolynomialUtils.decomposePolynomialInIrreducibleFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -630,7 +652,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("864+1728*x+2448*x^2+2768*x^3+2240*x^4+1616*x^5+864*x^6+408*x^7+138*x^8+40*x^9+7*x^10+x^11");
             expectedFactorizationOfF = Expression.build("(1+x)*(2+x^2)^2*(6+2*x+x^2)^3");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -647,7 +670,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("10125+23625*x+26325*x^2+22425*x^3+14990*x^4+7910*x^5+3486*x^6+1254*x^7+357*x^8+81*x^9+13*x^10+x^11");
             expectedFactorizationOfF = Expression.build("(1+x)*(5+x^2)^3*(x+3)^4");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -664,7 +688,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("a^2+2*a*x+x^2");
             expectedFactorizationOfF = Expression.build("(a+x)^2");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -681,7 +706,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("1+3*a*x+3*a^2*x^2+a^3*x^3");
             expectedFactorizationOfF = Expression.build("a^3*(1/a+x)^3");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -698,7 +724,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("a*b^2+2*a*b*x+a*x^2+x*b^2+2*x^2*b+x^3");
             expectedFactorizationOfF = Expression.build("(a+x)*(b+x)^2");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -715,7 +742,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("a^3+3*a^2*b+3*a*b^2+b^3+3*a^2*x+6*a*b*x+3*b^2*x+3*a*x^2+3*b*x^2+x^3");
             expectedFactorizationOfF = Expression.build("(a+b+x)^3");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -731,7 +759,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("x^4+2*x^2*t+t^2");
             expectedFactorizationOfF = Expression.build("(x^2+t)^2");
             f = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactors(f, "x");
-            TestUtilities.printResult(expectedFactorizationOfF, f);
+            expectedResults = new Object[]{expectedFactorizationOfF};
+            results = new Object[]{f};
             Assert.assertTrue(f.equivalent(expectedFactorizationOfF));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -751,9 +780,9 @@ public class PolynomialTests extends MathToolTestBase {
             Assert.assertTrue(fDecomposed.equivalent(expectedFactorizationOfF));
             Expression fDecomposedLight = SimplifyPolynomialUtils.decomposePolynomialIntoSquarefreeFactorsLight(f, "x");
             expectedFactorizationOfFLight = Expression.build("2*(1+x)^2*(3+4*x+x^2)");
+            expectedResults = new Object[]{expectedFactorizationOfF, expectedFactorizationOfFLight};
+            results = new Object[]{fDecomposed, fDecomposedLight};
             Assert.assertTrue(fDecomposedLight.equivalent(expectedFactorizationOfFLight));
-            TestUtilities.printResults(new Object[]{expectedFactorizationOfF, expectedFactorizationOfFLight},
-                    new Object[]{fDecomposed, fDecomposedLight});
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -769,7 +798,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("x^2-4*x+6");
             MatrixExpression resultant = SimplifyPolynomialUtils.getResultant(SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x"));
-            TestUtilities.printResult(new Constant(459), resultant.convertOneTimesOneMatrixToExpression());
+            expectedResults = new Object[]{new Constant(459)};
+            results = new Object[]{resultant.convertOneTimesOneMatrixToExpression()};
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(459)));
         } catch (ExpressionException | EvaluationException e) {
@@ -787,7 +817,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("2*x^2+4*x+3");
             MatrixExpression resultant = SimplifyPolynomialUtils.getResultant(SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x"));
-            TestUtilities.printResult(new Constant(731), resultant.convertOneTimesOneMatrixToExpression());
+            expectedResults = new Object[]{new Constant(731)};
+            results = new Object[]{resultant.convertOneTimesOneMatrixToExpression()};
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(new Constant(731)));
         } catch (ExpressionException | EvaluationException e) {
@@ -805,6 +836,8 @@ public class PolynomialTests extends MathToolTestBase {
             g = Expression.build("b*x+c");
             MatrixExpression resultant = SimplifyPolynomialUtils.getResultant(SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x"),
                     SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x"));
+            expectedResults = new Object[]{Variable.create("a")};
+            results = new Object[]{resultant.convertOneTimesOneMatrixToExpression()};
             TestUtilities.printResult(Variable.create("a"), resultant.convertOneTimesOneMatrixToExpression());
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(Variable.create("a")));

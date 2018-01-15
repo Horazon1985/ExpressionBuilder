@@ -2,11 +2,11 @@ package abstractexpressions.matrixexpression.basic;
 
 import exceptions.EvaluationException;
 import abstractexpressions.expression.classes.Expression;
-import java.util.HashMap;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixBinaryOperation;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
+import java.util.Map;
 import lang.translator.Translator;
 
 public abstract class SimplifyMatrixUtilities {
@@ -269,7 +269,7 @@ public abstract class SimplifyMatrixUtilities {
      *
      * @throws EvaluationException
      */
-    public static void collectFactorsInMatrixProduct(HashMap<Integer, MatrixExpression> factors, int l) throws EvaluationException {
+    public static void collectFactorsInMatrixProduct(Map<Integer, MatrixExpression> factors, int l) throws EvaluationException {
 
         MatrixExpression base;
         Expression exponent;

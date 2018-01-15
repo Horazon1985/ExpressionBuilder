@@ -14,11 +14,12 @@ import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyAlgebraicExpressionUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import java.util.HashSet;
+import java.util.Set;
 import notations.NotationLoader;
 
 public abstract class SubstitutionUtilities {
 
-    private static final HashSet<TypeSimplify> simplifyTypesSubstitution = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesSubstitution = new HashSet<>();
 
     static {
         simplifyTypesSubstitution.add(TypeSimplify.order_difference_and_division);

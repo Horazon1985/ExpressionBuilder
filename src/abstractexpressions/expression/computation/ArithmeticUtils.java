@@ -10,17 +10,41 @@ import computationbounds.ComputationBounds;
 import exceptions.EvaluationException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lang.translator.Translator;
 
 public abstract class ArithmeticUtils {
 
+    public static class PrimeFactorWithMultiplicity {
+
+        private final BigInteger p;
+        private final int mulitplicity;
+
+        public PrimeFactorWithMultiplicity(BigInteger p, int mulitplicity) {
+            this.p = p;
+            this.mulitplicity = mulitplicity;
+        }
+
+        public BigInteger getP() {
+            return p;
+        }
+
+        public int getMulitplicity() {
+            return mulitplicity;
+        }
+
+    }
+
     /**
      * Liefert die Primfaktorzerlegung von a, falls a &#8804; eine gewisse
-     * Schranke. Ansonsten werden womöglich nicht alle ermittelten Faktoren
-     * prim.<br>
+     * Schranke nicht überschreitet. Ansonsten werden womöglich nicht alle
+     * ermittelten Faktoren prim.<br>
      * VORAUSSETZUNG: a &#8805; 0.
      */
-    public static ArrayList<BigInteger> getPrimeDecomposition(BigInteger a) {
+    public static List<PrimeFactorWithMultiplicity> getPrimeDecomposition(BigInteger a) {
 
         BigInteger bound;
         try {
@@ -31,20 +55,29 @@ public abstract class ArithmeticUtils {
 
         bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
 
-        ArrayList<BigInteger> primeDivisors = new ArrayList<>();
+        List<PrimeFactorWithMultiplicity> primeDivisors = new ArrayList<>();
 
         if (a.compareTo(BigInteger.ONE) <= 0) {
             return primeDivisors;
         }
 
-        for (int i = 1; i <= bound.intValue(); i++) {
+        BigInteger currentPrime;
+        int currentMultiplicity;
+        for (int i = 2; i <= bound.intValue(); i++) {
             if (a.compareTo(BigInteger.valueOf(i)) < 0) {
                 break;
             }
-            if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
-                primeDivisors.add(BigInteger.valueOf(i));
+            currentPrime = BigInteger.valueOf(i);
+            currentMultiplicity = 0;
+            while (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
+                currentMultiplicity++;
                 a = a.divide(BigInteger.valueOf(i));
-                i--;
+            }
+            if (currentMultiplicity > 0) {
+                primeDivisors.add(new PrimeFactorWithMultiplicity(currentPrime, currentMultiplicity));
+            }
+            if (a.equals(BigInteger.ONE)) {
+                break;
             }
         }
 
@@ -58,7 +91,7 @@ public abstract class ArithmeticUtils {
      * kleiner oder gleich der Wurzel der Schranke sind, sowie ihre
      * Komplementärteiler ermittelt.
      */
-    public static ArrayList<BigInteger> getDivisors(BigInteger a) {
+    public static List<BigInteger> getDivisors(BigInteger a) {
 
         BigInteger bound;
         try {
@@ -69,7 +102,7 @@ public abstract class ArithmeticUtils {
 
         bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
 
-        ArrayList<BigInteger> divisors = new ArrayList<>();
+        List<BigInteger> divisors = new ArrayList<>();
 
         if (a.compareTo(BigInteger.ZERO) == 0) {
             divisors.add(BigInteger.ONE);
@@ -96,6 +129,49 @@ public abstract class ArithmeticUtils {
 
         return divisors;
 
+    }
+
+    /**
+     * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls
+     * a &#8804; eine gewisse Schranke. Ansonsten werden nur alle Teiler, welche
+     * kleiner oder gleich der Wurzel der Schranke sind, sowie ihre
+     * Komplementärteiler ermittelt.
+     */
+    public static List<BigInteger> getDivisors2(BigInteger a) {
+        BigInteger absA = a.abs();
+        List<PrimeFactorWithMultiplicity> primefactors = getPrimeDecomposition(absA);
+        Set<BigInteger> divisorsSet = getDivisorsFromPrimeFactors(primefactors);
+        Set<BigInteger> allDivisorsSet = new HashSet<>(divisorsSet);
+        for (BigInteger d : divisorsSet) {
+            allDivisorsSet.add(absA.divide(d));
+        }
+        List<BigInteger> divisors = new ArrayList<>(allDivisorsSet);
+        Collections.sort(divisors);
+        return divisors;
+    }
+
+    private static Set<BigInteger> getDivisorsFromPrimeFactors(List<PrimeFactorWithMultiplicity> computedPrimefactors) {
+        Set<BigInteger> divisors = new HashSet<>();
+        if (computedPrimefactors.isEmpty()) {
+            divisors.add(BigInteger.ONE);
+        } else {
+            BigInteger p = computedPrimefactors.get(0).getP();
+            int n = computedPrimefactors.get(0).getMulitplicity();
+            computedPrimefactors.remove(0);
+            for (int i = 0; i <= n; i++) {
+                divisors.add(p.pow(i));
+            }
+            if (!computedPrimefactors.isEmpty()) {
+                Set<BigInteger> divisorsComputedByFirstFactor = new HashSet<>(divisors);
+                Set<BigInteger> divisorsOfQuotient = getDivisorsFromPrimeFactors(computedPrimefactors);
+                for (BigInteger a : divisorsComputedByFirstFactor) {
+                    for (BigInteger b : divisorsOfQuotient) {
+                        divisors.add(a.multiply(b));
+                    }
+                }
+            }
+        }
+        return divisors;
     }
 
     /**
@@ -140,12 +216,12 @@ public abstract class ArithmeticUtils {
 
     }
 
-    public static BigInteger gcd(ArrayList<BigInteger> a) {
+    public static BigInteger gcd(List<BigInteger> a) {
         BigInteger[] result = new BigInteger[a.size()];
         return gcd(a.toArray(result));
     }
 
-    public static Expression gcdSimplifyTrivial(ArrayList<Expression> a) {
+    public static Expression gcdSimplifyTrivial(List<Expression> a) {
         for (Expression argument : a) {
             if (argument.isIntegerConstant() && ((Constant) argument).getBigIntValue().abs().equals(BigInteger.ONE)) {
                 return ONE;
@@ -191,7 +267,7 @@ public abstract class ArithmeticUtils {
 
     public static Expression lcmSimplifyTrivial(ArrayList<Expression> a) {
         for (int i = 0; i < a.size(); i++) {
-            if (a.size() > 1 && a.get(i).isIntegerConstant() 
+            if (a.size() > 1 && a.get(i).isIntegerConstant()
                     && ((Constant) a.get(i)).getBigIntValue().abs().equals(BigInteger.ONE)) {
                 a.remove(i);
                 i--;
@@ -263,7 +339,7 @@ public abstract class ArithmeticUtils {
      */
     public static BigInteger root(BigInteger a, int n) throws EvaluationException {
 
-        if (a.compareTo(BigInteger.ZERO) < 0 && (n / 2) * 2 == n) {
+        if (a.compareTo(BigInteger.ZERO) < 0 && n % 2 == 0) {
             throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST", a));
         }
 

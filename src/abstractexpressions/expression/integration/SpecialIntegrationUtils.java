@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import exceptions.MathToolException;
+import java.util.Set;
 
 /**
  * Klasse mit Methoden für die Integration spezieller Funktionstypen.
@@ -81,12 +82,12 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalFunction = getSimplifyTypesRationalTrigonometricalFunction();
-    private static final HashSet<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunction = getSimplifyTypesExpandProductOfComplexExponentialFunction();
-    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicFunction = getSimplifyTypesAlgebraicFunction();
+    private static final Set<TypeSimplify> simplifyTypesRationalTrigonometricalFunction = getSimplifyTypesRationalTrigonometricalFunction();
+    private static final Set<TypeSimplify> simplifyTypesExpandProductOfComplexExponentialFunction = getSimplifyTypesExpandProductOfComplexExponentialFunction();
+    private static final Set<TypeSimplify> simplifyTypesAlgebraicFunction = getSimplifyTypesAlgebraicFunction();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunction() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesRationalTrigonometricalFunction() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -106,8 +107,8 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesExpandProductOfComplexExponentialFunction() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesExpandProductOfComplexExponentialFunction() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -122,8 +123,8 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesAlgebraicFunction() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesAlgebraicFunction() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -164,7 +165,7 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
          Im Folgenden sind nur rationale Funktionen zugelassen: der Nenner
          enthält keine Parameter, der Zähler darf welche enthalten.
          */
-        HashSet<String> varsInDenominator = new HashSet<>();
+        Set<String> varsInDenominator = new HashSet<>();
         ((BinaryOperation) f).getRight().addContainedVars(varsInDenominator);
         if (!varsInDenominator.contains(var) || varsInDenominator.size() > 1) {
             /*
@@ -1452,7 +1453,7 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
-        HashSet<Expression> argumentsInExp = new HashSet<>();
+        Set<Expression> argumentsInExp = new HashSet<>();
 
         // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
         f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, var);
@@ -1535,7 +1536,7 @@ public abstract class SpecialIntegrationUtils extends GeneralIntegralUtils {
         Expression f = (Expression) expr.getParams()[0];
         String var = (String) expr.getParams()[1];
 
-        HashSet<Expression> argumentsInTrigonometricalFunctions = new HashSet<>();
+        Set<Expression> argumentsInTrigonometricalFunctions = new HashSet<>();
 
         // Konstante Summanden aus Argumenten in Exponentialfunktionen herausziehen.
         f = SimplifyTrigonometricalRelationsUtils.separateConstantPartsInRationalTrigonometricalEquations(f, var);

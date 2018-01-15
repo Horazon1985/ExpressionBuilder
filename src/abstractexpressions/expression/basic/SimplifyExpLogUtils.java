@@ -11,6 +11,7 @@ import abstractexpressions.expression.classes.TypeOperator;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class SimplifyExpLogUtils {
 
@@ -805,7 +806,7 @@ public abstract class SimplifyExpLogUtils {
             return result;
         }
 
-        HashMap<Integer, Integer> powers = new HashMap<>();
+        Map<Integer, Integer> powers = new HashMap<>();
         // Temporärer Platzhalter zum Kopieren von Parametern.
         BigInteger argumentCopy;
         int k;

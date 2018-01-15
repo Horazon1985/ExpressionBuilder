@@ -8,6 +8,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.basic.MatrixExpressionCollection;
+import java.util.List;
 import notations.NotationLoader;
 
 public abstract class GaussAlgorithmUtils {
@@ -126,7 +127,7 @@ public abstract class GaussAlgorithmUtils {
             return basis;
         }
 
-        ArrayList<Integer> listOfIndicesWithJumpings = new ArrayList<>();
+        List<Integer> listOfIndicesWithJumpings = new ArrayList<>();
         for (int j = 0; j < matrix.getColumnNumber(); j++) {
             if (listOfIndicesWithJumpings.size() >= matrix.getRowNumber()) {
                 break;
@@ -277,7 +278,7 @@ public abstract class GaussAlgorithmUtils {
         int indexOfParameterVar = 0;
 
         // Zunächst: Variablen, die freie Parameter sind, bestimmen.
-        ArrayList<Integer> jumpings = getIndicesOfJumpings(mExtended);
+        List<Integer> jumpings = getIndicesOfJumpings(mExtended);
         for (int i = dimM.width - 1; i >= 0; i--) {
             if (!jumpings.contains(i)) {
                 solution[i] = Variable.create(NotationLoader.FREE_REAL_PARAMETER_VAR + "_" + indexOfParameterVar);
@@ -319,8 +320,8 @@ public abstract class GaussAlgorithmUtils {
      * Hilfsmethode for solveLinearSystemOfEquations(). VORAUSSETZUNG: m ist in
      * Zeilestufenform.
      */
-    private static ArrayList<Integer> getIndicesOfJumpings(Matrix m) {
-        ArrayList<Integer> jumpings = new ArrayList<>();
+    private static List<Integer> getIndicesOfJumpings(Matrix m) {
+        List<Integer> jumpings = new ArrayList<>();
         Dimension dim = m.getDimension();
         int row = 0;
         for (int i = 0; i < dim.width; i++) {

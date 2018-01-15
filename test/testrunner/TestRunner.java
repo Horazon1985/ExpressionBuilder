@@ -1,6 +1,8 @@
-package utilities;
+package testrunner;
 
+import abstractexpressions.expression.computation.ArithmeticUtils;
 import basic.MathToolTestBase;
+import exceptions.EvaluationException;
 import expression.computationtests.*;
 import expression.generaltests.*;
 import logicalexpression.computationtests.*;
@@ -12,7 +14,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -35,7 +40,8 @@ public class TestRunner {
 
     @Before
     public void initTestClasses() throws Exception {
-        TEST_CLASSES.add(AlgebraicMethodsTests.class);
+        TEST_CLASSES.add(ArithmeticTests.class);
+        TEST_CLASSES.add(AlgebraicTests.class);
         TEST_CLASSES.add(GroebnerBasisTests.class);
         TEST_CLASSES.add(SolveSpecialDifferentialEquationTests.class);
         TEST_CLASSES.add(SolveGeneralEquationTests.class);
@@ -63,6 +69,7 @@ public class TestRunner {
         Constructor constructor;
         Object obj;
         int numberOfSuccessfulTests = 0, numberOfFailedTests = 0;
+        List<Long> executionTimes = new ArrayList<>();
         for (Class cls : TEST_CLASSES) {
             if (cls.getAnnotation(Ignore.class) != null) {
                 System.out.println("Test class " + cls.toString() + " will be ignored.");
@@ -110,6 +117,8 @@ public class TestRunner {
 
             for (Method test : methods) {
                 if (test.getAnnotation(Test.class) != null && test.getAnnotation(Ignore.class) == null) {
+                    long beginTimeInMs = System.currentTimeMillis();
+                    long endTimeInMs;
                     try {
                         System.out.println("Execution of test " + test.getName() + " begins.");
                         if (beforeMethod != null) {
@@ -119,9 +128,11 @@ public class TestRunner {
                         test.invoke(obj);
                         numberOfSuccessfulTests++;
                         System.out.println("Execution of test " + test.getName() + ": successful.");
+                        endTimeInMs = System.currentTimeMillis();
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         numberOfFailedTests++;
                         System.err.println("Execution of test " + test.getName() + ": failed.");
+                        endTimeInMs = System.currentTimeMillis();
                     } finally {
                         if (afterMethod != null) {
                             // @After-Methode aufrufen.
@@ -135,6 +146,7 @@ public class TestRunner {
                         printResults(cls, test);
                         MathToolTestBase.resetResults();
                     }
+                    executionTimes.add(endTimeInMs - beginTimeInMs);
                 }
             }
 
@@ -152,6 +164,11 @@ public class TestRunner {
 
         System.out.println("Number of successful tests: " + numberOfSuccessfulTests);
         System.err.println("\033[31mNumber of failed tests: " + numberOfFailedTests);
+        TestMeasure measure = computeTestMeasure(executionTimes);
+        System.out.println("Minimal time of a test execution: " + measure.getMinTime() + " sec.");
+        System.out.println("Maximal time of a test execution: " + measure.getMaxTime() + " sec.");
+        System.out.println("Average time of a test execution: " + measure.getAvgTime() + " sec.");
+        System.out.println("Mean square deviation a test execution: " + measure.getMeanSquareDeviation() + " sec.");
     }
 
     private void printResults(Class clazz, Method testMethod) {
@@ -175,6 +192,66 @@ public class TestRunner {
 
     private boolean exists(Object[] objects) {
         return objects != null && objects.length > 0;
+    }
+
+    private static class TestMeasure {
+
+        BigDecimal minTime;
+        BigDecimal maxTime;
+        BigDecimal avgTime;
+        BigDecimal meanSquareDeviation;
+
+        public TestMeasure(BigDecimal minTime, BigDecimal maxTime, BigDecimal avgTime, BigDecimal meanSquareDeviation) {
+            this.minTime = minTime;
+            this.maxTime = maxTime;
+            this.avgTime = avgTime;
+            this.meanSquareDeviation = meanSquareDeviation;
+        }
+
+        public BigDecimal getMinTime() {
+            return minTime;
+        }
+
+        public BigDecimal getMaxTime() {
+            return maxTime;
+        }
+
+        public BigDecimal getAvgTime() {
+            return avgTime;
+        }
+
+        public BigDecimal getMeanSquareDeviation() {
+            return meanSquareDeviation;
+        }
+
+    }
+
+    private TestMeasure computeTestMeasure(List<Long> times) {
+        long minTime = 0;
+        long maxTime = 0;
+        long avgTime;
+        long sigma;
+        BigInteger sum = BigInteger.ZERO;
+        BigInteger sumOfSquares = BigInteger.ZERO;
+        for (long time : times) {
+            minTime = Math.min(minTime, time);
+            maxTime = Math.max(maxTime, time);
+            sum = sum.add(BigInteger.valueOf(time));
+        }
+        avgTime = sum.divide(BigInteger.valueOf(times.size())).longValue();
+        for (long time : times) {
+            sumOfSquares = sumOfSquares.add(BigInteger.valueOf(time - avgTime).pow(2));
+        }
+        sumOfSquares = sumOfSquares.divide(BigInteger.valueOf(times.size()));
+        try {
+            sigma = ArithmeticUtils.root(sumOfSquares, 2).longValue();
+        } catch (EvaluationException e) {
+            sigma = 0;
+        }
+        
+        BigDecimal thousand = BigDecimal.valueOf(1000);
+        return new TestMeasure(BigDecimal.valueOf(minTime).divide(thousand), BigDecimal.valueOf(maxTime).divide(thousand), 
+                BigDecimal.valueOf(avgTime).divide(thousand), BigDecimal.valueOf(sigma).divide(thousand));
     }
 
 }

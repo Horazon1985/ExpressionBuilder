@@ -135,7 +135,7 @@ public class GraphicCanvasFormula extends Canvas {
      * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
      */
     public AbstractExpression[] getContainedAbstractExpression() {
-        ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
+        List<AbstractExpression> abstractExpressionList = new ArrayList<>();
         boolean abstrExprIsAlreadyContained;
         for (Object out : output) {
             if (out instanceof EditableAbstractExpression) {
@@ -173,7 +173,7 @@ public class GraphicCanvasFormula extends Canvas {
      * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
      */
     public String[] getContainedEditableStrings() {
-        ArrayList<String> editableStringList = new ArrayList<>();
+        List<String> editableStringList = new ArrayList<>();
         for (Object out : output) {
             if (out instanceof EditableString) {
                 String text = ((EditableString) out).getText();
@@ -215,7 +215,7 @@ public class GraphicCanvasFormula extends Canvas {
         }
     }
 
-    public void setOutput(ArrayList out) {
+    public void setOutput(List out) {
         output = new Object[out.size()];
         int i = 0;
         for (Object o : out) {

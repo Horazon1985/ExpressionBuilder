@@ -16,14 +16,16 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lang.translator.Translator;
 
 public abstract class SimplifyMultiPolynomialUtils {
 
-    private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
+    private static final Set<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
 
-    private static HashSet<TypeSimplify> getsimplifyTypesExpandPolynomial() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getsimplifyTypesExpandPolynomial() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -44,7 +46,7 @@ public abstract class SimplifyMultiPolynomialUtils {
      * VORAUSSETZUNG: f ist vereinfacht, d.h. Operatoren etc. kommen NICHT vor
      * (außer evtl. Gamma(x), was kein Polynom ist).
      */
-    public static boolean isMultiPolynomial(Expression f, ArrayList<String> vars) {
+    public static boolean isMultiPolynomial(Expression f, List<String> vars) {
 
         boolean exprContainsSomeVariableFromVars = false;
         for (String var : vars) {
@@ -90,7 +92,7 @@ public abstract class SimplifyMultiPolynomialUtils {
      * VORAUSSETZUNG: f ist vereinfacht, d.h. Operatoren etc. kommen NICHT vor
      * (außer evtl. Gamma(x), was kein Polynom ist).
      */
-    private static boolean isMultiPolynomialInExpandedForm(Expression f, ArrayList<String> vars) {
+    private static boolean isMultiPolynomialInExpandedForm(Expression f, List<String> vars) {
 
         ExpressionCollection summandsLeft = SimplifyUtilities.getSummandsLeftInExpression(f);
         ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(f);
@@ -110,7 +112,7 @@ public abstract class SimplifyMultiPolynomialUtils {
 
     }
 
-    private static boolean isMonomial(Expression f, ArrayList<String> vars) {
+    private static boolean isMonomial(Expression f, List<String> vars) {
 
         if (f.isSum() || f.isDifference()) {
             return false;
@@ -151,7 +153,7 @@ public abstract class SimplifyMultiPolynomialUtils {
      * Variablen vars, welches von f repräsentiert wird. Falls f kein Polynom
      * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
      */
-    public static BigInteger getDegreeOfMultiPolynomial(Expression f, ArrayList<String> vars) {
+    public static BigInteger getDegreeOfMultiPolynomial(Expression f, List<String> vars) {
 
         boolean fContainsVars = false;
 
@@ -213,12 +215,12 @@ public abstract class SimplifyMultiPolynomialUtils {
      * ist in var ist, so wird -1 (als BigInteger) zurückgegeben.
      */
     public static BigInteger getDegreeOfMultiPolynomial(Expression f, String... vars) {
-        ArrayList<String> varsAsHashSet = new ArrayList<>();
-        varsAsHashSet.addAll(Arrays.asList(vars));
-        return getDegreeOfMultiPolynomial(f, varsAsHashSet);
+        List<String> varsAsSet = new ArrayList<>();
+        varsAsSet.addAll(Arrays.asList(vars));
+        return getDegreeOfMultiPolynomial(f, varsAsSet);
     }
 
-    private static Monomial getMonomialFromExpression(Expression f, ArrayList<String> vars) throws EvaluationException {
+    private static Monomial getMonomialFromExpression(Expression f, List<String> vars) throws EvaluationException {
 
         ExpressionCollection factorsNumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
 
@@ -249,7 +251,7 @@ public abstract class SimplifyMultiPolynomialUtils {
 
     }
 
-    public static MultiPolynomial getMultiPolynomialFromExpression(Expression f, ArrayList<String> vars) throws EvaluationException {
+    public static MultiPolynomial getMultiPolynomialFromExpression(Expression f, List<String> vars) throws EvaluationException {
 
         MultiPolynomial fAsMultiPolynomial = new MultiPolynomial();
 
@@ -291,16 +293,16 @@ public abstract class SimplifyMultiPolynomialUtils {
 
     }
 
-    public static ArrayList<MultiPolynomial> getMultiPolynomialsFromExpressions(ArrayList<Expression> exprs, ArrayList<String> vars) throws EvaluationException {
-        ArrayList<MultiPolynomial> polynomials = new ArrayList<>();
+    public static List<MultiPolynomial> getMultiPolynomialsFromExpressions(List<Expression> exprs, List<String> vars) throws EvaluationException {
+        List<MultiPolynomial> polynomials = new ArrayList<>();
         for (Expression expr : exprs) {
             polynomials.add(getMultiPolynomialFromExpression(expr, vars));
         }
         return polynomials;
     }
 
-    public static ArrayList<MultiPolynomial> getMultiPolynomialsFromExpressions(Expression[] exprs, ArrayList<String> vars) throws EvaluationException {
-        ArrayList<MultiPolynomial> polynomials = new ArrayList<>();
+    public static List<MultiPolynomial> getMultiPolynomialsFromExpressions(Expression[] exprs, List<String> vars) throws EvaluationException {
+        List<MultiPolynomial> polynomials = new ArrayList<>();
         for (Expression expr : exprs) {
             polynomials.add(getMultiPolynomialFromExpression(expr, vars));
         }

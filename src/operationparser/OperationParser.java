@@ -16,6 +16,7 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import abstractexpressions.matrixexpression.classes.MatrixOperator;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import operationparser.ParameterPattern.Multiplicity;
 import operationparser.ParameterPattern.ParamRole;
@@ -40,13 +41,12 @@ public abstract class OperationParser {
         String opName = opData.getOperationName();
         String[] args = opData.getOperationArguments();
 
-        ArrayList<ParameterPattern> paramPatterns = new ArrayList<>();
+        List<ParameterPattern> paramPatterns = new ArrayList<>();
         ParameterPattern[] paramPattern = new ParameterPattern[args.length];
 
-        String[] paramTypeAndRestrictions;
         String paramType;
         String[] restrictions;
-        ArrayList<String> restrictionsAsList = new ArrayList<>();
+        List<String> restrictionsAsList = new ArrayList<>();
         Multiplicity m;
 
         for (int i = 0; i < args.length; i++) {
@@ -242,7 +242,7 @@ public abstract class OperationParser {
     }
 
     /**
-     * Gibt eine ArrayList mit Einschränkungsparametern zurück, falls der
+     * Gibt eine List mit Einschränkungsparametern zurück, falls der
      * gegebene Parameter ein (abstrakter) Ausdruck ist. Das Array mit den
      * Einschränkungen muss genau die Länge zwei haben und entweder
      * Integer-Zahlen (als Strings) enthalten, oder den String "none". Der erste
@@ -250,9 +250,9 @@ public abstract class OperationParser {
      * die Höchstzahl. Die Einschränkung "none" bedeutet jeweils, dass keine
      * Einschränkung vorliegt.
      */
-    private static ArrayList<String> getRestrictionList(String[] restrictions, int index) {
+    private static List<String> getRestrictionList(String[] restrictions, int index) {
 
-        ArrayList<String> restrictionsAsList = new ArrayList<>();
+        List<String> restrictionsAsList = new ArrayList<>();
 
         if (restrictions.length != 2) {
             throw new ParseException();
@@ -300,8 +300,8 @@ public abstract class OperationParser {
 
         int indexInOperatorArguments = 0;
         ParameterPattern p;
-        ArrayList<String> restrictions;
-        ArrayList<Integer> indices = new ArrayList<>();
+        List<String> restrictions;
+        List<Integer> indices = new ArrayList<>();
 
         // Zunächst nur reines Parsen, OHNE die Einschränkungen für die Variablen zu beachten.
         for (int i = 0; i < resultPattern.size(); i++) {
@@ -494,8 +494,8 @@ public abstract class OperationParser {
 
         int indexInOperatorArguments = 0;
         ParameterPattern p;
-        ArrayList<String> restrictions;
-        ArrayList<Integer> indices = new ArrayList<>();
+        List<String> restrictions;
+        List<Integer> indices = new ArrayList<>();
 
         // Zunächst nur reines Parsen, OHNE die Einschränkungen für die Variablen zu beachten.
         for (int i = 0; i < resultPattern.size(); i++) {
@@ -690,8 +690,8 @@ public abstract class OperationParser {
 
         int indexInCommandParameters = 0;
         ParameterPattern p;
-        ArrayList<String> restrictions;
-        ArrayList<Integer> indices = new ArrayList<>();
+        List<String> restrictions;
+        List<Integer> indices = new ArrayList<>();
 
         // Zunächst nur reines Parsen, OHNE die Einschränkungen für die Variablen zu beachten.
         for (int i = 0; i < resultPattern.size(); i++) {
@@ -837,7 +837,7 @@ public abstract class OperationParser {
      *
      * @throws ExpressionException
      */
-    private static Object getOperationParameter(String opName, String parameter, Set<String> vars, ParamType type, ArrayList<String> restrictions, int index, Class cls) throws ExpressionException {
+    private static Object getOperationParameter(String opName, String parameter, Set<String> vars, ParamType type, List<String> restrictions, int index, Class cls) throws ExpressionException {
 
         /* 
          Da diese Methode für Operator, MatrixOperator, Command gültig sein soll,

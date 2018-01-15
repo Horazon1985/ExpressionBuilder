@@ -8,12 +8,13 @@ import abstractexpressions.expression.classes.Expression;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public class ExpressionCollection implements Iterable<Expression> {
 
-    private final HashMap<Integer, Expression> terms;
+    private final Map<Integer, Expression> terms;
     private int bound;
 
     public ExpressionCollection() {
@@ -358,7 +359,7 @@ public class ExpressionCollection implements Iterable<Expression> {
         return result;
     }
 
-    public ExpressionCollection simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+    public ExpressionCollection simplify(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
         ExpressionCollection result = new ExpressionCollection();
         for (int i = 0; i < this.bound; i++) {
             if (this.terms.get(i) != null) {

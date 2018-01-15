@@ -71,7 +71,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
     protected static final Color gridColorGridOnlyBright = Color.BLACK;
     protected static final Color gridColorGridOnlyDark = Color.GRAY;
 
-    protected ArrayList<TangentPolygon>[][] abstractGraph3D;
+    protected List<TangentPolygon>[][] abstractGraph3D;
     /**
      * Standardwert für die Anzahl der Unterteilungen des zu zeichnenden
      * Bereichs der x,y-Ebene entlang x und y. Wird mit Veränderung des
@@ -418,7 +418,7 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
      * Berechnet die Maße Darstellungsbereichs eines einzelnen Graphen.
      */
     protected void computeScreenSizes(double[][][] graph, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
-        ArrayList<double[][][]> graphs = new ArrayList<>();
+        List<double[][][]> graphs = new ArrayList<>();
         graphs.add(graph);
         computeScreenSizes(graphs, paddingForX, paddingForY, paddingForZ);
     }
@@ -1149,11 +1149,11 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
     }
 
     /**
-     * Liefert eine ArrayList mit Bedienungsanweisungen für dreidimensionale
+     * Liefert eine List mit Bedienungsanweisungen für dreidimensionale
      * Grafiken.
      */
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
+    public static List<String> getInstructions() {
+        List<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateOutputMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));

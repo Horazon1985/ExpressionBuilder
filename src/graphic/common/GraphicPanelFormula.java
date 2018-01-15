@@ -27,7 +27,6 @@ import java.awt.event.MouseListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import javax.swing.JPanel;
 import abstractexpressions.logicalexpression.classes.LogicalBinaryOperation;
@@ -45,6 +44,8 @@ import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
 import abstractexpressions.output.EditableString;
 import graphic.util.TypeBracket;
+import java.util.List;
+import java.util.Map;
 
 public class GraphicPanelFormula extends JPanel {
 
@@ -60,7 +61,7 @@ public class GraphicPanelFormula extends JPanel {
     private static final Color BACKGROUND_COLOR_UNMARKED = Color.white;
     private static final Color BACKGROUND_COLOR_MARKED = new Color(51, 204, 255);
 
-    private static final ArrayList<GraphicPanelFormula> formulas = new ArrayList<>();
+    private static final List<GraphicPanelFormula> formulas = new ArrayList<>();
 
     public GraphicPanelFormula() {
         formulas.add(this);
@@ -145,7 +146,7 @@ public class GraphicPanelFormula extends JPanel {
      * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
      */
     public AbstractExpression[] getContainedAbstractExpression() {
-        ArrayList<AbstractExpression> abstractExpressionList = new ArrayList<>();
+        List<AbstractExpression> abstractExpressionList = new ArrayList<>();
         boolean abstrExprIsAlreadyContained;
         for (Object out : output) {
             if (out instanceof EditableAbstractExpression) {
@@ -183,7 +184,7 @@ public class GraphicPanelFormula extends JPanel {
      * Ausdrücke darstellen und zum Bearbeiten / Kopieren zur Verfügung stehen.
      */
     public String[] getContainedEditableStrings() {
-        ArrayList<String> editableStringList = new ArrayList<>();
+        List<String> editableStringList = new ArrayList<>();
         for (Object out : output) {
             if (out instanceof EditableString) {
                 String text = ((EditableString) out).getText();
@@ -225,7 +226,7 @@ public class GraphicPanelFormula extends JPanel {
         }
     }
 
-    public void setOutput(ArrayList out) {
+    public void setOutput(List out) {
         output = new Object[out.size()];
         int i = 0;
         for (Object o : out) {
@@ -281,7 +282,7 @@ public class GraphicPanelFormula extends JPanel {
             heightBelowCommonCenter = heightParameterCenter;
             heightBeyondCommonCenter = heightParameter - heightParameterCenter;
 
-            HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+            Map<String, Expression> varsWithValues = (Map<String, Expression>) params[1];
             String varCurrent;
 
             // Höhen über und unter dem Zentrum von allen Koordinatenausdrücken ermitteln.
@@ -346,13 +347,13 @@ public class GraphicPanelFormula extends JPanel {
          TypeCommand.normal oder == TypeCommand.tangent ist. 
          Dann ist params[0] eine Instanz von
          Expression und params[1] eine Instanz von
-         HashMap<String, Expression>.
+         Map<String, Expression>.
          */
         if (c.getTypeCommand().equals(TypeCommand.normal) || c.getTypeCommand().equals(TypeCommand.tangent)) {
 
             heightParameterCenter = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
 
-            HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+            Map<String, Expression> varsWithValues = (Map<String, Expression>) params[1];
             String varCurrent;
 
             // Höhenzentren der einzelnen Koordinatenausdrücke ermitteln.
@@ -464,10 +465,10 @@ public class GraphicPanelFormula extends JPanel {
             case normal:
             case tangent:
                 // Die Gesamtlänge aller Kommata und aller "="-Zeichen hinzuaddieren.
-                resultLength = resultLength + ((HashMap) params[1]).size() * (g.getFontMetrics().stringWidth(", ") + getWidthOfSignEquals(g, fontSize));
+                resultLength = resultLength + ((Map) params[1]).size() * (g.getFontMetrics().stringWidth(", ") + getWidthOfSignEquals(g, fontSize));
                 // Länge der Funktionsvorschrift hinzuaddieren.
                 resultLength = resultLength + getLengthOfExpression(g, (Expression) params[0], fontSize);
-                HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+                Map<String, Expression> varsWithValues = (Map<String, Expression>) params[1];
                 String varCurrent;
                 for (Iterator iter = varsWithValues.keySet().iterator(); iter.hasNext();) {
                     setFont(g, fontSize);
@@ -4336,9 +4337,9 @@ public class GraphicPanelFormula extends JPanel {
 
         /*
          Variablennamen mit den dazugehörigen Werten auslesen (params[1] ist
-         eine HashMap mit Keys = Variablennamen und Values = Variablenwerten).
+         eine Map mit Keys = Variablennamen und Values = Variablenwerten).
          */
-        HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+        Map<String, Expression> varsWithValues = (Map<String, Expression>) params[1];
         String varCurrent;
         Expression valueOfVarCurrent;
 

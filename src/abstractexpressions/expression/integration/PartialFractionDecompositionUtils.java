@@ -17,6 +17,7 @@ import java.math.BigInteger;
 import java.util.HashSet;
 import abstractexpressions.matrixexpression.computation.GaussAlgorithmUtils;
 import abstractexpressions.matrixexpression.classes.Matrix;
+import java.util.Set;
 import notations.NotationLoader;
 
 public abstract class PartialFractionDecompositionUtils {
@@ -39,8 +40,8 @@ public abstract class PartialFractionDecompositionUtils {
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesForPFD = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesForDenominatorOfPFD = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesForPFD = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesForDenominatorOfPFD = new HashSet<>();
 
     static {
         simplifyTypesForPFD.add(TypeSimplify.order_difference_and_division);

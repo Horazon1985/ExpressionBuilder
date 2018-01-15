@@ -32,7 +32,7 @@ public class GraphicCanvasSpherical extends AbstractGraphicCanvas3D {
     private List<double[][][]> sphericalGraphs3DForGraphic = new ArrayList<>();
     private List<boolean[][]> sphericalGraphs3DAreDefined = new ArrayList<>();
 
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     private final static Color[] FIXED_COLORS = {Color.rgb(170, 170, 70), Color.rgb(170, 70, 170), Color.rgb(70, 170, 170)};
 
@@ -46,11 +46,11 @@ public class GraphicCanvasSpherical extends AbstractGraphicCanvas3D {
         return this.exprs;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs.clear();
         this.exprs.addAll(exprs);
         setColors();
@@ -580,7 +580,7 @@ public class GraphicCanvasSpherical extends AbstractGraphicCanvas3D {
         draw();
     }
 
-    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawSphericalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, List<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
         draw();

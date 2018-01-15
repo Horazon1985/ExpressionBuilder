@@ -18,6 +18,7 @@ import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import java.awt.Dimension;
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.Set;
 import lang.translator.Translator;
 import notations.NotationLoader;
@@ -374,7 +375,7 @@ public abstract class AnalysisUtils {
      *
      * @throws EvaluationException
      */
-    public static Expression getTangentSpace(Expression f, HashMap<String, Expression> point)
+    public static Expression getTangentSpace(Expression f, Map<String, Expression> point)
             throws EvaluationException {
 
         Set<String> vars = point.keySet();
@@ -425,12 +426,12 @@ public abstract class AnalysisUtils {
      *
      * @throws EvaluationException
      */
-    public static HashMap<String, Expression> getNormalLineParametrization(Expression f, HashMap<String, Expression> point)
+    public static Map<String, Expression> getNormalLineParametrization(Expression f, Map<String, Expression> point)
             throws EvaluationException {
 
         Set<String> vars = point.keySet();
 
-        HashMap<String, Expression> normalLineParametrization = new HashMap<>();
+        Map<String, Expression> normalLineParametrization = new HashMap<>();
         Expression partialDerivativeAtPoint;
 
         // Alle Variablen auf die Werte setzen, die dem Punkt x_0 entsprechen.
@@ -479,7 +480,7 @@ public abstract class AnalysisUtils {
      */
     public static BigDecimal getDigitsOfE(int n) throws EvaluationException {
 
-        if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_E")) {
+        if (n > computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DIGITS_OF_E) {
             throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 
@@ -514,7 +515,7 @@ public abstract class AnalysisUtils {
      */
     public static BigDecimal getDigitsOfPi(int n) throws EvaluationException {
 
-        if (n > computationbounds.ComputationBounds.getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI")) {
+        if (n > computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DIGITS_OF_PI) {
             throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
         }
 

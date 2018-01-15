@@ -1,6 +1,7 @@
 package operationparser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ParameterPattern {
 
@@ -43,9 +44,9 @@ public class ParameterPattern {
 
     private final ParamType paramType;
     private final Multiplicity mulitplicity;
-    private final ArrayList<String> restrictions = new ArrayList<>();
+    private final List<String> restrictions = new ArrayList<>();
 
-    public ParameterPattern(ParamType paramType, Multiplicity multiplicity, ArrayList<String> restrictions) {
+    public ParameterPattern(ParamType paramType, Multiplicity multiplicity, List<String> restrictions) {
         this.paramType = paramType;
         this.mulitplicity = multiplicity;
         this.restrictions.addAll(restrictions);
@@ -59,7 +60,7 @@ public class ParameterPattern {
         return mulitplicity;
     }
 
-    public ArrayList<String> getRestrictions() {
+    public List<String> getRestrictions() {
         return restrictions;
     }
 

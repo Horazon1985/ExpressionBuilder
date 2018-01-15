@@ -1,12 +1,13 @@
 package graphic.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MarchingCube {
 
-    ArrayList<Boolean[]> innerVertices = new ArrayList<>();
+    List<Boolean[]> innerVertices = new ArrayList<>();
 
-    public ArrayList<Boolean[]> getInnerVertices() {
+    public List<Boolean[]> getInnerVertices() {
         return this.innerVertices;
     }
 
@@ -42,7 +43,7 @@ public class MarchingCube {
     }
 
     public void switchPoints() {
-        ArrayList<Boolean[]> switchedVertices = new ArrayList<>();
+        List<Boolean[]> switchedVertices = new ArrayList<>();
         Boolean[] vertex;
 
         boolean containsVertex;

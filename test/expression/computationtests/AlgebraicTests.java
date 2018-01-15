@@ -12,7 +12,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class AlgebraicMethodsTests extends MathToolTestBase {
+public class AlgebraicTests extends MathToolTestBase {
 
     @BeforeClass
     public static void setUpClass() throws Exception {

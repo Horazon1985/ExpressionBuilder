@@ -13,7 +13,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.fail;
-import utilities.TestUtilities;
+import testrunner.TestUtilities;
 
 public class SimplifyExpLogTests extends MathToolTestBase {
 
@@ -28,25 +28,26 @@ public class SimplifyExpLogTests extends MathToolTestBase {
     @Before
     public void defineExpressions() throws Exception {
     }
- 
+
     @Test
     public void collectExponentialFunctionsInProduct() {
-        try{
+        try {
             Expression f = Expression.build("a*exp(x)*b*exp(y^2)");
             Expression g = Expression.build("a*exp(x+y^2)*b");
             ExpressionCollection factors = SimplifyUtilities.getFactors(f);
             SimplifyExpLogUtils.collectExponentialFunctionsInProduct(factors);
             Expression fNew = SimplifyUtilities.produceProduct(factors);
-            TestUtilities.printResult(g, fNew);
+            expectedResults = new Object[]{g};
+            results = new Object[]{fNew};
             Assert.assertTrue(fNew.equivalent(g));
-        } catch (ExpressionException e){
+        } catch (ExpressionException e) {
             fail(e.getMessage());
         }
     }
-    
+
     @Test
     public void collectExponentialFunctionsInQuotient() {
-        try{
+        try {
             Expression f = Expression.build("(a*exp(x)*b*exp(y^2))/(c*exp(z)*d)");
             Expression g = Expression.build("(a*exp(x+y^2-z)*b)/(c*d)");
             ExpressionCollection factorsEnumerator = SimplifyUtilities.getFactorsOfNumeratorInExpression(f);
@@ -54,17 +55,12 @@ public class SimplifyExpLogTests extends MathToolTestBase {
             SimplifyExpLogUtils.collectExponentialFunctionsInQuotient(factorsEnumerator, factorsDenominator);
             Expression fNew = SimplifyUtilities.produceQuotient(factorsEnumerator, factorsDenominator).orderDifferencesAndQuotients();
             g = g.orderDifferencesAndQuotients();
-            TestUtilities.printResult(g, fNew);
+            expectedResults = new Object[]{g};
+            results = new Object[]{fNew};
             Assert.assertTrue(fNew.equivalent(g));
-        } catch (ExpressionException | EvaluationException e){
+        } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
     }
-    
-    
-    
-    
-    
-    
-    
+
 }

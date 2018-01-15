@@ -46,7 +46,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
         this.varOrd = varOrd;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs = exprs;
         this.graphs2D.clear();
         this.COLORS.clear();
@@ -337,7 +337,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphs2D(Expression x_0, Expression x_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphs2D(Expression x_0, Expression x_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;
@@ -352,7 +352,7 @@ public class GraphicCanvas2D extends AbstractGraphicCanvas2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphs2D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;

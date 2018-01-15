@@ -139,9 +139,9 @@ public class GraphicCanvasVectorField2D extends AbstractGraphicCanvas2D {
      * Berechnet die Pixelkoordinaten des (gröberen) Vektorfeldes.<br>
      * VORAUSSETZUNG: maxX und maxY sind bereits initialisiert.
      */
-    private ArrayList<int[]> convertVectorFieldToGraphicalVectorField() {
+    private List<int[]> convertVectorFieldToGraphicalVectorField() {
 
-        ArrayList<int[]> graphicalVectorField = new ArrayList<>();
+        List<int[]> graphicalVectorField = new ArrayList<>();
         int[] graphicalVectorFieldArrow;
 
         for (int i = 0; i < this.vectorField2D.size(); i++) {
@@ -163,7 +163,7 @@ public class GraphicCanvasVectorField2D extends AbstractGraphicCanvas2D {
             return;
         }
 
-        ArrayList<int[]> graphicalVectorField = convertVectorFieldToGraphicalVectorField();
+        List<int[]> graphicalVectorField = convertVectorFieldToGraphicalVectorField();
         gc.setStroke(this.color);
 
         double angle;

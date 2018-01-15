@@ -17,6 +17,7 @@ import abstractexpressions.matrixexpression.classes.MatrixFunction;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixFunction;
+import java.util.List;
 
 public abstract class SimplifyMatrixFunctionalRelationsUtils {
 
@@ -673,7 +674,7 @@ public abstract class SimplifyMatrixFunctionalRelationsUtils {
                     maxExponent++;
                 }
 
-                ArrayList<Expression> taylorCoefficients = getTaylorCoefficientsOfFunction(type, maxExponent);
+                List<Expression> taylorCoefficients = getTaylorCoefficientsOfFunction(type, maxExponent);
                 if (taylorCoefficients.isEmpty()) {
                     // Dann war dieser Funktionstyp in der Methode nicht vorgesehen.
                     return new MatrixFunction(argument, type);
@@ -701,9 +702,9 @@ public abstract class SimplifyMatrixFunctionalRelationsUtils {
 
     }
 
-    private static ArrayList<Expression> getTaylorCoefficientsOfFunction(TypeMatrixFunction type, int n) throws EvaluationException {
+    private static List<Expression> getTaylorCoefficientsOfFunction(TypeMatrixFunction type, int n) throws EvaluationException {
 
-        ArrayList<Expression> taylorCoefficients = new ArrayList<>();
+        List<Expression> taylorCoefficients = new ArrayList<>();
         BigInteger denominator;
 
         if (type.equals(TypeMatrixFunction.cos)) {

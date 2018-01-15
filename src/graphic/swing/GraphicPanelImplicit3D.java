@@ -12,6 +12,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
@@ -20,7 +21,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
      * Applikate.
      */
     private String varAbsc, varOrd, varAppl;
-    private ArrayList<Expression> exprs = new ArrayList<>();
+    private List<Expression> exprs = new ArrayList<>();
 
     private MarchingCube[][][] implicitGraph3D;
     private MarchingCubeForComputation[][][] cubesForComputation;
@@ -40,7 +41,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
     public class Polygon implements Comparable {
 
         double lengthOfAmbientCube;
-        ArrayList<Double[]> vertices = new ArrayList<>();
+        List<Double[]> vertices = new ArrayList<>();
 
         public Polygon(Double[]... vertexCoordinates) {
             this.vertices.addAll(Arrays.asList(vertexCoordinates));
@@ -58,7 +59,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
             return cube + "]";
         }
 
-        public ArrayList<Double[]> getVertices() {
+        public List<Double[]> getVertices() {
             return this.vertices;
         }
 
@@ -203,9 +204,9 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
     public static class MarchingCubeWithPolygons {
 
-        private final ArrayList<ArrayList<PolygonVertexCoordinate[]>> polygonVertices = new ArrayList<>();
+        private final List<List<PolygonVertexCoordinate[]>> polygonVertices = new ArrayList<>();
 
-        public ArrayList<ArrayList<PolygonVertexCoordinate[]>> getPolygonVertices() {
+        public List<List<PolygonVertexCoordinate[]>> getPolygonVertices() {
             return this.polygonVertices;
         }
 
@@ -247,7 +248,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         }
 
         private void addPolygonOfAnIsolatedVertex(Boolean[] vertex) {
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+            List<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
             polygon.add(new PolygonVertexCoordinate[]{PolygonVertexCoordinate.HALF,
                 convertToPolygonVertexCoordinate(vertex[1]), convertToPolygonVertexCoordinate(vertex[2])});
             polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex[0]),
@@ -259,8 +260,8 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         private void addPolygonOfAnIsolatedTriangle(Boolean[] vertex_1, Boolean[] vertex_2, Boolean[] vertex_3) {
 
-            ArrayList<PolygonVertexCoordinate[]> polygonTriangle = new ArrayList<>();
-            ArrayList<PolygonVertexCoordinate[]> polygonRectangle = new ArrayList<>();
+            List<PolygonVertexCoordinate[]> polygonTriangle = new ArrayList<>();
+            List<PolygonVertexCoordinate[]> polygonRectangle = new ArrayList<>();
             Boolean[] fourthPointInSquare;
 
             if (vertex_1[0].booleanValue() == vertex_2[0].booleanValue() && vertex_1[0].booleanValue() == vertex_3[0].booleanValue()) {
@@ -363,7 +364,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
                 return;
             }
 
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+            List<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
             if (vertex_1[0].booleanValue() != vertex_2[0].booleanValue()) {
                 polygon.add(new PolygonVertexCoordinate[]{convertToPolygonVertexCoordinate(vertex_1[0]),
@@ -399,12 +400,12 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         }
 
         private void computePolygonsInCaseOfOneEdge(MarchingCube cube) {
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
             addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(1));
         }
 
         private void computePolygonsInCaseOfIsolatedEdges(MarchingCube cube) {
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
             if (MarchingCube.areNeighbors(innerVertices.get(0), innerVertices.get(1))) {
                 addPolygonOfAnEdge(innerVertices.get(0), innerVertices.get(1));
                 addPolygonOfAnEdge(innerVertices.get(2), innerVertices.get(3));
@@ -418,12 +419,12 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
         }
 
         private void computePolygonsInCaseOfIsolatedTrangle(MarchingCube cube) {
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
             addPolygonOfAnIsolatedTriangle(innerVertices.get(0), innerVertices.get(1), innerVertices.get(2));
         }
 
         private void computePolygonsInCaseOfIsolatedEdgeAndIsolatedVertex(MarchingCube cube) {
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
             if (cube.isInnerPointAndIsolatedVertex(innerVertices.get(0))) {
                 addPolygonOfAnIsolatedVertex(innerVertices.get(0));
                 addPolygonOfAnEdge(innerVertices.get(1), innerVertices.get(2));
@@ -438,8 +439,8 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         private void computePolygonsInCaseOfIsolatedPlane(MarchingCube cube) {
 
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
             if ((boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(1)[0]
                     && (boolean) innerVertices.get(0)[0] == (boolean) innerVertices.get(2)[0]
@@ -470,13 +471,13 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         private void computePolygonsInCaseOfTetraeder(MarchingCube cube) {
 
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
 
             Boolean[] vertex_1 = innerVertices.get(0);
             Boolean[] vertex_2 = innerVertices.get(1);
             Boolean[] vertex_3 = innerVertices.get(2);
             Boolean[] vertex_4 = innerVertices.get(3);
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+            List<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
 
             if (MarchingCube.areNeighbors(vertex_1, vertex_2) && MarchingCube.areNeighbors(vertex_1, vertex_3) && MarchingCube.areNeighbors(vertex_1, vertex_4)) {
                 this.polygonVertices.add(getHexagonInFrontOfVertex(vertex_1));
@@ -490,8 +491,8 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         }
 
-        private ArrayList<PolygonVertexCoordinate[]> getHexagonInFrontOfVertex(Boolean[] vertex) {
-            ArrayList<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
+        private List<PolygonVertexCoordinate[]> getHexagonInFrontOfVertex(Boolean[] vertex) {
+            List<PolygonVertexCoordinate[]> polygon = new ArrayList<>();
             polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 0), 1));
             polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 0), 2));
             polygon.add(getNeighboringMiddlePoint(MarchingCube.getNeighboringVertex(vertex, 2), 0));
@@ -511,7 +512,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         private void computePolygonsInCaseOfIsolatedTrangleAndIsolatedVertex(MarchingCube cube) {
 
-            ArrayList<Boolean[]> innerVertices = cube.getInnerVertices();
+            List<Boolean[]> innerVertices = cube.getInnerVertices();
 
             Boolean[] vertex_1 = innerVertices.get(0);
             Boolean[] vertex_2 = innerVertices.get(1);
@@ -538,9 +539,9 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
     public class MarchingCubeForComputation {
 
-        private final ArrayList<Polygon> polygons = new ArrayList<>();
+        private final List<Polygon> polygons = new ArrayList<>();
 
-        public ArrayList<Polygon> getPolygons() {
+        public List<Polygon> getPolygons() {
             return this.polygons;
         }
 
@@ -558,12 +559,12 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
         public void computePolygons(MarchingCubeWithPolygons cube, double x_0, double x_1, double y_0, double y_1, double z_0, double z_1) {
 
-            ArrayList<ArrayList<PolygonVertexCoordinate[]>> polygonVertices = cube.getPolygonVertices();
+            List<List<PolygonVertexCoordinate[]>> polygonVertices = cube.getPolygonVertices();
 
             Polygon polygonWithCoordinates;
             double x, y, z;
 
-            for (ArrayList<PolygonVertexCoordinate[]> polygon : polygonVertices) {
+            for (List<PolygonVertexCoordinate[]> polygon : polygonVertices) {
                 polygonWithCoordinates = new Polygon();
                 for (PolygonVertexCoordinate[] vertices : polygon) {
                     switch (vertices[0]) {
@@ -606,7 +607,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
 
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
@@ -714,7 +715,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
     /**
      * Zeichnet ein (tangentiales) rechteckiges Plättchen des 3D-Graphen
      */
-    private void drawInfinitesimalTangentPolygone(Graphics g, Color c, ArrayList<Point> points) {
+    private void drawInfinitesimalTangentPolygone(Graphics g, Color c, List<Point> points) {
 
         if (points.isEmpty()) {
             return;
@@ -819,7 +820,7 @@ public class GraphicPanelImplicit3D extends AbstractGraphicPanel3D {
     private void drawSingleMarchingCube(Graphics g, Color c, int i, int j, int k) {
 
         int[] pixel;
-        ArrayList<Point> polygon;
+        List<Point> polygon;
 
         MarchingCubeForComputation cube = this.cubesForComputation[i][j][k];
         sortPolygonsForDraw(cube);

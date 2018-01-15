@@ -9,7 +9,6 @@ import static abstractexpressions.expression.classes.Expression.TWO;
 import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import basic.MathToolTestBase;
-import java.util.HashSet;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

@@ -10,6 +10,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
 
@@ -21,17 +22,17 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
      * Variablenname für 3D-Graphen: varPhi = Winkelname.
      */
     private String varPhi;
-    private final ArrayList<Expression> exprs = new ArrayList<>();
-    private ArrayList<double[][][]> cylindricalGraphs3D = new ArrayList<>();
+    private final List<Expression> exprs = new ArrayList<>();
+    private List<double[][][]> cylindricalGraphs3D = new ArrayList<>();
     /**
      * "Vergröberte Version" von cylindricalGraphs3D (GRUND: beim Herauszoomen
      * dürfen die Plättchen am Graphen nicht so klein sein. Deshalb muss der
      * Graph etwas vergröbert werden).
      */
-    private ArrayList<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
-    private ArrayList<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
+    private List<double[][][]> cylindricalGraphs3DForGraphic = new ArrayList<>();
+    private List<boolean[][]> cylindricalGraphs3DAreDefined = new ArrayList<>();
 
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
@@ -41,15 +42,15 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         super();
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs.clear();
         this.exprs.addAll(exprs);
         setColors();
@@ -585,7 +586,7 @@ public class GraphicPanelCylindrical extends AbstractGraphicPanel3D {
         drawCylindricalGraphs3D();
     }
 
-    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawCylindricalGraphs3D(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, List<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(r_0, r_1, phi_0, phi_1);
         drawCylindricalGraphs3D();

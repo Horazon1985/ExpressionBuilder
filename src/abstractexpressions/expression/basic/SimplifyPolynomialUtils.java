@@ -24,6 +24,7 @@ import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
+import java.util.List;
 import lang.translator.Translator;
 import notations.NotationLoader;
 
@@ -1067,14 +1068,14 @@ public abstract class SimplifyPolynomialUtils {
 
         // i ist der Grad eines Faktors in der Zerlegung.
         Expression[] equations = new Expression[a.getBound() - 1];
-        ArrayList<String> vars = new ArrayList<>();
+        List<String> vars = new ArrayList<>();
         for (int i = 0; i < coefficientsOfNormalizedPolynomial.getBound(); i++) {
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
         }
 
         Expression[] coefficientVarsOfFirstFactor, coefficientVarsOfSecondFactor;
 
-        ArrayList<Expression[]> solutions;
+        List<Expression[]> solutions;
         for (int i = 2; i <= coefficientsOfNormalizedPolynomial.getBound() / 2; i++) {
 
             coefficientVarsOfFirstFactor = new Expression[i + 1];
@@ -1572,7 +1573,7 @@ public abstract class SimplifyPolynomialUtils {
         }
 
         int l = coefficients.getBound();
-        ArrayList<BigInteger> cycleLengths = ArithmeticUtils.getDivisors(BigInteger.valueOf(l));
+        List<BigInteger> cycleLengths = ArithmeticUtils.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
         ExpressionCollection currentPeriod;
 
@@ -1608,7 +1609,7 @@ public abstract class SimplifyPolynomialUtils {
         }
 
         int l = coefficients.getBound();
-        ArrayList<BigInteger> cycleLengths = ArithmeticUtils.getDivisors(BigInteger.valueOf(l));
+        List<BigInteger> cycleLengths = ArithmeticUtils.getDivisors(BigInteger.valueOf(l));
         ExpressionCollection periodForCompare;
         ExpressionCollection currentPeriod;
         Expression sum;

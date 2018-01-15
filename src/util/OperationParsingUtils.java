@@ -2,6 +2,7 @@ package util;
 
 import exceptions.ExpressionException;
 import java.util.ArrayList;
+import java.util.List;
 import lang.translator.Translator;
 
 public final class OperationParsingUtils {
@@ -76,7 +77,7 @@ public final class OperationParsingUtils {
         if (input.isEmpty()) {
             return new String[0];
         }
-        ArrayList<String> resultParameters = new ArrayList<>();
+        List<String> resultParameters = new ArrayList<>();
         int startPositionOfCurrentParameter = 0;
         /*
         Differenz zwischen der Anzahl der öffnenden und der der schließenden

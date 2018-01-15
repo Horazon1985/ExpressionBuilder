@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
 
@@ -19,12 +20,12 @@ public class GraphicPanelCurves3D extends AbstractGraphicPanel3D {
     private Expression[] exprs = new Expression[3];
     /**
      * Der Graph der 3D-Kurve, gegeben durch seine (numerisch berechneten)
-     * Punkte. Die Punkte, welche durch die Elemente im ArrayList gegeben sind,
+     * Punkte. Die Punkte, welche durch die Elemente in der Liste gegeben sind,
      * werden durch ein Double-Array mit genau drei Elementen angegeben und die
-     * benachbarten ArrayList-Elemente werden beim Zeichnen miteinander
+     * benachbarten List-Elemente werden beim Zeichnen miteinander
      * verbunden.
      */
-    private final ArrayList<double[]> curve3D = new ArrayList<>();
+    private final List<double[]> curve3D = new ArrayList<>();
 
     public GraphicPanelCurves3D(){
         super();

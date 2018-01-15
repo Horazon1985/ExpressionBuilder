@@ -10,6 +10,7 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class GraphicPanel3D extends AbstractGraphicPanel3D {
 
@@ -28,10 +29,10 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
      * Plättchen am Graphen nicht so klein sein. Deshalb muss der Graph etwas
      * vergröbert werden).
      */
-    private ArrayList<double[][][]> graphs3DForGraphic = new ArrayList<>();
-    private ArrayList<boolean[][]> graphs3DAreDefined = new ArrayList<>();
+    private List<double[][][]> graphs3DForGraphic = new ArrayList<>();
+    private List<boolean[][]> graphs3DAreDefined = new ArrayList<>();
 
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     private final static Color[] fixedColors = {new Color(170, 170, 70), new Color(170, 70, 170), new Color(70, 170, 170)};
 
@@ -39,15 +40,15 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         super();
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    private void setExpressions(ArrayList<Expression> exprs) {
+    private void setExpressions(List<Expression> exprs) {
         this.exprs.clear();
         this.exprs.addAll(exprs);
         setColors();
@@ -585,7 +586,7 @@ public class GraphicPanel3D extends AbstractGraphicPanel3D {
         drawGraphs3D();
     }
 
-    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphs3D(Expression x_0, Expression x_1, Expression y_0, Expression y_1, List<Expression> exprs) throws EvaluationException {
         setExpressions(exprs);
         expressionToGraph(x_0, x_1, y_0, y_1);
         drawGraphs3D();

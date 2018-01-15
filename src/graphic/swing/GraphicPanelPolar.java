@@ -7,6 +7,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class GraphicPanelPolar extends AbstractGraphicPanel2D {
 
@@ -18,19 +19,19 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
     /**
      * Funktionsterme für Graphen.
      */
-    private final ArrayList<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
-    private final ArrayList<Color> colors = new ArrayList<>();
+    private final List<Expression> exprs = new ArrayList<>();
+    private final List<double[][]> polarGraph2D = new ArrayList<>();
+    private final List<Color> colors = new ArrayList<>();
 
     public GraphicPanelPolar() {
         super(10, 0.1);
     }
 
-    public ArrayList<Color> getColors() {
+    public List<Color> getColors() {
         return this.colors;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
@@ -38,7 +39,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
         this.var = var;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs.clear();
         this.exprs.addAll(exprs);
         setColors();
@@ -181,7 +182,7 @@ public class GraphicPanelPolar extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphPolar(Expression phi_0, Expression phi_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;

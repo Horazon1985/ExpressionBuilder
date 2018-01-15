@@ -26,9 +26,9 @@ import abstractexpressions.expression.basic.SimplifyPolynomialUtils;
 import abstractexpressions.expression.basic.SimplifyUtilities;
 import exceptions.MathToolException;
 import exceptions.NotAlgebraicallySolvableException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtils {
 
@@ -62,9 +62,9 @@ public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtil
 
     }
 
-    private static final HashSet<TypeSimplify> simplifyTypesRationalExponentialEquation = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesAlgebraicEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesRationalExponentialEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesRationalTrigonometricalEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesAlgebraicEquation = new HashSet<>();
 
     static {
         simplifyTypesRationalExponentialEquation.add(TypeSimplify.order_difference_and_division);
@@ -133,7 +133,7 @@ public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtil
         }
 
         ExpressionCollection zeros = new ExpressionCollection();
-        HashSet<Expression> argumentsInExp = new HashSet();
+        Set<Expression> argumentsInExp = new HashSet();
 
         // Konstante Summanden aus der Exponentialfunktion rausziehen.
         f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, var);
@@ -225,7 +225,7 @@ public abstract class SolveSpecialEquationUtils extends SolveGeneralEquationUtil
         }
 
         ExpressionCollection zeros = new ExpressionCollection();
-        HashSet<Expression> argumentsInTrigonometricFunctions = new HashSet();
+        Set<Expression> argumentsInTrigonometricFunctions = new HashSet();
         /*
          Falls f keine rationale Funktion in einer Exponentialfunktion ist (1.
          Abfrage), oder falls f konstant bzgl. var ist (2. Abfrage), dann

@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import operationparser.OperationParser;
 import lang.translator.Translator;
@@ -1375,7 +1376,7 @@ public class Operator extends Expression {
              <= einer bestimmten Schranke angegeben.
              */
             BigDecimal argumentEnumerator = ((Constant) ((BinaryOperation) argument).getLeft()).getValue();
-            if (argumentEnumerator.equals(argumentEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) && argumentEnumerator.abs().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_FACTORIAL_WITH_DENOMINATOR_TWO"))) <= 0) {
+            if (argumentEnumerator.equals(argumentEnumerator.setScale(0, BigDecimal.ROUND_HALF_UP)) && argumentEnumerator.abs().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_FACTORIAL_WITH_DENOMINATOR_TWO)) <= 0) {
                 BigInteger argumentEnumeratorAsBigInteger = argumentEnumerator.toBigInteger();
                 if (argumentEnumeratorAsBigInteger.mod(BigInteger.valueOf(2)).compareTo(BigInteger.ONE) == 0) {
 
@@ -1449,7 +1450,7 @@ public class Operator extends Expression {
     private Expression simplifyBasicGCD() throws EvaluationException {
 
         Expression[] arguments = new Expression[this.params.length];
-        ArrayList<BigInteger> integerArguments = new ArrayList<>();
+        List<BigInteger> integerArguments = new ArrayList<>();
         for (int i = 0; i < this.params.length; i++) {
             arguments[i] = ((Expression) this.params[i]).simplify();
             if (arguments[i].isIntegerConstant()) {
@@ -1468,7 +1469,7 @@ public class Operator extends Expression {
             return resultGCD;
         }
 
-        ArrayList<Expression> resultParams = new ArrayList<>();
+        List<Expression> resultParams = new ArrayList<>();
         resultParams.add(resultGCD);
         for (Expression argument : arguments) {
             if (!argument.isIntegerConstant()) {

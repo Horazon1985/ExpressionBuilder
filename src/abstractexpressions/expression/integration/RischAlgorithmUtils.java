@@ -28,13 +28,14 @@ import exceptions.NotAlgebraicallyIntegrableException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.HashSet;
+import java.util.Set;
 import notations.NotationLoader;
 
 public abstract class RischAlgorithmUtils extends GeneralIntegralUtils {
 
-    private static final HashSet<TypeSimplify> simplifyTypesForDifferentialFieldExtension = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesRischAlgorithm = new HashSet<>();
-    private static final HashSet<TypeSimplify> simplifyTypesRischDifferentialEquation = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesForDifferentialFieldExtension = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesRischAlgorithm = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesRischDifferentialEquation = new HashSet<>();
 
     static {
         simplifyTypesForDifferentialFieldExtension.add(TypeSimplify.order_difference_and_division);

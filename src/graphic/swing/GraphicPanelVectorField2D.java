@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import java.util.List;
 
 public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
@@ -16,7 +17,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
      * Funktionsvorschrift für das Vektorfeld als (2x1)-Matrix.
      */
     private Matrix vectorFieldExpr;
-    private final ArrayList<double[]> vectorField2D = new ArrayList<>();
+    private final List<double[]> vectorField2D = new ArrayList<>();
 
     private final Color color = Color.blue;
 
@@ -28,7 +29,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         return this.color;
     }
 
-    public ArrayList<double[]> getvectorField() {
+    public List<double[]> getvectorField() {
         return this.vectorField2D;
     }
 
@@ -138,9 +139,9 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
      * Berechnet die Pixelkoordinaten des (gröberen) Vektorfeldes.<br>
      * VORAUSSETZUNG: maxX und maxY sind bereits initialisiert.
      */
-    private ArrayList<int[]> convertVectorFieldToGraphicalVectorField() {
+    private List<int[]> convertVectorFieldToGraphicalVectorField() {
 
-        ArrayList<int[]> graphicalVectorField = new ArrayList<>();
+        List<int[]> graphicalVectorField = new ArrayList<>();
         int[] graphicalVectorFieldArrow;
 
         for (int i = 0; i < this.vectorField2D.size(); i++) {
@@ -162,7 +163,7 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
             return;
         }
 
-        ArrayList<int[]> graphicalVectorField = convertVectorFieldToGraphicalVectorField();
+        List<int[]> graphicalVectorField = convertVectorFieldToGraphicalVectorField();
         g.setColor(this.color);
 
         double angle;

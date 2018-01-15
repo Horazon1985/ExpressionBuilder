@@ -15,7 +15,6 @@ import static abstractexpressions.expression.differentialequation.SolveGeneralDi
 import abstractexpressions.expression.equation.SolveGeneralEquationUtils;
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.basic.SimplifyUtilities;
-import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils;
 import exceptions.DifferentialEquationNotAlgebraicallyIntegrableException;
 import exceptions.EvaluationException;
 import exceptions.MathToolException;

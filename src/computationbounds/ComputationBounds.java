@@ -36,7 +36,21 @@ public abstract class ComputationBounds {
     public static final int BOUND_NUMERIC_DEFAULT_NUMBER_OF_INTERVALS;
     public static final int BOUND_NUMERIC_MAX_OPERATOR_NORM_TO_COMPUTE_MATRIX_FUNCTION;
 
+    private static NodeList nList = null;
+
     static {
+        try {
+            URL langFile = ClassLoader.getSystemResource("computationbounds/Bounds.xml");
+
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(langFile.openStream());
+
+            doc.getDocumentElement().normalize();
+            nList = doc.getElementsByTagName("object");
+        } catch (Exception e) {
+        }
+
         BOUND_COMMAND_MAX_DIGITS_OF_E = getBound("BOUND_COMMAND_MAX_DIGITS_OF_E");
         BOUND_COMMAND_MAX_DIGITS_OF_PI = getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI");
         BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS = getBound("BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS");
@@ -68,33 +82,25 @@ public abstract class ComputationBounds {
      * Gibt zu einer gegebenen boundId die entsprechende Berechnungsschranke
      * zurück, die in der Bounds.xml festgelegt ist.
      */
-    public static int getBound(String boundId) {
+    private static int getBound(String boundId) {
 
-        try {
-            URL langFile = ClassLoader.getSystemResource("computationbounds/Bounds.xml");
+        if (nList == null) {
+            return 0;
+        }
+        
+        for (int i = 0; i < nList.getLength(); i++) {
 
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(langFile.openStream());
+            Node nNode = nList.item(i);
 
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("object");
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
 
-            for (int i = 0; i < nList.getLength(); i++) {
+                Element eElement = (Element) nNode;
 
-                Node nNode = nList.item(i);
-
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-
-                    Element eElement = (Element) nNode;
-
-                    if (eElement.getAttribute("id").equals(boundId)) {
-                        return Integer.parseInt(eElement.getElementsByTagName("value").item(0).getTextContent());
-                    }
-
+                if (eElement.getAttribute("id").equals(boundId)) {
+                    return Integer.parseInt(eElement.getElementsByTagName("value").item(0).getTextContent());
                 }
+
             }
-        } catch (Exception e) {
         }
 
         // Sollte bei korrekter boundId nie eintreten.

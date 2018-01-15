@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import notations.NotationLoader;
 
@@ -46,8 +47,8 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
     private static int indexForNextIntegrationConstant = 1;
 
-    protected static final HashSet<TypeSimplify> simplifyTypesDifferentialEquation = new HashSet<>();
-    protected static final HashSet<TypeSimplify> simplifyTypesSolutionOfDifferentialEquation = new HashSet<>();
+    protected static final Set<TypeSimplify> simplifyTypesDifferentialEquation = new HashSet<>();
+    protected static final Set<TypeSimplify> simplifyTypesSolutionOfDifferentialEquation = new HashSet<>();
 
     static {
         simplifyTypesDifferentialEquation.add(TypeSimplify.order_difference_and_division);
@@ -102,9 +103,9 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         indexForNextIntegrationConstant = 1;
     }
 
-    public static ArrayList<Variable> getListOfFreeIntegrationConstants(ExpressionCollection solutions) {
+    public static List<Variable> getListOfFreeIntegrationConstants(ExpressionCollection solutions) {
 
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
 
         // Alle Unbestimmten in den Lösungen bestimmen.
         for (Expression solution : solutions) {
@@ -112,7 +113,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
         }
 
         // Filtern.
-        ArrayList<Variable> integrationConstants = new ArrayList<>();
+        List<Variable> integrationConstants = new ArrayList<>();
         for (String var : vars) {
             if (var.startsWith(NotationLoader.FREE_INTEGRATION_CONSTANT_VAR)) {
                 integrationConstants.add(Variable.create(var));
@@ -242,7 +243,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
      */
     private static ExpressionCollection reindexFreeIntegrationConstantsInSolutions(ExpressionCollection solutions) {
 
-        ArrayList<Variable> freeIntegrationConstants = getListOfFreeIntegrationConstants(solutions);
+        List<Variable> freeIntegrationConstants = getListOfFreeIntegrationConstants(solutions);
         int oldIndex = 1;
 
         for (int i = 0; i < freeIntegrationConstants.size(); i++) {
@@ -1338,7 +1339,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
     private static ExpressionCollection solveZeroDifferentialEquationIfProduct(ExpressionCollection factors, String varAbsc, String varOrd) throws EvaluationException {
 
         ExpressionCollection solutions = new ExpressionCollection();
-        ArrayList<ExpressionCollection> solutionsForParticularFactors = new ArrayList<>();
+        List<ExpressionCollection> solutionsForParticularFactors = new ArrayList<>();
         for (Expression factor : factors) {
             solutionsForParticularFactors.add(solveZeroDifferentialEquation(factor, varAbsc, varOrd));
         }
@@ -1938,7 +1939,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
          */
         int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
-        ArrayList<String> vars = new ArrayList<>();
+        List<String> vars = new ArrayList<>();
         for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
@@ -1979,7 +1980,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
          */
         int n = getOrderOfDifferentialEquation(f, varOrd);
         String varOrdWithPrimes = varOrd;
-        ArrayList<String> vars = new ArrayList<>();
+        List<String> vars = new ArrayList<>();
         for (int i = 0; i <= n; i++) {
             f = f.replaceVariable(varOrdWithPrimes, Variable.create(NotationLoader.SUBSTITUTION_VAR + "_" + i));
             vars.add(NotationLoader.SUBSTITUTION_VAR + "_" + i);
@@ -2103,7 +2104,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
      *
      * @throws DifferentialEquationNotAlgebraicallyIntegrableException
      */
-    private static ArrayList<Expression> getLinearCoefficientsInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
+    private static List<Expression> getLinearCoefficientsInLinearDifferentialEquation(Expression f, String varAbsc, String varOrd) throws DifferentialEquationNotAlgebraicallyIntegrableException {
 
         int ord = getOrderOfDifferentialEquation(f, varOrd);
 
@@ -2113,7 +2114,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
             throw new DifferentialEquationNotAlgebraicallyIntegrableException();
         }
 
-        ArrayList<Expression> coefficients = new ArrayList<>();
+        List<Expression> coefficients = new ArrayList<>();
 
         Expression fCopy;
         for (int i = 0; i <= ord; i++) {
@@ -2334,7 +2335,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
 
         // 1. Ermittlung der Koeffizienten.
         int n = getOrderOfDifferentialEquation(f, varOrd);
-        ArrayList<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
+        List<Expression> coefficients = getLinearCoefficientsInLinearDifferentialEquation(f, varAbsc, varOrd);
 
         Expression charPolynomial = ZERO;
         Expression quotient, summand;
@@ -2374,7 +2375,7 @@ public abstract class SolveGeneralDifferentialEquationUtils {
      */
     protected static boolean doesExpressionContainOnlyDerivativesOfGivenOrder(Expression f, String varOrd, int orderOfDiffEq, int... orders) {
 
-        HashSet<String> forbiddenDerivatives = new HashSet<>();
+        Set<String> forbiddenDerivatives = new HashSet<>();
 
         String varOrdWithPrimes = varOrd;
         boolean found;

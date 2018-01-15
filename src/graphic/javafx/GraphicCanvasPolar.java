@@ -20,7 +20,7 @@ public class GraphicCanvasPolar extends AbstractGraphicCanvas2D {
      * Funktionsterme für Graphen.
      */
     private final List<Expression> exprs = new ArrayList<>();
-    private final ArrayList<double[][]> polarGraph2D = new ArrayList<>();
+    private final List<double[][]> polarGraph2D = new ArrayList<>();
     private final List<Color> colors = new ArrayList<>();
 
     public GraphicCanvasPolar() {
@@ -39,7 +39,7 @@ public class GraphicCanvasPolar extends AbstractGraphicCanvas2D {
         this.var = var;
     }
 
-    public void setExpressions(ArrayList<Expression> exprs) {
+    public void setExpressions(List<Expression> exprs) {
         this.exprs.clear();
         this.exprs.addAll(exprs);
         setColors();
@@ -182,7 +182,7 @@ public class GraphicCanvasPolar extends AbstractGraphicCanvas2D {
      *
      * @throws EvaluationException
      */
-    public void drawGraphPolar(Expression phi_0, Expression phi_1, ArrayList<Expression> exprs) throws EvaluationException {
+    public void drawGraphPolar(Expression phi_0, Expression phi_1, List<Expression> exprs) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;

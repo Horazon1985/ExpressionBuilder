@@ -18,7 +18,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import utilities.TestUtilities;
+import testrunner.TestUtilities;
 
 public class IntegrationTests extends MathToolTestBase {
 

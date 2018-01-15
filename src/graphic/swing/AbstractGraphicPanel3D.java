@@ -13,6 +13,7 @@ import java.awt.geom.GeneralPath;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lang.translator.Translator;
 
 /**
@@ -73,7 +74,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     protected static final Color gridColorGridOnlyBright = Color.black;
     protected static final Color gridColorGridOnlyDark = Color.green;
 
-    protected ArrayList<TangentPolygon>[][] abstractGraph3D;
+    protected List<TangentPolygon>[][] abstractGraph3D;
     /**
      * Standardwert für die Anzahl der Unterteilungen des zu zeichnenden
      * Bereichs der x,y-Ebene entlang x und y. Wird mit Veränderung des
@@ -311,7 +312,7 @@ public abstract class AbstractGraphicPanel3D extends AbstractGraphicPanel implem
     /**
      * Berechnet die Maße Darstellungsbereichs der Graphen.
      */
-    protected void computeScreenSizes(ArrayList<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
+    protected void computeScreenSizes(List<double[][][]> graphs, boolean paddingForX, boolean paddingForY, boolean paddingForZ) {
 
         if (graphs.isEmpty()) {
 

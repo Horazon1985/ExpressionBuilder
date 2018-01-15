@@ -31,13 +31,13 @@ public class GraphicCanvasImplicit2D extends AbstractGraphicCanvas2D {
 
     private static class GraphPointsInMarchingSquare {
 
-        private final ArrayList<Double[]> points = new ArrayList<>();
+        private final List<Double[]> points = new ArrayList<>();
 
         public void addPoints(Double[]... points) {
             this.points.addAll(Arrays.asList(points));
         }
 
-        public ArrayList<Double[]> getPoints() {
+        public List<Double[]> getPoints() {
             return this.points;
         }
 
@@ -63,8 +63,8 @@ public class GraphicCanvasImplicit2D extends AbstractGraphicCanvas2D {
         return this.exprs;
     }
 
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
+    public static List<String> getInstructions() {
+        List<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_GraphicImplicit2D_IMPOSSIBLE_MOVE_GRAPH"));
         return instructions;
     }

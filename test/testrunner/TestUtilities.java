@@ -1,4 +1,4 @@
-package utilities;
+package testrunner;
 
 import abstractexpressions.expression.basic.ExpressionCollection;
 import abstractexpressions.expression.classes.Expression;
@@ -64,14 +64,6 @@ public class TestUtilities {
         System.out.println("--------------End of test------------------");
     }
 
-    public static void printResults(Object[] expectedResults, Object[] results) {
-        Throwable t = new Throwable();
-        StackTraceElement[] elements = t.getStackTrace();
-        String callerClassName = elements[1].getClassName();
-        String callerMethodName = elements[1].getMethodName();
-        printResults(callerClassName, callerMethodName, expectedResults, results);
-    }
-    
     public static void printResults(String className, String testMethodName, Object[] expectedResults, Object[] results) {
         System.out.println("--------------Begin of test----------------");
         System.out.println("Test class: " + className);

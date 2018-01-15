@@ -19,9 +19,9 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.substitution.SubstitutionUtilities;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import lang.translator.Translator;
 
@@ -678,11 +678,11 @@ public abstract class SimplifyBinaryOperationUtils {
 
                 if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS)) <= 0) {
 
-                    ArrayList<BigInteger> divisorsOfRootDegree = ArithmeticUtils.getDivisors(rootDegree);
+                    List<BigInteger> divisorsOfRootDegree = ArithmeticUtils.getDivisors(rootDegree);
                     int root;
                     for (BigInteger divisorOfRootDegree : divisorsOfRootDegree) {
                         root = divisorOfRootDegree.intValue();
-                        if (root == 1 || ((root / 2) * 2 == root && base.compareTo(BigInteger.ZERO) < 0)) {
+                        if (root == 1 || root % 2 == 0 && base.compareTo(BigInteger.ZERO) < 0) {
                             // Es darf nicht versucht werden, Wurzeln gerader Ordnung aus negativen Zahlen zu ziehen.
                             continue;
                         }
@@ -702,13 +702,13 @@ public abstract class SimplifyBinaryOperationUtils {
 
                     BigInteger baseNumerator = ((Constant) ((BinaryOperation) expr.getLeft()).getLeft()).getBigIntValue();
 
-                    if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_ROOTDEGREE_OF_RATIONALS"))) <= 0) {
+                    if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS)) <= 0) {
 
-                        ArrayList<BigInteger> divisorsOfN = ArithmeticUtils.getDivisors(rootDegree);
+                        List<BigInteger> divisorsOfN = ArithmeticUtils.getDivisors(rootDegree);
                         int root;
                         for (BigInteger divisorOfN : divisorsOfN) {
                             root = divisorOfN.intValue();
-                            if (root == 1 || ((root / 2) * 2 == root && baseNumerator.compareTo(BigInteger.ZERO) < 0)) {
+                            if (root == 1 || root % 2 == 0 && baseNumerator.compareTo(BigInteger.ZERO) < 0) {
                                 /*
                                  Es darf nicht versucht werden, Wurzeln
                                  gerader Ordnung aus negativen Zahlen zu
@@ -731,13 +731,13 @@ public abstract class SimplifyBinaryOperationUtils {
 
                     BigInteger baseDenominator = ((Constant) ((BinaryOperation) expr.getLeft()).getRight()).getBigIntValue();
 
-                    if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.getBound("Bound_ROOTDEGREE_OF_RATIONALS"))) <= 0) {
+                    if (rootDegree.compareTo(BigInteger.ONE) > 0 && rootDegree.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_ROOTDEGREE_OF_RATIONALS)) <= 0) {
 
-                        ArrayList<BigInteger> divisorsOfN = ArithmeticUtils.getDivisors(rootDegree);
+                        List<BigInteger> divisorsOfN = ArithmeticUtils.getDivisors(rootDegree);
                         int root;
                         for (BigInteger divisorOfN : divisorsOfN) {
                             root = divisorOfN.intValue();
-                            if (root == 1 || ((root / 2) * 2 == root && baseDenominator.compareTo(BigInteger.ZERO) < 0)) {
+                            if (root == 1 || root % 2 == 0 && baseDenominator.compareTo(BigInteger.ZERO) < 0) {
                                 /*
                                  Es darf nicht versucht werden, Wurzeln
                                  gerader Ordnung aus negativen Zahlen zu
@@ -782,7 +782,7 @@ public abstract class SimplifyBinaryOperationUtils {
                  bewegt sich im int-Bereich.
                  */
                 if (((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) >= 0
-                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
                     constantNumerator = constantNumerator.pow(((Constant) expr.getRight()).getValue().intValue());
                     return new Constant(constantNumerator).div(((BinaryOperation) expr.getLeft()).getRight().pow(expr.getRight()));
                 }
@@ -796,7 +796,7 @@ public abstract class SimplifyBinaryOperationUtils {
                  */
                 if (expr.getRight().isIntegerConstant()
                         && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.ZERO) >= 0
-                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.getBound("Bound_POWER_OF_RATIONALS"))) <= 0) {
+                        && ((Constant) expr.getRight()).getValue().compareTo(BigDecimal.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_POWER_OF_RATIONALS)) <= 0) {
                     constantDenominator = constantDenominator.pow(((Constant) expr.getRight()).getValue().intValue());
                     return ((BinaryOperation) expr.getLeft()).getLeft().pow(expr.getRight()).div(constantDenominator);
                 }
@@ -3163,7 +3163,7 @@ public abstract class SimplifyBinaryOperationUtils {
      */
     private static Expression[] reduceGeneralFractionToNonFractionInQuotient(Expression numerator, Expression denominator) throws EvaluationException {
 
-        HashSet<Expression> setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
+        Set<Expression> setOfSubstitutions = getSetOfSubstitutionsForFractionReduction(numerator.div(denominator));
 
         if (setOfSubstitutions.isEmpty()) {
             return new Expression[0];
@@ -3214,7 +3214,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
     }
 
-    private static HashSet<Expression> getSetOfSubstitutionsForFractionReduction(Expression expr) {
+    private static Set<Expression> getSetOfSubstitutionsForFractionReduction(Expression expr) {
 
         // Nur im Falle eines Quotienten (= eigentlicher Anwendungsfall) weitermachen.
         if (expr.isNotQuotient()) {
@@ -3225,7 +3225,7 @@ public abstract class SimplifyBinaryOperationUtils {
         ExpressionCollection summandsRightInNumerator = SimplifyUtilities.getSummandsRightInExpression(((BinaryOperation) expr).getLeft());
         ExpressionCollection summandsLeftInDenominator = SimplifyUtilities.getSummandsLeftInExpression(((BinaryOperation) expr).getRight());
         ExpressionCollection summandsRightInDenominator = SimplifyUtilities.getSummandsRightInExpression(((BinaryOperation) expr).getRight());
-        HashSet<Expression> setOfSubstitutions = new HashSet<>();
+        Set<Expression> setOfSubstitutions = new HashSet<>();
 
         addSubstitutions(summandsLeftInNumerator, setOfSubstitutions);
         addSubstitutions(summandsRightInNumerator, setOfSubstitutions);
@@ -3234,7 +3234,7 @@ public abstract class SimplifyBinaryOperationUtils {
         return setOfSubstitutions;
     }
 
-    private static void addSubstitutions(ExpressionCollection summands, HashSet<Expression> setOfSubstitutions) {
+    private static void addSubstitutions(ExpressionCollection summands, Set<Expression> setOfSubstitutions) {
 
         boolean algebraicallyDependendExpFunctionFound;
         boolean equivalentExpressionFound;
@@ -3378,8 +3378,8 @@ public abstract class SimplifyBinaryOperationUtils {
         BigInteger exponentNumerator, exponentDenominator;
         Expression[] reducedFactor;
 
-        HashSet<String> varsNumerator = new HashSet<>();
-        HashSet<String> varsDenominator = new HashSet<>();
+        Set<String> varsNumerator = new HashSet<>();
+        Set<String> varsDenominator = new HashSet<>();
         String var;
 
         for (int i = 0; i < factorsNumerator.getBound(); i++) {
@@ -3494,7 +3494,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
     }
 
-    private static String getUniqueVar(HashSet<String> vars) {
+    private static String getUniqueVar(Set<String> vars) {
         Iterator<String> iter = vars.iterator();
         return iter.next();
     }

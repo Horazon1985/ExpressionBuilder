@@ -6,6 +6,7 @@ import javafx.scene.input.MouseEvent;
 import java.awt.Point;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
@@ -140,11 +141,11 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
     }
 
     /**
-     * Liefert eine ArrayList mit Bedienungsanweisungen für zweidimensionale
+     * Liefert eine List mit Bedienungsanweisungen für zweidimensionale
      * Grafiken.
      */
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
+    public static List<String> getInstructions() {
+        List<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
         instructions.add(Translator.translateOutputMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));

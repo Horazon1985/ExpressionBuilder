@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import graphic.util.MarchingCube;
 import graphic.util.MarchingSquare;
 import java.util.ArrayList;
+import java.util.List;
 import lang.translator.Translator;
 
 public abstract class NumericalUtils {
@@ -257,9 +258,9 @@ public abstract class NumericalUtils {
      * Hauptmethode zum (numerischen) Lösen der Gleichung f = 0 mittels
      * Newton-Verfahren. VORAUSSETZUNG: f hängt nur von der Variablen var ab.
      */
-    public static ArrayList<Double> solveEquation(Expression f, String var, double x_1, double x_2, int n) {
+    public static List<Double> solveEquation(Expression f, String var, double x_1, double x_2, int n) {
 
-        ArrayList<Double> zerosOfEquation = new ArrayList<>();
+        List<Double> zerosOfEquation = new ArrayList<>();
 
         double x;
         double valueAtCurrentArgument, valueAtNextArgument;

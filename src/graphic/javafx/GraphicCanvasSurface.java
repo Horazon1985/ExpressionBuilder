@@ -161,7 +161,7 @@ public class GraphicCanvasSurface extends AbstractGraphicCanvas3D {
 
         }
 
-        this.abstractGraph3D = (ArrayList<TangentPolygon>[][]) Array.newInstance(new ArrayList<TangentPolygon>().getClass(), numberOfIntervals, numberOfIntervals);
+        this.abstractGraph3D = (List<TangentPolygon>[][]) Array.newInstance(new ArrayList<TangentPolygon>().getClass(), numberOfIntervals, numberOfIntervals);
         TangentPolygon polygon;
         int indexI, indexJ;
         double centerX, centerY;

@@ -20,7 +20,7 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import utilities.TestUtilities;
+import testrunner.TestUtilities;
 
 public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
 
@@ -43,7 +43,8 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             Expression f = Expression.build("x^2*y''''-sin(x)*y'''-x^5/7");
             int ord = SolveGeneralDifferentialEquationUtils.getOrderOfDifferentialEquation(f, "y");
             int subOrd = SolveGeneralDifferentialEquationUtils.getSubOrderOfDifferentialEquation(f, "y");
-            TestUtilities.printResults(new Object[]{ord, subOrd}, new Object[]{4, 3});
+            expectedResults = new Object[]{4, 3};
+            results = new Object[]{ord, subOrd};
             assertTrue(ord == 4);
             assertTrue(subOrd == 3);
         } catch (ExpressionException e) {
@@ -58,7 +59,8 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             Expression f = Expression.build("y_1'''''+x^2*y''''-sin(x)*y'''-x^5/7");
             int ord = SolveGeneralDifferentialEquationUtils.getOrderOfDifferentialEquation(f, "y");
             int subOrd = SolveGeneralDifferentialEquationUtils.getSubOrderOfDifferentialEquation(f, "y");
-            TestUtilities.printResults(new Object[]{ord, subOrd}, new Object[]{4, 3});
+            expectedResults = new Object[]{4, 3};
+            results = new Object[]{ord, subOrd};
             assertTrue(ord == 4);
             assertTrue(subOrd == 3);
         } catch (ExpressionException e) {

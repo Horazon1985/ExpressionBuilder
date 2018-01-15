@@ -18,6 +18,7 @@ import exceptions.EvaluationException;
 import exceptions.ExpressionException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -43,7 +44,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
     public void getMultiPolynomialFromExpressionTest1() {
         try {
             Expression f = Expression.build("7*x^2*y-z^5/a");
-            ArrayList<String> vars = new ArrayList<>();
+            List<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");
             vars.add("z");
@@ -58,7 +59,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
     public void getMultiPolynomialFromExpressionTest2() {
         try {
             Expression f = Expression.build("0");
-            ArrayList<String> vars = new ArrayList<>();
+            List<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");
             vars.add("z");
@@ -73,7 +74,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
     public void getMultiPolynomialFromExpressionIfNotMultiPolynomialTest() {
         try {
             Expression f = Expression.build("x^2*y+sin(z)");
-            ArrayList<String> vars = new ArrayList<>();
+            List<String> vars = new ArrayList<>();
             vars.add("x");
             vars.add("y");
             vars.add("z");
@@ -237,7 +238,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
         MultiPolynomial g = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 2),
                 new Monomial(TWO, 0, 0));
         try {
-            ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
+            List<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
             MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(MINUS_ONE, 0, 2),
                     new Monomial(TWO, 0, 0));
             MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(ONE, 0, 3), new Monomial(THREE.div(TWO), 0, 2),
@@ -260,7 +261,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
         MultiPolynomial g = new MultiPolynomial(new Monomial(ONE, 0, 2), new Monomial(new Constant(5), 1, 1),
                 new Monomial(new Constant(-39), 0, 0));
         try {
-            ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
+            List<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
             MultiPolynomial groebnerBasisElementTwo = new MultiPolynomial(new Monomial(ONE, 0, 4), new Monomial(new Constant(133).div(4), 0, 2),
                     new Monomial(new Constant(-1521).div(4), 0, 0));
             MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(ONE, 1, 0), new Monomial(new Constant(-4).div(195), 0, 3),
@@ -283,7 +284,7 @@ public class GroebnerBasisTests extends MathToolTestBase {
         MultiPolynomial g = new MultiPolynomial(new Monomial(MINUS_ONE, 0, 1), new Monomial(ONE, 2, 3),
                 new Monomial(new Constant(-105), 0, 0));
         try {
-            ArrayList<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
+            List<MultiPolynomial> groebnerBasis = GroebnerBasisUtils.getNormalizedReducedGroebnerBasis(f, g);
             MultiPolynomial groebnerBasisElementOne = new MultiPolynomial(new Monomial(new Constant(-67075577).div(90294750), 0, 1),
                     new Monomial(new Constant(32992312).div(BigInteger.valueOf(4740474375L)), 0, 2),
                     new Monomial(new Constant(-181621).div(BigInteger.valueOf(1354421250)), 0, 4),

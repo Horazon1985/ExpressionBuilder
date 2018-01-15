@@ -3,10 +3,11 @@ package abstractexpressions.matrixexpression.basic;
 import java.util.HashMap;
 import java.util.Iterator;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import java.util.Map;
 
 public class MatrixExpressionCollection implements Iterable<MatrixExpression> {
 
-    private final HashMap<Integer, MatrixExpression> matrixTerms;
+    private final Map<Integer, MatrixExpression> matrixTerms;
     private int bound;
 
     public MatrixExpressionCollection() {

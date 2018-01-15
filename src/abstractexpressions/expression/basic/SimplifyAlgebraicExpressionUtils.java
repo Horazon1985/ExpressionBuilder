@@ -16,7 +16,7 @@ import abstractexpressions.expression.classes.Variable;
 import abstractexpressions.expression.equation.PolynomialAlgebraUtils;
 import exceptions.MathToolException;
 import java.math.BigInteger;
-import java.util.ArrayList;
+import java.util.List;
 
 public abstract class SimplifyAlgebraicExpressionUtils {
 
@@ -104,7 +104,7 @@ public abstract class SimplifyAlgebraicExpressionUtils {
 
         if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {
 
-            ArrayList<BigInteger> divisorsOfA = ArithmeticUtils.getDivisors(a);
+            List<BigInteger> divisorsOfA = ArithmeticUtils.getDivisors(a);
 
             for (int i = 0; i < divisorsOfA.size(); i++) {
 
@@ -185,7 +185,7 @@ public abstract class SimplifyAlgebraicExpressionUtils {
         BigInteger factorOutsideInDenominator = BigInteger.ONE;
 
         // Im Zähler faktorisieren.
-        ArrayList<BigInteger> setOfDivisors;
+        List<BigInteger> setOfDivisors;
         int sqrtOfBoundOfDivisorsOfIntegers = (int) (Math.sqrt(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS) + 1);
 
         if (a.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS)) <= 0) {

@@ -7,16 +7,17 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import lang.translator.Translator;
 
 public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
     /**
-     * Funktionsterme für den Graphen einer implizit gegebenen Funktion. Dieses
-     * ArrayList wird vor dem Plotten mit genau zwei Ausdrücken f und g gefüllt,
+     * Funktionsterme für den Graphen einer implizit gegebenen Funktion. Diese
+     * Liste wird vor dem Plotten mit genau zwei Ausdrücken f und g gefüllt,
      * so dass der Graph der implizit gegebenen Funktion f = g geplottet wird.
      */
-    private ArrayList<Expression> exprs = new ArrayList<>();
+    private List<Expression> exprs = new ArrayList<>();
 
     private MarchingSquare[][] implicitGraph2D;
 
@@ -30,13 +31,13 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
 
     private static class GraphPointsInMarchingSquare {
 
-        private final ArrayList<Double[]> points = new ArrayList<>();
+        private final List<Double[]> points = new ArrayList<>();
 
         public void addPoints(Double[]... points) {
             this.points.addAll(Arrays.asList(points));
         }
 
-        public ArrayList<Double[]> getPoints() {
+        public List<Double[]> getPoints() {
             return this.points;
         }
 
@@ -58,12 +59,12 @@ public class GraphicPanelImplicit2D extends AbstractGraphicPanel2D {
         return this.color;
     }
 
-    public ArrayList<Expression> getExpressions() {
+    public List<Expression> getExpressions() {
         return this.exprs;
     }
 
-    public static ArrayList<String> getInstructions() {
-        ArrayList<String> instructions = new ArrayList<>();
+    public static List<String> getInstructions() {
+        List<String> instructions = new ArrayList<>();
         instructions.add(Translator.translateOutputMessage("GR_GraphicImplicit2D_IMPOSSIBLE_MOVE_GRAPH"));
         return instructions;
     }

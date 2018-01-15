@@ -6,6 +6,7 @@ import abstractexpressions.expression.classes.Variable;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
 
@@ -19,12 +20,12 @@ public class GraphicPanelCurves2D extends AbstractGraphicPanel2D {
     private Expression[] expr = new Expression[2];
     /**
      * Der Graph der 2D-Kurve, gegeben durch seine (numerisch berechneten)
-     * Punkte. Die Punkte, welche durch die Elemente im ArrayList gegeben sind,
+     * Punkte. Die Punkte, welche durch die Elemente in der Liste gegeben sind,
      * werden durch ein Double-Array mit genau zwei Elementen angegeben und die
-     * benachbarten ArrayList-Elemente werden beim Zeichnen miteinander
+     * benachbarten List-Elemente werden beim Zeichnen miteinander
      * verbunden.
      */
-    private final ArrayList<double[]> curve2D = new ArrayList<>();
+    private final List<double[]> curve2D = new ArrayList<>();
 
     public GraphicPanelCurves2D() {
         super(10, 0.1);

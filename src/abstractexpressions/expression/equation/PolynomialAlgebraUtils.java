@@ -23,6 +23,7 @@ import abstractexpressions.expression.basic.SimplifyUtilities;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 
 public abstract class PolynomialAlgebraUtils {
 
@@ -302,11 +303,11 @@ public abstract class PolynomialAlgebraUtils {
          coefficients.get(coefficients.getBound() - 1)).
          */
         BigInteger polynomValue;
-        ArrayList<BigInteger> pDivisors = new ArrayList<>();
+        List<BigInteger> pDivisors = new ArrayList<>();
         // Wichtig: pDivisors muss auch die 0 enthalten.
         pDivisors.add(BigInteger.ZERO);
         pDivisors.addAll(ArithmeticUtils.getDivisors(((Constant) coefficients.get(0)).getBigIntValue()));
-        ArrayList<BigInteger> qDivisors = ArithmeticUtils.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getBigIntValue());
+        List<BigInteger> qDivisors = ArithmeticUtils.getDivisors(((Constant) coefficients.get(coefficients.getBound() - 1)).getBigIntValue());
 
         for (BigInteger pDivisor : pDivisors) {
             for (BigInteger qDivisor : qDivisors) {

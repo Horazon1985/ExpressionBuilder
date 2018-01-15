@@ -11,10 +11,12 @@ import exceptions.EvaluationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class GroebnerBasisUtils {
 
-    private static final HashSet<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = new HashSet<>();
+    private static final Set<TypeSimplify> simplifyTypesBuchbergerAlgorithmRationalCase = new HashSet<>();
 
     static {
         simplifyTypesBuchbergerAlgorithmRationalCase.add(TypeSimplify.order_difference_and_division);
@@ -224,7 +226,7 @@ public abstract class GroebnerBasisUtils {
             return new Monomial(this.coefficient.simplify(), this.term);
         }
 
-        public Monomial simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+        public Monomial simplify(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
             return new Monomial(this.coefficient.simplify(simplifyTypes), this.term);
         }
 
@@ -293,12 +295,12 @@ public abstract class GroebnerBasisUtils {
 
     public static class MultiPolynomial {
 
-        private final ArrayList<Monomial> monomials = new ArrayList<>();
+        private final List<Monomial> monomials = new ArrayList<>();
 
         public MultiPolynomial() {
         }
 
-        public MultiPolynomial(ArrayList<Monomial> monomials) {
+        public MultiPolynomial(List<Monomial> monomials) {
             for (Monomial m : monomials) {
                 this.monomials.add(new Monomial(m.getCoefficient(), m.getTerm()));
             }
@@ -308,7 +310,7 @@ public abstract class GroebnerBasisUtils {
             this.monomials.addAll(Arrays.asList(monomials));
         }
 
-        public ArrayList<Monomial> getMonomials() {
+        public List<Monomial> getMonomials() {
             return this.monomials;
         }
 
@@ -496,7 +498,7 @@ public abstract class GroebnerBasisUtils {
 
             MultiPolynomial multiPolynomialReplacedVar = new MultiPolynomial();
 
-            ArrayList<Monomial> monomialsCopy = new ArrayList<>();
+            List<Monomial> monomialsCopy = new ArrayList<>();
             for (Monomial m : this.monomials) {
                 monomialsCopy.add(m);
             }
@@ -507,7 +509,7 @@ public abstract class GroebnerBasisUtils {
 
             MultiPolynomial resultMultiPolynomial = new MultiPolynomial();
             Monomial m;
-            ArrayList<Monomial> monomialList = multiPolynomialReplacedVar.getMonomials();
+            List<Monomial> monomialList = multiPolynomialReplacedVar.getMonomials();
             // Monome mit gleichem Term aufsammeln.
             while (!monomialList.isEmpty()) {
                 m = monomialList.get(0);
@@ -558,7 +560,7 @@ public abstract class GroebnerBasisUtils {
             return f;
         }
 
-        public MultiPolynomial simplify(HashSet<TypeSimplify> simplifyTypes) throws EvaluationException {
+        public MultiPolynomial simplify(Set<TypeSimplify> simplifyTypes) throws EvaluationException {
             MultiPolynomial f = new MultiPolynomial();
             for (Monomial m : this.monomials) {
                 f.addMonomial(m.simplify(simplifyTypes));
@@ -581,12 +583,12 @@ public abstract class GroebnerBasisUtils {
         GroebnerBasisUtils.monomialVars = monomialVars;
     }
 
-    public static void setMonomialVars(ArrayList<String> monomialVars) {
+    public static void setMonomialVars(List<String> monomialVars) {
         GroebnerBasisUtils.monomialVars = new String[monomialVars.size()];
         GroebnerBasisUtils.monomialVars = monomialVars.toArray(GroebnerBasisUtils.monomialVars);
     }
 
-    public static boolean isMultiPolynomialFamilyRational(ArrayList<MultiPolynomial> polynomials) {
+    public static boolean isMultiPolynomialFamilyRational(List<MultiPolynomial> polynomials) {
         for (MultiPolynomial polynomial : polynomials) {
             if (!polynomial.isRationalPolynomial()) {
                 return false;
@@ -619,7 +621,7 @@ public abstract class GroebnerBasisUtils {
         boolean reductionPerformed;
         do {
             reductionPerformed = false;
-            ArrayList<Monomial> monomialsOfF = new ArrayList<>();
+            List<Monomial> monomialsOfF = new ArrayList<>();
             for (Monomial m : reducedPolynomial.getMonomials()) {
                 monomialsOfF.add(m);
             }
@@ -635,7 +637,7 @@ public abstract class GroebnerBasisUtils {
 
     }
 
-    public static MultiPolynomial reduce(MultiPolynomial f, ArrayList<MultiPolynomial> reductionPolynomials) throws EvaluationException {
+    public static MultiPolynomial reduce(MultiPolynomial f, List<MultiPolynomial> reductionPolynomials) throws EvaluationException {
         MultiPolynomial reducedPolynomial = f;
         for (MultiPolynomial polynomial : reductionPolynomials) {
             reducedPolynomial = reduce(reducedPolynomial, polynomial);
@@ -649,7 +651,7 @@ public abstract class GroebnerBasisUtils {
      *
      * @throws EvaluationException
      */
-    public static ArrayList<MultiPolynomial> getNormalizedReducedGroebnerBasis(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    public static List<MultiPolynomial> getNormalizedReducedGroebnerBasis(List<MultiPolynomial> polynomials) throws EvaluationException {
 
         // Vereinfachungsmodus setzen.
         if (isMultiPolynomialFamilyRational(polynomials)) {
@@ -658,15 +660,15 @@ public abstract class GroebnerBasisUtils {
             simplifyCase = SimplifyCase.GENERAL_CASE;
         }
 
-        ArrayList<MultiPolynomial> groebnerBasis = new ArrayList<>();
-        ArrayList<MultiPolynomial> groebnerBasisAfterBuchbergerAlgorithmStep = new ArrayList<>();
+        List<MultiPolynomial> groebnerBasis = new ArrayList<>();
+        List<MultiPolynomial> groebnerBasisAfterBuchbergerAlgorithmStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {
             groebnerBasis.add(polynomial);
             groebnerBasisAfterBuchbergerAlgorithmStep.add(polynomial);
         }
 
         // Gröbnerbasis berechnen.
-        ArrayList<int[]> indexPairsWhichReduceToZero = new ArrayList<>();
+        List<int[]> indexPairsWhichReduceToZero = new ArrayList<>();
         do {
             groebnerBasis = groebnerBasisAfterBuchbergerAlgorithmStep;
             groebnerBasisAfterBuchbergerAlgorithmStep = buchbergerAlgorithmSingleStep(groebnerBasis, indexPairsWhichReduceToZero);
@@ -688,15 +690,15 @@ public abstract class GroebnerBasisUtils {
 
     }
 
-    public static ArrayList<MultiPolynomial> getNormalizedReducedGroebnerBasis(MultiPolynomial... polynomials) throws EvaluationException {
-        ArrayList<MultiPolynomial> polynomialsAsArrayList = new ArrayList<>();
-        polynomialsAsArrayList.addAll(Arrays.asList(polynomials));
-        return getNormalizedReducedGroebnerBasis(polynomialsAsArrayList);
+    public static List<MultiPolynomial> getNormalizedReducedGroebnerBasis(MultiPolynomial... polynomials) throws EvaluationException {
+        List<MultiPolynomial> polynomialsAsList = new ArrayList<>();
+        polynomialsAsList.addAll(Arrays.asList(polynomials));
+        return getNormalizedReducedGroebnerBasis(polynomialsAsList);
     }
 
-    private static ArrayList<MultiPolynomial> buchbergerAlgorithmSingleStep(ArrayList<MultiPolynomial> polynomials, ArrayList<int[]> indexPairsWhichReduceToZero) throws EvaluationException {
+    private static List<MultiPolynomial> buchbergerAlgorithmSingleStep(List<MultiPolynomial> polynomials, List<int[]> indexPairsWhichReduceToZero) throws EvaluationException {
 
-        ArrayList<MultiPolynomial> polynomialsAfterStep = new ArrayList<>();
+        List<MultiPolynomial> polynomialsAfterStep = new ArrayList<>();
         for (MultiPolynomial polynomial : polynomials) {
             polynomialsAfterStep.add(polynomial);
         }
@@ -723,7 +725,7 @@ public abstract class GroebnerBasisUtils {
 
     }
     
-    private static boolean containsIndexPair(ArrayList<int[]> indexPairs, int i, int j){
+    private static boolean containsIndexPair(List<int[]> indexPairs, int i, int j){
         for (int[] pair : indexPairs){
             if (pair.length == 2 && pair[0] == i && pair[1] == j){
                 return true;
@@ -732,12 +734,12 @@ public abstract class GroebnerBasisUtils {
         return false;
     }
 
-    private static ArrayList<MultiPolynomial> reduceGroebnerBasisSystem(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    private static List<MultiPolynomial> reduceGroebnerBasisSystem(List<MultiPolynomial> polynomials) throws EvaluationException {
 
-        ArrayList<MultiPolynomial> polynomialsAfterReduction = new ArrayList<>();
+        List<MultiPolynomial> polynomialsAfterReduction = new ArrayList<>();
         MultiPolynomial polynomial;
         Monomial leadingMonomial;
-        HashSet<Integer> ignoreList = new HashSet<>();
+        Set<Integer> ignoreList = new HashSet<>();
 
         for (int i = 0; i < polynomials.size(); i++) {
             if (ignoreList.contains(i)) {
@@ -767,7 +769,7 @@ public abstract class GroebnerBasisUtils {
 
     }
 
-    private static void normalizeSystem(ArrayList<MultiPolynomial> polynomials) throws EvaluationException {
+    private static void normalizeSystem(List<MultiPolynomial> polynomials) throws EvaluationException {
         for (MultiPolynomial polynomial : polynomials) {
             polynomial.normalize();
         }
