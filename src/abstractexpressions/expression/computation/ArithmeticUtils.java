@@ -92,52 +92,6 @@ public abstract class ArithmeticUtils {
      * Komplementärteiler ermittelt.
      */
     public static List<BigInteger> getDivisors(BigInteger a) {
-
-        BigInteger bound;
-        try {
-            bound = ArithmeticUtils.root(a.abs(), 2);
-        } catch (EvaluationException e) {
-            bound = a.abs();
-        }
-
-        bound = bound.min(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS));
-
-        List<BigInteger> divisors = new ArrayList<>();
-
-        if (a.compareTo(BigInteger.ZERO) == 0) {
-            divisors.add(BigInteger.ONE);
-            return divisors;
-        }
-
-        for (int i = 1; i <= bound.intValue(); i++) {
-            if (a.mod(BigInteger.valueOf(i)).compareTo(BigInteger.ZERO) == 0) {
-                divisors.add(BigInteger.valueOf(i));
-            }
-        }
-
-        int numberOfDivisorsBelowSqrt = divisors.size();
-
-        if (bound.pow(2).compareTo(a) == 0) {
-            for (int i = numberOfDivisorsBelowSqrt - 2; i >= 0; i--) {
-                divisors.add(a.divide((BigInteger) divisors.get(i)));
-            }
-        } else {
-            for (int i = numberOfDivisorsBelowSqrt - 1; i >= 0; i--) {
-                divisors.add(a.divide((BigInteger) divisors.get(i)));
-            }
-        }
-
-        return divisors;
-
-    }
-
-    /**
-     * Liefert alle (positiven) Teiler von a, indiziert via 0, 1, 2, ..., falls
-     * a &#8804; eine gewisse Schranke. Ansonsten werden nur alle Teiler, welche
-     * kleiner oder gleich der Wurzel der Schranke sind, sowie ihre
-     * Komplementärteiler ermittelt.
-     */
-    public static List<BigInteger> getDivisors2(BigInteger a) {
         BigInteger absA = a.abs();
         List<PrimeFactorWithMultiplicity> primefactors = getPrimeDecomposition(absA);
         Set<BigInteger> divisorsSet = getDivisorsFromPrimeFactors(primefactors);

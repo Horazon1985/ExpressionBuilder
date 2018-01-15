@@ -45,7 +45,7 @@ public class ArithmeticTests extends MathToolTestBase {
     @Test
     public void computeDivisorsTest() {
         BigInteger a = BigInteger.valueOf(144);
-        List<BigInteger> divisors = ArithmeticUtils.getDivisors2(a);
+        List<BigInteger> divisors = ArithmeticUtils.getDivisors(a);
         results = new Object[]{divisors.size(),
             divisors.get(0), divisors.get(1), divisors.get(2), divisors.get(3), divisors.get(4),
             divisors.get(5), divisors.get(6), divisors.get(7), divisors.get(8), divisors.get(9),

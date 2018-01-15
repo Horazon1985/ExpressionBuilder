@@ -9,65 +9,19 @@ import abstractexpressions.matrixexpression.classes.MatrixExpression;
 
 public class TestUtilities {
 
-    public static void printResult(Object expected, Object result) {
-        Throwable t = new Throwable();
-        StackTraceElement[] elements = t.getStackTrace();
-        String callerClassName = elements[1].getClassName();
-        String callerMethodName = elements[1].getMethodName();
-        System.out.println("--------------Begin of test----------------");
-        System.out.println("Test class: " + callerClassName);
-        System.out.println("Test: " + callerMethodName);
-
-        if (expected instanceof Expression && result instanceof Expression) {
-            if (((Expression) expected).equivalent((Expression) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected instanceof LogicalExpression && result instanceof LogicalExpression) {
-            if (((LogicalExpression) expected).equivalent((LogicalExpression) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected instanceof MatrixExpression && result instanceof MatrixExpression) {
-            if (((MatrixExpression) expected).equivalent((MatrixExpression) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected instanceof ExpressionCollection && result instanceof ExpressionCollection) {
-            if (((ExpressionCollection) expected).equals((ExpressionCollection) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected instanceof LogicalExpressionCollection && result instanceof LogicalExpressionCollection) {
-            if (((LogicalExpressionCollection) expected).equals((LogicalExpressionCollection) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected instanceof MatrixExpressionCollection && result instanceof MatrixExpressionCollection) {
-            if (((MatrixExpressionCollection) expected).equals((MatrixExpressionCollection) result)) {
-                System.out.println("\033[32m Expected result:" + expected.toString());
-            } else {
-                System.out.println("\033[31m Expected result: " + expected.toString());
-            }
-        } else if (expected.equals(result)) {
-            System.out.println("\033[32m Expected result:" + expected.toString());
-        } else {
-            System.out.println("\033[31m Expected result: " + expected.toString());
-        }
-
-        System.out.println("Result: " + result.toString());
-        System.out.println("--------------End of test------------------");
-    }
-
     public static void printResults(String className, String testMethodName, Object[] expectedResults, Object[] results) {
         System.out.println("--------------Begin of test----------------");
         System.out.println("Test class: " + className);
         System.out.println("Test: " + testMethodName);
+        if (expectedResults == null && results == null) {
+            return;
+        } else if (expectedResults != null && results == null) {
+            System.err.println("ExpectedResults is not null, but results is null!");
+            return;
+        } else if (expectedResults == null && results != null) {
+            System.err.println("ExpectedResults is null, but results is not null!");
+            return;
+        }
         if (expectedResults.length != results.length) {
             System.err.println("Number of expected results does not coincide with the number of results!");
         } else {

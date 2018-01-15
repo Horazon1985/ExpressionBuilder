@@ -40,7 +40,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("(1+x)^2-(x-1)^2");
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(0, 4);
-            TestUtilities.printResult(coefficientsExpected, coefficients);
+            expectedResults = new Object[]{coefficientsExpected};
+            results = new Object[]{coefficients};
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -53,7 +54,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("(1/2+x)^3-x^2");
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(ONE.div(8), THREE.div(4), ONE.div(TWO), ONE);
-            TestUtilities.printResult(coefficientsExpected, coefficients);
+            expectedResults = new Object[]{coefficientsExpected};
+            results = new Object[]{coefficients};
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -66,7 +68,8 @@ public class PolynomialTests extends MathToolTestBase {
             f = Expression.build("(2+x/3)^3+(1+x)^5-3*x^5");
             ExpressionCollection coefficients = SimplifyPolynomialUtils.getPolynomialCoefficients(f, "x");
             ExpressionCollection coefficientsExpected = new ExpressionCollection(9, 9, "32/3", "271/27", 5, -2);
-            TestUtilities.printResult(coefficientsExpected, coefficients);
+            expectedResults = new Object[]{coefficientsExpected};
+            results = new Object[]{coefficients};
             Assert.assertTrue(coefficients.equals(coefficientsExpected));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
@@ -76,49 +79,56 @@ public class PolynomialTests extends MathToolTestBase {
     @Test
     public void periodicCoefficientsTest1() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 1, -4);
-        TestUtilities.printResult(3, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
+        expectedResults = new Object[]{3};
+        results = new Object[]{SimplifyPolynomialUtils.getPeriodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 3);
     }
 
     @Test
     public void periodicCoefficientsTest2() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, 2, 7, -4);
-        TestUtilities.printResult(6, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
+        expectedResults = new Object[]{6};
+        results = new Object[]{SimplifyPolynomialUtils.getPeriodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 6);
     }
 
     @Test
     public void periodicCoefficientsEmptyTest() {
         ExpressionCollection c = new ExpressionCollection();
-        TestUtilities.printResult(0, SimplifyPolynomialUtils.getPeriodOfCoefficients(c));
+        expectedResults = new Object[]{0};
+        results = new Object[]{SimplifyPolynomialUtils.getPeriodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getPeriodOfCoefficients(c) == 0);
     }
 
     @Test
     public void antiperiodicCoefficientsTest1() {
         ExpressionCollection c = new ExpressionCollection(2, 1, -4, -2, -1, 4, 2, 1, -4);
-        TestUtilities.printResult(3, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
+        expectedResults = new Object[]{3};
+        results = new Object[]{SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 3);
     }
 
     @Test
     public void antiperiodicCoefficientsTest2() {
         ExpressionCollection c = new ExpressionCollection(5, 1, -5, -1, 5, 1, -5, -1);
-        TestUtilities.printResult(2, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
+        expectedResults = new Object[]{2};
+        results = new Object[]{SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 2);
     }
 
     @Test
     public void antiperiodicCoefficientsTest3() {
         ExpressionCollection c = new ExpressionCollection(4, 3, -8, 2);
-        TestUtilities.printResult(4, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
+        expectedResults = new Object[]{4};
+        results = new Object[]{SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 4);
     }
 
     @Test
     public void antiperiodicCoefficientsEmptyTest() {
         ExpressionCollection c = new ExpressionCollection();
-        TestUtilities.printResult(0, SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c));
+        expectedResults = new Object[]{0};
+        results = new Object[]{SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c)};
         Assert.assertTrue(SimplifyPolynomialUtils.getAntiperiodOfCoefficients(c) == 0);
     }
 
@@ -196,7 +206,6 @@ public class PolynomialTests extends MathToolTestBase {
             Expression expectedResult = SimplifyPolynomialUtils.getGGTOfPolynomials(f, g, "x");
             expectedResults = new Object[]{expectedResult};
             results = new Object[]{ggT};
-            TestUtilities.printResult(expectedResult, ggT);
             Assert.assertTrue(expectedResult.equivalent(ggT));
         } catch (ExpressionException e) {
             fail(e.getMessage());
@@ -838,7 +847,6 @@ public class PolynomialTests extends MathToolTestBase {
                     SimplifyPolynomialUtils.getPolynomialCoefficients(g, "x"));
             expectedResults = new Object[]{Variable.create("a")};
             results = new Object[]{resultant.convertOneTimesOneMatrixToExpression()};
-            TestUtilities.printResult(Variable.create("a"), resultant.convertOneTimesOneMatrixToExpression());
             Assert.assertTrue(resultant.convertOneTimesOneMatrixToExpression() instanceof Expression);
             Assert.assertTrue(((Expression) resultant.convertOneTimesOneMatrixToExpression()).equivalent(Variable.create("a")));
         } catch (ExpressionException | EvaluationException e) {
