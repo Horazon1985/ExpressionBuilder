@@ -157,7 +157,7 @@ public class GraphicArea extends JTextArea {
         this.removeAll();
         // Standardgröße wiederherstellen.
         this.setBounds(this.mathToolGraphicAreaX, this.mathToolGraphicAreaY,
-                this.mathToolGraphicAreaWidth, this.mathToolGraphicAreaHeight - 50);
+                this.mathToolGraphicAreaWidth, this.mathToolGraphicAreaHeight);
         validate();
         repaint();
     }
