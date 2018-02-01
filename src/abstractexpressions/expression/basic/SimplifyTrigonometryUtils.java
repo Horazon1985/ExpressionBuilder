@@ -15,6 +15,8 @@ import notations.NotationLoader;
 
 public abstract class SimplifyTrigonometryUtils {
 
+    private static final String SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED = "SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED";
+    
     /**
      * Private Fehlerklasse für den Fall, dass ein Ausdruck kein rationales
      * Vielfaches von Pi ist.
@@ -760,7 +762,7 @@ public abstract class SimplifyTrigonometryUtils {
                 }
                 //tan(pi/2) = FEHLER!
                 if (n.compareTo(BigInteger.valueOf(2)) == 0) {
-                    throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
                 }
                 // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Tangens: tan(x/2) = (1 - cos(x))/sin(x).
                 int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
@@ -786,13 +788,13 @@ public abstract class SimplifyTrigonometryUtils {
 
         //cot(0) = FEHLER!
         if (f.equals(ZERO.cot()) || f.equals(PI.cot())) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_COT_NOT_DEFINED", f));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
         }
 
         //cot(k*pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cot) && f.getLeft().isProduct()
                 && ((BinaryOperation) f.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) f.getLeft()).getRight().equals(PI)) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_COT_NOT_DEFINED", f));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
         }
 
         //cot(m*pi/n) = (Kotangenstabelle)
@@ -891,13 +893,13 @@ public abstract class SimplifyTrigonometryUtils {
 
         // cosec(0) = FEHLER!, cosec(pi) = FEHLER!
         if (f.equals(ZERO.cosec()) || f.equals(PI.cosec())) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_COSEC_NOT_DEFINED", f));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
         }
 
         // cosec(k*pi) = FEHLER!
         if (f.getType().equals(TypeFunction.cosec) && f.getLeft().isProduct()
                 && ((BinaryOperation) f.getLeft()).getLeft().isIntegerConstant() && ((BinaryOperation) f.getLeft()).getRight().equals(PI)) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_COSEC_NOT_DEFINED", f));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
         }
 
         // cosec(m*pi/n) = (Kosecanstabelle)
@@ -1090,7 +1092,7 @@ public abstract class SimplifyTrigonometryUtils {
                 }
                 //sec(pi/2) = FEHLER!
                 if (n.compareTo(BigInteger.valueOf(2)) == 0) {
-                    throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_SEC_PI_DIVIDED_BY_TWO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
                 }
                 // Schließlich: (Sinnvolle) Iteration der Halbwinkelformel für den Secans.
                 int exponentOfTwo = getMaxPowerOfTwoInPrimeDecomposition(n);
@@ -1287,7 +1289,7 @@ public abstract class SimplifyTrigonometryUtils {
 
             // arccosec(0) = 0
             if (f.getLeft().equals(ZERO)) {
-                throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_ARCCOSEC_ZERO_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
             }
             // arccosec(1) = pi/2
             if (f.getLeft().equals(ONE)) {
@@ -1320,7 +1322,7 @@ public abstract class SimplifyTrigonometryUtils {
 
             // arcsec(0) = FEHLER!
             if (f.getLeft().equals(ZERO)) {
-                throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyTrigonometry_ARCSEC_ZERO_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED, f));
             }
             // arcsec(1) = 0
             if (f.getLeft().equals(ONE)) {

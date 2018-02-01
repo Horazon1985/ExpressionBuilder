@@ -5,41 +5,11 @@
     <Ukrainian>Занадто великий порядок полінома.</Ukrainian>
     <Russian>Слишком большой порядок полинома.</Russian>
   </object>
-  <object id = "SU_SimplifyTrigonometry_TAN_PI_DIVIDED_BY_TWO_NOT_DEFINED">
-    <German>tan(pi/2) ist nicht definiert.</German>
-    <English>tan(pi/2) is not defined.</English>
-    <Ukrainian>tan(pi/2) не визначено.</Ukrainian>
-    <Russian>tan(pi/2) не определен.</Russian>
-  </object>
-  <object id = "SU_SimplifyTrigonometry_COT_NOT_DEFINED">
+  <object id = "SU_SimplifyTrigonometry_FUNCTION_VALUE_NOT_DEFINED">
     <German>[0] ist nicht definiert.</German>
     <English>[0] is not defined.</English>
     <Ukrainian>[0] не визначено.</Ukrainian>
     <Russian>[0] не определен.</Russian>
-  </object>
-  <object id = "SU_SimplifyTrigonometry_COSEC_NOT_DEFINED">
-    <German>[0] ist nicht definiert.</German>
-    <English>[0] is not defined.</English>
-    <Ukrainian>[0] не визначено.</Ukrainian>
-    <Russian>[0] не определен.</Russian>
-  </object>
-  <object id = "SU_SimplifyTrigonometry_SEC_PI_DIVIDED_BY_TWO_NOT_DEFINED">
-    <German>sec(pi/2) ist nicht definiert.</German>
-    <English>sec(pi/2) is not defined.</English>
-    <Ukrainian>sec(pi/2) не визначено.</Ukrainian>
-    <Russian>sec(pi/2) не определен.</Russian>
-  </object>
-  <object id = "SU_SimplifyTrigonometry_ARCCOSEC_ZERO_NOT_DEFINED">
-    <German>arccosec(0) ist nicht definiert.</German>
-    <English>arccosec(0) is not defined.</English>
-    <Ukrainian>arccosec(0) не визначено.</Ukrainian>
-    <Russian>arccosec(0) не определен.</Russian>
-  </object>
-  <object id = "SU_SimplifyTrigonometry_ARCSEC_ZERO_NOT_DEFINED">
-    <German>arcsec(0) ist nicht definiert.</German>
-    <English>arcsec(0) is not defined.</English>
-    <Ukrainian>arcsec(0) не визначено.</Ukrainian>
-    <Russian>arcsec(0) не определен.</Russian>
   </object>
   <object id = "SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO">
     <German>Division durch 0.</German>

@@ -1227,7 +1227,7 @@ public abstract class SimplifyAlgebraicExpressionUtils {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomialAlgebraUtils.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomialAlgebraUtils.getUniqueRationalZeroOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1280,7 +1280,7 @@ public abstract class SimplifyAlgebraicExpressionUtils {
             throw new RootNotRationalException();
         }
 
-        ExpressionCollection rationalZeros = PolynomialAlgebraUtils.getRationalZerosOfRationalPolynomial(coefficients);
+        ExpressionCollection rationalZeros = PolynomialAlgebraUtils.getUniqueRationalZeroOfRationalPolynomial(coefficients);
 
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
@@ -1301,7 +1301,7 @@ public abstract class SimplifyAlgebraicExpressionUtils {
             throw new RootNotRationalException();
         }
 
-        rationalZeros = PolynomialAlgebraUtils.getRationalZerosOfRationalPolynomial(coefficients);
+        rationalZeros = PolynomialAlgebraUtils.getUniqueRationalZeroOfRationalPolynomial(coefficients);
         // Da die Lösung eindeutig ist, muss rationalZeros.size() <= 1 sein.
         if (rationalZeros.isEmpty()) {
             throw new RootNotRationalException();

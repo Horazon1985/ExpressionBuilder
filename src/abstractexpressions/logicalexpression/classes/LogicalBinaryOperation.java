@@ -10,6 +10,8 @@ import lang.translator.Translator;
 
 public class LogicalBinaryOperation extends LogicalExpression {
 
+    private static final String LEB_LogicalBinaryOperation_COMPUTATION_ABORTED = "LEB_LogicalBinaryOperation_COMPUTATION_ABORTED";
+    
     private final LogicalExpression left, right;
     private final TypeLogicalBinary type;
 
@@ -176,7 +178,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateOutputMessage("LEB_LogicalBinaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateOutputMessage(LEB_LogicalBinaryOperation_COMPUTATION_ABORTED));
         }
 
         //Konstante Ausdrücke direkt auswerten.
@@ -305,7 +307,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
                     // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
                     if (Thread.interrupted()) {
-                        throw new EvaluationException(Translator.translateOutputMessage("LEB_LogicalBinaryOperation_COMPUTATION_ABORTED"));
+                        throw new EvaluationException(Translator.translateOutputMessage(LEB_LogicalBinaryOperation_COMPUTATION_ABORTED));
                     }
 
                 }
@@ -397,7 +399,7 @@ public class LogicalBinaryOperation extends LogicalExpression {
 
                     // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
                     if (Thread.interrupted()) {
-                        throw new EvaluationException(Translator.translateOutputMessage("LEB_LogicalBinaryOperation_COMPUTATION_ABORTED"));
+                        throw new EvaluationException(Translator.translateOutputMessage(LEB_LogicalBinaryOperation_COMPUTATION_ABORTED));
                     }
 
                 }

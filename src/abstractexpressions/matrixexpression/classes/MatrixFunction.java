@@ -14,6 +14,17 @@ import lang.translator.Translator;
 
 public class MatrixFunction extends MatrixExpression {
 
+    private static final String MEB_MatrixFunction_DET_NOT_DEFINED = "MEB_MatrixFunction_DET_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_ABS_NOT_DEFINED = "MEB_MatrixFunction_ABS_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_COS_NOT_DEFINED = "MEB_MatrixFunction_COS_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_COSH_NOT_DEFINED = "MEB_MatrixFunction_COSH_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_EXP_NOT_DEFINED = "MEB_MatrixFunction_EXP_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_LN_NOT_DEFINED = "MEB_MatrixFunction_LN_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_SIN_NOT_DEFINED = "MEB_MatrixFunction_SIN_NOT_DEFINED";
+    private static final String MEB_MatrixFunction_SINH_NOT_DEFINED = "MEB_MatrixFunction_SINH_NOT_DEFINED";
+    private static final String MEB_MatrixExpression_NO_ROWS = "MEB_MatrixExpression_NO_ROWS";
+    private static final String MEB_MatrixFunction_TR_NOT_DEFINED = "MEB_MatrixFunction_TR_NOT_DEFINED";
+    
     private final MatrixExpression left;
     private final TypeMatrixFunction type;
 
@@ -213,7 +224,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_DET_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_DET_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -296,7 +307,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.width != 1) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_ABS_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_ABS_NOT_DEFINED));
         }
 
         if (this.left instanceof Matrix) {
@@ -321,7 +332,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_COS_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_COS_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -362,7 +373,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_COSH_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_COSH_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -402,7 +413,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_EXP_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_EXP_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -442,7 +453,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_LN_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_LN_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -486,7 +497,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_SIN_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_SIN_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -526,7 +537,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_SINH_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_SINH_NOT_DEFINED));
         }
 
         if (dim.height == 0) {
@@ -566,7 +577,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height == 0 || dim.width == 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixExpression_NO_ROWS"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixExpression_NO_ROWS));
         }
 
         if (this.left.isMatrix()) {
@@ -599,7 +610,7 @@ public class MatrixFunction extends MatrixExpression {
 
         Dimension dim = this.left.getDimension();
         if (dim.height != dim.width) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixFunction_TR_NOT_DEFINED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixFunction_TR_NOT_DEFINED));
         }
 
         if (this.left.isNotMatrix()) {

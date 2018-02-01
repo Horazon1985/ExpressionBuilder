@@ -29,6 +29,9 @@ import lang.translator.Translator;
 import notations.NotationLoader;
 
 public abstract class SimplifyPolynomialUtils {
+    
+    private static final String SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE = "SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE";
+    private static final String EB_BinaryOperation_DIVISION_BY_ZERO = "EB_BinaryOperation_DIVISION_BY_ZERO";
 
     private static final HashSet<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
     private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getSimplifyTypesExpandPolynomial();
@@ -275,7 +278,7 @@ public abstract class SimplifyPolynomialUtils {
             return coefficients;
         }
         if (deg.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE"));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE));
         }
 
         f = f.simplify(simplifyTypesExpandPolynomial);
@@ -1279,7 +1282,7 @@ public abstract class SimplifyPolynomialUtils {
          (und muss im Vorfeld geprüft werden).
          */
         if (coefficientsDenominator.isEmpty()) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_DIVISION_BY_ZERO"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_BinaryOperation_DIVISION_BY_ZERO));
         }
 
         int degreeDenominator = coefficientsDenominator.getBound() - 1;

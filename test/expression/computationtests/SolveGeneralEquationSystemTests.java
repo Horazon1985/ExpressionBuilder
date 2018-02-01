@@ -17,7 +17,6 @@ import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import testrunner.TestUtilities;
 
 public class SolveGeneralEquationSystemTests extends MathToolTestBase {
 

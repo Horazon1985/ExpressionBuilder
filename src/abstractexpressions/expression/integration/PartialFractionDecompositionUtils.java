@@ -145,9 +145,7 @@ public abstract class PartialFractionDecompositionUtils {
                  Sonstiger Fall: Ansatz auf einen Nenner bringen und Zähler betrachten.
                  Danach lineares Gleichungssystem für die Koeffizienten aufstellen und lösen.
                  */
-//                System.out.println("Vorher: " + approachForPFD);
                 Expression approachForPFDAsOneFraction = SimplifyBinaryOperationUtils.bringExpressionToCommonDenominator((BinaryOperation) approachForPFD);
-//                System.out.println("Nachher: " + approachForPFDAsOneFraction);
 
                 if (approachForPFDAsOneFraction.isNotQuotient()) {
                     throw new PartialFractionDecompositionNotComputableException();
@@ -163,14 +161,11 @@ public abstract class PartialFractionDecompositionUtils {
 
             }
 
-//            System.out.println("Koeffizienten:");
             for (int i = 0; i < n; i++) {
-//                System.out.println(getPFDVariable(i) + " = " + coefficientsForPFD[i]);
                 approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i].div(constantFactorInDenominator));
                 approachForPFD = approachForPFD.replaceVariable(getPFDVariable(i), coefficientsForPFD[i]);
             }
 
-//            System.out.println("PBZ: " + polynomialPart.add(approachForPFD));
             return polynomialPart.add(approachForPFD);
 
         } catch (PartialFractionDecompositionNotComputableException e) {

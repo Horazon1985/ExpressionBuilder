@@ -16,6 +16,10 @@ import lang.translator.Translator;
 
 public class MatrixBinaryOperation extends MatrixExpression {
 
+    private static final String MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED = "MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED";
+    private static final String MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED = "MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED";
+    private static final String MEB_MatrixBinaryOperation_COMPUTATION_ABORTED = "MEB_MatrixBinaryOperation_COMPUTATION_ABORTED";
+    
     private final MatrixExpression left, right;
     private final TypeMatrixBinary type;
 
@@ -45,7 +49,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         if (!this.isProduct()) {
             if (dimLeft.height != dimRight.height || dimLeft.width != dimRight.width) {
-                throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixBinaryOperation_SUM_OR_DIFFERENCE_OF_MATRICES_NOT_DEFINED));
             }
             return dimLeft;
         } else {
@@ -61,7 +65,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
                 return dimLeft;
             }
             if (dimLeft.width != dimRight.height) {
-                throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixBinaryOperation_PRODUCT_OF_MATRICES_NOT_DEFINED));
             }
             return new Dimension(dimRight.width, dimLeft.height);
         }
@@ -287,7 +291,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_BinaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixBinaryOperation_COMPUTATION_ABORTED));
         }
 
         MatrixExpressionCollection termsLeft = new MatrixExpressionCollection();
@@ -638,7 +642,7 @@ public class MatrixBinaryOperation extends MatrixExpression {
 
         // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
         if (Thread.interrupted()) {
-            throw new EvaluationException(Translator.translateOutputMessage("MEB_MatrixBinaryOperation_COMPUTATION_ABORTED"));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixBinaryOperation_COMPUTATION_ABORTED));
         }
 
         if (this.isSum()) {

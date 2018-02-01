@@ -11,6 +11,8 @@ import lang.translator.Translator;
 
 public class Constant extends Expression {
 
+    private static final String EB_Constant_CONSTANT_CANNOT_BE_EVALUATED = "EB_Constant_CONSTANT_CANNOT_BE_EVALUATED";
+    
     /*
      approxValue wird gebraucht, wenn es um approximative Berechnungen geht. Dann
      wird die Konstante als irrational angesehen. Ansonsten wird value
@@ -22,7 +24,7 @@ public class Constant extends Expression {
 
     public Constant(double approxValue) throws EvaluationException {
         if (Double.isNaN(approxValue) || Double.isInfinite(approxValue)) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Constant_CONSTANT_CANNOT_BE_EVALUATED));
         }
         this.approxValue = approxValue;
         this.value = BigDecimal.valueOf(this.approxValue);
@@ -107,7 +109,7 @@ public class Constant extends Expression {
     @Override
     public double evaluate() throws EvaluationException {
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Constant_CONSTANT_CANNOT_BE_EVALUATED));
         }
         return this.approxValue;
     }
@@ -291,7 +293,7 @@ public class Constant extends Expression {
             return SimplifyBinaryOperationUtils.constantToQuotient(this.value, BigDecimal.ONE);
         }
         if (Double.isNaN(this.approxValue) || Double.isInfinite(this.approxValue)) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Constant_CONSTANT_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Constant_CONSTANT_CANNOT_BE_EVALUATED));
         }
         return this;
     }

@@ -20,6 +20,10 @@ import lang.translator.Translator;
  */
 public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
 
+    private static final String GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON = "GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON";
+    private static final String GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON = "GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON";
+    private static final String GR_Graphic2D_MOVE_MOUSE_WHEEL = "GR_Graphic2D_MOVE_MOUSE_WHEEL";
+    
     /**
      * Variablenname für 2D-Graphen: varAbsc = Abszissenname.
      */
@@ -146,9 +150,9 @@ public abstract class AbstractGraphicCanvas2D extends AbstractGraphicCanvas {
      */
     public static List<String> getInstructions() {
         List<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic2D_MOVE_MOUSE_WHEEL"));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic2D_HOLD_DOWN_LEFT_MOUSE_BUTTON));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic2D_HOLD_DOWN_RIGHT_MOUSE_BUTTON));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic2D_MOVE_MOUSE_WHEEL));
         return instructions;
     }
 

@@ -388,6 +388,62 @@ public abstract class PolynomialAlgebraUtils {
     }
 
     /**
+     * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind und
+     * darüber hinaus bekannt ist, dass das Polynom eine eindeutige rationale
+     * Nullstelle besitzt, so liefert diese Methode diese Nullstellen, falls
+     * |Zähler|, |Nenner| &#8804; eine gewisse Schranke.
+     */
+    public static ExpressionCollection getUniqueRationalZeroOfRationalPolynomial(ExpressionCollection coefficients) {
+        ExpressionCollection zeros = new ExpressionCollection();
+
+        for (Expression coefficient : coefficients) {
+            if (!coefficient.isIntegerConstantOrRationalConstant()) {
+                return zeros;
+            }
+        }
+
+        /*
+         Alle Polynomkoeffizienten werden mit dem kleinsten gemeinsamen Nenner
+         multipliziert, damit alle Koeffizienten ganzzahlig werden.
+         */
+        BigInteger commonDenominator = BigInteger.ONE;
+        for (Expression coefficient : coefficients) {
+            if (coefficient.isQuotient()) {
+                commonDenominator = ArithmeticUtils.lcm(new BigInteger[]{commonDenominator, ((Constant) ((BinaryOperation) coefficient).getRight()).getBigIntValue()});
+            }
+        }
+
+        ExpressionCollection multipleOfCoefficients = coefficients.copy();
+
+        multipleOfCoefficients.multiplyWithExpression(new Constant(commonDenominator));
+
+        try {
+            multipleOfCoefficients = multipleOfCoefficients.simplify();
+
+            // Alle Polynomkoeffizienten werden nun durch ihren ggT dividiert.
+            BigInteger gcd = BigInteger.ZERO;
+            for (int i = 0; i < coefficients.getBound(); i++) {
+                if (gcd.equals(BigInteger.ZERO)) {
+                    gcd = ((Constant) multipleOfCoefficients.get(i)).getBigIntValue();
+                } else {
+                    gcd = ArithmeticUtils.gcd(new BigInteger[]{gcd, ((Constant) multipleOfCoefficients.get(i)).getBigIntValue()});
+                }
+            }
+            if (gcd.compareTo(BigInteger.ONE) > 0) {
+                multipleOfCoefficients.divideByExpression(new Constant(gcd));
+                multipleOfCoefficients = multipleOfCoefficients.simplify();
+            }
+
+            BigInteger[] zero = findRationalZeroOfPolynomial(multipleOfCoefficients);
+            if (zero.length > 0) {
+                zeros.add(new Constant(zero[0]).div(zero[1]).simplify());
+            }
+        } catch (EvaluationException e) {
+        }
+        return zeros;
+    }
+
+    /**
      * Falls die Koeffizienten a.get(i) des Polynoms alle rational sind, so
      * liefert diese Methode alle rationalen Nullstellen des Polynoms mit
      * |Zähler|, |Nenner| &#8804; eine gewisse Schranke. Diese werden der

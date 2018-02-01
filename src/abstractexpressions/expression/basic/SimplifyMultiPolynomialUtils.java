@@ -22,6 +22,8 @@ import lang.translator.Translator;
 
 public abstract class SimplifyMultiPolynomialUtils {
 
+    private static final String SEM_PolynomialRootMethods_TOO_HIGH_DEGREE = "SEM_PolynomialRootMethods_TOO_HIGH_DEGREE";
+    
     private static final Set<TypeSimplify> simplifyTypesExpandPolynomial = getsimplifyTypesExpandPolynomial();
 
     private static Set<TypeSimplify> getsimplifyTypesExpandPolynomial() {
@@ -264,7 +266,7 @@ public abstract class SimplifyMultiPolynomialUtils {
 
         BigInteger deg = getDegreeOfMultiPolynomial(f, vars);
         if (deg.compareTo(BigInteger.valueOf(computationbounds.ComputationBounds.BOUND_ALGEBRA_MAX_DEGREE_OF_POLYNOMIAL)) > 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("SEM_PolynomialRootMethods_TOO_HIGH_DEGREE"));
+            throw new EvaluationException(Translator.translateOutputMessage(SEM_PolynomialRootMethods_TOO_HIGH_DEGREE));
         }
 
         f = f.simplify(simplifyTypesExpandPolynomial);

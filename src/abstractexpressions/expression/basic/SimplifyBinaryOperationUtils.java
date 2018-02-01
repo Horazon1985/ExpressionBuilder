@@ -30,7 +30,11 @@ import lang.translator.Translator;
  * BinaryOperation (für simplifyBasic).
  */
 public abstract class SimplifyBinaryOperationUtils {
-
+    
+    private static final String SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO = "SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO";
+    private static final String SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED = "SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED";
+    private static final String SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED = "SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED";
+    
     /**
      * Approximiert eine konstante Summe.<br>
      * VORAUSSETZUNG: Der Gesamtausdruck muss konstant sein.
@@ -254,7 +258,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
         if (expr.getRight().isConstant() && (expr.getType().equals(TypeBinary.DIV)) && expr.containsApproximates()) {
             if (expr.getRight().evaluate() == 0) {
-                throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO"));
+                throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO));
             }
             return new BinaryOperation(new Constant(1 / expr.getRight().evaluate()), expr.getLeft(), TypeBinary.TIMES);
         }
@@ -379,7 +383,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
                 // Negative Potenzen von 0 sind nicht definiert.
                 if (constantLeft.equals(ZERO) && constantRight.getValue().compareTo(BigDecimal.ZERO) < 0) {
-                    throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED));
                 }
                 /*
                  Potenzen von ganzen Zahlen sollen nur vereinfacht werden,
@@ -418,7 +422,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
                 // Negative Potenzen von 0 sind nicht definiert.
                 if (numerator.equals(BigInteger.ZERO) && exponent.compareTo(BigInteger.ZERO) < 0) {
-                    throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED));
                 }
                 /*
                  Potenzen von ganzen Zahlen sollen nur vereinfacht werden,
@@ -456,7 +460,7 @@ public abstract class SimplifyBinaryOperationUtils {
                     return expr;
                 } else if (expr.getLeft().isNonPositive() && ((BinaryOperation) expr.getRight()).getLeft().isIntegerConstant()
                         && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
-                    throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED"));
+                    throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED));
                 }
             }
 
@@ -470,7 +474,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
             if (valueLeftIsDefined && valueLeft < 0 && ((BinaryOperation) expr.getRight()).getLeft().isOddIntegerConstant()
                     && ((BinaryOperation) expr.getRight()).getRight().isEvenIntegerConstant()) {
-                throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_ROOTS_OF_EVEN_ORDER_OF_NEGATIVE_NUMBERS_NOT_DEFINED));
             }
 
         }
@@ -855,7 +859,7 @@ public abstract class SimplifyBinaryOperationUtils {
 
         // a/0 = FEHLER!
         if (expr.isQuotient() && expr.getRight().equals(ZERO)) {
-            throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO"));
+            throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_DIVISION_BY_ZERO));
         }
 
         return expr;
@@ -883,7 +887,7 @@ public abstract class SimplifyBinaryOperationUtils {
         // 0^a = 0
         if (expr.isPower() && expr.getLeft().equals(ZERO)) {
             if (expr.getRight().isConstant() && expr.getRight().isNonPositive() && !expr.getRight().equals(Expression.ZERO)) {
-                throw new EvaluationException(Translator.translateOutputMessage("SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(SU_SimplifyBinaryOperationMethods_NEGATIVE_POWERS_OF_ZERO_NOT_DEFINED));
             }
             return ZERO;
         }

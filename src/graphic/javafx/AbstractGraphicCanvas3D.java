@@ -18,6 +18,10 @@ import lang.translator.Translator;
  */
 public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas implements Runnable {
 
+    private static final String GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON = "GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON";
+    private static final String GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON = "GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON";
+    private static final String GR_Graphic3D_MOVE_MOUSE_WHEEL = "GR_Graphic3D_MOVE_MOUSE_WHEEL";
+    
     /**
      * Boolsche Variable, die angibt, ob der Graph gerade rotiert oder nicht.
      */
@@ -1154,9 +1158,9 @@ public abstract class AbstractGraphicCanvas3D extends AbstractGraphicCanvas impl
      */
     public static List<String> getInstructions() {
         List<String> instructions = new ArrayList<>();
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON"));
-        instructions.add(Translator.translateOutputMessage("GR_Graphic3D_MOVE_MOUSE_WHEEL"));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic3D_HOLD_DOWN_LEFT_MOUSE_BUTTON));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic3D_HOLD_DOWN_RIGHT_MOUSE_BUTTON));
+        instructions.add(Translator.translateOutputMessage(GR_Graphic3D_MOVE_MOUSE_WHEEL));
         return instructions;
     }
 

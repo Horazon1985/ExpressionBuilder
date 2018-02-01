@@ -30,6 +30,18 @@ import lang.translator.Translator;
 
 public class Operator extends Expression {
 
+    private static final String EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID = "EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID";
+    private static final String EB_Operator_INVALID_OPERATOR = "EB_Operator_INVALID_OPERATOR";
+    private static final String EB_Operator_OPERATOR_CANNOT_BE_EVALUATED = "EB_Operator_OPERATOR_CANNOT_BE_EVALUATED";
+    private static final String EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE = "EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE";
+    private static final String EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED = "EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED";
+    private static final String EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER = "EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER";
+    private static final String EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER = "EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER";
+    private static final String EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER = "EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER";
+    private static final String CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE = "CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE";
+    private static final String EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER = "EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER";
+    private static final String EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER = "EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER";
+    
     private TypeOperator type;
     private Object[] params;
     private boolean precise;
@@ -136,7 +148,7 @@ public class Operator extends Expression {
                     try {
                         return OperationParser.parseDefaultOperator(operator, params, vars, PATTERN_DIFF_WITH_ORDER);
                     } catch (ExpressionException ex) {
-                        throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID"));
+                        throw new ExpressionException(Translator.translateOutputMessage(EB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID));
                     }
                 }
             case integral:
@@ -157,7 +169,7 @@ public class Operator extends Expression {
             }
         }
 
-        throw new ExpressionException(Translator.translateOutputMessage("EB_Operator_INVALID_OPERATOR"));
+        throw new ExpressionException(Translator.translateOutputMessage(EB_Operator_INVALID_OPERATOR));
 
     }
 
@@ -177,7 +189,7 @@ public class Operator extends Expression {
         Expression operatorSimplified = this.simplifyBasic();
         if (operatorSimplified.containsOperator()) {
             // Falls immer noch Operatoren auftreten -> keine explizite Auswertung möglich.
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_OPERATOR_CANNOT_BE_EVALUATED"));
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_OPERATOR_CANNOT_BE_EVALUATED));
         }
 
         if (this.getType().equals(TypeOperator.diff)) {
@@ -612,7 +624,7 @@ public class Operator extends Expression {
         }
 
         // Falls man die Ableitung nicht exakt angeben kann (etwa (x!)' etc.)
-        throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE", this, var));
+        throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_EXPRESSION_IS_NOT_DIFFERENTIABLE, this, var));
 
     }
 
@@ -1260,7 +1272,7 @@ public class Operator extends Expression {
                     if (e.getCause() instanceof CancellationException) {
                         throw (CancellationException) e.getCause();
                     }
-                    throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_INVALID_OPERATOR"));
+                    throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_INVALID_OPERATOR));
                 }
             }
         }
@@ -1406,7 +1418,7 @@ public class Operator extends Expression {
             argumentRoundedDown = ((Constant) argument).getBigIntValue();
             // Nur Fakultäten mit Argument <= einer bestimmten Schranke werden explizit ausgeben.
             if (argumentRoundedDown.compareTo(BigInteger.ZERO) < 0) {
-                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED"));
+                throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_FACULTIES_OF_NEGATIVE_INTEGERS_UNDEFINED));
             }
             if (argumentRoundedDown.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ARITHMETIC_MAX_INTEGER_FACTORIAL)) <= 0) {
                 Constant result = new Constant(ArithmeticUtils.factorial(argumentRoundedDown.intValue()));
@@ -1456,7 +1468,7 @@ public class Operator extends Expression {
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
-                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER", i + 1));
+                throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_GENERAL_PARAMETER_IN_GCD_IS_NOT_INTEGER, i + 1));
             }
         }
 
@@ -1563,7 +1575,7 @@ public class Operator extends Expression {
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
-                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER", i + 1));
+                throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_GENERAL_PARAMETER_IN_LCM_IS_NOT_INTEGER, i + 1));
             }
         }
 
@@ -1659,7 +1671,7 @@ public class Operator extends Expression {
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
-                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER", i + 1));
+                throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_GENERAL_PARAMETER_IN_MOD_IS_NOT_INTEGER, i + 1));
             }
         }
 
@@ -1672,7 +1684,7 @@ public class Operator extends Expression {
             return ZERO;
         }
         if (isIntegerValuedArithmeticExpression(arguments[1]) && arguments[1].isAlwaysNegative()) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE));
         }
 
         return new Operator(this.type, arguments);
@@ -1693,7 +1705,7 @@ public class Operator extends Expression {
             if (arguments[i].isIntegerConstant()) {
                 integerArguments.add(((Constant) arguments[i]).getBigIntValue());
             } else if (arguments[i].isConstant() && !isIntegerValuedArithmeticExpression(arguments[i])) {
-                throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER", i + 1));
+                throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_GENERAL_PARAMETER_IN_MODPOW_IS_NOT_INTEGER, i + 1));
             }
         }
 
@@ -1709,7 +1721,7 @@ public class Operator extends Expression {
         Expression exponent = arguments[1];
 
         if (!isIntegerValuedArithmeticExpression(base.pow(exponent))) {
-            throw new EvaluationException(Translator.translateOutputMessage("EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER",
+            throw new EvaluationException(Translator.translateOutputMessage(EB_Operator_FIRST_EXPRESSION_IN_MODPOW_IS_NOT_INTEGER,
                     base.pow(exponent)));
         }
 
