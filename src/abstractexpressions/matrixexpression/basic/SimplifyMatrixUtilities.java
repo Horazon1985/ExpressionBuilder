@@ -11,6 +11,8 @@ import lang.translator.Translator;
 
 public abstract class SimplifyMatrixUtilities {
 
+    private static final String MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED = "MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED";
+    
     /**
      * Liefert die Differenz termsLeft \ termsRight (mit Vielfachheiten
      * gezählt!).
@@ -305,7 +307,7 @@ public abstract class SimplifyMatrixUtilities {
 
             // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
             if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateOutputMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
+                throw new EvaluationException(Translator.translateOutputMessage(MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED));
             }
 
         }
@@ -354,7 +356,7 @@ public abstract class SimplifyMatrixUtilities {
 
             // Zur Kontrolle, ob zwischendurch die Berechnung unterbrochen wurde.
             if (Thread.interrupted()) {
-                throw new EvaluationException(Translator.translateOutputMessage("MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED"));
+                throw new EvaluationException(Translator.translateOutputMessage(MSM_SimplifyMatrixMethods_COMPUTATION_ABORTED));
             }
 
         }

@@ -680,12 +680,6 @@ public abstract class GroebnerBasisUtils {
         // Normieren.
         normalizeSystem(groebnerBasis);
 
-        // Konsolenausgabe, zur Kontrolle.
-        System.out.println("Gröbnerbasis:");
-        for (MultiPolynomial f : groebnerBasis) {
-            System.out.println(f.toString());
-        }
-
         return groebnerBasis;
 
     }

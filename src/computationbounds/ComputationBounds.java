@@ -10,6 +10,7 @@ import org.w3c.dom.NodeList;
 
 public abstract class ComputationBounds {
 
+    public static final int BOUND_COMMAND_MAX_NUMBER_OF_VARS_IN_LOGICAL_EXPRESSION;
     public static final int BOUND_COMMAND_MAX_DIGITS_OF_E;
     public static final int BOUND_COMMAND_MAX_DIGITS_OF_PI;
     public static final int BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS;
@@ -51,6 +52,7 @@ public abstract class ComputationBounds {
         } catch (Exception e) {
         }
 
+        BOUND_COMMAND_MAX_NUMBER_OF_VARS_IN_LOGICAL_EXPRESSION = getBound("BOUND_COMMAND_MAX_NUMBER_OF_VARS_IN_LOGICAL_EXPRESSION");
         BOUND_COMMAND_MAX_DIGITS_OF_E = getBound("BOUND_COMMAND_MAX_DIGITS_OF_E");
         BOUND_COMMAND_MAX_DIGITS_OF_PI = getBound("BOUND_COMMAND_MAX_DIGITS_OF_PI");
         BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS = getBound("BOUND_ARITHMETIC_DIVISORS_OF_INTEGERS");

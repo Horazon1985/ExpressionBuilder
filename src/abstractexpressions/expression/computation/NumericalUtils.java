@@ -11,6 +11,9 @@ import lang.translator.Translator;
 
 public abstract class NumericalUtils {
 
+    private static final String CC_NumericalUtils_VECTORS_MUST_HAVE_SAME_DIMENSION = "CC_NumericalUtils_VECTORS_MUST_HAVE_SAME_DIMENSION";
+    private static final String CC_NumericalUtils_UNDEFINED_VALUE = "CC_NumericalUtils_UNDEFINED_VALUE";
+    
     /**
      * Gibt die Summe der Vektoren a und b zurück.
      *
@@ -19,7 +22,7 @@ public abstract class NumericalUtils {
     private static double[] add(double[] a, double[] b) throws EvaluationException {
 
         if (a.length != b.length) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_NumericalMethods_VECTORS_MUST_HAVE_SAME_DIMENSION"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_NumericalUtils_VECTORS_MUST_HAVE_SAME_DIMENSION));
         }
 
         double[] result = new double[a.length];
@@ -242,11 +245,11 @@ public abstract class NumericalUtils {
         for (int i = 0; i < n; i++) {
             Variable.setValue(var, zeroOfEquation);
             if (derivative.evaluate() == 0) {
-                throw new EvaluationException(Translator.translateOutputMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage(CC_NumericalUtils_UNDEFINED_VALUE));
             }
             zeroOfEquation = zeroOfEquation - f.evaluate() / derivative.evaluate();
             if (Double.isNaN(zeroOfEquation) || Double.isInfinite(zeroOfEquation)) {
-                throw new EvaluationException(Translator.translateOutputMessage("CC_NumericalMethods_UNDEFINED_VALUE"));
+                throw new EvaluationException(Translator.translateOutputMessage(CC_NumericalUtils_UNDEFINED_VALUE));
             }
         }
 

@@ -1,47 +1,53 @@
 ﻿<objects>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED">
+  <object id = "CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED">
     <German>Das Taylorpolynom der Lösung der Differentialgleichung [0]^([1]) = [2] kann nicht explizit berechnet werden, da entweder in der Differentialgleichung oder in den Koeffizienten des Taylorpolynoms unbestimmte Integrale auftreten.</German>
     <English>The taylor polynomial of the solution of the differential equation [0]^([1]) = [2] cannot be computed explicitly, since either the differential equation or the coefficients of the taylor polynomial contain indefinite integrals.</English>
     <Ukrainian>Поліном Тейлора розв'язку диференціального рівняння [0]^([1]) = [2] не може бути точно обчислено, оскільки або в диференціальному рівнянні або в коєфіцієнтах полінома Тейлора містяться невизначені інтеграли.</Ukrainian>
     <Russian>Полином Тейлора решения дифференциального уравнения [0]^([1]) = [2] не может быть точно вычеслен, поскольку либо в дифференциальном уравнении либо в коэффициентах полинома Тейлора содержатся неопределённые интегралы.</Russian>
   </object>
-  <object id = "CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED">
+  <object id = "CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED">
     <German>Das Taylorpolynom der Funktion [0] kann nicht explizit berechnet werden, da in den Koeffizienten unbestimmte Integrale auftreten.</German>
     <English>The taylor polynomial of the function [0] cannot be computed explicitly, since its coefficients contain indefinite integrals.</English>
     <Ukrainian>Поліном Тейлора функції [0] не може бути точно обчислено, оскільки в коєфіцієнтах містяться невизначені інтеграли.</Ukrainian>
     <Russian>Полином Тейлора функции [0] не может быть точно вычеслен, поскольку в коэффициентах содержатся неопределённые интегралы.</Russian>
   </object>
-  <object id = "CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED">
+  <object id = "CC_AnalysisUtils_NORMAL_SPACE_CANNOT_BE_COMPUTED">
+    <German>Die Normale kann im vorgegebenen Punkt nicht berechnet werden, da die Funktion oder eine ihrer partiellen Ableitungen in diesem Punkt nicht definiert ist.</German>
+    <English>The normal line cannot be computed in the given point, since either the function or one of her partial derivatives is not defined in this point.</English>
+    <Ukrainian>??? не можна обчислити в даній точці, оскільки функція або одна з часткових похідних не визначена в точці.</Ukrainian>
+    <Russian>??? невозможно вычислить в данной точке, поскольку функция или одна из частичных производных не определена в точке.</Russian>
+  </object>
+  <object id = "CC_AnalysisUtils_TANGENT_SPACE_CANNOT_BE_COMPUTED">
     <German>Die Tangentialebene kann im vorgegebenen Punkt nicht berechnet werden, da die Funktion oder eine ihrer partiellen Ableitungen in diesem Punkt nicht definiert ist.</German>
     <English>The tangent space cannot be computed in the given point, since either the function or one of her partial derivatives is not defined in this point.</English>
     <Ukrainian>Дотичний простір не можна обчислити в даній точці, оскільки функція або одна з часткових похідних не визначена в точці.</Ukrainian>
     <Russian>Касательное пространство невозможно вычислить в данной точке, поскольку функция или одна из частичных производных не определена в точке.</Russian>
   </object>
-  <object id = "CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS">
+  <object id = "CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS">
     <German>Bitte geben Sie eine kleinere Zahl für die Anzahl der gewünschten Stellen ein.</German>
     <English>Enter a smaller integer for the number of digits.</English>
     <Ukrainian>Вкажіть, будь ласка, менше ціле число для значення кількості розрядів.</Ukrainian>
     <Russian>Укажите, пожалуйста, меньшее целое число для значения количества разрядов.</Russian>
   </object>
-  <object id = "CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE">
-    <German>Der 2. Parameter im Operator 'mod' muss positiv sein.</German>
-    <English>The 2. parameter in operator 'mod' must be positive.</English>
-    <Ukrainian>Другий параметр оператора 'mod' має бути додатним.</Ukrainian>
-    <Russian>Второй параметр оператора 'mod' должен быть положительным.</Russian>
+  <object id = "CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE">
+    <German>Der [0]. Parameter im Operator '[1]' muss positiv sein.</German>
+    <English>The [0]. parameter in operator '[1]' must be positive.</English>
+    <Ukrainian>[0]. параметр оператора '[1]' має бути додатним.</Ukrainian>
+    <Russian>[0]. параметр оператора '[1]' должен быть положительным.</Russian>
   </object>
-  <object id = "CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST">
+  <object id = "CC_ArithmeticUtils_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST">
     <German>Wurzeln gerader Ordnung können aus [0] nicht gezogen werden.</German>
     <English>Roots of even order cannot be taken from [0].</English>
     <Ukrainian>Корені парного степеня не можна брати з [0].</Ukrainian>
     <Russian>Корни четного степеня нельзя брать из [0].</Russian>
   </object>
-  <object id = "CC_NumericalMethods_VECTORS_MUST_HAVE_SAME_DIMENSION">
+  <object id = "CC_NumericalUtils_VECTORS_MUST_HAVE_SAME_DIMENSION">
     <German>Die zu addierenden Vektoren müssen die gleiche Dimension besitzen.</German>
     <English>The vactors to be added must have the same dimension.</English>
     <Ukrainian>Вектори, що додаються, повинні мати однакову розмірнісить.</Ukrainian>
     <Russian>Вектори можно складывать, если у них одинаковая размерность.</Russian>
   </object>
-  <object id = "CC_NumericalMethods_UNDEFINED_VALUE">
+  <object id = "CC_NumericalUtils_UNDEFINED_VALUE">
     <German>Undefinierter Wert.</German>
     <English>Undefined value.</English>
     <Ukrainian>Невизначене значення.</Ukrainian>

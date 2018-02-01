@@ -18,6 +18,9 @@ import lang.translator.Translator;
 
 public abstract class ArithmeticUtils {
 
+    private static final String CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE = "CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE";
+    private static final String CC_ArithmeticUtils_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST = "CC_ArithmeticUtils_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST";
+                    
     public static class PrimeFactorWithMultiplicity {
 
         private final BigInteger p;
@@ -240,17 +243,17 @@ public abstract class ArithmeticUtils {
      */
     public static BigInteger mod(BigInteger a, BigInteger m) throws EvaluationException {
         if (m.compareTo(BigInteger.ZERO) <= 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MOD_IS_NON_POSITIVE"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE, 2, TypeOperator.mod));
         }
         return a.mod(m);
     }
 
     public static BigInteger modpow(BigInteger a, BigInteger b, BigInteger m) throws EvaluationException {
         if (b.compareTo(BigInteger.ZERO) <= 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_SECOND_PARAMETER_IN_MODPOW_IS_NON_POSITIVE"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE, 2, TypeOperator.modpow));
         }
         if (m.compareTo(BigInteger.ZERO) <= 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_THIRD_PARAMETER_IN_MODPOW_IS_NON_POSITIVE"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_ArithmeticUtils_GENERAL_PARAMETER_IN_COMMAND_IS_NON_POSITIVE, 3, TypeOperator.modpow));
         }
         return a.modPow(b, m);
     }
@@ -294,7 +297,7 @@ public abstract class ArithmeticUtils {
     public static BigInteger root(BigInteger a, int n) throws EvaluationException {
 
         if (a.compareTo(BigInteger.ZERO) < 0 && n % 2 == 0) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_ArithmeticMethods_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST", a));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_ArithmeticUtils_ROOTS_OF_EVEN_ORDER_DO_NOT_EXIST, a));
         }
 
         if (a.compareTo(BigInteger.ZERO) == 0) {

@@ -25,6 +25,12 @@ import notations.NotationLoader;
 
 public abstract class AnalysisUtils {
 
+    private static final String CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED = "CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED";
+    private static final String CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED = "CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED";
+    private static final String CC_AnalysisUtils_TANGENT_SPACE_CANNOT_BE_COMPUTED = "CC_AnalysisUtils_TANGENT_SPACE_CANNOT_BE_COMPUTED";
+    private static final String CC_AnalysisUtils_NORMAL_SPACE_CANNOT_BE_COMPUTED = "CC_AnalysisUtils_NORMAL_SPACE_CANNOT_BE_COMPUTED";
+    private static final String CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS = "CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS";
+            
     /**
      * Gibt die Summe f(var = k_0) + f(var = k_0 + 1) + ... + f(var = k_1)
      * zurück.
@@ -173,7 +179,7 @@ public abstract class AnalysisUtils {
                      angegeben werden (da das Taylorpolynom etwa
                      Integrationskonstanten enthalten kann).
                      */
-                    throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED", functionVar, ord, f));
+                    throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED, functionVar, ord, f));
                 }
 
             }
@@ -195,7 +201,7 @@ public abstract class AnalysisUtils {
                      angegeben werden (da das Taylorpolynom etwa
                      Integrationskonstanten enthalten kann).
                      */
-                    throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED", functionVar, ord, f));
+                    throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED, functionVar, ord, f));
                 }
             }
 
@@ -220,7 +226,7 @@ public abstract class AnalysisUtils {
                  das Taylorpolynom etwa Integrationskonstanten enthalten
                  kann).
                  */
-                throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED", functionVar, ord, f));
+                throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_DEQ_CANNOT_BE_COMPUTED, functionVar, ord, f));
             }
             for (int j = 0; j < i; j++) {
                 coefficient[i] = coefficient[i].replaceVariable(functionVarWithPrimes, coefficient[j]);
@@ -338,7 +344,7 @@ public abstract class AnalysisUtils {
              Taylorpolynom ebenfalls nicht explizit angegeben werden (da das
              Taylorpolynom etwa Integrationskonstanten enthalten kann).
              */
-            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED", f));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED, f));
         }
 
         for (int i = 1; i <= degree; i++) {
@@ -355,7 +361,7 @@ public abstract class AnalysisUtils {
                  das Taylorpolynom etwa Integrationskonstanten enthalten
                  kann).
                  */
-                throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED", f));
+                throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TAYLOR_POLYNOMIAL_OF_FUNCTION_CANNOT_BE_COMPUTED, f));
             }
 
         }
@@ -404,7 +410,7 @@ public abstract class AnalysisUtils {
 
             return functionValueAtPoint.add(result).simplify();
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_TANGENT_SPACE_CANNOT_BE_COMPUTED));
         } finally {
             /* 
              Egal, ob die Berechnung des Tangentialraumes erfolgreich war oder nicht,
@@ -459,7 +465,7 @@ public abstract class AnalysisUtils {
 
             return normalLineParametrization;
         } catch (EvaluationException e) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_TANGENT_SPACE_CANNOT_BE_COMPUTED"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_NORMAL_SPACE_CANNOT_BE_COMPUTED));
         } finally {
             /* 
              Egal, ob die Berechnung des Tangentialraumes erfolgreich war oder nicht,
@@ -481,7 +487,7 @@ public abstract class AnalysisUtils {
     public static BigDecimal getDigitsOfE(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DIGITS_OF_E) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS));
         }
 
         BigDecimal e = BigDecimal.ONE;
@@ -516,7 +522,7 @@ public abstract class AnalysisUtils {
     public static BigDecimal getDigitsOfPi(int n) throws EvaluationException {
 
         if (n > computationbounds.ComputationBounds.BOUND_COMMAND_MAX_DIGITS_OF_PI) {
-            throw new EvaluationException(Translator.translateOutputMessage("CC_AnalysisMethods_ENTER_A_SMALLER_NUMBER_OF_DIGITS"));
+            throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS));
         }
 
         BigDecimal pi = BigDecimal.ONE.divide(BigDecimal.valueOf(2));

@@ -1,5 +1,8 @@
 <objects>
 <!-- MathToolForm -->    
+  <object id = "BOUND_COMMAND_MAX_NUMBER_OF_VARS_IN_LOGICAL_EXPRESSION">
+    <value>20</value>
+  </object>
   <object id = "BOUND_COMMAND_MAX_DIGITS_OF_E">
     <value>100000</value>
   </object>
