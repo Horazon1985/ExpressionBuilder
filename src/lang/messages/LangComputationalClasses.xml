@@ -14,8 +14,8 @@
   <object id = "CC_AnalysisUtils_NORMAL_SPACE_CANNOT_BE_COMPUTED">
     <German>Die Normale kann im vorgegebenen Punkt nicht berechnet werden, da die Funktion oder eine ihrer partiellen Ableitungen in diesem Punkt nicht definiert ist.</German>
     <English>The normal line cannot be computed in the given point, since either the function or one of her partial derivatives is not defined in this point.</English>
-    <Ukrainian>??? не можна обчислити в даній точці, оскільки функція або одна з часткових похідних не визначена в точці.</Ukrainian>
-    <Russian>??? невозможно вычислить в данной точке, поскольку функция или одна из частичных производных не определена в точке.</Russian>
+    <Ukrainian>Номаль не можна обчислити в даній точці, оскільки функція або одна з часткових похідних не визначена в точці.</Ukrainian>
+    <Russian>Номаль невозможно вычислить в данной точке, поскольку функция или одна из частичных производных не определена в точке.</Russian>
   </object>
   <object id = "CC_AnalysisUtils_TANGENT_SPACE_CANNOT_BE_COMPUTED">
     <German>Die Tangentialebene kann im vorgegebenen Punkt nicht berechnet werden, da die Funktion oder eine ihrer partiellen Ableitungen in diesem Punkt nicht definiert ist.</German>
