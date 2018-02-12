@@ -4145,7 +4145,11 @@ public abstract class SimplifyBinaryOperationUtils {
                 ExpressionCollection summandsRight = SimplifyUtilities.getSummandsRightInExpression(expr.getLeft());
                 BigInteger exponent = ((Constant) expr.getRight()).getBigIntValue();
                 BigInteger numberOfSummandsInBase = BigInteger.valueOf(summandsLeft.getBound() + summandsRight.getBound());
+                // Abschätzungen, ob die Anzahl der resultierenden Summanden nicht über die vordefinierte Schranke hinauswächst.
                 if (numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).compareTo(BigInteger.valueOf(Integer.MAX_VALUE)) > 0) {
+                    return expr;
+                }
+                if (exponent.compareTo(BigInteger.valueOf(ComputationBounds.BOUND_ALGEBRA_MAX_NUMBER_OF_SUMMANDS_IN_SHORT_EXPANSION)) > 0) {
                     return expr;
                 }
                 BigInteger numberOfSummandsInResult = ArithmeticUtils.factorial(numberOfSummandsInBase.subtract(BigInteger.ONE).add(exponent).intValue()).divide(ArithmeticUtils.factorial(numberOfSummandsInBase.intValue() - 1).multiply(ArithmeticUtils.factorial(exponent.intValue())));
