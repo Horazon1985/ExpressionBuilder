@@ -218,7 +218,7 @@ public class ExpressionCollection implements Iterable<Expression> {
      * (verglichen wird mit equivalent()). Ist expr == null, so wird false
      * zurückgegeben.
      */
-    public boolean containsExquivalent(Expression expr) {
+    public boolean containsEquivalent(Expression expr) {
         if (expr == null) {
             for (int i = 0; i < this.bound; i++) {
                 if (this.terms.get(i) == null) {

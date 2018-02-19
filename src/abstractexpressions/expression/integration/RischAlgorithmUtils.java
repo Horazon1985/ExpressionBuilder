@@ -167,7 +167,7 @@ public abstract class RischAlgorithmUtils extends GeneralIntegralUtils {
      */
     private static boolean isRationalOverDifferentialField(Expression f, String var, ExpressionCollection fieldGenerators) {
 
-        if (fieldGenerators.containsExquivalent(f)) {
+        if (fieldGenerators.containsEquivalent(f)) {
             return true;
         }
 
@@ -185,7 +185,7 @@ public abstract class RischAlgorithmUtils extends GeneralIntegralUtils {
         }
         if (f.isFunction()) {
 
-            if (fieldGenerators.containsExquivalent(f)) {
+            if (fieldGenerators.containsEquivalent(f)) {
                 return true;
             }
 

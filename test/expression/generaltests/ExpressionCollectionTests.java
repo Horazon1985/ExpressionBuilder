@@ -240,12 +240,12 @@ public class ExpressionCollectionTests extends MathToolTestBase {
             Expression expr1 = Expression.build("c+a+b");
             Expression expr2 = Expression.build("z*y*x");
             Expression expr3 = Expression.build("sin(v+u)*a");
-            assertTrue(terms.containsExquivalent(expr1));
-            assertTrue(terms.containsExquivalent(expr2));
-            assertTrue(terms.containsExquivalent(expr3));
+            assertTrue(terms.containsEquivalent(expr1));
+            assertTrue(terms.containsEquivalent(expr2));
+            assertTrue(terms.containsEquivalent(expr3));
             terms.remove(1);
-            assertFalse(terms.containsExquivalent(expr2));
-            assertTrue(terms.containsExquivalent(null));
+            assertFalse(terms.containsEquivalent(expr2));
+            assertTrue(terms.containsEquivalent(null));
         } catch (ExpressionException e) {
             fail(e.getMessage());
         }

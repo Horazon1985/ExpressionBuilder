@@ -46,8 +46,8 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             expectedResults = new Object[]{2, expectedSolutionOne, expectedSolutionTwo};
             results = new Object[]{solutions.getBound(), solutions.get(0), solutions.get(1)};
             assertTrue(solutions.getBound() == 2);
-            assertTrue(solutions.containsExquivalent(expectedSolutionOne));
-            assertTrue(solutions.containsExquivalent(expectedSolutionTwo));
+            assertTrue(solutions.containsEquivalent(expectedSolutionOne));
+            assertTrue(solutions.containsEquivalent(expectedSolutionTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -102,7 +102,7 @@ public class SolveSpecialDifferentialEquationTests extends MathToolTestBase {
             expectedResults = new Object[]{1, expectedSolution};
             results = new Object[]{solutions.getBound(), solutions.get(0)};
             assertTrue(solutions.getBound() == 1);
-            assertTrue(solutions.containsExquivalent(expectedSolution));
+            assertTrue(solutions.containsEquivalent(expectedSolution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }

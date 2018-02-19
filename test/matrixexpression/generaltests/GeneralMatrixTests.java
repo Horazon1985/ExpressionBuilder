@@ -45,6 +45,38 @@ public class GeneralMatrixTests extends MathToolTestBase {
     }
     
     @Test
+    public void matrixPowerExplicitTest() {
+        try {
+            matExpr = MatrixExpression.build("[2,1;1,2]^10");
+            expectedResult = MatrixExpression.build("[29525,29524;29524,29525]");
+            matExpr = matExpr.simplify();
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
+            Assert.assertTrue(matExpr.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
+    public void matrixPowerNotVeryExplicitTest() {
+        try {
+            matExpr = MatrixExpression.build("[2,1;1,2]^1000000");
+            expectedResult = MatrixExpression.build("[1/2+3^1000000/2,3^1000000/2-1/2;3^1000000/2-1/2,1/2+3^1000000/2]");
+            matExpr = matExpr.simplify();
+            
+            results = new Object[]{matExpr};
+            expectedResults = new Object[]{expectedResult};
+            
+            Assert.assertTrue(matExpr.equals(expectedResult));
+        } catch (ExpressionException | EvaluationException e) {
+            fail(e.getMessage());
+        }
+    }
+    
+    @Test
     public void matrixExpressionBuildTest1() {
         try {
             matExpr = MatrixExpression.build("a*[1;3]");

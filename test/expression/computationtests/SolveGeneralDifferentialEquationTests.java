@@ -78,8 +78,8 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             assertTrue(solutions.containsExpression(ZERO));
             Expression solutionOne = MINUS_ONE.div(Variable.create("x").pow(4).add(FOUR.mult(Variable.create("C_1")))).pow(1, 4);
             Expression solutionTwo = MINUS_ONE.mult(MINUS_ONE.div(Variable.create("x").pow(4).add(FOUR.mult(Variable.create("C_1")))).pow(1, 4));
-            assertTrue(solutions.containsExquivalent(solutionOne));
-            assertTrue(solutions.containsExquivalent(solutionTwo));
+            assertTrue(solutions.containsEquivalent(solutionOne));
+            assertTrue(solutions.containsEquivalent(solutionTwo));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -93,7 +93,7 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(Variable.create("y'"), rightSide, "x", "y");
             assertTrue(solutions.getBound() == 1);
             Expression solution = Variable.create("y").mult(Variable.create("y").ln().sub(1)).sub(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", "C_1", null, null, ONE.div(3)));
-            assertTrue(solutions.containsExquivalent(solution));
+            assertTrue(solutions.containsEquivalent(solution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -108,7 +108,7 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             assertTrue(solutions.getBound() == 1);
             Expression solution = MINUS_ONE.mult(Variable.create("x")).exp().mult(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", "C_1", "C_2")).add(
                     Variable.create("C_3").mult(TWO.mult(Variable.create("x")).exp()));
-            assertTrue(solutions.containsExquivalent(solution));
+            assertTrue(solutions.containsEquivalent(solution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -123,7 +123,7 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             assertTrue(solutions.getBound() == 1);
             Expression solution = Variable.create("C_1").mult(THREE.mult(Variable.create("x")).exp()).add(
                     Variable.create("C_2").mult(FOUR.mult(Variable.create("x")).exp()));
-            assertTrue(solutions.containsExquivalent(solution));
+            assertTrue(solutions.containsEquivalent(solution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
@@ -138,7 +138,7 @@ public class SolveGeneralDifferentialEquationTests extends MathToolTestBase {
             ExpressionCollection solutions = SolveGeneralDifferentialEquationUtils.solveDifferentialEquation(leftSide, rightSide, "x", "y");
             assertTrue(solutions.getBound() == 1);
             Expression solution = Variable.create("x").exp().mult(SimplifyPolynomialUtils.getPolynomialFromCoefficients("x", "C_1", "C_2", null, null, ONE.div(12)));
-            assertTrue(solutions.containsExquivalent(solution));
+            assertTrue(solutions.containsEquivalent(solution));
         } catch (ExpressionException | EvaluationException e) {
             fail(e.getMessage());
         }
