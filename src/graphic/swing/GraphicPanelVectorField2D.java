@@ -13,6 +13,9 @@ import java.util.List;
 
 public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
 
+    private static final int NUMBER_OF_SUBDIV_X = 20;
+    private static final int NUMBER_OF_SUBDIV_Y = 20;
+    
     /**
      * Funktionsvorschrift für das Vektorfeld als (2x1)-Matrix.
      */
@@ -101,11 +104,11 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
                 constAbscValue = Double.NaN;
                 constOrdValue = Double.NaN;
             }
-            for (int i = 0; i <= 20; i++) {
-                for (int j = 0; j <= 20; j++) {
+            for (int i = 0; i <= NUMBER_OF_SUBDIV_X; i++) {
+                for (int j = 0; j <= NUMBER_OF_SUBDIV_Y; j++) {
                     vectorFieldArrow = new double[4];
-                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / 20;
-                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 20;
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / NUMBER_OF_SUBDIV_X;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / NUMBER_OF_SUBDIV_Y;
                     vectorFieldArrow[2] = vectorFieldArrow[0] + constAbscValue;
                     vectorFieldArrow[3] = vectorFieldArrow[1] + constOrdValue;
                     this.vectorField2D.add(vectorFieldArrow);
@@ -114,13 +117,13 @@ public class GraphicPanelVectorField2D extends AbstractGraphicPanel2D {
         } else {
             Variable.setValue(this.varAbsc, varAbscStart);
             Variable.setValue(this.varOrd, varOrdStart);
-            for (int i = 0; i <= 20; i++) {
-                for (int j = 0; j <= 20; j++) {
+            for (int i = 0; i <= NUMBER_OF_SUBDIV_X; i++) {
+                for (int j = 0; j <= NUMBER_OF_SUBDIV_Y; j++) {
                     vectorFieldArrow = new double[4];
-                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / 20;
-                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / 20;
-                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * i / 20);
-                    Variable.setValue(this.varOrd, varOrdStart + (varOrdEnd - varOrdStart) * j / 20);
+                    vectorFieldArrow[0] = varAbscStart + (varAbscEnd - varAbscStart) * i / NUMBER_OF_SUBDIV_X;
+                    vectorFieldArrow[1] = varOrdStart + (varOrdEnd - varOrdStart) * j / NUMBER_OF_SUBDIV_Y;
+                    Variable.setValue(this.varAbsc, varAbscStart + (varAbscEnd - varAbscStart) * i / NUMBER_OF_SUBDIV_X);
+                    Variable.setValue(this.varOrd, varOrdStart + (varOrdEnd - varOrdStart) * j / NUMBER_OF_SUBDIV_Y);
                     try {
                         vectorFieldArrow[2] = vectorFieldArrow[0] + this.vectorFieldExpr.getEntry(0, 0).evaluate();
                         vectorFieldArrow[3] = vectorFieldArrow[1] + this.vectorFieldExpr.getEntry(1, 0).evaluate();
