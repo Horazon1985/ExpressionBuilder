@@ -296,7 +296,21 @@ public class GraphicPanelVectorFieldPolar extends AbstractGraphicPanel2D {
     private double[] getPolarRepresentation(double x, double y) {
         double[] polarRep = new double[2];
         polarRep[0] = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        polarRep[1] = Math.atan2(x, y);
+        if (x >= 0 && y == 0) {
+            polarRep[1] = 0;
+        } else if (x < 0 && y == 0) {
+            polarRep[1] = Math.PI;
+        } else if (x == 0 && y > 0) {
+            polarRep[1] = Math.PI / 2;
+        } else if (x == 0 && y < 0) {
+            polarRep[1] = 3 * Math.PI / 2;
+        } else if (x > 0 && y > 0) {
+            polarRep[1] = Math.atan(y / x);
+        } else if (x < 0) {
+            polarRep[1] = Math.atan(y / x) + Math.PI;
+        } else {
+            polarRep[1] = Math.atan(y / x) + 2 * Math.PI;
+        }
         return polarRep;
     }
 
