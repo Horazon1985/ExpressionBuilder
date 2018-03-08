@@ -246,13 +246,13 @@ public class GraphicPanelVectorFieldPolar extends AbstractGraphicPanel2D {
      *
      * @throws EvaluationException
      */
-    public void drawVectorFieldPolar(Expression r_0, Expression r_1, Expression phi_0, Expression phi_1, Expression[] vectorFieldComponents) throws EvaluationException {
+    public void drawVectorFieldPolar(Expression rStart, Expression rEnd, Expression phiStart, Expression phiEnd, Expression[] vectorFieldComponents) throws EvaluationException {
         this.zoomfactor = 1;
         this.zoomfactorX = 1;
         this.zoomfactorY = 1;
         setVectorFieldExpression(vectorFieldComponents);
-        computeScreenSizes(r_0, r_1, phi_0, phi_1);
-        expressionToVectorField(r_0, r_1, phi_0, phi_1);
+        computeScreenSizes(rStart, rEnd, phiStart, phiEnd);
+        expressionToVectorField(rStart, rEnd, phiStart, phiEnd);
         drawVectorFieldPolar();
     }
 
@@ -262,31 +262,11 @@ public class GraphicPanelVectorFieldPolar extends AbstractGraphicPanel2D {
 
     @Override
     public void paintComponent(Graphics g) {
-
         super.paintComponent(g);
         drawVectorFieldPolar(g);
-
-        /*
-         Im Folgenden wird das Vektorfeld in einem größeren/kleineren Bereich
-         gezeichnet, falls der aktuelle Zoomfaktor derart berechnet wurde,
-         dass das Vektorfeld zu grob oder zu klein ist.
-         */
-        try {
-            Constant varAbscStart = new Constant(this.axeCenterX - this.maxX);
-            Constant varAbscEnd = new Constant(this.axeCenterX + this.maxX);
-            Constant varOrdStart = new Constant(this.axeCenterY - this.maxY);
-            Constant varOrdEnd = new Constant(this.axeCenterY + this.maxY);
-            if (this.vectorFieldExpr != null) {
-                expressionToVectorField(varAbscStart, varAbscEnd, varOrdStart, varOrdEnd);
-            }
-        } catch (EvaluationException e) {
-        }
-        convertVectorFieldToGraphicalVectorField();
-
         if (pointsAreShowable) {
             drawMousePointOnGraph(g);
         }
-
     }
 
     @Override
