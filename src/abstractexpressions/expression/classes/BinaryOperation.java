@@ -29,14 +29,14 @@ public class BinaryOperation extends Expression {
     private final Expression left, right;
     private final TypeBinary type;
 
-    private static final HashSet<TypeSimplify> simplifyTypesExpandAndCollectIfShorter = getSimplifyTypesExpandAndCollectIfShorter();
+    private static final Set<TypeSimplify> simplifyTypesExpandAndCollectIfShorter = getSimplifyTypesExpandAndCollectIfShorter();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesExpandAndCollectIfShorter() {
+    private static Set<TypeSimplify> getSimplifyTypesExpandAndCollectIfShorter() {
         /*
          Als Vereinfachungstyp darf NICHT 
          simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
          */
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);

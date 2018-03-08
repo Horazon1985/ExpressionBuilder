@@ -206,8 +206,8 @@ public class Variable extends Expression {
      * Gibt eine Liste mit den Namen der Variablen zurück, die von der Variablen
      * mit dem Namen name abhängen.
      */
-    public static HashSet<String> getVariablesDependingOnGivenVariable(String name) {
-        HashSet<String> vars = new HashSet<>();
+    public static Set<String> getVariablesDependingOnGivenVariable(String name) {
+        Set<String> vars = new HashSet<>();
         for (String var : variables.keySet()) {
             if (name.equals(variables.get(var).dependingOnVariable)) {
                 vars.add(var);
@@ -235,8 +235,8 @@ public class Variable extends Expression {
      * Liefert eine Liste mit allen Variablen, denen ein fester Wert zugeordnet
      * wurde.
      */
-    public static HashSet<String> getVariablesWithPredefinedValues() {
-        HashSet<String> vars = new HashSet<>();
+    public static Set<String> getVariablesWithPredefinedValues() {
+        Set<String> vars = new HashSet<>();
         for (String var : variables.keySet()) {
             if (variables.get(var).preciseExpression != null) {
                 vars.add(var);

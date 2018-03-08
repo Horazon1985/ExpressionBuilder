@@ -175,7 +175,7 @@ public class MatrixOperator extends MatrixExpression {
                 return false;
             }
             // Bestimmte Integrale.
-            HashSet<String> varsInParameters = new HashSet<>();
+            Set<String> varsInParameters = new HashSet<>();
             ((MatrixExpression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
             ((Expression) this.params[2]).addContainedVars(varsInParameters);
@@ -187,7 +187,7 @@ public class MatrixOperator extends MatrixExpression {
 
         if (this.type.equals(TypeMatrixOperator.prod) || this.type.equals(TypeMatrixOperator.sum)) {
 
-            HashSet<String> varsInParameters = new HashSet<>();
+            Set<String> varsInParameters = new HashSet<>();
             ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
             ((Expression) this.params[2]).addContainedVars(varsInParameters);
@@ -957,7 +957,7 @@ public class MatrixOperator extends MatrixExpression {
         MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
         MatrixExpression result = zeroMatrix;
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
         matExpr.addContainedVars(vars);
         Iterator iter = vars.iterator();
         String var;

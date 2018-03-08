@@ -638,7 +638,7 @@ public class Operator extends Expression {
                 return false;
             }
             // Bestimmte Integrale.
-            HashSet<String> varsInParameters = new HashSet<>();
+            Set<String> varsInParameters = new HashSet<>();
             ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
             ((Expression) this.params[2]).addContainedVars(varsInParameters);
@@ -650,7 +650,7 @@ public class Operator extends Expression {
 
         if (this.type.equals(TypeOperator.prod) || this.type.equals(TypeOperator.sum)) {
 
-            HashSet<String> varsInParameters = new HashSet<>();
+            Set<String> varsInParameters = new HashSet<>();
             ((Expression) this.params[0]).addContainedVars(varsInParameters);
             varsInParameters.remove((String) this.params[1]);
             ((Expression) this.params[2]).addContainedVars(varsInParameters);
@@ -1514,7 +1514,7 @@ public class Operator extends Expression {
             // Falls das Integral keine Parameter enthält, kann es direkt ausgerechnet werden.
             if (((Expression) this.params[2]).isConstant() && ((Expression) this.params[3]).isConstant()) {
                 Expression expr = (Expression) this.params[0];
-                HashSet<String> varsInIntegrand = new HashSet<>();
+                Set<String> varsInIntegrand = new HashSet<>();
                 expr.addContainedVars(varsInIntegrand);
                 if (varsInIntegrand.isEmpty() || (varsInIntegrand.size() == 1 && varsInIntegrand.contains((String) params[1]))) {
                     // Falls keine Parameter im Integranden auftauchen -> Integral approximativ berechnen.
@@ -1543,7 +1543,7 @@ public class Operator extends Expression {
 
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
         expr.addContainedVars(vars);
         Iterator iter = vars.iterator();
         String var;

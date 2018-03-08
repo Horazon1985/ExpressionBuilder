@@ -425,9 +425,9 @@ public abstract class Expression implements AbstractExpression {
      * "x+y'+y''''+sin(y'')", so wird ein HashSet mit den Elementen "y''" und
      * "y''''" zurückgegeben.
      */
-    public HashSet<String> getContainedVariablesDependingOnGivenVariable(String varName) {
-        HashSet<String> vars = new HashSet<>();
-        HashSet<String> allVarsDependingOnGivenVariable = Variable.getVariablesDependingOnGivenVariable(varName);
+    public Set<String> getContainedVariablesDependingOnGivenVariable(String varName) {
+        Set<String> vars = new HashSet<>();
+        Set<String> allVarsDependingOnGivenVariable = Variable.getVariablesDependingOnGivenVariable(varName);
         for (String var : allVarsDependingOnGivenVariable) {
             if (Variable.create(var).getDependingVariable().equals(varName)) {
                 vars.add(var);
@@ -463,7 +463,7 @@ public abstract class Expression implements AbstractExpression {
      */
     @Override
     public Set<String> getContainedVars() {
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
     }
@@ -481,7 +481,7 @@ public abstract class Expression implements AbstractExpression {
      */
     @Override
     public Set<String> getContainedIndeterminates() {
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
         addContainedIndeterminates(vars);
         return vars;
     }
@@ -496,7 +496,7 @@ public abstract class Expression implements AbstractExpression {
      * Gibt zurück, ob der gegebene Ausdruck mindestens eine der Variable aus
      * vars enthält.
      */
-    public boolean containsAtLeastOne(HashSet<String> vars) {
+    public boolean containsAtLeastOne(Set<String> vars) {
         for (String var : vars) {
             if (this.contains(var)) {
                 return true;

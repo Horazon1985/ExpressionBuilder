@@ -426,7 +426,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      */
     @Override
     public Set<String> getContainedVars() {
-        HashSet<String> vars = new HashSet<>();
+        Set<String> vars = new HashSet<>();
         addContainedVars(vars);
         return vars;
     }
@@ -536,7 +536,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      */
     public LogicalExpression toCCNF() {
 
-        HashSet vars = new HashSet();
+        Set<String> vars = new HashSet<>();
         this.addContainedVars(vars);
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 
@@ -602,7 +602,7 @@ public abstract class LogicalExpression implements AbstractExpression {
      */
     public LogicalExpression toCDNF() {
 
-        HashSet vars = new HashSet();
+        Set<String> vars = new HashSet<>();
         this.addContainedVars(vars);
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 

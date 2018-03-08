@@ -22,27 +22,6 @@ public class Function extends Expression {
     private final Expression left;
     private final TypeFunction type;
 
-    private static final HashSet<TypeSimplify> simplifyTypesExpandAndCollectIfShorter = getSimplifyTypesExpandAndCollectIfShorter();
-
-    private static HashSet<TypeSimplify> getSimplifyTypesExpandAndCollectIfShorter() {
-        /*
-         Als Vereinfachungstyp darf NICHT 
-         simplify_expand_and_collect_equivalents_if_shorter verwendet werden.
-         */
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
-        simplifyTypes.add(TypeSimplify.simplify_basic);
-        simplifyTypes.add(TypeSimplify.order_difference_and_division);
-        simplifyTypes.add(TypeSimplify.simplify_pull_apart_powers);
-        simplifyTypes.add(TypeSimplify.simplify_collect_products);
-        simplifyTypes.add(TypeSimplify.simplify_expand_rational_factors);
-        simplifyTypes.add(TypeSimplify.simplify_factorize_all_but_rationals);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_quotients);
-        simplifyTypes.add(TypeSimplify.simplify_reduce_differences_and_quotients_advanced);
-        simplifyTypes.add(TypeSimplify.simplify_collect_logarithms);
-        simplifyTypes.add(TypeSimplify.order_sums_and_products);
-        return simplifyTypes;
-    }
-
     public Function(Expression left, TypeFunction type) {
         this.left = left;
         this.type = type;

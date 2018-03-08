@@ -1,9 +1,5 @@
 package abstractexpressions.expression.basic;
 
-import abstractexpressions.expression.computation.ArithmeticUtils;
-import computationbounds.ComputationBounds;
-import exceptions.EvaluationException;
-import exceptions.MathToolException;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
@@ -13,18 +9,23 @@ import static abstractexpressions.expression.classes.Expression.PI;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Operator;
-import enums.TypeSimplify;
 import abstractexpressions.expression.classes.Variable;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
+import abstractexpressions.expression.computation.ArithmeticUtils;
 import abstractexpressions.expression.equation.PolynomialAlgebraUtils;
 import abstractexpressions.expression.equation.SolveGeneralSystemOfEquationsUtils;
 import abstractexpressions.matrixexpression.classes.Matrix;
 import abstractexpressions.matrixexpression.classes.MatrixExpression;
+import computationbounds.ComputationBounds;
+import enums.TypeSimplify;
+import exceptions.EvaluationException;
+import exceptions.MathToolException;
 import exceptions.NotAlgebraicallySolvableException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import lang.translator.Translator;
 import notations.NotationLoader;
 
@@ -33,12 +34,12 @@ public abstract class SimplifyPolynomialUtils {
     private static final String SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE = "SU_PolynomialAlgebraMethods_TOO_HIGH_DEGREE";
     private static final String EB_BinaryOperation_DIVISION_BY_ZERO = "EB_BinaryOperation_DIVISION_BY_ZERO";
 
-    private static final HashSet<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
-    private static final HashSet<TypeSimplify> simplifyTypesExpandPolynomial = getSimplifyTypesExpandPolynomial();
-    private static final HashSet<TypeSimplify> simplifyTypesPolynomialDivisionEuklidRepresentation = getSimplifyTypesPolynomialDivisionEuklidRepresentation();
+    private static final Set<TypeSimplify> simplifyTypesDecomposePolynomial = getSimplifyTypesDecomposePolynomial();
+    private static final Set<TypeSimplify> simplifyTypesExpandPolynomial = getSimplifyTypesExpandPolynomial();
+    private static final Set<TypeSimplify> simplifyTypesPolynomialDivisionEuklidRepresentation = getSimplifyTypesPolynomialDivisionEuklidRepresentation();
 
-    private static HashSet<TypeSimplify> getSimplifyTypesDecomposePolynomial() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesDecomposePolynomial() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -52,8 +53,8 @@ public abstract class SimplifyPolynomialUtils {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesExpandPolynomial() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesExpandPolynomial() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);
@@ -69,8 +70,8 @@ public abstract class SimplifyPolynomialUtils {
         return simplifyTypes;
     }
 
-    private static HashSet<TypeSimplify> getSimplifyTypesPolynomialDivisionEuklidRepresentation() {
-        HashSet<TypeSimplify> simplifyTypes = new HashSet<>();
+    private static Set<TypeSimplify> getSimplifyTypesPolynomialDivisionEuklidRepresentation() {
+        Set<TypeSimplify> simplifyTypes = new HashSet<>();
         simplifyTypes.add(TypeSimplify.order_difference_and_division);
         simplifyTypes.add(TypeSimplify.order_sums_and_products);
         simplifyTypes.add(TypeSimplify.simplify_basic);

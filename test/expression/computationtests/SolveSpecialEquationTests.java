@@ -1,7 +1,8 @@
 package expression.computationtests;
 
-import exceptions.EvaluationException;
-import exceptions.ExpressionException;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyExponentialRelationsUtils;
+import abstractexpressions.expression.basic.SimplifyRationalFunctionUtils;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import static abstractexpressions.expression.classes.Expression.MINUS_ONE;
@@ -10,19 +11,20 @@ import static abstractexpressions.expression.classes.Expression.THREE;
 import static abstractexpressions.expression.classes.Expression.TWO;
 import static abstractexpressions.expression.classes.Expression.ZERO;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.basic.ExpressionCollection;
-import abstractexpressions.expression.basic.SimplifyExponentialRelationsUtils;
-import abstractexpressions.expression.basic.SimplifyRationalFunctionUtils;
+import abstractexpressions.expression.equation.SolveGeneralEquationUtils;
+import basic.MathToolTestBase;
+import exceptions.EvaluationException;
+import exceptions.ExpressionException;
 import java.util.HashSet;
+import java.util.Set;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import abstractexpressions.expression.equation.SolveGeneralEquationUtils;
-import basic.MathToolTestBase;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class SolveSpecialEquationTests extends MathToolTestBase {
 
@@ -44,7 +46,7 @@ public class SolveSpecialEquationTests extends MathToolTestBase {
             // Test: e^(2*x)+e^(7*x+1)/(2-e^(4*x))^3 ist eine rationale Exponentialgleichung.
             Expression f = Expression.build("exp(2*x)+exp(7*x+1)/(2-exp(4*x))^3");
             f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, "x");
-            HashSet<Expression> argumentsOfExp = new HashSet<>();
+            Set<Expression> argumentsOfExp = new HashSet<>();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(f, "x", argumentsOfExp));
             // Test: 5^x/(25^(x+3)-14)-12*625^x ist eine rationale Exponentialgleichung.
             Expression g = Expression.build("5^x/(25^(x+3)-14)-12*625^x");
@@ -67,10 +69,8 @@ public class SolveSpecialEquationTests extends MathToolTestBase {
             // Test: a^x+a^(2*x)-30 ist eine rationale Exponentialgleichung.
             Expression f = Expression.build("a^x+a^(2*x)-30");
             f = SimplifyExponentialRelationsUtils.separateConstantPartsInRationalExponentialEquations(f, "x");
-            HashSet<Expression> factorsOfVar = new HashSet<>();
+            Set<Expression> factorsOfVar = new HashSet<>();
             assertTrue(SimplifyRationalFunctionUtils.isRationalFunktionInExp(f, "x", factorsOfVar));
-            System.out.println(f);
-            System.out.println(factorsOfVar);
         } catch (exceptions.ExpressionException e) {
             fail(e.getMessage());
         }
