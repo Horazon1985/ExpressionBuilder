@@ -1034,6 +1034,7 @@ public class GraphicPanelFormula extends JPanel {
 
             }
             case laplace:
+                
                 result = g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) 
                         + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
                         + (params.length - 1) * g.getFontMetrics().stringWidth(", ");
@@ -1041,6 +1042,7 @@ public class GraphicPanelFormula extends JPanel {
                     result = result + g.getFontMetrics().stringWidth((String) params[i]);
                 }
                 return result;
+                
             case prod: {
 
                 int heightFactor = getHeightOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
@@ -1644,11 +1646,10 @@ public class GraphicPanelFormula extends JPanel {
         setFont(g, fontSize);
 
         Object[] params = expr.getParams();
+        int result;
 
         switch (expr.getType()) {
             case diff: {
-
-                int result;
 
                 if (params.length == 2) {
 
@@ -1703,7 +1704,7 @@ public class GraphicPanelFormula extends JPanel {
             case integral: {
 
                 int heightOfIntegral = getHeightOfExpression(g, (Expression) params[0], fontSize);
-                int result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
+                result = getWidthOfSignIntegral(g, fontSize, heightOfIntegral);
 
                 if (params.length == 4) {
                     // Bestimmtes Integral.
@@ -1722,11 +1723,19 @@ public class GraphicPanelFormula extends JPanel {
 
             }
             case laplace:
-                return g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                
+                result = getWidthOfSignDelta(g, fontSize) + 2 * getWidthOfBracket(fontSize) 
+                        + getLengthOfExpression(g, (Expression) params[0], fontSize)
+                        + (params.length - 1) * g.getFontMetrics().stringWidth(", ");
+                for (int i = 1; i < params.length; i++) {
+                    result = result + g.getFontMetrics().stringWidth((String) params[i]);
+                }
+                return result;
+                
             case prod: {
 
                 int heightFactor = getHeightOfExpression(g, (Expression) params[0], fontSize);
-                int result = getWidthOfSignPi(g, fontSize, heightFactor);
+                result = getWidthOfSignPi(g, fontSize, heightFactor);
                 setFont(g, getSizeForSup(fontSize));
                 int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
@@ -1743,7 +1752,7 @@ public class GraphicPanelFormula extends JPanel {
             case sum: {
 
                 int heightSummand = getHeightOfExpression(g, (Expression) params[0], fontSize);
-                int result = getWidthOfSignSigma(g, fontSize, heightSummand);
+                result = getWidthOfSignSigma(g, fontSize, heightSummand);
                 setFont(g, getSizeForSup(fontSize));
                 int lengthIndexVar = g.getFontMetrics().stringWidth((String) params[1] + " = ");
                 result = Math.max(result, lengthIndexVar + getLengthOfExpression(g, (Expression) params[2], getSizeForSup(fontSize)));
@@ -1762,9 +1771,6 @@ public class GraphicPanelFormula extends JPanel {
                 String name = Operator.getNameFromType(expr.getType());
                 int lengthOfName;
                 switch (expr.getType()) {
-                    case laplace:
-                        lengthOfName = getWidthOfSignDelta(g, fontSize);
-                        break;
                     case mu:
                         lengthOfName = getWidthOfSignSmallMu(g, fontSize);
                         break;
@@ -1779,7 +1785,7 @@ public class GraphicPanelFormula extends JPanel {
                         break;
                 }
 
-                int result = lengthOfName + 2 * getWidthOfBracket(fontSize);
+                result = lengthOfName + 2 * getWidthOfBracket(fontSize);
 
                 for (int i = 0; i < params.length; i++) {
 
@@ -3941,7 +3947,6 @@ public class GraphicPanelFormula extends JPanel {
 
         int heightOperand = getHeightOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[0], fontSize);
         int heightCenterOperand = getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[0], fontSize);
-        int lengthOperand = getLengthOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[0], fontSize);
         // Delta
         drawSignDelta(g, x_0, y_0 - (heightCenterOperand - (2 * fontSize) / 5), fontSize);
         //(
