@@ -541,9 +541,8 @@ public abstract class LogicalExpression implements AbstractExpression {
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 
         // Variablen vars in eine Reihenfolge bringen.
-        Iterator iter = vars.iterator();
-        for (int i = 0; i < vars.size(); i++) {
-            varsEnumerated.put(varsEnumerated.size(), (String) iter.next());
+        for (String var : vars) {
+            varsEnumerated.put(varsEnumerated.size(), var);
         }
 
         /*
@@ -607,9 +606,8 @@ public abstract class LogicalExpression implements AbstractExpression {
         HashMap<Integer, String> varsEnumerated = new HashMap<>();
 
         // Variables vars in eine Reihenfolge bringen.
-        Iterator iter = vars.iterator();
-        for (int i = 0; i < vars.size(); i++) {
-            varsEnumerated.put(varsEnumerated.size(), (String) iter.next());
+        for (String var : vars) {
+            varsEnumerated.put(varsEnumerated.size(), var);
         }
 
         /*

@@ -122,9 +122,7 @@ public class GraphicPanelFormula extends JPanel {
     }
 
     private void setRestUnmarked() {
-        GraphicPanelFormula formula;
-        for (Iterator<GraphicPanelFormula> iterator = formulas.iterator(); iterator.hasNext();) {
-            formula = iterator.next();
+        for (GraphicPanelFormula formula : formulas) {
             if (this != formula) {
                 formula.setUnmarked();
             }

@@ -1543,18 +1543,9 @@ public class Operator extends Expression {
 
         Expression result = Expression.ZERO;
         Expression expr = (Expression) this.params[0];
-        Set<String> vars = new HashSet<>();
-        expr.addContainedVars(vars);
-        Iterator iter = vars.iterator();
-        String var;
 
-        for (int i = 0; i < vars.size(); i++) {
-            var = (String) iter.next();
-            if (result.equals(Expression.ZERO)) {
-                result = expr.diff(var).simplify().diff(var).simplify();
-            } else {
-                result = result.add(expr.diff(var).simplify().diff(var).simplify());
-            }
+        for (int i = 1; i < this.params.length; i++) {
+            result = result.add(expr.diff((String) this.params[i]).simplify().diff((String) this.params[i]).simplify());
         }
         return result;
 

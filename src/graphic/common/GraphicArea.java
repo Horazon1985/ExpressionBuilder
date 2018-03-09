@@ -132,10 +132,7 @@ public class GraphicArea extends JTextArea {
      * die aktuellen Maße zulassen.
      */
     public void updateSize() {
-
-        GraphicPanelFormula formula;
-        for (Iterator<GraphicPanelFormula> iterator = formulas.iterator(); iterator.hasNext();) {
-            formula = iterator.next();
+        for (GraphicPanelFormula formula : formulas) {
             if (formula.getWidth() + 10 > this.getWidth()) {
                 this.setPreferredSize(new Dimension(formula.getWidth() + 40, this.getHeight()));
                 revalidate();
@@ -145,7 +142,6 @@ public class GraphicArea extends JTextArea {
                 revalidate();
             }
         }
-
     }
 
     /**
