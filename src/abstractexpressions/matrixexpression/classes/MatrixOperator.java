@@ -954,21 +954,11 @@ public class MatrixOperator extends MatrixExpression {
     private MatrixExpression simplifyBasicLaplace() throws EvaluationException {
 
         Dimension dim = ((MatrixExpression) this.params[0]).getDimension();
-        MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
-        MatrixExpression result = zeroMatrix;
+        MatrixExpression result = MatrixExpression.getZeroMatrix(dim.height, dim.width);
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
-        Set<String> vars = new HashSet<>();
-        matExpr.addContainedVars(vars);
-        Iterator iter = vars.iterator();
-        String var;
 
-        for (int i = 0; i < vars.size(); i++) {
-            var = (String) iter.next();
-            if (result.equals(zeroMatrix)) {
-                result = matExpr.diff(var);
-            } else {
-                result = result.add(matExpr.diff(var).simplify().diff(var).simplify());
-            }
+        for (int i = 1; i < this.params.length; i++) {
+            result = result.add(matExpr.diff((String) this.params[i]).simplify().diff((String) this.params[i]).simplify());
         }
 
         return result;

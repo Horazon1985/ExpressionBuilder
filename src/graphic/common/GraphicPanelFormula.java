@@ -3957,9 +3957,9 @@ public class GraphicPanelFormula extends JPanel {
         // Variablen
         int heightOfCenter = getHeightOfCenterOfMatrixExpression(g, (MatrixExpression) matOperator.getParams()[0], fontSize);
         for (int i = 1; i < matOperator.getParams().length; i++) {
-            g.drawString(", ", x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - heightOfCenter);
+            g.drawString(", ", x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - (heightOfCenter - (2 * fontSize) / 5));
             distanceFromOpeningBracket += g.getFontMetrics().stringWidth(", ");
-            g.drawString((String) matOperator.getParams()[i], x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - heightOfCenter);
+            g.drawString((String) matOperator.getParams()[i], x_0 + getWidthOfSignDelta(g, fontSize) + getWidthOfBracket(fontSize) + distanceFromOpeningBracket, y_0 - (heightOfCenter - (2 * fontSize) / 5));
             distanceFromOpeningBracket += g.getFontMetrics().stringWidth((String) matOperator.getParams()[i]);
         }
         // )
