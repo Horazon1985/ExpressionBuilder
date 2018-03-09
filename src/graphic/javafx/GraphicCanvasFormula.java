@@ -1,27 +1,19 @@
 package graphic.javafx;
 
-import abstractexpressions.expression.classes.MultiIndexVariable;
-import command.Command;
-import command.TypeCommand;
+import abstractexpressions.expression.basic.ExpressionCollection;
+import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.expression.classes.BinaryOperation;
 import abstractexpressions.expression.classes.Constant;
 import abstractexpressions.expression.classes.Expression;
 import abstractexpressions.expression.classes.Function;
+import abstractexpressions.expression.classes.MultiIndexVariable;
 import abstractexpressions.expression.classes.Operator;
 import abstractexpressions.expression.classes.SelfDefinedFunction;
 import abstractexpressions.expression.classes.TypeBinary;
 import abstractexpressions.expression.classes.TypeFunction;
 import abstractexpressions.expression.classes.TypeOperator;
 import abstractexpressions.expression.classes.Variable;
-import abstractexpressions.expression.basic.ExpressionCollection;
-import abstractexpressions.expression.basic.SimplifyUtilities;
 import abstractexpressions.interfaces.AbstractExpression;
-import abstractexpressions.output.EditableAbstractExpression;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import abstractexpressions.logicalexpression.classes.LogicalBinaryOperation;
 import abstractexpressions.logicalexpression.classes.LogicalConstant;
 import abstractexpressions.logicalexpression.classes.LogicalExpression;
@@ -35,9 +27,18 @@ import abstractexpressions.matrixexpression.classes.MatrixOperator;
 import abstractexpressions.matrixexpression.classes.MatrixPower;
 import abstractexpressions.matrixexpression.classes.TypeMatrixBinary;
 import abstractexpressions.matrixexpression.classes.TypeMatrixOperator;
+import abstractexpressions.output.EditableAbstractExpression;
 import abstractexpressions.output.EditableString;
+import command.Command;
+import command.TypeCommand;
 import graphic.util.TypeBracket;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javafx.event.EventHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -273,18 +274,14 @@ public class GraphicCanvasFormula extends Canvas {
             heightBelowCommonCenter = heightParameterCenter;
             heightBeyondCommonCenter = heightParameter - heightParameterCenter;
 
-            HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
-            String varCurrent;
+            Map<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
 
             // Höhen über und unter dem Zentrum von allen Koordinatenausdrücken ermitteln.
-            for (Iterator iter = varsWithValues.keySet().iterator(); iter.hasNext();) {
-                varCurrent = (String) iter.next();
-
+            for (String varCurrent : varsWithValues.keySet()) {
                 heightParameter = getHeightOfExpression(g, varsWithValues.get(varCurrent), fontSize);
                 heightParameterCenter = getHeightOfCenterOfExpression(g, varsWithValues.get(varCurrent), fontSize);
                 heightBelowCommonCenter = Math.max(heightBelowCommonCenter, heightParameterCenter);
                 heightBeyondCommonCenter = Math.max(heightBeyondCommonCenter, heightParameter - heightParameterCenter);
-
             }
 
         } else {
@@ -344,12 +341,10 @@ public class GraphicCanvasFormula extends Canvas {
 
             heightParameterCenter = getHeightOfCenterOfExpression(g, (Expression) params[0], fontSize);
 
-            HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
-            String varCurrent;
+            Map<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
 
             // Höhenzentren der einzelnen Koordinatenausdrücke ermitteln.
-            for (Iterator iter = varsWithValues.keySet().iterator(); iter.hasNext();) {
-                varCurrent = (String) iter.next();
+            for (String varCurrent : varsWithValues.keySet()) {
                 heightParameterCenter = Math.max(heightParameterCenter, getHeightOfCenterOfExpression(g, varsWithValues.get(varCurrent), fontSize));
             }
 
@@ -456,14 +451,12 @@ public class GraphicCanvasFormula extends Canvas {
             case normal:
             case tangent:
                 // Die Gesamtlänge aller Kommata und aller "="-Zeichen hinzuaddieren.
-                resultLength = resultLength + ((HashMap) params[1]).size() * (getTextWidth(", ") + getWidthOfSignEquals(g, fontSize));
+                resultLength = resultLength + ((Map) params[1]).size() * (getTextWidth(", ") + getWidthOfSignEquals(g, fontSize));
                 // Länge der Funktionsvorschrift hinzuaddieren.
                 resultLength = resultLength + getLengthOfExpression(g, (Expression) params[0], fontSize);
-                HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
-                String varCurrent;
-                for (Iterator iter = varsWithValues.keySet().iterator(); iter.hasNext();) {
-                    setFont(g, fontSize);
-                    varCurrent = (String) iter.next();
+                Map<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+                setFont(g, fontSize);
+                for (String varCurrent : varsWithValues.keySet()) {
                     // Pixellänge der jeweiligen Variable hinzuaddieren.
                     resultLength = resultLength + getTextWidth(varCurrent);
                     // Pixellänge des jeweiligen Variablenwertes hinzuaddieren.
@@ -4319,13 +4312,14 @@ public class GraphicCanvasFormula extends Canvas {
          Variablennamen mit den dazugehörigen Werten auslesen (params[1] ist
          eine HashMap mit Keys = Variablennamen und Values = Variablenwerten).
          */
-        HashMap<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
+        Map<String, Expression> varsWithValues = (HashMap<String, Expression>) params[1];
         String varCurrent;
         Expression valueOfVarCurrent;
 
+        setFont(g, fontSize);
+            
         for (Iterator iter = varsWithValues.keySet().iterator(); iter.hasNext();) {
 
-            setFont(g, fontSize);
             varCurrent = (String) iter.next();
             valueOfVarCurrent = (Expression) varsWithValues.get(varCurrent);
 
