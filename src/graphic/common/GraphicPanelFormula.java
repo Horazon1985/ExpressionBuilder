@@ -1080,8 +1080,7 @@ public class GraphicPanelFormula extends JPanel {
             default: {
 
                 // Sonstiger Standardfall
-                String name = MatrixOperator.getNameFromType(matOperator.getType());
-                result = g.getFontMetrics().stringWidth(name) + 2 * getWidthOfBracket(fontSize);
+                result = g.getFontMetrics().stringWidth(matOperator.getType().getOperatorName()) + 2 * getWidthOfBracket(fontSize);
 
                 for (int i = 0; i < params.length; i++) {
 
@@ -1768,7 +1767,6 @@ public class GraphicPanelFormula extends JPanel {
             }
             default: {
 
-                String name = Operator.getNameFromType(expr.getType());
                 int lengthOfName;
                 switch (expr.getType()) {
                     case mu:
@@ -1781,7 +1779,7 @@ public class GraphicPanelFormula extends JPanel {
                         lengthOfName = getWidthOfSignTaylor(g, fontSize);
                         break;
                     default:
-                        lengthOfName = g.getFontMetrics().stringWidth(name);
+                        lengthOfName = g.getFontMetrics().stringWidth(expr.getType().getOperatorName());
                         break;
                 }
 
@@ -3091,7 +3089,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightOperator = getHeightOfExpression(g, operator, fontSize);
         int heightCenterOperator = getHeightOfCenterOfExpression(g, operator, fontSize);
         Object[] left = ((Operator) operator).getParams();
-        String name = Operator.getNameFromType(((Operator) operator).getType());
+        String name = ((Operator) operator).getType().getOperatorName();
 
         int distanceFromBeginningOfOperator = 0;
 
@@ -4058,7 +4056,7 @@ public class GraphicPanelFormula extends JPanel {
         int heightOperator = getHeightOfMatrixExpression(g, matOperator, fontSize);
         int heightCenterOperator = getHeightOfCenterOfMatrixExpression(g, matOperator, fontSize);
         Object[] left = ((MatrixOperator) matOperator).getParams();
-        String name = MatrixOperator.getNameFromType(((MatrixOperator) matOperator).getType());
+        String name = ((MatrixOperator) matOperator).getType().getOperatorName();
 
         g.drawString(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + g.getFontMetrics().stringWidth(name), y_0, fontSize, heightOperator);

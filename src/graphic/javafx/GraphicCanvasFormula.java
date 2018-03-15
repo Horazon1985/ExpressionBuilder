@@ -1062,8 +1062,7 @@ public class GraphicCanvasFormula extends Canvas {
             default: {
 
                 // Sonstiger Standardfall
-                String name = MatrixOperator.getNameFromType(matOperator.getType());
-                int result = getTextWidth(name) + 2 * getWidthOfBracket(fontSize);
+                int result = getTextWidth(matOperator.getType().getOperatorName()) + 2 * getWidthOfBracket(fontSize);
 
                 for (int i = 0; i < params.length; i++) {
 
@@ -1743,7 +1742,6 @@ public class GraphicCanvasFormula extends Canvas {
             }
             default: {
 
-                String name = Operator.getNameFromType(expr.getType());
                 int lengthOfName;
                 switch (expr.getType()) {
                     case laplace:
@@ -1759,7 +1757,7 @@ public class GraphicCanvasFormula extends Canvas {
                         lengthOfName = getWidthOfSignTaylor(g, fontSize);
                         break;
                     default:
-                        lengthOfName = getTextWidth(name);
+                        lengthOfName = getTextWidth(expr.getType().getOperatorName());
                         break;
                 }
 
@@ -3058,7 +3056,7 @@ public class GraphicCanvasFormula extends Canvas {
         int heightOperator = getHeightOfExpression(g, operator, fontSize);
         int heightCenterOperator = getHeightOfCenterOfExpression(g, operator, fontSize);
         Object[] left = ((Operator) operator).getParams();
-        String name = Operator.getNameFromType(((Operator) operator).getType());
+        String name = ((Operator) operator).getType().getOperatorName();
 
         int distanceFromBeginningOfOperator = 0;
 
@@ -4017,7 +4015,7 @@ public class GraphicCanvasFormula extends Canvas {
         int heightOperator = getHeightOfMatrixExpression(g, matOperator, fontSize);
         int heightCenterOperator = getHeightOfCenterOfMatrixExpression(g, matOperator, fontSize);
         Object[] left = ((MatrixOperator) matOperator).getParams();
-        String name = MatrixOperator.getNameFromType(((MatrixOperator) matOperator).getType());
+        String name = ((MatrixOperator) matOperator).getType().getOperatorName();
 
         g.strokeText(name, x_0, y_0 - (heightCenterOperator - (2 * fontSize) / 5));
         drawOpeningBracket(g, x_0 + getTextWidth(name), y_0, fontSize, heightOperator);

@@ -7,6 +7,17 @@ public enum TypeMatrixOperator {
      bereits einen primitiven Datentyp kennzeichnet. In der Konsole aber muss
      'int' eingegeben werden.
      */
-    cov, cross, diff, div, grad, integral, laplace, prod, rot, sum;
+    cov("cov"), cross("cross"), diff("diff"), div("div"), grad("grad"), 
+    integral("int"), laplace("laplace"), prod("prod"), rot("rot"), sum("sum");
+    
+    private final String operatorName;
+    
+    private TypeMatrixOperator(String operatorName) {
+        this.operatorName = operatorName;
+    }
+    
+    public String getOperatorName() {
+        return this.operatorName;
+    }
     
 }

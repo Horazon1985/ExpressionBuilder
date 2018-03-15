@@ -383,11 +383,9 @@ public abstract class Expression implements AbstractExpression {
             OperationDataTO opData = OperationParsingUtils.getOperationData(formula);
             String opName = opData.getOperationName();
             String[] params = opData.getOperationArguments();
-            String operatorName;
             for (TypeOperator type : TypeOperator.values()) {
-                operatorName = Operator.getNameFromType(type);
-                if (opName.equals(operatorName)) {
-                    return Operator.getOperator(operatorName, params, vars);
+                if (opName.equals(type.getOperatorName())) {
+                    return Operator.getOperator(type.getOperatorName(), params, vars);
                 }
             }
         }

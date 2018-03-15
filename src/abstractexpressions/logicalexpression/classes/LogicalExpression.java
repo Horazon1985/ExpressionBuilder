@@ -8,7 +8,6 @@ import abstractexpressions.interfaces.IdentifierValidatorLogicalExpression;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 import lang.translator.Translator;
 import process.Canceller;
@@ -97,19 +96,19 @@ public abstract class LogicalExpression implements AbstractExpression {
             }
             //Aufteilungspunkt finden; zunächst wird nach =, >, |, &, ! gesucht 
             //breakpoint gibt den Index in formula an, wo die Formel aufgespalten werden soll.
-            if (currentChar.equals("=") && priority > 0) {
+            if (currentChar.equals(TypeLogicalBinary.EQUIVALENCE.getValue()) && priority > 0) {
                 priority = 0;
                 breakpoint = formulaLength - i;
-            } else if (currentChar.equals(">") && priority > 1) {
+            } else if (currentChar.equals(TypeLogicalBinary.IMPLICATION.getValue()) && priority > 1) {
                 priority = 1;
                 breakpoint = formulaLength - i;
-            } else if (currentChar.equals("|") && priority > 2) {
+            } else if (currentChar.equals(TypeLogicalBinary.OR.getValue()) && priority > 2) {
                 priority = 2;
                 breakpoint = formulaLength - i;
-            } else if (currentChar.equals("&") && priority > 3) {
+            } else if (currentChar.equals(TypeLogicalBinary.AND.getValue()) && priority > 3) {
                 priority = 3;
                 breakpoint = formulaLength - i;
-            } else if (currentChar.equals("!") && priority >= 4) {
+            } else if (currentChar.equals(TypeLogicalUnary.NEGATION.getValue()) && priority >= 4) {
                 /*
                  Falls Vorher bereits eine NEgation aufgetaucht ist, dann soll
                  man sich diejenige merken, die sich weiter links befindet.
@@ -669,7 +668,6 @@ public abstract class LogicalExpression implements AbstractExpression {
             LogicalExpression logExpr, logExprSimplified = this;
             do {
                 logExpr = logExprSimplified.copy();
-//                System.out.println(logExprSimplified.writeLogicalExpression());
                 logExprSimplified = logExprSimplified.simplifyBasic();
                 Canceller.interruptComputationIfNeeded();
                 logExprSimplified = logExprSimplified.factorizeInProducts();

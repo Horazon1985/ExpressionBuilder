@@ -1,6 +1,5 @@
 package abstractexpressions.logicalexpression.classes;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class LogicalConstant extends LogicalExpression {

@@ -22,7 +22,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import operationparser.OperationParser;
@@ -109,21 +108,10 @@ public class Operator extends Expression {
      * (welcher in der Konsole eingegeben wird) gehört.
      */
     public static TypeOperator getTypeFromName(String operator) {
-        if (operator.equals("int")) {
+        if (operator.equals(TypeOperator.integral.getOperatorName())) {
             return TypeOperator.integral;
         }
         return TypeOperator.valueOf(operator);
-    }
-
-    /**
-     * Gibt den Namen des Operators zurück, der in der Konsole eingegeben werden
-     * muss bzw. der bei der Ausgabe erscheint.
-     */
-    public static String getNameFromType(TypeOperator type) {
-        if (type.equals(TypeOperator.integral)) {
-            return "int";
-        }
-        return type.toString();
     }
 
     /**
@@ -882,7 +870,7 @@ public class Operator extends Expression {
             return "(" + ((Expression) this.params[0]).toString() + ")!";
         }
 
-        String result = (String) getNameFromType(this.type) + "(";
+        String result = (String) this.type.getOperatorName() + "(";
         String parameter = "";
 
         for (Object param : this.params) {

@@ -391,11 +391,9 @@ public abstract class MatrixExpression implements AbstractExpression {
             OperationDataTO opData = OperationParsingUtils.getOperationData(formula);
             String opName = opData.getOperationName();
             String[] params = opData.getOperationArguments();
-            String operatorName;
             for (TypeMatrixOperator type : TypeMatrixOperator.values()) {
-                operatorName = MatrixOperator.getNameFromType(type);
-                if (opName.equals(operatorName)) {
-                    return MatrixOperator.getMatrixOperator(operatorName, params, vars);
+                if (opName.equals(type.getOperatorName())) {
+                    return MatrixOperator.getMatrixOperator(type.getOperatorName(), params, vars);
                 }
             }
         }

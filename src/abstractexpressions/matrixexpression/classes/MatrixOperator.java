@@ -15,7 +15,6 @@ import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
-import java.util.Iterator;
 import abstractexpressions.matrixexpression.basic.SimplifyMatrixOperatorUtils;
 import exceptions.CancellationException;
 import java.lang.reflect.Field;
@@ -101,21 +100,10 @@ public class MatrixOperator extends MatrixExpression {
      * (welcher in der Konsole eingegeben wird) gehört.
      */
     public static TypeMatrixOperator getTypeFromName(String operator) {
-        if (operator.equals("int")) {
+        if (operator.equals(TypeMatrixOperator.integral.getOperatorName())) {
             return TypeMatrixOperator.integral;
         }
         return TypeMatrixOperator.valueOf(operator);
-    }
-
-    /**
-     * Gibt den Namen des Operators zurück, der in der Konsole eingegeben werden
-     * muss bzw. der bei der Ausgabe erscheint.
-     */
-    public static String getNameFromType(TypeMatrixOperator type) {
-        if (type.equals(TypeMatrixOperator.integral)) {
-            return "int";
-        }
-        return type.toString();
     }
 
     /**
@@ -508,7 +496,7 @@ public class MatrixOperator extends MatrixExpression {
     @Override
     public String toString() {
 
-        String result = (String) getNameFromType(this.type) + "(";
+        String result = this.type.getOperatorName() + "(";
         String parameter = "";
 
         for (Object param : this.params) {
