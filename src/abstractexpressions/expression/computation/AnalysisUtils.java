@@ -508,14 +508,13 @@ public abstract class AnalysisUtils {
         }
 
         //Auf n Stellen runden.
-        e = e.setScale(n, BigDecimal.ROUND_HALF_UP);
-
-        return e;
+        return e.setScale(n, BigDecimal.ROUND_HALF_UP);
 
     }
 
     /**
-     * Ermittelt die ersten n Dezimalstellen der Kreiszahl pi.
+     * Ermittelt die ersten n Dezimalstellen der Kreiszahl pi. Zugrundeliegende
+     * Berechnungsformel: pi = 16*arctan(1/4) - 4*arctan(1/239).
      *
      * @throws EvaluationException
      */
@@ -525,31 +524,44 @@ public abstract class AnalysisUtils {
             throw new EvaluationException(Translator.translateOutputMessage(CC_AnalysisUtils_ENTER_A_SMALLER_NUMBER_OF_DIGITS));
         }
 
-        BigDecimal pi = BigDecimal.ONE.divide(BigDecimal.valueOf(2));
-
         // bound = 10^(-n - 5). Zusätzliche 5 Stellen sind für Rundungsfehler gedacht.
         BigDecimal bound = BigDecimal.ONE.divide(BigDecimal.TEN.pow(n + 5));
-        /*
-         summandOfSeriesForPi ist der aktuelle Summand in der pi-Reihe pi/6 =
-         arcsin(1/2). Die Summanden werden hier rekursiv berechnet.
-         */
-        BigDecimal summandOfSeriesForPi = BigDecimal.ONE.divide(BigDecimal.valueOf(2));
-
-        int i = 0;
-        while (summandOfSeriesForPi.compareTo(bound) >= 0) {
-            summandOfSeriesForPi = summandOfSeriesForPi.multiply(BigDecimal.valueOf(2 * i + 1));
-            summandOfSeriesForPi = summandOfSeriesForPi.divide(BigDecimal.valueOf(2 * i + 3), n + 5, BigDecimal.ROUND_HALF_UP);
-            summandOfSeriesForPi = summandOfSeriesForPi.multiply(BigDecimal.valueOf(2 * i + 1));
-            summandOfSeriesForPi = summandOfSeriesForPi.divide(BigDecimal.valueOf(8 * i + 8), n + 5, BigDecimal.ROUND_HALF_UP);
-            pi = pi.add(summandOfSeriesForPi);
+        BigDecimal FOUR = BigDecimal.valueOf(4);
+        BigDecimal FIVE = BigDecimal.valueOf(5);
+        BigDecimal SIXTEEN = BigDecimal.valueOf(16);
+        BigDecimal TTN = BigDecimal.valueOf(239);
+        
+        BigDecimal firstSummand = BigDecimal.ONE.divide(FIVE, n + 5, BigDecimal.ROUND_HALF_UP);
+        
+        int i = 1;
+        BigDecimal summand;
+        do {
+            summand = BigDecimal.ONE.divide(BigDecimal.valueOf(2 * i + 1).multiply(FIVE.pow(2 * i + 1)), n + 5, BigDecimal.ROUND_HALF_UP);
+            if (i % 2 == 0) {
+                firstSummand = firstSummand.add(summand);
+            } else {
+                firstSummand = firstSummand.subtract(summand);
+            }
             i++;
-        }
+        } while (summand.compareTo(bound) >= 0);
+        
+        BigDecimal secondSummand = BigDecimal.ONE.divide(TTN, n + 5, BigDecimal.ROUND_HALF_UP);
 
+        i = 1;
+        do {
+            summand = BigDecimal.ONE.divide(BigDecimal.valueOf(2 * i + 1).multiply(TTN.pow(2 * i + 1)), n + 5, BigDecimal.ROUND_HALF_UP);
+            if (i % 2 == 0) {
+                secondSummand = secondSummand.add(summand);
+            } else {
+                secondSummand = secondSummand.subtract(summand);
+            }
+            i++;
+        } while (summand.compareTo(bound) >= 0);
+        
+        BigDecimal pi = SIXTEEN.multiply(firstSummand).subtract(FOUR.multiply(secondSummand));
+                
         //Auf n Stellen runden.
-        pi = pi.multiply(BigDecimal.valueOf(6));
-        pi = pi.setScale(n, BigDecimal.ROUND_HALF_UP);
-
-        return pi;
+        return pi.setScale(n, BigDecimal.ROUND_HALF_UP);
 
     }
 
