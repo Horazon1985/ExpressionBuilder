@@ -26,8 +26,8 @@ import java.util.Set;
 import lang.translator.Translator;
 
 /**
- * Viele kleine Einzelmethoden zur Vereinfachung von Ausdrücken der Klasse
- * BinaryOperation (für simplifyBasic).
+ * Klasse mit vielen einfachen Einzelmethoden zur Vereinfachung von Ausdrücken 
+ * der Klasse BinaryOperation.
  */
 public abstract class SimplifyBinaryOperationUtils {
     

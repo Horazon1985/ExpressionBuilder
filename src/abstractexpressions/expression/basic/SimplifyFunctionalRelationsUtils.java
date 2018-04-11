@@ -771,16 +771,16 @@ public abstract class SimplifyFunctionalRelationsUtils {
     /**
      * Fasst in einem Produkt multiplikative Relationen zusammen. Genauer:
      * kommen in einem Produkt Faktoren F(x) und G(x) vor mit
-     * F.getTypeFunction() == type_1, G.getTypeFunction() == type_2, so wird
-     * dies zu H(x) zusammengefasst, wobei H.getTypeFunction() == result_type
+     * F.getTypeFunction() == firstType, G.getTypeFunction() == secondType, so wird
+     * dies zu H(x) zusammengefasst, wobei H.type == resultType
      * ist. Beispiel: cos(x)*tan(x) wird zu sin(x) vereinfacht. Diese Funktion
-     * kann auch gleiche Potenzen von solchen Funktionen zusammenfassen.
-     * Konkret: F(x)^n*G(x)^n = H(x)^n.
+     * kann auch Potenzen von solchen Funktionen zusammenfassen.
+     * Konkret: F(x)^3*G(x)^5 = H(x)^3 * G(x)^2.
      */
     public static void productOfTwoFunctions(ExpressionCollection factors, TypeFunction firstType, TypeFunction secondType,
             TypeFunction resultType) {
 
-        Expression factor, factorToCompare, exponent;
+        Expression factor, factorToCompare, exponent, exponentToCompare;
 
         for (int i = 0; i < factors.getBound(); i++) {
 
@@ -788,45 +788,56 @@ public abstract class SimplifyFunctionalRelationsUtils {
                 continue;
             }
 
-            // Keine innere Schleife beginnen, wenn nicht nötig.
             factor = factors.get(i);
             if (factor.isPower()) {
-                if (!((BinaryOperation) factor).getLeft().isFunction(firstType)
-                        && !((BinaryOperation) factor).getLeft().isFunction(secondType)) {
-                    continue;
-                }
+                exponent = ((BinaryOperation) factor).getRight();
+                factor = ((BinaryOperation) factor).getLeft();
             } else {
-                if (!factor.isFunction(firstType) && !factor.isFunction(secondType)) {
-                    continue;
-                }
+                exponent = Expression.ONE;
             }
+            
+            if (!factor.isFunction(firstType)) {
+                continue;
+            }
+            
+            for (int j = 0; j < factors.getBound(); j++) {
 
-            for (int j = i + 1; j < factors.getBound(); j++) {
-
-                if (factors.get(j) == null) {
+                if (i == j || factors.get(j) == null) {
                     continue;
                 }
-
+                
                 factorToCompare = factors.get(j);
-                if (factor.isPower() && factorToCompare.isPower()
-                        && ((BinaryOperation) factor).getRight().equivalent(((BinaryOperation) factorToCompare).getRight())) {
-                    exponent = ((BinaryOperation) factor).getRight();
-                    factor = ((BinaryOperation) factor).getLeft();
+                
+                if (factorToCompare.isPower()) {
+                    exponentToCompare = ((BinaryOperation) factorToCompare).getRight();
                     factorToCompare = ((BinaryOperation) factorToCompare).getLeft();
                 } else {
-                    exponent = Expression.ONE;
+                    exponentToCompare = Expression.ONE;
                 }
 
-                if ((factor.isFunction(firstType) && factorToCompare.isFunction(secondType)
-                        || factor.isFunction(secondType) && factorToCompare.isFunction(firstType))
-                        && ((Function) factor).getLeft().equivalent(((Function) factorToCompare).getLeft())) {
-                    factors.remove(j);
-                    if (exponent.equals(Expression.ONE)) {
-                        factors.put(i, new Function(((Function) factor).getLeft(), resultType));
-                    } else {
-                        factors.put(i, (new Function(((Function) factor).getLeft(), resultType)).pow(exponent));
+                if (!factorToCompare.isFunction(secondType)) {
+                    continue;
+                }
+                
+                if (((Function) factor).getLeft().equivalent(((Function) factorToCompare).getLeft())) {
+                    
+                    Expression arg = ((Function) factor).getLeft();
+                    
+                    if (exponent.equivalent(exponentToCompare)) {
+                        factors.remove(j);
+                        factors.put(i, (new Function(arg, resultType)).pow(exponent));
+                        break;
                     }
-                    break;
+                    if (exponent.isNonNegativeIntegerConstant() && exponentToCompare.isNonNegativeIntegerConstant()) {
+                        if (((Constant) exponent).getValue().compareTo(((Constant) exponentToCompare).getValue()) > 0) {
+                            factors.put(i, (new Function(arg, firstType)).pow(exponent.sub(exponentToCompare)));
+                            factors.put(j, (new Function(arg, resultType)).pow(exponentToCompare));
+                        } else if (((Constant) exponent).getValue().compareTo(((Constant) exponentToCompare).getValue()) < 0) {
+                            factors.put(i, (new Function(arg, resultType)).pow(exponent));
+                            factors.put(j, (new Function(arg, secondType)).pow(exponentToCompare.sub(exponent)));
+                        }
+                    } 
+
                 }
 
             }
@@ -845,7 +856,7 @@ public abstract class SimplifyFunctionalRelationsUtils {
      */
     public static void productOfTwoFunctionsEqualsOne(ExpressionCollection factors, TypeFunction firstType, TypeFunction secondType) {
 
-        Expression factor, factorToCompare;
+        Expression factor, factorToCompare, exponent, exponentToCompare;
 
         for (int i = 0; i < factors.getBound(); i++) {
 
@@ -854,28 +865,62 @@ public abstract class SimplifyFunctionalRelationsUtils {
             }
 
             factor = factors.get(i);
-            for (int j = i + 1; j < factors.getBound(); j++) {
+            
+            if (factor.isPower()) {
+                exponent = ((BinaryOperation) factor).getRight();
+                factor = ((BinaryOperation) factor).getLeft();
+            } else {
+                exponent = ONE;
+            }
+            
+            if (!factor.isFunction(firstType)) {
+                continue;
+            }
+            
+            for (int j = 0; j < factors.getBound(); j++) {
 
-                if (factors.get(j) == null) {
+                if (i == j || factors.get(j) == null) {
                     continue;
                 }
 
                 factorToCompare = factors.get(j);
-                if (factor.isPower() && factorToCompare.isPower()
-                        && ((BinaryOperation) factor).getRight().equivalent(((BinaryOperation) factorToCompare).getRight())) {
-                    factor = ((BinaryOperation) factor).getLeft();
+                
+                if (factorToCompare.isPower()) {
+                    exponentToCompare = ((BinaryOperation) factorToCompare).getRight();
                     factorToCompare = ((BinaryOperation) factorToCompare).getLeft();
+                } else {
+                    exponentToCompare = ONE;
                 }
 
-                if (factor instanceof Function && factorToCompare instanceof Function
-                        && (((Function) factor).getType().equals(firstType) && ((Function) factorToCompare).getType().equals(secondType)
-                        || ((Function) factor).getType().equals(secondType) && ((Function) factorToCompare).getType().equals(firstType))
-                        && ((Function) factor).getLeft().equivalent(((Function) factorToCompare).getLeft())) {
+                if (!factorToCompare.isFunction(secondType)) {
+                    continue;
+                }
+                
+                if (((Function) factor).getLeft().equivalent(((Function) factorToCompare).getLeft())) {
 
-                    factors.remove(i);
-                    factors.remove(j);
-                    factors.put(i, Expression.ONE);
-                    break;
+                    if (exponent.equivalent(exponentToCompare)) {
+                        factors.remove(i);
+                        factors.remove(j);
+                        break;
+                    }
+                    if (exponent.isNonNegativeIntegerConstant() && exponentToCompare.isNonNegativeIntegerConstant()) {
+                        if (((Constant) exponent).getValue().compareTo(((Constant) exponentToCompare).getValue()) > 0) {
+                            factors.put(i, factor.pow(exponent.sub(exponentToCompare)));
+                            factors.remove(j);
+                            break;
+                        } else {
+                            factors.remove(i);
+                            factors.put(j, factorToCompare.pow(exponentToCompare.sub(exponent)));
+                            break;
+                        }
+                    
+                    }
+                    if (SimplifyAlgebraicExpressionUtils.isAdmissibleExponent(exponent) 
+                            && SimplifyAlgebraicExpressionUtils.isAdmissibleExponent(exponentToCompare)) {
+                        factors.put(i, factor.pow(exponent.sub(exponentToCompare)));
+                        factors.remove(j);
+                        break;
+                    }
 
                 }
 
