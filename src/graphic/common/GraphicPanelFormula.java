@@ -1035,9 +1035,10 @@ public class GraphicPanelFormula extends JPanel {
             }
             case laplace:
                 
-                result = g.getFontMetrics().stringWidth("\u0394") + 2 * getWidthOfBracket(fontSize) 
-                        + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize)
-                        + (params.length - 1) * g.getFontMetrics().stringWidth(", ");
+                result = getWidthOfSignDelta(g, fontSize) + 2 * getWidthOfBracket(fontSize) 
+                        + getLengthOfMatrixExpression(g, (MatrixExpression) params[0], fontSize);
+                setFont(g, fontSize);
+                result += (params.length - 1) * g.getFontMetrics().stringWidth(", ");
                 for (int i = 1; i < params.length; i++) {
                     result = result + g.getFontMetrics().stringWidth((String) params[i]);
                 }
@@ -1724,8 +1725,9 @@ public class GraphicPanelFormula extends JPanel {
             case laplace:
                 
                 result = getWidthOfSignDelta(g, fontSize) + 2 * getWidthOfBracket(fontSize) 
-                        + getLengthOfExpression(g, (Expression) params[0], fontSize)
-                        + (params.length - 1) * g.getFontMetrics().stringWidth(", ");
+                        + getLengthOfExpression(g, (Expression) params[0], fontSize);
+                setFont(g, fontSize);
+                result += (params.length - 1) * g.getFontMetrics().stringWidth(", ");
                 for (int i = 1; i < params.length; i++) {
                     result = result + g.getFontMetrics().stringWidth((String) params[i]);
                 }
@@ -2992,7 +2994,7 @@ public class GraphicPanelFormula extends JPanel {
         }
 
     }
-
+    
     private void drawOperatorProd(Graphics g, Operator operator, int x_0, int y_0, int fontSize) {
 
         setFont(g, fontSize);
