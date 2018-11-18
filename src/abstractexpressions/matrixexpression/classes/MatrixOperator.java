@@ -27,13 +27,13 @@ import lang.translator.Translator;
 
 public class MatrixOperator extends MatrixExpression {
 
-    private static final String MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID = "MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID";
+    private static final String MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID = "MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID";
     private static final String MEB_MatrixOperator_INVALID_MATRIX_OPERATOR = "MEB_MatrixOperator_INVALID_MATRIX_OPERATOR";
-    private static final String MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS = "MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS";
+    private static final String MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS = "MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS";
     private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS";
     private static final String MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES = "MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES";
     private static final String MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX = "MEB_MatrixOperator_FIRST_PARAMETER_IN_PROD_NOT_SQUARE_MATRIX";
-    private static final String MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT = "MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT";
+    private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT";
     
     private TypeMatrixOperator type;
     private Object[] params;
@@ -128,7 +128,7 @@ public class MatrixOperator extends MatrixExpression {
                     try {
                         return OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_DIFF_WITHOUT_ORDER);
                     } catch (ExpressionException ex) {
-                        throw new ExpressionException(Translator.translateOutputMessage(MEB_Operator_3_PARAMETER_IN_DIFF_IS_INVALID));
+                        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID));
                     }
                 }
             case integral:
@@ -711,7 +711,7 @@ public class MatrixOperator extends MatrixExpression {
             points[i] = ((MatrixExpression) params[i]).simplify();
             dim = points[i].getDimension();
             if (!points[i].isMatrix() || dim.width != 1 || dim.height != 2) {
-                throw new EvaluationException(Translator.translateOutputMessage(MEB_Operator_COV_PARAMETERS_ARE_NOT_POINTS));
+                throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS));
             }
         }
 
@@ -841,6 +841,13 @@ public class MatrixOperator extends MatrixExpression {
     private MatrixExpression simplifyBasicDiv() throws EvaluationException {
 
         Dimension dim = ((MatrixExpression) this.params[0]).getDimension();
+        int numberOfIndeterminates = this.params.length - 1;
+
+        // TO DO: reparieren!
+        if (dim.width != 1 && dim.height != numberOfIndeterminates) {
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT));
+        }
+        
         MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
         MatrixExpression result = zeroMatrix;
         MatrixExpression matExpr = (MatrixExpression) this.params[0];
@@ -1005,14 +1012,14 @@ public class MatrixOperator extends MatrixExpression {
 
         MatrixExpression matExpr = ((MatrixExpression) this.params[0]).simplify();
 
-        if (!(matExpr instanceof Matrix)) {
+        if (!matExpr.isMatrix()) {
             return this;
         }
 
         Dimension dim = ((Matrix) matExpr).getDimension();
 
         if (dim.height != 3 || dim.width != 1) {
-            throw new EvaluationException(Translator.translateOutputMessage(MEB_Operator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT));
+            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT));
         }
 
         Expression matExprX = ((Matrix) this.params[0]).getEntry(0, 0);
