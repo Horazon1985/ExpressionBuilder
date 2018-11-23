@@ -28,6 +28,7 @@ import lang.translator.Translator;
 public class MatrixOperator extends MatrixExpression {
 
     private static final String MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID = "MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID";
+    private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV";
     private static final String MEB_MatrixOperator_INVALID_MATRIX_OPERATOR = "MEB_MatrixOperator_INVALID_MATRIX_OPERATOR";
     private static final String MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS = "MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS";
     private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS";
@@ -130,6 +131,19 @@ public class MatrixOperator extends MatrixExpression {
                     } catch (ExpressionException ex) {
                         throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID));
                     }
+                }
+            case div:
+                MatrixOperator divOpr =  OperationParser.parseDefaultMatrixOperator(operator, params, vars, PATTERN_DIV);
+                Object[] oprParams = divOpr.getParams();
+                MatrixExpression argument = (MatrixExpression) oprParams[0];
+                try {
+                    Dimension dim = argument.getDimension();
+                    if (dim.width != 1 || dim.height != oprParams.length - 1) {
+                        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV));
+                    }
+                    return divOpr;
+                } catch (EvaluationException e) {
+                    throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV));
                 }
             case integral:
                 if (params.length <= 2) {

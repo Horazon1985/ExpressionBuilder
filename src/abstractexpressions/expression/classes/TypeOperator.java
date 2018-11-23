@@ -11,7 +11,7 @@ public enum TypeOperator {
      bereits einen primitiven Datentyp kennzeichnet. In der Konsole aber muss
      'int' eingegeben werden.
      */
-    diff("diff"), div("div"), fac("fac"), fourier("fourier"), gcd("gcd"), 
+    diff("diff"), fac("fac"), fourier("fourier"), gcd("gcd"), 
     integral("int"), laplace("laplace"), lcm("lcm"), max("max"), min("min"), 
     mod("mod"), mu("mu"), modpow("modpow"), prod("prod"), sigma("sigma"), 
     sum("sum"), taylor("taylor"), var("var");

@@ -46,26 +46,25 @@ public class Operator extends Expression {
     private boolean precise;
 
     // Patterns für die einzelnen Operatoren.
-    public static final String PATTERN_DIFF = "diff(expr,indet+)";
-    public static final String PATTERN_DIFF_WITH_ORDER = "diff(expr,indet,integer(0,2147483647))";
-    public static final String PATTERN_DIV = "div(expr,uniqueindet+)";
-    public static final String PATTERN_FAC = "fac(expr)";
-    public static final String PATTERN_FOURIER = "fourier(expr,indet(!2,!3),expr,expr,integer(0,2147483647))";
-    public static final String PATTERN_GCD = "gcd(expr+)";
-    public static final String PATTERN_INT_INDEF = "int(expr,indet)";
-    public static final String PATTERN_INT_DEF = "int(expr,indet(!2,!3),expr,expr)";
-    public static final String PATTERN_LCM = "lcm(expr+)";
-    public static final String PATTERN_LAPLACE = "laplace(expr,uniqueindet+)";
-    public static final String PATTERN_MAX = "max(expr,expr+)";
-    public static final String PATTERN_MIN = "min(expr,expr+)";
-    public static final String PATTERN_MOD = "mod(expr,expr)";
-    public static final String PATTERN_MU = "mu(expr+)";
-    public static final String PATTERN_MODPOW = "modpow(expr,expr,expr)";
-    public static final String PATTERN_PROD = "prod(expr,indet(!2,!3),expr,expr)";
-    public static final String PATTERN_SIGMA = "sigma(expr+)";
-    public static final String PATTERN_SUM = "sum(expr,indet(!2,!3),expr,expr)";
-    public static final String PATTERN_TAYLOR = "taylor(expr,indet(!2),expr,integer(0,2147483647))";
-    public static final String PATTERN_VAR = "var(expr+)";
+    private static final String PATTERN_DIFF = "diff(expr,indet+)";
+    private static final String PATTERN_DIFF_WITH_ORDER = "diff(expr,indet,integer(0,2147483647))";
+    private static final String PATTERN_FAC = "fac(expr)";
+    private static final String PATTERN_FOURIER = "fourier(expr,indet(!2,!3),expr,expr,integer(0,2147483647))";
+    private static final String PATTERN_GCD = "gcd(expr+)";
+    private static final String PATTERN_INT_INDEF = "int(expr,indet)";
+    private static final String PATTERN_INT_DEF = "int(expr,indet(!2,!3),expr,expr)";
+    private static final String PATTERN_LCM = "lcm(expr+)";
+    private static final String PATTERN_LAPLACE = "laplace(expr,uniqueindet+)";
+    private static final String PATTERN_MAX = "max(expr,expr+)";
+    private static final String PATTERN_MIN = "min(expr,expr+)";
+    private static final String PATTERN_MOD = "mod(expr,expr)";
+    private static final String PATTERN_MU = "mu(expr+)";
+    private static final String PATTERN_MODPOW = "modpow(expr,expr,expr)";
+    private static final String PATTERN_PROD = "prod(expr,indet(!2,!3),expr,expr)";
+    private static final String PATTERN_SIGMA = "sigma(expr+)";
+    private static final String PATTERN_SUM = "sum(expr,indet(!2,!3),expr,expr)";
+    private static final String PATTERN_TAYLOR = "taylor(expr,indet(!2),expr,integer(0,2147483647))";
+    private static final String PATTERN_VAR = "var(expr+)";
 
     public Operator(TypeOperator type, Object[] params) {
         this.type = type;
@@ -125,6 +124,7 @@ public class Operator extends Expression {
         TypeOperator type = getTypeFromName(operator);
 
         // Sonderfälle: überladene Operatoren.
+
         switch (type) {
             case diff:
                 if (params.length != 3) {
@@ -182,9 +182,6 @@ public class Operator extends Expression {
 
         if (this.getType().equals(TypeOperator.diff)) {
             return simplifyBasicDiff().evaluate();
-        }
-        if (this.getType().equals(TypeOperator.div)) {
-            return simplifyBasicDiv().evaluate();
         }
         if (this.getType().equals(TypeOperator.fac)) {
 
@@ -916,8 +913,6 @@ public class Operator extends Expression {
                 }
                 return result;
             }
-        } else if (this.type.equals(TypeOperator.div)) {
-            return "\\div\\left(" + ((Expression) this.params[0]).expressionToLatex() + "\\right)";
         } else if (this.type.equals(TypeOperator.gcd)) {
             String result = "\\gcd(";
             for (int i = 0; i < this.params.length - 1; i++) {
@@ -1031,7 +1026,7 @@ public class Operator extends Expression {
                         result = result && this.params[i].equals(operator.params[i]);
                     }
                 }
-            } else if (this.type.equals(TypeOperator.diff) || this.type.equals(TypeOperator.div)
+            } else if (this.type.equals(TypeOperator.diff)
                     || this.type.equals(TypeOperator.laplace) || this.type.equals(TypeOperator.mu)) {
                 for (int i = 0; i < this.params.length; i++) {
                     if (this.params[i] instanceof Expression) {
@@ -1334,29 +1329,6 @@ public class Operator extends Expression {
             }
         }
         return expr;
-
-    }
-
-    /**
-     * Vereinfacht den Divergenzoperator, soweit es möglich ist.
-     *
-     * @throws EvaluationException
-     */
-    @SimplifyOperator(type = TypeOperator.div)
-    private Expression simplifyBasicDiv() throws EvaluationException {
-
-        Expression result = Expression.ZERO;
-        Expression expr = (Expression) this.params[0];
-
-        for (int i = 1; i < this.params.length; i++) {
-            if (result.equals(Expression.ZERO)) {
-                result = expr.diff((String) this.params[i]);
-            } else {
-                result = result.add(expr.diff((String) this.params[i]));
-            }
-        }
-
-        return result;
 
     }
 
