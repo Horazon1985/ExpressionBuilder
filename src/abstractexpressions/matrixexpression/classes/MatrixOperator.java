@@ -28,7 +28,7 @@ import lang.translator.Translator;
 public class MatrixOperator extends MatrixExpression {
 
     private static final String MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID = "MEB_MatrixOperator_3_PARAMETER_IN_DIFF_IS_INVALID";
-    private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV";
+    private static final String MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV = "MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV";
     private static final String MEB_MatrixOperator_INVALID_MATRIX_OPERATOR = "MEB_MatrixOperator_INVALID_MATRIX_OPERATOR";
     private static final String MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS = "MEB_MatrixOperator_COV_PARAMETERS_ARE_NOT_POINTS";
     private static final String MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETERS_IN_OPERATOR_CROSS";
@@ -139,11 +139,11 @@ public class MatrixOperator extends MatrixExpression {
                 try {
                     Dimension dim = argument.getDimension();
                     if (dim.width != 1 || dim.height != oprParams.length - 1) {
-                        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV));
+                        throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV));
                     }
                     return divOpr;
                 } catch (EvaluationException e) {
-                    throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV));
+                    throw new ExpressionException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV));
                 }
             case integral:
                 if (params.length <= 2) {
@@ -854,27 +854,18 @@ public class MatrixOperator extends MatrixExpression {
     @SimplifyMatrixOperator(type = TypeMatrixOperator.div)
     private MatrixExpression simplifyBasicDiv() throws EvaluationException {
 
-        Dimension dim = ((MatrixExpression) this.params[0]).getDimension();
-        int numberOfIndeterminates = this.params.length - 1;
-
-        // TO DO: reparieren!
-        if (dim.width != 1 && dim.height != numberOfIndeterminates) {
-            throw new EvaluationException(Translator.translateOutputMessage(MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_ROT));
+        if (!((MatrixExpression) this.params[0]).isMatrix()) {
+            return this;
         }
         
-        MatrixExpression zeroMatrix = MatrixExpression.getZeroMatrix(dim.height, dim.width);
-        MatrixExpression result = zeroMatrix;
-        MatrixExpression matExpr = (MatrixExpression) this.params[0];
-
+        Matrix m = (Matrix) this.params[0];
+        Expression div = Expression.ZERO;
+        
         for (int i = 1; i < this.params.length; i++) {
-            if (result.equals(zeroMatrix)) {
-                result = matExpr.diff((String) this.params[i]);
-            } else {
-                result = result.add(matExpr.diff((String) this.params[i]));
-            }
+            div = div.add(m.getEntry(i - 1, 0).diff((String) this.params[i]));
         }
 
-        return result;
+        return new Matrix(div);
 
     }
 

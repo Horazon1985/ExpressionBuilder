@@ -162,23 +162,12 @@
         <Ukrainian>[0]. параметр оператора 'cross' має бути вектором розмірності [1].</Ukrainian>
         <Russian>[0]. параметр оператора 'cross' должен быть вектором размерности [1].</Russian>
     </object>
-
-
-
-
-
-
-    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_PARAMETER_IN_OPERATOR_DIV">
+    <object id = "MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV">
         <German>Der 1. Parameter im Operator 'div' muss ein Vektor sein. Seine Dimension muss gleich der Anzahl der angegebenen Veränderlichen sein.</German>
         <English>The 1. parameter of the operator 'div' must be a vector. Its dimension must equal the number of given variables.</English>
-        <Ukrainian></Ukrainian>
-        <Russian></Russian>  
+        <Ukrainian>???</Ukrainian>
+        <Russian>???</Russian>  
     </object>
-
-
-
-
-
     <object id = "MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES">
         <German>Der Gradient kann nur von 1x1-Matrizen gebildet werden.</German>
         <English>Only gradient of 1x1-matrices is possible.</English>
