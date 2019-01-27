@@ -165,8 +165,8 @@
     <object id = "MEB_MatrixOperator_WRONG_FORM_OF_FIRST_PARAMETER_IN_OPERATOR_DIV">
         <German>Der 1. Parameter im Operator 'div' muss ein Vektor sein. Seine Dimension muss gleich der Anzahl der angegebenen Veränderlichen sein.</German>
         <English>The 1. parameter of the operator 'div' must be a vector. Its dimension must equal the number of given variables.</English>
-        <Ukrainian>???</Ukrainian>
-        <Russian>???</Russian>  
+        <Ukrainian>Перший параметр має бути вектором. Його ромірність повинна дорівнювати кількості заданих змінних.</Ukrainian>
+        <Russian>Первый параметр должен быть вектором. Его размерность должна равняться количеству заданых переменных.</Russian> 
     </object>
     <object id = "MEB_MatrixOperator_GRAD_ONLY_POSSIBLE_FOR_1_X_1_MATRICES">
         <German>Der Gradient kann nur von 1x1-Matrizen gebildet werden.</German>
