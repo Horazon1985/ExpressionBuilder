@@ -473,8 +473,8 @@ public class ParseTests extends MathToolTestBase {
     public void parseOperatorNotSuccesfullyParsedTest3() {
         // Parsen von "div(x^2+y-z,x,y,x)" gegen das Pattern "div(expr,uniqueindet,uniqueindet,uniqueindet)".
         try {
-            patternForOperator = "div(expr,uniqueindet,uniqueindet,uniqueindet)";
-            operator = OperationParser.parseDefaultOperator("div", new String[]{"x^2+y-z", "x", "y", "x"}, null, patternForOperator);
+            patternForOperator = "laplace(expr,uniqueindet,uniqueindet,uniqueindet)";
+            operator = OperationParser.parseDefaultOperator("laplace", new String[]{"x^2+y-z", "x", "y", "x"}, null, patternForOperator);
             fail();
         } catch (ParseException e) {
             /* 
